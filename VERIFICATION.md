@@ -34,23 +34,43 @@ not an unavailable local device/toolchain.
 
 ## Android CI
 
-The first integration run, [39685845251](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39685845251),
-passed domain/schema checks but failed AAR metadata validation: stable Health
-Connect 1.1.0 requires compile SDK 36. The build configuration and CI SDK install
-were updated to 36. Minimum SDK remains 28 and target SDK remains 35.
+[Integration run 39688833480](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39688833480)
+passed (attempt 2) for commit `05ef331e6816e57ed4b02f2ab51783a1d7c53730`
+with schema 3. All three jobs are green.
 
-Integration run [39686757355](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39686757355)
-passed debug APK build, lint and test-APK compilation on API 28, 35 and 36. Each
-emulator executed 82 tests: 80 passed and two new-profile onboarding UI tests
-failed. The new-profile graph was being rebuilt when asynchronous baseline review
-finished. The graph destination is now stable, navigation waits for persisted
-review, and tests verify each distinct form step. Run 39687977009 still exposed
-the same two first-Continue failures: a baseline-review confirmation snackbar
-could overlap the newly opened native form. That redundant cross-screen message
-is now removed. A fresh full run is required before merge; failed runs are not
-green merge results.
-The workflow tests all three APIs and uploads APKs/device reports. Older Phase 1
-CI results are not verification of the resumed implementation.
+| Runtime | Domain/schema | Debug APK + test APK | Lint | Instrumentation |
+| --- | --- | --- | --- | --- |
+| API 28 / Android 9 | 615 / 24 passed | Passed | Passed | 86 passed, 0 skipped, 0 failed |
+| API 35 / Android 15 | 615 / 24 passed | Passed | Passed | 86 passed, 0 skipped, 0 failed |
+| API 36 / Android 16 | 615 / 24 passed | Passed | Passed | 86 passed, 0 skipped, 0 failed |
+
+Commands executed by CI:
+
+```sh
+sh scripts/test-domain.sh
+python3 scripts/test-schema.py
+./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
+./gradlew :app:dependencies --configuration debugRuntimeClasspath
+./gradlew :app:connectedDebugAndroidTest
+```
+
+The resolved runtime dependency graph was reviewed and its permissive transitive
+licence notices were added to THIRD_PARTY.md and offline application assets.
+APKs and device-test reports are uploaded for each successful emulator job.
+
+Earlier integration failures were fixed before merging: compile SDK was raised
+to 36 for stable Health Connect 1.1.0; the Compose/native View call was corrected;
+the initial navigation graph was stabilized; and the baseline-review snackbar
+that could intercept the next screen's first Continue tap was removed. Tests
+retain their behavioral assertions and now report the actual form step and
+view hierarchy on a timeout. The first API 36 attempt in the run above failed
+before tests while downloading an invalid emulator-image ZIP; only that failed
+job was retried. Such infrastructure failure is not counted as a passing test.
+
+Minimum SDK remains 28 and target SDK remains 35. The workflow runs on every PR
+and main update; use [PR checks](https://github.com/mmwiza1/Race-day-dreams/pull/1/checks)
+for the exact final head and the Actions main-branch run after merge. Older
+Phase 1 results are not verification of this implementation.
 
 ## Automated Android coverage
 
