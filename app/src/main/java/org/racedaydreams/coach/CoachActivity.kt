@@ -122,6 +122,16 @@ private fun CoachApp(model: CoachViewModel) {
         return
     }
 
+    // Profile/review changes navigate explicitly. Rebuilding this graph while a runner is
+    // typing would recreate the retained goal form and can discard the current interaction.
+    val startDestination = rememberSaveable {
+        when {
+            state.profile != null -> "home"
+            state.baselineReviewed -> "goals"
+            else -> "baseline"
+        }
+    }
+
     val tabs = listOf("home" to "Home", "plan" to "Plan", "calendar" to "Calendar", "progress" to "Progress", "settings" to "Settings")
     Scaffold(
         topBar = { TopAppBar(title = { Text("Race Day Dreams") }, navigationIcon = {
@@ -153,18 +163,15 @@ private fun CoachApp(model: CoachViewModel) {
                     TextButton(onClick = { resetDialog = true }) { Text("Delete local data") }
                 }
             }
-            NavHost(navController = nav, startDestination = when {
-                state.profile != null -> "home"
-                state.baselineReviewed -> "goals"
-                else -> "baseline"
-            }, modifier = Modifier.weight(1f)) {
+            NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
                 composable("home") { HomeScreen(state, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
                         onContinue = {
-                            model.reviewBaseline()
-                            nav.navigate(if (state.profile == null) "goals" else "home") { launchSingleTop = true }
+                            model.reviewBaseline {
+                                nav.navigate(if (state.profile == null) "goals" else "home") { launchSingleTop = true }
+                            }
                         })
                 }
                 composable("manual") { ManualBaselineScreen(state, model) { nav.popBackStack() } }

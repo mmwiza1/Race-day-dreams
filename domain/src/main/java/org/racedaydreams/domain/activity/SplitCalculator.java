@@ -34,10 +34,13 @@ public final class SplitCalculator {
             if (segmentIndex == series.segments.size()) { missing = true; continue; }
             SampleSeries.Segment segment = series.segments.get(segmentIndex);
             if (series.samples.get(segment.first()).distanceMetres() > from + .000001) { missing = true; continue; }
-            SampleSeries.Point start = series.at(segment, from, true);
-            SampleSeries.Point end = series.at(segment, to, false);
-            // For the first distance split retain observed stationary time at activity start.
-            double startSeconds = from == 0 && series.samples.get(0).elapsed().isZero() ? 0 : start.seconds();
+            // Adjacent elapsed splits share the first observed crossing of their boundary.
+            // A stationary interval at that boundary belongs to the following split; using
+            // the latest start (appropriate for rolling efforts) would silently discard it.
+            SampleSeries.Point start = series.at(segment, from, false);
+            // Include observed stationary time after the final distance was reached too.
+            SampleSeries.Point end = series.at(segment, to, to == last);
+            double startSeconds = start.seconds();
             if (end.seconds() <= startSeconds) { missing = true; continue; }
             Double elevation = start.elevation() == null || end.elevation() == null ? null : end.elevation() - start.elevation();
             result.add(new RunSplit(number, to - from, ActivityChecks.duration(end.seconds() - startSeconds),
@@ -45,7 +48,7 @@ public final class SplitCalculator {
                     series.sampleMean(startSeconds, end.seconds(), false), to - from < splitMetres - .001));
         }
         if (missing) reasons.add("Some distance splits could not be derived because their full interval was not continuously recorded.");
-        reasons.add("Split boundaries are interpolated between nearby recorded points. Heart-rate/cadence values are means of available samples, not invented complete recordings.");
+        reasons.add("Splits use observed elapsed time, including stationary time within continuously recorded sections. Boundaries are interpolated between nearby recorded points. Heart-rate/cadence values are means of available samples, not invented complete recordings.");
         return new SplitAnalysis(result, missing ? SampleQuality.UNCERTAIN : series.quality, reasons);
     }
 }

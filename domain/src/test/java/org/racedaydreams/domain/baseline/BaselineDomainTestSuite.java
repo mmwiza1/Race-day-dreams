@@ -17,6 +17,7 @@ public final class BaselineDomainTestSuite {
         recordedHistoryAndQuality();
         manualFallbackAndFreshness();
         performanceUsesEvidence();
+        mixedEvidenceDeadlines();
         assessmentChoicesAndAnalysis();
         resultAndTimeZoneBoundaries();
         immutabilityAndInputBoundaries();
@@ -130,6 +131,35 @@ public final class BaselineDomainTestSuite {
         RunnerBaseline partialManual = BaselineEngine.applyManualOverlay(BaselineEngine.derive(regularRuns(0, 6, 3, 10), FROM, TO),
                 new ManualBaselineInput(30.0, null, null, null, null, null, null, null), TO);
         check(!PerformanceEligibilityEvaluator.evaluate(partialManual, TO).eligible());
+    }
+
+    private static void mixedEvidenceDeadlines() {
+        ArrayList<ActivityRecord> runs = new ArrayList<>(regularRuns(2, 8, 3, 10));
+        runs.add(activity("latest-supporting-record", TO.minus(Duration.ofDays(13)), 10000.0, 3600, ZoneOffset.UTC));
+        RunnerBaseline recorded = BaselineEngine.derive(runs, FROM, TO);
+        RunnerBaseline mixed = BaselineEngine.applyManualOverlay(recorded,
+                new ManualBaselineInput(30.0, 3.0, null, null, null, null, null, null), TO);
+        EligibilityDecision current = PerformanceEligibilityEvaluator.evaluate(mixed, TO);
+        check(current.eligible());
+        eq(TO.plus(Duration.ofDays(1)), current.validUntil());
+        check(PerformanceEligibilityEvaluator.evaluate(mixed, current.validUntil()).eligible());
+        check(!PerformanceEligibilityEvaluator.evaluate(mixed, current.validUntil().plusSeconds(1)).eligible());
+        eq(TO.plus(Duration.ofDays(1)), PerformanceEligibilityEvaluator.evaluate(recorded, TO).validUntil());
+
+        RunnerBaseline fresherRecorded = BaselineEngine.derive(regularRuns(4, 8, 3, 10), FROM, TO);
+        RunnerBaseline olderManual = BaselineEngine.applyManualOverlay(fresherRecorded,
+                new ManualBaselineInput(30.0, null, null, null, null, null, null, null), TO.minus(Duration.ofDays(13)));
+        check(PerformanceEligibilityEvaluator.evaluate(olderManual, TO).eligible());
+        eq(TO.plus(Duration.ofDays(1)), PerformanceEligibilityEvaluator.evaluate(olderManual, TO).validUntil());
+
+        RunnerBaseline entirelyManual = BaselineEngine.applyManualOverlay(recorded,
+                new ManualBaselineInput(30.0, 3.0, 10.0, null, null, null, null, 8), TO);
+        check(PerformanceEligibilityEvaluator.evaluate(entirelyManual, TO).eligible());
+        eq(TO.plus(Duration.ofDays(14)), PerformanceEligibilityEvaluator.evaluate(entirelyManual, TO).validUntil());
+        RunnerBaseline unsupported = BaselineEngine.applyManualOverlay(RunnerBaseline.empty(FROM, TO),
+                new ManualBaselineInput(30.0, null, null, null, null, null, null, null), TO);
+        check(!PerformanceEligibilityEvaluator.evaluate(unsupported, TO).eligible());
+        eq(TO, PerformanceEligibilityEvaluator.evaluate(unsupported, TO).validUntil());
     }
 
     private static void assessmentChoicesAndAnalysis() {

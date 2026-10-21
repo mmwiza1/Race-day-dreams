@@ -50,7 +50,10 @@ fun BaselineScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
         Text("Performance-focused training", style = MaterialTheme.typography.titleMedium)
         state.eligibilityReasons.forEach { Text(it) }
     }
-    CoachButton(if (state.profile == null) "Looks right / continue to my goals" else "Confirm baseline", onContinue)
+    Button(onClick = onContinue, enabled = !state.busy,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+        Text(if (state.profile == null) "Looks right / continue to my goals" else "Confirm baseline")
+    }
     OutlinedButton(onManual, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Fill gaps or correct this baseline") }
     OutlinedButton(onAssessment, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Optional baseline assessment") }
     Text("Your future goal, race date and availability are still your decisions. Recorded history cannot tell us your intentions.")

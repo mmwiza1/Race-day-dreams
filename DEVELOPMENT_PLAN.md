@@ -10,6 +10,7 @@ it does not imply that all running-coach features are complete.
 | Storage | Additive schema 1→2, source identities, annotations, snapshots and user-owned data | Future schema changes require explicit migrations |
 | Health Connect | Optional running/distance/HR/history import, availability and permission states, source-aware dedup/update/deletion | Physical-device/vendor validation; additional metrics only with implemented use |
 | Baseline | Recorded-history review, optional manual corrections, confidence/provenance and derived eligibility | Richer effort/context inference requires more evidence |
+| Gym | Run/gym day overlap and shared GymSession domain model | Manual gym logging UI/storage, non-running Health Connect imports and coaching load integration |
 | Assessment | Optional 1–5 km controlled/best-effort choice and manually entered completion | Live GPS recording and sensor capture |
 | Activity history | Calendar list/detail, available metrics, notes/RPE/shoes, laps | Month/week calendar presentation; richer planned-vs-actual comparison |
 | Splits/PBs | Reliable-sample splits, rolling efforts, manual/official results and progression | Health Connect totals cannot provide rolling samples; GPX/runtime recorder pending |

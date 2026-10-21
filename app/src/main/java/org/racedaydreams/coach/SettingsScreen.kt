@@ -66,6 +66,7 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
         TextButton(onClick = { noticeAsset = "kotlin-LICENSE.txt" }) { Text("Kotlin licence") }
         TextButton(onClick = { noticeAsset = "coroutines-LICENSE.txt" }) { Text("Coroutines licence") }
         TextButton(onClick = { noticeAsset = "protobuf-LICENSE.txt" }) { Text("Protocol Buffers licence") }
+        TextButton(onClick = { noticeAsset = "transitive-NOTICES.txt" }) { Text("Dependency notices") }
     }
     OutlinedButton(reset, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Delete local app data") }
     if (showLicence) AlertDialog(onDismissRequest = { showLicence = false }, title = { Text("MIT License") },

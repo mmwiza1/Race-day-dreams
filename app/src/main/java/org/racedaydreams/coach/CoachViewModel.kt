@@ -208,7 +208,8 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         mutate { profiles.clearDraft() }
     }
 
-    fun reviewBaseline() = mutate("Baseline reviewed. You can change it whenever your circumstances change.") {
+    fun reviewBaseline(onSuccess: () -> Unit = {}) = mutate(
+        "Baseline reviewed. You can change it whenever your circumstances change.", onSuccess) {
         store.putSetting("baseline.reviewed", "true")
     }
 

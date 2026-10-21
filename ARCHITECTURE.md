@@ -53,7 +53,9 @@ and metres are stored independently, allowing additional PB distances.
 
 Repositories share an application-scoped helper. Transactions stage complete
 imports, source deletions, derived efforts and the next checkpoint together.
-Provider updates retain manual annotations and shoe assignments. A source delete
+Provider updates retain manual annotations and shoe assignments. Annotation notes
+use null for no app override and empty text for an intentional clearing, separate
+from provider payload. A source delete
 invalidates its derived efforts; manually entered results remain user-owned.
 
 Unreadable files are retained by an explicit corruption handler. Only confirmed

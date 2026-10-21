@@ -57,6 +57,18 @@ jobs:
           target: default
           disable-animations: true
           script: ./gradlew :app:connectedDebugAndroidTest
+      - name: Explain device test failures
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for report in Path('app/build/outputs/androidTest-results/connected').rglob('TEST-*.xml'):
+              for case in ET.parse(report).iter('testcase'):
+                  for failure in case.findall('failure') + case.findall('error'):
+                      print(case.get('classname'), case.get('name'))
+                      print((failure.text or failure.get('message', ''))[:20000])
+          PY
       - name: Upload device test reports
         if: always()
         uses: actions/upload-artifact@v4

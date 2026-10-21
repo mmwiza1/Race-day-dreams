@@ -42,7 +42,8 @@ public final class AppPrivacyTest extends AndroidTestCase {
 
     public void testRequiredNoticesAreAvailableOffline() throws Exception {
         for (String name : new String[]{"third_party.md", "apache-2.0.txt",
-                "kotlin-LICENSE.txt", "coroutines-LICENSE.txt", "protobuf-LICENSE.txt"}) {
+                "kotlin-LICENSE.txt", "coroutines-LICENSE.txt", "protobuf-LICENSE.txt",
+                "transitive-NOTICES.txt"}) {
             try (InputStream source = getContext().getAssets().open(name)) {
                 int count = 0;
                 byte[] buffer = new byte[2048];

@@ -10,8 +10,8 @@ completed and tested. The original main commit was `a1e970a` (README only).
 
 ## Local verification, 2026-10-21
 
-- `sh scripts/test-domain.sh`: **585 checks passed**: core 151, reminders 60,
-  activity/PB/splits/shoes 119, baseline/assessment 146, provider abstraction 33,
+- `sh scripts/test-domain.sh`: **615 checks passed**: core 151, reminders 60,
+  activity/PB/splits/shoes 138, baseline/assessment 157, provider abstraction 33,
   whole-plan regression 76. Whole-plan inputs are explicitly synthetic test-only
   fixtures; they do not constitute an implemented production plan generator.
 - `python3 scripts/test-schema.py`: **20 tests passed**, executing actual schema
@@ -37,9 +37,15 @@ passed domain/schema checks but failed AAR metadata validation: stable Health
 Connect 1.1.0 requires compile SDK 36. The build configuration and CI SDK install
 were updated to 36. Minimum SDK remains 28 and target SDK remains 35.
 
-Current integration build, lint and emulator results are pending. Do not treat
-older Phase 1 CI results as verification of the resumed implementation. The
-workflow tests API 28, API 35 and API 36 and uploads APKs/device reports.
+Integration run [39686757355](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39686757355)
+passed debug APK build, lint and test-APK compilation on API 28, 35 and 36. Each
+emulator executed 82 tests: 80 passed and two new-profile onboarding UI tests
+failed. The new-profile graph was being rebuilt when asynchronous baseline review
+finished. The graph destination is now stable, navigation waits for persisted
+review, and tests verify each distinct form step. A fresh full run is required
+before merge; the failed run is not a green merge result.
+The workflow tests all three APIs and uploads APKs/device reports. Older Phase 1
+CI results are not verification of the resumed implementation.
 
 ## Automated Android coverage
 

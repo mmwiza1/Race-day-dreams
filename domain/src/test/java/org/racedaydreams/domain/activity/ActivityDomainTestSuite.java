@@ -23,6 +23,7 @@ public final class ActivityDomainTestSuite {
         rollingEfforts();
         quality();
         splits();
+        elapsedSplitBoundaries();
         progression();
         shoes();
         milestones();
@@ -176,6 +177,41 @@ public final class ActivityDomainTestSuite {
         equal(3, SplitCalculator.calculate(lapped, 1_000).splits().size(), "Distance splits do not overwrite laps");
         equal("prescribed-rep-1", lapped.laps().get(0).plannedSegmentId(), "Lap can reference planned segment without overwriting it");
         expect(UnsupportedOperationException.class, () -> lapped.laps().clear(), "Lap list immutable");
+    }
+
+    private static void elapsedSplitBoundaries() {
+        for (UnitSystem units : UnitSystem.values()) {
+            double unitMetres = units == UnitSystem.IMPERIAL ? 1_609.344 : 1_000;
+            List<DistanceSample> points = new ArrayList<>();
+            points.add(point(0, 0));
+            points.add(point(20, 0));
+            for (int index = 1; index <= 10; index++) points.add(point(20 + 30 * index, unitMetres * index / 10));
+            points.add(point(350, unitMetres));
+            for (int index = 1; index <= 10; index++) points.add(point(350 + 30 * index, unitMetres + unitMetres * index / 10));
+            points.add(point(670, 2 * unitMetres));
+            ActivityRecord run = activity("stationary-boundaries-" + units, 2 * unitMetres, Duration.ofSeconds(670), points, null);
+            SplitAnalysis analysis = SplitCalculator.calculate(run, units);
+            equal(SampleQuality.QUALIFIED, analysis.quality(), "Observed stationary time does not imply a recording gap: " + units);
+            equal(2, analysis.splits().size(), "Two distance splits despite boundary stops: " + units);
+            equal(Duration.ofSeconds(320), analysis.splits().get(0).duration(), "First split retains initial stationary time: " + units);
+            equal(Duration.ofSeconds(350), analysis.splits().get(1).duration(), "Following split retains boundary and final stationary time: " + units);
+            Duration splitTotal = analysis.splits().get(0).duration().plus(analysis.splits().get(1).duration());
+            equal(run.elapsedTime(), splitTotal, "Continuous split durations account for every observed second: " + units);
+            check(analysis.reasons().stream().anyMatch(reason -> reason.contains("elapsed time")), "Elapsed split convention is explained: " + units);
+            PerformanceDistance distance = units == UnitSystem.IMPERIAL ? PerformanceDistance.ONE_MILE : PerformanceDistance.ONE_K;
+            BestEffort effort = effort(BestEffortCalculator.calculate(run), distance);
+            equal(Duration.ofSeconds(300), effort.duration(), "Rolling PB still excludes stationary time outside its interval: " + units);
+            equal(Duration.ofSeconds(20), effort.startElapsed(), "Rolling PB retains latest start on its initial plateau: " + units);
+        }
+
+        List<DistanceSample> partialPoints = new ArrayList<>();
+        for (int index = 0; index <= 15; index++) partialPoints.add(point(index * 20, index * 100));
+        partialPoints.add(point(320, 1_500));
+        ActivityRecord partial = activity("partial-stationary-end", 1_500.0, Duration.ofSeconds(320), partialPoints, null);
+        SplitAnalysis partialSplits = SplitCalculator.calculate(partial, UnitSystem.METRIC);
+        check(partialSplits.splits().get(1).partial(), "Final partial split retains its partial label");
+        equal(Duration.ofSeconds(120), partialSplits.splits().get(1).duration(), "Final partial split retains observed stationary finish");
+        equal(partial.elapsedTime(), partialSplits.splits().get(0).duration().plus(partialSplits.splits().get(1).duration()), "Partial distance splits retain total observed elapsed duration");
     }
 
     private static void progression() {

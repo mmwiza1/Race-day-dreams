@@ -163,14 +163,16 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
     }
     if (chooseShoe) AlertDialog(onDismissRequest = { chooseShoe = false },
         title = { Text("Assign a shoe") },
-        text = { Column {
-            TextButton(onClick = { chooseShoe = false; model.assignShoe(activity.id(), null) }) { Text("No shoe") }
-            state.shoes.forEach { shoe ->
-                TextButton(onClick = { chooseShoe = false; model.assignShoe(activity.id(), shoe.id()) }) {
+        text = { LazyColumn(Modifier.heightIn(max = 360.dp)) {
+            item { TextButton(onClick = { chooseShoe = false; model.assignShoe(activity.id(), null) },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("No shoe") } }
+            items(state.shoes, key = { it.id() }) { shoe ->
+                TextButton(onClick = { chooseShoe = false; model.assignShoe(activity.id(), shoe.id()) },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                     Text("${shoe.brand()} ${shoe.model()}${if (shoe.retired()) " · retired" else ""}")
                 }
             }
-            if (state.shoes.isEmpty()) Text("Add shoes from Progress or Settings first.")
+            if (state.shoes.isEmpty()) item { Text("Add shoes from Progress or Settings first.") }
         } },
         confirmButton = { TextButton(onClick = { chooseShoe = false }) { Text("Close") } })
 }

@@ -6,9 +6,10 @@ training schedules are incorporated.
 
 ## Incorporated runtime/build/test dependencies
 
-Versions below are pinned direct dependencies. The resolved runtime graph is
-printed by CI; AndroidX transitive modules are maintained by the same upstream
-project under Apache-2.0. Review that graph and this inventory when versions change.
+Direct dependencies are pinned below. Transitive versions are the actual versions
+resolved by CI for this build, whose runtime graph is printed in the job logs.
+AndroidX transitive modules are maintained by the same upstream project under
+Apache-2.0. Review that graph and this inventory when versions change.
 
 | Project / artifact | Version | Licence | Purpose / source / notices |
 | --- | --- | --- | --- |
@@ -22,7 +23,14 @@ project under Apache-2.0. Review that graph and this inventory when versions cha
 | AndroidX Health Connect client | 1.1.0 | Apache-2.0 | Optional local health-provider reads; [source](https://android.googlesource.com/platform/frameworks/support/+/androidx-main/health/connect/). |
 | AndroidX transitive Core, Collection, SavedState, Annotation, ProfileInstaller and related modules | Resolved by pinned graph | Apache-2.0 | Support libraries from AndroidX; no analytics or network service. |
 | Protocol Buffers code used by Health Connect client | Resolved/relocated upstream component | BSD-3-Clause | Serialization in AndroidX Health Connect. [Source](https://github.com/protocolbuffers/protobuf); BSD licence retained in assets. |
-| Guava/listenablefuture and AndroidX concurrent adapters, when resolved | Resolved by pinned graph | Apache-2.0 | Async interoperability; [Guava](https://github.com/google/guava). |
+| Guava (`com.google.guava:guava`) | 31.1-android | Apache-2.0 | Health Connect / AndroidX async interoperability; [source and licence](https://github.com/google/guava/tree/v31.1). Attribution in `transitive-NOTICES.txt`; Apache terms bundled. |
+| Guava failureaccess (`com.google.guava:failureaccess`) | 1.0.1 | Apache-2.0 | Internal future interoperability; [component](https://github.com/google/guava/blob/v31.1/futures/failureaccess/pom.xml). Guava notice and Apache terms bundled. |
+| Guava listenablefuture (`com.google.guava:listenablefuture`) | 9999.0-empty-to-avoid-conflict-with-guava | Apache-2.0 | [Empty conflict-avoidance artifact](https://github.com/google/guava/blob/v31.1/futures/listenablefuture9999/pom.xml); implementation comes from Guava. Apache terms bundled. |
+| JSR305 annotations (`com.google.code.findbugs:jsr305`) | 3.0.2 | BSD-3-Clause | Nullability annotations; [FindBugs licence inventory](https://github.com/findbugsproject/findbugs/blob/master/findbugs/licenses/LICENSE-jsr305.txt), [full expert-group notice retained by Google](https://github.com/google/j2objc/blob/1.3/jsr305/LICENSE). Full notice bundled in `transitive-NOTICES.txt`. |
+| Checker Framework qualifiers (`org.checkerframework:checker-qual`) | 3.12.0 | MIT | Type-qualifier annotations; [exact component licence](https://github.com/typetools/checker-framework/blob/checker-framework-3.12.0/checker-qual/LICENSE.txt). This MIT-only annotations component does not include the GPL-licensed compiler. Full notice bundled in `transitive-NOTICES.txt`. |
+| Error Prone annotations (`com.google.errorprone:error_prone_annotations`) | 2.11.0 | Apache-2.0 | Static-analysis annotations; [component declaration](https://github.com/google/error-prone/blob/v2.11.0/annotations/pom.xml). Author notice and Apache terms bundled. |
+| J2ObjC annotations (`com.google.j2objc:j2objc-annotations`) | 1.3 | Apache-2.0 | Guava's cross-platform annotations; [source](https://github.com/google/j2objc/tree/master/annotations), [licence](https://github.com/google/j2objc/blob/master/LICENSE). Author notice and Apache terms bundled; no Objective-C runtime incorporated. |
+| JetBrains annotations (`org.jetbrains:annotations`) | 23.0.0 | Apache-2.0 | Kotlin/JVM nullability and contract annotations; [exact licence](https://github.com/JetBrains/java-annotations/blob/23.0.0/LICENSE.txt). JetBrains notice and Apache terms bundled. |
 | Gradle wrapper/distribution | 8.11.1 | Apache-2.0 plus included-component notices | Build only; [upstream notices](third_party/gradle-LICENSE.txt). |
 | Android Gradle Plugin | 8.9.2 | Apache-2.0 | Build only; Android Open Source Project. |
 | Android SDK/build tools | Platform 36 / tools 35.0.0 | Package-specific SDK terms | Developer toolchain; not application code. |
@@ -31,12 +39,27 @@ project under Apache-2.0. Review that graph and this inventory when versions cha
 | Compose UI test JUnit4/test manifest | BOM-managed | Apache-2.0 | Instrumentation/debug support only. |
 | JUnit 4 and Hamcrest (test transitive) | Resolved by AndroidX Test | EPL-1.0 / BSD-3-Clause | Test APK only; [JUnit](https://github.com/junit-team/junit4), [Hamcrest](https://github.com/hamcrest/JavaHamcrest). Gradle notices retain corresponding test-component notices. |
 
-Apache-2.0 terms and upstream Kotlin/coroutines notices, plus the protobuf BSD
-notice, are bundled under app assets for offline access. AndroidX works are
+Apache-2.0 terms and upstream Kotlin/coroutines notices, the protobuf BSD notice,
+and `transitive-NOTICES.txt` (including JSR305 BSD and checker-qual MIT terms) are
+bundled under app assets and accessible from Settings offline. AndroidX works are
 Copyright The Android Open Source Project / The Android Open Source Project
 authors and are licensed under Apache License 2.0. No AndroidX, Kotlin or
 Health Connect source files were copied into this project's MIT source.
 Dependencies are linked through their published artifacts.
+
+## CI-only actions
+
+These actions execute in GitHub Actions and are not bundled in the application.
+Their licence files were checked at the configured major-version refs.
+
+| Action / source | Ref | Licence | Purpose |
+| --- | --- | --- | --- |
+| [actions/checkout](https://github.com/actions/checkout) | v5 | MIT | Repository checkout |
+| [actions/setup-java](https://github.com/actions/setup-java) | v5 | MIT | CI JDK |
+| [android-actions/setup-android](https://github.com/android-actions/setup-android) | v3 | MIT | Android SDK setup |
+| [gradle/actions](https://github.com/gradle/actions) | v4 | MIT | Gradle setup/cache |
+| [reactivecircus/android-emulator-runner](https://github.com/ReactiveCircus/android-emulator-runner) | v2 | Apache-2.0 | Emulator device tests |
+| [actions/upload-artifact](https://github.com/actions/upload-artifact) | v4 | MIT | APK/test-report artifacts |
 
 ## Engineering references, no incorporated source
 

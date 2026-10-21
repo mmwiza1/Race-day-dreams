@@ -12,10 +12,12 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.printToString
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -61,6 +63,7 @@ import org.racedaydreams.domain.activity.PerformanceDistance
 import org.racedaydreams.domain.activity.ResultSource
 import org.racedaydreams.domain.activity.SourceIdentity
 import org.racedaydreams.reminders.EveningReminders
+import org.racedaydreams.ui.OnboardingView
 
 /** Tests the real Compose/retained-View boundary with isolated synthetic local fixtures. */
 @RunWith(AndroidJUnit4::class)
@@ -87,7 +90,7 @@ class CoachOnboardingTest {
     @Test fun canContinueWithoutHealthAndSaveGoalThroughExistingForm() {
         launch()
         continueToGoals()
-        repeat(3) { nativeContinue() }
+        repeat(3) { index -> nativeContinue(index + 2) }
         waitNativeText(R.string.onboarding_save)
         onView(withText(R.string.onboarding_save)).perform(scrollTo(), click())
         waitForText("Review running baseline")
@@ -128,7 +131,7 @@ class CoachOnboardingTest {
         launch()
         continueToGoals()
         onView(withText("Half Marathon")).perform(scrollTo(), click())
-        nativeContinue()
+        nativeContinue(2)
         onView(withText("Target Time")).perform(scrollTo(), click())
         onView(withHint(R.string.onboarding_target_hint)).perform(scrollTo(), replaceText("1:59:59"))
         closeSoftKeyboard()
@@ -232,11 +235,11 @@ class CoachOnboardingTest {
         compose.onNodeWithText("Settings").performClick()
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         waitNativeText(R.string.onboarding_edit_title)
-        nativeContinue()
+        nativeContinue(2)
         onView(withText(R.string.onboarding_performance_retained))
             .perform(scrollTo()).check(matches(isDisplayed()))
-        nativeContinue()
-        nativeContinue()
+        nativeContinue(3)
+        nativeContinue(4)
         onView(withText(R.string.onboarding_performance_retained))
             .perform(scrollTo()).check(matches(isDisplayed()))
         waitNativeText(R.string.onboarding_save)
@@ -279,18 +282,29 @@ class CoachOnboardingTest {
 
     private fun continueToGoals() {
         compose.onNodeWithText("Looks right / continue to my goals").performScrollTo().performClick()
+        awaitCondition("baseline review to be persisted") { FeatureStore(context).getSetting("baseline.reviewed") == "true" }
+        waitNativeStep(1)
         waitNativeText(R.string.onboarding_title)
         onView(withText(R.string.onboarding_title)).check(matches(isDisplayed()))
     }
 
-    private fun nativeContinue() {
+    private fun nativeContinue(nextStep: Int) {
+        waitNativeStep(nextStep - 1)
         waitNativeText(R.string.onboarding_continue)
         onView(withText(R.string.onboarding_continue)).perform(scrollTo(), click())
+        waitNativeStep(nextStep)
     }
 
-    private fun waitNativeText(resource: Int) {
-        val expected = context.getString(resource)
-        compose.waitUntil(15_000) {
+    private fun waitNativeStep(step: Int) {
+        val names = listOf(R.string.onboarding_step_goal, R.string.onboarding_step_approach,
+            R.string.onboarding_step_routine, R.string.onboarding_step_review)
+        waitNativeText(context.getString(R.string.onboarding_step, step, context.getString(names[step - 1])))
+    }
+
+    private fun waitNativeText(resource: Int) = waitNativeText(context.getString(resource))
+
+    private fun waitNativeText(expected: String) {
+        awaitCondition("enabled native text '$expected'") {
             var found = false
             scenario!!.onActivity { activity -> found = hasEnabledText(activity.window.decorView, expected) }
             found
@@ -308,6 +322,34 @@ class CoachOnboardingTest {
     private fun field(label: String) = compose.onNode(hasSetTextAction() and hasText(label))
 
     private fun waitForText(text: String) {
-        compose.waitUntil(15_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+        awaitCondition("Compose text '$text'") { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    private fun awaitCondition(description: String, condition: () -> Boolean) {
+        try { compose.waitUntil(15_000, condition) }
+        catch (failure: Exception) {
+            throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
+        }
+    }
+
+    private fun failureDiagnostics(): String {
+        val native = StringBuilder()
+        runCatching { scenario?.onActivity { appendView(it.window.decorView, native, 0) } }
+            .onFailure { native.append("Native hierarchy unavailable: ").append(it.message) }
+        val semantics = runCatching { compose.onRoot(useUnmergedTree = true).printToString(maxDepth = 8) }
+            .getOrElse { "Compose hierarchy unavailable: ${it.message}" }
+        return "Native hierarchy and current goal draft:\n$native\nCompose hierarchy:\n$semantics"
+    }
+
+    private fun appendView(view: View, output: StringBuilder, depth: Int) {
+        if (output.length > 16_000) return
+        output.append("  ".repeat(depth)).append(view.javaClass.simpleName)
+            .append(" shown=").append(view.isShown).append(" enabled=").append(view.isEnabled)
+        if (view is TextView) output.append(" text=").append(view.text)
+        if (view is OnboardingView) output.append(" draft=").append(view.draftJson())
+        output.append('\n')
+        if (view is ViewGroup) for (index in 0 until view.childCount) {
+            appendView(view.getChildAt(index), output, depth + 1)
+        }
     }
 }

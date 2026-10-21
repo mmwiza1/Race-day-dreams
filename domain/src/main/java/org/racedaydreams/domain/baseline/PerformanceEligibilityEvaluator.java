@@ -40,6 +40,13 @@ public final class PerformanceEligibilityEvaluator {
         if (manual) reasons.add("This decision includes your manually entered history. Imported or completed workouts will refine it over time.");
         reasons.add("These thresholds are transparent product heuristics, not universal training rules. Other strategies and runner choices remain available.");
         Instant evidenceAt = manual ? manualReviewedAt : baseline.lastActivityAt();
+        // Mixed evidence depends on both the manual review and recorded history remaining
+        // current. Its review deadline must follow the earlier expiry, not just the review.
+        if (manual && !entirelyManual) {
+            Instant recordedAt = baseline.lastActivityAt();
+            if (evidenceAt == null || recordedAt == null) evidenceAt = null;
+            else if (recordedAt.isBefore(evidenceAt)) evidenceAt = recordedAt;
+        }
         Instant deadline = evidenceAt == null ? now : evidenceAt.plus(Duration.ofDays(14));
         if (deadline.isBefore(now)) deadline = now;
         return new EligibilityDecision(eligible, reasons, deadline);
