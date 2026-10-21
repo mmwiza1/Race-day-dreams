@@ -6,6 +6,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,6 +27,33 @@ jobs:
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - name: Offline-compatible domain tests
-        run: sh scripts/test-domain.sh
+        run: |
+          sh scripts/test-domain.sh
+          python3 scripts/test-schema.py
       - name: Build, lint and compile instrumentation tests
         run: ./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: race-day-dreams-debug
+          path: app/build/outputs/apk/debug/*.apk
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run Android persistence and draft tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: default
+          disable-animations: true
+          script: ./gradlew :app:connectedDebugAndroidTest
+      - name: Upload device test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-reports
+          path: app/build/reports/androidTests/connected/
+          if-no-files-found: ignore
