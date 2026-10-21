@@ -39,6 +39,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
     }
     var expandedDistance by rememberSaveable { mutableStateOf<String?>(null) }
     var enteringResult by rememberSaveable { mutableStateOf(false) }
+    var showAllEntered by rememberSaveable { mutableStateOf(false) }
     CoachPage {
         CoachHeading("Progress from your recorded running")
         Text("These are summaries of retained records, not a claim that unrecorded training did not happen. No readiness score or race prediction is generated.")
@@ -75,7 +76,8 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
         if (manualResults.isNotEmpty()) {
             CoachHeading("Your entered results")
             Text("Every result is retained, including efforts that were not a personal best.")
-            manualResults.sortedByDescending { it.date() }.forEach { result ->
+            val entered = manualResults.sortedByDescending { it.date() }
+            (if (showAllEntered) entered else entered.take(20)).forEach { result ->
                 CoachCard {
                     Text("${result.distance().label()} · ${PaceCalculator.formatTime(result.duration())}")
                     Text("${result.date()} · ${resultSource(result)}")
@@ -83,6 +85,9 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
                     LinkedActivity(result, state, onActivity)
                     TextButton(onClick = { model.deleteResult(result.id()) }, enabled = !state.busy) { Text("Remove entered result") }
                 }
+            }
+            if (entered.size > 20) TextButton(onClick = { showAllEntered = !showAllEntered }) {
+                Text(if (showAllEntered) "Show recent entered results" else "Show all ${entered.size} entered results")
             }
         }
         CoachHeading("Shoes and mileage")
@@ -176,6 +181,7 @@ private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () 
     var official by rememberSaveable { mutableStateOf(false) }
     var activityId by rememberSaveable { mutableStateOf<String?>(null) }
     var chooseActivity by rememberSaveable { mutableStateOf(false) }
+    var activitySearch by rememberSaveable { mutableStateOf("") }
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     CoachCard {
         Text("Record a result", style = MaterialTheme.typography.titleLarge)
@@ -193,13 +199,16 @@ private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () 
         Text(activityId?.let { "Linked activity: ${state.activities.firstOrNull { a -> a.id() == it }?.let(::displayActivityDate) ?: it}" } ?: "No linked activity")
         TextButton(onClick = { chooseActivity = !chooseActivity }) { Text(if (chooseActivity) "Hide activity choices" else "Choose optional linked activity") }
         if (chooseActivity) {
+            CoachField("Find activity date (YYYY-MM-DD, optional)", activitySearch, { activitySearch = it })
             TextButton(onClick = { activityId = null; chooseActivity = false }) { Text("No linked activity") }
-            state.activities.take(100).forEach { activity ->
+            val matches = state.activities.filter { activitySearch.isBlank() || displayActivityDate(it).contains(activitySearch.trim()) }
+            matches.take(100).forEach { activity ->
                 TextButton(onClick = { activityId = activity.id(); chooseActivity = false }) {
                     Text("${displayActivityDate(activity)} · ${activity.distanceMetres()?.let { formatDistance(it, state) } ?: "distance unavailable"}")
                 }
             }
-            if (state.activities.size > 100) Text("Only the most recent 100 activities are shown. Linking an activity is optional.")
+            if (matches.size > 100) Text("Only the most recent 100 matches are shown. Enter a date to find older activities. Linking an activity is optional.")
+            if (matches.isEmpty()) Text("No retained activities match that date.")
         }
         CoachField("Result notes (optional)", note, { note = it }, singleLine = false)
         error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -238,9 +247,10 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
                 Text("${shoe.brand()} ${shoe.model()}".trim(), style = MaterialTheme.typography.titleLarge)
                 Text(when { shoe.retired() -> "Retired"; shoe.defaultShoe() -> "Default for newly added runs"; else -> "Active" })
                 Text("Recorded distance: ${formatDistance(summary.recordedDistanceMetres(), state)}")
-                summary.totalDistanceMetres()?.let { Text("Total including entered starting mileage: ${formatDistance(it, state)}") }
+                summary.totalDistanceMetres()?.let { Text("Known mileage including entered starting mileage: ${formatDistance(it, state)}") }
                     ?: Text("Earlier mileage was not supplied; recorded distance is a known lower bound, not lifetime shoe mileage.")
                 Text("${summary.runCount()} assigned runs · ${summary.runsWithKnownDistance()} with known distance")
+                if (summary.runsWithKnownDistance() < summary.runCount()) Text("Some assigned runs have no distance. Mileage totals include known distances only.")
                 summary.averageRunDistanceMetres()?.let { Text("Average known run distance: ${formatDistance(it, state)}") }
                 summary.longestRunMetres()?.let { Text("Longest assigned run: ${formatDistance(it, state)}") }
                 summary.ageDays()?.let { Text("Age since entered purchase date: $it days") }

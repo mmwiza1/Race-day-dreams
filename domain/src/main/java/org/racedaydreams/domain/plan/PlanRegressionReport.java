@@ -23,10 +23,14 @@ public record PlanRegressionReport(List<Issue> issues, List<Week> weeks) {
         weeks = Collections.unmodifiableList(new ArrayList<>(weeks));
     }
 
+    /** No explicit violation was found; consult fullyVerified() for missing-data diagnostics. */
     public boolean passed() {
         for (Issue issue : issues) if (issue.severity() == Severity.ERROR) return false;
         return true;
     }
+
+    /** All configured checks were verifiable and no violation was found. */
+    public boolean fullyVerified() { return issues.isEmpty(); }
 
     public boolean has(String code) {
         for (Issue issue : issues) if (issue.code().equals(code)) return true;

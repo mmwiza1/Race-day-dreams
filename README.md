@@ -35,7 +35,7 @@ See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the detailed status matrix.
 
 ## Build and tests
 
-Use JDK 17 or 21, Android SDK 35 and Android Studio with Kotlin 2.0 support.
+Use JDK 17 or 21, Android SDK 36 and Android Studio with Kotlin 2.0 support.
 The minimum Android version is API 28. Gradle 8.11.1 / AGP 8.9.2 are pinned.
 Set `ANDROID_HOME` or an untracked `local.properties` with your SDK directory.
 
@@ -52,7 +52,7 @@ sh scripts/test-domain.sh
 python3 scripts/test-schema.py
 ```
 
-GitHub Actions builds, lints and runs the Android tests on API 28 and API 35.
+GitHub Actions builds, lints and runs the Android tests on API 28, API 35 and API 36.
 Each job uploads a debug APK and device-test report. Exact verified results and
 remaining manual checks are recorded in [VERIFICATION.md](VERIFICATION.md).
 

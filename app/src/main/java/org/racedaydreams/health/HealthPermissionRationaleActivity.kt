@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import org.racedaydreams.R
 
 /** Public permission-rationale entry point only; it never reads or exposes private app records. */
 class HealthPermissionRationaleActivity : Activity() {
@@ -23,7 +24,7 @@ class HealthPermissionRationaleActivity : Activity() {
             isAccessibilityHeading = true
         })
         content.addView(TextView(this).apply {
-            text = "Race Day Dreams reads running exercise sessions and distance to review your existing training baseline and show your activity history. Heart rate is optional and supplies recorded average/max heart rate where available. Optional extended-history access supports up to twelve weeks of baseline evidence.\n\nNothing is uploaded. No account is required. Data synchronized into Health Connect by Samsung Health or other compatible providers can be read when you permit it; Race Day Dreams does not connect directly to those accounts.\n\nYou can decline, grant partial access or revoke access and continue manually. Imported records remain in this app’s private on-device database until you delete local data. Revoking permission stops further reads; it does not erase already imported records.\n\nSession totals alone are not used to invent kilometre splits, GPS points, cadence, moving time or rolling personal bests. No Health Connect records are written or changed."
+            text = getString(R.string.health_data_privacy)
             textSize = 17f
         })
         content.addView(Button(this).apply {

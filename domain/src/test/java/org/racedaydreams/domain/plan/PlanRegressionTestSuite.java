@@ -34,6 +34,7 @@ public final class PlanRegressionTestSuite {
         for (SyntheticPlanFixtures.Fixture fixture : fixtures) {
             PlanRegressionReport report = inspect(fixture, fixture.plan());
             check(report.passed(), fixture.id() + " fixture invariants: " + report.issues());
+            check(report.fullyVerified(), fixture.id() + " distance checks have sufficient fixture data");
             check(fixture.plan().workouts().size() >= 20, "Full multi-week fixture, not a single-workout assertion");
             String expected = resource("plan-snapshots/" + fixture.id() + ".txt");
             String actual = PlanSnapshot.render(fixture.plan());
@@ -59,6 +60,9 @@ public final class PlanRegressionTestSuite {
         values.set(0, copy(a, a.id(), a.date(), WorkoutCategory.INTERVALS, a.distanceKm()));
         values.set(1, copy(b, b.id(), b.date(), WorkoutCategory.TEMPO_THRESHOLD_RUN, b.distanceKm()));
         check(inspect(fixture, plan(original, values)).has("HARD_DAY_SPACING"), "Adjacent hard days detected");
+        PlannedWorkout third = values.get(2);
+        values.set(2, copy(third, third.id(), third.date(), WorkoutCategory.INTERVALS, third.distanceKm()));
+        check(inspect(fixture, plan(original, values)).has("HARD_FREQUENCY"), "Excessive hard-session frequency detected");
 
         values = new ArrayList<>(original.workouts());
         PlannedWorkout spike = values.get(8);
@@ -80,6 +84,7 @@ public final class PlanRegressionTestSuite {
         PlanRegressionReport unknown = inspect(fixture, plan(original, values));
         check(unknown.has("UNKNOWN_WEEKLY_DISTANCE"), "Unknown distance explicitly unverifiable");
         check(unknown.weeks().get(0).trainingDistanceKm() == null, "Unknown distance never becomes zero");
+        check(!unknown.fullyVerified(), "Missing data cannot be labelled fully verified");
         values.set(0, new PlannedWorkout(a.id(), a.date(), a.category(), null, null, Collections.emptyList(), "Empty fixture"));
         check(inspect(fixture, plan(original, values)).has("EMPTY_PRESCRIPTION"), "Empty prescription detected");
 
@@ -99,6 +104,20 @@ public final class PlanRegressionTestSuite {
         List<TrainingPhase> overlapping = new ArrayList<>(original.phases());
         overlapping.add(original.phases().get(0));
         check(inspect(fixture, new TrainingPlan(original.id(), original.startDate(), original.endDate(), overlapping, original.workouts())).has("PHASE_OVERLAP"), "Phase overlap detected");
+
+        WorkoutSegment segment = new WorkoutSegment(WorkoutSegment.Kind.RUN, null,
+                Duration.ofMinutes(20), null, null, null, 3.0, "Conversational | effort\nNo heart-rate requirement");
+        values = new ArrayList<>(original.workouts());
+        values.set(0, new PlannedWorkout(a.id(), a.date(), WorkoutCategory.EASY_RUN, null,
+                Duration.ofMinutes(20), Collections.singletonList(segment), "Time-based fixture"));
+        String structured = PlanSnapshot.render(plan(original, values));
+        check(structured.contains("segment|" + a.id()), "Structured prescription included in full snapshot");
+        check(structured.contains("Conversational \\| effort\\nNo heart-rate requirement"), "Snapshot escapes delimiters and line breaks");
+        check(structured.contains("|~|~|~|3.0|"), "Missing pace and HR guidance preserved as unknown");
+        values.set(0, new PlannedWorkout(a.id(), a.date(), a.category(), a.distanceKm(), null, Collections.emptyList(), null));
+        String nullNote = PlanSnapshot.render(plan(original, values));
+        values.set(0, new PlannedWorkout(a.id(), a.date(), a.category(), a.distanceKm(), null, Collections.emptyList(), "~"));
+        check(!nullNote.equals(PlanSnapshot.render(plan(original, values))), "Literal null marker differs from unknown note");
     }
 
     private static void schedulingChecks(SyntheticPlanFixtures.Fixture fixture) {
@@ -133,6 +152,14 @@ public final class PlanRegressionTestSuite {
         SyntheticPlanFixtures.Fixture longWindow = SyntheticPlanFixtures.build("year", year, start, 20);
         check(inspect(longWindow, longWindow.plan()).passed(), "One-year complete fixture checked");
         check(longWindow.plan().workouts().size() > 300, "Whole one-year schedule inspected");
+        TrainingPreferences old = fixture.profile().preferences();
+        UserProfile hybrid = new UserProfile(fixture.profile().raceGoal(),
+                new TrainingPreferences(old.strategy(), old.runningDays(), old.runsPerWeek(), old.longRunDay(),
+                        java.util.EnumSet.range(java.time.DayOfWeek.MONDAY, java.time.DayOfWeek.FRIDAY),
+                        old.scheduleType(), old.units()), fixture.profile().performanceEligible());
+        SyntheticPlanFixtures.Fixture gymFive = SyntheticPlanFixtures.build("five-gym-days", hybrid, start, 20);
+        check(inspect(gymFive, gymFive.plan()).passed(), "Five gym days do not erase running availability");
+        check(gymFive.plan().workouts().stream().anyMatch(workout -> hybrid.preferences().gymDays().contains(workout.date().getDayOfWeek())), "Gym and run can share a day");
         Locale priorLocale = Locale.getDefault(); TimeZone priorZone = TimeZone.getDefault();
         String before = PlanSnapshot.render(longWindow.plan());
         try {

@@ -19,7 +19,7 @@ it does not imply that all running-coach features are complete.
 | Backup | Versioned local export and transactional validated replace restore | Merge restore deliberately unsupported |
 | GPX/GPS | Codec/route/recorder extension contracts, compatibility/licence evaluation | Runtime parser/writer, foreground recorder, sensors, route UI |
 | Maps/Wear | Shared models and open-stack architectural direction | MapLibre runtime and Wear OS companion |
-| Training engine | Existing prescriptions/models, generator contract and regression-fixture boundary | Original complete-plan generation, adaptation, taper and race prediction |
+| Training engine | Existing prescriptions/models, generator contract, whole-plan snapshots, invariant diagnostics and five synthetic test-only fixtures | Original complete-plan generation, adaptation, taper and race prediction |
 
 ## Next development sequence
 

@@ -56,6 +56,6 @@ public final class PlanSnapshot {
         out.append('\n');
     }
     private static String escape(Object value) {
-        return value == null ? "~" : value.toString().replace("\\", "\\\\").replace("|", "\\|").replace("\r", "\\r").replace("\n", "\\n");
+        return value == null ? "~" : value.toString().replace("\\", "\\\\").replace("|", "\\|").replace("~", "\\~").replace("\r", "\\r").replace("\n", "\\n");
     }
 }

@@ -25,8 +25,9 @@ project under Apache-2.0. Review that graph and this inventory when versions cha
 | Guava/listenablefuture and AndroidX concurrent adapters, when resolved | Resolved by pinned graph | Apache-2.0 | Async interoperability; [Guava](https://github.com/google/guava). |
 | Gradle wrapper/distribution | 8.11.1 | Apache-2.0 plus included-component notices | Build only; [upstream notices](third_party/gradle-LICENSE.txt). |
 | Android Gradle Plugin | 8.9.2 | Apache-2.0 | Build only; Android Open Source Project. |
-| Android SDK/build tools | Platform 35 / tools 35.0.0 | Package-specific SDK terms | Developer toolchain; not application code. |
+| Android SDK/build tools | Platform 36 / tools 35.0.0 | Package-specific SDK terms | Developer toolchain; not application code. |
 | AndroidX Test runner/core/ext JUnit | 1.6.2 / 1.6.1 / 1.2.1 | Apache-2.0 | Instrumentation tests only; [source](https://github.com/android/android-test). |
+| AndroidX Espresso core | 3.6.1 | Apache-2.0 | Native View interoperability tests during incremental Compose migration; AndroidX Test. |
 | Compose UI test JUnit4/test manifest | BOM-managed | Apache-2.0 | Instrumentation/debug support only. |
 | JUnit 4 and Hamcrest (test transitive) | Resolved by AndroidX Test | EPL-1.0 / BSD-3-Clause | Test APK only; [JUnit](https://github.com/junit-team/junit4), [Hamcrest](https://github.com/hamcrest/JavaHamcrest). Gradle notices retain corresponding test-component notices. |
 
