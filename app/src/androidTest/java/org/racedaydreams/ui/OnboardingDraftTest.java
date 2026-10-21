@@ -108,8 +108,65 @@ public final class OnboardingDraftTest extends AndroidTestCase {
 
         OnboardingDraft restored = new OnboardingDraft(null, json.toString());
         assertFalse(restored.performanceEligible);
-        assertEquals(TrainingStrategy.BALANCED, restored.strategy);
+        assertFalse(restored.canSelectPerformance());
+        assertEquals(TrainingStrategy.PERFORMANCE, restored.strategy);
+        try {
+            restored.profile();
+            fail("A restored draft cannot grant a new Performance selection");
+        } catch (IllegalArgumentException expected) {
+            // Keep the runner's draft visible, but require an explicit supported choice.
+            assertTrue(expected.getMessage().contains("Current training evidence"));
+        }
+    }
+
+    public void testSavedPerformanceIsPreservedWhenCurrentEvidenceNoLongerSupportsIt() {
+        UserProfile initial = performanceProfile(true);
+        OnboardingDraft draft = new OnboardingDraft(initial, null, false);
+        draft.raceName = "Updated event name";
+        draft.targetTime = "1:58:00";
+        draft.step = 3;
+
+        OnboardingDraft restored = new OnboardingDraft(initial, draft.toJson(), false);
+        assertTrue(restored.canSelectPerformance());
+        assertTrue(restored.retainingPerformanceWithoutCurrentEvidence());
+        assertEquals(TrainingStrategy.PERFORMANCE, restored.profile().preferences().strategy());
+        assertEquals("Updated event name", restored.profile().raceGoal().raceName());
+        assertEquals(Duration.ofMinutes(118), restored.profile().raceGoal().targetTime());
+        assertFalse("Keeping a preference must not fabricate current eligibility",
+                restored.profile().performanceEligible());
+        assertEquals(initial.preferences().runningDays(), restored.profile().preferences().runningDays());
+    }
+
+    public void testExistingPerformanceCanBeExplicitlyChangedWithInsufficientEvidence() {
+        UserProfile initial = performanceProfile(false);
+        OnboardingDraft draft = new OnboardingDraft(initial, null, false);
+        draft.strategy = TrainingStrategy.BALANCED;
+        OnboardingDraft restored = new OnboardingDraft(initial, draft.toJson(), false);
+        assertEquals(TrainingStrategy.BALANCED, restored.profile().preferences().strategy());
         assertFalse(restored.profile().performanceEligible());
+    }
+
+    public void testStaleFlagDoesNotEnableNewPerformanceSelection() throws Exception {
+        UserProfile initial = new UserProfile(profile().raceGoal(), profile().preferences(), true);
+        JSONObject json = new JSONObject(new OnboardingDraft(initial, null, true).toJson());
+        json.put("strategy", TrainingStrategy.PERFORMANCE.name());
+        OnboardingDraft restored = new OnboardingDraft(initial, json.toString(), false);
+        assertFalse(restored.canSelectPerformance());
+        try {
+            restored.profile();
+            fail("The stored compatibility flag is not current training evidence");
+        } catch (IllegalArgumentException expected) {
+            assertEquals(TrainingStrategy.DISTANCE_FIRST, initial.preferences().strategy());
+        }
+    }
+
+    public void testCurrentEvidenceEnablesNewPerformanceSelection() {
+        OnboardingDraft draft = new OnboardingDraft(null, null, true);
+        draft.strategy = TrainingStrategy.PERFORMANCE;
+        assertTrue(draft.canSelectPerformance());
+        assertFalse(draft.retainingPerformanceWithoutCurrentEvidence());
+        assertEquals(TrainingStrategy.PERFORMANCE, draft.profile().preferences().strategy());
+        assertTrue(draft.profile().performanceEligible());
     }
 
     public void testGeneralFitnessDoesNotRestoreAnEventOrTimeTarget() throws Exception {
@@ -148,5 +205,13 @@ public final class OnboardingDraftTest extends AndroidTestCase {
                         3, DayOfWeek.SUNDAY,
                         EnumSet.of(DayOfWeek.TUESDAY, DayOfWeek.FRIDAY),
                         ScheduleType.FIXED, UnitSystem.IMPERIAL), false);
+    }
+
+    private static UserProfile performanceProfile(boolean legacyEligible) {
+        UserProfile initial = profile();
+        TrainingPreferences preferences = initial.preferences();
+        return new UserProfile(initial.raceGoal(), new TrainingPreferences(TrainingStrategy.PERFORMANCE,
+                preferences.runningDays(), preferences.runsPerWeek(), preferences.longRunDay(),
+                preferences.gymDays(), preferences.scheduleType(), preferences.units()), legacyEligible);
     }
 }

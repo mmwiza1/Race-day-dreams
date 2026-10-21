@@ -37,6 +37,7 @@ final class OnboardingDraft {
     ScheduleType scheduleType = ScheduleType.FLEXIBLE;
     UnitSystem units = UnitSystem.METRIC;
     final boolean performanceEligible;
+    private final boolean existingPerformanceStrategy;
     boolean invalidDraft;
 
     OnboardingDraft(UserProfile initial, String savedJson) {
@@ -45,6 +46,8 @@ final class OnboardingDraft {
 
     OnboardingDraft(UserProfile initial, String savedJson, boolean derivedPerformanceEligibility) {
         performanceEligible = derivedPerformanceEligibility;
+        existingPerformanceStrategy = initial != null
+                && initial.preferences().strategy() == TrainingStrategy.PERFORMANCE;
         if (initial != null) {
             RaceGoal goal = initial.raceGoal();
             TrainingPreferences preferences = initial.preferences();
@@ -72,9 +75,8 @@ final class OnboardingDraft {
                 step = 0;
             }
         }
-        if (!performanceEligible && strategy == TrainingStrategy.PERFORMANCE) {
-            strategy = TrainingStrategy.BALANCED;
-        }
+        // Preserve an existing preference even when evidence has aged or permissions change.
+        // Restored drafts cannot grant eligibility; unsupported new selections require a choice.
     }
 
     private void read(JSONObject source) throws JSONException {
@@ -154,7 +156,23 @@ final class OnboardingDraft {
     }
 
     UserProfile profile() {
+        validateStrategy();
         return new UserProfile(goal(goalMode), preferences(), performanceEligible);
+    }
+
+    boolean canSelectPerformance() {
+        return performanceEligible || existingPerformanceStrategy;
+    }
+
+    boolean retainingPerformanceWithoutCurrentEvidence() {
+        return existingPerformanceStrategy && !performanceEligible;
+    }
+
+    void validateStrategy() {
+        if (strategy == TrainingStrategy.PERFORMANCE && !canSelectPerformance()) {
+            throw new IllegalArgumentException("Current training evidence does not support selecting Performance. "
+                    + "Choose another strategy or review your running baseline; your race goal is unchanged.");
+        }
     }
 
     private static EnumSet<DayOfWeek> readDays(JSONArray array) throws JSONException {

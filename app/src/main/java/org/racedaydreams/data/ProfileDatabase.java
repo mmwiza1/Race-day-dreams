@@ -75,8 +75,9 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE shoes (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL, "
                 + "is_default INTEGER NOT NULL DEFAULT 0 CHECK(is_default IN (0, 1)))");
         db.execSQL("CREATE UNIQUE INDEX shoes_one_default ON shoes(is_default) WHERE is_default = 1");
+        // Null notes retain provider text; an empty string is an explicit app-owned clearing.
         db.execSQL("CREATE TABLE activity_annotations (provider TEXT NOT NULL, record_id TEXT NOT NULL, "
-                + "notes TEXT NOT NULL DEFAULT '', rpe REAL CHECK(rpe BETWEEN 0 AND 10), "
+                + "notes TEXT, rpe REAL CHECK(rpe BETWEEN 0 AND 10), "
                 + "shoe_id TEXT REFERENCES shoes(id) ON DELETE SET NULL, PRIMARY KEY(provider, record_id))");
         db.execSQL("CREATE TABLE manual_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, "
                 + "distance_code TEXT NOT NULL, distance_metres REAL NOT NULL CHECK(distance_metres > 0), "

@@ -209,7 +209,7 @@ private fun CoachApp(model: CoachViewModel) {
 private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () -> Unit) {
     var form by remember { mutableStateOf<OnboardingView?>(null) }
     BackHandler { if (form?.navigateBack() != true) onCancel() }
-    AndroidView(Modifier.fillMaxSize().imePadding(), factory = { context ->
+    AndroidView(modifier = Modifier.fillMaxSize().imePadding(), factory = { context ->
         OnboardingView(context, state.draft, state.profile, state.performanceEligible, object : OnboardingView.Listener {
             override fun onSave(profile: org.racedaydreams.domain.UserProfile) { model.saveProfile(profile) }
             override fun onDraftChanged(json: String) { model.saveDraft(json) }

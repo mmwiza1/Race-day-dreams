@@ -1,88 +1,70 @@
-# Phase 1 verification
+# Verification record
 
-## Repository baseline
+## Resumed baseline
 
-Inspected the full recursive GitHub tree on 2026-10-21. Initial commit
-`a1e970a348d38e70f8be715a3e6df36971962b96` contained only `README.md`.
-There was no application, build system, test suite or existing implementation to
-reuse. The exact baseline Git objects were restored through the connected GitHub
-API after shell Git access failed; original object hashes were verified locally.
+Continued the existing `codex/phase-1-android-foundation` branch and interrupted
+working tree, rather than recreating the project. Phase 1 commit `3011e037` had
+the Java domain, native goal form, SQLite schema 1 and existing persistence/draft
+tests. Interrupted activity/baseline/storage/Compose/integration code was audited,
+completed and tested. The original main commit was `a1e970a` (README only).
 
-## Checks run locally
+## Local verification, 2026-10-21
 
-- `sh scripts/test-domain.sh`: **150 checks passed**. Covers all race distances,
-  target time parsing, pace/unit conversion and rounding, goal modes, race dates
-  (including today/tomorrow/year boundaries), availability, two/six running days,
-  overlapping gym/running days, Performance eligibility, immutable data and
-  separate planned/completed values. No Android classes or downloaded dependencies.
-- `python3 scripts/test-schema.py`: **5 tests passed**, executing the actual DDL
-  from `ProfileDatabase.java` with foreign keys enabled. Checks fresh schema,
-  overlapping run/gym days, invalid/orphan rows, cascades and rollback. This is
-  SQL verification, not Android repository execution.
-- All Android XML parses. All 121 string references resolve; no duplicate string
-  names. Main manifest requests no permissions.
-- Reviewed the complete diff for lifecycle/data-loss paths, Android API 28 library
-  compatibility, secrets, unsupported functionality and obvious resource issues.
-- Verified the official Gradle 8.11.1 wrapper JAR SHA-256:
-  `2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046`.
+- `sh scripts/test-domain.sh`: **585 checks passed**: core 151, reminders 60,
+  activity/PB/splits/shoes 119, baseline/assessment 146, provider abstraction 33,
+  whole-plan regression 76. Whole-plan inputs are explicitly synthetic test-only
+  fixtures; they do not constitute an implemented production plan generator.
+- `python3 scripts/test-schema.py`: **20 tests passed**, executing actual schema
+  DDL and frozen schema-1 migration fixtures with foreign keys enabled. Includes
+  original-row preservation, failed-migration/transaction rollback, import identity,
+  checkpoint atomicity, annotations, shoe defaults and PB invalidation constraints.
+- `git diff --check`: passed. Android XML parsed successfully. Reviewed changed
+  source for accidental credentials, SDK paths, destructive upgrades, invented
+  metrics, abandoned entry points and licence issues.
+- Gradle wrapper JAR remains the verified official Gradle 8.11.1 wrapper:
+  SHA-256 `2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046`.
 
-## Android build and device verification
+The workspace provides Java 21's compiler module, but no Android SDK, emulator
+or installed Gradle distribution. The local offline wrapper bootstrap failed
+with `java.net.SocketException: Operation not permitted`; blocked downloads were
+not repeatedly retried. Android results below therefore come from GitHub Actions,
+not an unavailable local device/toolchain.
 
-[GitHub Actions run 39677607836](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39677607836)
-passed against commit `80fd7137c60222d759ecae07a5f91d58c4d2a098`:
+## Android CI
 
-- Android debug APK assembly and lint.
-- Android instrumentation APK assembly.
-- All 21 instrumentation tests on an Android 15 / API 35 emulator.
-- All 150 domain checks and five SQLite schema tests.
-- Debug APK and device-test reports uploaded as workflow artifacts.
+The first integration run, [39685845251](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39685845251),
+passed domain/schema checks but failed AAR metadata validation: stable Health
+Connect 1.1.0 requires compile SDK 36. The build configuration and CI SDK install
+were updated to 36. Minimum SDK remains 28 and target SDK remains 35.
 
-The initial CI SDK setup attempted to install the retired `tools` package. The
-workflow now requests `platform-tools` explicitly and builds with SDK 35. No
-Android code compilation or test failures remained in the successful run.
+Current integration build, lint and emulator results are pending. Do not treat
+older Phase 1 CI results as verification of the resumed implementation. The
+workflow tests API 28, API 35 and API 36 and uploads APKs/device reports.
 
-## Local toolchain limitation
+## Automated Android coverage
 
-The workspace has Java 21 (including the compiler module) but no Android SDK,
-Gradle distribution or emulator. Its normal Gradle cache is outside writable
-paths, so the build attempt used a task-local `GRADLE_USER_HOME`.
+The suite retains original profile/draft tests and adds real local-store and UI
+checks for migration, import deduplication/updates/deletions, transactional backup
+round-trip/rejection/rollback, PB preservation and invalidation, annotations,
+shoe assignment/mileage, shared-helper reset, Health Connect availability and
+denied-permission boundaries, reminder replacement/cancellation/stale delivery,
+manifest privacy and offline notices. Compose/native-form tests exercise manual
+fallback, reviewed recorded history, target-time draft recreation, saving goals,
+manual results and shoes. Exact executed counts belong to the CI results above.
 
-```sh
-GRADLE_USER_HOME=/tmp/rdd-gradle ./gradlew --offline \
-  :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
-```
+## Manual/device checks still required before release
 
-The wrapper needs a Gradle distribution even for `--offline`; bootstrapping failed
-with `java.net.SocketException: Operation not permitted`. The blocked download
-was not repeatedly retried. Local Android compilation and device checks remain
-unavailable, but the CI build and emulator results above provide actual Android
-verification. This environment limitation does not require changing the app or
-adding a backend.
+- Real Health Connect consent, partial/revoked permissions, extended history,
+  updates/deletions and Samsung Health-synchronized records. Emulator/fake-provider
+  tests cannot establish vendor interoperability or provider data quality.
+- All onboarding paths on physical devices, external document providers, battery
+  restrictions, notification delivery after reboot/time-zone change and Android
+  notification settings. Inexact alarms may be delayed by the operating system.
+- TalkBack traversal, 200% font scale, small screens, dark mode, RTL, keyboard
+  interaction, system bars and process death while editing/saving/importing.
+- Calendar week/month UI, production plan generation/adaptation, actual GPS/GPX,
+  route maps and Wear OS are pending and cannot be reported as device-verified.
 
-## Added device tests
-
-There are 15 repository instrumentation tests for storage round trips, replacement,
-optional event/target fields, gym overlap, draft handling, clear/reset, failed-write
-rollback, inconsistent rows, unknown enum values, main-thread rejection, retaining
-physically corrupt files and recovering through a confirmed database reset.
-Eight onboarding draft tests cover incomplete input, JSON restoration, malformed
-dates/versions, event-date requirements, eligibility, general fitness and routine
-preferences. The original 21 tests passed in the run above. The two additional
-corruption/reset tests bring the suite to 23. The workflow executes the full suite
-using Android's platform test runner; see the [PR checks](https://github.com/mmwiza1/Race-day-dreams/pull/1/checks)
-for the current commit's result.
-
-## Before release
-
-1. Run the Android build/lint and instrumentation commands in README with SDK 35.
-2. Install on Android API 28 and API 35+. Check first launch, each onboarding path,
-   save/relaunch, edit/cancel, delete, Back navigation and system-bar/keyboard insets.
-3. Rotate/recreate at each step, during a save, and after a simulated persistence
-   failure. Verify the prior saved profile survives and input remains available.
-4. Check TalkBack, large fonts, dark mode, RTL layout and metric/imperial pace.
-5. Confirm no health/network permission prompt and no generated coaching results.
-
-The workflow builds, lints, runs the domain/schema checks and executes device
-tests. Check the result for the exact commit under review. Automated persistence
-and draft tests do not establish that every screen is usable with every font
-scale or accessibility service; the manual checks above remain required.
+No production readiness probability, race prediction, generated plan, GPS track
+or NHS programme is fabricated. See DEVELOPMENT_PLAN.md for operational versus
+scaffolded features and TRAINING_ENGINE.md for test-fixture limitations.

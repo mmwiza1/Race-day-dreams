@@ -28,8 +28,9 @@
     <string name="onboarding_strategy">Training strategy</string>
     <string name="onboarding_distance_first_explanation">Build the endurance foundation for your distance before gradually adding more race-specific speed work.</string>
     <string name="onboarding_balanced_explanation">Develop endurance and speed together, with room for recovery.</string>
-    <string name="onboarding_performance_explanation">More threshold, interval and race-pace work. Available only when recorded training history supports it.</string>
-    <string name="onboarding_performance_unavailable">Performance is unavailable until your training history can be assessed. You can still choose Maximum Performance as your race goal.</string>
+    <string name="onboarding_performance_explanation">A preference for more threshold, interval and race-pace work. Selecting it for the first time requires supporting recent training evidence.</string>
+    <string name="onboarding_performance_unavailable">Your current evidence does not support a new Performance selection. Choose another strategy or review your baseline. You can still choose Maximum Performance as your race goal.</string>
+    <string name="onboarding_performance_retained">Your current evidence does not support extra performance-focused workload. Performance is your saved preference: you can keep it or choose another strategy. Keeping it does not confirm training readiness, and nothing changes until you save.</string>
     <string name="onboarding_zone2_explanation">Lower-intensity training option designed to build aerobic endurance while limiting unnecessary high-intensity workload.</string>
     <string name="onboarding_running_days">Preferred running days</string>
     <string name="onboarding_running_days_hint">Choose the days that usually work for you. Select at least as many days as your planned runs per week.</string>

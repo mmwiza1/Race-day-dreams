@@ -49,7 +49,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         try(Cursor cursor=db.rawQuery("SELECT a.payload, n.provider, n.notes, n.rpe, n.shoe_id FROM activities a LEFT JOIN activity_annotations n ON a.provider=n.provider AND a.record_id=n.record_id ORDER BY a.start_millis DESC, a.id",null)) {
             while(cursor.moveToNext()) {
                 ActivityRecord a=FeatureJson.activity(FeatureJson.object(cursor.getString(0)));
-                if(!cursor.isNull(1)) a=annotated(a,cursor.getString(2),cursor.isNull(3)?null:cursor.getDouble(3),cursor.getString(4));
+                if(!cursor.isNull(1)) a=annotated(a,cursor.isNull(2)?a.notes():cursor.getString(2),cursor.isNull(3)?null:cursor.getDouble(3),cursor.getString(4));
                 out.add(a);
             }
         }
@@ -121,13 +121,14 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
     @Override public String importToken(String provider) {
         try(Cursor c=read().rawQuery("SELECT token FROM import_checkpoints WHERE provider=?",new String[]{required(provider,"provider")})) {return c.moveToFirst()?c.getString(0):null;}
     }
-    public void saveActivityNotes(String id,String notes,Double rpe) { updateAnnotation(id,notes,rpe,null,false); }
+    // Null in storage means no app override; an explicit save of null/empty clears the note.
+    public void saveActivityNotes(String id,String notes,Double rpe) { updateAnnotation(id,notes==null?"":notes,rpe,null,false); }
     public void assignShoe(String id,String shoeId) {updateAnnotation(id,null,null,shoeId,true);}
     private void updateAnnotation(String id,String notes,Double rpe,String shoe,boolean changeShoe) {
         SQLiteDatabase db=write(); db.beginTransaction();
         try(Cursor c=db.rawQuery("SELECT provider,record_id FROM activities WHERE id=?",new String[]{required(id,"activity ID")})) {
             if(!c.moveToFirst()) throw new IllegalArgumentException("Activity no longer exists.");
-            String provider=c.getString(0),record=c.getString(1),oldNotes="",oldShoe=null;Double oldRpe=null;
+            String provider=c.getString(0),record=c.getString(1),oldNotes=null,oldShoe=null;Double oldRpe=null;
             try(Cursor old=db.rawQuery("SELECT notes,rpe,shoe_id FROM activity_annotations WHERE provider=? AND record_id=?",new String[]{provider,record})) {if(old.moveToFirst()){oldNotes=old.getString(0);oldRpe=old.isNull(1)?null:old.getDouble(1);oldShoe=old.getString(2);}}
             putAnnotation(db,provider,record,changeShoe?oldNotes:notes,changeShoe?oldRpe:rpe,changeShoe?shoe:oldShoe);
             db.setTransactionSuccessful();
@@ -135,7 +136,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
     }
     private static void putAnnotation(SQLiteDatabase db,String provider,String record,String notes,Double rpe,String shoe) {
         if(rpe!=null && (!Double.isFinite(rpe)||rpe<0||rpe>10)) throw new IllegalArgumentException("RPE must be between 0 and 10.");
-        ContentValues v=values("provider",required(provider,"annotation provider"));v.put("record_id",required(record,"annotation record ID"));v.put("notes",notes==null?"":notes);if(rpe==null)v.putNull("rpe");else v.put("rpe",rpe);v.put("shoe_id",shoe);replace(db,"activity_annotations",v);
+        ContentValues v=values("provider",required(provider,"annotation provider"));v.put("record_id",required(record,"annotation record ID"));v.put("notes",notes);if(rpe==null)v.putNull("rpe");else v.put("rpe",rpe);v.put("shoe_id",shoe);replace(db,"activity_annotations",v);
     }
 
     public List<RecordedResult> results() {
@@ -258,7 +259,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             List<RecordedResult> results=new ArrayList<>();Set<String> resultIds=new HashSet<>();JSONArray resultRows=array(data,"results");for(int i=0;i<resultRows.length();i++){RecordedResult r=FeatureJson.result(resultRows.getJSONObject(i));if(r.source()==ResultSource.ROLLING)throw new IllegalArgumentException("Derived efforts must be recalculated from retained samples.");unique(resultIds,r.id());registerDistance(catalog,r.distance());results.add(r);}
             JSONArray bestEfforts=array(data,"bestEfforts");Set<String> effortPairs=new HashSet<>();
             for(int i=0;i<bestEfforts.length();i++){JSONObject e=bestEfforts.getJSONObject(i);RecordedResult r=FeatureJson.result(e.getJSONObject("result"));if(r.source()!=ResultSource.ROLLING)throw new IllegalArgumentException("An archived effort requires rolling provenance.");unique(resultIds,r.id());unique(effortPairs,r.activityId()+"\n"+r.distance().code());registerDistance(catalog,r.distance());JSONObject source=e.getJSONObject("source");SourceIdentity identity=new SourceIdentity(FeatureJson.required(source,"provider"),FeatureJson.required(source,"recordId"),FeatureJson.text(source,"originPackage"));SourceIdentity prior=activitySources.put(r.activityId(),identity);if(prior!=null&&!prior.equals(identity))throw new IllegalArgumentException("Archived efforts disagree about their activity source.");}
-            JSONArray annotations=array(data,"annotations");Set<SourceKey> annotationIds=new HashSet<>();for(int i=0;i<annotations.length();i++){JSONObject a=annotations.getJSONObject(i);String provider=FeatureJson.required(a,"provider"),record=FeatureJson.required(a,"recordId");unique(annotationIds,new SourceKey(provider,record));if(FeatureJson.text(a,"notes")==null)throw new IllegalArgumentException("Annotation notes must be text.");Double rpe=FeatureJson.number(a,"rpe");if(rpe!=null&&(rpe<0||rpe>10))throw new IllegalArgumentException("Invalid RPE.");String shoe=FeatureJson.text(a,"shoeId");if(shoe!=null&&!shoeIds.contains(shoe))throw new IllegalArgumentException("Annotation shoe is missing.");}
+            JSONArray annotations=array(data,"annotations");Set<SourceKey> annotationIds=new HashSet<>();for(int i=0;i<annotations.length();i++){JSONObject a=annotations.getJSONObject(i);String provider=FeatureJson.required(a,"provider"),record=FeatureJson.required(a,"recordId");unique(annotationIds,new SourceKey(provider,record));if(!a.has("notes"))throw new IllegalArgumentException("Annotation notes presence is required.");FeatureJson.text(a,"notes");Double rpe=FeatureJson.number(a,"rpe");if(rpe!=null&&(rpe<0||rpe>10))throw new IllegalArgumentException("Invalid RPE.");String shoe=FeatureJson.text(a,"shoeId");if(shoe!=null&&!shoeIds.contains(shoe))throw new IllegalArgumentException("Annotation shoe is missing.");}
             JSONObject settings=data.getJSONObject("settings");for(Iterator<String> it=settings.keys();it.hasNext();){String key=it.next();required(key,"setting key");if(!(settings.get(key) instanceof String))throw new IllegalArgumentException("Setting values must be text.");}
             JSONArray plans=array(data,"plannedWorkouts");Set<String> planIds=new HashSet<>();for(int i=0;i<plans.length();i++){JSONObject row=plans.getJSONObject(i);PlannedWorkout w=FeatureJson.planned(row.getJSONObject("workout"));unique(planIds,w.id());if(FeatureJson.requiredLong(row,"revision")<1)throw new IllegalArgumentException("Invalid workout revision.");}
             JSONArray assessments=array(data,"assessments"),trainingPlans=array(data,"trainingPlans"),adjustments=array(data,"planAdjustments");validateOpaque(assessments);for(int i=0;i<assessments.length();i++)FeatureJson.assessment(assessments.getJSONObject(i));validateOpaque(trainingPlans);validateOpaque(adjustments);
@@ -285,7 +286,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
                 JSONObject e=snapshot.bestEfforts().getJSONObject(i),source=e.getJSONObject("source");RecordedResult r=FeatureJson.result(e.getJSONObject("result"));
                 ContentValues v=values("id",r.id());v.put("activity_id",r.activityId());v.put("distance_code",r.distance().code());v.put("provider",source.getString("provider"));v.put("record_id",source.getString("recordId"));v.put("origin_package",FeatureJson.text(source,"originPackage"));v.put("payload",FeatureJson.result(r).toString());replace(db,"preserved_best_efforts",v);
             }
-            for(int i=0;i<snapshot.annotations().length();i++){JSONObject a=snapshot.annotations().getJSONObject(i);putAnnotation(db,a.getString("provider"),a.getString("recordId"),a.getString("notes"),FeatureJson.number(a,"rpe"),FeatureJson.text(a,"shoeId"));}
+            for(int i=0;i<snapshot.annotations().length();i++){JSONObject a=snapshot.annotations().getJSONObject(i);putAnnotation(db,a.getString("provider"),a.getString("recordId"),FeatureJson.text(a,"notes"),FeatureJson.number(a,"rpe"),FeatureJson.text(a,"shoeId"));}
             if(snapshot.baseline()!=null)putBaseline(db,snapshot.baseline(),snapshot.baselineAt());
             for(Iterator<String> it=snapshot.settings().keys();it.hasNext();){String key=it.next();putSetting(db,key,snapshot.settings().getString(key));}
             for(int i=0;i<snapshot.plans().length();i++){JSONObject p=snapshot.plans().getJSONObject(i);putPlanned(db,FeatureJson.planned(p.getJSONObject("workout")),FeatureJson.requiredLong(p,"revision"));}

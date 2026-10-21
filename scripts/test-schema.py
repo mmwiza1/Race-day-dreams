@@ -240,6 +240,16 @@ class FeatureSchemaTest(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):
             self.db.execute("INSERT INTO activity_annotations VALUES ('provider','other','',NULL,'missing')")
 
+    def test_absent_and_explicitly_cleared_note_overrides_are_distinct(self):
+        self.db.execute("INSERT INTO activity_annotations (provider,record_id) VALUES ('provider','no-override')")
+        self.db.execute("INSERT INTO activity_annotations VALUES ('provider','cleared','',NULL,NULL)")
+        self.assertIsNone(self.db.execute(
+            "SELECT notes FROM activity_annotations WHERE record_id='no-override'"
+        ).fetchone()[0])
+        self.assertEqual("", self.db.execute(
+            "SELECT notes FROM activity_annotations WHERE record_id='cleared'"
+        ).fetchone()[0])
+
     def test_baseline_and_workout_revision_constraints(self):
         for statement in [
             "INSERT INTO baseline_state VALUES (2,'{}',NULL,0)",

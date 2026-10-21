@@ -141,7 +141,9 @@ public final class DomainTestSuite {
             UserProfile profile = profile(RaceDistance.TEN_K, null, strategy, strategy == TrainingStrategy.PERFORMANCE);
             equal(strategy, profile.preferences().strategy(), "Strategy retained: " + strategy);
         }
-        rejects(() -> profile(RaceDistance.TEN_K, null, TrainingStrategy.PERFORMANCE, false), "Performance requires history support");
+        UserProfile preserved = profile(RaceDistance.TEN_K, null, TrainingStrategy.PERFORMANCE, false);
+        equal(TrainingStrategy.PERFORMANCE, preserved.preferences().strategy(), "Saved Performance preference survives insufficient current evidence");
+        equal(false, preserved.performanceEligible(), "Legacy eligibility snapshot remains false without silently changing the preference");
         UserProfile maximum = new UserProfile(new RaceGoal(RaceDistance.TEN_K, "", null, GoalMode.MAXIMUM_PERFORMANCE, null), preferences(Set.of(DayOfWeek.MONDAY), 1, null), false);
         equal(GoalMode.MAXIMUM_PERFORMANCE, maximum.raceGoal().mode(), "Maximum-performance goal independent of Performance strategy eligibility");
     }

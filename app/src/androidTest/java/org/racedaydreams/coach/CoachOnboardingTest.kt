@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -34,8 +35,11 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.temporal.TemporalAdjusters
+import java.util.EnumSet
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -45,7 +49,16 @@ import org.racedaydreams.R
 import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.RaceDistance
+import org.racedaydreams.domain.GoalMode
+import org.racedaydreams.domain.RaceGoal
+import org.racedaydreams.domain.ScheduleType
+import org.racedaydreams.domain.TrainingPreferences
+import org.racedaydreams.domain.TrainingStrategy
+import org.racedaydreams.domain.UnitSystem
+import org.racedaydreams.domain.UserProfile
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.activity.PerformanceDistance
+import org.racedaydreams.domain.activity.ResultSource
 import org.racedaydreams.domain.activity.SourceIdentity
 import org.racedaydreams.reminders.EveningReminders
 
@@ -148,6 +161,96 @@ class CoachOnboardingTest {
         field("Approximate easy pace (MM:SS/km)").performScrollTo().assertIsDisplayed()
     }
 
+    @Test fun officialResultIsStoredSeparatelyFromActivitiesAndProgressSurvivesRecreation() {
+        launchSavedProfile()
+        compose.onNodeWithText("Progress").performClick()
+        waitForText("Progress from your recorded running")
+        compose.onNodeWithText("Add a race or manual result").performScrollTo().performClick()
+        field("Finishing time (MM:SS or H:MM:SS)").performScrollTo().performTextInput("26:00")
+        field("Result date (YYYY-MM-DD)").performScrollTo().performTextReplacement("2025-01-12")
+        field("Race or event name (optional)").performScrollTo().performTextInput("Synthetic fixture 5K")
+        compose.onNodeWithText("This is my official chip time").performScrollTo().performClick()
+        compose.onNodeWithText("Save result").performScrollTo().performClick()
+
+        compose.waitUntil(15_000) { FeatureStore(context).results().size == 1 }
+        val result = FeatureStore(context).results().single()
+        assertEquals(PerformanceDistance.FIVE_K, result.distance())
+        assertEquals(Duration.ofMinutes(26), result.duration())
+        assertEquals(ResultSource.OFFICIAL_CHIP, result.source())
+        assertEquals("Synthetic fixture 5K", result.eventName())
+        assertEquals(LocalDate.of(2025, 1, 12), result.date())
+        assertNull("Entering an official result must not invent a linked activity", result.activityId())
+        assertTrue(FeatureStore(context).activities().isEmpty())
+
+        scenario!!.recreate()
+        waitForText("Progress from your recorded running")
+        compose.onNodeWithText("Progress from your recorded running").performScrollTo().assertIsDisplayed()
+        assertEquals(listOf(result), FeatureStore(context).results())
+        assertTrue(FeatureStore(context).activities().isEmpty())
+    }
+
+    @Test fun shoeFormRetainsExplicitZeroStartingMileageAndDefaultMetadata() {
+        launchSavedProfile()
+        compose.onNodeWithText("Progress").performClick()
+        waitForText("Progress from your recorded running")
+        compose.onNodeWithText("View and manage shoes").performScrollTo().performClick()
+        waitForText("Your shoes")
+        compose.onNodeWithText("Add shoes").performScrollTo().performClick()
+        field("Brand (optional)").performScrollTo().performTextInput("Test Brand")
+        field("Model").performScrollTo().performTextInput("Everyday Trainer")
+        field("Starting mileage (km, optional)").performScrollTo().performTextInput("0")
+        compose.onNodeWithText("Use as default for new runs").performScrollTo().performClick()
+        field("Shoe notes (optional)").performScrollTo().performTextInput("Synthetic shoe fixture")
+        compose.onNodeWithText("Save shoes").performScrollTo().performClick()
+
+        compose.waitUntil(15_000) { FeatureStore(context).shoes().size == 1 }
+        val shoe = FeatureStore(context).shoes().single()
+        assertEquals("Test Brand", shoe.brand())
+        assertEquals("Everyday Trainer", shoe.model())
+        assertEquals(0.0, shoe.startingDistanceMetres()!!, 0.0)
+        assertTrue(shoe.defaultShoe())
+        assertFalse(shoe.retired())
+        assertNull(shoe.purchaseDate())
+        assertEquals("Synthetic shoe fixture", shoe.notes())
+        assertTrue(FeatureStore(context).activities().isEmpty())
+
+        scenario!!.recreate()
+        waitForText("Your shoes")
+        compose.onNodeWithText("Test Brand Everyday Trainer").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Default for newly added runs").performScrollTo().assertIsDisplayed()
+        assertEquals(listOf(shoe), FeatureStore(context).shoes())
+    }
+
+    @Test fun savedPerformancePreferenceCanBeKeptWithoutInventingCurrentEligibility() {
+        launchSavedProfile(TrainingStrategy.PERFORMANCE, true)
+        val original = SqliteUserPreferencesRepository(context).load().get()
+        assertTrue(original.performanceEligible())
+        assertTrue(FeatureStore(context).activities().isEmpty())
+        compose.onNodeWithText("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
+            .performScrollTo().assertIsDisplayed()
+
+        compose.onNodeWithText("Settings").performClick()
+        compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
+        waitNativeText(R.string.onboarding_edit_title)
+        nativeContinue()
+        onView(withText(R.string.onboarding_performance_retained))
+            .perform(scrollTo()).check(matches(isDisplayed()))
+        nativeContinue()
+        nativeContinue()
+        onView(withText(R.string.onboarding_performance_retained))
+            .perform(scrollTo()).check(matches(isDisplayed()))
+        waitNativeText(R.string.onboarding_save)
+        onView(withText(R.string.onboarding_save)).perform(scrollTo(), click())
+
+        waitForText("Review running baseline")
+        val stored = SqliteUserPreferencesRepository(context).load().get()
+        assertEquals(original.raceGoal(), stored.raceGoal())
+        assertEquals(original.preferences(), stored.preferences())
+        assertEquals(TrainingStrategy.PERFORMANCE, stored.preferences().strategy())
+        assertFalse("Current eligibility must come from the empty evidence, not the legacy flag", stored.performanceEligible())
+        assertTrue(FeatureStore(context).activities().isEmpty())
+    }
+
     private fun fixtureRun(id: String, start: Instant) = ActivityRecord(
         id, SourceIdentity("health-connect", id, "org.racedaydreams.synthetic.test"),
         start, start.plus(Duration.ofMinutes(40)), ZoneOffset.UTC, ZoneOffset.UTC,
@@ -158,6 +261,20 @@ class CoachOnboardingTest {
     private fun launch() {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         waitForText("Start with the running you already do")
+    }
+
+    private fun launchSavedProfile(strategy: TrainingStrategy = TrainingStrategy.DISTANCE_FIRST,
+                                   legacyEligibility: Boolean = false) {
+        val profile = UserProfile(
+            RaceGoal(RaceDistance.FIVE_K, "", null, GoalMode.FINISH, null),
+            TrainingPreferences(strategy,
+                EnumSet.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY),
+                3, DayOfWeek.SATURDAY, emptySet(), ScheduleType.FLEXIBLE, UnitSystem.METRIC),
+            legacyEligibility
+        )
+        SqliteUserPreferencesRepository(context).save(profile)
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        waitForText("Your running, your way")
     }
 
     private fun continueToGoals() {

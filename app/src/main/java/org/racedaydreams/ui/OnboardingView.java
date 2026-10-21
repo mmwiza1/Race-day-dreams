@@ -254,11 +254,15 @@ public final class OnboardingView extends ScrollView {
                 value -> {
                     draft.strategy = value;
                     changed();
-                }, value -> value != TrainingStrategy.PERFORMANCE || draft.performanceEligible);
+                }, value -> value != TrainingStrategy.PERFORMANCE || draft.canSelectPerformance());
         text(R.string.onboarding_distance_first_explanation, 16, false);
         text(R.string.onboarding_balanced_explanation, 16, false);
         text(R.string.onboarding_performance_explanation, 16, false);
-        if (!draft.performanceEligible) text(R.string.onboarding_performance_unavailable, 16, false);
+        if (draft.retainingPerformanceWithoutCurrentEvidence()) {
+            text(R.string.onboarding_performance_retained, 16, false);
+        } else if (!draft.performanceEligible) {
+            text(R.string.onboarding_performance_unavailable, 16, false);
+        }
         text(R.string.onboarding_zone2_explanation, 16, false);
     }
 
@@ -324,6 +328,10 @@ public final class OnboardingView extends ScrollView {
             }
         }
         detail(R.string.onboarding_review_strategy, draft.strategy.label());
+        if (draft.strategy == TrainingStrategy.PERFORMANCE
+                && draft.retainingPerformanceWithoutCurrentEvidence()) {
+            text(R.string.onboarding_performance_retained, 16, false);
+        }
         text(getContext().getString(R.string.onboarding_review_runs, draft.runsPerWeek), 16, false);
         detail(R.string.onboarding_review_running_days, daysSummary(draft.runningDays));
         detail(R.string.onboarding_review_long_day, draft.longRunDay == null
@@ -343,6 +351,7 @@ public final class OnboardingView extends ScrollView {
                 OnboardingValidator.validateRaceGoal(draft.goal(GoalMode.FINISH), Clock.systemDefaultZone());
             } else if (draft.step == 1) {
                 OnboardingValidator.validateRaceGoal(draft.goal(draft.goalMode), Clock.systemDefaultZone());
+                draft.validateStrategy();
             } else if (draft.step == 2) {
                 draft.preferences();
             } else {

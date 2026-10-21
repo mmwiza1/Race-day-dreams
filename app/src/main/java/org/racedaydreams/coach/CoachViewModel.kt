@@ -166,6 +166,12 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
             mutableState.update { it.copy(savedProfileRevision = it.savedProfileRevision + 1, draft = null) }
         }, onFailure = { draftWritesSuspended = false }) {
             val eligible = mutableState.value.performanceEligible
+            val retainingPerformance = profiles.load().orElse(null)?.preferences()?.strategy() ==
+                org.racedaydreams.domain.TrainingStrategy.PERFORMANCE
+            require(profile.preferences().strategy() != org.racedaydreams.domain.TrainingStrategy.PERFORMANCE ||
+                eligible || retainingPerformance) {
+                "Current evidence does not support a new Performance selection. Review your baseline or choose another strategy; your saved goal is unchanged."
+            }
             val validated = UserProfile(profile.raceGoal(), profile.preferences(), eligible)
             profiles.save(validated)
             store.putSetting("baseline.reviewed", "true")

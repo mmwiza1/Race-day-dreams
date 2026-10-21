@@ -60,6 +60,46 @@ public final class FeatureStoreTest extends AndroidTestCase {
         assertEquals(5100d,updated.distanceMetres(),0.01);assertEquals("Felt relaxed",updated.notes());assertEquals(4d,updated.rpe(),0.01);assertEquals("trainer",updated.shoeId());
         assertEquals("token-two",store.importToken("health-connect"));
     }
+    public void testProviderNotesRemainVisibleUntilAnExplicitUserOverride() throws Exception {
+        store.saveShoe(shoe("trainer",true));
+        ActivityRecord run=withNotes(activity("provider-run","health-connect","record-1",5000d),"Provider note");
+        store.applyImport("health-connect",Collections.singletonList(run),Collections.emptyList(),"one");
+        assertEquals("Provider note",find(run.id()).notes());assertEquals("trainer",find(run.id()).shoeId());
+        store.assignShoe(run.id(),null);
+        assertEquals("Provider note",find(run.id()).notes());
+        run=withNotes(run,"Updated provider note");
+        store.applyImport("health-connect",Collections.singletonList(run),Collections.emptyList(),"two");
+        assertEquals("Updated provider note",find(run.id()).notes());
+        JSONObject withoutOverride=store.exportUserData();
+        assertTrue(withoutOverride.getJSONArray("annotations").getJSONObject(0).isNull("notes"));
+        assertFalse(withoutOverride.toString().contains("Updated provider note"));
+        store.restoreUserData(withoutOverride,false);
+        run=withNotes(run,"Reimported provider note");
+        store.applyImport("health-connect",Collections.singletonList(run),Collections.emptyList(),"three");
+        assertEquals("Reimported provider note",find(run.id()).notes());
+        store.saveActivityNotes(run.id(),"",null);store.assignShoe(run.id(),"trainer");
+        JSONObject explicitlyCleared=store.exportUserData();
+        assertEquals("",explicitlyCleared.getJSONArray("annotations").getJSONObject(0).getString("notes"));
+        store.restoreUserData(explicitlyCleared,false);
+        run=withNotes(run,"Another provider note");
+        store.applyImport("health-connect",Collections.singletonList(run),Collections.emptyList(),"four");
+        assertEquals("",find(run.id()).notes());assertEquals("trainer",find(run.id()).shoeId());
+        store.saveActivityNotes(run.id(),"My own note",5d);
+        run=withNotes(run,"Latest provider note");
+        store.applyImport("health-connect",Collections.singletonList(run),Collections.emptyList(),"five");
+        assertEquals("My own note",find(run.id()).notes());
+        // Editing annotations must not rewrite the separately retained provider payload.
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null);Cursor c=db.rawQuery("SELECT payload FROM activities WHERE id=?",new String[]{run.id()})){
+            assertTrue(c.moveToFirst());assertEquals("Latest provider note",FeatureJson.activity(FeatureJson.object(c.getString(0))).notes());
+        }
+    }
+    public void testExistingPerformancePreferenceRoundTripsWithoutCurrentEligibility() throws Exception {
+        UserProfile previous=profile();TrainingPreferences p=previous.preferences();
+        UserProfile saved=new UserProfile(previous.raceGoal(),new TrainingPreferences(TrainingStrategy.PERFORMANCE,p.runningDays(),p.runsPerWeek(),p.longRunDay(),p.gymDays(),p.scheduleType(),p.units()),false);
+        profiles.save(saved);assertEquals(saved,profiles.load().get());
+        JSONObject backup=store.exportUserData();store.restoreUserData(backup,false);
+        assertEquals(saved,profiles.load().get());assertFalse(profiles.load().get().performanceEligible());
+    }
     public void testImportDeletionRemovesDerivedEffortsButPreservesOfficialResultAndAnnotations() {
         ActivityRecord run=sampledActivity("provider-run","health-connect","record-1");
         store.applyImport("health-connect",Collections.singletonList(run),Collections.emptyList(),"one");
@@ -199,6 +239,7 @@ public final class FeatureStoreTest extends AndroidTestCase {
     private ActivityRecord find(String id){for(ActivityRecord a:store.activities())if(a.id().equals(id))return a;throw new AssertionError("Missing activity");}
     private static Shoe shoe(String id,boolean defaultShoe){return new Shoe(id,"Brand","Model",LocalDate.of(2029,1,1),null,false,null,defaultShoe);}
     private static ActivityRecord activity(String id,String provider,String recordId,Double metres){Instant start=Instant.parse("2030-01-01T12:00:00Z");return new ActivityRecord(id,new SourceIdentity(provider,recordId,"source.app"),start,start.plusSeconds(1800),ZoneOffset.ofHours(1),ZoneOffset.ofHours(1),metres,null,null,null,null,null,null,null,Collections.emptyList(),Collections.emptyList(),null,null);}
+    private static ActivityRecord withNotes(ActivityRecord a,String notes){return new ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),notes,a.samples(),a.laps(),a.plannedWorkoutId(),a.shoeId());}
     private static ActivityRecord sampledActivity(String id,String provider,String recordId){ActivityRecord a=activity(id,provider,recordId,5000d);List<DistanceSample> points=new ArrayList<>();for(int t=0;t<=1500;t+=10)points.add(new DistanceSample(Duration.ofSeconds(t),t/0.3,null,null,null,false));return new ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),null,null,null,null,null,null,null,points,Collections.emptyList(),null,null);}
     private static UserProfile profile(){return new UserProfile(new RaceGoal(RaceDistance.TEN_K,"Original race",LocalDate.of(2031,4,20),GoalMode.TARGET_TIME,Duration.ofSeconds(3300)),new TrainingPreferences(TrainingStrategy.BALANCED,EnumSet.of(DayOfWeek.TUESDAY,DayOfWeek.THURSDAY,DayOfWeek.SUNDAY),3,DayOfWeek.SUNDAY,EnumSet.of(DayOfWeek.TUESDAY),ScheduleType.FLEXIBLE,UnitSystem.METRIC),false);}
     /** Frozen Phase 1 schema fixture, independent of the migration implementation. */
