@@ -43,7 +43,11 @@ corruption handling. Repository contracts permit a later Room migration without
 changing evidence or training calculations. A Room change needs its own schema
 comparison and data-migration tests; it must not use destructive fallback.
 
-Schema 1 → 2 is explicit and additive. Existing profile, goal, availability and
+Schema 1 → 2 is explicit and additive; schema 2 → 3 transactionally copies the
+annotation table to allow absent note overrides. Both previously published
+draft schema-2 variants upgrade without a reset. Stored null, empty and text
+notes, RPE and shoe links are preserved; ambiguous old empty notes are never
+reinterpreted by guesswork. Unsupported upgrade paths fail before any changes. Existing profile, goal, availability and
 unfinished draft rows are retained. New tables represent activity payloads,
 source identities, annotations, shoes, results, derived efforts, baseline state,
 assessment records, checkpoints, settings, planned workouts and future

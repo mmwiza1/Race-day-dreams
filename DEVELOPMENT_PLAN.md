@@ -7,7 +7,7 @@ it does not imply that all running-coach features are complete.
 | Area | Current scope | Remaining |
 | --- | --- | --- |
 | Architecture | Kotlin/Compose/Material 3/Nav/ViewModel/StateFlow; Java domain retained | Room adapter evaluated/deferred; legacy goal form migration optional |
-| Storage | Additive schema 1→2, source identities, annotations, snapshots and user-owned data | Future schema changes require explicit migrations |
+| Storage | Additive schema 1→2 plus transactional 2→3 annotation migration, source identities, annotations, snapshots and user-owned data | Future schema changes require explicit migrations |
 | Health Connect | Optional running/distance/HR/history import, availability and permission states, source-aware dedup/update/deletion | Physical-device/vendor validation; additional metrics only with implemented use |
 | Baseline | Recorded-history review, optional manual corrections, confidence/provenance and derived eligibility | Richer effort/context inference requires more evidence |
 | Gym | Run/gym day overlap and shared GymSession domain model | Manual gym logging UI/storage, non-running Health Connect imports and coaching load integration |

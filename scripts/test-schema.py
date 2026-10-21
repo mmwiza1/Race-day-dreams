@@ -26,6 +26,27 @@ FROZEN_V1 = [
     "CREATE TABLE onboarding_draft (id INTEGER PRIMARY KEY CHECK(id = 1), payload TEXT NOT NULL)",
 ]
 
+# Frozen public draft schema from commit 60272f4; do not read current DDL for
+# upgrade fixtures, since that would hide incompatible edits to a released version.
+FROZEN_V2_ADDITIONS = [
+    'CREATE TABLE activities (id TEXT PRIMARY KEY NOT NULL, provider TEXT NOT NULL, record_id TEXT NOT NULL, origin_package TEXT, start_millis INTEGER NOT NULL, end_millis INTEGER NOT NULL, payload TEXT NOT NULL, UNIQUE(provider, record_id), CHECK(end_millis >= start_millis))',
+    'CREATE INDEX activities_start ON activities(start_millis DESC)',
+    'CREATE TABLE shoes (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL, is_default INTEGER NOT NULL DEFAULT 0 CHECK(is_default IN (0, 1)))',
+    'CREATE UNIQUE INDEX shoes_one_default ON shoes(is_default) WHERE is_default = 1',
+    "CREATE TABLE activity_annotations (provider TEXT NOT NULL, record_id TEXT NOT NULL, notes TEXT NOT NULL DEFAULT '', rpe REAL CHECK(rpe BETWEEN 0 AND 10), shoe_id TEXT REFERENCES shoes(id) ON DELETE SET NULL, PRIMARY KEY(provider, record_id))",
+    'CREATE TABLE manual_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, distance_code TEXT NOT NULL, distance_metres REAL NOT NULL CHECK(distance_metres > 0), result_date TEXT NOT NULL, payload TEXT NOT NULL)',
+    'CREATE TABLE best_efforts (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT NOT NULL REFERENCES activities(id) ON DELETE CASCADE, distance_code TEXT NOT NULL, payload TEXT NOT NULL, UNIQUE(activity_id, distance_code))',
+    'CREATE TABLE preserved_best_efforts (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT NOT NULL, distance_code TEXT NOT NULL, provider TEXT NOT NULL, record_id TEXT NOT NULL, origin_package TEXT, payload TEXT NOT NULL, UNIQUE(activity_id, distance_code))',
+    'CREATE INDEX preserved_efforts_source ON preserved_best_efforts(provider, record_id)',
+    'CREATE TABLE import_checkpoints (provider TEXT PRIMARY KEY NOT NULL, token TEXT, updated_at TEXT NOT NULL)',
+    'CREATE TABLE baseline_state (id INTEGER PRIMARY KEY CHECK(id = 1), manual_json TEXT NOT NULL, manual_recorded_at TEXT, reviewed INTEGER NOT NULL DEFAULT 0 CHECK(reviewed IN (0, 1)))',
+    'CREATE TABLE settings (setting_key TEXT PRIMARY KEY NOT NULL, setting_value TEXT NOT NULL)',
+    'CREATE TABLE assessment_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, payload TEXT NOT NULL)',
+    'CREATE TABLE planned_workouts (id TEXT PRIMARY KEY NOT NULL, scheduled_date TEXT NOT NULL, revision INTEGER NOT NULL CHECK(revision > 0), payload TEXT NOT NULL)',
+    'CREATE TABLE training_plans (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL)',
+    'CREATE TABLE plan_adjustments (id TEXT PRIMARY KEY NOT NULL, plan_id TEXT, user_decision TEXT, payload TEXT NOT NULL)',
+]
+
 
 def schema_statements(version):
     """Read the marked Java literals, testing the exact DDL used on Android."""
@@ -42,26 +63,40 @@ def schema_statements(version):
             for statement in statements]
 
 
-def create_schema(connection, version=2, frozen=False):
+def create_schema(connection, version=3, frozen=False):
     connection.execute("PRAGMA foreign_keys = ON")
     with connection:
         connection.execute("BEGIN")
         for statement in FROZEN_V1 if frozen else schema_statements(1):
             connection.execute(statement)
-        if version >= 2:
-            for statement in schema_statements(2):
+        for schema_version in range(2, version + 1):
+            for statement in schema_statements(schema_version):
                 connection.execute(statement)
         connection.execute(f"PRAGMA user_version = {version}")
 
 
-def migrate_one_to_two(connection):
-    if connection.execute("PRAGMA user_version").fetchone()[0] != 1:
-        raise ValueError("Only the explicit version 1 to 2 path is supported")
-    # SQLiteOpenHelper invokes onUpgrade inside a transaction. Keep that same
-    # boundary here so a failure cannot leave partially created tables.
+def migrate_to_latest(connection, target=3):
+    old = connection.execute("PRAGMA user_version").fetchone()[0]
+    # Match the Java preflight guard before running any intermediate DDL.
+    if old not in (1, 2) or target != 3:
+        raise ValueError("Only explicit version 1/2 to 3 paths are supported")
+    # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
+    # in the second migration must roll back the first migration as well.
     with connection:
         connection.execute("BEGIN")
-        for statement in schema_statements(2):
+        for version in range(old + 1, target + 1):
+            for statement in schema_statements(version):
+                connection.execute(statement)
+        connection.execute(f"PRAGMA user_version = {target}")
+
+
+def create_frozen_v2(connection, nullable_notes=False):
+    connection.execute("PRAGMA foreign_keys = ON")
+    with connection:
+        connection.execute("BEGIN")
+        for statement in FROZEN_V1 + FROZEN_V2_ADDITIONS:
+            if nullable_notes:
+                statement = statement.replace("notes TEXT NOT NULL DEFAULT ''", "notes TEXT")
             connection.execute(statement)
         connection.execute("PRAGMA user_version = 2")
 
@@ -176,7 +211,7 @@ class FeatureSchemaTest(unittest.TestCase):
             "SELECT name FROM sqlite_master WHERE type='index'"
         )}
         self.assertTrue({"activities_start", "shoes_one_default", "preserved_efforts_source"}.issubset(indexes))
-        self.assertEqual(2, self.db.execute("PRAGMA user_version").fetchone()[0])
+        self.assertEqual(3, self.db.execute("PRAGMA user_version").fetchone()[0])
 
     def test_source_record_identity_is_unique_but_other_provider_can_share_id(self):
         self.add_activity()
@@ -307,9 +342,9 @@ class MigrationSchemaTest(unittest.TestCase):
 
     def test_additive_migration_preserves_all_existing_rows(self):
         before = self.snapshot()
-        migrate_one_to_two(self.db)
+        migrate_to_latest(self.db)
         self.assertEqual(before, self.snapshot())
-        self.assertEqual(2, self.db.execute("PRAGMA user_version").fetchone()[0])
+        self.assertEqual(3, self.db.execute("PRAGMA user_version").fetchone()[0])
         self.db.execute("INSERT INTO shoes VALUES ('new-shoe','{}',1)")
         self.assertEqual(1, self.db.execute("SELECT COUNT(*) FROM shoes").fetchone()[0])
 
@@ -318,7 +353,7 @@ class MigrationSchemaTest(unittest.TestCase):
         # A collision occurs after activities/index creation, proving earlier DDL rolls back.
         self.db.execute("CREATE TABLE shoes (collision TEXT)")
         with self.assertRaises(sqlite3.OperationalError):
-            migrate_one_to_two(self.db)
+            migrate_to_latest(self.db)
         self.assertEqual(1, self.db.execute("PRAGMA user_version").fetchone()[0])
         self.assertEqual(before, self.snapshot())
         self.assertIsNone(self.db.execute("SELECT name FROM sqlite_master WHERE name='activities'").fetchone())
@@ -329,9 +364,115 @@ class MigrationSchemaTest(unittest.TestCase):
         before = self.snapshot()
         self.db.execute("PRAGMA user_version=99")
         with self.assertRaises(ValueError):
-            migrate_one_to_two(self.db)
+            migrate_to_latest(self.db)
         self.assertEqual(99, self.db.execute("PRAGMA user_version").fetchone()[0])
         self.assertEqual(before, self.snapshot())
+
+
+class AnnotationMigrationSchemaTest(unittest.TestCase):
+    def make_v2(self, nullable=False):
+        connection = sqlite3.connect(":memory:")
+        create_frozen_v2(connection, nullable)
+        # Seed every persisted data family. The migration may only change the
+        # annotation table's nullability, not user-owned or imported rows.
+        rows = [
+            "INSERT INTO user_profile VALUES (1,0)",
+            "INSERT INTO race_goal VALUES (1,'TEN_K','Retain race','2031-04-20','TARGET_TIME',3300)",
+            "INSERT INTO training_preferences VALUES (1,'BALANCED',3,7,'FIXED','METRIC')",
+            "INSERT INTO availability_day VALUES (1,'RUN',7)",
+            "INSERT INTO onboarding_draft VALUES (1,'{\"step\":1}')",
+            "INSERT INTO activities VALUES ('run','provider','record','writer',1000,2000,'{\"distance\":5}')",
+            "INSERT INTO shoes VALUES ('shoe','{\"model\":\"retain\"}',1)",
+            "INSERT INTO activity_annotations VALUES ('provider','record','Kept note',6.5,'shoe')",
+            "INSERT INTO activity_annotations VALUES ('provider','cleared','',NULL,'shoe')",
+            "INSERT INTO manual_results VALUES ('result','run','5k',5000,'2030-01-01','{}')",
+            "INSERT INTO best_efforts VALUES ('effort','run','1k','{}')",
+            "INSERT INTO preserved_best_efforts VALUES ('archived','absent','5k','provider','old','writer','{}')",
+            "INSERT INTO import_checkpoints VALUES ('provider','token','2030-01-01T00:00:00Z')",
+            "INSERT INTO baseline_state VALUES (1,'{}','2030-01-01T00:00:00Z',1)",
+            "INSERT INTO settings VALUES ('units','metric')",
+            "INSERT INTO assessment_results VALUES ('assessment','run','{}')",
+            "INSERT INTO planned_workouts VALUES ('planned','2030-01-02',3,'{}')",
+            "INSERT INTO training_plans VALUES ('plan','{}')",
+            "INSERT INTO plan_adjustments VALUES ('adjustment','plan','accepted','{}')",
+        ]
+        for row in rows:
+            connection.execute(row)
+        if nullable:
+            connection.execute("INSERT INTO activity_annotations VALUES ('provider','no-override',NULL,4,'shoe')")
+        connection.commit()
+        return connection
+
+    @staticmethod
+    def snapshot(connection):
+        return {name: connection.execute(f"SELECT * FROM {name} ORDER BY rowid").fetchall()
+                for (name,) in connection.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")}
+
+    def test_both_published_v2_variants_upgrade_without_changing_any_rows(self):
+        for nullable in (False, True):
+            with self.subTest(nullable=nullable):
+                db = self.make_v2(nullable)
+                try:
+                    before = self.snapshot(db)
+                    migrate_to_latest(db)
+                    self.assertEqual(3, db.execute("PRAGMA user_version").fetchone()[0])
+                    self.assertEqual(before, self.snapshot(db))
+                    columns = {row[1]: row for row in db.execute("PRAGMA table_info(activity_annotations)")}
+                    self.assertEqual(0, columns['notes'][3])
+                    self.assertIsNone(columns['notes'][4])
+                    db.execute("INSERT INTO activity_annotations (provider,record_id) VALUES ('provider','new-no-override')")
+                    self.assertIsNone(db.execute("SELECT notes FROM activity_annotations WHERE record_id='new-no-override'").fetchone()[0])
+                    db.execute("DELETE FROM shoes WHERE id='shoe'")
+                    self.assertEqual(0, db.execute("SELECT COUNT(*) FROM activity_annotations WHERE shoe_id IS NOT NULL").fetchone()[0])
+                    self.assertEqual([], db.execute("PRAGMA foreign_key_check").fetchall())
+                finally:
+                    db.close()
+
+    def test_v2_annotation_rebuild_failure_rolls_back_data_and_version(self):
+        db = self.make_v2()
+        try:
+            db.execute("CREATE TABLE activity_annotations_v3 (collision TEXT)")
+            before = self.snapshot(db)
+            with self.assertRaises(sqlite3.OperationalError):
+                migrate_to_latest(db)
+            self.assertEqual(2, db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual(before, self.snapshot(db))
+            columns = {row[1]: row for row in db.execute("PRAGMA table_info(activity_annotations)")}
+            self.assertEqual(1, columns['notes'][3])
+        finally:
+            db.close()
+
+    def test_v1_failure_during_v3_rolls_back_all_intermediate_v2_tables(self):
+        db = sqlite3.connect(":memory:")
+        try:
+            create_schema(db, version=1, frozen=True)
+            db.execute("INSERT INTO onboarding_draft VALUES (1,'{\"step\":2}')")
+            db.execute("CREATE TABLE activity_annotations_v3 (collision TEXT)")
+            db.commit()
+            before = self.snapshot(db)
+            with self.assertRaises(sqlite3.OperationalError):
+                migrate_to_latest(db)
+            self.assertEqual(1, db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual(before, self.snapshot(db))
+            self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='activities'").fetchone())
+        finally:
+            db.close()
+
+    def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
+        for source, target in ((0,3), (3,3), (99,3), (1,2), (2,2), (1,4), (2,4)):
+            with self.subTest(source=source, target=target):
+                db = self.make_v2()
+                try:
+                    db.execute(f"PRAGMA user_version={source}")
+                    before = self.snapshot(db)
+                    schema_before = db.execute("SELECT type,name,sql FROM sqlite_master ORDER BY type,name").fetchall()
+                    with self.assertRaises(ValueError):
+                        migrate_to_latest(db, target)
+                    self.assertEqual(source, db.execute("PRAGMA user_version").fetchone()[0])
+                    self.assertEqual(before, self.snapshot(db))
+                    self.assertEqual(schema_before, db.execute("SELECT type,name,sql FROM sqlite_master ORDER BY type,name").fetchall())
+                finally:
+                    db.close()
 
 
 if __name__ == "__main__":

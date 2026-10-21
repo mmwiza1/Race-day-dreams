@@ -208,8 +208,9 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         mutate { profiles.clearDraft() }
     }
 
-    fun reviewBaseline(onSuccess: () -> Unit = {}) = mutate(
-        "Baseline reviewed. You can change it whenever your circumstances change.", onSuccess) {
+    // Moving to the requested screen confirms review. A snackbar on the next screen would
+    // obscure the retained form's bottom Continue button during the first interaction.
+    fun reviewBaseline(onSuccess: () -> Unit = {}) = mutate(onSuccess = onSuccess) {
         store.putSetting("baseline.reviewed", "true")
     }
 

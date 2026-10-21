@@ -14,10 +14,12 @@ completed and tested. The original main commit was `a1e970a` (README only).
   activity/PB/splits/shoes 138, baseline/assessment 157, provider abstraction 33,
   whole-plan regression 76. Whole-plan inputs are explicitly synthetic test-only
   fixtures; they do not constitute an implemented production plan generator.
-- `python3 scripts/test-schema.py`: **20 tests passed**, executing actual schema
-  DDL and frozen schema-1 migration fixtures with foreign keys enabled. Includes
+- `python3 scripts/test-schema.py`: **24 tests passed**, executing actual schema
+  DDL and frozen schema-1/schema-2 migration fixtures with foreign keys enabled. Includes
   original-row preservation, failed-migration/transaction rollback, import identity,
   checkpoint atomicity, annotations, shoe defaults and PB invalidation constraints.
+  Both draft schema-2 variants migrate to schema 3 without resetting data;
+  failed copies and late failures during 1→3 upgrades roll back completely.
 - `git diff --check`: passed. Android XML parsed successfully. Reviewed changed
   source for accidental credentials, SDK paths, destructive upgrades, invented
   metrics, abandoned entry points and licence issues.
@@ -42,8 +44,11 @@ passed debug APK build, lint and test-APK compilation on API 28, 35 and 36. Each
 emulator executed 82 tests: 80 passed and two new-profile onboarding UI tests
 failed. The new-profile graph was being rebuilt when asynchronous baseline review
 finished. The graph destination is now stable, navigation waits for persisted
-review, and tests verify each distinct form step. A fresh full run is required
-before merge; the failed run is not a green merge result.
+review, and tests verify each distinct form step. Run 39687977009 still exposed
+the same two first-Continue failures: a baseline-review confirmation snackbar
+could overlap the newly opened native form. That redundant cross-screen message
+is now removed. A fresh full run is required before merge; failed runs are not
+green merge results.
 The workflow tests all three APIs and uploads APKs/device reports. Older Phase 1
 CI results are not verification of the resumed implementation.
 

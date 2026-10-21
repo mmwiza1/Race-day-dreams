@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 2;
+    static final int VERSION = 3;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -37,6 +37,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         createVersionOne(db);
         migrateOneToTwo(db);
+        migrateTwoToThree(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -75,9 +76,8 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE shoes (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL, "
                 + "is_default INTEGER NOT NULL DEFAULT 0 CHECK(is_default IN (0, 1)))");
         db.execSQL("CREATE UNIQUE INDEX shoes_one_default ON shoes(is_default) WHERE is_default = 1");
-        // Null notes retain provider text; an empty string is an explicit app-owned clearing.
         db.execSQL("CREATE TABLE activity_annotations (provider TEXT NOT NULL, record_id TEXT NOT NULL, "
-                + "notes TEXT, rpe REAL CHECK(rpe BETWEEN 0 AND 10), "
+                + "notes TEXT NOT NULL DEFAULT '', rpe REAL CHECK(rpe BETWEEN 0 AND 10), "
                 + "shoe_id TEXT REFERENCES shoes(id) ON DELETE SET NULL, PRIMARY KEY(provider, record_id))");
         db.execSQL("CREATE TABLE manual_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, "
                 + "distance_code TEXT NOT NULL, distance_metres REAL NOT NULL CHECK(distance_metres > 0), "
@@ -106,13 +106,31 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V2_SCHEMA_END
     }
 
+    /**
+     * Public draft builds used both non-null and nullable v2 annotation notes. Copying the
+     * stored value unchanged supports both: null retains provider text, while empty text is
+     * an explicit clearing. SQLiteOpenHelper runs the entire upgrade in one transaction.
+     */
+    private static void migrateTwoToThree(SQLiteDatabase db) {
+        // V3_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE activity_annotations_v3 (provider TEXT NOT NULL, record_id TEXT NOT NULL, "
+                + "notes TEXT, rpe REAL CHECK(rpe BETWEEN 0 AND 10), "
+                + "shoe_id TEXT REFERENCES shoes(id) ON DELETE SET NULL, PRIMARY KEY(provider, record_id))");
+        db.execSQL("INSERT INTO activity_annotations_v3 (provider, record_id, notes, rpe, shoe_id) "
+                + "SELECT provider, record_id, notes, rpe, shoe_id FROM activity_annotations");
+        db.execSQL("DROP TABLE activity_annotations");
+        db.execSQL("ALTER TABLE activity_annotations_v3 RENAME TO activity_annotations");
+        // V3_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion == 1 && newVersion == 2) {
-            migrateOneToTwo(db);
-            return;
+        // Reject unsupported paths before executing any DDL or touching existing rows.
+        if (newVersion != VERSION || (oldVersion != 1 && oldVersion != 2)) {
+            throw new SQLiteException("An explicit migration is required from schema "
+                    + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
-        throw new SQLiteException("An explicit migration is required from schema "
-                + oldVersion + " to " + newVersion + ". Existing data was retained.");
+        if (oldVersion == 1) migrateOneToTwo(db);
+        migrateTwoToThree(db);
     }
 }

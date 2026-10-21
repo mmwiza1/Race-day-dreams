@@ -327,6 +327,9 @@ class CoachOnboardingTest {
 
     private fun awaitCondition(description: String, condition: () -> Boolean) {
         try { compose.waitUntil(15_000, condition) }
+        catch (failure: AssertionError) {
+            throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
+        }
         catch (failure: Exception) {
             throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
         }

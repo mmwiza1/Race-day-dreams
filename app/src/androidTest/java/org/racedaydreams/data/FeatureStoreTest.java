@@ -36,8 +36,46 @@ public final class FeatureStoreTest extends AndroidTestCase {
         assertTrue(profile.preferences().runningDays().contains(DayOfWeek.TUESDAY));
         assertTrue(profile.preferences().gymDays().contains(DayOfWeek.TUESDAY));
         assertEquals("{\"step\":2}",profiles.loadDraft().get());
-        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){assertEquals(2,db.getVersion());}
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){assertEquals(3,db.getVersion());}
         store.saveShoe(shoe("new",true));assertEquals(1,store.shoes().size());
+    }
+    public void testPublishedVersionTwoUpgradesWithoutChangingNotesOrOtherData() throws Exception {
+        frozenVersionTwo(false);
+        assertVersionTwoDataRetained(false);
+    }
+    public void testNullableDraftVersionTwoUpgradesWithoutLosingAbsentOrBlankNotes() throws Exception {
+        frozenVersionTwo(true);
+        assertVersionTwoDataRetained(true);
+    }
+    public void testVersionTwoCopyFailureRollsBackAndAllowsRetryWithoutReset() throws Exception {
+        frozenVersionTwo(false);
+        // Raw fixture connections intentionally leave FK enforcement off to model corrupt input.
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){
+            db.execSQL("UPDATE activity_annotations SET shoe_id='unavailable-shoe' WHERE record_id='preserved'");
+        }
+        try{store.activities();fail("A failed annotation copy must not leave a partial upgrade.");}catch(SQLiteException expected){
+            try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){
+                assertEquals(2,db.getVersion());
+                try(Cursor c=db.rawQuery("SELECT notes,rpe,shoe_id FROM activity_annotations WHERE record_id='preserved'",null)){
+                    assertTrue(c.moveToFirst());assertEquals("Saved note",c.getString(0));assertEquals(7d,c.getDouble(1),0);assertEquals("unavailable-shoe",c.getString(2));
+                }
+                try(Cursor c=db.rawQuery("SELECT name FROM sqlite_master WHERE name='activity_annotations_v3'",null)){assertFalse(c.moveToFirst());}
+                db.execSQL("UPDATE activity_annotations SET shoe_id='migration-shoe' WHERE record_id='preserved'");
+            }
+        }
+        assertVersionTwoDataRetained(false);
+    }
+    public void testVersionOneFailureAtFinalMigrationRollsBackIntermediateSchema() {
+        frozenVersionOne();
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){db.execSQL("CREATE TABLE activity_annotations_v3 (collision TEXT)");}
+        try{store.activities();fail("The complete sequential upgrade must be atomic.");}catch(SQLiteException expected){
+            try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){
+                assertEquals(1,db.getVersion());
+                try(Cursor c=db.rawQuery("SELECT race_name FROM race_goal",null)){assertTrue(c.moveToFirst());assertEquals("Original race",c.getString(0));}
+                try(Cursor c=db.rawQuery("SELECT name FROM sqlite_master WHERE name='activities'",null)){assertFalse(c.moveToFirst());}
+                try(Cursor c=db.rawQuery("PRAGMA table_info(activity_annotations_v3)",null)){assertTrue(c.moveToFirst());assertEquals("collision",c.getString(1));}
+            }
+        }
     }
     public void testFailedMigrationRollsBackAllNewTablesAndRetainsVersionOne() {
         frozenVersionOne();
@@ -242,6 +280,61 @@ public final class FeatureStoreTest extends AndroidTestCase {
     private static ActivityRecord withNotes(ActivityRecord a,String notes){return new ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),notes,a.samples(),a.laps(),a.plannedWorkoutId(),a.shoeId());}
     private static ActivityRecord sampledActivity(String id,String provider,String recordId){ActivityRecord a=activity(id,provider,recordId,5000d);List<DistanceSample> points=new ArrayList<>();for(int t=0;t<=1500;t+=10)points.add(new DistanceSample(Duration.ofSeconds(t),t/0.3,null,null,null,false));return new ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),null,null,null,null,null,null,null,points,Collections.emptyList(),null,null);}
     private static UserProfile profile(){return new UserProfile(new RaceGoal(RaceDistance.TEN_K,"Original race",LocalDate.of(2031,4,20),GoalMode.TARGET_TIME,Duration.ofSeconds(3300)),new TrainingPreferences(TrainingStrategy.BALANCED,EnumSet.of(DayOfWeek.TUESDAY,DayOfWeek.THURSDAY,DayOfWeek.SUNDAY),3,DayOfWeek.SUNDAY,EnumSet.of(DayOfWeek.TUESDAY),ScheduleType.FLEXIBLE,UnitSystem.METRIC),false);}
+    private void assertVersionTwoDataRetained(boolean nullable) throws Exception {
+        assertEquals("Saved note",find("preserved-run").notes());assertEquals(7d,find("preserved-run").rpe(),0);assertEquals("migration-shoe",find("preserved-run").shoeId());
+        assertEquals("",find("cleared-run").notes());
+        if(nullable)assertEquals("Provider note",find("provider-run").notes());
+        assertEquals("Original race",profiles.load().get().raceGoal().raceName());assertEquals("{\"step\":2}",profiles.loadDraft().get());
+        assertEquals("before-upgrade",store.importToken("health-connect"));assertEquals("retained",store.getSetting("sentinel"));
+        assertEquals("migration-shoe",store.shoes().get(0).id());assertEquals("official",store.results().get(0).id());
+        assertEquals("planned",store.plannedWorkouts().get(0).id());assertEquals(7L,store.plannedWorkoutRevision("planned"));
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){
+            assertEquals(3,db.getVersion());
+            try(Cursor c=db.rawQuery("SELECT name FROM sqlite_master WHERE name='activity_annotations_v3'",null)){assertFalse(c.moveToFirst());}
+            try(Cursor c=db.rawQuery("PRAGMA table_info(activity_annotations)",null)){while(c.moveToNext())if(c.getString(1).equals("notes"))assertEquals(0,c.getInt(3));}
+            db.setForeignKeyConstraintsEnabled(true);
+            db.execSQL("DELETE FROM shoes WHERE id='migration-shoe'");
+            try(Cursor c=db.rawQuery("SELECT notes,rpe,shoe_id FROM activity_annotations WHERE record_id='preserved'",null)){
+                assertTrue(c.moveToFirst());assertEquals("Saved note",c.getString(0));assertEquals(7d,c.getDouble(1),0);assertTrue(c.isNull(2));
+            }
+        }
+    }
+    /** Frozen published draft-v2 feature DDL, independent of the production migration code. */
+    private void frozenVersionTwo(boolean nullable) throws Exception {
+        frozenVersionOne();
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){
+            db.execSQL("CREATE TABLE activities (id TEXT PRIMARY KEY NOT NULL, provider TEXT NOT NULL, record_id TEXT NOT NULL, origin_package TEXT, start_millis INTEGER NOT NULL, end_millis INTEGER NOT NULL, payload TEXT NOT NULL, UNIQUE(provider, record_id), CHECK(end_millis >= start_millis))");
+            db.execSQL("CREATE INDEX activities_start ON activities(start_millis DESC)");
+            db.execSQL("CREATE TABLE shoes (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL, is_default INTEGER NOT NULL DEFAULT 0 CHECK(is_default IN (0, 1)))");
+            db.execSQL("CREATE UNIQUE INDEX shoes_one_default ON shoes(is_default) WHERE is_default = 1");
+            db.execSQL("CREATE TABLE activity_annotations (provider TEXT NOT NULL, record_id TEXT NOT NULL, notes TEXT"+(nullable?"":" NOT NULL DEFAULT ''")+", rpe REAL CHECK(rpe BETWEEN 0 AND 10), shoe_id TEXT REFERENCES shoes(id) ON DELETE SET NULL, PRIMARY KEY(provider, record_id))");
+            db.execSQL("CREATE TABLE manual_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, distance_code TEXT NOT NULL, distance_metres REAL NOT NULL CHECK(distance_metres > 0), result_date TEXT NOT NULL, payload TEXT NOT NULL)");
+            db.execSQL("CREATE TABLE best_efforts (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT NOT NULL REFERENCES activities(id) ON DELETE CASCADE, distance_code TEXT NOT NULL, payload TEXT NOT NULL, UNIQUE(activity_id, distance_code))");
+            db.execSQL("CREATE TABLE preserved_best_efforts (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT NOT NULL, distance_code TEXT NOT NULL, provider TEXT NOT NULL, record_id TEXT NOT NULL, origin_package TEXT, payload TEXT NOT NULL, UNIQUE(activity_id, distance_code))");
+            db.execSQL("CREATE INDEX preserved_efforts_source ON preserved_best_efforts(provider, record_id)");
+            db.execSQL("CREATE TABLE import_checkpoints (provider TEXT PRIMARY KEY NOT NULL, token TEXT, updated_at TEXT NOT NULL)");
+            db.execSQL("CREATE TABLE baseline_state (id INTEGER PRIMARY KEY CHECK(id = 1), manual_json TEXT NOT NULL, manual_recorded_at TEXT, reviewed INTEGER NOT NULL DEFAULT 0 CHECK(reviewed IN (0, 1)))");
+            db.execSQL("CREATE TABLE settings (setting_key TEXT PRIMARY KEY NOT NULL, setting_value TEXT NOT NULL)");
+            db.execSQL("CREATE TABLE assessment_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, payload TEXT NOT NULL)");
+            db.execSQL("CREATE TABLE planned_workouts (id TEXT PRIMARY KEY NOT NULL, scheduled_date TEXT NOT NULL, revision INTEGER NOT NULL CHECK(revision > 0), payload TEXT NOT NULL)");
+            db.execSQL("CREATE TABLE training_plans (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL)");
+            db.execSQL("CREATE TABLE plan_adjustments (id TEXT PRIMARY KEY NOT NULL, plan_id TEXT, user_decision TEXT, payload TEXT NOT NULL)");
+            db.execSQL("INSERT INTO shoes VALUES (?,?,1)",new Object[]{"migration-shoe",FeatureJson.shoe(shoe("migration-shoe",true)).toString()});
+            for(String id:nullable?new String[]{"preserved","cleared","provider"}:new String[]{"preserved","cleared"}){
+                ActivityRecord run=withNotes(activity(id+"-run","health-connect",id,5000d),"Provider note");
+                db.execSQL("INSERT INTO activities VALUES (?,?,?,?,?,?,?)",new Object[]{run.id(),run.source().provider(),run.source().recordId(),run.source().originPackage(),run.start().toEpochMilli(),run.end().toEpochMilli(),FeatureJson.activity(run).toString()});
+            }
+            db.execSQL("INSERT INTO activity_annotations VALUES ('health-connect','preserved','Saved note',7,'migration-shoe')");
+            db.execSQL("INSERT INTO activity_annotations VALUES ('health-connect','cleared','',NULL,NULL)");
+            if(nullable)db.execSQL("INSERT INTO activity_annotations VALUES ('health-connect','provider',NULL,NULL,NULL)");
+            RecordedResult result=new RecordedResult("official",PerformanceDistance.FIVE_K,Duration.ofMinutes(27),LocalDate.of(2030,1,1),null,ResultSource.OFFICIAL_CHIP,"preserved-run",null);
+            db.execSQL("INSERT INTO manual_results VALUES (?,?,?,?,?,?)",new Object[]{result.id(),result.activityId(),result.distance().code(),result.distance().metres(),result.date().toString(),FeatureJson.result(result).toString()});
+            PlannedWorkout planned=new PlannedWorkout("planned",LocalDate.of(2030,2,1),WorkoutCategory.EASY_RUN,5d,null,Collections.emptyList(),null);
+            db.execSQL("INSERT INTO planned_workouts VALUES ('planned','2030-02-01',7,?)",new Object[]{FeatureJson.planned(planned).toString()});
+            db.execSQL("INSERT INTO import_checkpoints VALUES ('health-connect','before-upgrade','2030-01-01T12:00:00Z')");
+            db.execSQL("INSERT INTO settings VALUES ('sentinel','retained')");db.setVersion(2);
+        }
+    }
     /** Frozen Phase 1 schema fixture, independent of the migration implementation. */
     private void frozenVersionOne(){
         store.close();profiles.close();getContext().deleteDatabase(ProfileDatabase.NAME);
