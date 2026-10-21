@@ -62,9 +62,14 @@ public final class OnboardingView extends ScrollView {
     private boolean saving;
 
     public OnboardingView(Context context, String draftJson, UserProfile initial, Listener listener) {
+        this(context, draftJson, initial, initial != null && initial.performanceEligible(), listener);
+    }
+
+    public OnboardingView(Context context, String draftJson, UserProfile initial,
+            boolean derivedPerformanceEligibility, Listener listener) {
         super(context);
         this.listener = Objects.requireNonNull(listener);
-        this.draft = new OnboardingDraft(initial, draftJson);
+        this.draft = new OnboardingDraft(initial, draftJson, derivedPerformanceEligibility);
         this.editing = initial != null;
         setFillViewport(true);
         setClipToPadding(false);
@@ -77,6 +82,7 @@ public final class OnboardingView extends ScrollView {
     }
 
     public void setSaving(boolean saving) {
+        if (this.saving == saving) return;
         this.saving = saving;
         render();
     }

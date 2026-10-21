@@ -1,53 +1,65 @@
 # Health Connect
 
-## Current status
+## Implemented integration
 
-Phase 1 does not include the Health Connect SDK, query Health Connect, request
-health permissions or import workouts. Missing health data cannot block
-onboarding. There is no Google Fit integration.
+Health Connect is the optional primary baseline provider. The adapter follows
+the official Google Android Health sample API patterns and sits behind
+provider-neutral HealthGateway / HealthImportRepository contracts. No Google Fit
+API, provider account, direct Samsung connection or application server is used.
+Samsung Health contributes only records it has synchronized to Health Connect.
 
-## Phase 2 design
+The UI detects available, unavailable and update-required states. It explains
+permissions before the platform request. Declining, granting partially or
+revoking access leaves manual baseline, goals, shoes and results usable.
 
-Android Health Connect will be the primary health-data integration. Samsung
-Health and other compatible apps may supply records when the runner has enabled
-their Health Connect synchronisation; Race Day Dreams must not promise that any
-particular source has synchronised.
+| Permission | Implemented purpose |
+| --- | --- |
+| Read exercise | Running sessions, times, source metadata and available native laps |
+| Read distance | Recorded session distance and baseline mileage |
+| Read heart rate (optional) | Available session average and maximum HR |
+| Read history (optional, feature guarded) | Up to 84 days of baseline evidence |
 
-```text
-Optional consented Health Connect records
-                 ↓
-provider adapter → local repository/database → local domain calculations
-```
+No write, background-read, sleep, location, cadence or elevation permission is
+requested. Those metrics are not invented when absent. With standard access the
+adapter uses an explicit conservative 29-day window; Health Connect may otherwise
+silently omit older data. Extended history is requested only when supported and
+chosen. The review screen reports its actual window and limitations.
 
-Provider-specific types belong in the Android data adapter, not the training
-engine. Use a provider-neutral contract and domain types so another provider
-can be added without rewriting training rules.
+## Import integrity
 
-## Permission policy
+Initial import acquires a changes token before the paginated snapshot. Follow-up
+imports process paginated changes, updates and deletion IDs, refresh associated
+measurements, and reconcile an authorized snapshot. Source identity is a neutral
+provider + record ID with origin metadata, not a Health Connect object in the
+domain. Repeating the same import does not create duplicate records.
 
-Request only permissions consumed by implemented features, with a clear
-explanation before the Android permission dialog. Do not pre-request the entire
-list of potentially useful metrics. Account for provider availability, partial
-consent, denial and revocation. The app remains usable without Health Connect.
+A complete staged batch and next checkpoint commit atomically. Mid-read
+revocation or any failed read does not advance the checkpoint or write a partial
+snapshot. Permission changes/token expiry trigger bounded reconciliation.
+Inaccessible older records are retained and the limitation is reported rather
+than treated as deleted. Associated metrics are constrained to the session's
+source writer to avoid summing mirrored providers.
 
-Start with exercise sessions and relevant running records. Add distance, timing,
-heart rate, sleep, resting HR or other metrics only when an implemented feature
-uses them. Never infer the presence of a permission from a nonempty cached value.
-No writes, background access or extended-history access should be requested
-without an implemented reason and explicit explanation.
+Distinct source records can describe the same physical run. Baseline analysis
+counts exact mirrored start/end/distance recordings once and explains that
+choice while retaining raw provenance. Approximate cross-provider matching is
+not a verified identity merge. Review remains important.
 
-## Import requirements
+## Honest metric availability
 
-- Preserve provider/source identifiers and provenance.
-- Deduplicate repeated imports and reconcile updates/deletions.
-- Keep imported actual activity separate from planned workouts.
-- Use explicit time zones/instants and avoid double-counting overlapping sources.
-- Treat absent metrics as absent, not zero or fabricated values.
-- Stop new reads after permissions are revoked; explain the handling of locally
-  retained records and provide a deletion path.
-- Test unavailable provider, denied/partial permissions, empty records, repeat
-  import, time-zone boundaries and recovery after provider errors.
+Session totals do not contain the continuous distance/time samples needed for
+rolling PBs or arbitrary kilometre/mile splits. Import does not reconstruct
+samples from a total or assume constant pace. Native exercise laps remain
+separate. Cadence, routes, moving time and elevation are blank unless later
+supported by retained reliable data and the corresponding implemented feature.
 
-Before Phase 2 release, update [PRIVACY.md](PRIVACY.md) with the exact record
-types accessed, retention/deletion behavior and permission rationale. No health
-data upload or backend is planned.
+## Remaining verification and extension
+
+Automated tests cover provider-neutral availability/permission/import policy,
+identity, deletion, checkpoints and local storage. A physical device with actual
+Health Connect records is still required to exercise vendor synchronization,
+platform consent/revocation UI and history availability. Emulator fake-provider
+checks do not establish that Samsung Health synchronization is enabled.
+
+Future providers should implement the same contract. Add only permissions tied
+to an implemented feature and update this document before collecting new data.

@@ -1,102 +1,69 @@
 # Race Day Dreams
 
-A free, open-source Android app to assist runners in hitting their race goals.
+A free, open-source, account-free Android running companion.
 
 **The app recommends. The runner decides. The plan adapts.**
 
-Race Day Dreams is being built as a local-first running coach, without accounts,
-advertising, subscriptions, analytics or an LLM dependency. The current release
-implements **Phase 1: the application foundation**. It does not yet generate
-training plans, import workouts, predict race results or provide adaptive advice.
+The app works locally and without Health Connect. It has no Internet permission,
+advertising, analytics, subscriptions, backend or LLM dependency.
 
-## Phase 1
+## Current scope
 
-- Native Android application with Home, Plan, Calendar, Progress and Settings
-  navigation. Future features have explicit empty states, not simulated results.
-- Structured onboarding for 5K, 10K, half marathon, marathon and general
-  fitness / aerobic development.
-- Optional race event, name and date; Finish, Target Time and Maximum Performance
-  goal modes; target race pace calculated from the entered finishing time.
-- Distance First, Balanced and Zone 2 / Aerobic strategies. Performance is
-  represented in the domain but unavailable until training history can support it.
-- Running days, runs per week, preferred long-run day, gym days, fixed/flexible
-  schedules and metric/imperial units. Running and gym days may overlap.
-- On-device SQLite storage for the profile, goal, preferences and onboarding draft.
-- A separate Java domain module containing validation, pace/date calculations,
-  repository contracts and immutable models for later training features.
+The current implementation builds on the original Phase 1 foundation:
 
-There is no Health Connect access or health permission request in this phase.
+- Kotlin/Compose/Material 3 navigation and ViewModel/StateFlow presentation, with
+  the tested Java goal-onboarding form retained during incremental migration.
+- Optional Health Connect running import, source identity, atomic checkpoints,
+  updates/deletions, partial-permission handling and recorded-baseline review.
+- Optional manual baseline corrections and manually recorded 1–5 km controlled
+  or best-effort assessments. Assessments do not record GPS in this version.
+- Provenance, baseline confidence and evidence-derived Performance eligibility.
+- Activity history/detail, notes, RPE, laps, and reproducible splits/rolling best
+  efforts when sufficiently reliable cumulative distance samples exist.
+- Personal bests and progression, manually entered/official race results, shoe
+  assignments and mileage, and accessible recorded-distance summaries.
+- Local, opt-in evening preparation reminders tied to stored planned workouts.
+  No plan is generated in this version; without planned workouts there are no
+  workout reminders. Notification time is approximate, not an exact alarm.
+- Versioned user-chosen backup/export and transactional replace restore.
 
-## Build and test
+Health Connect session totals do **not** supply continuous distance samples.
+They therefore do not produce invented kilometre splits or rolling PBs. Missing
+metrics stay unknown. General GPS recording, a GPX runtime adapter, full plan
+and adaptation engines, race predictions, maps and Wear OS remain pending.
+See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the detailed status matrix.
 
-The Android project uses Java 17, Gradle 8.11.1 and Android Gradle Plugin 8.9.2.
-Use JDK 17 or 21 and Android SDK platform 35. The minimum supported Android
-version is Android 9 (API 28).
+## Build and tests
 
-Open the project in Android Studio, install the requested SDK packages and let
-Gradle sync. Alternatively, set `ANDROID_HOME` or create a local, untracked
-`local.properties` with `sdk.dir=/path/to/Android/Sdk`.
-
-```sh
-./gradlew :app:assembleDebug :domain:check
-```
-
-The first Gradle run requires network access to download Gradle, the Android
-plugin and build tools. Do not commit SDK paths, signing keys or credentials.
-
-The domain suite has no third-party test dependency and can run without an
-Android SDK or Gradle download:
+Use JDK 17 or 21, Android SDK 35 and Android Studio with Kotlin 2.0 support.
+The minimum Android version is API 28. Gradle 8.11.1 / AGP 8.9.2 are pinned.
+Set `ANDROID_HOME` or an untracked `local.properties` with your SDK directory.
 
 ```sh
-./scripts/test-domain.sh
-python3 scripts/test-schema.py
-```
-
-The second command checks the actual schema DDL using Python's SQLite engine;
-it does not replace Android repository instrumentation. The current offline
-results are 150 domain checks and five schema tests passing.
-
-Run persistence instrumentation tests on an emulator or connected API 28+
-Android device:
-
-```sh
+./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
-The Android foundation GitHub Actions workflow builds the debug app, runs domain
-and schema checks and lint, and executes the instrumentation tests on an API 35
-emulator. It uploads the debug APK and device-test reports under the run's
-**Artifacts** area. Phase 1 verification includes Android instrumentation,
-150 domain checks, five schema tests, APK assembly and lint. Check the latest
-workflow result for the commit under review.
+The first Android build needs dependency downloads. Pure Java domain tests and
+actual schema-DDL checks can also run offline:
 
-The development workspace used to establish Phase 1 did not have an Android SDK
-or a cached Gradle distribution, and shell network access was unavailable.
-Android build and device checks were therefore run in GitHub Actions. Local
-Android builds still require the toolchain above. Manual layout, TalkBack,
-large-font and API 28 checks remain before release.
-See [VERIFICATION.md](VERIFICATION.md) for the Phase 1 checks and remaining device
-verification.
+```sh
+sh scripts/test-domain.sh
+python3 scripts/test-schema.py
+```
 
-## Contributing
+GitHub Actions builds, lints and runs the Android tests on API 28 and API 35.
+Each job uploads a debug APK and device-test report. Exact verified results and
+remaining manual checks are recorded in [VERIFICATION.md](VERIFICATION.md).
 
-Read [ARCHITECTURE.md](ARCHITECTURE.md) and
-[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) before adding features. Keep training
-rules out of Android Views, preserve planned and completed workouts separately,
-and explain recommendations in ordinary language. Do not change a runner's goal
-or plan without their decision.
+## Contributing and licensing
 
-The repository initially contained only its purpose statement. There was no
-existing application, framework or test suite to migrate.
+Keep calculations independent of Android UI. Preserve planned and actual data,
+source identity and runner decisions. No commercial training schedules or GPL
+source are incorporated. Original code is [MIT](LICENSE); incorporated libraries
+and engineering references are tracked in [THIRD_PARTY.md](THIRD_PARTY.md).
 
-## Documentation
-
-- [Architecture](ARCHITECTURE.md)
-- [Phased development plan](DEVELOPMENT_PLAN.md)
-- [Training engine scope and principles](TRAINING_ENGINE.md)
-- [Health Connect integration plan](HEALTH_CONNECT.md)
-- [Privacy](PRIVACY.md)
-- [Training safety](TRAINING_SAFETY.md)
-- [Licences and attribution](LICENCES_AND_ATTRIBUTION.md)
-
-Original project code is available under the [MIT licence](LICENSE).
+Read [ARCHITECTURE.md](ARCHITECTURE.md), [HEALTH_CONNECT.md](HEALTH_CONNECT.md),
+[TRAINING_ENGINE.md](TRAINING_ENGINE.md), [PRIVACY.md](PRIVACY.md),
+[TRAINING_SAFETY.md](TRAINING_SAFETY.md), and
+[LICENCES_AND_ATTRIBUTION.md](LICENCES_AND_ATTRIBUTION.md).

@@ -8,11 +8,18 @@ java {
 }
 
 // The same dependency-free test suite is usable without Android or Gradle.
-tasks.register('domainTest', JavaExec) {
+tasks.register('domainTest') {
     dependsOn testClasses
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'org.racedaydreams.domain.DomainTestSuite'
-    enableAssertions = true
+    doLast {
+        fileTree('src/test/java').matching { include '**/*TestSuite.java' }.files.sort().each { suite ->
+            def relative = file('src/test/java').toPath().relativize(suite.toPath()).toString()
+            javaexec {
+                classpath = sourceSets.test.runtimeClasspath
+                mainClass = relative.replace(File.separator, '.').replaceAll(/\.java$/, '')
+                enableAssertions = true
+            }
+        }
+    }
 }
 
 tasks.named('check') { dependsOn domainTest }

@@ -9,7 +9,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 1;
+    static final int VERSION = 2;
+    private static ProfileDatabase shared;
+
+    /** A shared helper ensures confirmed reset closes every repository's connection pool. */
+    static synchronized ProfileDatabase get(Context context) {
+        if (shared == null) shared = new ProfileDatabase(context);
+        return shared;
+    }
 
     ProfileDatabase(Context context) {
         super(context.getApplicationContext(), NAME, null, VERSION, db -> {
@@ -28,6 +35,12 @@ final class ProfileDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        createVersionOne(db);
+        migrateOneToTwo(db);
+    }
+
+    private static void createVersionOne(SQLiteDatabase db) {
+        // V1_SCHEMA_BEGIN - retained unchanged for migration fixtures.
         db.execSQL("CREATE TABLE user_profile ("
                 + "id INTEGER PRIMARY KEY CHECK(id = 1), "
                 + "performance_eligible INTEGER NOT NULL CHECK(performance_eligible IN (0, 1)))");
@@ -48,10 +61,56 @@ final class ProfileDatabase extends SQLiteOpenHelper {
                 + "PRIMARY KEY(user_id, kind, day))");
         db.execSQL("CREATE TABLE onboarding_draft ("
                 + "id INTEGER PRIMARY KEY CHECK(id = 1), payload TEXT NOT NULL)");
+        // V1_SCHEMA_END
+    }
+
+    /** Additive only: runner goals, availability and unfinished onboarding remain untouched. */
+    private static void migrateOneToTwo(SQLiteDatabase db) {
+        // V2_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE activities ("
+                + "id TEXT PRIMARY KEY NOT NULL, provider TEXT NOT NULL, record_id TEXT NOT NULL, "
+                + "origin_package TEXT, start_millis INTEGER NOT NULL, end_millis INTEGER NOT NULL, "
+                + "payload TEXT NOT NULL, UNIQUE(provider, record_id), CHECK(end_millis >= start_millis))");
+        db.execSQL("CREATE INDEX activities_start ON activities(start_millis DESC)");
+        db.execSQL("CREATE TABLE shoes (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL, "
+                + "is_default INTEGER NOT NULL DEFAULT 0 CHECK(is_default IN (0, 1)))");
+        db.execSQL("CREATE UNIQUE INDEX shoes_one_default ON shoes(is_default) WHERE is_default = 1");
+        db.execSQL("CREATE TABLE activity_annotations (provider TEXT NOT NULL, record_id TEXT NOT NULL, "
+                + "notes TEXT NOT NULL DEFAULT '', rpe REAL CHECK(rpe BETWEEN 0 AND 10), "
+                + "shoe_id TEXT REFERENCES shoes(id) ON DELETE SET NULL, PRIMARY KEY(provider, record_id))");
+        db.execSQL("CREATE TABLE manual_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, "
+                + "distance_code TEXT NOT NULL, distance_metres REAL NOT NULL CHECK(distance_metres > 0), "
+                + "result_date TEXT NOT NULL, payload TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE best_efforts (id TEXT PRIMARY KEY NOT NULL, "
+                + "activity_id TEXT NOT NULL REFERENCES activities(id) ON DELETE CASCADE, "
+                + "distance_code TEXT NOT NULL, payload TEXT NOT NULL, UNIQUE(activity_id, distance_code))");
+        db.execSQL("CREATE TABLE preserved_best_efforts (id TEXT PRIMARY KEY NOT NULL, "
+                + "activity_id TEXT NOT NULL, distance_code TEXT NOT NULL, provider TEXT NOT NULL, "
+                + "record_id TEXT NOT NULL, origin_package TEXT, payload TEXT NOT NULL, "
+                + "UNIQUE(activity_id, distance_code))");
+        db.execSQL("CREATE INDEX preserved_efforts_source ON preserved_best_efforts(provider, record_id)");
+        db.execSQL("CREATE TABLE import_checkpoints (provider TEXT PRIMARY KEY NOT NULL, "
+                + "token TEXT, updated_at TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE baseline_state (id INTEGER PRIMARY KEY CHECK(id = 1), "
+                + "manual_json TEXT NOT NULL, manual_recorded_at TEXT, "
+                + "reviewed INTEGER NOT NULL DEFAULT 0 CHECK(reviewed IN (0, 1)))");
+        db.execSQL("CREATE TABLE settings (setting_key TEXT PRIMARY KEY NOT NULL, setting_value TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE assessment_results (id TEXT PRIMARY KEY NOT NULL, activity_id TEXT, "
+                + "payload TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE planned_workouts (id TEXT PRIMARY KEY NOT NULL, scheduled_date TEXT NOT NULL, "
+                + "revision INTEGER NOT NULL CHECK(revision > 0), payload TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE training_plans (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE plan_adjustments (id TEXT PRIMARY KEY NOT NULL, plan_id TEXT, "
+                + "user_decision TEXT, payload TEXT NOT NULL)");
+        // V2_SCHEMA_END
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion == 1 && newVersion == 2) {
+            migrateOneToTwo(db);
+            return;
+        }
         throw new SQLiteException("An explicit migration is required from schema "
                 + oldVersion + " to " + newVersion + ". Existing data was retained.");
     }

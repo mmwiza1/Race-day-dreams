@@ -40,7 +40,7 @@ public final class SqliteUserPreferencesRepository
 
     public SqliteUserPreferencesRepository(Context context) {
         this.context = Objects.requireNonNull(context).getApplicationContext();
-        helper = new ProfileDatabase(this.context);
+        helper = ProfileDatabase.get(this.context);
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class SqliteUserPreferencesRepository
         }
     }
 
-    private Optional<UserProfile> readProfile(SQLiteDatabase db) {
+    static Optional<UserProfile> readProfile(SQLiteDatabase db) {
         try (Cursor profile = db.rawQuery(
                 "SELECT performance_eligible FROM user_profile WHERE id = 1", null)) {
             if (!profile.moveToFirst()) {
@@ -143,18 +143,23 @@ public final class SqliteUserPreferencesRepository
         SQLiteDatabase db = helper.getWritableDatabase();
         db.beginTransaction();
         try {
-            db.delete("user_profile", "id = 1", null);
-            ContentValues user = new ContentValues();
-            user.put("id", 1);
-            user.put("performance_eligible", profile.performanceEligible() ? 1 : 0);
-            db.insertOrThrow("user_profile", null, user);
-            saveGoal(db, profile.raceGoal());
-            savePreferences(db, profile.preferences());
-            db.delete("onboarding_draft", null, null);
+            writeProfile(db, profile);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
+    }
+
+    /** Used by atomic backup restore on the same database transaction. */
+    static void writeProfile(SQLiteDatabase db, UserProfile profile) {
+        db.delete("user_profile", "id = 1", null);
+        ContentValues user = new ContentValues();
+        user.put("id", 1);
+        user.put("performance_eligible", profile.performanceEligible() ? 1 : 0);
+        db.insertOrThrow("user_profile", null, user);
+        saveGoal(db, profile.raceGoal());
+        savePreferences(db, profile.preferences());
+        db.delete("onboarding_draft", null, null);
     }
 
     private static void saveGoal(SQLiteDatabase db, RaceGoal goal) {

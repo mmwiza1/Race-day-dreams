@@ -40,7 +40,11 @@ final class OnboardingDraft {
     boolean invalidDraft;
 
     OnboardingDraft(UserProfile initial, String savedJson) {
-        performanceEligible = initial != null && initial.performanceEligible();
+        this(initial, savedJson, initial != null && initial.performanceEligible());
+    }
+
+    OnboardingDraft(UserProfile initial, String savedJson, boolean derivedPerformanceEligibility) {
+        performanceEligible = derivedPerformanceEligibility;
         if (initial != null) {
             RaceGoal goal = initial.raceGoal();
             TrainingPreferences preferences = initial.preferences();
