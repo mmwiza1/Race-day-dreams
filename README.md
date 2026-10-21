@@ -64,13 +64,16 @@ Android device:
 ```
 
 The Android foundation GitHub Actions workflow builds the debug app, runs domain
-checks and lint, and compiles instrumentation tests. Device instrumentation still
-requires an emulator or connected device; compiling tests does not execute them.
+and schema checks and lint, and executes the instrumentation tests on an API 35
+emulator. It uploads the debug APK and device-test reports under the run's
+**Artifacts** area. Phase 1 CI has passed all 21 Android tests, 150 domain checks,
+five schema tests, APK assembly and lint.
 
 The development workspace used to establish Phase 1 did not have an Android SDK
 or a cached Gradle distribution, and shell network access was unavailable.
-Android build and device verification require the toolchain above; a successful
-domain test run alone does not establish that the APK builds or launches.
+Android build and device checks were therefore run in GitHub Actions. Local
+Android builds still require the toolchain above. Manual layout, TalkBack,
+large-font and API 28 checks remain before release.
 See [VERIFICATION.md](VERIFICATION.md) for the Phase 1 checks and remaining device
 verification.
 

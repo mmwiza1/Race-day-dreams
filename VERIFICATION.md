@@ -26,7 +26,22 @@ API after shell Git access failed; original object hashes were verified locally.
 - Verified the official Gradle 8.11.1 wrapper JAR SHA-256:
   `2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046`.
 
-## Environment-blocked verification
+## Android build and device verification
+
+[GitHub Actions run 39677607836](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39677607836)
+passed against commit `80fd7137c60222d759ecae07a5f91d58c4d2a098`:
+
+- Android debug APK assembly and lint.
+- Android instrumentation APK assembly.
+- All 21 instrumentation tests on an Android 15 / API 35 emulator.
+- All 150 domain checks and five SQLite schema tests.
+- Debug APK and device-test reports uploaded as workflow artifacts.
+
+The initial CI SDK setup attempted to install the retired `tools` package. The
+workflow now requests `platform-tools` explicitly and builds with SDK 35. No
+Android code compilation or test failures remained in the successful run.
+
+## Local toolchain limitation
 
 The workspace has Java 21 (including the compiler module) but no Android SDK,
 Gradle distribution or emulator. Its normal Gradle cache is outside writable
@@ -39,8 +54,10 @@ GRADLE_USER_HOME=/tmp/rdd-gradle ./gradlew --offline \
 
 The wrapper needs a Gradle distribution even for `--offline`; bootstrapping failed
 with `java.net.SocketException: Operation not permitted`. The blocked download
-was not repeatedly retried. Android compilation, lint, APK installation and device
-tests have **not** passed locally. No installable APK is claimed.
+was not repeatedly retried. Local Android compilation and device checks remain
+unavailable, but the CI build and emulator results above provide actual Android
+verification. This environment limitation does not require changing the app or
+adding a backend.
 
 ## Added device tests
 
@@ -49,7 +66,7 @@ optional event/target fields, gym overlap, draft handling, clear/reset, failed-w
 rollback, inconsistent rows, unknown enum values and main-thread rejection.
 Eight onboarding draft tests cover incomplete input, JSON restoration, malformed
 dates/versions, event-date requirements, eligibility, general fitness and routine
-preferences. These tests use Android's platform test runner and remain unrun here.
+preferences. All 21 tests passed in CI using Android's platform test runner.
 
 ## Before release
 
@@ -61,6 +78,7 @@ preferences. These tests use Android's platform test runner and remain unrun her
 4. Check TalkBack, large fonts, dark mode, RTL layout and metric/imperial pace.
 5. Confirm no health/network permission prompt and no generated coaching results.
 
-The GitHub Actions workflow builds, lints and compiles device tests when executed
-in a network-enabled Android environment. Its result must be checked separately;
-adding a workflow is not evidence that it passed.
+The workflow builds, lints, runs the domain/schema checks and executes device
+tests. Check the result for the exact commit under review. Automated persistence
+and draft tests do not establish that every screen is usable with every font
+scale or accessibility service; the manual checks above remain required.
