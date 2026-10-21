@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// The same dependency-free test suite is usable without Android or Gradle.
+tasks.register('domainTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.racedaydreams.domain.DomainTestSuite'
+    enableAssertions = true
+}
+
+tasks.named('check') { dependsOn domainTest }
+tasks.named('test') { dependsOn domainTest }

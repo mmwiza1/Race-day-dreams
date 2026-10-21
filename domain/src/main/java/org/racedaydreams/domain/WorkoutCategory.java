@@ -1,0 +1,6 @@
+package org.racedaydreams.domain;
+
+public enum WorkoutCategory {
+    RECOVERY_RUN, EASY_RUN, ZONE_2_RUN, STEADY_RUN, LONG_RUN, PROGRESSION_RUN,
+    TEMPO_THRESHOLD_RUN, INTERVALS, RACE_PACE_RUN, TIME_TRIAL, RACE, CUSTOM_RUN
+}
