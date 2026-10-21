@@ -19,6 +19,7 @@ import org.racedaydreams.domain.UnitSystem;
 import org.racedaydreams.domain.UserPreferencesRepository;
 import org.racedaydreams.domain.UserProfile;
 
+import java.io.File;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -34,10 +35,12 @@ import java.util.Set;
  */
 public final class SqliteUserPreferencesRepository
         implements UserPreferencesRepository, AutoCloseable {
+    private final Context context;
     private final ProfileDatabase helper;
 
     public SqliteUserPreferencesRepository(Context context) {
-        helper = new ProfileDatabase(Objects.requireNonNull(context));
+        this.context = Objects.requireNonNull(context).getApplicationContext();
+        helper = new ProfileDatabase(this.context);
     }
 
     @Override
@@ -226,14 +229,19 @@ public final class SqliteUserPreferencesRepository
     @Override
     public void clear() {
         requireIoThread();
-        SQLiteDatabase db = helper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            db.delete("user_profile", null, null);
-            db.delete("onboarding_draft", null, null);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
+        // This is the explicitly confirmed reset, not a read-error recovery path. Deleting the
+        // closed database also works when corruption prevents SQLite from opening it at all.
+        helper.close();
+        File database = context.getDatabasePath(ProfileDatabase.NAME);
+        boolean databaseExisted = database.exists();
+        boolean deleted = context.deleteDatabase(ProfileDatabase.NAME);
+        if (!deleted && databaseExisted) {
+            throw new SQLiteException("Your local data could not be deleted.");
+        }
+        for (String suffix : new String[]{"", "-journal", "-wal", "-shm"}) {
+            if (new File(database.getPath() + suffix).exists()) {
+                throw new SQLiteException("Your local data could not be completely deleted.");
+            }
         }
     }
 

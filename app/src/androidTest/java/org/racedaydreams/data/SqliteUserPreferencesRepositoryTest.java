@@ -2,6 +2,7 @@ package org.racedaydreams.data;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteException;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,12 +17,15 @@ import org.racedaydreams.domain.TrainingStrategy;
 import org.racedaydreams.domain.UnitSystem;
 import org.racedaydreams.domain.UserProfile;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -199,6 +203,52 @@ public final class SqliteUserPreferencesRepositoryTest extends AndroidTestCase {
         } catch (IllegalStateException expected) {
             assertTrue(expected.getMessage().contains("has not been changed"));
         }
+    }
+
+    public void testPhysicallyMalformedDatabaseIsRetainedWhenLoadFails() throws Exception {
+        byte[] original = writeMalformedDatabase();
+        File database = getContext().getDatabasePath(ProfileDatabase.NAME);
+        try {
+            repository.load();
+            fail("A malformed database must not silently become an empty profile.");
+        } catch (SQLiteDatabaseCorruptException expected) {
+            assertTrue("Unreadable local data must be retained.", database.exists());
+            assertTrue("A failed read must preserve the original file bytes.",
+                    Arrays.equals(original, Files.readAllBytes(database.toPath())));
+        }
+    }
+
+    public void testConfirmedClearRecoversFromPhysicallyMalformedDatabase() throws Exception {
+        writeMalformedDatabase();
+        try {
+            repository.load();
+            fail("The malformed database should be unreadable before reset.");
+        } catch (SQLiteDatabaseCorruptException expected) {
+            // The user can explicitly reset after the read error has been shown.
+        }
+        repository.clear();
+        assertFalse(getContext().getDatabasePath(ProfileDatabase.NAME).exists());
+        repository.clear(); // An already absent database is a successful reset too.
+        assertFalse(repository.load().isPresent());
+        assertFalse(repository.loadDraft().isPresent());
+        repository.save(halfMarathon());
+        assertEquals(halfMarathon(), repository.load().get());
+    }
+
+    private byte[] writeMalformedDatabase() throws Exception {
+        repository.close();
+        getContext().deleteDatabase(ProfileDatabase.NAME);
+        File database = getContext().getDatabasePath(ProfileDatabase.NAME);
+        File directory = database.getParentFile();
+        assertTrue(directory.isDirectory() || directory.mkdirs());
+        // More than a SQLite header/page minimum: a short file might be accepted as a new DB.
+        byte[] original = new byte[1024];
+        for (int index = 0; index < original.length; index++) {
+            original[index] = (byte) (index * 37 + 11);
+        }
+        Files.write(database.toPath(), original);
+        repository = new SqliteUserPreferencesRepository(getContext());
+        return original;
     }
 
     private static Set<DayOfWeek> days(DayOfWeek... values) {

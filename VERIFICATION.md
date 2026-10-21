@@ -61,12 +61,16 @@ adding a backend.
 
 ## Added device tests
 
-There are 13 repository instrumentation tests for storage round trips, replacement,
+There are 15 repository instrumentation tests for storage round trips, replacement,
 optional event/target fields, gym overlap, draft handling, clear/reset, failed-write
-rollback, inconsistent rows, unknown enum values and main-thread rejection.
+rollback, inconsistent rows, unknown enum values, main-thread rejection, retaining
+physically corrupt files and recovering through a confirmed database reset.
 Eight onboarding draft tests cover incomplete input, JSON restoration, malformed
 dates/versions, event-date requirements, eligibility, general fitness and routine
-preferences. All 21 tests passed in CI using Android's platform test runner.
+preferences. The original 21 tests passed in the run above. The two additional
+corruption/reset tests bring the suite to 23. The workflow executes the full suite
+using Android's platform test runner; see the [PR checks](https://github.com/mmwiza1/Race-day-dreams/pull/1/checks)
+for the current commit's result.
 
 ## Before release
 

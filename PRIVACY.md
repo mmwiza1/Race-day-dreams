@@ -9,8 +9,11 @@ incomplete onboarding draft so setup can be resumed.
 
 These values are held in the application's private SQLite database on the
 device. Saving completed setup replaces the saved profile transactionally and
-clears its draft. Local reset removes the stored profile and draft. Android's
-app-data clearing or uninstall also removes application data.
+clears its draft. Local reset, after your confirmation, deletes the database and
+its journal files, including the stored profile and draft. Unreadable or corrupt
+data is retained until you choose that reset; the app does not silently delete
+it after a read error. Android's app-data clearing or uninstall also removes
+application data.
 
 ## What is accessed or sent
 

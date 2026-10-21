@@ -68,6 +68,12 @@ or corrupt persisted data must report an error rather than silently replacing
 it with default or demo data. Database upgrades must use explicit migrations;
 dropping user data is not an upgrade strategy.
 
+An explicit corruption handler preserves unreadable database files instead of
+using Android's default destructive recovery. Only the user-confirmed local-data
+reset closes and deletes the database and its journal files. This reset does not
+need to open SQLite, so it can recover from a physically unreadable database;
+the next load creates an empty schema. Deletion failures remain visible errors.
+
 The database belongs to the app's private storage. Backup is disabled and the
 manifest does not request Internet access. See [PRIVACY.md](PRIVACY.md).
 

@@ -66,8 +66,9 @@ Android device:
 The Android foundation GitHub Actions workflow builds the debug app, runs domain
 and schema checks and lint, and executes the instrumentation tests on an API 35
 emulator. It uploads the debug APK and device-test reports under the run's
-**Artifacts** area. Phase 1 CI has passed all 21 Android tests, 150 domain checks,
-five schema tests, APK assembly and lint.
+**Artifacts** area. Phase 1 verification includes Android instrumentation,
+150 domain checks, five schema tests, APK assembly and lint. Check the latest
+workflow result for the commit under review.
 
 The development workspace used to establish Phase 1 did not have an Android SDK
 or a cached Gradle distribution, and shell network access was unavailable.

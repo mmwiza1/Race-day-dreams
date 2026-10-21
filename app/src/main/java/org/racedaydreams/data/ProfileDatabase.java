@@ -2,6 +2,7 @@ package org.racedaydreams.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -11,7 +12,12 @@ final class ProfileDatabase extends SQLiteOpenHelper {
     static final int VERSION = 1;
 
     ProfileDatabase(Context context) {
-        super(context.getApplicationContext(), NAME, null, VERSION);
+        super(context.getApplicationContext(), NAME, null, VERSION, db -> {
+            // Android's default corruption handler deletes database files. Preserve them until
+            // the runner explicitly chooses the app's confirmed local-data reset instead.
+            throw new SQLiteDatabaseCorruptException(
+                    "Local data could not be read. The database files have been retained.");
+        });
         setWriteAheadLoggingEnabled(true);
     }
 
