@@ -1,0 +1,105 @@
+# Architecture
+
+## Incremental modernization decision
+
+The original branch used Java 17, programmatic platform Views, a small IO
+controller and SQLiteOpenHelper. Its independent domain module and tested
+onboarding/persistence behavior remain valuable and are retained.
+
+New application presentation uses Kotlin, Compose, Material 3, Navigation,
+ViewModel, SavedStateHandle and StateFlow. The existing goal form is embedded
+with AndroidView, so adopting Compose does not require rewriting working goal
+validation or date/pace handling. Derived eligibility is passed explicitly into
+that form; its legacy stored Boolean is a compatibility field, not authority.
+
+Google Now in Android's Architecture Learning Journey was used as an engineering
+reference for unidirectional data flow and layer boundaries. This app does not
+copy its module graph, network architecture, synchronization framework or code.
+
+```text
+Compose screens / retained onboarding View
+                   ↓ user actions
+CoachViewModel + immutable StateFlow + SavedStateHandle
+                   ↓
+Android-independent Java models, evidence/quality policies and calculators
+                   ↓ repository contracts
+SQLite feature/profile repositories ← provider-neutral Health Connect adapter
+                   ↓
+application-private local database
+```
+
+The domain contains no Android, Compose, Health Connect or JSON imports. Kotlin
+is introduced at Android integration/presentation boundaries. Java domain logic
+is not rewritten for style. Disk work and provider reads run off the main thread;
+ViewModels own operation state across rotation. No training rule lives in a UI.
+
+## Persistence decision and migration
+
+Room was evaluated as the eventual structured-store adapter. It is deliberately
+not introduced during this simultaneous UI and data-model expansion. Reusing the
+existing SQLite store keeps one transaction boundary for profile, activity,
+backup/restore and user annotations and preserves its tested non-destructive
+corruption handling. Repository contracts permit a later Room migration without
+changing evidence or training calculations. A Room change needs its own schema
+comparison and data-migration tests; it must not use destructive fallback.
+
+Schema 1 → 2 is explicit and additive; schema 2 → 3 transactionally copies the
+annotation table to allow absent note overrides. Both previously published
+draft schema-2 variants upgrade without a reset. Stored null, empty and text
+notes, RPE and shoe links are preserved; ambiguous old empty notes are never
+reinterpreted by guesswork. Unsupported upgrade paths fail before any changes. Existing profile, goal, availability and
+unfinished draft rows are retained. New tables represent activity payloads,
+source identities, annotations, shoes, results, derived efforts, baseline state,
+assessment records, checkpoints, settings, planned workouts and future
+plan/decision metadata. Variable sample/lap payloads are versioned by their
+containing codec rather than coupled to Health Connect classes. Distance codes
+and metres are stored independently, allowing additional PB distances.
+
+Repositories share an application-scoped helper. Transactions stage complete
+imports, source deletions, derived efforts and the next checkpoint together.
+Provider updates retain manual annotations and shoe assignments. Annotation notes
+use null for no app override and empty text for an intentional clearing, separate
+from provider payload. A source delete
+invalidates its derived efforts; manually entered results remain user-owned.
+
+Unreadable files are retained by an explicit corruption handler. Only confirmed
+local-data reset closes the shared pool and deletes the database/journals.
+Migration, malformed data or failed writes never silently create a new profile.
+
+## Evidence and analysis
+
+ActivityRecord stores explicit Instants and optional reported offsets, nullable
+metrics, provenance, cumulative samples, actual laps and optional planned/shoe
+links. Moving duration is distinct from elapsed time. PlannedWorkout and actual
+activity remain separate. A future Wear OS companion must use these shared
+prescriptions rather than duplicate phone training logic.
+
+BaselineEngine reports what available records support, with per-field provenance,
+recorded gaps and confidence explanations. Manual corrections preserve their
+explicit review timestamp. Performance eligibility is recomputed from current
+evidence and ages out; neither reload nor restore refreshes old manual evidence.
+Session-average pace is not labelled easy without effort evidence.
+
+Split and rolling-effort calculators require time/distance samples. They reject
+invalid ordering and impossible jumps and do not cross long gaps or pauses.
+Uncertain candidates are not automatically awarded as PBs. Calculations are
+linear in sample count for each requested distance; PB history is reproduced
+from retained results rather than discarding former records.
+
+## Portability, reminders and future boundaries
+
+Backups are user-chosen JSON files with a versioned, validated envelope. Replace
+restore validates the complete document before a single database transaction;
+unsupported merge semantics are rejected. Raw imported Health Connect records,
+samples, heart rate and live checkpoints are excluded. App-owned annotations,
+manual records and derived PB metadata can survive independently of reimport.
+
+Evening reminders use deterministic local-time policy plus an inexact Android
+alarm adapter. Delivery rereads the current planned workout, revision and
+completion state. Moves, replacements, cancellations, permission changes and
+quiet hours invalidate stale messages. Preferences default to disabled.
+
+GPX, GPS recording, route maps, Wear OS, race prediction and full adaptive plan
+generation have explicit extension boundaries or existing domain models. A
+boundary is not an operational feature. The training engine and whole-plan
+regression harness must grow together; no pretend generated plan is displayed.

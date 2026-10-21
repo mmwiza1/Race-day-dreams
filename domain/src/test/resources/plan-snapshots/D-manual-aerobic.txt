@@ -1,0 +1,27 @@
+plan-snapshot-version|1
+plan|test:D-manual-aerobic|2030-01-07|2030-03-03
+phase|FOUNDATION|2030-01-07|2030-03-03|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-07|2030-01-07|ZONE_2_RUN|4.125|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-08|2030-01-08|ZONE_2_RUN|4.125|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-09|2030-01-09|ZONE_2_RUN|6.75|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-14|2030-01-14|ZONE_2_RUN|4.208|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-15|2030-01-15|ZONE_2_RUN|4.208|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-16|2030-01-16|ZONE_2_RUN|6.885|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-21|2030-01-21|ZONE_2_RUN|4.29|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-22|2030-01-22|ZONE_2_RUN|4.29|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-23|2030-01-23|ZONE_2_RUN|7.02|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-28|2030-01-28|ZONE_2_RUN|4.373|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-29|2030-01-29|ZONE_2_RUN|4.373|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-01-30|2030-01-30|ZONE_2_RUN|7.155|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-04|2030-02-04|ZONE_2_RUN|4.455|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-05|2030-02-05|ZONE_2_RUN|4.455|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-06|2030-02-06|ZONE_2_RUN|7.29|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-11|2030-02-11|ZONE_2_RUN|4.538|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-12|2030-02-12|ZONE_2_RUN|4.538|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-13|2030-02-13|ZONE_2_RUN|7.425|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-18|2030-02-18|ZONE_2_RUN|4.62|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-19|2030-02-19|ZONE_2_RUN|4.62|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-20|2030-02-20|ZONE_2_RUN|7.56|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-25|2030-02-25|ZONE_2_RUN|4.703|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-26|2030-02-26|ZONE_2_RUN|4.703|~|SYNTHETIC TEST FIXTURE — not training advice
+workout|D-manual-aerobic:2030-02-27|2030-02-27|ZONE_2_RUN|7.695|~|SYNTHETIC TEST FIXTURE — not training advice

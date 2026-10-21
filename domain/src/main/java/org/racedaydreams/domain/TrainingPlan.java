@@ -1,0 +1,28 @@
+package org.racedaydreams.domain;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+
+/** Future plan snapshot. Phase 1 does not generate plans or claim these models are populated. */
+public record TrainingPlan(String id, LocalDate startDate, LocalDate endDate,
+        List<TrainingPhase> phases, List<PlannedWorkout> workouts) {
+    public TrainingPlan {
+        id = DomainChecks.id(id, "plan id");
+        Objects.requireNonNull(startDate, "startDate");
+        Objects.requireNonNull(endDate, "endDate");
+        if (endDate.isBefore(startDate)) throw new IllegalArgumentException("Plan end precedes start");
+        phases = DomainChecks.immutableList(phases);
+        workouts = DomainChecks.immutableList(workouts);
+        for (TrainingPhase phase : phases) {
+            if (phase.startDate().isBefore(startDate) || phase.endDate().isAfter(endDate)) {
+                throw new IllegalArgumentException("Phase falls outside plan dates");
+            }
+        }
+        for (PlannedWorkout workout : workouts) {
+            if (workout.date().isBefore(startDate) || workout.date().isAfter(endDate)) {
+                throw new IllegalArgumentException("Workout falls outside plan dates");
+            }
+        }
+    }
+}
