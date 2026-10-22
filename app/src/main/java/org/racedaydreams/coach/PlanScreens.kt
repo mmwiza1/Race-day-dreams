@@ -35,14 +35,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             Text("${plan.startDate()} – ${plan.endDate()}")
             Text(version.reason())
             if (state.profile != version.goalSnapshot()) Text("Your saved goal or availability has changed. This programme still uses its original snapshot. Review and explicitly rebuild when ready.")
-            state.proposals.forEach { proposal -> CoachCard {
-                Text("Recommendation", style = MaterialTheme.typography.titleMedium)
-                Text(proposal.reason())
-                Text(proposal.impact())
-                Text(proposal.confidence())
-                proposal.options().forEach { option -> OutlinedButton(onClick = { model.decide(proposal, option.id()) }, enabled = !state.busy,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(option.label()) } }
-            } }
+            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(selected = !overview, onClick = { overview = false }, label = { Text("Week") })
                 FilterChip(selected = overview, onClick = { overview = true }, label = { Text("Programme") })
@@ -153,3 +146,15 @@ fun CoachInput(label: String, value: String, change: (String) -> Unit, decimal: 
         keyboardOptions=KeyboardOptions(keyboardType=if(decimal) KeyboardType.Decimal else KeyboardType.Text), singleLine=true)
 }
 private fun formatPace(seconds: Double): String { val total=kotlin.math.round(seconds).toInt();return "%d:%02d".format(total/60,total%60) }
+
+@Composable
+fun AdjustmentCard(proposal: AdjustmentProposal, busy: Boolean, decide: (String) -> Unit) = CoachCard {
+    Text("Plan adjustment suggested", style = MaterialTheme.typography.titleMedium)
+    Text(proposal.reason())
+    Text(proposal.impact())
+    Text(proposal.confidence())
+    proposal.options().forEach { option ->
+        OutlinedButton(onClick = { decide(option.id()) }, enabled = !busy,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(option.label()) }
+    }
+}

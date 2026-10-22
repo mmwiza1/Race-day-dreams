@@ -65,6 +65,13 @@ public final class RunScoreEngine {
             ? "Reliable continuous splits are unavailable; pacing stability is not inferred."
             : planned.category() == WorkoutCategory.PROGRESSION_RUN ? "Compared early and late complete splits for a genuine progression."
             : "Compared early and late complete splits. Terrain, conditions and context can affect this heuristic."));
+        if (stability != null) {
+            if (planned.category() == WorkoutCategory.PROGRESSION_RUN) {
+                if (stability >= .9) good.add("Your later complete splits were faster than your early splits, supporting the progression objective.");
+                else differed.add("Your complete splits did not show the intended progression.");
+            } else if (stability >= .9) good.add("Retained complete splits did not show substantial late slowing.");
+            else differed.add("Your later complete splits were slower. Terrain, conditions and effort context can affect this observation.");
+        }
         Double reps = null;
         if (planned.category() == WorkoutCategory.INTERVALS && response != null && response.completedReps() != null) {
             long prescribed = planned.segments().stream().filter(s -> s.kind() == WorkoutSegment.Kind.RUN).count();
@@ -87,7 +94,8 @@ public final class RunScoreEngine {
                 || planned.category() == WorkoutCategory.INTERVALS && reps != null && reps < .8)) score = Math.min(score, 7);
         return new RunFeedback(score, score == null ? "Execution evidence incomplete" : score >= 8 ? "Good execution" : "Against today's objective",
             components, good, differed,
-            "This records how the run met its purpose. Completion alone does not prove fitness improved. Missing components are excluded, not scored as zero.",
+            (controlled && effort != null && effort < .8 ? "This aerobic session became more demanding than intended. " : "This records how the run met its purpose. ")
+                + "Completion alone does not prove fitness improved. Missing components are excluded, not scored as zero.",
             differed.isEmpty() ? "No change is needed from this run alone. Keep the next session aligned with its purpose."
                 : "Review the raw evidence and the rest of your week. Any meaningful plan adjustment remains your choice.");
     }

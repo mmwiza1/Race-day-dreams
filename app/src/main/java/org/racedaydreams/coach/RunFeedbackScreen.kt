@@ -33,6 +33,13 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
         Text("Next step",style=MaterialTheme.typography.titleMedium);Text(result.nextStep())
         Text("Deterministic product heuristics, rule version ${RunScoreEngine.RULE_VERSION}; not scientifically validated weights. Missing evidence is excluded.")
     } }
+    if (planned != null) {
+        if (state.proposals.isEmpty()) Text("No programme adjustment is currently proposed. This run remains useful evidence for future reviews.")
+        else {
+            Text("Review the rest of your week. These proposals use the underlying run and strength evidence, not your rounded Run Score.")
+            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
+        }
+    }
     if(planned!=null){CoachCard {
         Text("Preserved planned workout · version ${version.version()}",style=MaterialTheme.typography.titleMedium)
         Text("${planned.date()} · ${planned.category().name.replace('_',' ')}")
