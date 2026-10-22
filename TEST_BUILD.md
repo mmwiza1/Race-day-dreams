@@ -1,8 +1,8 @@
 # Galaxy S24 evaluation — 0.4.0-test1
 
 Working increment: PR #3, `codex/weekly-coach-and-simple-ux`, starting main
-`0c3a810048a7c92e9dc632d726a57d908ca519be`. This update targets main after green
-verification. See VERIFICATION.md for actual results and final merge status.
+`0c3a810048a7c92e9dc632d726a57d908ca519be`. See VERIFICATION.md for the observed functional verification results, and
+PR #3 / GitHub Actions for exact delivery and merged-main status.
 
 Download `Race-Day-Dreams-0.4.0-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.

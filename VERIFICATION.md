@@ -24,12 +24,45 @@ minimum API 28 retained.
 
 ## Final CI / screenshot verification
 
-Final API 28/35/36 matrix and actual-render screenshot verification are in progress.
-This section will be replaced with observed final run results before merging.
+[Run 39781253630](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39781253630)
+passed for final functional source
+`938b392fb2e2990c35a453541839e80c28d055bd`.
+
+| Emulator | Domain assertions | Schema tests | Debug/test APK + lint | Instrumentation |
+| --- | --- | --- | --- | --- |
+| API 28 / Android 9 | 30,316 passed | 30 passed | Passed | 116 passed, 0 skipped, 0 failed |
+| API 35 / Android 15 | 30,316 passed | 30 passed | Passed | 116 passed, 0 skipped, 0 failed |
+| API 36 / Android 16 | 30,316 passed | 30 passed | Passed | 116 passed, 0 skipped, 0 failed |
+
+Commands: `sh scripts/test-domain.sh`, `python3 scripts/test-schema.py`,
+`./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest`
+and `./gradlew :app:connectedDebugAndroidTest`. Lint passed; this is not a claim
+of zero informational warnings. The 16 additional instrumentation cases cover
+schema/evidence backup and review acceptance/rejection, calendar persistence,
+historical PB entry, manual weight, optional weight permissions and provider state.
+The 99 new domain assertions cover weekly/return/performance/durability/provider
+and mass rules alongside retained plan regression and existing suites.
+
+The [verified API-35 APK artifact](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39781253630/artifacts/12426743045)
+contains `Race-Day-Dreams-0.4.0-test1-debug.apk`. It was uploaded only after device
+tests passed. Final delivery should use the successful merged-main run's artifact;
+the repository Actions page records newer documentation-only builds.
+
+Seventeen canonical PNGs were captured from real app code with instrumentation-only
+fixtures, published by the successful matrix and visually reviewed. Month rendering
+now waits for its unique month heading, and capture checks reject raw ISO date text
+in normal Compose UI. Sources/commit digest are stored beside the images.
+No fabricated mock screenshot or production demo entry point was introduced.
+The bot capture commit is followed by a reviewed documentation commit so the final
+PR head receives normal complete checks; a held bot-only workflow is not counted
+as a successful run. Merge/post-merge status is verified directly on GitHub and
+reported in the delivery report rather than invented ahead of execution.
+
 Earlier failed candidates caught a calendar syntax error, obsolete Settings
-selectors and an inaccurate version-three migration fixture; those findings were
-fixed rather than reducing test coverage. Superseded runs may be cancelled by
-workflow concurrency and are not represented as successful verification.
+selectors and an inaccurate version-three migration fixture. Visual review caught
+a stale Week frame in the Month capture and two remaining date-format issues.
+All were corrected without reducing the test matrix. Superseded/cancelled runs
+are not represented as successful verification.
 
 ## Schema and portability
 

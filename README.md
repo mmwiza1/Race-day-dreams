@@ -59,6 +59,10 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 | --- | --- | --- | --- |
 | ![Setup](docs/screenshots/onboarding.png) | ![Weekly coaching](docs/screenshots/weekly-review.png) | ![Week](docs/screenshots/calendar-week.png) | ![Month](docs/screenshots/calendar-month.png) |
 
+| Body weight | Strength records | Provider options |
+| --- | --- | --- |
+| ![Actual weight measurements](docs/screenshots/body-weight.png) | ![Strength PB provenance](docs/screenshots/strength-pbs.png) | ![Optional provider settings](docs/screenshots/data-sources.png) |
+
 ## Build and tests
 
 Use JDK 17 or 21, Android SDK 36 and Android Studio with Kotlin 2.0 support.

@@ -1,9 +1,9 @@
 # Development plan and feature status
 
-The coaching test build has now been merged to `main` at
+The 0.3 coaching foundation was merged to `main` at
 `09f2cbf66622c57df1a4b68d5a78bf34c73ce449`.
 
-The next development increment focuses on multi-week adaptation, weekly coaching
+The 0.4 increment adds multi-week adaptation, weekly coaching
 reviews, improved onboarding/calendar UX, stronger strength integration, body-weight
 progress tracking, and richer health-data ingestion where it can be done safely and
 honestly.
