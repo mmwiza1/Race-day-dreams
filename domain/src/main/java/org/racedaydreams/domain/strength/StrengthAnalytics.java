@@ -60,7 +60,8 @@ public final class StrengthAnalytics {
     private static void award(List<Record> history, Map<String, Double> best, StrengthExercise e, String category,
             double value, StrengthSession.SetEntry set, StrengthSession session) {
         String key = e.id() + ":" + category;
-        if (value <= 0 || value <= best.getOrDefault(key, -1.0)) return;
+        // Ignore binary floating-point residue from equivalent kg/lb or distance conversions.
+        if (value <= 0 || value <= best.getOrDefault(key, -1.0) + 0.0000001) return;
         best.put(key, value); history.add(new Record(e.id(), category, value, set.kilograms(), set.reps(),
                 session.startedAt(), session.id(), set.id(), session.notes()));
     }

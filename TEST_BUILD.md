@@ -84,3 +84,8 @@ and key runs; inspect/reject/accept changes and stop generation without losing
 actual sessions. Review diagrams with a qualified coach. Test TalkBack, 200% fonts,
 dark mode, keyboards, scrolling and reminders on the Galaxy S24. CI cannot prove
 real coaching efficacy, OEM reminder timing or Health Connect synchronisation.
+
+CI debug builds may use a different debug signing certificate from an older download.
+If Android rejects an in-place installation, retain/export the old app's backup before
+considering uninstall/reinstall. Restore the backup and re-import Health Connect data.
+No production signing key or credential is bundled in this repository.

@@ -133,7 +133,7 @@ production plan generation, single-workout proposals and bounded weekly/multi-we
 boundary is not an operational feature. The training engine and whole-plan
 regression harness must grow together; no pretend generated plan is displayed.
 
-Backup envelope version 3 includes coaching data and prevents old app versions
+Backup envelope version 4 includes coaching and optional strength-programming data and prevents old app versions
 from silently discarding it. This reader also restores original version-1 and version-2
 backups. Core store format 1 and coaching section version 1 are independently
 validated. Export retains the existing 8 MiB/complexity limits: exceeding them
@@ -154,15 +154,14 @@ payloads are omitted from export and can be re-read.
 
 Compose uses the existing ViewModel snapshot and IO mutex; weekly evidence is
 recomputed on evidence refresh, not every destination composition. Calendar view,
-mass unit and provider preference persist locally. The retained tested native
+mass unit persists locally; obsolete provider preferences normalize to Health Connect. The retained tested native
 onboarding wizard now uses compact weekday selections/card choices, disclosure
 and a date picker; it is intentionally not rewritten merely to use Compose.
 The final explicit Create my programme action saves the goal then generates.
 Manual move/skip and review acceptance create immutable plan versions and update
 reminder mirrors transactionally. Weight has no input path into coaching.
 
-Enhanced provider contracts and conservative reconciliation remain independent of
-proprietary APIs. Health Connect is the supported adapter. Legacy provider preferences normalize on upgrade/restore.
+Health Connect is the supported adapter; unused enhanced-provider dispatch has been removed. Legacy provider preferences normalize on upgrade/restore.
 
 ## 0.5 strength and optional programming
 
