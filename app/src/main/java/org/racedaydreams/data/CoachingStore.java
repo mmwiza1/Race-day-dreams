@@ -14,7 +14,7 @@ import org.racedaydreams.domain.coaching.*;
 import org.racedaydreams.domain.strength.*;
 
 /** Shared database and transactions; immutable versions plus one current pointer. All calls require IO. */
-public final class CoachingStore {
+public final class CoachingStore implements CoachingRepository {
     private final ProfileDatabase helper;
     public CoachingStore(Context context) { helper=ProfileDatabase.get(context); }
     private SQLiteDatabase db(){if(Looper.myLooper()==Looper.getMainLooper())throw new IllegalStateException("Coaching storage requires IO.");return helper.getWritableDatabase();}

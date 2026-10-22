@@ -84,7 +84,7 @@ data class CoachUiState(
 class CoachViewModel(application: Application, private val savedState: SavedStateHandle) : AndroidViewModel(application) {
     private val app = application
     private val store = FeatureStore(application)
-    private val coaching = CoachingStore(application)
+    private val coaching: CoachingRepository = CoachingStore(application)
     private val profiles = SqliteUserPreferencesRepository(application)
     private val reminders = EveningReminders(application, store)
     val health = HealthConnectGateway(application)

@@ -12,7 +12,7 @@ public final class CoachingTestSuite {
     static final LocalDate START = LocalDate.of(2026, 10, 26);
     static final Instant NOW = START.atTime(12, 0).toInstant(ZoneOffset.UTC);
     public static void main(String[] args) {
-        plans(); scores(); strength(); adaptations(); extraEvidence();
+        plans(); scores(); strength(); adaptations(); extraEvidence(); regressionProfiles();
         System.out.println("CoachingTestSuite: " + checks + " checks passed (production generator, constraints, adaptation, scores, strength).");
     }
     static void check(boolean value, String message) { checks++; if (!value) throw new AssertionError(message); }
@@ -166,6 +166,40 @@ public final class CoachingTestSuite {
         var bwSession=new StrengthSession("bw",NOW.minusSeconds(3600),ZoneOffset.UTC,Duration.ofMinutes(30),null,"",List.of(new StrengthSession.ExerciseSets(weightedBody,List.of(new StrengthSession.SetEntry("bw-set",5,20,null,false)))));
         check(StrengthAnalytics.progression(List.of(bwSession)).stream().anyMatch(r->r.category().equals("Added load × 5")),"Weighted-bodyweight PB retains added load and reps");
         check(StrengthAnalytics.estimatedOneRepMax(weightedBody,bwSession.exercises().get(0).sets().get(0))==null,"No misleading bodyweight 1RM estimate");
+    }
+
+    static Map<String, TrainingPlan> representativePlans() {
+        var g=new OriginalTrainingPlanGenerator();var plans=new LinkedHashMap<String,TrainingPlan>();
+        plans.put("beginner-5k",g.generate(profile(RaceDistance.FIVE_K,3,12,TrainingStrategy.DISTANCE_FIRST),RunnerBaseline.empty(NOW.minus(Duration.ofDays(84)),NOW),START));
+        plans.put("established-10k",g.generate(profile(RaceDistance.TEN_K,4,12,TrainingStrategy.BALANCED),baseline(25,10),START));
+        plans.put("sub2-half",g.generate(profile(RaceDistance.HALF_MARATHON,4,18,TrainingStrategy.BALANCED),baseline(25,13),START));
+        plans.put("marathon",g.generate(profile(RaceDistance.MARATHON,4,22,TrainingStrategy.PERFORMANCE),baseline(45,18),START));
+        plans.put("aerobic-manual-fallback",g.generate(profile(RaceDistance.GENERAL_FITNESS,3,12,TrainingStrategy.ZONE_2),RunnerBaseline.empty(NOW.minus(Duration.ofDays(84)),NOW),START));
+        plans.put("three-days",g.generate(profile(RaceDistance.HALF_MARATHON,3,12,TrainingStrategy.BALANCED),baseline(20,10),START));
+        plans.put("six-days",g.generate(profile(RaceDistance.TEN_K,6,12,TrainingStrategy.BALANCED),baseline(40,14),START));
+        plans.put("heavy-lower-body",g.generate(new PlanRequest(profile(RaceDistance.TEN_K,6,12,TrainingStrategy.BALANCED),baseline(30,12),START.plusDays(1),Set.of(),List.of(strengthSession("heavy",90,5,START)))));
+        plans.put("returning-runner",g.generate(profile(RaceDistance.FIVE_K,3,12,TrainingStrategy.DISTANCE_FIRST),baseline(5,3),START));
+        plans.put("short-horizon",g.generate(profile(RaceDistance.MARATHON,3,3,TrainingStrategy.BALANCED),baseline(12,7),START));
+        plans.put("long-horizon",g.generate(profile(RaceDistance.MARATHON,4,28,TrainingStrategy.BALANCED),baseline(45,18),START));
+        return plans;
+    }
+    static String planSnapshot(TrainingPlan plan) {
+        StringBuilder out=new StringBuilder();
+        for(var phase:plan.phases())out.append("PHASE ").append(phase.kind()).append(" ").append(phase.startDate()).append("..").append(phase.endDate()).append("\n");
+        for(var w:plan.workouts()){
+            out.append(w.date()).append("|").append(w.category()).append("|").append(w.distanceKm()).append(" km|").append(w.duration()).append("\n");
+            for(var segment:w.segments())out.append("  ").append(segment.kind()).append("|").append(segment.distanceKm()).append(" km|").append(segment.duration()).append("|RPE ").append(segment.rpe()).append("|pace ").append(segment.minimumSecondsPerKm()).append("..").append(segment.maximumSecondsPerKm()).append("\n");
+        }
+        return out.toString();
+    }
+    static void regressionProfiles(){
+        for(var entry:representativePlans().entrySet())try{
+            String expected=new String(Objects.requireNonNull(CoachingTestSuite.class.getResourceAsStream("/coaching/"+entry.getKey()+".txt")).readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);
+            check(expected.equals(planSnapshot(entry.getValue())),"Review whole-plan diff for "+entry.getKey());
+        }catch(java.io.IOException e){throw new AssertionError(e);}
+        var prefs=profile(RaceDistance.TEN_K,4,12,TrainingStrategy.BALANCED).preferences();
+        var schedule=ConstraintScheduler.select(START,START.plusDays(6),4,prefs,Set.of(),Set.of(START),true,null);
+        check(!START.plusDays(1).equals(schedule.quality()),"Feasible alternative avoids quality the day after hard legs");
     }
 
 }

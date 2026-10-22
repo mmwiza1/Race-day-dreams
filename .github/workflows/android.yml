@@ -52,6 +52,8 @@ jobs:
           target: default
           disable-animations: true
           script: |
+            adb shell wm size 540x1200
+            adb shell wm density 210
             ./gradlew :app:connectedDebugAndroidTest
             mkdir -p build/canonical-screenshots
             adb pull /data/local/tmp/racedaydreams-screenshots/. build/canonical-screenshots/

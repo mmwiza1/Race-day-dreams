@@ -185,7 +185,7 @@ and licensing verification. Real-world coaching efficacy has not been establishe
 `CoachingTestSuite` exercises production generation across distances, three/six-day
 availability and short/long horizons, plus one/two-day reductions, blocked race
 and unavailable dates, no duplicate placements, frequency, spacing, phase coverage,
-Zone 2, beginner fallback, a readable full-programme HM regression fixture,
+Zone 2, beginner fallback, eleven readable complete-programme regression fixtures plus a compact HM fixture,
 raw-evidence proposals and runner decisions, scores without HR/RPE, intervals,
 progression, strength PB/history/deletion/e1RM and workload coverage. The old
 synthetic regression fixtures remain as independent validation utilities.

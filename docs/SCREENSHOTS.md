@@ -9,7 +9,7 @@ profile, cancels alarms and clears the test database.
 The fixture fixes record IDs, exercise sets and training evidence. Dates are
 relative to the capture day so the actual Today screen remains meaningful; the
 canonical image is a dated build capture, not a daily-changing golden assertion.
-System API/font/density follow the CI API-35 emulator. No stock image, generated
+Canonical captures use the CI API-35 emulator at 540×1200 pixels / 210 dpi (approximately 411×914 dp). Fonts use the Android defaults. No stock image, generated
 mockup or manually composited UI is used.
 
 Run locally with an emulator:

@@ -227,6 +227,14 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 @Composable
 private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit) = CoachPage {
     CoachHeading("Your running, your way")
+    state.currentPlan?.let { version ->
+        val today = version.plan().workouts().firstOrNull { it.date() == java.time.LocalDate.now() }
+        CoachHeading("Today")
+        if (today == null) Text("No run is scheduled today. You can rest, run independently or review the programme.")
+        else WorkoutCard(today, state.activities.any { it.plannedWorkoutId() == today.id() }) { workout(today.id()) }
+        if (state.proposals.isNotEmpty()) Text("A coaching recommendation is ready to review. Your programme has not been changed.")
+    }
+    CoachButton(if (state.currentPlan == null) "Create training programme" else "View training programme", plan)
     state.profile?.let { profile ->
         CoachCard {
             Text(profile.raceGoal().distance().label(), style = MaterialTheme.typography.headlineSmall)
@@ -245,14 +253,6 @@ private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: ()
     if (state.profile?.preferences()?.strategy() == org.racedaydreams.domain.TrainingStrategy.PERFORMANCE && !state.performanceEligible) {
         Text("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
     }
-    state.currentPlan?.let { version ->
-        val today = version.plan().workouts().firstOrNull { it.date() == java.time.LocalDate.now() }
-        CoachHeading("Today")
-        if (today == null) Text("No run is scheduled today. You can rest, run independently or review the programme.")
-        else WorkoutCard(today, state.activities.any { it.plannedWorkoutId() == today.id() }) { workout(today.id()) }
-        if (state.proposals.isNotEmpty()) Text("A coaching recommendation is ready to review. Your programme has not been changed.")
-    }
-    CoachButton(if (state.currentPlan == null) "Create training programme" else "View training programme", plan)
     CoachButton("Review running baseline", baseline)
     CoachButton("View activity history", history)
     OutlinedButton(onClick = assessment, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Optional assessment result") }

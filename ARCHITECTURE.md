@@ -41,7 +41,7 @@ session-RPE context. `domain.strength` holds extensible exercises, ordered sessi
 sets, explainable classification and reproducible full PB progression. No Android
 or storage dependency enters these rules.
 
-`CoachingStore` shares the existing application-private helper and transaction
+`CoachingStore` implements the Android-independent `CoachingRepository` boundary and shares the existing application-private helper and transaction
 boundary. Plan saves atomically insert an immutable version, update the one
 current pointer and mirror prescriptions for existing reminders. Accepted
 proposals store the decision and resulting version atomically. Rejection preserves

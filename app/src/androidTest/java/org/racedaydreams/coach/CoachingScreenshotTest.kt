@@ -3,6 +3,7 @@ package org.racedaydreams.coach
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -68,7 +69,7 @@ class CoachingScreenshotTest {
         // Open the first real retained activity through the Calendar screen.
         compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
         await("Run detail");capture("activity-detail")
-        compose.onNodeWithText("Run Score and feedback").performScrollTo();capture("run-feedback")
+        alignHeading("Run Score and feedback");capture("run-feedback")
         pressBack();click("Progress");await("Strength progress");capture("progress")
         click("View Strength progress");await("Latest sessions");capture("strength")
         pressBack();click("Settings");await("Settings")
@@ -77,6 +78,14 @@ class CoachingScreenshotTest {
     }
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
+    private fun alignHeading(text:String){
+        compose.onNodeWithText(text).performScrollTo()
+        val scroll=compose.onNode(hasScrollAction())
+        val top=scroll.fetchSemanticsNode().boundsInRoot.top
+        val delta=compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top-top
+        scroll.performSemanticsAction(SemanticsActions.ScrollBy){it(0f,delta)}
+        compose.waitForIdle()
+    }
     private fun capture(name:String){
         compose.waitForIdle()
         val bitmap=InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
