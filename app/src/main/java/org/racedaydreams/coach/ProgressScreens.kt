@@ -28,7 +28,7 @@ import org.racedaydreams.domain.activity.ShoeMetricsCalculator
 /** Presentation of retained evidence. Blank metrics are not substituted with predicted values. */
 @Composable
 fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (String) -> Unit,
-                   onShoes: () -> Unit, onStrength: () -> Unit = {}) {
+                   onShoes: () -> Unit, onStrength: () -> Unit = {}, section: String = "pbs") {
     val weeks = remember(state.activities) {
         ActivityAnalytics.weekly(state.activities, LocalDate.now(), ZoneId.systemDefault(), 12)
     }
@@ -41,16 +41,11 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
     var enteringResult by rememberSaveable { mutableStateOf(false) }
     var showAllEntered by rememberSaveable { mutableStateOf(false) }
     CoachPage {
-        if (state.strengthSessions.isNotEmpty()) {
-            CoachHeading("Strength progress")
-            Text("${state.strengthSessions.size} recorded strength sessions; exercise PB progression is separate from running performance.")
-            CoachButton("View Strength progress", onStrength)
-        } else TextButton(onClick=onStrength, modifier=Modifier.heightIn(min=48.dp)) { Text("Optional strength training") }
-
+        if(section=="trends"){
         CoachHeading("Progress from your recorded running")
         WhyDetails("These are summaries of retained records, not a claim that unrecorded training did not happen. No readiness score or race prediction is generated.","About these trends")
         WeeklyDistanceCard(weeks, state)
-        WeightSection(state, model)
+
         val now = java.time.Instant.now()
         val load = remember(state.activities, state.strengthSessions) {
             org.racedaydreams.domain.coaching.TrainingLoadEvidence.window(state.activities, state.strengthSessions, now.minus(java.time.Duration.ofDays(7)), now)
@@ -61,14 +56,20 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
             Text(load.strengthLoad()?.let { "Strength: ${kotlin.math.round(it).toInt()} min·RPE from ${load.strengthWithRpe()}/${load.strengthObserved()} sessions" } ?: "Strength load: unavailable — no RPE recorded in this window")
             WhyDetails("Duration × reported RPE. Missing effort is excluded, not filled with zero. Running and strength loads are separate context signals, not injury predictions.","How is workload calculated?")
         }
-        CoachHeading("Personal bests")
-        Text("Results retain their date and source. Official chip times are entered by you; they are not independently verified. Rolling efforts require reliable continuous samples.")
+        }
+        if(section=="weight")WeightSection(state,model)
+        if(section=="pbs"){
+        CoachHeading("Running PBs")
+        WhyDetails("Results retain their date and source. Official chip times are entered by you, not independently verified. Rolling efforts require reliable continuous samples.","How PBs are calculated")
         Button(onClick = { enteringResult = !enteringResult }, enabled = !state.busy,
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
             Text(if (enteringResult) "Close result form" else "Add a race or manual result")
         }
         if (enteringResult) ResultEditor(state, model) { enteringResult = false }
-        PerformanceDistance.CORE.forEach { distance ->
+        var showAllDistances by rememberSaveable { mutableStateOf(false) }
+        if(current.isEmpty())Text("No running PBs yet. Add a race or manual result, or continue training; supported PBs appear when sufficient evidence exists.")
+        TextButton(onClick={showAllDistances=!showAllDistances}){Text(if(showAllDistances)"Show recorded distances"else "View all distances")}
+        PerformanceDistance.CORE.filter{showAllDistances||current.containsKey(it.code())}.forEach { distance ->
             val best = current[distance.code()]
             CoachCard {
                 Text(distance.label(), style = MaterialTheme.typography.titleLarge)
@@ -107,6 +108,8 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
                 Text(if (showAllEntered) "Show recent entered results" else "Show all ${entered.size} entered results")
             }
         }
+        }
+        if(section=="trends"){
         CoachHeading("Shoes and mileage")
         CoachButton("View and manage shoes", onShoes)
         CoachCard {
@@ -123,6 +126,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
                     }
                 }
             }
+        }
         }
     }
 }

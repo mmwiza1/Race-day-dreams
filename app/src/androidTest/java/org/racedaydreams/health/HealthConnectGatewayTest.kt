@@ -60,11 +60,9 @@ class HealthConnectGatewayTest : AndroidTestCase() {
         assertNull(HealthConnectGateway.importWindow("""{"version":1,"token":"opaque-test-token","permissions":[]}"""))
     }
 
-    fun testWeightPermissionIsSeparateAndSamsungIsUnavailableWithoutSdk() {
+    fun testWeightPermissionIsSeparate() {
         assertEquals("android.permission.health.READ_WEIGHT",HealthConnectGateway.WEIGHT_PERMISSION)
         assertFalse(HealthConnectGateway.BASELINE_PERMISSIONS.contains(HealthConnectGateway.WEIGHT_PERMISSION))
-        assertEquals(org.racedaydreams.domain.activity.EnhancedHealthProvider.Availability.SDK_NOT_INCLUDED,SamsungHealthProvider().availability())
-        assertTrue(SamsungHealthProvider().readRuns(Instant.now().minusSeconds(3600),Instant.now()).isEmpty())
     }
 
     private class RejectingStore : HealthImportRepository {

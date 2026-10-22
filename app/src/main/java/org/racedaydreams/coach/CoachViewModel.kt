@@ -73,7 +73,9 @@ data class CoachUiState(
     val historicalStrength: List<HistoricalStrengthRecord> = emptyList(),
     val massUnit: MassUnit = MassUnit.KG,
     val calendarView: String = "List",
-    val providerPreference: String = "AUTOMATIC",
+    val exerciseChoices: List<org.racedaydreams.data.StrengthUserStore.Choice> = emptyList(),
+    val acknowledgedPbs: Set<String> = emptySet(),
+    val providerPreference: String = "HEALTH_CONNECT",
     val workoutDecisions: List<WorkoutDecision> = emptyList(),
     val weeklyReview: WeeklyCoaching.Review? = null,
     val weeklyDecision: String? = null,
@@ -134,7 +136,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         } else emptySet()
         val snapshot = withContext(Dispatchers.IO) {
             val profile = profiles.load().orElse(null)
-            val preference = runCatching { ProviderReconciliation.Preference.valueOf(store.getSetting("provider.preference") ?: "AUTOMATIC") }.getOrDefault(ProviderReconciliation.Preference.AUTOMATIC)
+            val preference = ProviderReconciliation.normalizePreference(store.getSetting("provider.preference"))
             val activities = ProviderReconciliation.reconcile(store.activities(), preference).map { it.activity() }
             val results = store.results()
             val manual = store.savedManualBaseline()
@@ -162,6 +164,8 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 currentPlan = currentPlan, planVersions = history,
                 weights = development.weights(), historicalStrength = development.historical(),
                 massUnit = runCatching { MassUnit.valueOf(store.getSetting("mass.unit") ?: "KG") }.getOrDefault(MassUnit.KG),
+                exerciseChoices = org.racedaydreams.data.StrengthUserStore(getApplication()).choices(),
+                acknowledgedPbs = org.racedaydreams.data.StrengthUserStore(getApplication()).acknowledged(),
                 calendarView = store.getSetting("calendar.view") ?: "List", providerPreference = preference.name,
                 workoutDecisions = development.sessionDecisions(),
                 weeklyReview = review, weeklyDecision = review?.let { development.decisionForReview(it) },
@@ -333,6 +337,11 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         require(!store.activities().any { it.plannedWorkoutId() == proposal.workoutId() }) { "This workout has already been completed; refresh the plan." }
         coaching.decide(proposal, optionId, completed)
     }
+
+    fun exerciseChoice(id: String, favourite: Boolean, archived: Boolean) = mutate {
+        org.racedaydreams.data.StrengthUserStore(getApplication()).save(org.racedaydreams.data.StrengthUserStore.Choice(id,favourite,archived))
+    }
+    fun acknowledgePb(id: String) = mutate { org.racedaydreams.data.StrengthUserStore(getApplication()).acknowledge(id) }
 
     fun setting(key: String,value: String) = mutate { require(key in setOf("calendar.view","mass.unit","provider.preference")); store.putSetting(key,value) }
     fun saveWeight(value: Double,date: LocalDate,id: String? = null) = mutate {

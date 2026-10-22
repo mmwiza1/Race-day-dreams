@@ -38,9 +38,8 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
     Text("Revoking access stops future reads. Existing locally imported records remain until you delete local data. The app never writes or deletes Health Connect records.")
     CoachCard {
         Text("Activity data source",style=MaterialTheme.typography.titleMedium)
-        listOf("AUTOMATIC" to "Automatic — recommended","SAMSUNG_EXPERIMENTAL" to "Samsung Health — experimental","HEALTH_CONNECT" to "Health Connect").forEach { (id,label) -> FilterChip(selected=state.providerPreference==id,onClick={model.setting("provider.preference",id)},label={Text(label)}) }
-        Text("Samsung direct SDK is not included in this open-source build. Health Connect remains available; changing this preference does not enable direct access.")
-        WhyDetails("Direct Samsung access requires separately reviewed proprietary SDK terms, registered package/signing and applicable partnership/developer access. It is temporary and may be removed before public distribution.","Experimental provider details")
+        Text("Health Connect")
+        Text("Optional health access. Manual entry works independently.")
         TextButton(onClick=weightPermissions,enabled=state.healthAvailability==org.racedaydreams.health.HealthAvailability.AVAILABLE){Text("Allow optional Health Connect weight")}
         Text("Weight is used only for your personal trend. No weight-based coaching judgement.")
     }

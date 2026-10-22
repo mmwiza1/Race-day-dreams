@@ -9,10 +9,14 @@ import java.util.Objects;
 
 public record StrengthSession(String id, Instant startedAt, ZoneOffset offset, Duration duration,
         Double rpe, String notes, List<ExerciseSets> exercises) {
-    public record SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp) {
+    public record SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp, Long durationSeconds, Double distanceMetres) {
+        public SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp) { this(id,reps,kilograms,rpe,warmUp,null,null); }
         public SetEntry {
-            if (id == null || id.trim().isEmpty() || reps < 1 || reps > 500 || !Double.isFinite(kilograms)
+            if (id == null || id.trim().isEmpty() || reps < 0 || reps > 500 || !Double.isFinite(kilograms)
                     || kilograms < 0 || kilograms > 1500) throw new IllegalArgumentException("Check set ID, reps and load.");
+            if (durationSeconds != null && (durationSeconds <= 0 || durationSeconds > 43200)) throw new IllegalArgumentException("Check set duration.");
+            if (distanceMetres != null && (!Double.isFinite(distanceMetres) || distanceMetres <= 0 || distanceMetres > 100000)) throw new IllegalArgumentException("Check set distance.");
+            if ((reps > 0 ? 1 : 0) + (durationSeconds != null ? 1 : 0) + (distanceMetres != null ? 1 : 0) != 1) throw new IllegalArgumentException("Record exactly one of repetitions, duration or distance.");
             checkRpe(rpe);
         }
     }
@@ -21,6 +25,9 @@ public record StrengthSession(String id, Instant startedAt, ZoneOffset offset, D
             Objects.requireNonNull(exercise); sets = org.racedaydreams.domain.coaching.Immutable.copyList(sets);
             if (sets.isEmpty() || sets.size() > 100) throw new IllegalArgumentException("Record 1–100 sets per exercise.");
             for (SetEntry set : sets) {
+                var profile = exercise.measurement();
+                if (profile.usesReps() != (set.reps() > 0) || profile.usesDuration() != (set.durationSeconds() != null) || profile.usesDistance() != (set.distanceMetres() != null)) throw new IllegalArgumentException("Set does not match the exercise measurement profile.");
+                if (!profile.usesLoad() && set.kilograms() != 0) throw new IllegalArgumentException("This exercise does not use external load.");
                 if (exercise.mode() == StrengthExercise.Mode.BODYWEIGHT && set.kilograms() != 0)
                     throw new IllegalArgumentException("Use a weighted-bodyweight exercise for added load.");
             }

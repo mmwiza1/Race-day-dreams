@@ -29,7 +29,7 @@ public final class StrengthAnalytics {
     }
     /** Epley estimate, restricted to 2–10 reps; a single rep is recorded load, not a prediction. */
     public static Double estimatedOneRepMax(StrengthExercise exercise, StrengthSession.SetEntry set) {
-        if (!exercise.estimateOneRepMax() || exercise.mode() != StrengthExercise.Mode.WEIGHTED
+        if (set.reps() < 1 || !exercise.estimateOneRepMax() || exercise.mode() != StrengthExercise.Mode.WEIGHTED
                 || set.warmUp() || set.reps() > 10 || set.kilograms() <= 0) return null;
         return set.reps() == 1 ? set.kilograms() : set.kilograms() * (1 + set.reps() / 30.0);
     }
@@ -38,7 +38,13 @@ public final class StrengthAnalytics {
         sorted.sort(Comparator.comparing(StrengthSession::startedAt).thenComparing(StrengthSession::id));
         Map<String, Double> best = new HashMap<>(); var history = new ArrayList<Record>();
         for (var session : sorted) for (var e : session.exercises()) for (var set : e.sets()) if (!set.warmUp()) {
-            if (e.exercise().mode() == StrengthExercise.Mode.BODYWEIGHT) award(history, best, e.exercise(), "Bodyweight reps", set.reps(), set, session);
+            if (!e.exercise().measurement().usesReps()) {
+                double value = set.durationSeconds() != null ? set.durationSeconds() : set.distanceMetres();
+                String unit = set.durationSeconds() != null ? "Duration seconds" : "Distance metres";
+                // Loaded records are comparable only at the same load; do not flatten different tasks.
+                if (e.exercise().measurement().usesLoad()) unit += " at " + set.kilograms() + " kg";
+                award(history, best, e.exercise(), unit, value, set, session);
+            } else if (e.exercise().mode() == StrengthExercise.Mode.BODYWEIGHT) award(history, best, e.exercise(), "Bodyweight reps", set.reps(), set, session);
             else {
                 String prefix = e.exercise().mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT ? "Added load" : "Load";
                 award(history, best, e.exercise(), prefix, set.kilograms(), set, session);

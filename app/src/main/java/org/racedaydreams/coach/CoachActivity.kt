@@ -183,12 +183,19 @@ private fun CoachApp(model: CoachViewModel) {
                 } }
                 composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { nav.navigate("strength?date=$it") }) }
                 composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id")) { nav.navigate("activity/${Uri.encode(it)}") } }
-                composable("strength?date={date}") { destination -> StrengthScreen(state, model, destination.arguments?.getString("date")) }
+                composable("strength?date={date}") { destination -> val date=destination.arguments?.getString("date");if(date!=null)StrengthScreen(state,model,date) else StrengthDashboard(state){nav.navigate(it)} }
+                composable("strength/log") { StrengthScreen(state,model) }
+                composable("strength/pbs") { StrengthScreen(state,model,section="pbs") }
+                composable("strength/history") { StrengthScreen(state,model,section="history") }
+                composable("exercises") { ExerciseBrowser(state,model){nav.navigate("exercise/${Uri.encode(it)}")} }
+                composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")) }
+
                 composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("strength?date=$it") }) { nav.navigate("activity/${Uri.encode(it)}") } }
                 composable("activity/{id}") { destination ->
                     ActivityDetailScreen(state, model, destination.arguments?.getString("id"))
                 }
-                composable("progress") { ProgressScreen(state, model, { nav.navigate("activity/${Uri.encode(it)}") }, { nav.navigate("shoes") }, { nav.navigate("strength") }) }
+                composable("progress") { ProgressDashboard(state){nav.navigate(it)} }
+                listOf("pbs","trends","weight").forEach { section -> composable("progress/$section") { ProgressScreen(state,model,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("shoes")},{nav.navigate("strength")},section) } }
                 composable("shoes") { ShoesScreen(state, model) }
                 composable("settings") { SettingsScreen(state, model, model.health.historyPermissionAvailable(), connect,
                     providerUpdate, providerSettings,
@@ -228,6 +235,8 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 @Composable
 private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit) = CoachPage {
     CoachHeading("Your running, your way")
+    val summary=org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
+    CoachCard { Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("View details")} }
     if(state.weeklyReview!=null) OutlinedButton(onClick=weekly,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Weekly coaching review")}
     state.currentPlan?.let { version ->
         val today = version.plan().workouts().firstOrNull { it.date() == java.time.LocalDate.now() }
