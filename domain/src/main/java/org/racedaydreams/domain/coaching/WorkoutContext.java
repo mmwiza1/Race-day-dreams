@@ -19,10 +19,12 @@ public final class WorkoutContext {
         if(reasons.isEmpty())reasons.add(recent.isEmpty()?"We are still gathering similar-session evidence. Begin at the intended effort and adjust to conditions.":"Recent comparable sessions are available. Keep the opening work controlled; completion alone does not prove fitness improved.");
         return new Briefing(hardGym||high>=2?"Take care with today's intensity":recent.isEmpty()?"Start with the planned effort":"Keep today's purpose in focus",Immutable.copyList(reasons));
     }
-    public static List<String> moveWarnings(PlannedWorkout workout,LocalDate proposed,List<PlannedWorkout> plan,List<StrengthSession> strength){
+    public static List<String> moveWarnings(PlannedWorkout workout,LocalDate proposed,List<PlannedWorkout> plan,List<StrengthSession> strength){return moveWarnings(workout,proposed,plan,strength,null);}
+    public static List<String> moveWarnings(PlannedWorkout workout,LocalDate proposed,List<PlannedWorkout> plan,List<StrengthSession> strength,GymProgramme gym){
         var out=new ArrayList<String>();if(proposed==null)return Immutable.list("Choose a valid date.");
         if(StrengthAnalytics.hardLowerBodyDates(strength).contains(proposed.minusDays(1))&&GymProgrammeGenerator.demanding(workout.category()))out.add("This places a demanding run immediately after recorded hard lower-body strength.");
         for(var other:plan)if(!other.id().equals(workout.id())&&GymProgrammeGenerator.demanding(other.category())&&GymProgrammeGenerator.demanding(workout.category())&&Math.abs(java.time.temporal.ChronoUnit.DAYS.between(proposed,other.date()))==1)out.add("A demanding running session is on the neighbouring day.");
+        if(gym!=null&&GymProgrammeGenerator.demanding(workout.category()))for(var session:gym.sessions())if((session.date().equals(proposed)||session.date().equals(proposed.minusDays(1)))&&session.exercises().stream().anyMatch(e->ExerciseCatalog.definition(e.exerciseId())!=null&&ExerciseCatalog.definition(e.exerciseId()).exercise().region()==StrengthExercise.Region.LOWER))out.add("A programmed lower-body strength session neighbours this date. It has not necessarily been completed; consider the trade-off before moving.");
         if(out.isEmpty())out.add("No neighbouring conflict was found in the available evidence. This is not medical readiness advice.");
         out.add("Only this workout will move. Your normal training days and other workouts stay unchanged.");return Immutable.copyList(out);
     }

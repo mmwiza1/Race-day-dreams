@@ -181,7 +181,7 @@ private fun CoachApp(model: CoachViewModel) {
                     model.cancelGoalEditing()
                     if (state.profile == null) nav.navigate("baseline") else nav.navigate("home") { launchSingleTop = true }
                 } }
-                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { nav.navigate("strength?date=$it") }) }
+                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") }) }
                 composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id")) { nav.navigate("activity/${Uri.encode(it)}") } }
                 composable("strength?date={date}") { destination -> val date=destination.arguments?.getString("date");if(date!=null)StrengthScreen(state,model,date) else StrengthDashboard(state){nav.navigate(it)} }
                 composable("strength/log") { StrengthScreen(state,model) }
@@ -194,7 +194,7 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("exercises") { ExerciseBrowser(state,model){nav.navigate("exercise/${Uri.encode(it)}")} }
                 composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")){nav.navigate("strength/source/${Uri.encode(it)}")} }
 
-                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("strength?date=$it") }) { nav.navigate("activity/${Uri.encode(it)}") } }
+                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { date -> val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date().toString()==date};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$date") }) { nav.navigate("activity/${Uri.encode(it)}") } }
                 composable("activity/{id}") { destination ->
                     ActivityDetailScreen(state, model, destination.arguments?.getString("id"))
                 }

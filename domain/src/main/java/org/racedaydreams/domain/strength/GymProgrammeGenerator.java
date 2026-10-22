@@ -25,6 +25,7 @@ public final class GymProgrammeGenerator {
         }
         sessions.sort(Comparator.comparing(GymProgramme.Session::date));
         if(settings.frequency()>3&&settings.priority()==GymProgramme.Priority.RUNNING_FIRST)tradeoffs.add("You selected frequent gym training with running first. Working sets are deliberately limited; more days are not inherently better.");
+        if(!settings.equipment().contains("full gym")&&java.util.Collections.disjoint(settings.equipment(),Immutable.list("dumbbells","barbell","cables","pull-up bar")))tradeoffs.add("No pulling equipment was selected. Trunk work fills a practical slot; it is not equivalent to rows or pull-ups.");
         if(settings.goal()==GymProgramme.Goal.POWER&&settings.experience()==GymProgramme.Experience.BEGINNER)tradeoffs.add("Beginner power preparation uses controlled fundamentals; technical Olympic lifts are not automatically prescribed.");
         return new GymProgramme(id,version,createdAt,reason,settings,start,end,sessions,Immutable.copyList(tradeoffs));
     }

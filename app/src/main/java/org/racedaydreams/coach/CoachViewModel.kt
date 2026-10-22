@@ -382,7 +382,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         require(workout.category()!=org.racedaydreams.domain.WorkoutCategory.RACE) { "Change your race date through goal setup." }
         require(coaching.responses().none{it.plannedWorkoutId()==workoutId} && store.activities().none{it.plannedWorkoutId()==workoutId}) { "Completed sessions cannot be changed." }
         if(movedTo!=null) {
-            require(movedTo>=LocalDate.now() && movedTo<=current.plan().endDate() && current.goalSnapshot().preferences().runningDays().contains(movedTo.dayOfWeek)) { "Choose an available running day within this programme." }
+            require(movedTo>=LocalDate.now() && movedTo<=current.plan().endDate()) { "Choose a current or future date within this programme. A one-off move does not change recurring days." }
             require(current.plan().workouts().none{it.id()!=workoutId&&it.date()==movedTo}) { "A run is already planned on that date." }
             val monday=movedTo.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY))
             require(current.plan().workouts().count{it.id()!=workoutId&&it.date()>=monday&&it.date()<monday.plusWeeks(1)}<current.goalSnapshot().preferences().runsPerWeek()) { "This move would exceed your maximum runs/week." }

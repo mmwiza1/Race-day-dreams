@@ -284,6 +284,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             }
             JSONObject development=data.has("development")?data.getJSONObject("development"):null;if(development!=null)DevelopmentStore.validate(development);
             if(data.has("gymProgramming"))GymProgrammeStore.validate(data.getJSONObject("gymProgramming"));
+            GymProgrammeStore.validateLinks(development,coaching,data.optJSONObject("gymProgramming"));
             return new RestoreData(profile,draft,baseline,baselineAt,activities,shoes,results,bestEfforts,annotations,settings,plans,assessments,trainingPlans,adjustments,coaching,development,data.optJSONObject("strengthState"),data.optJSONObject("gymProgramming"));
         }catch(JSONException | java.time.DateTimeException e){throw FeatureJson.invalid(e);}
     }
