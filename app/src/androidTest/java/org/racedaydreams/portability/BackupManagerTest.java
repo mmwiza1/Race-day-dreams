@@ -60,14 +60,26 @@ public final class BackupManagerTest extends AndroidTestCase {
         assertTrue(text.contains("\n  \"format\""));
         JSONObject envelope = new JSONObject(text);
         assertEquals(BackupManager.FORMAT, envelope.getString("format"));
-        assertEquals(1, envelope.getInt("version"));
+        assertEquals(2, envelope.getInt("version"));
         store.saveShoe(shoe("extra"));
         BackupManager.RestoreSummary summary = manager.restoreFrom(new ByteArrayInputStream(snapshot));
-        assertEquals(1, summary.version()); assertEquals(1, summary.manualActivities());
+        assertEquals(2, summary.version()); assertEquals(1, summary.manualActivities());
         assertEquals(1, summary.manualResults()); assertEquals(1, summary.shoes());
         assertEquals(Collections.singletonList(shoe), store.shoes());
         assertEquals(Collections.singletonList(manual), store.activities());
         assertEquals(Collections.singletonList(official), store.results());
+    }
+
+    public void testOriginalVersionOneBackupRemainsReadable() throws Exception {
+        store.saveShoe(shoe("legacy"));
+        JSONObject envelope=objectExport();envelope.put("version",1);envelope.getJSONObject("data").remove("coaching");
+        store.saveShoe(shoe("later"));
+        BackupManager.RestoreSummary summary=manager.restoreFrom(new ByteArrayInputStream(envelope.toString().getBytes(StandardCharsets.UTF_8)));
+        assertEquals(1,summary.version());assertEquals(1,store.shoes().size());assertEquals("legacy",store.shoes().get(0).id());
+    }
+    public void testVersionTwoRequiresCoachingSectionBeforeReplacement() throws Exception {
+        store.saveShoe(shoe("retained"));JSONObject envelope=objectExport();envelope.getJSONObject("data").remove("coaching");
+        rejected(envelope.toString());assertEquals("retained",store.shoes().get(0).id());
     }
 
     public void testExternalPayloadAndImportTokenAreNotExported() throws Exception {

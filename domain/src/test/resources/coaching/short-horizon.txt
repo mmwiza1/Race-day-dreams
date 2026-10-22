@@ -1,0 +1,21 @@
+PHASE ENDURANCE_DEVELOPMENT 2026-10-26..2026-10-31
+PHASE TAPER 2026-11-01..2026-11-14
+PHASE RACE 2026-11-15..2026-11-15
+2026-10-27|EASY_RUN|2.1 km|null
+  RUN|2.1 km|null|RPE 3.0|pace null..null
+2026-10-29|EASY_RUN|2.1 km|null
+  RUN|2.1 km|null|RPE 3.0|pace null..null
+2026-11-01|EASY_RUN|2.1 km|null
+  RUN|2.1 km|null|RPE 3.0|pace null..null
+2026-11-03|EASY_RUN|2.2 km|null
+  RUN|2.2 km|null|RPE 3.0|pace null..null
+2026-11-05|EASY_RUN|2.2 km|null
+  RUN|2.2 km|null|RPE 3.0|pace null..null
+2026-11-08|EASY_RUN|2.2 km|null
+  RUN|2.2 km|null|RPE 3.0|pace null..null
+2026-11-10|EASY_RUN|1.7 km|null
+  RUN|1.7 km|null|RPE 3.0|pace null..null
+2026-11-12|EASY_RUN|1.7 km|null
+  RUN|1.7 km|null|RPE 3.0|pace null..null
+2026-11-15|RACE|42.195 km|null
+  RUN|42.195 km|null|RPE null|pace null..null

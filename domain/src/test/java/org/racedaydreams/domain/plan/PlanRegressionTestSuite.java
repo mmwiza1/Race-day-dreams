@@ -49,7 +49,7 @@ public final class PlanRegressionTestSuite {
         schedulingChecks(fixtures.get(2));
         boundaries(fixtures.get(1));
         deterministicContextIsolation(fixtures);
-        System.out.println("PlanRegressionTestSuite: " + checks + " checks passed (synthetic fixtures; production generation remains pending).");
+        System.out.println("PlanRegressionTestSuite: " + checks + " checks passed (synthetic invariant fixtures; production generator tested separately).");
     }
 
     private static void mutationChecks(SyntheticPlanFixtures.Fixture fixture) {

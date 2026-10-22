@@ -1,46 +1,28 @@
-# Development plan and feature status
+# Development plan and feature status — coaching test build
 
-The baseline is draft PR #1 at commit `3011e037`. Its original Phase 1 behavior
-and tests are retained. This increment grows data and presentation foundations;
-it does not imply that all running-coach features are complete.
+This increment starts from verified main
+`7624a662c5a52b6cd0ab427c09e17b354b50c62e`, on
+`codex/production-coach-test-build`, draft PR #2. It must **not merge to main**
+until physical-device evaluation and a separate merge decision.
 
-| Area | Current scope | Remaining |
+| Area | Implemented | Partial/pending |
 | --- | --- | --- |
-| Architecture | Kotlin/Compose/Material 3/Nav/ViewModel/StateFlow; Java domain retained | Room adapter evaluated/deferred; legacy goal form migration optional |
-| Storage | Additive schema 1→2 plus transactional 2→3 annotation migration, source identities, annotations, snapshots and user-owned data | Future schema changes require explicit migrations |
-| Health Connect | Optional running/distance/HR/history import, availability and permission states, source-aware dedup/update/deletion | Physical-device/vendor validation; additional metrics only with implemented use |
-| Baseline | Recorded-history review, optional manual corrections, confidence/provenance and derived eligibility | Richer effort/context inference requires more evidence |
-| Gym | Run/gym day overlap and shared GymSession domain model | Manual gym logging UI/storage, non-running Health Connect imports and coaching load integration |
-| Assessment | Optional 1–5 km controlled/best-effort choice and manually entered completion | Live GPS recording and sensor capture |
-| Activity history | Calendar list/detail, available metrics, notes/RPE/shoes, laps | Month/week calendar presentation; richer planned-vs-actual comparison |
-| Splits/PBs | Reliable-sample splits, rolling efforts, manual/official results and progression | Health Connect totals cannot provide rolling samples; GPX/runtime recorder pending |
-| Shoes | Local shoes, default/retired state, assignments, mileage and restrained wear guidance | More advanced wear/context analysis |
-| Progress | Recorded-distance and PB/shoe trends with textual equivalents | Recovery/load/prediction graphs require their respective engines |
-| Notifications | Opt-in evening policy, inexact local scheduling and stale-plan guards | No generated workouts until plan generation exists |
-| Backup | Versioned local export and transactional validated replace restore | Merge restore deliberately unsupported |
-| GPX/GPS | Codec/route/recorder extension contracts, compatibility/licence evaluation | Runtime parser/writer, foreground recorder, sensors, route UI |
-| Maps/Wear | Shared models and open-stack architectural direction | MapLibre runtime and Wear OS companion |
-| Training engine | Existing prescriptions/models, generator contract, whole-plan snapshots, invariant diagnostics and five synthetic test-only fixtures | Original complete-plan generation, adaptation, taper and race prediction |
+| Architecture | Existing Kotlin/Compose/Material 3/Nav/ViewModel/StateFlow and Android-independent Java rules preserved | Room and retained native goal form conversion remain optional separate migrations |
+| Storage | Explicit 1→2→3→4 migrations; immutable coaching versions; current pointer; proposals/decisions; strength; response/feedback; atomic reminder mirror | Normalised per-set tables unnecessary until query needs justify them; JSON codecs retain typed structure |
+| Health Connect/baseline | Existing availability/partial consent/import identity/update/delete, observed baseline, manual fallback, assessment, provenance/confidence | Samsung/real-phone verification; no additional gym permissions |
+| Training generation | Original deterministic 5K/10K/HM/marathon/aerobic plans, actual horizon/phases, conservative workload/run-walk, taper, effort guidance | Sophisticated PB-based pace/ability modelling, advanced intensity-retaining taper, NHS C25K |
+| Scheduling | Bounded hard/soft scorer, availability/frequency/race constraints, long/quality spacing, recorded lower-body context | Global optimisation and manual customise-any-week editor |
+| Current plan | Explicit generation/rebuild, preserved versions and evidence/goal snapshot, weekly view/phases/future projections | Rich standalone version-history browser |
+| Adaptation | Raw-evidence single-quality-session proposals, explained options/keep/easy/rest/feasible move, recorded decisions/versions | Automatic long-run modifications, multi-week interruption/fitness restructuring; explicit rebuild available |
+| Run feedback | Planned-vs-actual/response separation, purpose-based component score, unplanned Run Analysis, neutral feedback | Automatic rep/lap matching, terrain/HR-normalised scoring and richer completion response form |
+| Strength | Multiple exercises/ordered sets/custom library, region/effort context, full reproducible PB progression/e1RM, optional UI | Session/library editing UI, lb entry/display, provider import and strength graphs |
+| Load | Duration×RPE with coverage and separate run/strength context | CTL/ATL/TSB modelling deliberately not fabricated |
+| Running progress/shoes | Existing PB/history, splits/rolling-effort gates, results, shoes, weekly-distance summaries | Prediction/readiness engines and advanced graphs |
+| Reminders | Existing local opt-in scheduler now driven by current generated plan, revisions and accepted changes | Real Galaxy/OEM timing and battery tests |
+| Backup | Versioned user export/validated transactional replacement includes coaching graph; old backups accepted | Merge restore deliberately unsupported |
+| Screenshots | Actual code instrumentation fixtures, capture artifacts, API-35 canonical publication and source digest | Human image review and physical-device accessibility checks remain necessary |
+| GPX/GPS/maps/Wear | Existing extension contracts retained | Runtime implementations explicitly outside this iteration |
 
-## Next development sequence
-
-1. Exercise real Health Connect synchronization and consent on physical devices,
-   with manual fallback always available. Correct gaps revealed by vendor data.
-2. Add an original deterministic plan generator behind the existing contract.
-   Pair each rule with whole-plan snapshots for beginner, half-marathon, marathon,
-   aerobic and returning-runner fixtures. Do not substitute fake generated plans.
-3. Add editable week/month scheduling and controlled plan-adjustment decisions.
-   Connect every plan mutation to reminder reconciliation.
-4. Implement live recording/GPX with a reviewed compatible permissive library,
-   then expand retained samples/sensor provenance and routes.
-5. Add conservative multi-signal predictions, pace guidance and transparent
-   readiness components. Never change a target without consent.
-6. Broaden charts and optional watch delivery only where supported by real data.
-
-Before beginner C25K content is added, verify the current NHS published schedule
-and reuse terms. Do not copy commercial plan catalogues, NHS app assets, GPL
-source or another project's safety claims.
-
-Every completed increment must pass domain/schema tests, Android build/lint,
-device tests and migration tests before main. Pending features must remain
-labelled and may not return invented health values, workouts or predictions.
+See TRAINING_ENGINE.md for rules/research/limitations and TEST_BUILD.md for the
+Galaxy S24 evaluation checklist. VERIFICATION.md records results actually observed.
+No scaffold returns fabricated health values, predictions or readiness scores.

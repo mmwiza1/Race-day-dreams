@@ -28,7 +28,7 @@ import org.racedaydreams.domain.activity.ShoeMetricsCalculator
 /** Presentation of retained evidence. Blank metrics are not substituted with predicted values. */
 @Composable
 fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (String) -> Unit,
-                   onShoes: () -> Unit) {
+                   onShoes: () -> Unit, onStrength: () -> Unit = {}) {
     val weeks = remember(state.activities) {
         ActivityAnalytics.weekly(state.activities, LocalDate.now(), ZoneId.systemDefault(), 12)
     }
@@ -41,9 +41,25 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
     var enteringResult by rememberSaveable { mutableStateOf(false) }
     var showAllEntered by rememberSaveable { mutableStateOf(false) }
     CoachPage {
+        if (state.strengthSessions.isNotEmpty()) {
+            CoachHeading("Strength progress")
+            Text("${state.strengthSessions.size} recorded strength sessions; exercise PB progression is separate from running performance.")
+            CoachButton("View Strength progress", onStrength)
+        } else TextButton(onClick=onStrength, modifier=Modifier.heightIn(min=48.dp)) { Text("Optional strength training") }
+
         CoachHeading("Progress from your recorded running")
         Text("These are summaries of retained records, not a claim that unrecorded training did not happen. No readiness score or race prediction is generated.")
         WeeklyDistanceCard(weeks, state)
+        val now = java.time.Instant.now()
+        val load = remember(state.activities, state.strengthSessions) {
+            org.racedaydreams.domain.coaching.TrainingLoadEvidence.window(state.activities, state.strengthSessions, now.minus(java.time.Duration.ofDays(7)), now)
+        }
+        CoachCard {
+            Text("Recent session-RPE context", style = MaterialTheme.typography.titleMedium)
+            Text(load.runningLoad()?.let { "Running: ${kotlin.math.round(it).toInt()} min·RPE from ${load.runsWithRpe()}/${load.runsObserved()} runs in the last seven days" } ?: "Running load: unavailable — no RPE recorded in this window")
+            Text(load.strengthLoad()?.let { "Strength: ${kotlin.math.round(it).toInt()} min·RPE from ${load.strengthWithRpe()}/${load.strengthObserved()} sessions" } ?: "Strength load: unavailable — no RPE recorded in this window")
+            Text("Duration × reported RPE. Missing effort is excluded, not filled with zero. Running and strength loads are separate context signals, not injury predictions.")
+        }
         CoachHeading("Personal bests")
         Text("Results retain their date and source. Official chip times are entered by you; they are not independently verified. Rolling efforts require reliable continuous samples.")
         Button(onClick = { enteringResult = !enteringResult }, enabled = !state.busy,

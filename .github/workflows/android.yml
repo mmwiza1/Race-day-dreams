@@ -1,4 +1,4 @@
-name: Android foundation
+name: Android coaching test build
 on:
   push:
     branches: [main]
@@ -31,6 +31,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - name: Require current canonical screenshots on other branches
+        if: github.head_ref != 'codex/production-coach-test-build'
+        run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
           sh scripts/test-domain.sh
@@ -39,11 +42,6 @@ jobs:
         run: ./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
       - name: Resolved runtime dependency inventory
         run: ./gradlew :app:dependencies --configuration debugRuntimeClasspath
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: race-day-dreams-debug-api-${{ matrix.api-level }}
-          path: app/build/outputs/apk/debug/*.apk
       - name: Enable emulator acceleration
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -56,7 +54,27 @@ jobs:
           arch: x86_64
           target: default
           disable-animations: true
-          script: ./gradlew :app:connectedDebugAndroidTest
+          script: |
+            adb shell wm size 540x1200
+            adb shell wm density 210
+            ./gradlew :app:connectedDebugAndroidTest
+            mkdir -p build/canonical-screenshots
+            adb pull /data/local/tmp/racedaydreams-screenshots/. build/canonical-screenshots/
+      - name: Prepare named test APK
+        run: |
+          mkdir -p build/distributions
+          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.3.0-test1-debug.apk
+      - name: Upload verified debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Race-Day-Dreams-0.3.0-test1-debug-api-${{ matrix.api-level }}
+          path: build/distributions/Race-Day-Dreams-0.3.0-test1-debug.apk
+      - name: Upload actual-build screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-build-screenshots-api-${{ matrix.api-level }}
+          path: build/canonical-screenshots/*.png
+          if-no-files-found: error
       - name: Explain device test failures
         if: failure()
         run: |
@@ -76,3 +94,47 @@ jobs:
           name: android-test-reports-api-${{ matrix.api-level }}
           path: app/build/reports/androidTests/connected/
           if-no-files-found: ignore
+
+  canonical-screenshots:
+    needs: build
+    # This job can only update the explicitly requested test branch, never main.
+    if: github.event_name == 'pull_request' && github.head_ref == 'codex/production-coach-test-build' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: codex/production-coach-test-build
+          fetch-depth: 1
+      - uses: actions/download-artifact@v4
+        with:
+          name: actual-build-screenshots-api-35
+          path: build/screenshots-api-35
+      - name: Commit canonical captures when screenshot source changes
+        env:
+          VERIFIED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$VERIFIED_HEAD" || exit 0
+          digest=$(python3 scripts/screenshot-source.py)
+          previous=$(cat docs/screenshots/source.sha256 2>/dev/null || true)
+          if [ "$digest" = "$previous" ]; then exit 0; fi
+          mkdir -p docs/screenshots
+          cp build/screenshots-api-35/*.png docs/screenshots/
+          echo "$digest" > docs/screenshots/source.sha256
+          echo "$VERIFIED_HEAD" > docs/screenshots/source-commit.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/screenshots
+          git commit -m 'Capture canonical API 35 screenshots from verified test build'
+          git push origin HEAD:codex/production-coach-test-build
+      - name: Reviewable synthetic screenshot bytes
+        # Text-only repository connectors can reconstruct these real PNGs for review.
+        # Only instrumentation fixture renders are logged; no user data is available.
+        run: |
+          python3 - <<'PYSCREEN'
+          from pathlib import Path
+          import base64, json
+          for image in sorted(Path('docs/screenshots').glob('*.png')):
+              print('SCREENSHOT_REVIEW ' + json.dumps({'path': str(image), 'base64': base64.b64encode(image.read_bytes()).decode()}))
+          PYSCREEN

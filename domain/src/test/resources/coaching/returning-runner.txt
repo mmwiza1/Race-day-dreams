@@ -1,0 +1,148 @@
+PHASE FOUNDATION 2026-10-26..2026-11-20
+PHASE ENDURANCE_DEVELOPMENT 2026-11-21..2026-12-15
+PHASE RACE_SPECIFIC 2026-12-16..2027-01-05
+PHASE PEAK 2027-01-06..2027-01-10
+PHASE TAPER 2027-01-11..2027-01-16
+PHASE RACE 2027-01-17..2027-01-17
+2026-10-27|EASY_RUN|null km|PT15M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT5M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-10-29|EASY_RUN|null km|PT15M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT5M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-01|LONG_RUN|null km|PT15M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT5M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-03|EASY_RUN|null km|PT15M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT5M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-05|EASY_RUN|null km|PT15M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT5M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-08|LONG_RUN|null km|PT15M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT5M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-10|EASY_RUN|null km|PT17M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT7M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-12|EASY_RUN|null km|PT17M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT7M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-15|LONG_RUN|null km|PT17M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT7M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-17|EASY_RUN|null km|PT17M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT7M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-19|EASY_RUN|null km|PT17M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT7M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-22|LONG_RUN|null km|PT17M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT7M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-24|EASY_RUN|null km|PT19M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT9M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-26|EASY_RUN|null km|PT19M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT9M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-11-29|LONG_RUN|null km|PT19M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT9M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-01|EASY_RUN|null km|PT19M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT9M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-03|EASY_RUN|null km|PT19M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT9M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-06|LONG_RUN|null km|PT19M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT9M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-08|EASY_RUN|null km|PT21M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT11M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-10|EASY_RUN|null km|PT21M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT11M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-13|LONG_RUN|null km|PT21M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT11M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-15|EASY_RUN|null km|PT21M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT11M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-17|EASY_RUN|null km|PT21M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT11M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-20|LONG_RUN|null km|PT21M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT11M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-22|EASY_RUN|null km|PT23M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT13M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-24|EASY_RUN|null km|PT23M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT13M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-27|LONG_RUN|null km|PT23M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT13M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-29|EASY_RUN|null km|PT23M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT13M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2026-12-31|EASY_RUN|null km|PT23M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT13M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2027-01-03|LONG_RUN|null km|PT23M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT13M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2027-01-05|EASY_RUN|null km|PT25M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT15M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2027-01-07|EASY_RUN|null km|PT25M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT15M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2027-01-10|LONG_RUN|null km|PT25M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT15M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2027-01-12|EASY_RUN|null km|PT25M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT15M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2027-01-14|EASY_RUN|null km|PT25M
+  WARM_UP|null km|PT5M|RPE 2.0|pace null..null
+  RUN|null km|PT15M|RPE 3.0|pace null..null
+  COOL_DOWN|null km|PT5M|RPE 2.0|pace null..null
+2027-01-17|RACE|5.0 km|null
+  RUN|5.0 km|null|RPE null|pace null..null

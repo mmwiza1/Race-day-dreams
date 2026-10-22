@@ -7,31 +7,54 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## Current scope
+## Coaching test build — 0.3.0-test1
 
-The current implementation builds on the original Phase 1 foundation:
+This branch is an installable evaluation build, **not approved for merging to
+main**. It adds original deterministic programmes for 5K, 10K, half marathon,
+marathon and general aerobic fitness; availability-aware scheduling; preserved
+plan versions; runner-controlled coaching proposals; purpose-based Run Scores
+and post-run feedback; optional multi-exercise strength logging, PB history and
+estimated 1RM; and transactional schema-4 persistence/backup.
 
-- Kotlin/Compose/Material 3 navigation and ViewModel/StateFlow presentation, with
-  the tested Java goal-onboarding form retained during incremental migration.
-- Optional Health Connect running import, source identity, atomic checkpoints,
-  updates/deletions, partial-permission handling and recorded-baseline review.
-- Optional manual baseline corrections and manually recorded 1–5 km controlled
-  or best-effort assessments. Assessments do not record GPS in this version.
-- Provenance, baseline confidence and evidence-derived Performance eligibility.
-- Activity history/detail, notes, RPE, laps, and reproducible splits/rolling best
-  efforts when sufficiently reliable cumulative distance samples exist.
-- Personal bests and progression, manually entered/official race results, shoe
-  assignments and mileage, and accessible recorded-distance summaries.
-- Local, opt-in evening preparation reminders tied to stored planned workouts.
-  No plan is generated in this version; without planned workouts there are no
-  workout reminders. Notification time is approximate, not an exact alarm.
-- Versioned user-chosen backup/export and transactional replace restore.
+Existing Health Connect import, automatic baseline review/manual fallback,
+assessments, activity history, splits/laps/rolling PB quality gates, shoes,
+opt-in local reminders and account-free backup remain available.
 
-Health Connect session totals do **not** supply continuous distance samples.
-They therefore do not produce invented kilometre splits or rolling PBs. Missing
-metrics stay unknown. General GPS recording, a GPX runtime adapter, full plan
-and adaptation engines, race predictions, maps and Wear OS remain pending.
-See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the detailed status matrix.
+Plans are created explicitly from Plan. Review your baseline and availability
+first. Future sessions are projections, not guarantees. No plan change is forced,
+missed mileage is never crammed into later days, and your goal is never silently
+changed. This app provides fitness guidance, not medical care.
+
+Health Connect session totals do **not** provide continuous distance samples;
+splits and rolling PBs appear only when supported. Missing metrics stay unknown.
+GPS recording, maps, Wear OS, advanced multi-week adaptation and multi-evidence
+race predictions are pending. See [TEST_BUILD.md](TEST_BUILD.md),
+[TRAINING_ENGINE.md](TRAINING_ENGINE.md) and [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
+
+## Install the test APK
+
+Open the latest successful [draft PR #2 workflow](https://github.com/mmwiza1/Race-day-dreams/pull/2/checks).
+Download the API-35 artifact containing
+`Race-Day-Dreams-0.3.0-test1-debug.apk`, extract it, then install it on your phone.
+GitHub artifact downloads require signing in to GitHub. The app itself has no
+account requirement. Only use an artifact from a successful run for the intended
+branch commit. Debug builds are for evaluation; export a backup before upgrading.
+
+## App Preview
+
+Screenshots are generated from the current Race Day Dreams build using
+instrumentation-only demo data. They are real emulator renders, not UI mockups.
+Canonical API-35 images and their source fingerprint are in
+[docs/screenshots](docs/screenshots). Capture automation commits images only
+after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
+
+| Home | Training plan | Workout detail |
+| --- | --- | --- |
+| ![Home](docs/screenshots/home.png) | ![Training plan](docs/screenshots/training-plan.png) | ![Planned workout](docs/screenshots/planned-workout.png) |
+
+| Feedback | Progress | Optional strength |
+| --- | --- | --- |
+| ![Run feedback](docs/screenshots/run-feedback.png) | ![Progress](docs/screenshots/progress.png) | ![Strength](docs/screenshots/strength.png) |
 
 ## Build and tests
 

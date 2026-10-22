@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 3;
+    static final int VERSION = 4;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -38,6 +38,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         createVersionOne(db);
         migrateOneToTwo(db);
         migrateTwoToThree(db);
+        migrateThreeToFour(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -123,14 +124,27 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V3_SCHEMA_END
     }
 
+    private static void migrateThreeToFour(SQLiteDatabase db) {
+        // V4_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE coach_plan_versions (id TEXT PRIMARY KEY NOT NULL, plan_id TEXT NOT NULL, version INTEGER NOT NULL CHECK(version > 0), payload TEXT NOT NULL, UNIQUE(plan_id, version))");
+        db.execSQL("CREATE TABLE coach_current_plan (id INTEGER PRIMARY KEY CHECK(id = 1), version_id TEXT NOT NULL REFERENCES coach_plan_versions(id))");
+        db.execSQL("CREATE TABLE coach_proposals (id TEXT PRIMARY KEY NOT NULL, base_version_id TEXT NOT NULL REFERENCES coach_plan_versions(id), payload TEXT NOT NULL, decision TEXT, result_version_id TEXT REFERENCES coach_plan_versions(id))");
+        db.execSQL("CREATE TABLE strength_exercises (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE strength_sessions (id TEXT PRIMARY KEY NOT NULL, started_at TEXT NOT NULL, payload TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE run_responses (activity_id TEXT PRIMARY KEY NOT NULL, planned_workout_id TEXT, plan_version_id TEXT REFERENCES coach_plan_versions(id), payload TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE run_feedback (activity_id TEXT PRIMARY KEY NOT NULL, plan_version_id TEXT NOT NULL REFERENCES coach_plan_versions(id), payload TEXT NOT NULL)");
+        // V4_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion != 1 && oldVersion != 2)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 3)) {
             throw new SQLiteException("An explicit migration is required from schema "
                     + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
         if (oldVersion == 1) migrateOneToTwo(db);
-        migrateTwoToThree(db);
+        if (oldVersion <= 2) migrateTwoToThree(db);
+        migrateThreeToFour(db);
     }
 }
