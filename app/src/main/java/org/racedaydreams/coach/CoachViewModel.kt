@@ -27,6 +27,9 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.strength.*
+import org.racedaydreams.data.DevelopmentStore
+import org.racedaydreams.domain.body.*
+import org.racedaydreams.domain.activity.ProviderReconciliation
 import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.SqliteUserPreferencesRepository
@@ -62,9 +65,18 @@ data class CoachUiState(
     val currentPlan: PlanVersion? = null,
     val planVersions: List<PlanVersion> = emptyList(),
     val proposals: List<AdjustmentProposal> = emptyList(),
+    val strengthPlannedDates: Map<String,LocalDate> = emptyMap(),
     val strengthSessions: List<StrengthSession> = emptyList(),
     val exercises: List<StrengthExercise> = StrengthExercise.starters(),
     val runResponses: List<RunExecution> = emptyList(),
+    val weights: List<BodyWeight> = emptyList(),
+    val historicalStrength: List<HistoricalStrengthRecord> = emptyList(),
+    val massUnit: MassUnit = MassUnit.KG,
+    val calendarView: String = "List",
+    val providerPreference: String = "AUTOMATIC",
+    val workoutDecisions: List<WorkoutDecision> = emptyList(),
+    val weeklyReview: WeeklyCoaching.Review? = null,
+    val weeklyDecision: String? = null,
     val milestonesEnabled: Boolean = false,
     val reminderPreferences: ReminderPreferences = ReminderPreferences.defaults(ZoneId.systemDefault()),
     val baseline: RunnerBaseline = RunnerBaseline.empty(Instant.now().minus(Duration.ofDays(84)), Instant.now()),
@@ -83,6 +95,7 @@ data class CoachUiState(
 /** UI state and IO coordination only: analysis and eligibility belong to the domain. */
 class CoachViewModel(application: Application, private val savedState: SavedStateHandle) : AndroidViewModel(application) {
     private val app = application
+    private val development = DevelopmentStore(application)
     private val store = FeatureStore(application)
     private val coaching: CoachingRepository = CoachingStore(application)
     private val profiles = SqliteUserPreferencesRepository(application)
@@ -121,7 +134,8 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         } else emptySet()
         val snapshot = withContext(Dispatchers.IO) {
             val profile = profiles.load().orElse(null)
-            val activities = store.activities()
+            val preference = runCatching { ProviderReconciliation.Preference.valueOf(store.getSetting("provider.preference") ?: "AUTOMATIC") }.getOrDefault(ProviderReconciliation.Preference.AUTOMATIC)
+            val activities = ProviderReconciliation.reconcile(store.activities(), preference).map { it.activity() }
             val results = store.results()
             val manual = store.savedManualBaseline()
             val now = Instant.now()
@@ -138,13 +152,21 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                     if (!coaching.proposalKnown(proposal.id())) coaching.saveProposal(proposal)
                 }
             }
+            val history = coaching.versions()
+            val review = currentPlan?.let { WeeklyCoaching.review(it, history, activities, responses, strength, results, LocalDate.now(), development.interruption(), development.sessionDecisions()) }
+            if (review != null && !development.reviewKnown(review.id())) development.saveReview(review)
             reminders.reconcile()
             CoachUiState(
                 loading = false, profile = profile, activities = activities, results = results,
                 shoes = store.shoes(), assessments = store.assessments(), baseline = baseline, manualBaseline = manual,
-                currentPlan = currentPlan, planVersions = coaching.versions(),
+                currentPlan = currentPlan, planVersions = history,
+                weights = development.weights(), historicalStrength = development.historical(),
+                massUnit = runCatching { MassUnit.valueOf(store.getSetting("mass.unit") ?: "KG") }.getOrDefault(MassUnit.KG),
+                calendarView = store.getSetting("calendar.view") ?: "List", providerPreference = preference.name,
+                workoutDecisions = development.sessionDecisions(),
+                weeklyReview = review, weeklyDecision = review?.let { development.decisionForReview(it) },
                 proposals = coaching.proposals().filter { it.baseVersionId() == currentPlan?.id() },
-                strengthSessions = strength, exercises = coaching.exercises(), runResponses = responses,
+                strengthPlannedDates = development.strengthLinks(), strengthSessions = strength, exercises = coaching.exercises(), runResponses = responses,
                 plannedWorkouts = store.plannedWorkouts(), milestonesEnabled = store.getSetting("milestones.enabled") == "true",
                 reminderPreferences = reminders.preferences(),
                 performanceEligible = eligibility.eligible(), eligibilityReasons = eligibility.reasons(),
@@ -178,13 +200,14 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         mutableState.update { it.copy(loading = false, busy = false, error = message) }
     }
 
-    fun saveProfile(profile: UserProfile) {
+    fun saveProfile(profile: UserProfile, createPlan: Boolean = false) {
         draftWritesSuspended = true
         draftJob?.cancel()
         mutate("Your goal and routine are saved on this device.", onSuccess = {
             savedState.remove<String>("goalDraft")
             draftWritesSuspended = false
             mutableState.update { it.copy(savedProfileRevision = it.savedProfileRevision + 1, draft = null) }
+            if(createPlan) generatePlan()
         }, onFailure = { draftWritesSuspended = false }) {
             val eligible = mutableState.value.performanceEligible
             val retainingPerformance = profiles.load().orElse(null)?.preferences()?.strategy() ==
@@ -241,6 +264,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
 
     fun syncHealth() = mutate {
         val result = health.sync(store)
+        if (HealthConnectGateway.WEIGHT_PERMISSION in health.grantedPermissions()) health.syncWeights(development)
         mutableState.update { it.copy(message = result.message) }
     }
 
@@ -310,10 +334,48 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         coaching.decide(proposal, optionId, completed)
     }
 
-    fun saveStrength(session: StrengthSession, onSuccess: () -> Unit = {}) = mutate("Strength workout saved. PB history is derived from retained sets.", onSuccess) {
-        coaching.saveStrength(session)
+    fun setting(key: String,value: String) = mutate { require(key in setOf("calendar.view","mass.unit","provider.preference")); store.putSetting(key,value) }
+    fun saveWeight(value: Double,date: LocalDate,id: String? = null) = mutate {
+        require(date <= LocalDate.now()) { "A measurement cannot be in the future." }
+        val at = date.atTime(12,0).atZone(ZoneId.systemDefault())
+        val identity=id ?: UUID.randomUUID().toString()
+        development.saveWeight(BodyWeight(identity,state.value.massUnit.toKilograms(value),at.toInstant(),at.offset,"manual",identity,null))
     }
-    fun deleteStrength(id: String) = mutate("Strength workout removed; PB history has been recalculated.") { coaching.deleteStrength(id) }
+    fun deleteWeight(id:String) = mutate { development.deleteWeight(id) }
+    fun saveHistorical(record: HistoricalStrengthRecord,done:()->Unit = {}) = mutate(onSuccess=done) {
+        require(record.date()==null || record.date() <= LocalDate.now()) { "A historical PB cannot be in the future." }
+        development.saveHistorical(record)
+    }
+    fun deleteHistorical(id:String) = mutate { development.deleteHistorical(id) }
+    fun weeklyDecision(choice:String) = mutate {
+        val review=state.value.weeklyReview ?: throw IllegalArgumentException("No review available.")
+        development.decide(review,choice,coaching,coaching.responses().mapNotNull{it.plannedWorkoutId()}.toSet())
+    }
+    fun reportInterruption(from: LocalDate,returned: LocalDate,reason:String) = mutate {
+        require(returned<=LocalDate.now()) { "Return date cannot be in the future." }
+        development.saveInterruption(WeeklyCoaching.Interruption(from,returned,reason))
+    }
+
+    fun changeWorkout(workoutId:String,movedTo:LocalDate? = null) = mutate {
+        val current=coaching.current() ?: throw IllegalArgumentException("No current plan.")
+        val workout=current.plan().workouts().firstOrNull{it.id()==workoutId} ?: throw IllegalArgumentException("Workout not found.")
+        require(workout.category()!=org.racedaydreams.domain.WorkoutCategory.RACE) { "Change your race date through goal setup." }
+        require(coaching.responses().none{it.plannedWorkoutId()==workoutId} && store.activities().none{it.plannedWorkoutId()==workoutId}) { "Completed sessions cannot be changed." }
+        if(movedTo!=null) {
+            require(movedTo>=LocalDate.now() && movedTo<=current.plan().endDate() && current.goalSnapshot().preferences().runningDays().contains(movedTo.dayOfWeek)) { "Choose an available running day within this programme." }
+            require(current.plan().workouts().none{it.id()!=workoutId&&it.date()==movedTo}) { "A run is already planned on that date." }
+            val monday=movedTo.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY))
+            require(current.plan().workouts().count{it.id()!=workoutId&&it.date()>=monday&&it.date()<monday.plusWeeks(1)}<current.goalSnapshot().preferences().runsPerWeek()) { "This move would exceed your maximum runs/week." }
+        }
+        val workouts=current.plan().workouts().mapNotNull { w->if(w.id()!=workoutId) w else if(movedTo==null) null else PlannedWorkout(w.id(),movedTo,w.category(),w.distanceKm(),w.duration(),w.segments(),"Moved by the runner. "+w.note()) }.sortedBy{it.date()}
+        val next=PlanVersion(UUID.randomUUID().toString(),current.planId(),current.version()+1,Instant.now(),if(movedTo==null) "Runner skipped a session" else "Runner moved a session",current.goalSnapshot(),current.evidenceSnapshot(),org.racedaydreams.domain.TrainingPlan(current.planId(),current.plan().startDate(),current.plan().endDate(),current.plan().phases(),workouts))
+        coaching.transaction { coaching.saveCurrent(next);development.saveSessionDecision(WorkoutDecision(UUID.randomUUID().toString(),workoutId,current.id(),workout.date(),movedTo,if(movedTo==null)WorkoutDecision.Kind.SKIPPED else WorkoutDecision.Kind.MOVED,Instant.now())) }
+    }
+
+    fun saveStrength(session: StrengthSession, onSuccess: () -> Unit = {}, plannedDate: LocalDate? = null) = mutate("Strength workout saved. PB history is derived from retained sets.", onSuccess) {
+        coaching.transaction { coaching.saveStrength(session); if(plannedDate!=null) development.linkStrength(session.id(),plannedDate) }
+    }
+    fun deleteStrength(id: String) = mutate("Strength workout removed; PB history has been recalculated.") { coaching.transaction { coaching.deleteStrength(id);development.deleteStrengthLink(id) } }
     fun saveExercise(exercise: StrengthExercise) = mutate("Exercise saved. Recorded sessions retain their original exercise definition.") { coaching.saveExercise(exercise) }
 
     fun linkRun(activityId: String, versionId: String, workoutId: String, reps: Int? = null) = mutate("Run linked to its preserved prescription.") {

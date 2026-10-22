@@ -63,7 +63,7 @@ public final class CoachingStoreTest extends AndroidTestCase {
     public void testVersionThreeMigrationRetainsExistingActivityAndShoe(){
         var shoe=new Shoe("shoe","Brand","Model",LocalDate.now().minusDays(20),0.0,false,"",true);
         features.saveShoe(shoe);ProfileDatabase.get(getContext()).close();
-        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){CoachingStore.clear(db);for(String table:CoachingStore.TABLES)db.execSQL("DROP TABLE "+table);db.setVersion(3);}
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){db.execSQL("DROP TABLE coach_evidence");CoachingStore.clear(db);for(String table:CoachingStore.TABLES)db.execSQL("DROP TABLE "+table);db.setVersion(3);}
         assertEquals(shoe,features.shoes().get(0));assertNull(coaching.current());assertTrue(coaching.strength().isEmpty());
     }
 }

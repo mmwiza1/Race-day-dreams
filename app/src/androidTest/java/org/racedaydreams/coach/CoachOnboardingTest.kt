@@ -170,7 +170,8 @@ class CoachOnboardingTest {
         waitForText("Progress from your recorded running")
         compose.onNodeWithText("Add a race or manual result").performScrollTo().performClick()
         field("Finishing time (MM:SS or H:MM:SS)").performScrollTo().performTextInput("26:00")
-        field("Result date (YYYY-MM-DD)").performScrollTo().performTextReplacement("2025-01-12")
+        compose.onNodeWithText("Result date: ${friendlyDate(LocalDate.now())}").performScrollTo().performClick()
+        compose.onNodeWithText("Choose date").performClick()
         field("Race or event name (optional)").performScrollTo().performTextInput("Synthetic fixture 5K")
         compose.onNodeWithText("This is my official chip time").performScrollTo().performClick()
         compose.onNodeWithText("Save result").performScrollTo().performClick()
@@ -181,7 +182,7 @@ class CoachOnboardingTest {
         assertEquals(Duration.ofMinutes(26), result.duration())
         assertEquals(ResultSource.OFFICIAL_CHIP, result.source())
         assertEquals("Synthetic fixture 5K", result.eventName())
-        assertEquals(LocalDate.of(2025, 1, 12), result.date())
+        assertEquals(LocalDate.now(), result.date())
         assertNull("Entering an official result must not invent a linked activity", result.activityId())
         assertTrue(FeatureStore(context).activities().isEmpty())
 
@@ -232,7 +233,7 @@ class CoachOnboardingTest {
         compose.onNodeWithText("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
             .performScrollTo().assertIsDisplayed()
 
-        compose.onNodeWithText("Settings").performClick()
+        compose.onNodeWithText("⚙ Settings").performClick()
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         waitNativeText(R.string.onboarding_edit_title)
         nativeContinue(2)

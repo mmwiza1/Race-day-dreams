@@ -28,7 +28,7 @@ is not available to or used by production code.
 CI tests API 28/35/36, uploads each API's captures and the named APK **after tests
 pass**, then publishes canonical API-35 PNGs only when all matrix jobs succeed.
 The publisher is restricted to the same-repository
-`codex/production-coach-test-build` PR branch and cannot write main. A changed
+`codex/weekly-coach-and-simple-ux` PR branch and cannot write main. A changed
 screenshot-source fingerprint (including rendering workflow settings) causes recapture; an unchanged digest avoids
 commit loops. `source-commit.txt` identifies the tested source commit.
 

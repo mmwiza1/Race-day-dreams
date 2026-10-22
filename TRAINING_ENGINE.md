@@ -1,4 +1,4 @@
-# Original coaching engine — 0.3.0-test1
+# Original coaching engine — 0.4.0-test1
 
 The app recommends. The runner decides. The plan adapts.
 
@@ -18,8 +18,8 @@ race. No race goal or recorded activity is changed by generation.
 Supported goals: 5K, 10K, half marathon, marathon and general aerobic fitness;
 Finish, Target Time and Maximum Performance remain runner-owned choices.
 Without a dated event the engine generates a clearly projected 12-week rolling
-programme. A dated event uses its actual horizon, up to two years. Past dates
-and race dates outside availability are rejected with an actionable message,
+programme. A dated event uses its actual horizon, including multi-year events. Past dates
+and explicitly blocked one-off race dates are rejected with an actionable message,
 leaving the existing plan intact.
 
 ### Workload rules (product heuristics, not scientific safety thresholds)
@@ -118,7 +118,7 @@ fitness; there is no fabricated outcome/readiness/prediction.
 
 ## Run Score and feedback
 
-`RunScoreEngine` rule version 1 scores planned **purpose**, not raw speed.
+`RunScoreEngine` rule version 2 scores planned **purpose**, not raw speed.
 Components are completion (weight 3), effort match (4), and available pace,
 pacing/objective, reps and recoveries (2 each). Missing components are excluded,
 not zero-filled. Completion alone does not produce a numeric score. The displayed
@@ -191,3 +191,75 @@ Zone 2, beginner fallback, eleven readable complete-programme regression fixture
 raw-evidence proposals and runner decisions, scores without HR/RPE, intervals,
 progression, strength PB/history/deletion/e1RM and workload coverage. The old
 synthetic regression fixtures remain as independent validation utilities.
+
+## 0.4 weekly review and multi-week decisions
+
+`WeeklyCoaching` evaluates the last fully finished Monday–Sunday week and a rolling
+four-week context. It uses actual linked activities, optional RPE, qualified
+long-run samples, retained prescriptions, recorded strength sets and comparable
+results. Run Score and body weight are deliberately absent from its inputs.
+The ViewModel recomputes on evidence refresh/mutation off the main thread, not on
+screen opening. Reviews, replacement prescriptions, explicit moves/skips and
+runner decisions are retained in schema five and in local backups.
+
+Most reviews offer only **Keep original plan / no adjustment required**. Existing
+planned progression continues; a good week does not manufacture extra mileage.
+Repeated high effort (three sessions), or rising mean RPE (at least three recent
+and two earlier responses, +1.5) together with two shortened sessions (<80%), or
+two qualified fading long runs can suggest holding/reducing the next two weeks.
+Hold caps future weekly distance to the reviewed week's observed distance;
+reduce uses 80% of that ceiling. Neither adds distance elsewhere. These thresholds
+are transparent product heuristics, not clinically validated risk limits.
+
+Three or more distinct weeks with a weekday missed/moved produce a routine-review
+suggestion. Moved-and-completed runs are distinguished from unrecorded and
+explicitly skipped sessions. The runner can edit their normal days in Settings;
+there is no automatic recurring-availability rewrite. Manual moves validate normal
+availability, race boundaries, duplicate dates and maximum frequency. Skips/moves
+create plan versions and refresh reminders. Completed prescriptions are protected.
+
+A >5% improvement over the best comparable non-rolling result in the prior six
+months, plus complete recent planned running and several controlled RPE responses,
+can flag a major performance review. Incidental rolling efforts alone cannot.
+Where quality segments already have pace ranges, an explicit option previews a
+3% faster range for the next four weeks. Easy/recovery ranges and the race target
+never change. This is a bounded heuristic, not a race prediction; richer
+terrain/effort-matched modelling and assessment-specific confidence remain future
+work. If no numerical quality ranges exist, the app reports the evidence without
+inventing ranges.
+
+## Durability and return guidance
+
+`LongRunDurability` requires >=30 minutes, continuous qualified distance/time
+samples covering the run, and the shared gap/jump/total-agreement gates. It
+interpolates the time midpoint, compares seconds/metre between halves and, only
+with >=80% sensor coverage per half, reports HR-to-pace and cadence changes.
+HR-to-pace drift = `(HR2 × pace2 / (HR1 × pace1) − 1) × 100`.
+Pace fade above 8% is a review flag, not proof of fatigue: terrain, weather,
+intention and pauses can explain changes. Missing/corrupt samples mean
+**insufficient evidence**, never totals-derived split/durability estimates.
+Late-run RPE by timestamp is not currently collected; session RPE remains separate.
+
+An observed absence or explicitly reported illness/injury/life interruption of
+>=14 days can propose a three-week easy return bridge. First-week distance is
+65% of existing prescriptions (50% after >=28 days), followed by 75% and 85%.
+Frequency does not increase, quality is replaced by easy effort, race day is
+retained, and nothing is applied without runner choice. A one-week gap alone
+need not change training. This is return-to-training guidance, not medical
+clearance. User reports do not diagnose conditions or authorise exercise with
+concerning symptoms.
+
+Evidence channels remain separate: volume, intensity, durability, performance,
+strength interference, consistency and subjective response. There is no universal
+readiness number. Recorded hard lower-body sessions can affect any upcoming
+non-race demanding workout, including long runs. Planned strength availability
+is never treated as an actually completed hard session.
+
+Race day overrides recurring weekday availability, but not an explicitly blocked
+one-off date. Long horizons retain early foundation work, with quality limited
+to the final 140 days. Distant foundation volume is capped at baseline +6 km/week
+and long-run progression at +3 km, with the later build index reset so crossing
+the 196-day boundary cannot jump straight to peak mileage. Horizons beyond 280 days allocate phases backwards from
+the race. The generator guards obviously erroneous dates beyond a century;
+very distant projections are not fitness promises. Race/time-trial Run Scores
+allow RPE 9–10; easy/recovery scores still reward controlled execution.

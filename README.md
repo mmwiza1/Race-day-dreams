@@ -7,38 +7,37 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## Coaching test build — 0.3.0-test1
+## Coaching increment — 0.4.0-test1
 
-This branch is an installable evaluation build, **not approved for merging to
-main**. It adds original deterministic programmes for 5K, 10K, half marathon,
-marathon and general aerobic fitness; availability-aware scheduling; preserved
-plan versions; runner-controlled coaching proposals; purpose-based Run Scores
-and post-run feedback; optional multi-exercise strength logging, PB history and
-estimated 1RM; and transactional schema-4 persistence/backup.
+Original deterministic 5K, 10K, half-marathon, marathon and general aerobic plans
+now have raw-evidence weekly reviews, bounded multi-week choices, repeated-day
+patterns, explicit move/skip history, sample-qualified durability and return
+bridges. The runner previews and decides changes. Race day can fall outside
+normal running weekdays, and long horizons retain an early foundation.
 
-Existing Health Connect import, automatic baseline review/manual fallback,
-assessments, activity history, splits/laps/rolling PB quality gates, shoes,
-opt-in local reminders and account-free backup remain available.
+Five primary tabs: Home, Plan, Calendar, Progress and Strength. Settings is in the
+app bar. Setup uses concise choices and optional explanations; dates use natural
+UK ordering and pickers. Calendar offers remembered List/Week/Month views.
+Strength has structured sets, automatic workout PB history, historical PBs with
+unknown/approximate dates, routine-session links and kg/lb. Progress includes
+neutral body-weight measurements/graphs and separate optional Health Connect
+weight access. Existing running history/PBs/splits, shoes, reminders and account-free
+backup remain available, with non-destructive schema five and backup envelope three.
 
-Plans are created explicitly from Plan. Review your baseline and availability
-first. Future sessions are projections, not guarantees. No plan change is forced,
-missed mileage is never crammed into later days, and your goal is never silently
-changed. This app provides fitness guidance, not medical care.
-
-Health Connect session totals do **not** provide continuous distance samples;
-splits and rolling PBs appear only when supported. Missing metrics stay unknown.
-GPS recording, maps, Wear OS, advanced multi-week adaptation and multi-evidence
-race predictions are pending. See [TEST_BUILD.md](TEST_BUILD.md),
-[TRAINING_ENGINE.md](TRAINING_ENGINE.md) and [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
+No fake samples, readiness or predictions are generated. Health Connect totals
+cannot create splits. The Samsung direct provider is an **unavailable experimental
+boundary**, not operational ingestion; no proprietary SDK ships. See
+[Samsung constraints](docs/SAMSUNG_PROVIDER.md), [training rules](TRAINING_ENGINE.md),
+[feature status](DEVELOPMENT_PLAN.md) and [phone checklist](TEST_BUILD.md).
 
 ## Install the test APK
 
-Open the latest successful [draft PR #2 workflow](https://github.com/mmwiza1/Race-day-dreams/pull/2/checks).
-Download the API-35 artifact containing
-`Race-Day-Dreams-0.3.0-test1-debug.apk`, extract it, then install it on your phone.
-GitHub artifact downloads require signing in to GitHub. The app itself has no
-account requirement. Only use an artifact from a successful run for the intended
-branch commit. Debug builds are for evaluation; export a backup before upgrading.
+Use a successful [GitHub Actions run](https://github.com/mmwiza1/Race-day-dreams/actions)
+for the intended main commit. Its API-35 artifact contains
+`Race-Day-Dreams-0.4.0-test1-debug.apk`. Extract the ZIP and install the APK.
+GitHub artifact downloads require GitHub sign-in; the app requires no account.
+Export a local backup before upgrading. [VERIFICATION.md](VERIFICATION.md) records
+actual CI and merge results; an open PR is not evidence of a successful APK.
 
 ## App Preview
 
@@ -55,6 +54,14 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 | Feedback | Progress | Optional strength |
 | --- | --- | --- |
 | ![Run feedback](docs/screenshots/run-feedback.png) | ![Progress](docs/screenshots/progress.png) | ![Strength](docs/screenshots/strength.png) |
+
+| Setup | Weekly review | Calendar week | Calendar month |
+| --- | --- | --- | --- |
+| ![Setup](docs/screenshots/onboarding.png) | ![Weekly coaching](docs/screenshots/weekly-review.png) | ![Week](docs/screenshots/calendar-week.png) | ![Month](docs/screenshots/calendar-month.png) |
+
+| Body weight | Strength records | Provider options |
+| --- | --- | --- |
+| ![Actual weight measurements](docs/screenshots/body-weight.png) | ![Strength PB provenance](docs/screenshots/strength-pbs.png) | ![Optional provider settings](docs/screenshots/data-sources.png) |
 
 ## Build and tests
 

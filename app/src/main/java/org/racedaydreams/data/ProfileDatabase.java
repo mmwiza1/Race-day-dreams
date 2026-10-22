@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 4;
+    static final int VERSION = 5;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -39,6 +39,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateOneToTwo(db);
         migrateTwoToThree(db);
         migrateThreeToFour(db);
+        migrateFourToFive(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -136,15 +137,22 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V4_SCHEMA_END
     }
 
+    private static void migrateFourToFive(SQLiteDatabase db) {
+        // V5_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE coach_evidence (kind TEXT NOT NULL CHECK(kind IN ('WEIGHT','HISTORICAL_PB','WEEKLY_REVIEW','REVIEW_DECISION','INTERRUPTION','STRENGTH_LINK','SESSION_DECISION')), id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(kind,id))");
+        // V5_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 3)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 4)) {
             throw new SQLiteException("An explicit migration is required from schema "
                     + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
         if (oldVersion == 1) migrateOneToTwo(db);
         if (oldVersion <= 2) migrateTwoToThree(db);
-        migrateThreeToFour(db);
+        if (oldVersion <= 3) migrateThreeToFour(db);
+        migrateFourToFive(db);
     }
 }

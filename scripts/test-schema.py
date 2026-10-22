@@ -63,7 +63,7 @@ def schema_statements(version):
             for statement in statements]
 
 
-def create_schema(connection, version=4, frozen=False):
+def create_schema(connection, version=5, frozen=False):
     connection.execute("PRAGMA foreign_keys = ON")
     with connection:
         connection.execute("BEGIN")
@@ -75,11 +75,11 @@ def create_schema(connection, version=4, frozen=False):
         connection.execute(f"PRAGMA user_version = {version}")
 
 
-def migrate_to_latest(connection, target=4):
+def migrate_to_latest(connection, target=5):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if old not in (1, 2, 3) or target != 4:
-        raise ValueError("Only explicit version 1/2/3 to 4 paths are supported")
+    if old not in (1, 2, 3, 4) or target != 5:
+        raise ValueError("Only explicit version 1/2/3/4 to 5 paths are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -211,7 +211,7 @@ class FeatureSchemaTest(unittest.TestCase):
             "SELECT name FROM sqlite_master WHERE type='index'"
         )}
         self.assertTrue({"activities_start", "shoes_one_default", "preserved_efforts_source"}.issubset(indexes))
-        self.assertEqual(4, self.db.execute("PRAGMA user_version").fetchone()[0])
+        self.assertEqual(5, self.db.execute("PRAGMA user_version").fetchone()[0])
 
     def test_source_record_identity_is_unique_but_other_provider_can_share_id(self):
         self.add_activity()
@@ -344,7 +344,7 @@ class MigrationSchemaTest(unittest.TestCase):
         before = self.snapshot()
         migrate_to_latest(self.db)
         self.assertEqual(before, self.snapshot())
-        self.assertEqual(4, self.db.execute("PRAGMA user_version").fetchone()[0])
+        self.assertEqual(5, self.db.execute("PRAGMA user_version").fetchone()[0])
         self.db.execute("INSERT INTO shoes VALUES ('new-shoe','{}',1)")
         self.assertEqual(1, self.db.execute("SELECT COUNT(*) FROM shoes").fetchone()[0])
 
@@ -415,7 +415,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
                 try:
                     before = self.snapshot(db)
                     migrate_to_latest(db)
-                    self.assertEqual(4, db.execute("PRAGMA user_version").fetchone()[0])
+                    self.assertEqual(5, db.execute("PRAGMA user_version").fetchone()[0])
                     self.assertEqual(before, {key: value for key, value in self.snapshot(db).items() if key in before})
                     columns = {row[1]: row for row in db.execute("PRAGMA table_info(activity_annotations)")}
                     self.assertEqual(0, columns['notes'][3])
@@ -459,7 +459,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,4), (4,4), (99,4), (1,2), (2,2), (1,5), (2,5)):
+        for source, target in ((0,5), (5,5), (99,5), (1,2), (2,2), (1,6), (2,6)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -485,7 +485,7 @@ class CoachingSchemaTest(unittest.TestCase):
             migrate_to_latest(db)
             self.assertEqual([('existing','retained')], db.execute("SELECT * FROM settings").fetchall())
             self.assertEqual([], db.execute("PRAGMA foreign_key_check").fetchall())
-            self.assertEqual(4, db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual(5, db.execute("PRAGMA user_version").fetchone()[0])
         finally:
             db.close()
 
@@ -518,6 +518,43 @@ class CoachingSchemaTest(unittest.TestCase):
             self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='coach_plan_versions'").fetchone())
         finally:
             db.close()
+
+
+class EvidenceSchemaTest(unittest.TestCase):
+    def test_all_prior_versions_upgrade_and_preserve_profile(self):
+        for version in (1,2,3,4):
+            db=sqlite3.connect(":memory:")
+            try:
+                create_schema(db,version=version)
+                db.execute("INSERT INTO user_profile VALUES (1,0)")
+                db.commit()
+                migrate_to_latest(db)
+                self.assertEqual([(1,0)],db.execute("SELECT * FROM user_profile").fetchall())
+                self.assertEqual(5,db.execute("PRAGMA user_version").fetchone()[0])
+                self.assertEqual([],db.execute("PRAGMA foreign_key_check").fetchall())
+            finally: db.close()
+
+    def test_kind_and_identity_constraints(self):
+        db=sqlite3.connect(":memory:")
+        try:
+            create_schema(db)
+            db.execute("INSERT INTO coach_evidence VALUES ('WEIGHT','w','{}')")
+            with self.assertRaises(sqlite3.IntegrityError): db.execute("INSERT INTO coach_evidence VALUES ('WEIGHT','w','{}')")
+            with self.assertRaises(sqlite3.IntegrityError): db.execute("INSERT INTO coach_evidence VALUES ('UNKNOWN','x','{}')")
+            db.execute("INSERT INTO coach_evidence VALUES ('HISTORICAL_PB','w','{}')")
+        finally: db.close()
+
+    def test_five_migration_rolls_back_without_touching_four(self):
+        db=sqlite3.connect(":memory:")
+        try:
+            create_schema(db,version=4)
+            db.execute("INSERT INTO settings VALUES ('retained','yes')")
+            db.execute("CREATE TABLE coach_evidence (collision TEXT)")
+            db.commit()
+            with self.assertRaises(sqlite3.OperationalError): migrate_to_latest(db)
+            self.assertEqual(4,db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual([('retained','yes')],db.execute("SELECT * FROM settings").fetchall())
+        finally: db.close()
 
 
 if __name__ == "__main__":

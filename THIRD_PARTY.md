@@ -95,3 +95,13 @@ APK size, Java-runtime and maintenance costs. No TrainingPlanKit, TLR, Open-Coac
 Long Run Hybrid Coach or other reference-project source/schedule data was copied.
 Scientific/formula references are documented in TRAINING_ENGINE.md; arithmetic
 and product heuristics are not presented as independently validated coaching.
+
+
+## 0.4 increment
+
+No runtime, build or screenshot dependencies added. Charts, scheduling, review,
+durability, reconciliation and mass conversions are original project code.
+Samsung Health Data SDK 1.1.0 was investigated through official documentation,
+not incorporated. No Samsung binary/source/licence is bundled or relicensed MIT;
+redistribution permission is not established. Partnership/signing restrictions
+and links are documented in docs/SAMSUNG_PROVIDER.md. Global minSdk remains 28.

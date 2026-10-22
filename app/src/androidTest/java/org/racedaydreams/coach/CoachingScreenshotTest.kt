@@ -40,6 +40,9 @@ class CoachingScreenshotTest {
         store.putSetting("baseline.reviewed","true")
         store.saveManualBaseline(ManualBaselineInput(25.0,4.0,12.0,Duration.ofMinutes(27),null,null,390.0,8))
         store.saveShoe(Shoe("demo-shoe","Demo","Daily trainer",today.minusDays(80),120000.0,false,"Test-only screenshot fixture",true))
+        val evidence=DevelopmentStore(context)
+        for(i in 0..5) {val at=today.minusWeeks((5-i).toLong()).atTime(12,0).atOffset(ZoneOffset.UTC);evidence.saveWeight(org.racedaydreams.domain.body.BodyWeight("demo-weight-$i",75.0+i*.15,at.toInstant(),at.offset,"manual","demo-weight-$i",null))}
+        evidence.saveHistorical(HistoricalStrengthRecord("demo-historical",StrengthExercise.starters().first(),75.0,5,null,HistoricalStrengthRecord.DatePrecision.UNKNOWN,"Before using the app; test-only fixture"))
         val now=Instant.now()
         val baseline=RunnerBaseline(25.0,4.0,12.0,45.0,390.0,8,Duration.ofMinutes(27),null,null,24,8,now.minus(Duration.ofDays(84)),now,now.minus(Duration.ofDays(1)),BaselineConfidence.STRONG,emptyMap(),emptyList(),emptyList(),emptyList())
         val plan=OriginalTrainingPlanGenerator().generate(profile,baseline,today.minusWeeks(2).with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
@@ -62,18 +65,25 @@ class CoachingScreenshotTest {
     @Test fun capturesCurrentBuildScreensAndVerifiesCoachingNavigation() {
         scenario=ActivityScenario.launch(CoachActivity::class.java)
         await("Your running, your way");capture("home")
+        click("Weekly coaching review");await("Recommendation");capture("weekly-review");pressBack()
         click("Plan");await("Your training programme");capture("training-plan")
         compose.onAllNodesWithText("View workout and purpose")[0].performScrollTo().performClick()
         await("Workout structure");capture("planned-workout")
         pressBack();click("Calendar");await("Activity calendar");capture("history")
+        click("Week");await("Training calendar");capture("calendar-week")
+        click("Month");await(LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("MMMM uuuu",java.util.Locale.UK)));capture("calendar-month")
+        click("List");await("Activity calendar")
         // Open the first real retained activity through the Calendar screen.
         compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
         await("Run detail");capture("activity-detail")
         alignHeading("Run Score and feedback");capture("run-feedback")
-        pressBack();click("Progress");await("Strength progress");capture("progress")
-        click("View Strength progress");await("Latest sessions");capture("strength")
-        pressBack();click("Settings");await("Settings")
-        capture("settings")
+        pressBack();click("Progress");await("Strength progress");capture("progress");alignHeading("Body weight");capture("body-weight")
+        compose.onNodeWithText("View Strength progress").performScrollTo().performClick();await("Latest sessions");capture("strength");alignHeading("Exercise progress and PB history");capture("strength-pbs")
+        pressBack();click("⚙ Settings");await("Settings")
+        capture("settings");alignHeading("Activity data source");capture("data-sources")
+        compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
+        compose.waitForIdle();capture("onboarding")
+        pressBack();click("⚙ Settings");await("Settings")
         compose.onNodeWithText("Shoes and mileage").performScrollTo().performClick();await("Your shoes");capture("shoes")
     }
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
@@ -92,6 +102,8 @@ class CoachingScreenshotTest {
         // Compose idleness can precede SurfaceFlinger presenting the last frame.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         android.os.SystemClock.sleep(200)
+        val semantics=compose.onRoot(useUnmergedTree=true).printToString()
+        Assert.assertFalse("Raw ISO date in normal UI",Regex("Text = .*\\b[0-9]{4}-[0-9]{2}-[0-9]{2}").containsMatchIn(semantics))
         val bitmap=InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
         Assert.assertNotNull(bitmap)
         val dir=File(context.getExternalFilesDir(null),"screenshots");dir.mkdirs()

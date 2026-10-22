@@ -31,16 +31,17 @@ public final class AdaptiveCoachingEngine {
             }
         }
         final boolean repeated = highEffort >= 2;
-        var next = version.plan().workouts().stream().filter(w -> !w.date().isBefore(today) && w.date().isBefore(today.plusDays(7))
-            && !completed.contains(w.id()) && w.category() != WorkoutCategory.RACE && isQuality(w.category())).findFirst().orElse(null);
-        if (next == null) return Optional.empty();
+        final boolean lowHard = lowAndHard;
         var hardDates = StrengthAnalytics.hardLowerBodyDates(strength);
+        var next = version.plan().workouts().stream().filter(w -> !w.date().isBefore(today) && w.date().isBefore(today.plusDays(7))
+            && !completed.contains(w.id()) && w.category() != WorkoutCategory.RACE && isDemanding(w.category()) && (repeated || lowHard || hardDates.contains(w.date().minusDays(1)))).findFirst().orElse(null);
+        if (next == null) return Optional.empty();
         boolean gym = hardDates.contains(next.date().minusDays(1));
         if (!gym && !repeated && !lowAndHard) return Optional.empty();
         if (repeated) evidence.add("At least two recent linked sessions had reported RPE above their intended range.");
         if (lowAndHard) evidence.add("A recent linked run combined less than 75% of planned distance with RPE 8 or higher.");
         if (gym) {
-            evidence.add("Recorded hard lower-body work falls the day before this quality session.");
+            evidence.add("Recorded hard lower-body work falls the day before this demanding session.");
             strength.stream().filter(s -> s.startedAt().atOffset(s.offset()).toLocalDate().equals(next.date().minusDays(1)))
                 .forEach(s -> evidenceIds.add(s.id() + ":" + s));
         }
@@ -60,7 +61,7 @@ public final class AdaptiveCoachingEngine {
                 var monday = day.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
                 long count = version.plan().workouts().stream().filter(w -> !w.id().equals(next.id()) && !w.date().isBefore(monday) && w.date().isBefore(monday.plusWeeks(1))).count();
                 if (count >= version.goalSnapshot().preferences().runsPerWeek()) continue;
-                options.add(0, new AdjustmentProposal.Option("move", "Move quality session to " + day + " (recommended)", AdjustmentProposal.Action.REPLACE,
+                options.add(0, new AdjustmentProposal.Option("move", "Move demanding session to " + day.format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu",java.util.Locale.UK)) + " (recommended)", AdjustmentProposal.Action.REPLACE,
                     new PlannedWorkout(next.id(), day, next.category(), next.distanceKm(), next.duration(), next.segments(),
                         "Runner accepted a move after recorded lower-body work. " + next.note())));
                 break;

@@ -30,6 +30,10 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit) {
             Text("Recorded runs · list view", Modifier.padding(top = 8.dp))
             Text("Your week can change. Recorded activities are retained independently of planned workouts.", Modifier.padding(top = 8.dp))
         }
+        if(state.strengthSessions.isNotEmpty()) item { CoachHeading("Strength history") }
+        items(state.strengthSessions.sortedByDescending { it.startedAt() },key={"strength:"+it.id()}) { session ->
+            CoachCard { Text("${friendlyDate(session.startedAt().atOffset(session.offset()).toLocalDate())} · Strength ✓");Text("${session.duration().toMinutes()} min · ${session.exercises().size} exercises");session.exercises().forEach { Text(it.exercise().name()) } }
+        }
         if (groups.isEmpty()) item { Text("No completed runs have been added. Connect Health Connect or enter an optional completed assessment to begin your history.") }
         groups.forEach { (date, activities) ->
             item(key = "date:$date") { Text(date, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() }) }
@@ -39,7 +43,14 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit) {
                         Text(if (activity.source().provider() == "assessment") "Assessment run" else "Recorded run", style = MaterialTheme.typography.titleMedium)
                         Text(activity.distanceMetres()?.let { formatDistance(it, state) } ?: "Distance unavailable")
                         Text("Elapsed: ${PaceCalculator.formatTime(activity.elapsedTime())}")
-                        Text("Source: ${activity.source().provider()}${activity.source().originPackage()?.takeIf { it.isNotBlank() }?.let { " · $it" } ?: ""}")
+Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
+                        val score = remember(activity,state.runResponses,state.planVersions) {
+                            val response=state.runResponses.firstOrNull{it.activityId()==activity.id()}
+                            val prescription=state.planVersions.firstOrNull{it.id()==response?.planVersionId()}?.plan()?.workouts()?.firstOrNull{it.id()==response?.plannedWorkoutId()}
+                            if(prescription==null) null else org.racedaydreams.domain.coaching.RunScoreEngine.analyse(prescription,activity,response).score()
+                        }
+                        score?.let{Text("Run Score $it/10")}
+                        activity.distanceMetres()?.takeIf{it>0}?.let{Text("${formatPaceSeconds(activity.elapsedTime().toMillis()/1000.0/(it/1000))}/km")}
                         Text("Completed · tap for details")
                     }
                 }
@@ -67,7 +78,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
     }
     CoachPage {
         CoachHeading(if (assessment != null) "Assessment run" else "Run detail")
-        Text(activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).toString())
+        Text(activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM uuuu · HH:mm XXX", java.util.Locale.UK)))
         if (activity.startOffset() == null) Text("The source did not provide a time-zone offset; this time is shown explicitly in UTC.")
         CoachCard {
             activity.distanceMetres()?.let { Text(formatDistance(it, state), style = MaterialTheme.typography.headlineMedium) }
@@ -83,9 +94,11 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             activity.elevationGainMetres()?.let { Text("Recorded elevation gain: ${decimal(it)} m") }
             activity.cadence()?.let { Text("Recorded cadence: ${decimal(it)} steps/min") }
             activity.rpe()?.let { Text("Manually entered effort: ${decimal(it)}/10") }
-            Text("Source: ${activity.source().provider()}")
-            activity.source().originPackage()?.takeIf { it.isNotBlank() }?.let { Text("Origin app: $it") }
-            Text("Source record: ${activity.source().recordId()}")
+            val durability = remember(activity) { org.racedaydreams.domain.activity.LongRunDurability.analyse(activity) }
+            WhyDetails(if(durability.sufficient()) "Second-half pace change: ${decimal(durability.paceFadePercent())}%. ${durability.explanation()}${durability.heartRateDriftPercent()?.let { " HR-to-pace change: ${decimal(it)}%." } ?: " HR context unavailable."}" else durability.explanation(),"Long-run durability")
+            Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
+            WhyDetails("Provider: ${activity.source().provider()}\nOrigin: ${activity.source().originPackage() ?: "Unavailable"}\nRecord: ${activity.source().recordId()}","Technical data source")
+
             Text("Values absent from the source remain unavailable. Elapsed time is not presented as moving time.")
         }
         RunFeedbackSection(state, model, activity)
