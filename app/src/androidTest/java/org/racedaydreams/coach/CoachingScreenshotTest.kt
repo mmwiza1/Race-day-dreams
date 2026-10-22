@@ -58,7 +58,9 @@ class CoachingScreenshotTest {
             coach.saveResponse(RunExecution(run.id(),w.id(),version.id(),null,null,"Test-only fixture"))
         }
         val exercise=StrengthExercise.starters().first()
-        coach.saveStrength(StrengthSession("demo-strength",today.minusDays(3).atTime(18,0).toInstant(ZoneOffset.UTC),ZoneOffset.UTC,Duration.ofMinutes(50),7.0,"Test-only fixture",
+        evidence.saveHistorical(HistoricalStrengthRecord("demo-old",exercise,70.0,5,today.minusDays(90),HistoricalStrengthRecord.DatePrecision.EXACT,"Test-only historical evidence"))
+        evidence.saveHistorical(HistoricalStrengthRecord("demo-approx",exercise,72.5,5,today.minusDays(60),HistoricalStrengthRecord.DatePrecision.APPROXIMATE,"Approximate date; test-only"))
+        coach.saveStrength(StrengthSession("demo-strength",plan.workouts().filter{it.date()<today}.maxBy{it.date()}.date().atTime(18,0).toInstant(ZoneOffset.UTC),ZoneOffset.UTC,Duration.ofMinutes(50),7.0,"Test-only fixture",
             listOf(StrengthSession.ExerciseSets(exercise,listOf(StrengthSession.SetEntry("demo-set1",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set2",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set3",5,80.0,7.0,false))))))
     }
     @After fun clear(){scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
@@ -78,7 +80,7 @@ class CoachingScreenshotTest {
         await("Run detail");capture("activity-detail")
         alignHeading("Run Score and feedback");capture("run-feedback")
         pressBack();click("Progress");await("Strength progress");capture("progress");alignHeading("Body weight");capture("body-weight")
-        compose.onNodeWithText("View Strength progress").performScrollTo().performClick();await("Latest sessions");capture("strength");alignHeading("Exercise progress and PB history");capture("strength-pbs")
+        compose.onNodeWithText("View Strength progress").performScrollTo().performClick();await("Latest sessions");capture("strength");alignHeading("Exercise progress and PB history");compose.onAllNodesWithText("View progression")[0].performScrollTo().performClick();capture("strength-pbs")
         pressBack();click("⚙ Settings");await("Settings")
         capture("settings");alignHeading("Activity data source");capture("data-sources")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
@@ -90,13 +92,17 @@ class CoachingScreenshotTest {
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
     private fun alignHeading(text:String){
         compose.onNodeWithText(text).performScrollTo()
-        // A slow real scroll gives the screenshot its own useful viewport instead
-        // of merely making the heading one pixel visible at the bottom edge.
-        compose.onRoot().performTouchInput {
-            swipe(Offset(centerX,height*.8f),Offset(centerX,height*.35f),durationMillis=1000)
+        // Anchor the actual heading near the top, independent of content above it.
+        repeat(4){
+            val top=compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top
+            val height=compose.onRoot().fetchSemanticsNode().boundsInRoot.height
+            val shift=(top-160f).coerceAtMost(height*.6f)
+            if(shift<=8f)return
+            compose.onRoot().performTouchInput{swipe(Offset(centerX,height*.85f),Offset(centerX,height*.85f-shift),durationMillis=1000)}
+            compose.waitForIdle()
         }
-        compose.waitForIdle()
     }
+
     private fun capture(name:String){
         compose.waitForIdle()
         // Compose idleness can precede SurfaceFlinger presenting the last frame.

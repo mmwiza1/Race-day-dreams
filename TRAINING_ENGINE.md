@@ -218,15 +218,25 @@ there is no automatic recurring-availability rewrite. Manual moves validate norm
 availability, race boundaries, duplicate dates and maximum frequency. Skips/moves
 create plan versions and refresh reminders. Completed prescriptions are protected.
 
-A >5% improvement over the best comparable non-rolling result in the prior six
-months, plus complete recent planned running and several controlled RPE responses,
-can flag a major performance review. Incidental rolling efforts alone cannot.
-Where quality segments already have pace ranges, an explicit option previews a
-3% faster range for the next four weeks. Easy/recovery ranges and the race target
-never change. This is a bounded heuristic, not a race prediction; richer
-terrain/effort-matched modelling and assessment-specific confidence remain future
-work. If no numerical quality ranges exist, the app reports the evidence without
-inventing ranges.
+Performance reassessment v2 uses comparable results from the last four weeks
+against evidence from the preceding six months. Gains below 2% are ignored.
+A substantial gain (>=5%) or multiple corroborating gains (>=2.5% maximum)
+may support review, only with >=80% completion, at least three controlled RPE
+responses, no elevated-effort concern and at least moderate baseline confidence.
+Official/manual race results and deliberate best-effort assessments carry more
+weight than incidental rolling efforts; controlled assessments are not treated as
+races. Short-distance and older evidence is down-weighted. Same-activity results
+count once. Confidence is Strong, Moderate or Limited, with component reasoning.
+These are documented product heuristics, not scientifically validated thresholds.
+
+Only existing numerical quality-session ranges in the next four weeks are
+proposed faster, by 40% of the observed comparable gain capped at 3%. The dialog
+shows current/proposed workouts, dates, pace ranges, confidence and unchanged
+sessions before explicit acceptance. Easy/recovery running, volume and the race
+goal remain unchanged. Short (<3K) evidence caps proposals at 1.5%; race-pace
+work requires evidence covering at least half the target distance, capped at 10K.
+Easy-effort segments inside quality workouts are also excluded. No numerical ranges are fabricated when none exist.
+Terrain/effort-matched performance modelling remains future work.
 
 ## Durability and return guidance
 

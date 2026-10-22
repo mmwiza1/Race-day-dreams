@@ -28,3 +28,5 @@ fun shortDate(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern
         DatePickerDialog(onDismissRequest={open=false},confirmButton={TextButton(onClick={picker.selectedDateMillis?.let{onChange(Instant.ofEpochMilli(it).atOffset(ZoneOffset.UTC).toLocalDate().toString())};open=false}){Text("Choose date")}},dismissButton={TextButton(onClick={open=false}){Text("Cancel")}}){DatePicker(picker)}
     }
 }
+
+fun workoutName(category:org.racedaydreams.domain.WorkoutCategory)=org.racedaydreams.domain.presentation.CalendarData.label(category)

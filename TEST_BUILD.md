@@ -1,10 +1,9 @@
-# Galaxy S24 evaluation — 0.4.0-test1
+# Galaxy S24 evaluation — 0.4.1-test1
 
-Working increment: PR #3, `codex/weekly-coach-and-simple-ux`, starting main
-`0c3a810048a7c92e9dc632d726a57d908ca519be`. See VERIFICATION.md for the observed functional verification results, and
-PR #3 / GitHub Actions for exact delivery and merged-main status.
+Refinement release from main `7fa431ddc8bb3fa3b73677680a53957ff772cdbc`.
+See VERIFICATION.md and the 0.4.1 PR/Actions for observed build and device-test results.
 
-Download `Race-Day-Dreams-0.4.0-test1-debug.apk` from a successful intended-commit
+Download `Race-Day-Dreams-0.4.1-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
 Debug signing keys may differ between workflows; preserve your backup before any
 uninstall Android requires. CI does not establish physical-device interoperability
@@ -63,3 +62,22 @@ or real-world coaching efficacy.
 No demo records are installed by the production APK. Canonical screenshots are
 rendered by instrumentation-only fixtures. No account, analytics, backend,
 Internet permission, map/GPS/Wear feature or runtime LLM is introduced.
+
+## Refinement checks on the Galaxy S24
+
+- Compare List/Week/Month and restart the app to confirm the selected view persists.
+  Check E/Q/L/S/R/– category labels, outlined planned/filled completed markers,
+  moved/skipped labels, and run + strength on one date. Blank dates outside a plan
+  must not gain Rest markers. Selected/today/outside-month dates must remain distinct.
+- Inspect all weight ranges, tap points, compare textual values and switch kg/lb.
+  No measurements should appear on missing days. Lines only connect retained points.
+- Open an exercise progression: exact/approximate dates retain labels, unknown dates
+  stay outside chronology, and current best may come from either source. Delete
+  evidence and confirm the derived best recalculates. Estimated 1RM remains approximate.
+- Add/duplicate/edit/remove sets, switch exercises, review blocks, then save a session.
+- Review weekly positives/attention and no-change outcomes. For a meaningful change,
+  inspect both prescriptions and dates before accepting; cancel must leave the plan alone.
+- Check normal/200% fonts, dark mode, portrait scrolling, keyboard/date-picker behaviour,
+  TalkBack labels and vector navigation on the physical phone. CI does not prove these.
+- Samsung integration and settings are unchanged in this patch; no new Samsung setup
+  or proprietary components are introduced.

@@ -144,7 +144,7 @@ private fun CoachApp(model: CoachViewModel) {
                 NavigationBar {
                     tabs.forEach { (destination, label) ->
                         NavigationBarItem(selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
-                            icon = { Text(label.take(1), Modifier.clearAndSetSemantics { }) },
+                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=null) },
                             label = { Text(label) }, onClick = {
                                 nav.navigate(destination) { popUpTo("home"); launchSingleTop = true }
                             })
