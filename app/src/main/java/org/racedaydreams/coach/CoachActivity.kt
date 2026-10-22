@@ -190,7 +190,7 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("strength/history") { StrengthScreen(state,model,section="history") }
                 composable("gym") { GymProgrammeScreen(state,model){nav.navigate("gym/session/${Uri.encode(it)}")} }
                 composable("gym/session/{id}") { destination -> GymSessionScreen(state,model,destination.arguments?.getString("id")){nav.navigate("strength?date=$it")} }
-                composable("history") { WorkoutHistoryScreen(state,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("strength/history")}) }
+                composable("history?kind={kind}") { d -> WorkoutHistoryScreen(state,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("strength/source/${Uri.encode(it)}")},d.arguments?.getString("kind")?:"ALL") }
                 composable("exercises") { ExerciseBrowser(state,model){nav.navigate("exercise/${Uri.encode(it)}")} }
                 composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")){nav.navigate("strength/source/${Uri.encode(it)}")} }
 

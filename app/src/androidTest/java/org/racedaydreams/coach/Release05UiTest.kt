@@ -7,6 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import org.junit.*
 import org.racedaydreams.data.*
 import org.racedaydreams.domain.*
+import org.racedaydreams.domain.strength.*
 import org.racedaydreams.reminders.EveningReminders
 import java.time.*
 import java.util.EnumSet
@@ -36,4 +37,24 @@ class Release05UiTest {
         compose.waitUntil(20000){GymProgrammeStore(context).current()==null}
         Assert.assertEquals(1,GymProgrammeStore(context).versions().size)
     }
+    @Test fun editingASourceSetPreservesUnchangedTimeAndDuration(){
+        val date=LocalDate.now().minusDays(2)
+        val at=date.atTime(9,14,37,123000000).toInstant(ZoneOffset.UTC)
+        val duration=Duration.ofSeconds(3017)
+        val e=ExerciseCatalog.definition("back-squat").exercise()
+        CoachingStore(context).saveStrength(StrengthSession("precise",at,ZoneOffset.UTC,duration,7.0,"Keep this note",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("kept-set-id",5,80.0,7.0,false))))))
+        launch();compose.onNodeWithText("View activity history").performScrollTo().performClick();await("Workout history")
+        compose.onNode(hasText(friendlyDate(date)) and hasClickAction()).performClick();await("Edit source workout")
+        compose.onNodeWithText("Edit exercise").performScrollTo().performClick()
+        compose.onNodeWithText("Edit").performScrollTo().performClick()
+        compose.onNodeWithText("Weight (kg)").performScrollTo().performTextReplacement("85")
+        compose.onNodeWithText("Update set").performScrollTo().performClick()
+        compose.onNodeWithText("Add exercise and sets").performScrollTo().performClick()
+        compose.onNodeWithText("Save strength workout").performScrollTo().performClick()
+        compose.waitUntil(20000){CoachingStore(context).strength().single().exercises()[0].sets()[0].kilograms()==85.0}
+        val saved=CoachingStore(context).strength().single()
+        Assert.assertEquals(at,saved.startedAt());Assert.assertEquals(duration,saved.duration())
+        Assert.assertEquals("kept-set-id",saved.exercises()[0].sets()[0].id());Assert.assertEquals("Keep this note",saved.notes())
+    }
+
 }

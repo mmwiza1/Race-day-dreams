@@ -19,7 +19,7 @@ import org.racedaydreams.domain.UnitSystem
     DestinationCard("Log workout","Record what you actually did"){open("strength/log")}
     DestinationCard("Gym programme","Optional programming alongside your running"){open("gym")}
     DestinationCard("PBs & progression","Historical and workout records together"){open("strength/pbs")}
-    DestinationCard("Workout history","${state.strengthSessions.size} recorded sessions"){open("strength/history")}
+    DestinationCard("Workout history","${state.strengthSessions.size} recorded sessions"){open("history?kind=STRENGTH")}
     DestinationCard("Exercises","Search, favourite and manage your exercises"){open("exercises")}
     state.strengthSessions.maxByOrNull{it.startedAt()}?.let{CoachCard{Text("Most recent workout",style=MaterialTheme.typography.titleSmall);Text(friendlyDate(it.startedAt().atOffset(it.offset()).toLocalDate()));Text("${it.exercises().size} exercises · ${it.duration().toMinutes()} min")}}
 }
