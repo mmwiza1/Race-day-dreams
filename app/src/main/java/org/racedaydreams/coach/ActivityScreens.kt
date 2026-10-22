@@ -88,6 +88,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             Text("Source record: ${activity.source().recordId()}")
             Text("Values absent from the source remain unavailable. Elapsed time is not presented as moving time.")
         }
+        RunFeedbackSection(state, model, activity)
         assessmentSummary?.let { summary ->
             CoachCard {
                 Text("What this assessment tells us", style = MaterialTheme.typography.titleMedium)

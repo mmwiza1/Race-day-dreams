@@ -28,7 +28,7 @@ import org.racedaydreams.domain.activity.ShoeMetricsCalculator
 /** Presentation of retained evidence. Blank metrics are not substituted with predicted values. */
 @Composable
 fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (String) -> Unit,
-                   onShoes: () -> Unit) {
+                   onShoes: () -> Unit, onStrength: () -> Unit = {}) {
     val weeks = remember(state.activities) {
         ActivityAnalytics.weekly(state.activities, LocalDate.now(), ZoneId.systemDefault(), 12)
     }
@@ -41,6 +41,12 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
     var enteringResult by rememberSaveable { mutableStateOf(false) }
     var showAllEntered by rememberSaveable { mutableStateOf(false) }
     CoachPage {
+        if (state.strengthSessions.isNotEmpty()) {
+            CoachHeading("Strength progress")
+            Text("${state.strengthSessions.size} recorded strength sessions; exercise PB progression is separate from running performance.")
+            CoachButton("View Strength progress", onStrength)
+        } else TextButton(onClick=onStrength, modifier=Modifier.heightIn(min=48.dp)) { Text("Optional strength training") }
+
         CoachHeading("Progress from your recorded running")
         Text("These are summaries of retained records, not a claim that unrecorded training did not happen. No readiness score or race prediction is generated.")
         WeeklyDistanceCard(weeks, state)

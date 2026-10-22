@@ -11,14 +11,14 @@ public record StrengthSession(String id, Instant startedAt, ZoneOffset offset, D
         Double rpe, String notes, List<ExerciseSets> exercises) {
     public record SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp) {
         public SetEntry {
-            if (id == null || id.isBlank() || reps < 1 || reps > 500 || !Double.isFinite(kilograms)
+            if (id == null || id.trim().isEmpty() || reps < 1 || reps > 500 || !Double.isFinite(kilograms)
                     || kilograms < 0 || kilograms > 1500) throw new IllegalArgumentException("Check set ID, reps and load.");
             checkRpe(rpe);
         }
     }
     public record ExerciseSets(StrengthExercise exercise, List<SetEntry> sets) {
         public ExerciseSets {
-            Objects.requireNonNull(exercise); sets = List.copyOf(sets);
+            Objects.requireNonNull(exercise); sets = org.racedaydreams.domain.coaching.Immutable.copyList(sets);
             if (sets.isEmpty() || sets.size() > 100) throw new IllegalArgumentException("Record 1–100 sets per exercise.");
             for (SetEntry set : sets) {
                 if (exercise.mode() == StrengthExercise.Mode.BODYWEIGHT && set.kilograms() != 0)
@@ -27,13 +27,13 @@ public record StrengthSession(String id, Instant startedAt, ZoneOffset offset, D
         }
     }
     public StrengthSession {
-        if (id == null || id.isBlank()) throw new IllegalArgumentException("Session ID is required.");
+        if (id == null || id.trim().isEmpty()) throw new IllegalArgumentException("Session ID is required.");
         Objects.requireNonNull(startedAt); Objects.requireNonNull(offset); Objects.requireNonNull(duration);
         if (duration.isNegative() || duration.isZero() || duration.compareTo(Duration.ofHours(12)) > 0)
             throw new IllegalArgumentException("Session duration must be positive and at most 12 hours.");
         checkRpe(rpe); notes = notes == null ? "" : notes;
         if (notes.length() > 10000) throw new IllegalArgumentException("Notes are too long.");
-        exercises = List.copyOf(exercises);
+        exercises = org.racedaydreams.domain.coaching.Immutable.copyList(exercises);
         if (exercises.isEmpty() || exercises.size() > 100) throw new IllegalArgumentException("Record 1–100 exercises.");
         HashSet<String> ids = new HashSet<>();
         for (ExerciseSets exercise : exercises) for (SetEntry set : exercise.sets())

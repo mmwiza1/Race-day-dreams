@@ -25,6 +25,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.racedaydreams.domain.coaching.*
+import org.racedaydreams.domain.strength.*
+import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.UserProfile
@@ -56,6 +59,12 @@ data class CoachUiState(
     val shoes: List<Shoe> = emptyList(),
     val assessments: List<AssessmentResult> = emptyList(),
     val plannedWorkouts: List<PlannedWorkout> = emptyList(),
+    val currentPlan: PlanVersion? = null,
+    val planVersions: List<PlanVersion> = emptyList(),
+    val proposals: List<AdjustmentProposal> = emptyList(),
+    val strengthSessions: List<StrengthSession> = emptyList(),
+    val exercises: List<StrengthExercise> = StrengthExercise.starters(),
+    val runResponses: List<RunExecution> = emptyList(),
     val milestonesEnabled: Boolean = false,
     val reminderPreferences: ReminderPreferences = ReminderPreferences.defaults(ZoneId.systemDefault()),
     val baseline: RunnerBaseline = RunnerBaseline.empty(Instant.now().minus(Duration.ofDays(84)), Instant.now()),
@@ -75,6 +84,7 @@ data class CoachUiState(
 class CoachViewModel(application: Application, private val savedState: SavedStateHandle) : AndroidViewModel(application) {
     private val app = application
     private val store = FeatureStore(application)
+    private val coaching = CoachingStore(application)
     private val profiles = SqliteUserPreferencesRepository(application)
     private val reminders = EveningReminders(application, store)
     val health = HealthConnectGateway(application)
@@ -120,10 +130,21 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
             val derived = BaselineEngine.derive(activities, results, from, now)
             val baseline = BaselineEngine.applyManualOverlay(derived, manual, store.manualBaselineRecordedAt())
             val eligibility = PerformanceEligibilityEvaluator.evaluate(baseline, now, store.manualBaselineRecordedAt())
+            val currentPlan = coaching.current()
+            val strength = coaching.strength()
+            val responses = coaching.responses()
+            if (currentPlan != null) {
+                AdaptiveCoachingEngine.review(currentPlan, activities, responses, strength, LocalDate.now(), now).ifPresent { proposal ->
+                    if (!coaching.proposalKnown(proposal.id())) coaching.saveProposal(proposal)
+                }
+            }
             reminders.reconcile()
             CoachUiState(
                 loading = false, profile = profile, activities = activities, results = results,
                 shoes = store.shoes(), assessments = store.assessments(), baseline = baseline, manualBaseline = manual,
+                currentPlan = currentPlan, planVersions = coaching.versions(),
+                proposals = coaching.proposals().filter { it.baseVersionId() == currentPlan?.id() },
+                strengthSessions = strength, exercises = coaching.exercises(), runResponses = responses,
                 plannedWorkouts = store.plannedWorkouts(), milestonesEnabled = store.getSetting("milestones.enabled") == "true",
                 reminderPreferences = reminders.preferences(),
                 performanceEligible = eligibility.eligible(), eligibilityReasons = eligibility.reasons(),
@@ -253,6 +274,68 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
             if (bestEffort) AssessmentMode.BEST_EFFORT else AssessmentMode.CONTROLLED), duration, rpe,
             start.toInstant().plus(duration), activity.id())
         store.saveAssessment(activity, result)
+    }
+
+    fun generatePlan() = mutate("Your current programme is saved. Future sessions remain adaptable; your goal is unchanged.") {
+        val profile = profiles.load().orElse(null) ?: throw IllegalArgumentException("Save your goal and availability first.")
+        val baseline = mutableState.value.baseline
+        val generated = OriginalTrainingPlanGenerator().generate(PlanRequest(profile, baseline, LocalDate.now(), emptySet(), coaching.strength()))
+        val evidence = "Baseline window ${baseline.windowStart()} to ${baseline.windowEnd()}; confidence ${baseline.confidence()}; " +
+            "weekly km ${baseline.weeklyDistanceKm() ?: "unknown"}; longest km ${baseline.longestRunKm() ?: "unknown"}; " +
+            "consistent weeks ${baseline.consistentWeeks() ?: "unknown"}; sources ${baseline.provenance()}. " +
+            "History, manual inputs and assessment evidence remain distinct. No race prediction is inferred."
+        coaching.saveCurrent(PlanVersion(UUID.randomUUID().toString(), generated.id(),
+            (coaching.versions().filter { it.planId() == generated.id() }.maxOfOrNull { it.version() } ?: 0) + 1,
+            Instant.now(), if (coaching.current() == null) "Runner requested initial programme" else "Runner explicitly requested remaining programme rebuild",
+            profile, evidence, generated))
+    }
+
+    fun decide(proposal: AdjustmentProposal, optionId: String) = mutate("Your decision is saved. Other workouts and your goal are unchanged.") {
+        val completed = store.activities().mapNotNull { it.plannedWorkoutId() }.toSet()
+        require(!store.activities().any { it.plannedWorkoutId() == proposal.workoutId() }) { "This workout has already been completed; refresh the plan." }
+        coaching.decide(proposal, optionId, completed)
+    }
+
+    fun saveStrength(session: StrengthSession, onSuccess: () -> Unit = {}) = mutate("Strength workout saved. PB history is derived from retained sets.", onSuccess) {
+        coaching.saveStrength(session)
+    }
+    fun deleteStrength(id: String) = mutate("Strength workout removed; PB history has been recalculated.") { coaching.deleteStrength(id) }
+    fun saveExercise(exercise: StrengthExercise) = mutate("Exercise saved. Recorded sessions retain their original exercise definition.") { coaching.saveExercise(exercise) }
+
+    fun linkRun(activityId: String, versionId: String, workoutId: String, reps: Int? = null) = mutate("Run linked to its preserved prescription.") {
+        val activity = store.activities().firstOrNull { it.id() == activityId } ?: throw IllegalArgumentException("Run no longer available.")
+        val version = coaching.versions().firstOrNull { it.id() == versionId } ?: throw IllegalArgumentException("Plan version no longer available.")
+        val workout = version.plan().workouts().firstOrNull { it.id() == workoutId } ?: throw IllegalArgumentException("Workout not found.")
+        require(workout.date() <= LocalDate.now()) { "A future workout cannot be marked completed." }
+        require(store.activities().none { it.id() != activityId && it.plannedWorkoutId() == workoutId }) { "Another run is linked to this workout. Review it before changing this link." }
+        val response = RunExecution(activity.id(), workout.id(), version.id(), reps, null, "Runner explicitly linked activity to prescription")
+        coaching.transaction {
+            coaching.saveResponse(response)
+            coaching.saveFeedback(activity.id(), version.id(), RunScoreEngine.analyse(workout, activity, response))
+        }
+    }
+
+    fun completeRun(versionId: String, workoutId: String, distanceKm: Double, duration: Duration,
+                    date: LocalDate, time: LocalTime, rpe: Double?, notes: String, onSuccess: (String) -> Unit) = mutate(onSuccess = {}) {
+        require(distanceKm.isFinite() && distanceKm > 0 && distanceKm <= 300) { "Enter an actual distance between 0 and 300 km." }
+        require(!duration.isZero && !duration.isNegative && duration <= Duration.ofHours(48)) { "Enter a positive actual duration of up to 48 hours." }
+        val start = date.atTime(time).atZone(ZoneId.systemDefault())
+        require(!start.toInstant().plus(duration).isAfter(Instant.now())) { "A completed run must end before the current time." }
+        val version = coaching.versions().firstOrNull { it.id() == versionId } ?: throw IllegalArgumentException("Plan version not found.")
+        val workout = version.plan().workouts().firstOrNull { it.id() == workoutId } ?: throw IllegalArgumentException("Workout not found.")
+        require(workout.date() <= LocalDate.now()) { "A future prescription cannot be marked completed." }
+        require(store.activities().none { it.plannedWorkoutId() == workoutId }) { "This workout already has a recorded run." }
+        val id = UUID.randomUUID().toString()
+        val activity = ActivityRecord(id, SourceIdentity("manual", id, null), start.toInstant(), start.toInstant().plus(duration), start.offset,
+            start.plus(duration).offset, distanceKm * 1000, null, null, null, null, null, rpe, notes, emptyList(), emptyList(), workoutId,
+            store.shoes().firstOrNull { it.defaultShoe() }?.id())
+        val response = RunExecution(id, workoutId, versionId, null, null, "Manually recorded actual run; no splits or reps invented")
+        coaching.transaction {
+            store.upsertManualActivity(activity)
+            coaching.saveResponse(response)
+            coaching.saveFeedback(id, versionId, RunScoreEngine.analyse(workout, activity, response))
+        }
+        withContext(Dispatchers.Main) { onSuccess(id) }
     }
 
     fun exportBackup(uri: Uri) = mutate("Backup saved to the file you selected. Keep it somewhere you trust.") {

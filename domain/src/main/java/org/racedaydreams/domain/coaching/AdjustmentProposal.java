@@ -15,5 +15,5 @@ public record AdjustmentProposal(String id, String baseVersionId, String workout
             if ((action == Action.REPLACE) != (replacement != null)) throw new IllegalArgumentException("Replacement does not match its action.");
         }
     }
-    public AdjustmentProposal { evidence = List.copyOf(evidence); options = List.copyOf(options); }
+    public AdjustmentProposal { evidence = org.racedaydreams.domain.coaching.Immutable.copyList(evidence); options = org.racedaydreams.domain.coaching.Immutable.copyList(options); }
 }

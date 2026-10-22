@@ -12,6 +12,6 @@ public record PlanRequest(UserProfile profile, RunnerBaseline baseline, LocalDat
         Set<LocalDate> unavailableDates, List<StrengthSession> strengthSessions) {
     public PlanRequest {
         Objects.requireNonNull(profile); Objects.requireNonNull(baseline); Objects.requireNonNull(startDate);
-        unavailableDates = Set.copyOf(unavailableDates); strengthSessions = List.copyOf(strengthSessions);
+        unavailableDates = org.racedaydreams.domain.coaching.Immutable.copySet(unavailableDates); strengthSessions = org.racedaydreams.domain.coaching.Immutable.copyList(strengthSessions);
     }
 }

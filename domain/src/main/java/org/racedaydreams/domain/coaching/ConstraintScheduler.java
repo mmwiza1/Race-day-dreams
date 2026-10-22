@@ -14,7 +14,7 @@ public final class ConstraintScheduler {
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1))
             if (preferences.runningDays().contains(date.getDayOfWeek()) && !unavailable.contains(date)
                     && (raceDate == null || date.isBefore(raceDate.minusDays(1)))) candidates.add(date);
-        Schedule winner = new Schedule(List.of(), null, null, 0, "No available training days in this part of the week.");
+        Schedule winner = new Schedule(org.racedaydreams.domain.coaching.Immutable.list(), null, null, 0, "No available training days in this part of the week.");
         int count = Math.min(maximum, candidates.size()), bestCost = Integer.MAX_VALUE;
         for (int mask = 1; mask < (1 << candidates.size()); mask++) {
             if (Integer.bitCount(mask) != count) continue;
@@ -39,7 +39,7 @@ public final class ConstraintScheduler {
                     }
                     if (cost < bestCost) {
                         bestCost = cost;
-                        winner = new Schedule(List.copyOf(days), longDay, quality, cost,
+                        winner = new Schedule(org.racedaydreams.domain.coaching.Immutable.copyList(days), longDay, quality, cost,
                             "Selected from feasible available days; score " + cost + " (lower is preferred). "
                             + "Long-run preference, recovery spacing and recorded lower-body work affect placement. "
                             + "Gym availability alone is a small preference, not evidence of a hard session.");

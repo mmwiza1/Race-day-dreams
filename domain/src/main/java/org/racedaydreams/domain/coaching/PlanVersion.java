@@ -8,7 +8,7 @@ import org.racedaydreams.domain.*;
 public record PlanVersion(String id, String planId, int version, Instant createdAt, String reason,
         UserProfile goalSnapshot, String evidenceSnapshot, TrainingPlan plan) {
     public PlanVersion {
-        if (id == null || id.isBlank() || planId == null || planId.isBlank() || version < 1)
+        if (id == null || id.trim().isEmpty() || planId == null || planId.trim().isEmpty() || version < 1)
             throw new IllegalArgumentException("Check plan identity/version.");
         Objects.requireNonNull(createdAt); Objects.requireNonNull(reason); Objects.requireNonNull(goalSnapshot);
         Objects.requireNonNull(evidenceSnapshot); Objects.requireNonNull(plan);

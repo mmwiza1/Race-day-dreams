@@ -46,7 +46,7 @@ public final class AdaptiveCoachingEngine {
         }
         List<AdjustmentProposal.Option> options = new ArrayList<>();
         var easy = new PlannedWorkout(next.id(), next.date(), WorkoutCategory.EASY_RUN, next.distanceKm(), next.duration(),
-            List.of(new WorkoutSegment(WorkoutSegment.Kind.RUN, next.distanceKm(), next.duration(), null, null, null, 3.0,
+            org.racedaydreams.domain.coaching.Immutable.list(new WorkoutSegment(WorkoutSegment.Kind.RUN, next.distanceKm(), next.duration(), null, null, null, 3.0,
                 "Conversational effort; shorten or take walk breaks if needed.")), "Runner-selected easier alternative. Original prescription remains in plan history.");
         options.add(new AdjustmentProposal.Option("easy", "Run easy instead (recommended)", AdjustmentProposal.Action.REPLACE, easy));
         if (gym) {

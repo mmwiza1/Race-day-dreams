@@ -7,6 +7,6 @@ public record RunFeedback(Integer score, String label, List<Component> component
         List<String> differed, String learned, String nextStep) {
     public record Component(String name, Double fraction, String explanation) { }
     public RunFeedback {
-        components = List.copyOf(components); wentWell = List.copyOf(wentWell); differed = List.copyOf(differed);
+        components = org.racedaydreams.domain.coaching.Immutable.copyList(components); wentWell = org.racedaydreams.domain.coaching.Immutable.copyList(wentWell); differed = org.racedaydreams.domain.coaching.Immutable.copyList(differed);
     }
 }

@@ -11,7 +11,7 @@ import org.racedaydreams.domain.strength.StrengthAnalytics;
 /** Original, deterministic coaching heuristics. No commercial schedules or prescription tables. */
 public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerator {
     @Override public TrainingPlan generate(UserProfile p, RunnerBaseline b, LocalDate start) {
-        return generate(new PlanRequest(p, b, start, Set.of(), List.of()));
+        return generate(new PlanRequest(p, b, start, org.racedaydreams.domain.coaching.Immutable.set(), org.racedaydreams.domain.coaching.Immutable.list()));
     }
     public TrainingPlan generate(PlanRequest request) {
         UserProfile profile = request.profile(); RunnerBaseline baseline = request.baseline();
@@ -119,7 +119,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
             }
         }
         if (race != null) workouts.add(new PlannedWorkout(id + ":race", race, WorkoutCategory.RACE, distance, null,
-            List.of(new WorkoutSegment(WorkoutSegment.Kind.RUN, distance, null, null, null, null, null,
+            org.racedaydreams.domain.coaching.Immutable.list(new WorkoutSegment(WorkoutSegment.Kind.RUN, distance, null, null, null, null, null,
                 "Runner-owned race goal. Adjust effort to conditions and how you feel; completion is not guaranteed by a training plan.")),
             "Your chosen race anchors this programme. The target has not been changed." + caution));
         workouts.sort(Comparator.comparing(PlannedWorkout::date));
@@ -158,6 +158,6 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
                 phaseStart = day; previous = kind;
             }
         }
-        return List.copyOf(result);
+        return org.racedaydreams.domain.coaching.Immutable.copyList(result);
     }
 }

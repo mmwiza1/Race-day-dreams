@@ -9,7 +9,7 @@ public final class RunScoreEngine {
     public static final int RULE_VERSION = 1;
     private RunScoreEngine() { }
     public static RunFeedback analyse(PlannedWorkout planned, ActivityRecord actual, RunExecution response) {
-        if (planned == null) return new RunFeedback(null, "Run Analysis", List.of(), List.of(), List.of(),
+        if (planned == null) return new RunFeedback(null, "Run Analysis", org.racedaydreams.domain.coaching.Immutable.list(), org.racedaydreams.domain.coaching.Immutable.list(), org.racedaydreams.domain.coaching.Immutable.list(),
             "There was no planned workout to compare this run against. Recorded distance, duration, RPE and splits remain useful evidence.",
             "One completed run does not establish a fitness change.");
         if (response != null && !Objects.equals(response.plannedWorkoutId(), planned.id()))
@@ -52,7 +52,7 @@ public final class RunScoreEngine {
         Double stability = null;
         var splits = SplitCalculator.calculate(actual, 1000);
         if (splits.splits().size() >= 3 && planned.category() != WorkoutCategory.INTERVALS) {
-            var full = splits.splits().stream().filter(s -> !s.partial()).toList();
+            var full = splits.splits().stream().filter(s -> !s.partial()).collect(java.util.stream.Collectors.toList());
             if (full.size() >= 3) {
                 double first = full.get(0).duration().toMillis() / full.get(0).distanceMetres();
                 double last = full.get(full.size()-1).duration().toMillis() / full.get(full.size()-1).distanceMetres();

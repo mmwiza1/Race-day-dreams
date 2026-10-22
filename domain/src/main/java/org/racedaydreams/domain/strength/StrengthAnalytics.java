@@ -21,7 +21,7 @@ public final class StrengthAnalytics {
         var region = lower == 0 ? StrengthExercise.Region.UPPER : upper == 0 ? StrengthExercise.Region.LOWER : StrengthExercise.Region.FULL;
         var involvement = lower >= 3 && hard ? Involvement.HIGH : lower > 0 ? Involvement.MODERATE : Involvement.LOW;
         return new Context(region, hard ? "Hard" : session.rpe() == null ? "Effort not recorded" : session.rpe() <= 3 ? "Light" : "Moderate",
-                involvement, List.of(lower + " working sets involved the lower body.",
+                involvement, org.racedaydreams.domain.coaching.Immutable.list(lower + " working sets involved the lower body.",
                 "Effort uses recorded session/set RPE; load alone does not establish fatigue. This is coaching context, not a physiological measurement."));
     }
     public static Double sessionLoad(StrengthSession session) {
@@ -42,13 +42,13 @@ public final class StrengthAnalytics {
             else {
                 String prefix = e.exercise().mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT ? "Added load" : "Load";
                 award(history, best, e.exercise(), prefix, set.kilograms(), set, session);
-                if (List.of(1, 3, 5, 8, 10).contains(set.reps()))
+                if (org.racedaydreams.domain.coaching.Immutable.list(1, 3, 5, 8, 10).contains(set.reps()))
                     award(history, best, e.exercise(), prefix + " × " + set.reps(), set.kilograms(), set, session);
                 Double estimate = estimatedOneRepMax(e.exercise(), set);
                 if (estimate != null) award(history, best, e.exercise(), "Estimated 1RM", estimate, set, session);
             }
         }
-        return List.copyOf(history);
+        return org.racedaydreams.domain.coaching.Immutable.copyList(history);
     }
     private static void award(List<Record> history, Map<String, Double> best, StrengthExercise e, String category,
             double value, StrengthSession.SetEntry set, StrengthSession session) {
@@ -61,6 +61,6 @@ public final class StrengthAnalytics {
         Set<LocalDate> dates = new HashSet<>();
         for (var s : sessions) if (context(s).lowerBody() == Involvement.HIGH)
             dates.add(s.startedAt().atOffset(s.offset()).toLocalDate());
-        return Set.copyOf(dates);
+        return org.racedaydreams.domain.coaching.Immutable.copySet(dates);
     }
 }

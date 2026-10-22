@@ -164,7 +164,7 @@ private fun CoachApp(model: CoachViewModel) {
                 }
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
-                composable("home") { HomeScreen(state, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }) }
+                composable("home") { HomeScreen(state, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -180,17 +180,14 @@ private fun CoachApp(model: CoachViewModel) {
                     model.cancelGoalEditing()
                     if (state.profile == null) nav.navigate("baseline") else nav.navigate("home") { launchSingleTop = true }
                 } }
-                composable("plan") { CoachPage {
-                    CoachHeading("Your plan, with room for real life")
-                    Text("Adaptive training plans are not yet available. Your goal, baseline and availability are saved; no workouts have been prescribed.")
-                    Text("The app recommends. The runner decides. The plan adapts.")
-                    CoachButton("Edit goal and routine") { nav.navigate("goals") }
-                } }
+                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }) }
+                composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id")) { nav.navigate("activity/${Uri.encode(it)}") } }
+                composable("strength") { StrengthScreen(state, model) }
                 composable("calendar") { ActivityHistoryScreen(state) { nav.navigate("activity/${Uri.encode(it)}") } }
                 composable("activity/{id}") { destination ->
                     ActivityDetailScreen(state, model, destination.arguments?.getString("id"))
                 }
-                composable("progress") { ProgressScreen(state, model, { nav.navigate("activity/${Uri.encode(it)}") }, { nav.navigate("shoes") }) }
+                composable("progress") { ProgressScreen(state, model, { nav.navigate("activity/${Uri.encode(it)}") }, { nav.navigate("shoes") }, { nav.navigate("strength") }) }
                 composable("shoes") { ShoesScreen(state, model) }
                 composable("settings") { SettingsScreen(state, model, model.health.historyPermissionAvailable(), connect,
                     providerUpdate, providerSettings,
@@ -228,7 +225,7 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 }
 
 @Composable
-private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit) = CoachPage {
+private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit) = CoachPage {
     CoachHeading("Your running, your way")
     state.profile?.let { profile ->
         CoachCard {
@@ -248,7 +245,14 @@ private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: ()
     if (state.profile?.preferences()?.strategy() == org.racedaydreams.domain.TrainingStrategy.PERFORMANCE && !state.performanceEligible) {
         Text("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
     }
-    Text("Training recommendations are not yet available in this version.")
+    state.currentPlan?.let { version ->
+        val today = version.plan().workouts().firstOrNull { it.date() == java.time.LocalDate.now() }
+        CoachHeading("Today")
+        if (today == null) Text("No run is scheduled today. You can rest, run independently or review the programme.")
+        else WorkoutCard(today, state.activities.any { it.plannedWorkoutId() == today.id() }) { workout(today.id()) }
+        if (state.proposals.isNotEmpty()) Text("A coaching recommendation is ready to review. Your programme has not been changed.")
+    }
+    CoachButton(if (state.currentPlan == null) "Create training programme" else "View training programme", plan)
     CoachButton("Review running baseline", baseline)
     CoachButton("View activity history", history)
     OutlinedButton(onClick = assessment, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Optional assessment result") }
