@@ -41,7 +41,6 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
     var enteringResult by rememberSaveable { mutableStateOf(false) }
     var showAllEntered by rememberSaveable { mutableStateOf(false) }
     CoachPage {
-        WeightSection(state, model)
         if (state.strengthSessions.isNotEmpty()) {
             CoachHeading("Strength progress")
             Text("${state.strengthSessions.size} recorded strength sessions; exercise PB progression is separate from running performance.")
@@ -51,6 +50,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
         CoachHeading("Progress from your recorded running")
         Text("These are summaries of retained records, not a claim that unrecorded training did not happen. No readiness score or race prediction is generated.")
         WeeklyDistanceCard(weeks, state)
+        WeightSection(state, model)
         val now = java.time.Instant.now()
         val load = remember(state.activities, state.strengthSessions) {
             org.racedaydreams.domain.coaching.TrainingLoadEvidence.window(state.activities, state.strengthSessions, now.minus(java.time.Duration.ofDays(7)), now)

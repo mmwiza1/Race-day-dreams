@@ -139,7 +139,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
 
     private static void migrateFourToFive(SQLiteDatabase db) {
         // V5_SCHEMA_BEGIN
-        db.execSQL("CREATE TABLE coach_evidence (kind TEXT NOT NULL CHECK(kind IN ('WEIGHT','HISTORICAL_PB','WEEKLY_REVIEW','REVIEW_DECISION','INTERRUPTION','STRENGTH_LINK')), id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(kind,id))");
+        db.execSQL("CREATE TABLE coach_evidence (kind TEXT NOT NULL CHECK(kind IN ('WEIGHT','HISTORICAL_PB','WEEKLY_REVIEW','REVIEW_DECISION','INTERRUPTION','STRENGTH_LINK','SESSION_DECISION')), id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(kind,id))");
         // V5_SCHEMA_END
     }
 

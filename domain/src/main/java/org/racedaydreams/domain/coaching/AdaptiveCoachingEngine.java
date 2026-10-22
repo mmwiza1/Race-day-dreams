@@ -31,10 +31,11 @@ public final class AdaptiveCoachingEngine {
             }
         }
         final boolean repeated = highEffort >= 2;
-        var next = version.plan().workouts().stream().filter(w -> !w.date().isBefore(today) && w.date().isBefore(today.plusDays(7))
-            && !completed.contains(w.id()) && w.category() != WorkoutCategory.RACE && isDemanding(w.category())).findFirst().orElse(null);
-        if (next == null) return Optional.empty();
+        final boolean lowHard = lowAndHard;
         var hardDates = StrengthAnalytics.hardLowerBodyDates(strength);
+        var next = version.plan().workouts().stream().filter(w -> !w.date().isBefore(today) && w.date().isBefore(today.plusDays(7))
+            && !completed.contains(w.id()) && w.category() != WorkoutCategory.RACE && isDemanding(w.category()) && (repeated || lowHard || hardDates.contains(w.date().minusDays(1)))).findFirst().orElse(null);
+        if (next == null) return Optional.empty();
         boolean gym = hardDates.contains(next.date().minusDays(1));
         if (!gym && !repeated && !lowAndHard) return Optional.empty();
         if (repeated) evidence.add("At least two recent linked sessions had reported RPE above their intended range.");

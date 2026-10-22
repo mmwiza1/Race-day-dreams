@@ -13,7 +13,7 @@ import org.racedaydreams.domain.*
 import org.racedaydreams.domain.coaching.*
 
 @Composable
-fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String) -> Unit, editGoal: () -> Unit) {
+fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String) -> Unit, editGoal: () -> Unit, strength: (LocalDate) -> Unit = {}) {
     var confirm by rememberSaveable { mutableStateOf(false) }
     var overview by rememberSaveable { mutableStateOf(false) }
     var week by rememberSaveable { mutableIntStateOf(0) }
@@ -24,7 +24,8 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
         Text("The app recommends. The runner decides. The plan adapts.")
         if (version == null) {
             Text("Create an original programme from your saved goal, running evidence and availability. No training has been prescribed yet.")
-            Text("Missing or stale workload evidence starts with short conversational run/walk sessions. A short race horizon never triggers a catch-up build.")
+            Text("Starting conservatively when evidence is limited.")
+            WhyDetails("Missing or stale workload evidence starts with short conversational run/walk sessions. A short race horizon never triggers a catch-up build.")
             CoachButton("Generate my programme") { model.generatePlan() }
         } else {
             val plan = version.plan()
@@ -45,7 +46,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                 plan.phases().forEach { phase -> CoachCard {
                     Text(phase.kind().name.replace('_', ' '), style = MaterialTheme.typography.titleMedium)
                     Text("${friendlyDate(phase.startDate())} – ${friendlyDate(phase.endDate())}")
-                    Text(phase.explanation())
+                    WhyDetails(phase.explanation())
                 } }
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -60,10 +61,12 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                 state.strengthSessions.filter { it.startedAt().atOffset(it.offset()).toLocalDate() in selectedWeek..selectedWeek.plusDays(6) }.forEach {
                     Text("Strength · ${friendlyDate(it.startedAt().atOffset(it.offset()).toLocalDate())} · ${it.duration().toMinutes()} min · recorded")
                 }
-                if (state.profile?.preferences()?.gymDays()?.isNotEmpty() == true) Text("Preferred gym days: ${state.profile.preferences().gymDays().joinToString()}. Run + gym on the same day is allowed; these preferences are not invented workouts.")
+                repeat(7) { offset -> val day=selectedWeek.plusDays(offset.toLong())
+                    if(state.profile?.preferences()?.gymDays()?.contains(day.dayOfWeek)==true) OutlinedButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Strength routine · ${shortDate(day)} · Log workout")}
+                }
             }
             Text("Evidence used", style = MaterialTheme.typography.titleMedium)
-            Text(version.evidenceSnapshot())
+            WhyDetails(version.evidenceSnapshot(),"Evidence used for this plan")
             Text("${state.planVersions.size} preserved plan versions. Earlier prescriptions remain available when linked to a completed run.")
             OutlinedButton(onClick = { confirm = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Rebuild remaining programme…") }
         }
@@ -106,6 +109,12 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 Text(segment.guidance() ?: "Adjust to conditions and how you feel.")
             } }
             CoachHeading("Why this workout?")
+            var moving by rememberSaveable { mutableStateOf(false) }
+            var moveDate by rememberSaveable { mutableStateOf(workout.date().toString()) }
+            if(workout.category()!=WorkoutCategory.RACE && state.runResponses.none{it.plannedWorkoutId()==workout.id()}) {
+                TextButton(onClick={moving=!moving}){Text("Move or skip this session")}
+                if(moving){DateInput("Move to",moveDate,{moveDate=it});Text("Nearby demanding sessions may need recovery. This choice never adds mileage elsewhere.");CoachButton("Confirm move",{model.changeWorkout(workout.id(),LocalDate.parse(moveDate))});OutlinedButton(onClick={model.changeWorkout(workout.id())}){Text("Skip this session")}}
+            }
             WhyDetails(workout.note() ?: "No explanation was recorded.","Why this workout?")
             Text("Goal: ${version.goalSnapshot().raceGoal().distance().label()} · ${version.goalSnapshot().raceGoal().mode().label()}")
             Text("You can run a different workout, take it easy or rest. Record what actually happened; your original prescription is retained. No session is blocked by a recommendation.")

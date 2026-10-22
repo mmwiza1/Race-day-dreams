@@ -22,7 +22,7 @@ import org.racedaydreams.domain.body.MassUnit
         WhyDetails(r.channels().joinToString("\n\n"){"${it.name()}: ${it.state().name.lowercase().replace('_',' ')}\n${it.reason()}"},"Evidence channels")
         CoachHeading("Recommendation");Text(r.recommendation())
         if(s.weeklyDecision!=null)Text("Your decision: ${s.weeklyDecision}. Your choice is retained.")else r.choices().forEach{c->
-            if(c.replacements().isNotEmpty())WhyDetails(c.replacements().joinToString("\n"){"${shortDate(it.date())}: ${it.category().name.lowercase().replace('_',' ')} · ${it.distanceKm()?.let{d->"${decimal(d)} km"}?:it.duration()?.toMinutes()?.let{d->"$d min"}?:"Effort guidance"}"},"Preview ${c.label().lowercase()}")
+            if(c.replacements().isNotEmpty())WhyDetails(c.replacements().joinToString("\n"){"${shortDate(it.date())}: ${it.category().name.lowercase().replace('_',' ')} · ${it.distanceKm()?.let{d->"${decimal(d)} km"}?:it.duration()?.toMinutes()?.let{d->"$d min"}?:"Effort guidance"}${it.segments().filter { segment -> segment.minimumSecondsPerKm()!=null }.joinToString { segment -> " · ${formatPaceSeconds(segment.minimumSecondsPerKm())}–${formatPaceSeconds(segment.maximumSecondsPerKm()?:segment.minimumSecondsPerKm())}/km" }}"},"Preview ${c.label().lowercase()}")
             OutlinedButton(onClick={model.weeklyDecision(c.id())},enabled=!s.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(c.label())}
         }
     }

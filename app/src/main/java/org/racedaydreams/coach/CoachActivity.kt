@@ -165,8 +165,7 @@ private fun CoachApp(model: CoachViewModel) {
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
                 composable("weekly") { WeeklyReviewScreen(state,model) }
-                composable("home") { if(state.weeklyReview!=null) {}
-                    HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
+                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -182,7 +181,7 @@ private fun CoachApp(model: CoachViewModel) {
                     model.cancelGoalEditing()
                     if (state.profile == null) nav.navigate("baseline") else nav.navigate("home") { launchSingleTop = true }
                 } }
-                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }) }
+                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { nav.navigate("strength?date=$it") }) }
                 composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id")) { nav.navigate("activity/${Uri.encode(it)}") } }
                 composable("strength?date={date}") { destination -> StrengthScreen(state, model, destination.arguments?.getString("date")) }
                 composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("strength?date=$it") }) { nav.navigate("activity/${Uri.encode(it)}") } }
@@ -217,7 +216,7 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
     BackHandler { if (form?.navigateBack() != true) onCancel() }
     AndroidView(modifier = Modifier.fillMaxSize().imePadding(), factory = { context ->
         OnboardingView(context, state.draft, state.profile, state.performanceEligible, object : OnboardingView.Listener {
-            override fun onSave(profile: org.racedaydreams.domain.UserProfile) { model.saveProfile(profile) }
+            override fun onSave(profile: org.racedaydreams.domain.UserProfile) { model.saveProfile(profile, createPlan = true) }
             override fun onDraftChanged(json: String) { model.saveDraft(json) }
             override fun onCancel() { onCancel() }
         }).also { form = it; it.tag = false }

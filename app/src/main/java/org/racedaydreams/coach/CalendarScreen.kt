@@ -41,5 +41,6 @@ private fun calendarLabels(s:CoachUiState,d:LocalDate):List<String>{val out=muta
     s.plannedWorkouts.filter{it.date()==d}.forEach{w->val done=s.activities.any{it.plannedWorkoutId()==w.id()};TextButton(onClick={workout(w.id())}){Text("${if(done)"✓" else "○"} ${w.category().name.replace('_',' ').lowercase()}${w.distanceKm()?.let{" · ${decimal(it)} km"}?:""}${if(!done&&d<LocalDate.now())" · Not completed"else ""}")}}
     s.strengthSessions.filter{strengthDate(it)==d}.forEach{Text("✓ Strength · ${it.duration().toMinutes()} min")}
     if(s.profile?.preferences()?.gymDays()?.contains(d.dayOfWeek)==true&&s.strengthSessions.none{strengthDate(it)==d})TextButton(onClick={strength(d.toString())}){Text("○ Planned strength · Log actual workout")}
+    s.workoutDecisions.filter{it.originalDate()==d}.forEach{decision->Text(if(decision.kind()==org.racedaydreams.domain.coaching.WorkoutDecision.Kind.SKIPPED) "Workout skipped by choice" else "Workout moved to ${decision.movedTo()?.let(::friendlyDate)}")}
     if(calendarLabels(s,d).isEmpty())Text("Rest / no session planned")
 }}

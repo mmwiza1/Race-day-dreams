@@ -26,6 +26,10 @@ public final class WeeklyCoaching {
     /** Evaluates the latest fully finished Monday–Sunday week; up to four prior weeks provide context. */
     public static Review review(PlanVersion version,List<PlanVersion> history,List<ActivityRecord> runs,List<RunExecution> links,
             List<StrengthSession> strength,List<RecordedResult> results,LocalDate today,Interruption interruption) {
+        return review(version,history,runs,links,strength,results,today,interruption,Immutable.list());
+    }
+    public static Review review(PlanVersion version,List<PlanVersion> history,List<ActivityRecord> runs,List<RunExecution> links,
+            List<StrengthSession> strength,List<RecordedResult> results,LocalDate today,Interruption interruption,List<WorkoutDecision> decisions) {
         LocalDate end=today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),from=end.minusWeeks(1),window=end.minusWeeks(4);
         Map<String,PlannedWorkout> original=new HashMap<>();
         // Earliest prescription supports moved-then-completed pattern explanations.
@@ -40,7 +44,9 @@ public final class WeeklyCoaching {
         Set<String> countedRuns=new HashSet<>();
         for(var a:runs){LocalDate date=date(a);if(!date.isBefore(from)&&date.isBefore(end)&&countedRuns.add(a.id())&&a.distanceMetres()!=null){km+=a.distanceMetres()/1000;longest=Math.max(longest,a.distanceMetres()/1000);}}
         Map<DayOfWeek,Set<LocalDate>> difficult=new EnumMap<>(DayOfWeek.class);Map<DayOfWeek,Integer> moved=new EnumMap<>(DayOfWeek.class);
-        for(var w:version.plan().workouts()) {
+        var reviewedWorkouts=new ArrayList<>(version.plan().workouts());
+        for(var decision:decisions)if(decision.kind()==WorkoutDecision.Kind.SKIPPED&&original.containsKey(decision.workoutId())&&reviewedWorkouts.stream().noneMatch(w->w.id().equals(decision.workoutId())))reviewedWorkouts.add(original.get(decision.workoutId()));
+        for(var w:reviewedWorkouts) {
             if(w.category()==WorkoutCategory.RACE)continue;
             var a=actual.get(w.id());
             if(!w.date().isBefore(from)&&w.date().isBefore(end)){planned++;if(a!=null)completed++;}
@@ -57,6 +63,8 @@ public final class WeeklyCoaching {
         boolean rising=recentCount>=3&&priorCount>=2&&recentEffort/recentCount-priorEffort/priorCount>=1.5;
         boolean strain=(rising&&shortened>=2)||hard>=3||faded>=2;
         boolean consistent=planned>=2&&completed==planned;
+        long explicitSkips=decisions.stream().filter(d->d.kind()==WorkoutDecision.Kind.SKIPPED&&!d.originalDate().isBefore(window)&&d.originalDate().isBefore(end)).count();
+        if(explicitSkips>0)observations.add(explicitSkips+" sessions were explicitly skipped; this is distinct from an unrecorded workout.");
         observations.add(completed+" / "+planned+" planned runs completed in the reviewed week.");
         if(shortened>=2)observations.add(shortened+" recent sessions were below 80% of their planned distance.");
         if(rising)observations.add("Reported effort increased across several sessions. Workout mix and conditions may contribute.");
@@ -86,7 +94,8 @@ public final class WeeklyCoaching {
     private static LocalDate date(ActivityRecord a){return a.start().atOffset(a.startOffset()==null?ZoneOffset.UTC:a.startOffset()).toLocalDate();}
     private static boolean majorPerformance(List<RecordedResult> results,LocalDate end){
         for(var r:results){if(r.source()==ResultSource.ROLLING||r.date().isBefore(end.minusWeeks(4))||!r.date().isBefore(end))continue;
-            for(var old:results)if(old.distance().equals(r.distance())&&old.source()!=ResultSource.ROLLING&&old.date().isBefore(r.date())&&!old.date().isBefore(end.minusMonths(6))&&r.duration().toMillis()<old.duration().toMillis()*.95)return true;
+            var previous=results.stream().filter(old->old.distance().equals(r.distance())&&old.source()!=ResultSource.ROLLING&&old.date().isBefore(r.date())&&!old.date().isBefore(end.minusMonths(6))).map(RecordedResult::duration).min(Duration::compareTo);
+            if(previous.isPresent()&&r.duration().toMillis()<previous.get().toMillis()*.95)return true;
         }return false;
     }
     private static List<PlannedWorkout> scaled(PlanVersion v,LocalDate start,int weeks,double ceiling){var out=new ArrayList<PlannedWorkout>();for(int i=0;i<weeks;i++){LocalDate from=start.plusWeeks(i),to=from.plusWeeks(1);double total=v.plan().workouts().stream().filter(w->!w.date().isBefore(from)&&w.date().isBefore(to)&&w.category()!=WorkoutCategory.RACE&&w.distanceKm()!=null).mapToDouble(w->w.distanceKm()).sum();double factor=total>0&&ceiling>0?Math.min(1,ceiling/total):.8;for(var w:v.plan().workouts())if(!w.date().isBefore(from)&&w.date().isBefore(to)&&w.category()!=WorkoutCategory.RACE)out.add(resize(w,factor,false));}return out;}

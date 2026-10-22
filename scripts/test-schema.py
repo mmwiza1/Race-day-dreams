@@ -520,5 +520,42 @@ class CoachingSchemaTest(unittest.TestCase):
             db.close()
 
 
+class EvidenceSchemaTest(unittest.TestCase):
+    def test_all_prior_versions_upgrade_and_preserve_profile(self):
+        for version in (1,2,3,4):
+            db=sqlite3.connect(":memory:")
+            try:
+                create_schema(db,version=version)
+                db.execute("INSERT INTO user_profile VALUES (1,0)")
+                db.commit()
+                migrate_to_latest(db)
+                self.assertEqual([(1,0)],db.execute("SELECT * FROM user_profile").fetchall())
+                self.assertEqual(5,db.execute("PRAGMA user_version").fetchone()[0])
+                self.assertEqual([],db.execute("PRAGMA foreign_key_check").fetchall())
+            finally: db.close()
+
+    def test_kind_and_identity_constraints(self):
+        db=sqlite3.connect(":memory:")
+        try:
+            create_schema(db)
+            db.execute("INSERT INTO coach_evidence VALUES ('WEIGHT','w','{}')")
+            with self.assertRaises(sqlite3.IntegrityError): db.execute("INSERT INTO coach_evidence VALUES ('WEIGHT','w','{}')")
+            with self.assertRaises(sqlite3.IntegrityError): db.execute("INSERT INTO coach_evidence VALUES ('UNKNOWN','x','{}')")
+            db.execute("INSERT INTO coach_evidence VALUES ('HISTORICAL_PB','w','{}')")
+        finally: db.close()
+
+    def test_five_migration_rolls_back_without_touching_four(self):
+        db=sqlite3.connect(":memory:")
+        try:
+            create_schema(db,version=4)
+            db.execute("INSERT INTO settings VALUES ('retained','yes')")
+            db.execute("CREATE TABLE coach_evidence (collision TEXT)")
+            db.commit()
+            with self.assertRaises(sqlite3.OperationalError): migrate_to_latest(db)
+            self.assertEqual(4,db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual([('retained','yes')],db.execute("SELECT * FROM settings").fetchall())
+        finally: db.close()
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -233,7 +233,7 @@ class CoachOnboardingTest {
         compose.onNodeWithText("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
             .performScrollTo().assertIsDisplayed()
 
-        compose.onNodeWithText("Settings").performClick()
+        compose.onNodeWithText("⚙ Settings").performClick()
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         waitNativeText(R.string.onboarding_edit_title)
         nativeContinue(2)

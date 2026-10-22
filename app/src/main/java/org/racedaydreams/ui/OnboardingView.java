@@ -217,8 +217,7 @@ public final class OnboardingView extends ScrollView {
             target.setVisibility(value == GoalMode.TARGET_TIME ? VISIBLE : GONE);
             changed();
         }, value -> draft.distance != RaceDistance.GENERAL_FITNESS || value == GoalMode.FINISH);
-        disclosure(R.string.onboarding_finish_explanation);
-        disclosure(R.string.onboarding_max_explanation);
+        disclosure(R.string.onboarding_finish_explanation, R.string.onboarding_max_explanation);
         content.addView(target, blockParams());
         TextView targetLabel = new TextView(getContext());
         targetLabel.setText(R.string.onboarding_target_time);
@@ -255,15 +254,12 @@ public final class OnboardingView extends ScrollView {
                     draft.strategy = value;
                     changed();
                 }, value -> value != TrainingStrategy.PERFORMANCE || draft.canSelectPerformance());
-        disclosure(R.string.onboarding_distance_first_explanation);
-        disclosure(R.string.onboarding_balanced_explanation);
-        disclosure(R.string.onboarding_performance_explanation);
+        disclosure(R.string.onboarding_distance_first_explanation, R.string.onboarding_balanced_explanation, R.string.onboarding_performance_explanation, R.string.onboarding_zone2_explanation);
         if (draft.retainingPerformanceWithoutCurrentEvidence()) {
             text(R.string.onboarding_performance_retained, 16, false);
         } else if (!draft.performanceEligible) {
             disclosure(R.string.onboarding_performance_unavailable);
         }
-        disclosure(R.string.onboarding_zone2_explanation);
     }
 
     private void routineStep() {
@@ -395,11 +391,11 @@ public final class OnboardingView extends ScrollView {
         error.post(() -> smoothScrollTo(0, error.getTop()));
     }
 
-    private void disclosure(int resource) {
+    private void disclosure(int... resources) {
         Button help = button(android.R.string.dialog_alert_title);
         help.setText("Why? / Learn more");
         TextView details = new TextView(getContext());
-        details.setText(resource); details.setTextSize(16); details.setVisibility(GONE);
+        StringBuilder explanation=new StringBuilder();for(int resource:resources){if(explanation.length()>0)explanation.append("\n\n");explanation.append(getContext().getString(resource));}details.setText(explanation); details.setTextSize(16); details.setVisibility(GONE);
         content.addView(help, blockParams()); content.addView(details, blockParams());
         help.setOnClickListener(v -> {boolean show=details.getVisibility()!=VISIBLE;details.setVisibility(show?VISIBLE:GONE);help.setText(show?"Hide details":"Why? / Learn more");});
     }

@@ -62,7 +62,7 @@
     <string name="onboarding_no_days">None selected</string>
     <string name="onboarding_back">Back</string>
     <string name="onboarding_continue">Continue</string>
-    <string name="onboarding_save">Save goals and routine</string>
+    <string name="onboarding_save">Create my programme</string>
     <string name="onboarding_saving">Saving…</string>
     <string name="onboarding_cancel">Cancel editing</string>
     <string name="onboarding_draft_invalid">We could not restore the unfinished form. Your saved goals have not changed.</string>
