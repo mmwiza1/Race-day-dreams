@@ -40,7 +40,7 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
 @Composable fun CalendarLegend(){
     Text("Legend: workout categories",style=MaterialTheme.typography.titleSmall)
     FlowRow(Modifier.semantics{contentDescription="Workout category legend"},horizontalArrangement=Arrangement.spacedBy(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-        CalendarData.Category.entries.filter{it!=CalendarData.Category.RUN}.forEach{c->Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(4.dp)){CalendarMarker(CalendarData.Entry(c,CalendarData.State.PLANNED,markerName(c),null,null));Text(markerName(c),style=MaterialTheme.typography.labelMedium)}}
+        CalendarData.Category.entries.forEach{c->Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(4.dp)){CalendarMarker(CalendarData.Entry(c,CalendarData.State.PLANNED,markerName(c),null,null));Text(markerName(c),style=MaterialTheme.typography.labelMedium)}}
     }
     Text("Outline: planned · Filled: completed · ↗ Moved · − Skipped · ? Not completed",style=MaterialTheme.typography.labelMedium)
     WhyDetails("E Easy · Q Quality · L Long · S Strength · R Race · – Rest · U Unclassified run. Moved and skipped sessions are labelled in day details. Rest means an available day deliberately left free within your programme; blank dates outside it are not labelled rest.","Calendar key")
