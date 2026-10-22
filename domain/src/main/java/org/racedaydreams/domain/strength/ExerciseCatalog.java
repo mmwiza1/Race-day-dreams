@@ -184,6 +184,10 @@ public final class ExerciseCatalog {
         add(out, "dead-hang", "Dead Hang", "Core", "bodyweight", StrengthExercise.Region.FULL, StrengthExercise.Mode.BODYWEIGHT, StrengthExercise.MeasurementProfile.DURATION, false, new String[]{});
         add(out, "wall-sit", "Wall Sit", "Core", "bodyweight", StrengthExercise.Region.FULL, StrengthExercise.Mode.BODYWEIGHT, StrengthExercise.MeasurementProfile.DURATION, false, new String[]{});
         add(out, "weighted-wall-sit", "Weighted Wall Sit", "Core", "barbell", StrengthExercise.Region.FULL, StrengthExercise.Mode.WEIGHTED, StrengthExercise.MeasurementProfile.LOAD_DURATION, false, new String[]{});
+        add(out,"bodyweight-squat","Bodyweight Squat","Squat / quad","bodyweight",StrengthExercise.Region.LOWER,StrengthExercise.Mode.BODYWEIGHT,StrengthExercise.MeasurementProfile.REPS_ONLY,false,new String[]{"Air Squat"});
+        add(out,"reverse-lunge-bodyweight","Bodyweight Reverse Lunge","Unilateral","bodyweight",StrengthExercise.Region.LOWER,StrengthExercise.Mode.BODYWEIGHT,StrengthExercise.MeasurementProfile.REPS_ONLY,false,new String[]{});
+        add(out,"glute-bridge","Glute Bridge","Hinge / posterior chain","bodyweight",StrengthExercise.Region.LOWER,StrengthExercise.Mode.BODYWEIGHT,StrengthExercise.MeasurementProfile.REPS_ONLY,false,new String[]{});
+        add(out,"single-leg-calf-raise-bodyweight","Bodyweight Single-Leg Calf Raise","Calves / lower leg","bodyweight",StrengthExercise.Region.LOWER,StrengthExercise.Mode.BODYWEIGHT,StrengthExercise.MeasurementProfile.REPS_ONLY,false,new String[]{});
         var ids=new HashSet<String>();for(var d:out)if(!ids.add(d.exercise().id()))throw new IllegalStateException("Duplicate exercise identity");
         return Immutable.copyList(out);
     }

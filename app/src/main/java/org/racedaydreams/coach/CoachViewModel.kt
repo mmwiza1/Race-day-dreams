@@ -73,6 +73,8 @@ data class CoachUiState(
     val historicalStrength: List<HistoricalStrengthRecord> = emptyList(),
     val massUnit: MassUnit = MassUnit.KG,
     val calendarView: String = "List",
+    val gymProgramme: org.racedaydreams.domain.strength.GymProgramme? = null,
+    val gymVersions: List<org.racedaydreams.domain.strength.GymProgramme> = emptyList(),
     val exerciseChoices: List<org.racedaydreams.data.StrengthUserStore.Choice> = emptyList(),
     val acknowledgedPbs: Set<String> = emptySet(),
     val providerPreference: String = "HEALTH_CONNECT",
@@ -164,6 +166,8 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 currentPlan = currentPlan, planVersions = history,
                 weights = development.weights(), historicalStrength = development.historical(),
                 massUnit = runCatching { MassUnit.valueOf(store.getSetting("mass.unit") ?: "KG") }.getOrDefault(MassUnit.KG),
+                gymProgramme = org.racedaydreams.data.GymProgrammeStore(getApplication()).current(),
+                gymVersions = org.racedaydreams.data.GymProgrammeStore(getApplication()).versions(),
                 exerciseChoices = org.racedaydreams.data.StrengthUserStore(getApplication()).choices(),
                 acknowledgedPbs = org.racedaydreams.data.StrengthUserStore(getApplication()).acknowledged(),
                 calendarView = store.getSetting("calendar.view") ?: "List", providerPreference = preference.name,
@@ -337,6 +341,11 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         require(!store.activities().any { it.plannedWorkoutId() == proposal.workoutId() }) { "This workout has already been completed; refresh the plan." }
         coaching.decide(proposal, optionId, completed)
     }
+
+    fun saveGym(plan: org.racedaydreams.domain.strength.GymProgramme) = mutate("Strength programme saved. Previous versions are retained.") {
+        org.racedaydreams.data.GymProgrammeStore(getApplication()).save(plan)
+    }
+    fun disableGym() = mutate("Generated programming stopped. Your recorded workouts and PBs remain.") { org.racedaydreams.data.GymProgrammeStore(getApplication()).disable() }
 
     fun exerciseChoice(id: String, favourite: Boolean, archived: Boolean) = mutate {
         org.racedaydreams.data.StrengthUserStore(getApplication()).save(org.racedaydreams.data.StrengthUserStore.Choice(id,favourite,archived))

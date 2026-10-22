@@ -75,6 +75,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
                 Text(distance.label(), style = MaterialTheme.typography.titleLarge)
                 if (best == null) Text("No supported result recorded yet.")
                 else {
+                    PbCelebration(state,model,"running:"+best.result().id(),best.improvement()?.let{"${PaceCalculator.formatTime(it)} faster than the previous retained PB"})
                     ResultEvidence(best, state, onActivity)
                     TextButton(onClick = { expandedDistance = if (expandedDistance == distance.code()) null else distance.code() }) {
                         Text(if (expandedDistance == distance.code()) "Hide PB progression" else "Show PB progression")

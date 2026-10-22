@@ -150,6 +150,8 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // Local user choices. Legacy activity payloads/identities remain untouched.
         db.execSQL("CREATE TABLE strength_user_state (exercise_id TEXT PRIMARY KEY NOT NULL, favourite INTEGER NOT NULL DEFAULT 0 CHECK(favourite IN (0,1)), archived INTEGER NOT NULL DEFAULT 0 CHECK(archived IN (0,1)))");
         db.execSQL("CREATE TABLE pb_acknowledgements (id TEXT PRIMARY KEY NOT NULL)");
+        db.execSQL("CREATE TABLE gym_plan_versions (version_id TEXT PRIMARY KEY NOT NULL, plan_id TEXT NOT NULL, version INTEGER NOT NULL CHECK(version > 0), payload TEXT NOT NULL, UNIQUE(plan_id,version))");
+        db.execSQL("CREATE TABLE gym_current (id INTEGER PRIMARY KEY CHECK(id=1), version_id TEXT NOT NULL REFERENCES gym_plan_versions(version_id))");
         // V6_SCHEMA_END
     }
 

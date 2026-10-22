@@ -113,6 +113,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
 
             Text("Values absent from the source remain unavailable. Elapsed time is not presented as moving time.")
         }
+        RunComparisonSection(state,activity)
         RunFeedbackSection(state, model, activity)
         assessmentSummary?.let { summary ->
             CoachCard {

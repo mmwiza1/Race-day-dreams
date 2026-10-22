@@ -100,6 +100,8 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             CoachHeading(workoutName(workout.category()))
             Text("${friendlyDate(workout.date())} · plan version ${version.version()}")
             Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Runner-owned race")
+            val briefing=org.racedaydreams.domain.coaching.WorkoutContext.briefing(workout,state.plannedWorkouts,state.activities,state.strengthSessions,state.weeklyReview)
+            CoachCard { Text("Today’s focus",style=MaterialTheme.typography.titleMedium);Text(briefing.title());WhyDetails(briefing.observations().joinToString("\n"),"Before you run") }
             CoachHeading("Workout structure")
             workout.segments().forEachIndexed { index, segment -> CoachCard {
                 Text("${index + 1}. ${segment.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}}", style = MaterialTheme.typography.titleMedium)
@@ -113,7 +115,7 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             var moveDate by rememberSaveable { mutableStateOf(workout.date().toString()) }
             if(workout.category()!=WorkoutCategory.RACE && state.runResponses.none{it.plannedWorkoutId()==workout.id()}) {
                 TextButton(onClick={moving=!moving}){Text("Move or skip this session")}
-                if(moving){DateInput("Move to",moveDate,{moveDate=it});Text("Nearby demanding sessions may need recovery. This choice never adds mileage elsewhere.");CoachButton("Confirm move",{model.changeWorkout(workout.id(),LocalDate.parse(moveDate))});OutlinedButton(onClick={model.changeWorkout(workout.id())}){Text("Skip this session")}}
+                if(moving){DateInput("Move to",moveDate,{moveDate=it});val proposed=runCatching{LocalDate.parse(moveDate)}.getOrNull();org.racedaydreams.domain.coaching.WorkoutContext.moveWarnings(workout,proposed,state.plannedWorkouts,state.strengthSessions).forEach{Text(it)};CoachButton("Move this workout only",{model.changeWorkout(workout.id(),LocalDate.parse(moveDate))});OutlinedButton(onClick={model.changeWorkout(workout.id())}){Text("Skip this session")}}
             }
             WhyDetails(workout.note() ?: "No explanation was recorded.","Why this workout?")
             Text("Goal: ${version.goalSnapshot().raceGoal().distance().label()} · ${version.goalSnapshot().raceGoal().mode().label()}")
