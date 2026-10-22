@@ -81,7 +81,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             db.setTransactionSuccessful();
         } finally {db.endTransaction();}
     }
-    private static void putActivity(SQLiteDatabase db,ActivityRecord a,boolean userOwned) {
+    static void putActivity(SQLiteDatabase db,ActivityRecord a,boolean userOwned) {
         putActivity(db,a,userOwned,true);
     }
     private static void putActivity(SQLiteDatabase db,ActivityRecord a,boolean userOwned,boolean assignDefault) {

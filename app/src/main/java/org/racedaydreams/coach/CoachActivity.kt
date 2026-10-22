@@ -164,8 +164,10 @@ private fun CoachApp(model: CoachViewModel) {
                 }
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
+                composable("record-run") { RecordingScreen(model) }
+                composable("health-intelligence") { HealthIntelligenceScreen(model) }
                 composable("weekly") { WeeklyReviewScreen(state,model,{nav.navigate("goals")}) }
-                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
+                composable("home") { TextButton(onClick={nav.navigate("record-run")}){Text("Record a run")}; HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -201,7 +203,7 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("progress") { ProgressDashboard(state){nav.navigate(it)} }
                 listOf("pbs","trends","weight").forEach { section -> composable("progress/$section") { ProgressScreen(state,model,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("shoes")},{nav.navigate("strength")},section) } }
                 composable("shoes") { ShoesScreen(state, model) }
-                composable("settings") { SettingsScreen(state, model, model.health.historyPermissionAvailable(), connect,
+                composable("settings") { TextButton(onClick={nav.navigate("health-intelligence")}){Text("Sleep, HRV and personal health trends")}; SettingsScreen(state, model, model.health.historyPermissionAvailable(), connect,
                     providerUpdate, providerSettings,
                     { nav.navigate("goals") }, { nav.navigate("baseline") }, { nav.navigate("shoes") },
                     { export.launch("race-day-dreams-backup.json") }, { restore.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) },

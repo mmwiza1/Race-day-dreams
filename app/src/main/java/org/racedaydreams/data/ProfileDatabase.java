@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 6;
+    static final int VERSION = 7;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -41,6 +41,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateThreeToFour(db);
         migrateFourToFive(db);
         migrateFiveToSix(db);
+        migrateSixToSeven(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -156,10 +157,21 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V6_SCHEMA_END
     }
 
+    private static void migrateSixToSeven(SQLiteDatabase db) {
+        // V7_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE health_observations (id TEXT PRIMARY KEY NOT NULL, metric TEXT NOT NULL, day TEXT NOT NULL, start_time TEXT NOT NULL, end_time TEXT NOT NULL, value REAL NOT NULL CHECK(value>=0), source TEXT NOT NULL, imported_at TEXT NOT NULL)");
+        db.execSQL("CREATE INDEX health_metric_day ON health_observations(metric,day)");
+        db.execSQL("CREATE TABLE recording_sessions (id TEXT PRIMARY KEY NOT NULL, state TEXT NOT NULL, started_at TEXT NOT NULL, started_mono INTEGER NOT NULL, last_mono INTEGER NOT NULL, activity_id TEXT)");
+        db.execSQL("CREATE UNIQUE INDEX one_active_recording ON recording_sessions((1)) WHERE state IN ('ACTIVE','PAUSED','RECOVERABLE')");
+        db.execSQL("CREATE TABLE recording_points (session_id TEXT NOT NULL REFERENCES recording_sessions(id) ON DELETE CASCADE, sequence INTEGER NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(session_id,sequence))");
+        db.execSQL("CREATE TABLE recording_events (session_id TEXT NOT NULL REFERENCES recording_sessions(id) ON DELETE CASCADE, sequence INTEGER NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(session_id,sequence))");
+        // V7_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 5)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 6)) {
             throw new SQLiteException("An explicit migration is required from schema "
                     + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
@@ -167,6 +179,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 2) migrateTwoToThree(db);
         if (oldVersion <= 3) migrateThreeToFour(db);
         if (oldVersion <= 4) migrateFourToFive(db);
-        migrateFiveToSix(db);
+        if (oldVersion <= 5) migrateFiveToSix(db);
+        migrateSixToSeven(db);
     }
 }
