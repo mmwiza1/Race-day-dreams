@@ -73,6 +73,7 @@ data class CoachUiState(
     val historicalStrength: List<HistoricalStrengthRecord> = emptyList(),
     val massUnit: MassUnit = MassUnit.KG,
     val calendarView: String = "List",
+    val gymLinks: Map<String,org.racedaydreams.data.DevelopmentStore.GymLink> = emptyMap(),
     val gymProgramme: org.racedaydreams.domain.strength.GymProgramme? = null,
     val gymVersions: List<org.racedaydreams.domain.strength.GymProgramme> = emptyList(),
     val exerciseChoices: List<org.racedaydreams.data.StrengthUserStore.Choice> = emptyList(),
@@ -166,6 +167,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 currentPlan = currentPlan, planVersions = history,
                 weights = development.weights(), historicalStrength = development.historical(),
                 massUnit = runCatching { MassUnit.valueOf(store.getSetting("mass.unit") ?: "KG") }.getOrDefault(MassUnit.KG),
+                gymLinks = development.gymLinks(),
                 gymProgramme = org.racedaydreams.data.GymProgrammeStore(getApplication()).current(),
                 gymVersions = org.racedaydreams.data.GymProgrammeStore(getApplication()).versions(),
                 exerciseChoices = org.racedaydreams.data.StrengthUserStore(getApplication()).choices(),
@@ -391,7 +393,15 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     }
 
     fun saveStrength(session: StrengthSession, onSuccess: () -> Unit = {}, plannedDate: LocalDate? = null) = mutate("Strength workout saved. PB history is derived from retained sets.", onSuccess) {
-        coaching.transaction { coaching.saveStrength(session); if(plannedDate!=null) development.linkStrength(session.id(),plannedDate) }
+        coaching.transaction {
+            coaching.saveStrength(session)
+            if(plannedDate!=null && session.id() !in development.strengthLinks()) {
+                val gym=org.racedaydreams.data.GymProgrammeStore(getApplication()).current()
+                val prescription=gym?.sessions()?.firstOrNull{it.date()==plannedDate}
+                if(gym!=null&&prescription!=null)development.linkGym(session.id(),plannedDate,org.racedaydreams.data.GymProgrammeStore.key(gym),prescription.id())
+                else development.linkStrength(session.id(),plannedDate)
+            }
+        }
     }
     fun deleteStrength(id: String) = mutate("Strength workout removed; PB history has been recalculated.") { coaching.transaction { coaching.deleteStrength(id);development.deleteStrengthLink(id) } }
     fun saveExercise(exercise: StrengthExercise) = mutate("Exercise saved. Recorded sessions retain their original exercise definition.") { coaching.saveExercise(exercise) }

@@ -18,7 +18,7 @@ final class CoachingJson {
         JSONArray exercises = new JSONArray();
         for (var e : s.exercises()) {
             JSONArray sets = new JSONArray();
-            for (var set : e.sets()) sets.put(json("id",set.id(),"reps",set.reps(),"kg",set.kilograms(),"rpe",set.rpe(),"warmUp",set.warmUp(),"seconds",set.durationSeconds(),"metres",set.distanceMetres()));
+            for (var set : e.sets()) sets.put(json("id",set.id(),"reps",set.reps(),"kg",set.kilograms(),"rpe",set.rpe(),"warmUp",set.warmUp(),"seconds",set.durationSeconds(),"metres",set.distanceMetres(),"rir",set.repetitionsInReserve()));
             exercises.put(json("exercise",exercise(e.exercise()),"sets",sets));
         }
         return json("id",s.id(),"startedAt",s.startedAt().toString(),"offset",s.offset().toString(),"duration",s.duration().toString(),"rpe",s.rpe(),"notes",s.notes(),"exercises",exercises);
@@ -29,7 +29,7 @@ final class CoachingJson {
         for (int i=0;i<rows.length();i++) { JSONObject e=rows.getJSONObject(i); JSONArray sets=e.getJSONArray("sets");
             if (sets.length()>100) throw new IllegalArgumentException("Too many sets.");
             List<StrengthSession.SetEntry> values=new ArrayList<>();
-            for(int k=0;k<sets.length();k++) {JSONObject v=sets.getJSONObject(k);values.add(new StrengthSession.SetEntry(required(v,"id"),requiredInteger(v,"reps"),requiredNumber(v,"kg"),number(v,"rpe"),bool(v,"warmUp"),v.isNull("seconds")?null:requiredLong(v,"seconds"),number(v,"metres")));}
+            for(int k=0;k<sets.length();k++) {JSONObject v=sets.getJSONObject(k);values.add(new StrengthSession.SetEntry(required(v,"id"),requiredInteger(v,"reps"),requiredNumber(v,"kg"),number(v,"rpe"),bool(v,"warmUp"),v.isNull("seconds")?null:requiredLong(v,"seconds"),number(v,"metres"),number(v,"rir")));}
             exercises.add(new StrengthSession.ExerciseSets(exercise(e.getJSONObject("exercise")),values));
         }
         return new StrengthSession(required(j,"id"),Instant.parse(required(j,"startedAt")),ZoneOffset.of(required(j,"offset")),Duration.parse(required(j,"duration")),number(j,"rpe"),prose(j,"notes"),exercises);

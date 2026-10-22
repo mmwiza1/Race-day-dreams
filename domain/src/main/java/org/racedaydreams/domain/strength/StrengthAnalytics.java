@@ -17,13 +17,13 @@ public final class StrengthAnalytics {
             boolean involvesLower = e.exercise().region() != StrengthExercise.Region.UPPER && !(ExerciseCatalog.definition(e.exercise().id()) != null && ExerciseCatalog.definition(e.exercise().id()).category().equals("Core"));
             if (involvesLower) lower++;
             if (e.exercise().region() != StrengthExercise.Region.LOWER) upper++;
-            if (set.rpe() != null && set.rpe() >= 8) { hard = true; if (involvesLower) hardLower = true; }
+            if (set.coachingRpe() != null && set.coachingRpe() >= 8) { hard = true; if (involvesLower) hardLower = true; }
         }
         var region = lower == 0 ? StrengthExercise.Region.UPPER : upper == 0 ? StrengthExercise.Region.LOWER : StrengthExercise.Region.FULL;
         var involvement = lower >= 3 && hardLower ? Involvement.HIGH : lower > 0 ? Involvement.MODERATE : Involvement.LOW;
         return new Context(region, hard ? "Hard" : session.rpe() == null ? "Effort not recorded" : session.rpe() <= 3 ? "Light" : "Moderate",
                 involvement, org.racedaydreams.domain.coaching.Immutable.list(lower + " working sets involved the lower body.",
-                "Effort uses recorded session/set RPE; load alone does not establish fatigue. This is coaching context, not a physiological measurement."));
+                "Effort uses recorded session/set RPE or an approximate 10−RIR conversion; load alone does not establish fatigue. This is coaching context, not a physiological measurement."));
     }
     public static Double sessionLoad(StrengthSession session) {
         return session.rpe() == null ? null : session.duration().toMillis() / 60000.0 * session.rpe();

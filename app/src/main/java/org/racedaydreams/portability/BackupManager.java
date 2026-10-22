@@ -122,7 +122,7 @@ public final class BackupManager {
             if (!(version instanceof Integer) || ((Integer) version) < 1 || ((Integer) version) > VERSION) {
                 throw new IOException("This backup version is not supported by this app.");
             }
-            if (((Integer) version) >= 4 && !envelope.getJSONObject("data").has("strengthState")) throw new IOException("Version-four backup is missing exercise choices.");
+            if (((Integer) version) >= 4 && (!envelope.getJSONObject("data").has("strengthState") || !envelope.getJSONObject("data").has("gymProgramming"))) throw new IOException("Version-four backup is missing exercise choices.");
             if (((Integer) version) >= 3 && !envelope.getJSONObject("data").has("development")) throw new IOException("Version-three backup is missing its evidence section.");
             if (((Integer) version) >= 2 && !envelope.getJSONObject("data").has("coaching"))
                 throw new IOException("This version-two backup is missing its coaching data section.");

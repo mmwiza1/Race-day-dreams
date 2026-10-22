@@ -17,7 +17,7 @@ import org.racedaydreams.domain.strength.TechniqueGuide
     Text("How to do it",style=MaterialTheme.typography.titleLarge)
     listOf("Setup" to guide.setup(),"Movement" to guide.movement()).forEachIndexed{i,pair->CoachCard{
         Text("${i+1}. ${pair.first}",style=MaterialTheme.typography.titleMedium)
-        TechniqueDrawing(guide.pattern(),i,pair.second)
+        TechniqueDrawing(id,guide.pattern(),i,pair.second)
         Text(pair.second)
     }}
     Text("Key cues",style=MaterialTheme.typography.titleMedium);guide.cues().forEach{Text("• $it")}
@@ -27,22 +27,31 @@ import org.racedaydreams.domain.strength.TechniqueGuide
     Text("Alternatives: ${guide.alternatives().joinToString()}")
     WhyDetails("General technique guidance. Start conservatively and seek qualified in-person coaching if you are unsure about a movement. Drawings are schematic and do not prescribe an exact joint angle.","About this guidance")
 }
-@Composable private fun TechniqueDrawing(pattern:String,frame:Int,description:String){
+@Composable private fun TechniqueDrawing(id:String,pattern:String,frame:Int,description:String){
     val ink=MaterialTheme.colorScheme.onSurface;val load=MaterialTheme.colorScheme.primary
     Canvas(Modifier.fillMaxWidth().height(130.dp).semantics{contentDescription="Schematic $pattern, ${if(frame==0)"setup"else "movement"}: $description"}){
         fun point(x:Float,y:Float)=Offset(size.width*x,size.height*y)
         fun limb(a:Pair<Float,Float>,b:Pair<Float,Float>)=drawLine(ink,point(a.first,a.second),point(b.first,b.second),6f)
         val bent=frame==1
         val horizontal=pattern in listOf("plank","press","bridge","curl")
-        val hip=if(horizontal) .48f to .58f else if(bent&&pattern in listOf("hinge","row","squat","split")) .42f to .62f else .48f to .48f
-        val shoulder=if(horizontal) .30f to .48f else if(bent&&pattern in listOf("hinge","row")) .60f to .40f else .48f to .25f
-        val knee=if(horizontal).65f to .63f else if(bent&&pattern in listOf("squat","split")) .60f to .68f else .48f to .70f
-        val foot=if(horizontal).80f to .72f else .48f to .92f
-        val hand=when(pattern){"overhead","pull"-> .62f to (if(bent).06f else .32f);"press"-> .30f to (if(bent).15f else .43f);"row"->if(bent).53f to .45f else .62f to .68f;else-> .62f to (if(bent).65f else .49f)}
+        var hip=if(horizontal) .48f to .58f else if(bent&&pattern in listOf("hinge","row","squat","split")) .42f to .62f else .48f to .48f
+        var shoulder=if(horizontal) .30f to .48f else if(bent&&pattern in listOf("hinge","row")) .60f to .40f else .48f to .25f
+        var knee=if(horizontal).65f to .63f else if(bent&&pattern in listOf("squat","split")) .60f to .68f else .48f to .70f
+        var foot=if(horizontal).80f to .72f else .48f to .92f
+        var hand=when(pattern){"overhead","pull"-> .62f to (if(bent).06f else .32f);"press"-> .30f to (if(bent).15f else .43f);"row"->if(bent).53f to .45f else .62f to .68f;else-> .62f to (if(bent).65f else .49f)}
+        if(pattern=="row"){hip=.42f to .62f;shoulder=.60f to .40f}
+        if(pattern=="press"){shoulder=.28f to .5f;hip=.50f to .5f;knee=.65f to .7f;foot=.65f to .92f;hand=.30f to (if(bent).18f else .43f);drawLine(ink,point(.22f,.60f),point(.57f,.60f),5f)}
+        if(pattern=="bridge"){shoulder=.28f to .5f;hip=.50f to (if(bent).50f else .74f);knee=.68f to .58f;foot=.68f to .92f;drawLine(ink,point(.2f,.60f),point(.34f,.60f),5f)}
+        if(pattern=="curl"){shoulder=.28f to .55f;hip=.48f to .55f;knee=.65f to .55f;foot=if(bent).65f to .23f else .82f to .55f;drawLine(ink,point(.22f,.65f),point(.68f,.65f),5f)}
+        if(pattern=="pull")hand=.62f to (if(bent).32f else .06f)
+        if(id=="leg-press"){shoulder=.28f to .32f;hip=.35f to .68f;knee=if(bent).48f to .42f else .60f to .55f;foot=.76f to .30f;drawLine(ink,point(.20f,.3f),point(.30f,.75f),5f);drawLine(load,point(.72f,.23f),point(.81f,.37f),7f)}
         limb(shoulder,hip);limb(hip,knee);limb(knee,foot);limb(shoulder,hand)
         if(pattern=="split"){limb(hip,.30f to .76f);limb(.30f to .76f,.24f to .92f)}
-        drawCircle(ink,size.height*.065f,point(shoulder.first,shoulder.second-.10f))
+        drawCircle(ink,size.height*.065f,if(horizontal)point(shoulder.first-.07f,shoulder.second)else point(shoulder.first,shoulder.second-.10f))
         drawLine(ink.copy(alpha=.3f),point(.15f,.96f),point(.85f,.96f),3f)
-        if(pattern !in listOf("plank","calf")){drawLine(load,point(hand.first-.09f,hand.second),point(hand.first+.09f,hand.second),7f);drawCircle(load,8f,point(hand.first-.09f,hand.second));drawCircle(load,8f,point(hand.first+.09f,hand.second))}
+        if(pattern !in listOf("plank","calf")&&id!="leg-press"){
+            val location=when(pattern){"squat"->shoulder;"bridge"->hip;"curl"->foot;else->hand}
+            drawLine(load,point(location.first-.09f,location.second),point(location.first+.09f,location.second),7f);drawCircle(load,8f,point(location.first-.09f,location.second));drawCircle(load,8f,point(location.first+.09f,location.second))
+        }
     }
 }

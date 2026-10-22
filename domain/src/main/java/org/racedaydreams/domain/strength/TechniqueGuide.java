@@ -20,6 +20,19 @@ public record TechniqueGuide(String pattern,String setup,String movement,List<St
             case "lying-leg-curl" -> {pattern="curl";setup="Adjust the machine pivot near your knee and the pad above your heels; keep your hips supported.";movement="Bend the knees to curl the pad toward you, then extend under control without lifting the hips.";muscles="Hamstrings";alternatives=Immutable.list("Seated Leg Curl","Sliding Leg Curl");}
             default -> {return null;}
         }
-        return new TechniqueGuide(pattern,setup,movement,Immutable.list("Start with a manageable load or variation","Use a controlled, comfortable range","Keep breathing and maintain a stable setup"),Immutable.list("Using momentum instead of control","Choosing a load that changes the intended movement","Continuing when technique deteriorates"),muscles,alternatives);
+        List<String> cues,mistakes;
+        switch(pattern){
+            case "hinge" -> {cues=Immutable.list("Brace your trunk","Hinge at the hips","Keep the load close","Control the lowering phase");mistakes=Immutable.list("Turning the hinge into a squat","Letting the load drift forward","Excessive back rounding or uncontrolled lowering");}
+            case "squat" -> {cues=Immutable.list("Keep your whole foot supported","Brace before each repetition","Let knees follow a comfortable line with your feet");mistakes=Immutable.list("Losing foot contact or balance","Bouncing beyond a controllable range","Choosing a load that changes your intended movement");}
+            case "split" -> {cues=Immutable.list("Keep the working foot stable","Lower with control","Use a manageable step or support height");mistakes=Immutable.list("Pushing mainly from the trailing leg","Using an unstable support","Rushing the lowering phase");}
+            case "press","overhead" -> {cues=Immutable.list("Keep wrists supported beneath the load","Maintain a stable trunk and support","Press smoothly and lower under control");mistakes=Immutable.list("Bouncing or jerking the load","Excessive back arching to finish a repetition","Losing stable contact with the bench or floor");}
+            case "row","pull" -> {cues=Immutable.list("Keep your trunk steady","Lead the pull with controlled elbow movement","Return the load smoothly");mistakes=Immutable.list("Swinging the body for momentum","Jerking at the start","Pulling beyond a comfortable range");}
+            case "plank" -> {cues=Immutable.list("Place the elbow beneath the shoulder","Keep a controlled supported body line","Breathe throughout the hold");mistakes=Immutable.list("Letting the hips sag or twist","Holding your breath","Extending the hold after control deteriorates");}
+            case "bridge" -> {cues=Immutable.list("Keep ribs and pelvis controlled","Drive through stable feet","Finish with hip extension rather than back extension");mistakes=Immutable.list("Overarching the lower back","Using an unstable bench","Bouncing through the bottom");}
+            case "carry" -> {cues=Immutable.list("Stand tall without excessive leaning","Use controlled steps","Set the loads down deliberately");mistakes=Immutable.list("Leaning heavily to one side","Rushing with unstable steps","Losing grip or posture to extend the distance");}
+            case "curl" -> {cues=Immutable.list("Adjust the pad and pivot to your leg length","Keep the hips supported","Control both directions");mistakes=Immutable.list("Lifting the hips to move the load","Swinging the lower legs","Using an uncomfortable machine setup");}
+            default -> {cues=Immutable.list("Use a stable support","Pause and control the lowering","Choose a comfortable range");mistakes=Immutable.list("Bouncing instead of controlled movement","Losing balance","Using a load that changes the intended action");}
+        }
+        return new TechniqueGuide(pattern,setup,movement,cues,mistakes,muscles,alternatives);
     }
 }

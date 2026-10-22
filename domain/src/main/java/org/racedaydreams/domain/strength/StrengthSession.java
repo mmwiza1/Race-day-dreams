@@ -9,14 +9,17 @@ import java.util.Objects;
 
 public record StrengthSession(String id, Instant startedAt, ZoneOffset offset, Duration duration,
         Double rpe, String notes, List<ExerciseSets> exercises) {
-    public record SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp, Long durationSeconds, Double distanceMetres) {
-        public SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp) { this(id,reps,kilograms,rpe,warmUp,null,null); }
+    public record SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp, Long durationSeconds, Double distanceMetres, Double repetitionsInReserve) {
+        public SetEntry(String id,int reps,double kilograms,Double rpe,boolean warmUp,Long durationSeconds,Double distanceMetres){this(id,reps,kilograms,rpe,warmUp,durationSeconds,distanceMetres,null);}
+        public Double coachingRpe(){return rpe!=null?rpe:repetitionsInReserve==null?null:10-repetitionsInReserve;}
+        public SetEntry(String id, int reps, double kilograms, Double rpe, boolean warmUp) { this(id,reps,kilograms,rpe,warmUp,null,null,null); }
         public SetEntry {
             if (id == null || id.trim().isEmpty() || reps < 0 || reps > 500 || !Double.isFinite(kilograms)
                     || kilograms < 0 || kilograms > 1500) throw new IllegalArgumentException("Check set ID, reps and load.");
             if (durationSeconds != null && (durationSeconds <= 0 || durationSeconds > 43200)) throw new IllegalArgumentException("Check set duration.");
             if (distanceMetres != null && (!Double.isFinite(distanceMetres) || distanceMetres <= 0 || distanceMetres > 100000)) throw new IllegalArgumentException("Check set distance.");
             if ((reps > 0 ? 1 : 0) + (durationSeconds != null ? 1 : 0) + (distanceMetres != null ? 1 : 0) != 1) throw new IllegalArgumentException("Record exactly one of repetitions, duration or distance.");
+            if(repetitionsInReserve!=null&&(!Double.isFinite(repetitionsInReserve)||repetitionsInReserve<0||repetitionsInReserve>10||reps==0||rpe!=null))throw new IllegalArgumentException("Record RPE or rep-based RIR, not both.");
             checkRpe(rpe);
         }
     }
