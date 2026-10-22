@@ -51,13 +51,13 @@ public final class WeeklyCoaching {
         for(var w:reviewedWorkouts) {
             if(w.category()==WorkoutCategory.RACE)continue;
             var a=actual.get(w.id());
-            if(!w.date().isBefore(from)&&w.date().isBefore(end)){planned++;if(a!=null)completed++;}
+            if(!w.date().isBefore(from)&&w.date().isBefore(end)){planned++;if(a!=null&&date(a).isBefore(end))completed++;}
             if(w.date().isBefore(window)||!w.date().isBefore(end))continue;
             var first=original.getOrDefault(w.id(),w);
             boolean wasMoved=!first.date().equals(w.date())||a!=null&&!date(a).equals(first.date());
             if(a==null){difficultTypes.merge(w.category(),1,Integer::sum);if(w.duration()!=null&&w.duration().toMinutes()>=60)longDurationMisses++;if(recordedHeavy.contains(first.date().minusDays(1)))strengthPrecededMisses++;}
             if(a==null||wasMoved){var day=first.date().getDayOfWeek();difficult.computeIfAbsent(day,d->new HashSet<>()).add(first.date().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));if(wasMoved&&a!=null)moved.merge(day,1,Integer::sum);}
-            if(a==null)continue;
+            if(a==null||!date(a).isBefore(end))continue;
             if(a.rpe()!=null){if(w.date().isBefore(end.minusWeeks(2))){priorEffort+=a.rpe();priorCount++;}else{recentEffort+=a.rpe();recentCount++;}if(a.rpe()>(AdaptiveCoachingEngine.isQuality(w.category())?8:5))hard++;}
             if(w.distanceKm()!=null&&a.distanceMetres()!=null&&a.distanceMetres()<w.distanceKm()*800){shortened++;if(w.category()==WorkoutCategory.LONG_RUN)longShortened++;}
             if(w.category()==WorkoutCategory.LONG_RUN){var d=LongRunDurability.analyse(a);if(d.sufficient()){durable++;if(d.paceFadePercent()>8)faded++;}}
