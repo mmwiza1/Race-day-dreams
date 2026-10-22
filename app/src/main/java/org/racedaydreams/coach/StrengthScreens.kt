@@ -71,7 +71,7 @@ import org.racedaydreams.domain.strength.*
             state.strengthPlannedDates[s.id()]?.let{Text("Linked planned strength date: ${friendlyDate(it)}") }
             val context=StrengthAnalytics.context(s);Text("${context.region().name.lowercase().replace('_',' ')} · ${context.effort()} · lower-body involvement ${context.lowerBody().name.lowercase()}")
             WhyDetails(context.reasons().joinToString("\n"),"Why this strength context?")
-            val newRecords=progression.filter{it.sessionId()==s.id()&&it.category()!="Estimated 1RM"}
+            val newRecords=progression.filter{r->r.sessionId()==s.id()&&r.category()!="Estimated 1RM"&&timeline.none{it.sessionId()==null&&it.exerciseId()==r.exerciseId()&&it.category()==r.category()&&it.value()>=r.value()}}
             if(newRecords.isNotEmpty())Text("PB evidence recorded · ${newRecords.map{it.exerciseId()}.distinct().size} exercises",style=MaterialTheme.typography.titleSmall)
             s.exercises().forEach{b->
                 Text(b.exercise().name(),style=MaterialTheme.typography.titleMedium)

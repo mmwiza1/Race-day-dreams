@@ -52,7 +52,7 @@ public final class CalendarData {
         }
         // An available slot deliberately left free by an active generated plan is planned rest.
         // Unavailable dates, dates outside the plan, and moved/skipped dates stay distinct.
-        if(out.isEmpty()&&plan!=null&&!date.isBefore(plan.plan().startDate())&&!date.isAfter(plan.plan().endDate())&&plan.goalSnapshot().preferences().runningDays().contains(date.getDayOfWeek()))out.add(new Entry(Category.REST,State.PLANNED,"Rest · available day left free in this programme",null,null));
+        if(out.isEmpty()&&plan!=null&&!date.isBefore(plan.plan().startDate())&&!date.isAfter(plan.plan().endDate())&&plan.goalSnapshot().preferences().runningDays().contains(date.getDayOfWeek()))out.add(new Entry(Category.REST,State.PLANNED,"Rest day",null,null));
         return Collections.unmodifiableList(out);
     }
     private static LocalDate runDate(ActivityRecord a) { return a.start().atOffset(a.startOffset()==null?ZoneOffset.UTC:a.startOffset()).toLocalDate(); }

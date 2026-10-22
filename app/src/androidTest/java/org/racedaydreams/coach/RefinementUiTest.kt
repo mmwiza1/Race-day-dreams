@@ -56,7 +56,7 @@ class RefinementUiTest {
         launch();compose.onNodeWithText("Strength").performClick();await("Exercise progress and PB history")
         compose.onNodeWithText("View progression").performScrollTo().performClick()
         compose.onNodeWithText("Date unknown · not placed in chronology").performScrollTo().assertExists()
-        compose.onAllNodesWithText("Recorded workout PB").fetchSemanticsNodes().let{Assert.assertTrue(it.isNotEmpty())}
+        compose.onAllNodesWithText("Recorded workout").fetchSemanticsNodes().let{Assert.assertTrue(it.isNotEmpty())}
         compose.onNodeWithText("Historical/manual PB").assertExists()
     }
     @Test fun editingASetRetainsItUntilUpdated(){

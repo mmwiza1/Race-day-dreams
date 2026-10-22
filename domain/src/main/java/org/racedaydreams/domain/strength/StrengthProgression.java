@@ -10,7 +10,7 @@ public final class StrengthProgression {
         var out=new ArrayList<Point>();
         for(var r:StrengthAnalytics.progression(sessions)){
             var session=sessions.stream().filter(s->s.id().equals(r.sessionId())).findFirst().orElseThrow();
-            out.add(new Point(r.setId()+r.category(),r.exerciseId(),r.category(),r.value(),r.kilograms(),r.reps(),r.at().atOffset(session.offset()).toLocalDate(),HistoricalStrengthRecord.DatePrecision.EXACT,"Recorded workout PB",r.sessionId(),r.notes()));
+            out.add(new Point(r.setId()+r.category(),r.exerciseId(),r.category(),r.value(),r.kilograms(),r.reps(),r.at().atOffset(session.offset()).toLocalDate(),HistoricalStrengthRecord.DatePrecision.EXACT,"Recorded workout",r.sessionId(),r.notes()));
         }
         for(var r:manual){var mode=r.exercise().mode();String prefix=mode==StrengthExercise.Mode.WEIGHTED_BODYWEIGHT?"Added load":"Load";
             if(mode==StrengthExercise.Mode.BODYWEIGHT)add(out,r,"Bodyweight reps",r.reps());
