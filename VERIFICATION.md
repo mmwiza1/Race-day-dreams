@@ -24,26 +24,26 @@ minimum API 28 retained.
 
 ## Final CI / screenshot verification
 
-[Run 39781253630](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39781253630)
+[Run 39782772090](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39782772090)
 passed for final functional source
-`938b392fb2e2990c35a453541839e80c28d055bd`.
+`66ec3d0e044b10ca7092af528ec7ab1240d2badc`.
 
 | Emulator | Domain assertions | Schema tests | Debug/test APK + lint | Instrumentation |
 | --- | --- | --- | --- | --- |
-| API 28 / Android 9 | 30,316 passed | 30 passed | Passed | 116 passed, 0 skipped, 0 failed |
-| API 35 / Android 15 | 30,316 passed | 30 passed | Passed | 116 passed, 0 skipped, 0 failed |
-| API 36 / Android 16 | 30,316 passed | 30 passed | Passed | 116 passed, 0 skipped, 0 failed |
+| API 28 / Android 9 | 30,316 passed | 30 passed | Passed | 117 passed, 0 skipped, 0 failed |
+| API 35 / Android 15 | 30,316 passed | 30 passed | Passed | 117 passed, 0 skipped, 0 failed |
+| API 36 / Android 16 | 30,316 passed | 30 passed | Passed | 117 passed, 0 skipped, 0 failed |
 
 Commands: `sh scripts/test-domain.sh`, `python3 scripts/test-schema.py`,
 `./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest`
 and `./gradlew :app:connectedDebugAndroidTest`. Lint passed; this is not a claim
-of zero informational warnings. The 16 additional instrumentation cases cover
+of zero informational warnings. The 17 additional instrumentation cases cover
 schema/evidence backup and review acceptance/rejection, calendar persistence,
-historical PB entry, manual weight, optional weight permissions and provider state.
+historical PB entry, manual weight, optional weight permissions/provider state and preserved optional purchase-date clearing.
 The 99 new domain assertions cover weekly/return/performance/durability/provider
 and mass rules alongside retained plan regression and existing suites.
 
-The [verified API-35 APK artifact](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39781253630/artifacts/12426743045)
+The [verified API-35 APK artifact](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39782772090/artifacts/12428470149)
 contains `Race-Day-Dreams-0.4.0-test1-debug.apk`. It was uploaded only after device
 tests passed. Final delivery should use the successful merged-main run's artifact;
 the repository Actions page records newer documentation-only builds.
