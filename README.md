@@ -7,7 +7,7 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.5.0-test1 — implementation in verification
+## 0.5.0-test1
 
 Strength and Progress use summary dashboards with dedicated detail screens. The
 local catalogue has 174 canonical exercises, live name/alias search, favourites,
@@ -62,6 +62,14 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 | Body weight | Strength records | Health settings |
 | --- | --- | --- |
 | ![Actual weight measurements](docs/screenshots/body-weight.png) | ![Strength PB provenance](docs/screenshots/strength-pbs.png) | ![Health settings](docs/screenshots/data-sources.png) |
+
+| Exercise search | Offline technique guide | Optional gym block |
+| --- | --- | --- |
+| ![Exercise aliases](docs/screenshots/exercise-search.png) | ![Original RDL guide](docs/screenshots/exercise-rdl-howto.png) | ![Running-support strength block](docs/screenshots/gym-running-support.png) |
+
+| Run comparison | Timed strength logging | Carry logging |
+| --- | --- | --- |
+| ![Comparable recorded runs](docs/screenshots/run-comparison.png) | ![Timed exercise entry](docs/screenshots/strength-log-timed.png) | ![Load and distance entry](docs/screenshots/strength-log-distance.png) |
 
 ## Build and tests
 

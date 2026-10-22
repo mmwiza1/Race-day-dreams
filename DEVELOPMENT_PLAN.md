@@ -39,3 +39,17 @@ an individually validated physiological model or promise of optimal outcomes.
 Provider-independent rich activity data is future work: native recording, GPX/FIT or
 structured imports could improve splits/rolling PBs/durability. None of these recorders,
 parsers or maps is added here. Health Connect is supported; direct Samsung access is not.
+
+## Test-build limitations to keep visible
+
+History renders bounded results (up to 100 matches per selected date range); narrow
+the range to browse older entries. The background snapshot still reads retained
+history; database-backed paging is a future performance improvement.
+
+Generated gym moves/skips preserve their prescriptions and reasons in block versions.
+The Calendar shows current gym placements; additional old-date gym-edit annotations
+remain a follow-up. Existing running moved/skipped/completion semantics are retained.
+
+Automatic time/distance strength progression stays conservative (hold/review);
+repetition/load suggestions have explicit runner approval and retained decisions.
+Technique figures are original schematics, not individual form assessment.

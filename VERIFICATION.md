@@ -1,13 +1,56 @@
-# 0.5 verification — in progress
+# Verification record — 0.5.0-test1
 
-Starting main: e395a7c7ceb74f2cfeeafb94bb3466ecc6cb53b1.
-Branch: codex/0.5-strength-and-coach; PR #6.
-Version 0.5.0-test1 / code 6; schema 6; backup envelope 4.
+Starting main: `e395a7c7ceb74f2cfeeafb94bb3466ecc6cb53b1`.
+Branch: `codex/0.5-strength-and-coach`; PR [#6](https://github.com/mmwiza1/Race-day-dreams/pull/6).
+Version **0.5.0-test1**, versionCode **6**; schema **6**, backup envelope **4**.
 
-Local domain and schema suites run at each checkpoint. Local Gradle cannot download
-its distribution because this sandbox rejects network sockets. Android build/lint
-and device checks therefore run in GitHub Actions. No final 0.5 APK, screenshot
-review or merge is claimed yet. The records below describe earlier releases only.
+## Executed verification
+
+Verified UI/domain source: `2fb441c3c997234ec91df0f8bb9d0eda5d1a66e6`.
+[Actions run 39856025518](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39856025518) passed:
+
+| Check | Actual result |
+| --- | --- |
+| Offline Java domain suites / Gradle domain check | 56,668 assertions passed |
+| Actual schema-DDL tests | 33 tests passed |
+| Android debug build, lint and instrumentation compilation | Passed on API 28 / 35 / 36 jobs |
+| API 28 instrumentation | 140 tests passed; job 120094330922 |
+| API 35 instrumentation | 140 tests passed; job 120094331502 |
+| API 36 instrumentation | 140 tests passed; job 120094331229 |
+| Canonical screenshot publication | Passed; job 120097154088; 34 real API-35 renders |
+
+All three jobs produced their named debug APK after device tests passed. The API-35
+artifact is `Race-Day-Dreams-0.5.0-test1-debug-api-35`, containing
+`Race-Day-Dreams-0.5.0-test1-debug.apk`. Final-head and post-merge runs remain visible
+on PR #6 and the main-branch Actions history; the final delivery report identifies
+the merged SHA and its post-merge result.
+
+Schema/Android tests cover supported old-schema upgrades, retained records, setting
+normalization and rollback. Backup tests cover legacy envelopes (including a full
+v3 strength payload with the removed provider preference), new round trips,
+measurements/choices, gym versions, actual/prescribed links and progression decisions.
+
+The source fingerprint in `docs/screenshots/source.sha256` matches production code
+and the actual capture fixture. Screenshots were inspected for dashboards, calendar,
+weight/PB charts, comparisons, logging, original technique figures, dark mode and
+200% font layout. Fixtures remain in androidTest only. No Internet permission,
+runtime dependency, proprietary SDK, analytics or account requirement was added.
+
+## Environment and physical limits
+
+Local Java/schema checks pass. The local Android build cannot download Gradle because
+the execution sandbox rejects network sockets; Android build/lint/device results above
+come from actual GitHub-hosted builds and emulators. One earlier emulator download
+failed with a corrupt SDK image before tests; that is not counted as a test pass.
+
+CI does not establish physical Galaxy S24 Health Connect synchronisation, OEM reminder
+timing, real TalkBack interaction, individual technique or coaching efficacy. Follow
+TEST_BUILD.md. Debug signing can differ between CI builds: export before an upgrade
+that may require reinstall/restore. History uses bounded filtered views; full database
+paging, richer gym-edit calendar annotations and automatic time/distance progression
+remain documented follow-ups. No metrics or results are fabricated to fill these gaps.
+
+The following records describe earlier releases only.
 
 # Verification record — 0.4.0-test1
 
