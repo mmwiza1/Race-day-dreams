@@ -19,10 +19,11 @@ fun shortDate(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern
 }
 /** Date is stored as ISO in drafts; the runner only sees a natural date and a native-style picker. */
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun DateInput(label: String,value: String,onChange:(String)->Unit) {
+@Composable fun DateInput(label: String,value: String,onChange:(String)->Unit, optional:Boolean=false) {
     var open by rememberSaveable { mutableStateOf(false) }
     val parsed=runCatching{LocalDate.parse(value)}.getOrNull()
     OutlinedButton(onClick={open=true},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("$label: ${parsed?.let(::friendlyDate) ?: "Choose date"}")}
+    if(optional&&parsed!=null)TextButton(onClick={onChange("")},modifier=Modifier.heightIn(min=48.dp)){Text("Clear date")}
     if(open){val picker=rememberDatePickerState(initialSelectedDateMillis=(parsed?:LocalDate.now()).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
         DatePickerDialog(onDismissRequest={open=false},confirmButton={TextButton(onClick={picker.selectedDateMillis?.let{onChange(Instant.ofEpochMilli(it).atOffset(ZoneOffset.UTC).toLocalDate().toString())};open=false}){Text("Choose date")}},dismissButton={TextButton(onClick={open=false}){Text("Cancel")}}){DatePicker(picker)}
     }

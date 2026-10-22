@@ -197,7 +197,7 @@ fun AssessmentScreen(state: CoachUiState, model: CoachViewModel, onDone: () -> U
 
 @Composable
 fun CoachField(label: String, value: String, update: (String) -> Unit, supporting: String? = null, singleLine: Boolean = true) {
-    if(label.contains("YYYY-MM-DD") && !label.startsWith("Find")){DateInput(label.substringBefore(" ("),value,update);return}
+    if(label.contains("YYYY-MM-DD") && !label.startsWith("Find")){DateInput(label.substringBefore(" ("),value,update,optional=label.contains("optional"));return}
     OutlinedTextField(value, update, label = { Text(label) }, modifier = Modifier.fillMaxWidth(),
         supportingText = if (supporting == null) null else ({ Text(supporting) }), singleLine = singleLine)
 }
