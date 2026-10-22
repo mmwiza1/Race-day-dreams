@@ -2,7 +2,7 @@ package org.racedaydreams.domain.activity;
 import java.time.Duration;
 import java.util.*;
 import org.racedaydreams.domain.coaching.Immutable;
-/** Conservative cross-provider matching. Raw records remain retained; canonical choices carry both identities. */
+/** Retained source presentation and compatibility for removed preference values. No direct provider path. */
 public final class ProviderReconciliation {
     private ProviderReconciliation() { }
     public enum Preference { HEALTH_CONNECT }

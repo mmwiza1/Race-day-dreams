@@ -8,7 +8,7 @@ public final class ExerciseSearch {
         String q=normal(query);var out=new ArrayList<StrengthExercise>();
         for(var e:exercises)if(!archived.contains(e.id()) && rank(e,q)<6)out.add(e);
         out.sort(Comparator.comparingInt((StrengthExercise e)->rank(e,q)).thenComparingInt(e->favourites.contains(e.id())?0:1)
-            .thenComparingInt(e->{int i=recent.indexOf(e.id());return i<0?Integer.MAX_VALUE:i;}).thenComparing(StrengthExercise::name).thenComparing(StrengthExercise::id));
+            .thenComparingInt(e->{int i=recent.indexOf(e.id());return i<0?Integer.MAX_VALUE:i;}).thenComparingInt(e->e.estimateOneRepMax()?0:1).thenComparing(StrengthExercise::name).thenComparing(StrengthExercise::id));
         return Immutable.copyList(out);
     }
     private static String normal(String s){return s==null?"":s.trim().toLowerCase(Locale.ROOT).replace('’','\'');}

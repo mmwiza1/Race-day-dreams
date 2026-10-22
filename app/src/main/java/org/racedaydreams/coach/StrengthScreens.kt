@@ -50,6 +50,7 @@ import org.racedaydreams.domain.strength.*
             var expanded by rememberSaveable(e.id()){mutableStateOf(false)}
             TextButton(onClick={expanded=!expanded},modifier=Modifier.heightIn(min=48.dp)){Text(if(expanded)"Hide progression"else "View progression")}
             if(expanded){val history=timeline.filter{it.exerciseId()==e.id()&&it.category()==category}
+                StrengthTrend(history,state)
                 history.forEach{r->
                     Column(verticalArrangement=Arrangement.spacedBy(4.dp)){
                         HorizontalDivider()

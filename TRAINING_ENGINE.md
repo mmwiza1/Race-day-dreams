@@ -273,3 +273,12 @@ the 196-day boundary cannot jump straight to peak mileage. Horizons beyond 280 d
 the race. The generator guards obviously erroneous dates beyond a century;
 very distant projections are not fitness promises. Race/time-trial Run Scores
 allow RPE 9–10; easy/recovery scores still reward controlled execution.
+
+## 0.5 contextual running and strength
+
+See docs/STRENGTH_PROGRAMMING.md for research, original rules and limitations.
+Home projects existing weekly channels without a readiness score. WorkoutContext
+uses retained run/gym evidence for briefings and move warnings; it never changes
+availability. ComparableRuns matches purpose/distance/duration/recency/available
+elevation, rejects weak matches and qualifies faster/harder interpretations. It
+never invents route matching, missing HR or guaranteed fitness improvement.

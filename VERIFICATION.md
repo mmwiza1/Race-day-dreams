@@ -1,3 +1,14 @@
+# 0.5 verification — in progress
+
+Starting main: e395a7c7ceb74f2cfeeafb94bb3466ecc6cb53b1.
+Branch: codex/0.5-strength-and-coach; PR #6.
+Version 0.5.0-test1 / code 6; schema 6; backup envelope 4.
+
+Local domain and schema suites run at each checkpoint. Local Gradle cannot download
+its distribution because this sandbox rejects network sockets. Android build/lint
+and device checks therefore run in GitHub Actions. No final 0.5 APK, screenshot
+review or merge is claimed yet. The records below describe earlier releases only.
+
 # Verification record — 0.4.0-test1
 
 Starting main: `0c3a810048a7c92e9dc632d726a57d908ca519be`.
@@ -77,13 +88,13 @@ legacy rule-one snapshots in backups while applying the current race-aware rules
 ## Limits and phone checks
 
 Samsung SDK/direct ingestion is **not included or verified**. Official developer
-access and distribution constraints are documented in docs/SAMSUNG_PROVIDER.md;
+the unused direct-provider boundary was removed in 0.5;
 no proprietary binary is bundled. Provider reconciliation is verified with
 synthetic records, not real Samsung/Health Connect duplicates. Health Connect
 weight API/permissions need physical-device validation; window refresh deletes
 only within the refreshed readable window. Split/durability calculations require
 qualified genuine samples. Historical/recorded strength records remain separate
-provenance groups; a unified progression chart is future work. Recurring patterns
+a unified provenance-preserving progression timeline, implemented in 0.4.1. Recurring patterns
 suggest reviewing the routine rather than changing normal days automatically.
 
 CI cannot establish Samsung synchronisation, OEM reminder delivery, physical

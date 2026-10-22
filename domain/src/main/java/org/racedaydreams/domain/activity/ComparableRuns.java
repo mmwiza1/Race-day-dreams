@@ -10,9 +10,9 @@ public final class ComparableRuns {
     public static List<Match> find(ActivityRecord current,List<ActivityRecord> history,List<PlannedWorkout> prescriptions) {
         Map<String,WorkoutCategory> types=new HashMap<>();for(var p:prescriptions)types.put(p.id(),p.category());
         var out=new ArrayList<Match>();
-        if(current.distanceMetres()==null||current.distanceMetres()<500)return Immutable.list();
+        if(current.distanceMetres()==null||current.distanceMetres()<500||!plausible(current))return Immutable.list();
         var purpose=types.get(current.plannedWorkoutId());
-        for(var prior:history){if(prior.id().equals(current.id())||!prior.start().isBefore(current.start())||prior.distanceMetres()==null)continue;
+        for(var prior:history){if(!plausible(prior)||prior.id().equals(current.id())||!prior.start().isBefore(current.start())||prior.distanceMetres()==null)continue;
             double delta=Math.abs(prior.distanceMetres()-current.distanceMetres())/current.distanceMetres();if(delta>.12)continue;
             double durationDelta=Math.abs(prior.elapsedTime().toMillis()-current.elapsedTime().toMillis())/(double)current.elapsedTime().toMillis();if(durationDelta>.35)continue;
             var other=types.get(prior.plannedWorkoutId());if(purpose!=null&&other!=null&&purpose!=other)continue;
@@ -28,6 +28,7 @@ public final class ComparableRuns {
         }
         out.sort(Comparator.comparingDouble(Match::relevance).reversed().thenComparing(m->m.activity().id()));return Immutable.copyList(out);
     }
+    private static boolean plausible(ActivityRecord a){if(a.distanceMetres()==null||a.distanceMetres()<=0)return false;double pace=a.elapsedTime().toMillis()/a.distanceMetres();return pace>=100&&pace<=3600;}
     public static String interpretation(ActivityRecord current,ActivityRecord prior) {
         if(current.distanceMetres()==null||prior.distanceMetres()==null)return "Distance evidence is unavailable.";
         double pace=current.elapsedTime().toMillis()/current.distanceMetres(),old=prior.elapsedTime().toMillis()/prior.distanceMetres();

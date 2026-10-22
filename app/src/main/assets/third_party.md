@@ -101,7 +101,12 @@ and product heuristics are not presented as independently validated coaching.
 
 No runtime, build or screenshot dependencies added. Charts, scheduling, review,
 durability, reconciliation and mass conversions are original project code.
-Samsung Health Data SDK 1.1.0 was investigated through official documentation,
-not incorporated. No Samsung binary/source/licence is bundled or relicensed MIT;
-redistribution permission is not established. Partnership/signing restrictions
-and links are documented in docs/SAMSUNG_PROVIDER.md. Global minSdk remains 28.
+No proprietary provider SDK is incorporated. Direct-provider scaffolding is removed
+in 0.5; Health Connect remains supported. No new runtime dependencies were added.
+
+## Original 0.5 assets and engineering
+
+The exercise catalogue, technique copy and schematic Compose drawings are original
+Race Day Dreams work licensed with this MIT repository. No exercise photography,
+commercial schedules or GPL/AGPL source/assets were incorporated. Scientific papers
+are references, not copied programme tables: see docs/STRENGTH_PROGRAMMING.md.

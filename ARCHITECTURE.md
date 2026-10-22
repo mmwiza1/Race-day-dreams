@@ -162,5 +162,20 @@ Manual move/skip and review acceptance create immutable plan versions and update
 reminder mirrors transactionally. Weight has no input path into coaching.
 
 Enhanced provider contracts and conservative reconciliation remain independent of
-proprietary APIs. Samsung's runtime adapter is not included; see its development
-caveat. Health Connect weight permission is isolated from running permissions.
+proprietary APIs. Health Connect is the supported adapter. Legacy provider preferences normalize on upgrade/restore.
+
+## 0.5 strength and optional programming
+
+Schema 6 adds exercise choices, PB acknowledgements, append-only gym versions and a
+current pointer. Forward migrations retain old data and normalize removed provider
+preferences. Backup envelope 4 includes these choices/plans and reads versions 1–3.
+Restore validates a captured typed snapshot before a transactional replacement.
+
+Measurement profiles distinguish load/reps, reps, duration, load/duration, distance
+and load/distance. Canonical kg/metres/seconds survive display changes. Old JSON
+without measurement fields decodes with original repetition semantics. Sessions and
+manual PBs retain their recorded definitions and source/date precision.
+
+GymProgrammeGenerator, GymPlanEditor, StrengthProgressionAdvisor, ComparableRuns,
+WorkoutHistoryQuery and HomeCoachingSummary are Android-independent. Compose shows
+these decisions; explicit runner action alone persists a changed prescription.

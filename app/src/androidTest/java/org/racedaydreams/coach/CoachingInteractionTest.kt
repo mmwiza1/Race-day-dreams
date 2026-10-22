@@ -53,8 +53,8 @@ class CoachingInteractionTest {
         Assert.assertEquals("test-version",CoachingStore(context).responses()[0].planVersionId())
     }
     @Test fun strengthFormPersistsOrderedSetsAndPbEvidence(){
-        launch();compose.onNodeWithText("Progress").performClick();await("Optional strength training")
-        compose.onNodeWithText("Optional strength training").performScrollTo().performClick();await("Log strength workout")
+        launch();compose.onNodeWithText("Strength").performClick();await("Log workout")
+        compose.onNodeWithText("Log workout").performScrollTo().performClick();await("Log strength workout")
         compose.onNodeWithText("Log strength workout").performClick()
         enter("Start time (HH:mm, local)","00:01")
         enter("Duration (minutes)","50");enter("Session RPE 0–10 (optional)","7")

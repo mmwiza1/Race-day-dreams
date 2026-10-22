@@ -1,9 +1,9 @@
-# Galaxy S24 evaluation — 0.4.1-test1
+# Galaxy S24 evaluation — 0.5.0-test1
 
 Refinement release from main `7fa431ddc8bb3fa3b73677680a53957ff772cdbc`.
-See VERIFICATION.md and the 0.4.1 PR/Actions for observed build and device-test results.
+See VERIFICATION.md and the 0.5 PR/Actions for observed build and device-test results.
 
-Download `Race-Day-Dreams-0.4.1-test1-debug.apk` from a successful intended-commit
+Download `Race-Day-Dreams-0.5.0-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
 Debug signing keys may differ between workflows; preserve your backup before any
 uninstall Android requires. CI does not establish physical-device interoperability
@@ -50,14 +50,7 @@ or real-world coaching efficacy.
     history permission, 84 with it), handles updates/deletions in that window and
     never overwrites manual records. Older provider measurements are retained.
 11. Detailed splits/durability require real samples. Health Connect totals alone
-    must not create them. Samsung direct SDK is **not included**; selecting the
-    experimental preference does not magically enable direct access. See
-    docs/SAMSUNG_PROVIDER.md for the isolated developer boundary and constraints.
-12. Test TalkBack, 200% fonts, dark mode, RTL, keyboard dismissal and rotation on
-    your S24. Check tab labels, date picker, calendar touch targets and graph text.
-13. Test evening reminders with OEM battery restrictions, denied notifications,
-    moved/cancelled sessions, timezone/daylight-saving changes and reboot. CI
-    cannot prove actual Samsung delivery timing.
+    must not create them. Only Health Connect is supported; no direct provider setting remains.
 
 No demo records are installed by the production APK. Canonical screenshots are
 rendered by instrumentation-only fixtures. No account, analytics, backend,
@@ -79,5 +72,15 @@ Internet permission, map/GPS/Wear feature or runtime LLM is introduced.
   inspect both prescriptions and dates before accepting; cancel must leave the plan alone.
 - Check normal/200% fonts, dark mode, portrait scrolling, keyboard/date-picker behaviour,
   TalkBack labels and vector navigation on the physical phone. CI does not prove these.
-- Samsung integration and settings are unchanged in this patch; no new Samsung setup
+- Direct Samsung scaffolding is removed; Health Connect remains supported. No direct-provider setup
   or proprietary components are introduced.
+
+## 0.5 phone checks
+
+Export a 0.4.1 backup before upgrading. Check retained goals, workouts, shoes, manual
+PB dates and weights. Try RDL/OHP/BSS aliases, favourites, timed planks and carries;
+inspect units and previous sets. Generate a programme using your actual equipment
+and key runs; inspect/reject/accept changes and stop generation without losing
+actual sessions. Review diagrams with a qualified coach. Test TalkBack, 200% fonts,
+dark mode, keyboards, scrolling and reminders on the Galaxy S24. CI cannot prove
+real coaching efficacy, OEM reminder timing or Health Connect synchronisation.
