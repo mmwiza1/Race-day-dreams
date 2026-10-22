@@ -356,7 +356,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         repository.decide(p,proposed,sessionId,exerciseId,evidence)
     }
 
-    fun saveGym(plan: org.racedaydreams.domain.strength.GymProgramme) = mutate("Strength programme saved. Previous versions are retained.") {
+    fun saveGym(plan: org.racedaydreams.domain.strength.GymProgramme) = mutate() {
         org.racedaydreams.data.GymProgrammeStore(getApplication()).save(plan)
     }
     fun disableGym() = mutate("Generated programming stopped. Your recorded workouts and PBs remain.") { org.racedaydreams.data.GymProgrammeStore(getApplication()).disable() }
