@@ -19,6 +19,8 @@ Verified UI/domain source: `2fb441c3c997234ec91df0f8bb9d0eda5d1a66e6`.
 | API 36 instrumentation | 140 tests passed; job 120094331229 |
 | Canonical screenshot publication | Passed; job 120097154088; 34 real API-35 renders |
 
+After that source run, five additional distance-only measurement/PB regression checks were added. The current full local domain suite passes **56,673 assertions**; final-head and main runs execute that complete suite.
+
 All three jobs produced their named debug APK after device tests passed. The API-35
 artifact is `Race-Day-Dreams-0.5.0-test1-debug-api-35`, containing
 `Race-Day-Dreams-0.5.0-test1-debug.apk`. Final-head and post-merge runs remain visible
