@@ -231,7 +231,7 @@ private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: ()
         val today = version.plan().workouts().firstOrNull { it.date() == java.time.LocalDate.now() }
         CoachHeading("Today")
         if (today == null) Text("No run is scheduled today. You can rest, run independently or review the programme.")
-        else WorkoutCard(today, state.activities.any { it.plannedWorkoutId() == today.id() }) { workout(today.id()) }
+        else WorkoutCard(state, today, state.activities.any { it.plannedWorkoutId() == today.id() }) { workout(today.id()) }
         if (state.proposals.isNotEmpty()) Text("A coaching recommendation is ready to review. Your programme has not been changed.")
     }
     CoachButton(if (state.currentPlan == null) "Create training programme" else "View training programme", plan)

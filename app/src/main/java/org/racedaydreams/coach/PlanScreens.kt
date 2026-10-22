@@ -56,7 +56,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                 Text("Week of $selectedWeek")
                 val workouts = plan.workouts().filter { it.date() >= selectedWeek && it.date() < selectedWeek.plusWeeks(1) }
                 if (workouts.isEmpty()) Text("No workouts scheduled in this week.")
-                workouts.forEach { workout -> WorkoutCard(workout, state.activities.any { it.plannedWorkoutId() == workout.id() }) { open(workout.id()) } }
+                workouts.forEach { workout -> WorkoutCard(state, workout, state.activities.any { it.plannedWorkoutId() == workout.id() }) { open(workout.id()) } }
                 state.strengthSessions.filter { it.startedAt().atOffset(it.offset()).toLocalDate() in selectedWeek..selectedWeek.plusDays(6) }.forEach {
                     Text("Strength · ${it.startedAt().atOffset(it.offset()).toLocalDate()} · ${it.duration().toMinutes()} min · recorded")
                 }
@@ -77,10 +77,10 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
 }
 
 @Composable
-fun WorkoutCard(workout: PlannedWorkout, completed: Boolean, open: () -> Unit) = CoachCard {
+fun WorkoutCard(state: CoachUiState, workout: PlannedWorkout, completed: Boolean, open: () -> Unit) = CoachCard {
     Text("${workout.date()} · ${if (completed) "Completed" else if (workout.date() < LocalDate.now()) "Workout not completed" else "Planned"}")
     Text(workout.category().name.replace('_', ' '), style = MaterialTheme.typography.titleMedium)
-    Text(workout.distanceKm()?.let { "$it km" } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Prescription in detail")
+    Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Prescription in detail")
     TextButton(onClick = open, modifier = Modifier.heightIn(min = 48.dp)) { Text("View workout and purpose") }
 }
 
@@ -88,19 +88,21 @@ fun WorkoutCard(workout: PlannedWorkout, completed: Boolean, open: () -> Unit) =
 fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?, openActivity: (String) -> Unit) {
     val version = state.currentPlan
     val workout = version?.plan()?.workouts()?.firstOrNull { it.id() == id }
+    val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
+    val paceFactor = if (imperial) 1.609344 else 1.0
     var recording by rememberSaveable { mutableStateOf(false) }
     CoachPage {
         if (workout == null) { CoachHeading("Workout unavailable"); Text("The current programme no longer contains this workout. Completed prescriptions remain linked to their preserved version.") }
         else {
             CoachHeading(workout.category().name.replace('_', ' '))
             Text("${workout.date()} · plan version ${version.version()}")
-            Text(workout.distanceKm()?.let { "$it km" } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Runner-owned race")
+            Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Runner-owned race")
             CoachHeading("Workout structure")
             workout.segments().forEachIndexed { index, segment -> CoachCard {
                 Text("${index + 1}. ${segment.kind().name.replace('_',' ')}", style = MaterialTheme.typography.titleMedium)
-                segment.distanceKm()?.let { Text("$it km") }; segment.duration()?.let { Text("${it.toMinutes()} min") }
+                segment.distanceKm()?.let { Text(formatDistance(it * 1000, state)) }; segment.duration()?.let { Text("${it.toMinutes()} min") }
                 segment.rpe()?.let { Text("Intended RPE: approximately ${it.toInt()}/10") }
-                if (segment.minimumSecondsPerKm() != null && segment.maximumSecondsPerKm() != null) Text("Pace: ${formatPace(segment.minimumSecondsPerKm())}–${formatPace(segment.maximumSecondsPerKm())}/km; effort takes precedence")
+                if (segment.minimumSecondsPerKm() != null && segment.maximumSecondsPerKm() != null) Text("Pace: ${formatPaceSeconds(segment.minimumSecondsPerKm() * paceFactor)}–${formatPaceSeconds(segment.maximumSecondsPerKm() * paceFactor)}/${if (imperial) "mi" else "km"}; effort takes precedence")
                 Text(segment.guidance() ?: "Adjust to conditions and how you feel.")
             } }
             CoachHeading("Why this workout?")
@@ -125,7 +127,7 @@ private fun CompletionForm(state: CoachUiState, model: CoachViewModel, version: 
     var time by rememberSaveable { mutableStateOf("08:00") }; var notes by rememberSaveable { mutableStateOf("") }; var error by rememberSaveable { mutableStateOf<String?>(null) }
     CoachCard {
         Text("Actual workout — manually entered")
-        CoachInput("Actual distance (km)", km, { km=it }, true)
+        CoachInput(if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) "Actual distance (miles)" else "Actual distance (km)", km, { km=it }, true)
         CoachInput("Actual duration (mm:ss or h:mm:ss)", duration, { duration=it })
         CoachInput("Start date (YYYY-MM-DD)", date, { date=it })
         CoachInput("Start time (HH:mm, local)", time, { time=it })
@@ -133,7 +135,7 @@ private fun CompletionForm(state: CoachUiState, model: CoachViewModel, version: 
         CoachInput("Notes (optional)", notes, { notes=it })
         error?.let { Text(it) }
         Button(enabled = !state.busy, onClick = {
-            try { model.completeRun(version.id(), workout.id(), km.toDouble(), PaceCalculator.parseTime(duration), LocalDate.parse(date), LocalTime.parse(time),
+            try { model.completeRun(version.id(), workout.id(), km.toDouble() * (if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) 1.609344 else 1.0), PaceCalculator.parseTime(duration), LocalDate.parse(date), LocalTime.parse(time),
                 rpe.takeIf { it.isNotBlank() }?.toDouble(), notes, done); error=null }
             catch (e: Exception) { error=e.message ?: "Check actual values." }
         }, modifier = Modifier.fillMaxWidth().heightIn(min=48.dp)) { Text("Save actual run") }
@@ -145,7 +147,6 @@ fun CoachInput(label: String, value: String, change: (String) -> Unit, decimal: 
     OutlinedTextField(value, change, label={Text(label)}, modifier=Modifier.fillMaxWidth(),
         keyboardOptions=KeyboardOptions(keyboardType=if(decimal) KeyboardType.Decimal else KeyboardType.Text), singleLine=true)
 }
-private fun formatPace(seconds: Double): String { val total=kotlin.math.round(seconds).toInt();return "%d:%02d".format(total/60,total%60) }
 
 @Composable
 fun AdjustmentCard(proposal: AdjustmentProposal, busy: Boolean, decide: (String) -> Unit) = CoachCard {

@@ -46,16 +46,7 @@ class CoachingInteractionTest {
         Assert.assertEquals(current,CoachingStore(context).current())
     }
     @Test fun actualRunFormPreservesPrescriptionAndShowsPurposeScore(){
-        seedToday();launch();compose.onNodeWithText("Plan").performClick();await("View workout and purpose")
-        compose.onNodeWithText("View workout and purpose").performScrollTo().performClick();await("Record actual run")
-        compose.onNodeWithText("Record actual run").performScrollTo().performClick()
-        enter("Actual distance (km)","5");enter("Actual duration (mm:ss or h:mm:ss)","32:30")
-        enter("Start date (YYYY-MM-DD)",LocalDate.now().minusDays(1).toString());enter("Start time (HH:mm, local)","08:00")
-        enter("RPE 0–10 (optional)","3")
-        compose.onNodeWithText("Save actual run").performScrollTo().performClick()
-        compose.waitUntil(20000){FeatureStore(context).activities().size==1}
-        await("Run Score and feedback")
-        compose.onNodeWithText("Run Score and feedback").performScrollTo()
+        seedToday();recordActualRun("Actual distance (km)","5")
         await("10/10 — Good execution")
         Assert.assertEquals(5.0,CoachingStore(context).current()!!.plan().workouts()[0].distanceKm()!!,0.00001)
         Assert.assertEquals("today-workout",FeatureStore(context).activities()[0].plannedWorkoutId())
@@ -74,6 +65,26 @@ class CoachingInteractionTest {
         val sets=CoachingStore(context).strength()[0].exercises()[0].sets()
         Assert.assertEquals(80.0,sets[0].kilograms(),0.00001);Assert.assertEquals(90.0,sets[1].kilograms(),0.00001)
         Assert.assertTrue(org.racedaydreams.domain.strength.StrengthAnalytics.progression(CoachingStore(context).strength()).any{it.category()=="Load × 5"&&it.kilograms()==90.0})
+    }
+    @Test fun imperialActualDistanceConvertsOnceWithoutChangingPrescription(){
+        val t=profile.preferences()
+        profile=UserProfile(profile.raceGoal(),TrainingPreferences(t.strategy(),t.runningDays(),t.runsPerWeek(),t.longRunDay(),t.gymDays(),t.scheduleType(),UnitSystem.IMPERIAL),false)
+        SqliteUserPreferencesRepository(context).save(profile)
+        seedToday();recordActualRun("Actual distance (miles)","1")
+        Assert.assertEquals(1609.344,FeatureStore(context).activities()[0].distanceMetres()!!,0.00001)
+        Assert.assertEquals(5.0,CoachingStore(context).current()!!.plan().workouts()[0].distanceKm()!!,0.00001)
+    }
+    private fun recordActualRun(distanceLabel:String,distance:String){
+        launch();compose.onNodeWithText("Plan").performClick();await("View workout and purpose")
+        compose.onNodeWithText("View workout and purpose").performScrollTo().performClick();await("Record actual run")
+        compose.onNodeWithText("Record actual run").performScrollTo().performClick()
+        enter(distanceLabel,distance);enter("Actual duration (mm:ss or h:mm:ss)","32:30")
+        enter("Start date (YYYY-MM-DD)",LocalDate.now().minusDays(1).toString());enter("Start time (HH:mm, local)","08:00")
+        enter("RPE 0–10 (optional)","3")
+        compose.onNodeWithText("Save actual run").performScrollTo().performClick()
+        compose.waitUntil(20000){FeatureStore(context).activities().size==1}
+        await("Run Score and feedback")
+        compose.onNodeWithText("Run Score and feedback").performScrollTo()
     }
     private fun seedToday(){
         val today=LocalDate.now()
