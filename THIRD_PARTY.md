@@ -79,3 +79,19 @@ The NHS published Couch to 5K schedule has not been copied or implemented here.
 Its current schedule and applicable reuse terms must be verified before that
 programme is added. No NHS app source, audio, UI, branding or proprietary assets
 are used, and no NHS endorsement is implied.
+
+## 0.3.0-test1 additions
+
+No new runtime, build or test dependency was incorporated. Scheduling, strength
+analytics and scoring are original MIT application code. Android's existing
+`UiAutomation.takeScreenshot()` and the existing AndroidX Compose instrumentation
+tools capture actual screens; no image-generation or screenshot-library runtime
+is shipped. Capture fixtures are in the test APK only.
+
+Choco (BSD-3-Clause) and Timefold (Apache-2.0) hard/soft constraint concepts were
+considered; neither library, source nor prescription data is incorporated. For a
+seven-day search space, original bounded enumeration avoids Android compatibility,
+APK size, Java-runtime and maintenance costs. No TrainingPlanKit, TLR, Open-Coach,
+Long Run Hybrid Coach or other reference-project source/schedule data was copied.
+Scientific/formula references are documented in TRAINING_ENGINE.md; arithmetic
+and product heuristics are not presented as independently validated coaching.

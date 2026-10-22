@@ -12,14 +12,14 @@ public final class StrengthAnalytics {
     public record Record(String exerciseId, String category, double value, double kilograms, int reps,
             Instant at, String sessionId, String setId, String notes) { }
     public static Context context(StrengthSession session) {
-        int lower = 0, upper = 0; boolean hard = session.rpe() != null && session.rpe() >= 7;
+        int lower = 0, upper = 0; boolean hard = session.rpe() != null && session.rpe() >= 7; boolean hardLower = hard;
         for (var e : session.exercises()) for (var set : e.sets()) if (!set.warmUp()) {
             if (e.exercise().region() != StrengthExercise.Region.UPPER) lower++;
             if (e.exercise().region() != StrengthExercise.Region.LOWER) upper++;
-            if (set.rpe() != null && set.rpe() >= 8) hard = true;
+            if (set.rpe() != null && set.rpe() >= 8) { hard = true; if (e.exercise().region() != StrengthExercise.Region.UPPER) hardLower = true; }
         }
         var region = lower == 0 ? StrengthExercise.Region.UPPER : upper == 0 ? StrengthExercise.Region.LOWER : StrengthExercise.Region.FULL;
-        var involvement = lower >= 3 && hard ? Involvement.HIGH : lower > 0 ? Involvement.MODERATE : Involvement.LOW;
+        var involvement = lower >= 3 && hardLower ? Involvement.HIGH : lower > 0 ? Involvement.MODERATE : Involvement.LOW;
         return new Context(region, hard ? "Hard" : session.rpe() == null ? "Effort not recorded" : session.rpe() <= 3 ? "Light" : "Moderate",
                 involvement, org.racedaydreams.domain.coaching.Immutable.list(lower + " working sets involved the lower body.",
                 "Effort uses recorded session/set RPE; load alone does not establish fatigue. This is coaching context, not a physiological measurement."));

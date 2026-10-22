@@ -1,108 +1,191 @@
-# Training calculations and plan-regression infrastructure
+# Original coaching engine — 0.3.0-test1
 
-**The app recommends. The runner decides. The plan adapts.**
+The app recommends. The runner decides. The plan adapts.
 
-## What exists
+## Implemented
 
-The Android-independent Java domain currently implements target-pace/date
-arithmetic, source-aware running-baseline summaries, explicit manual corrections,
-assessment summaries, evidence-confidence and Performance-eligibility heuristics,
-reproducible splits, rolling best-effort quality checks, PB progression and shoe
-statistics. The respective domain tests exercise those calculations without UI.
+`OriginalTrainingPlanGenerator` implements the Android-independent
+`TrainingPlanGenerator` interface. No schedule catalogue, commercial training
+plan, LLM or online service is used. Given the same `PlanRequest`, the complete
+programme, IDs, dates, prescriptions and explanations are deterministic.
 
-Target pace is finishing duration divided by exact race distance. For example,
-1:59:59 over 21.0975 km rounds to 5:41/km. This arithmetic does not establish
-whether that target is realistic.
+Inputs are the saved goal/routine, provenance-aware baseline, start date,
+explicit unavailable dates and recorded strength sessions. The baseline already
+combines recorded history with optional manual gap filling. A recent assessment
+contributes observed training evidence; it does not prove endurance for a longer
+race. No race goal or recorded activity is changed by generation.
 
-Baseline confidence describes evidence quality, not a probability of success.
-Missing records are not proof of rest and missing metrics are not zero. Easy
-pace is not inferred merely because a session had an average pace. A short
-assessment alone does not establish long-distance endurance. Manually reviewed
-values retain provenance and a review timestamp; reload/restore does not refresh
-their apparent age. Performance eligibility is recomputed, not controlled by the
-legacy persisted Boolean.
+Supported goals: 5K, 10K, half marathon, marathon and general aerobic fitness;
+Finish, Target Time and Maximum Performance remain runner-owned choices.
+Without a dated event the engine generates a clearly projected 12-week rolling
+programme. A dated event uses its actual horizon, up to two years. Past dates
+and race dates outside availability are rejected with an actionable message,
+leaving the existing plan intact.
 
-Split and rolling-effort calculations use retained cumulative distance/time
-samples, not proportional slices of a session total. Long gaps, pauses, invalid
-ordering and implausible sample jumps cannot yield automatically awarded PBs.
-Quality thresholds are transparent product checks, not medical or scientific
-guarantees. Source totals from Health Connect do not by themselves provide
-rolling efforts, arbitrary splits, cadence or moving duration.
+### Workload rules (product heuristics, not scientific safety thresholds)
 
-## Production training generation remains pending
+- Missing, low or more-than-21-day-old workload evidence starts with 15-minute
+  conversational run/walk sessions, progressing toward 30 minutes, at at most
+  three sessions/week. Walk breaks remain optional. This is an original simple
+  progression, **not** an implementation of NHS Couch to 5K.
+- Established starting volume uses recent weekly mileage and longest run.
+  Reducing available frequency reduces the starting weekly budget. Partial
+  weeks and unavailable days reduce training; missing mileage is never packed
+  into the remaining sessions.
+- Build increments are absolute, bounded context heuristics (0.5–2 km per build
+  week based on starting volume), with an easier fourth week. There is no
+  universal 10% rule. Session distance is also bounded by recent long-run
+  evidence plus modest projected development. Race-distance caps limit long
+  runs and projected weekly volume; they are not mandatory achievements.
+- Quality requires established volume, at least six consistent weeks and three
+  available sessions. At most one controlled quality session is prescribed in
+  a week. Zone 2/general aerobic plans contain no unnecessary quality work.
+  Distance First delays quality until the race-specific phase. Performance
+  uses the existing evidence-derived eligibility evaluator and a higher intended
+  controlled quality effort; losing eligibility never deletes the stored preference.
+- Foundation/build/specific/peak/taper phases are allocated from actual dates
+  and baseline. Established short horizons omit unnecessary foundation. Taper
+  windows vary by distance and workload (6 days for 5/10K, 10 for HM, 14–21 for
+  marathon, clipped to available time), with reduced volume and conversational
+  sessions. Advanced intensity-retaining tapers are still pending.
+- A short marathon/HM horizon with limited endurance produces a clear caution
+  and conservative development, never an accelerated catch-up programme.
+- Pace is optional. Race-specific segments may show the runner's target pace;
+  controlled RPE takes precedence. Personalised threshold/interval pace models
+  and conservative multi-evidence race predictions remain pending.
 
-`TrainingPlanGenerator` is an interface. There is no production implementation
-of full-plan generation, adaptive coaching, race prediction, readiness scoring
-or taper selection in this increment. Choosing a goal/strategy records runner
-intent; it does not silently create training prescriptions. Existing plan and
-workout records establish persistence/reminder boundaries for future work.
+### Scheduling
 
-An original generator needs separately reviewed methodology and explainability.
-Do not ship a few unvalidated mileage multipliers as a complete running coach.
-Do not copy commercial/book-derived schedule catalogues. Beginner NHS Couch to
-5K content remains pending verification of the current published schedule and
-reuse/attribution terms. No NHS app code, UI, audio or branding is included.
+`ConstraintScheduler` enumerates the small weekly search space (at most 128 day
+subsets), filters unavailable dates, availability, race proximity and frequency,
+then deterministically scores feasible long/quality placements. The race is
+reserved on its chosen date and counts toward the weekly maximum. No duplicate
+placement or post-race workout is allowed.
 
-## Implemented whole-plan regression tooling
+Soft costs: missing preferred long-run day +20; omitting an eligible quality
+session +80; consecutive running days +2; demanding running the day after
+recorded hard lower-body work +120 (same day +90); a preferred gym day before
+such running +4. A gym preference is not evidence of actual hard work. Quality
+and long runs are spaced by at least two calendar days; cross-week conflicts
+fall back to easy running. Each generated workout retains the winning score,
+phase and actual workload decision in its explanation.
 
-`domain.plan.PlanSnapshot` renders every phase, workout and ordered structured
-segment in a canonical, human-inspectable format. It sorts unordered phase/run
-collections, preserves nullable guidance, escapes delimiters and adds no random
-IDs, timestamps or locale-dependent formatting. Its line-numbered diff makes a
-changed prescription visible in a failing test and normal Git review.
+Choco/Timefold-style hard/soft constraint separation informed the design.
+A solver dependency was rejected for this small problem: enumeration is bounded,
+requires no additional Android/Java runtime, adds no APK dependency, and is
+straightforward to test. Global multi-week optimisation is not claimed.
 
-`domain.plan.PlanRegression` inspects a complete supplied plan against the
-runner's availability, known hard lower-body dates and an explicit
-`PlanRegressionPolicy`. It reports:
+### One current plan and runner choice
 
-- incomplete/overlapping phases, duplicate IDs/days and empty prescriptions;
-- running-day/frequency violations and a race that differs from the runner goal;
-- absolute/relative weekly-distance changes, long-run spikes and concentrated
-  single-run load;
-- hard-session frequency/spacing and proximity to known hard lower-body work;
-- missing or insufficiently reduced taper phases in long dated test contexts;
-- unknown distance as **unverifiable**, rather than silently treating it as zero.
+`PlanVersion` retains identity, monotonic per-plan version, creation time,
+reason, goal snapshot, evidence summary, phases and original workouts. One
+SQLite pointer identifies the authoritative current version. Plans are generated
+only on an explicit request. A confirmation is required before rebuilding future
+training. Old versions remain immutable, including prescriptions linked to
+completed runs. A rebuild begins today; earlier completed runs remain attached
+to their original versions, not rewritten into the new programme.
 
-Gym availability alone is not evidence of a hard lower-body session. Running
-and gym training may share a day. Race distance is kept separate from ordinary
-training progression checks. Short/partial weeks are not compared as complete
-weekly load, so a race tomorrow does not create a false full-week comparison.
+Current-week sessions are concrete; the next weeks remain adaptable; distant
+weeks are projections. Merely loading an activity does not regenerate the plan.
 
-Acceptance budgets belong to the test context. They are not a universal
-ten-percent mileage rule, a safety score or clinical advice. A future generator
-must justify its policies and add validation for the decisions it actually makes.
+`AdaptiveCoachingEngine` consumes raw actual distance/RPE, preserved
+prescriptions, response links and strength context. **Run Score is not an input.**
+The first implementation proposes a change to one upcoming quality workout when:
 
-## Snapshot fixtures and honest scope
+- at least two linked recent sessions have effort above their intended range;
+- a linked run combines under-75% completion with RPE 8+; or
+- recorded hard lower-body work falls the day before a quality session.
 
-`domain/src/test/resources/plan-snapshots/` contains complete synthetic plans for
-five test-only contexts: beginner 5K, sub-2 half marathon, marathon with gym
-days, manual aerobic fitness and a returning runner. Additional tests inspect
-two/six runs per week, five gym days, race tomorrow, race a year away, ambient
-locale/timezone changes and isolated changes to one runner fixture.
+A single missed easy run, an isolated poor quality session or excellent
+completion alone does not trigger restructuring. Options include keep original,
+run easy, rest, and a feasible move when available. Moves preserve availability,
+maximum frequency and demanding-session spacing. The proposal retains evidence,
+confidence, explanation and impact. Accepting changes only the selected workout;
+rejecting records the decision and prevents repeating the same evidence proposal.
+No lost mileage is redistributed. Changed goals/availability or a prolonged
+interruption require the runner to review and explicitly rebuild; automatic
+multi-week restructuring is not yet implemented.
 
-The fixtures are deliberately constructed **test data**, not generated coaching
-plans or an NHS programme. Every fixture prescription is labelled accordingly.
-Mutation tests prove that the checks detect spikes, broken tapers, consecutive
-hard days, ignored hard-gym context and impossible scheduling. These tests verify
-the regression infrastructure; they do not claim that a production plan engine
-exists or that a training methodology has been validated.
+## Planned, actual, response, outcome
 
-Run the complete offline domain suite with `sh scripts/test-domain.sh`, or
-Gradle `:domain:check`. To deliberately regenerate the five golden snapshots
-after inspecting a fixture change, run `PlanRegressionTestSuite` with
-`--write-snapshots domain/src/test/resources/plan-snapshots` using the test
-classpath. Normal tests never overwrite expected snapshots. Review the entire
-snapshot diff before accepting it.
+`PlannedWorkout` is the preserved prescription. `ActivityRecord` is the actual
+measured/imported or manually entered result. `RunExecution` records the explicit
+link and optional runner-reported rep/recovery information. RPE and notes are
+response evidence. Completing a session does not establish an improvement in
+fitness; there is no fabricated outcome/readiness/prediction.
 
-## Rules for future engines
+## Run Score and feedback
 
-- Keep decisions deterministic and independent of Android UI/provider types.
-- Explain significant recommendations and offer alternatives.
-- Preserve planned versus completed data and the runner's original goal.
-- Treat missed or changed sessions as a changed week, without punishment.
-- Consider running, gym, consistency and available recovery context together.
-- Keep useful guidance available without HR, sleep or Health Connect.
-- Use multiple signals for performance estimates and display ranges/limitations.
-- Require a runner decision before changing a goal or accepting an adjustment.
-- Never prevent a runner from choosing to run anyway.
-- Do not diagnose, promise injury prevention, or market deterministic rules as AI.
+`RunScoreEngine` rule version 1 scores planned **purpose**, not raw speed.
+Components are completion (weight 3), effort match (4), and available pace,
+pacing/objective, reps and recoveries (2 each). Missing components are excluded,
+not zero-filled. Completion alone does not produce a numeric score. The displayed
+1–10 score is rounded; detailed component explanations and evidence remain visible.
+
+Easy/Zone 2/long runs favour conversational RPE up to 4; recovery up to 3.
+Controlled quality work uses RPE 5–8. Going harder earns no bonus. Distance above
+115% begins reducing completion-match credit. Whole-run average pace is compared
+only with a whole-run pace prescription; recovery-inclusive interval averages
+cannot establish rep pace. Reliable continuous splits can identify late fade or
+lack of progression. Missing progression or substantial missing reps caps the
+score at 7. Rep/recovery completion is used only when explicitly reported;
+provider laps are not automatically assumed to be workout reps.
+
+An unplanned run shows **Run Analysis**, with no adherence score. Feedback
+separates what went well, what differed, what was learned and the next step.
+Low scores use neutral language. HR is never required. These weights are product
+heuristics, not validated physiology. Detailed per-rep pace matching, terrain
+normalisation and automatic mapping of imported laps to structured reps remain
+pending. Feedback displayed from an imported run is recomputed from current
+retained evidence; stored rule-versioned feedback is an historical snapshot.
+
+## Optional strength
+
+Definitions are extensible, not a closed exercise enum. Sessions retain exercise
+snapshots and ordered sets (reps, added kg, optional RPE, warm-up flag), time/offset,
+duration and notes. The UI supports multiple exercises/custom definitions.
+Current UI logs working sets; editing a session/default definition is a storage
+boundary rather than a finished editor. Delete/re-log is available.
+
+Classification uses exercise region and recorded RPE. Three or more lower-body
+working sets plus session RPE >=7 or a working-set RPE >=8 produces HIGH
+lower-body involvement. Fewer/lower-effort lower-body sets produce MODERATE;
+upper-only work LOW. Unknown effort remains unknown. This is explainable context,
+not an exact fatigue measurement.
+
+Strength PB progression is rebuilt chronologically from retained non-warm-up
+sets, with session/set/date/source retained. Categories include heaviest load,
+exact 1/3/5/8/10 reps, bodyweight reps and weighted-bodyweight added load. Edits or
+deletions cannot leave unsupported PBs. Estimated 1RM uses Epley:
+`kg × (1 + reps / 30)` for suitable weighted 2–10-rep sets; a single rep uses
+recorded load. UI rounds to whole kg and labels estimates. High-rep, bodyweight,
+weighted-bodyweight and opted-out custom lifts have no estimate. This does not
+account for reps in reserve or equipment differences and never asks for a max test.
+
+Session-RPE context is `duration in minutes × reported RPE`, with data coverage.
+Running and strength are kept separate. No ACWR injury gate, CTL/ATL medical
+readiness score or prediction of injury is implemented.
+
+## Evidence and limitations
+
+Public primary research was reviewed for the direction of the design, not copied
+into a schedule or presented as validation of our constants:
+
+- [Foster et al. (2001), A new approach to monitoring exercise training](https://pubmed.ncbi.nlm.nih.gov/11708692/): session-RPE monitoring. Our app uses elapsed duration and user-entered session RPE, without claiming protocol-standardised measurement.
+- [Foster et al. (1996), Athletic performance in relation to training load](https://pubmed.ncbi.nlm.nih.gov/8693756/): integration of perceived effort and duration; does not establish a universal individual injury threshold.
+- [Bosquet et al. (2007), Effects of tapering on performance](https://pubmed.ncbi.nlm.nih.gov/17762369/): reduced volume before competition, with substantial context dependence. Our distance-specific windows are original conservative product choices, not a replication of the studied interventions.
+- [LeSuer et al. (1997), accuracy of 1RM prediction equations](https://doi.org/10.1519/00124278-199711000-00001): equation estimates differ by lift/population; Epley's conventional arithmetic is used only as an approximate progression view.
+
+No source tables, proprietary plan prescriptions or third-party source code were
+copied. NHS programme reuse remains a separate task requiring current schedule
+and licensing verification. Real-world coaching efficacy has not been established.
+
+## Verification
+
+`CoachingTestSuite` exercises production generation across distances, three/six-day
+availability and short/long horizons, plus one/two-day reductions, blocked race
+and unavailable dates, no duplicate placements, frequency, spacing, phase coverage,
+Zone 2, beginner fallback, a readable full-programme HM regression fixture,
+raw-evidence proposals and runner decisions, scores without HR/RPE, intervals,
+progression, strength PB/history/deletion/e1RM and workload coverage. The old
+synthetic regression fixtures remain as independent validation utilities.

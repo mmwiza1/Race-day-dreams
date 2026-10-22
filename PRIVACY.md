@@ -4,7 +4,7 @@
 
 Race Day Dreams has no Internet permission, server, account, analytics, advertising
 or LLM service. Goals, preferences, drafts, manual baseline, activities, results,
-shoes, annotations and reminder preferences are stored in the app's private SQLite
+shoes, annotations, generated plans/version history, evidence summaries, coaching proposals/decisions, strength sets, run responses/feedback and reminder preferences are stored in the app's private SQLite
 database. Android cloud backup and device transfer are excluded. The database
 uses Android application/device protection, not a separate encryption scheme.
 
@@ -26,7 +26,7 @@ No Health Connect credentials or records are uploaded by the app.
 
 A backup is an explicit user-chosen JSON file. It contains app-owned profile,
 goals, preferences, manual/assessment entries, shoes, notes, results, derived PB
-metadata and relevant plan/settings data. Raw imported Health Connect activities,
+metadata and plan/settings data, including goal/evidence snapshots, complete coaching version/decision history, strength sessions/custom exercises and run responses. Raw imported Health Connect activities,
 HR, samples and live checkpoints are excluded. Their local source references can
 preserve annotations and derived PB history until records are re-imported.
 
@@ -51,3 +51,10 @@ app-data clearing or uninstall also removes local data.
 Development dependencies are downloaded by build tools; those downloads are not
 application telemetry. Never commit real health records, secrets, signing keys or
 local SDK paths. Automated fixtures contain synthetic data only.
+
+
+Screenshot demo fixtures exist only in the instrumentation test APK. CI renders
+isolated synthetic records and clears test storage afterward. The installable
+APK contains no automatic demo-data import. Screenshots published in this repository
+contain only that synthetic fixture, never a user's Health Connect or personal data.
+No additional Health Connect permissions were introduced for coaching/strength.

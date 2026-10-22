@@ -33,6 +33,34 @@ is introduced at Android integration/presentation boundaries. Java domain logic
 is not rewritten for style. Disk work and provider reads run off the main thread;
 ViewModels own operation state across rotation. No training rule lives in a UI.
 
+## Coaching test-build layers
+
+`domain.coaching` now implements original deterministic generation, bounded
+constraint scheduling, raw-evidence adaptive proposals, execution feedback and
+session-RPE context. `domain.strength` holds extensible exercises, ordered session
+sets, explainable classification and reproducible full PB progression. No Android
+or storage dependency enters these rules.
+
+`CoachingStore` shares the existing application-private helper and transaction
+boundary. Plan saves atomically insert an immutable version, update the one
+current pointer and mirror prescriptions for existing reminders. Accepted
+proposals store the decision and resulting version atomically. Rejection preserves
+the current version. `RunExecution` references the preserved prescription version;
+provider activity payloads are not overwritten to add that link. Health Connect
+imports and source deletions remain governed by the existing repository.
+
+`CoachViewModel` coordinates IO and publishes actual state. Explicit user actions
+create/rebuild plans or resolve proposals. Read-only loading may record a proposal
+but never applies it. UI screens show near/distant certainty and the actual reasons
+computed by the engine. Plan, Strength and feedback screens extend the existing
+navigation without replacing the working onboarding/data features.
+
+Backup's optional `coaching.version=1` section is typed and graph-validated before
+any destructive writes. Restore uses the existing transaction, including all
+coaching tables, and checks that reminder prescriptions match the current plan.
+Older backups without coaching remain supported. Imported activity references
+can await re-import; raw provider measurements are still excluded from export.
+
 ## Persistence decision and migration
 
 Room was evaluated as the eventual structured-store adapter. It is deliberately
@@ -44,7 +72,7 @@ changing evidence or training calculations. A Room change needs its own schema
 comparison and data-migration tests; it must not use destructive fallback.
 
 Schema 1 → 2 is explicit and additive; schema 2 → 3 transactionally copies the
-annotation table to allow absent note overrides. Both previously published
+annotation table to allow absent note overrides. Schema 3 → 4 adds immutable coaching plan versions, one current pointer, proposals/decisions, strength definitions/sessions, run responses and feedback snapshots. Both previously published
 draft schema-2 variants upgrade without a reset. Stored null, empty and text
 notes, RPE and shoe links are preserved; ambiguous old empty notes are never
 reinterpreted by guesswork. Unsupported upgrade paths fail before any changes. Existing profile, goal, availability and
@@ -99,7 +127,8 @@ alarm adapter. Delivery rereads the current planned workout, revision and
 completion state. Moves, replacements, cancellations, permission changes and
 quiet hours invalidate stale messages. Preferences default to disabled.
 
-GPX, GPS recording, route maps, Wear OS, race prediction and full adaptive plan
-generation have explicit extension boundaries or existing domain models. A
+GPX, GPS recording, route maps, Wear OS, race prediction and advanced multi-week
+adaptation have explicit extension boundaries or existing domain models. Original
+production plan generation and the first single-workout adaptive rules are implemented. A
 boundary is not an operational feature. The training engine and whole-plan
 regression harness must grow together; no pretend generated plan is displayed.

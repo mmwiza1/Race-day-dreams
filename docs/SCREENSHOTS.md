@@ -1,0 +1,40 @@
+# Authentic app screenshots
+
+Canonical images are captured by `CoachingScreenshotTest` from the real
+`CoachActivity`, navigation and production screen composables. Fixture builders
+exist only in `app/src/androidTest`: neither test data nor a demo-seeding entry
+point is compiled into the app APK. Setup/teardown deletes the isolated test
+profile, cancels alarms and clears the test database.
+
+The fixture fixes record IDs, exercise sets and training evidence. Dates are
+relative to the capture day so the actual Today screen remains meaningful; the
+canonical image is a dated build capture, not a daily-changing golden assertion.
+System API/font/density follow the CI API-35 emulator. No stock image, generated
+mockup or manually composited UI is used.
+
+Run locally with an emulator:
+
+```sh
+./gradlew :app:connectedDebugAndroidTest
+adb pull /data/local/tmp/racedaydreams-screenshots/. docs/screenshots/
+python3 scripts/screenshot-source.py > docs/screenshots/source.sha256
+```
+
+`UiAutomation.takeScreenshot` is provided by Android; no new screenshot dependency
+is required. Captures are copied with the instrumentation shell identity to a
+temporary emulator directory before AGP uninstalls test apps. That shell capability
+is not available to or used by production code.
+
+CI tests API 28/35/36, uploads each API's captures and the named APK **after tests
+pass**, then publishes canonical API-35 PNGs only when all matrix jobs succeed.
+The publisher is restricted to the same-repository
+`codex/production-coach-test-build` PR branch and cannot write main. A changed
+screenshot-source fingerprint causes recapture; an unchanged digest avoids
+commit loops. `source-commit.txt` identifies the tested source commit.
+
+Review images after a material screen change. The digest detects source changes,
+not visual correctness; it is not pixel-difference approval or physical-device
+validation. CI bot screenshot commits do not themselves trigger a workflow with
+GitHub's default token. A subsequent reviewed documentation/source commit triggers
+full verification of the resulting branch head. No claim is made that the images
+are always pixel-identical across Android releases or wall-clock dates.

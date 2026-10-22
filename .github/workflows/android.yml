@@ -123,3 +123,13 @@ jobs:
           git add docs/screenshots
           git commit -m 'Capture canonical API 35 screenshots from verified test build'
           git push origin HEAD:codex/production-coach-test-build
+      - name: Reviewable synthetic screenshot bytes
+        # Text-only repository connectors can reconstruct these real PNGs for review.
+        # Only instrumentation fixture renders are logged; no user data is available.
+        run: |
+          python3 - <<'PYSCREEN'
+          from pathlib import Path
+          import base64, json
+          for image in sorted(Path('docs/screenshots').glob('*.png')):
+              print('SCREENSHOT_REVIEW ' + json.dumps({'path': str(image), 'base64': base64.b64encode(image.read_bytes()).decode()}))
+          PYSCREEN

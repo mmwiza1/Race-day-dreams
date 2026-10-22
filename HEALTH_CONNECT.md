@@ -63,3 +63,14 @@ checks do not establish that Samsung Health synchronization is enabled.
 
 Future providers should implement the same contract. Add only permissions tied
 to an implemented feature and update this document before collecting new data.
+
+
+## Coaching test-build use
+
+Imported records feed the existing baseline derivation and explicit plan-generation
+request. The runner reviews evidence before entering intentions. Optional manual
+baseline data fills gaps. Coaching, strength logging and scores work with no Health
+Connect/HR/sleep data; no new permission was added. Imported runs are explicitly
+linked by the runner to a preserved prescription version before planned execution
+scoring. Provider payload/source identity remain separate from this app-owned link.
+Strength logging is manual in this build; no provider-specific gym assumptions.

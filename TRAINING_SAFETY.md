@@ -3,8 +3,9 @@
 Race Day Dreams provides fitness guidance, not medical care. It does not diagnose
 conditions, guarantee race outcomes or promise to prevent injury.
 
-The current app collects goals, routine and optional running evidence. It does
-not yet generate training prescriptions, evaluate recovery or predict race results. A calculated target pace
+The 0.3.0-test1 app generates original heuristic training prescriptions and offers
+specific runner-controlled adjustments from raw evidence. It does not diagnose
+recovery conditions, estimate injury probability or predict race results. A calculated target pace
 is arithmetic from the runner's selected finish time, not an assessment that the
 pace is suitable.
 
@@ -14,7 +15,7 @@ Use recommendations and ordinary explanations, never diagnoses or shame. Missing
 a session is normal. Prefer “Workout not completed” and “Your week changed” to
 failure labels. A runner may keep a goal or decline a training adjustment.
 
-For future coaching, every significant adjustment must show:
+Every significant coaching adjustment shows:
 
 1. Recommendation.
 2. Why it was proposed.
@@ -67,3 +68,12 @@ Shoe-distance guidance suggests checking cushioning/outsole feel progressively.
 It does not declare a shoe unsafe at a universal mileage. Preparation reminders
 use general food, hydration, sleep and kit advice without fixed fluid quantities,
 supplements or universal carb-loading rules.
+
+
+Run Score measures execution of a planned purpose, not exertion, health or worth.
+RPE remains separate. Unknown measurements are excluded. Low scores are neutral
+information and never disable running. The adaptation engine uses raw evidence,
+not the rounded score. A short preparation horizon is explained without forcing
+rapid mileage increases. Session-RPE and lower-body strength classifications are
+context heuristics, not medical fatigue/fitness measurements. See TRAINING_ENGINE.md
+for exact rules and limitations. Real-world coaching efficacy is not established.
