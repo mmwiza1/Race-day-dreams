@@ -20,7 +20,10 @@ import java.time.*
 import java.time.temporal.TemporalAdjusters
 import org.racedaydreams.domain.presentation.CalendarData
 
-fun calendarEntries(s:CoachUiState,d:LocalDate,today:LocalDate=LocalDate.now())=CalendarData.day(d,today,s.currentPlan,s.currentPlan?.plan()?.workouts()?:s.plannedWorkouts,s.activities,s.strengthSessions,s.strengthPlannedDates,s.workoutDecisions)
+fun calendarEntries(s:CoachUiState,d:LocalDate,today:LocalDate=LocalDate.now()):List<CalendarData.Entry>{
+    val entries=CalendarData.day(d,today,s.currentPlan,s.currentPlan?.plan()?.workouts()?:s.plannedWorkouts,s.activities,s.strengthSessions,s.strengthPlannedDates,s.workoutDecisions)
+    return if(s.currentPlan==null&&s.profile?.preferences()?.gymDays()?.contains(d.dayOfWeek)==true&&entries.none{it.category()==CalendarData.Category.STRENGTH}&&s.strengthPlannedDates.values.none{it==d})entries+CalendarData.Entry(CalendarData.Category.STRENGTH,CalendarData.State.PLANNED,"Strength routine",null,null)else entries
+}
 private fun markerLetter(c:CalendarData.Category)=when(c){CalendarData.Category.REST->"–";CalendarData.Category.RUN->"U";else->c.name.take(1)}
 private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RUN->"Unclassified run";else->c.name.lowercase().replaceFirstChar{it.uppercase()}}
 @Composable private fun markerColour(c:CalendarData.Category):Color {val dark=isSystemInDarkTheme();return when(c){CalendarData.Category.EASY->if(dark)Color(0xFF80D8A0)else Color(0xFF206839);CalendarData.Category.QUALITY->if(dark)Color(0xFF9BC9FF)else Color(0xFF175FA6);CalendarData.Category.LONG->if(dark)Color(0xFFFFC078)else Color(0xFF955000);CalendarData.Category.STRENGTH->if(dark)Color(0xFFDDB5FF)else Color(0xFF78469E);CalendarData.Category.RACE->if(dark)Color(0xFFFFADA7)else Color(0xFFB12F32);else->if(dark)Color(0xFFCBCBCB)else Color(0xFF5E6268)}}
@@ -36,7 +39,7 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
 @OptIn(ExperimentalLayoutApi::class)
 @Composable fun CalendarLegend(){
     Text("Legend: workout categories",style=MaterialTheme.typography.titleSmall)
-    FlowRow(horizontalArrangement=Arrangement.spacedBy(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+    FlowRow(Modifier.semantics{contentDescription="Workout category legend"},horizontalArrangement=Arrangement.spacedBy(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
         CalendarData.Category.entries.filter{it!=CalendarData.Category.RUN}.forEach{c->Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(4.dp)){CalendarMarker(CalendarData.Entry(c,CalendarData.State.PLANNED,markerName(c),null,null));Text(markerName(c),style=MaterialTheme.typography.labelMedium)}}
     }
     Text("Outline: planned · Filled: completed · ↗ Moved · − Skipped · ? Not completed",style=MaterialTheme.typography.labelMedium)

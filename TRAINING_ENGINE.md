@@ -233,7 +233,9 @@ Only existing numerical quality-session ranges in the next four weeks are
 proposed faster, by 40% of the observed comparable gain capped at 3%. The dialog
 shows current/proposed workouts, dates, pace ranges, confidence and unchanged
 sessions before explicit acceptance. Easy/recovery running, volume and the race
-goal remain unchanged. No numerical ranges are fabricated when none exist.
+goal remain unchanged. Short (<3K) evidence caps proposals at 1.5%; race-pace
+work requires evidence covering at least half the target distance, capped at 10K.
+Easy-effort segments inside quality workouts are also excluded. No numerical ranges are fabricated when none exist.
 Terrain/effort-matched performance modelling remains future work.
 
 ## Durability and return guidance

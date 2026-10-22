@@ -37,8 +37,8 @@ import org.racedaydreams.domain.body.MassUnit
             OutlinedButton(onClick={if(c.replacements().isEmpty())model.weeklyDecision(c.id())else previewId=c.id()},enabled=!s.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(c.label())}
         }
         if(preview!=null)AlertDialog(onDismissRequest={previewId=null},title={Text("Preview plan change")},text={Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(12.dp)){
-            Text(r.recommendation())
-            r.channels().firstOrNull{it.name()=="Performance trend"}?.takeIf{preview.id()=="paces"}?.let{Text(it.reason())}
+            Text(if(preview.id()=="paces")"Optional quality-pace reassessment"else r.recommendation())
+            r.channels().firstOrNull{it.name()=="Performance trend"}?.takeIf{preview.id()=="paces"}?.let{Text(it.reason().substringBefore("."));WhyDetails(it.reason(),"Why these pace ranges?")}
             preview.replacements().forEach{next->
                 val current=s.currentPlan?.plan()?.workouts()?.firstOrNull{it.id()==next.id()}
                 Text(shortDate(next.date()),style=MaterialTheme.typography.titleSmall)
@@ -61,7 +61,7 @@ import org.racedaydreams.domain.body.MassUnit
     var range by rememberSaveable{mutableStateOf("Month")};var value by rememberSaveable{mutableStateOf("")};var date by rememberSaveable{mutableStateOf(LocalDate.now().toString())};var editId by rememberSaveable{mutableStateOf<String?>(null)};var error by rememberSaveable{mutableStateOf<String?>(null)}
     CoachHeading("Body weight")
     Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){MassUnit.entries.forEach{u->FilterChip(selected=s.massUnit==u,onClick={model.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
-    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)){listOf("Week","Month","3 Months","Year","All").forEach{r->TextButton(onClick={range=r},modifier=Modifier.weight(1f),contentPadding=PaddingValues(0.dp)){Text(if(range==r)"[$r]"else r)}}}
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)){listOf("Week","Month","3 Months","Year","All").forEach{r->FilterChip(selected=range==r,onClick={range=r},modifier=Modifier.weight(1f).heightIn(min=48.dp),label={Text(r)})}}
     val graph=remember(s.weights,range,s.massUnit){org.racedaydreams.domain.presentation.WeightGraphData.of(s.weights,LocalDate.now(),range,s.massUnit)}
     val points=graph.points()
     var selectedId by rememberSaveable(range){mutableStateOf<String?>(null)}
@@ -74,7 +74,7 @@ import org.racedaydreams.domain.body.MassUnit
     if(points.isEmpty())Text(description)else{
         Row(Modifier.fillMaxWidth().height(168.dp)){
             Column(Modifier.width(60.dp).fillMaxHeight(),verticalArrangement=Arrangement.SpaceBetween){listOf(graph.maximum(),(graph.maximum()+graph.minimum())/2,graph.minimum()).forEach{Text(decimal(it),style=MaterialTheme.typography.labelSmall)}}
-            Canvas(Modifier.weight(1f).fillMaxHeight().pointerInput(graph){detectTapGestures{tap->selectedId=graph.nearest(((tap.x-8f)/(size.width-16).coerceAtLeast(1)).toDouble())?.id()}}.semantics{contentDescription="Weight graph in ${s.massUnit.name.lowercase()}. $description. Tap to inspect a recorded point. Lines connect actual measurements, not daily estimates."}){
+            Canvas(Modifier.weight(1f).fillMaxHeight().pointerInput(graph){detectTapGestures{tap->selectedId=graph.nearest(((tap.x-8f)/(size.width-16).coerceAtLeast(1)).toDouble(),((tap.y-8f)/(size.height-16).coerceAtLeast(1)).toDouble())?.id()}}.semantics{contentDescription="Weight graph in ${s.massUnit.name.lowercase()}. $description. Tap to inspect a recorded point. Lines connect actual measurements, not daily estimates."}){
                 listOf(8f,size.height/2,size.height-8f).forEach{y->drawLine(grid,Offset(8f,y),Offset(size.width-8f,y),1.dp.toPx())}
                 val coords=points.indices.map{Offset(8f+(size.width-16)*graph.x(it).toFloat(),8f+(size.height-16)*graph.y(it).toFloat())}
                 coords.zipWithNext().forEach{(a,b)->drawLine(colour.copy(alpha=.5f),a,b,2.dp.toPx())}

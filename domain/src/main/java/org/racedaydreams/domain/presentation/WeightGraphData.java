@@ -14,5 +14,6 @@ public record WeightGraphData(List<BodyWeight> points, double minimum, double ma
     }
     public double x(int i){if(points.size()<2)return .5;long span=points.get(points.size()-1).at().toEpochMilli()-points.get(0).at().toEpochMilli();return span==0?.5:(points.get(i).at().toEpochMilli()-points.get(0).at().toEpochMilli())/(double)span;}
     public double y(int i){return 1-(unit.fromKilograms(points.get(i).kilograms())-minimum)/(maximum-minimum);}
+    public BodyWeight nearest(double x,double y){if(points.isEmpty())return null;int best=0;for(int i=1;i<points.size();i++)if(Math.pow(x(i)-x,2)+Math.pow(y(i)-y,2)<Math.pow(x(best)-x,2)+Math.pow(y(best)-y,2))best=i;return points.get(best);}
     public BodyWeight nearest(double fraction){if(points.isEmpty())return null;int best=0;for(int i=1;i<points.size();i++)if(Math.abs(x(i)-fraction)<Math.abs(x(best)-fraction))best=i;return points.get(best);}
 }

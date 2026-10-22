@@ -116,7 +116,7 @@ the icon mask previews were reviewed separately. No physical Samsung launcher wa
 ## 0.4.1 refinement — verification in progress
 
 Starting main: `7fa431ddc8bb3fa3b73677680a53957ff772cdbc`.
-Local checks: 30,402 domain assertions (including 86 refinement assertions) and
+Local checks: 30,407 domain assertions (including 91 refinement assertions) and
 30 schema tests pass. Android SDK is unavailable; local Gradle download fails
 with `SocketException: Operation not permitted`. Android compile/lint/device and
 canonical screenshot results will be recorded after CI. No destructive migration,

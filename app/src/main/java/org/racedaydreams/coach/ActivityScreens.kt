@@ -158,7 +158,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
         if (planned == null) Text(if (activity.plannedWorkoutId() == null) "No planned workout is linked to this activity."
             else "The linked planned workout is not currently available. The actual result remains retained.")
         else CoachCard {
-            Text("Planned: ${planned.category().name.replace('_', ' ').lowercase()}")
+            Text("Planned: ${workoutName(planned.category())}")
             planned.distanceKm()?.let { Text("Planned distance: ${formatDistance(it * 1000, state)}") }
             planned.duration()?.let { Text("Planned duration: ${PaceCalculator.formatTime(it)}") }
             activity.distanceMetres()?.let { actual ->

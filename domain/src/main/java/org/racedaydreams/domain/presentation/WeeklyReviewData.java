@@ -7,6 +7,6 @@ public record WeeklyReviewData(List<String> positives,List<String> attention,Str
         var positive=new ArrayList<String>();var attention=new ArrayList<String>();
         for(var c:review.channels())if(c.state()==WeeklyCoaching.State.IMPROVING||c.state()==WeeklyCoaching.State.STABLE)positive.add(c.name()+": "+c.state().name().toLowerCase(Locale.UK).replace('_',' '));
         for(var c:review.channels())if(c.state()==WeeklyCoaching.State.NEEDS_ATTENTION)attention.add(c.name()+": worth reviewing");
-        return new WeeklyReviewData(Collections.unmodifiableList(positive),Collections.unmodifiableList(attention),review.recommendation(),review.choices().stream().allMatch(c->c.replacements().isEmpty()));
+        return new WeeklyReviewData(Collections.unmodifiableList(positive),Collections.unmodifiableList(attention),review.recommendation(),review.recommendation().startsWith("No adjustment required"));
     }
 }
