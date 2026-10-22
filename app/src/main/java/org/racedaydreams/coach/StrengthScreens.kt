@@ -16,6 +16,7 @@ import org.racedaydreams.domain.strength.*
     var logging by rememberSaveable(planned){mutableStateOf(plannedDate!=null)};var historical by rememberSaveable{mutableStateOf(false)};var custom by rememberSaveable{mutableStateOf(false)}
     var name by rememberSaveable{mutableStateOf("")};var error by rememberSaveable{mutableStateOf<String?>(null)};var region by rememberSaveable{mutableStateOf("LOWER")};var mode by rememberSaveable{mutableStateOf("WEIGHTED")}
     val progression=remember(state.strengthSessions){StrengthAnalytics.progression(state.strengthSessions)}
+    val timeline=remember(state.strengthSessions,state.historicalStrength){StrengthProgression.timeline(state.strengthSessions,state.historicalStrength)}
     fun mass(kg:Double)="${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}"
     CoachPage{
         CoachHeading("Strength")
@@ -41,18 +42,27 @@ import org.racedaydreams.domain.strength.*
         }
         CoachHeading("Exercise progress and PB history")
         if(progression.isEmpty()&&state.historicalStrength.isEmpty())Text("Log working sets or add a historical record. No maximal test is needed.")
-        state.exercises.filter{e->progression.any{it.exerciseId()==e.id()}||state.historicalStrength.any{it.exercise().id()==e.id()}}.forEach{e->CoachCard{
+        state.exercises.filter{e->timeline.any{it.exerciseId()==e.id()}}.forEach{e->CoachCard{
             Text(e.name(),style=MaterialTheme.typography.titleMedium)
-            val recorded=progression.filter{it.exerciseId()==e.id()}
-            recorded.groupBy{it.category()}.forEach{(category,history)->val best=history.last();Text(if(category=="Estimated 1RM")"Estimated 1RM: ~${kotlin.math.round(state.massUnit.fromKilograms(best.value())).toInt()} ${state.massUnit.name.lowercase()} (Epley estimate)"else if(category=="Bodyweight reps")"Bodyweight reps: ${best.reps()}"else "$category: ${mass(best.kilograms())} × ${best.reps()}")
-                WhyDetails(history.joinToString(" → "){"${shortDate(it.at().atZone(ZoneId.systemDefault()).toLocalDate())}: ${mass(it.kilograms())} × ${it.reps()}"},"Recorded workout PB history")
-            }
-            state.historicalStrength.filter{it.exercise().id()==e.id()}.forEach{r->
-                Text("Manual historical PB · ${mass(r.kilograms())} × ${r.reps()}")
-                Text(when(r.precision()){HistoricalStrengthRecord.DatePrecision.UNKNOWN->"Date unknown";HistoricalStrengthRecord.DatePrecision.APPROXIMATE->"Approximately ${friendlyDate(r.date())}";else->friendlyDate(r.date())})
-                if(recorded.any{it.reps()==r.reps()&&it.kilograms()>r.kilograms()})Text("A recorded workout has exceeded this historical result.")
-                r.notes()?.takeIf{it.isNotBlank()}?.let{Text(it)}
-                TextButton(onClick={model.deleteHistorical(r.id())}){Text("Delete historical entry")}
+            val categories=timeline.filter{it.exerciseId()==e.id()}.map{it.category()}.distinct()
+            var selectedCategory by rememberSaveable(e.id()){mutableStateOf(categories.firstOrNull{it=="Load × 5"}?:categories.first())}
+            var choose by remember{mutableStateOf(false)}
+            val category=selectedCategory.takeIf{it in categories}?:categories.first()
+            Box{OutlinedButton(onClick={choose=true},modifier=Modifier.heightIn(min=48.dp)){Text(category)};DropdownMenu(expanded=choose,onDismissRequest={choose=false}){categories.forEach{c->DropdownMenuItem(text={Text(c)},onClick={selectedCategory=c;choose=false})}}}
+            val best=StrengthProgression.best(timeline,e.id(),category)
+            best?.let{Text(if(category=="Estimated 1RM")"Estimated 1RM: ~${kotlin.math.round(state.massUnit.fromKilograms(it.value())).toInt()} ${state.massUnit.name.lowercase()}"else if(category=="Bodyweight reps")"Current PB: ${it.reps()} reps"else "Current PB: ${mass(it.kilograms())} × ${it.reps()}",style=MaterialTheme.typography.titleLarge);Text(it.provenance(),style=MaterialTheme.typography.labelMedium)}
+            if(category=="Estimated 1RM")WhyDetails("Epley estimate from eligible working sets of at most 10 reps. This is approximate and does not require maximal testing.","How was this estimated?")
+            var expanded by rememberSaveable(e.id()){mutableStateOf(false)}
+            TextButton(onClick={expanded=!expanded},modifier=Modifier.heightIn(min=48.dp)){Text(if(expanded)"Hide progression"else "View progression")}
+            if(expanded){val history=timeline.filter{it.exerciseId()==e.id()&&it.category()==category}
+                history.forEach{r->
+                    HorizontalDivider()
+                    Text(when(r.precision()){HistoricalStrengthRecord.DatePrecision.UNKNOWN->"Date unknown · not placed in chronology";HistoricalStrengthRecord.DatePrecision.APPROXIMATE->"Around ${shortDate(r.date())}";else->shortDate(r.date())},style=MaterialTheme.typography.titleSmall)
+                    Text(if(category=="Estimated 1RM")"~${kotlin.math.round(state.massUnit.fromKilograms(r.value())).toInt()} ${state.massUnit.name.lowercase()} · estimated"else if(category=="Bodyweight reps")"${r.reps()} reps"else "${mass(r.kilograms())} × ${r.reps()}")
+                    Text(r.provenance(),style=MaterialTheme.typography.labelMedium)
+                    r.notes()?.takeIf{it.isNotBlank()}?.let{WhyDetails(it,"Notes")}
+                    if(r.sessionId()==null)TextButton(onClick={model.deleteHistorical(r.id())}){Text("Delete historical entry")}
+                }
             }
         }}
         CoachHeading("Latest sessions")
@@ -61,7 +71,13 @@ import org.racedaydreams.domain.strength.*
             state.strengthPlannedDates[s.id()]?.let{Text("Linked planned strength date: ${friendlyDate(it)}") }
             val context=StrengthAnalytics.context(s);Text("${context.region().name.lowercase().replace('_',' ')} · ${context.effort()} · lower-body involvement ${context.lowerBody().name.lowercase()}")
             WhyDetails(context.reasons().joinToString("\n"),"Why this strength context?")
-            s.exercises().forEach{b->Text(b.exercise().name());b.sets().forEachIndexed{i,set->Text("Set ${i+1}: ${mass(set.kilograms())} × ${set.reps()}${set.rpe()?.let{" · RPE $it"}?:""}")}}
+            val newRecords=progression.filter{it.sessionId()==s.id()&&it.category()!="Estimated 1RM"}
+            if(newRecords.isNotEmpty())Text("PB evidence recorded · ${newRecords.map{it.exerciseId()}.distinct().size} exercises",style=MaterialTheme.typography.titleSmall)
+            s.exercises().forEach{b->
+                Text(b.exercise().name(),style=MaterialTheme.typography.titleMedium)
+                Text("${b.sets().size} sets",style=MaterialTheme.typography.labelMedium)
+                b.sets().forEachIndexed{i,set->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text("${i+1}. ${mass(set.kilograms())} × ${set.reps()}");Text(set.rpe()?.let{"RPE ${decimal(it)}"}?:"RPE —")}}
+            }
             if(s.notes().isNotBlank())Text(s.notes())
             TextButton(onClick={model.deleteStrength(s.id())}){Text("Delete session and recalculate PBs")}
         }}
@@ -77,19 +93,25 @@ import org.racedaydreams.domain.strength.*
 }
 /** Draft storage uses strings internally, while visible entry has separate normal set fields. */
 @Composable private fun StrengthForm(s:CoachUiState,model:CoachViewModel,plannedDate:LocalDate?,done:()->Unit){
+    var editingSet by rememberSaveable{mutableStateOf<Int?>(null)}
     var selected by rememberSaveable{mutableStateOf(s.exercises.first().id())};var load by rememberSaveable{mutableStateOf("")};var reps by rememberSaveable{mutableStateOf("")};var effort by rememberSaveable{mutableStateOf("")};var sets by rememberSaveable{mutableStateOf(arrayListOf<String>())};var blocks by rememberSaveable{mutableStateOf(arrayListOf<String>())}
     var date by rememberSaveable{mutableStateOf((plannedDate?:LocalDate.now()).toString())};var time by rememberSaveable{mutableStateOf("18:00")};var minutes by rememberSaveable{mutableStateOf("")};var rpe by rememberSaveable{mutableStateOf("")};var notes by rememberSaveable{mutableStateOf("")};var error by rememberSaveable{mutableStateOf<String?>(null)}
     fun parseSet(line:String):StrengthSession.SetEntry{val p=line.split('|');return StrengthSession.SetEntry(UUID.randomUUID().toString(),p[1].toInt(),p[0].toDouble(),p[2].takeIf{it.isNotBlank()}?.toDouble(),false)}
     CoachCard{
         Text("Completed strength workout");DateInput("Session date",date,{date=it});CoachInput("Start time (HH:mm, local)",time,{time=it});CoachInput("Duration (minutes)",minutes,{minutes=it},true);CoachInput("Session RPE 0–10 (optional)",rpe,{rpe=it},true)
-        ExercisePicker(s,selected,{selected=it})
+        ExercisePicker(s,selected,{next->if(next!=selected&&editingSet==null){if(sets.isNotEmpty()){blocks=ArrayList(blocks+"$selected\t${sets.joinToString(";")}");sets=arrayListOf()};selected=next;editingSet=null;load="";reps="";effort=""}})
         CoachInput("Weight (${s.massUnit.name.lowercase()})",load,{load=it},true);CoachInput("Reps",reps,{reps=it},true);CoachInput("Set RPE 0–10 (optional)",effort,{effort=it},true)
-        CoachButton("Add set",{try{val line="${s.massUnit.toKilograms(load.toDouble())}|$reps|$effort";parseSet(line);sets=ArrayList(sets+line);error=null}catch(e:Exception){error=e.message?:"Check set values."}})
-        sets.forEachIndexed{i,line->val set=parseSet(line);Row(Modifier.fillMaxWidth()){Text("${i+1}: ${decimal(s.massUnit.fromKilograms(set.kilograms()))} ${s.massUnit.name.lowercase()} × ${set.reps()}",Modifier.weight(1f));TextButton(onClick={load=s.massUnit.fromKilograms(set.kilograms()).toString();reps=set.reps().toString();effort=set.rpe()?.toString()?:"";sets=ArrayList(sets.filterIndexed{index,_->index!=i})}){Text("Edit")};TextButton(onClick={sets=ArrayList(sets.filterIndexed{index,_->index!=i})}){Text("Remove")}}}
-        if(sets.isNotEmpty())TextButton(onClick={sets=ArrayList(sets+sets.last())}){Text("Duplicate previous set")}
-        OutlinedButton(onClick={if(sets.isNotEmpty()){blocks=ArrayList(blocks+"$selected\t${sets.joinToString(";")}");sets=arrayListOf()}else error="Add at least one set."},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Add exercise and sets")}
-        blocks.forEachIndexed{i,b->Text("${i+1}. ${s.exercises.firstOrNull{it.id()==b.substringBefore('\t')}?.name()} · ${b.substringAfter('\t').split(';').size} sets")}
-        if(blocks.isNotEmpty())TextButton(onClick={blocks=ArrayList(blocks.dropLast(1))}){Text("Remove last exercise")}
+        CoachButton(if(editingSet==null)"Add set"else "Update set",{try{val line="${s.massUnit.toKilograms(load.toDouble())}|$reps|$effort";parseSet(line);sets=ArrayList(if(editingSet==null)sets+line else sets.mapIndexed{i,old->if(i==editingSet)line else old});editingSet=null;error=null}catch(e:Exception){error=e.message?:"Check set values."}})
+        sets.forEachIndexed{i,line->val set=parseSet(line);Row(Modifier.fillMaxWidth()){Text("${i+1}: ${decimal(s.massUnit.fromKilograms(set.kilograms()))} ${s.massUnit.name.lowercase()} × ${set.reps()}",Modifier.weight(1f));TextButton(onClick={load=s.massUnit.fromKilograms(set.kilograms()).toString();reps=set.reps().toString();effort=set.rpe()?.toString()?:"";editingSet=i}){Text("Edit")};TextButton(onClick={sets=ArrayList(sets.filterIndexed{index,_->index!=i});editingSet=null}){Text("Remove")}}}
+        if(editingSet!=null)TextButton(onClick={editingSet=null}){Text("Cancel set edit")}
+        if(sets.isNotEmpty()&&editingSet==null)TextButton(onClick={sets=ArrayList(sets+sets.last())}){Text("Duplicate previous set")}
+        OutlinedButton(onClick={if(editingSet!=null){error="Update or cancel the set edit first."}else if(sets.isNotEmpty()){blocks=ArrayList(blocks+"$selected\t${sets.joinToString(";")}");sets=arrayListOf();editingSet=null}else error="Add at least one set."},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Add exercise and sets")}
+        if(blocks.isNotEmpty())Text("Session review",style=MaterialTheme.typography.titleMedium)
+        blocks.forEachIndexed{i,b->CoachCard{
+            Text(s.exercises.firstOrNull{it.id()==b.substringBefore('\t')}?.name()?:"Exercise",style=MaterialTheme.typography.titleSmall)
+            b.substringAfter('\t').split(';').forEach{line->val set=parseSet(line);Text("${decimal(s.massUnit.fromKilograms(set.kilograms()))} ${s.massUnit.name.lowercase()} × ${set.reps()}${set.rpe()?.let{" · RPE ${decimal(it)}"}?:""}")}
+            Row{TextButton(onClick={if(sets.isNotEmpty()){error="Finish the current exercise first."}else{selected=b.substringBefore('\t');sets=ArrayList(b.substringAfter('\t').split(';'));blocks=ArrayList(blocks.filterIndexed{index,_->index!=i});editingSet=null}}){Text("Edit exercise")};TextButton(onClick={blocks=ArrayList(blocks.filterIndexed{index,_->index!=i})}){Text("Remove exercise")}}
+        }}
         CoachInput("Notes (optional)",notes,{notes=it});error?.let{Text(it)}
         CoachButton("Save strength workout",{try{require(sets.isEmpty()){ "Add the pending exercise and sets first." };val exercises=blocks.map{b->StrengthSession.ExerciseSets(s.exercises.first{it.id()==b.substringBefore('\t')},b.substringAfter('\t').split(';').map(::parseSet))};require(exercises.isNotEmpty()){ "Add at least one exercise." };val start=LocalDate.parse(date).atTime(LocalTime.parse(time)).atZone(ZoneId.systemDefault());val duration=Duration.ofMinutes(minutes.toLong());require(start.toInstant().plus(duration)<=Instant.now()){ "Completed session must end before now." };model.saveStrength(StrengthSession(UUID.randomUUID().toString(),start.toInstant(),start.offset,duration,rpe.takeIf{it.isNotBlank()}?.toDouble(),notes,exercises),done,plannedDate)}catch(e:Exception){error=e.message?:"Check workout values."}})
     }

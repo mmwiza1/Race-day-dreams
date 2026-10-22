@@ -153,7 +153,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 }
             }
             val history = coaching.versions()
-            val review = currentPlan?.let { WeeklyCoaching.review(it, history, activities, responses, strength, results, LocalDate.now(), development.interruption(), development.sessionDecisions()) }
+            val review = currentPlan?.let { WeeklyCoaching.review(it, history, activities, responses, strength, results, LocalDate.now(), development.interruption(), development.sessionDecisions(), baseline.confidence(), store.assessments()) }
             if (review != null && !development.reviewKnown(review.id())) development.saveReview(review)
             reminders.reconcile()
             CoachUiState(

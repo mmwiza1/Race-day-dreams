@@ -8,6 +8,26 @@ reviews, improved onboarding/calendar UX, stronger strength integration, body-we
 progress tracking, and richer health-data ingestion where it can be done safely and
 honestly.
 
+## 0.4.1 refinement
+
+Category/state-aware Week/Month markers and visible legends replace generic dots.
+Rest is derived only for an available slot left free inside an active generated
+programme; unavailable dates, dates outside it, and moved/skipped dates are not rest.
+Unclassified actual runs remain labelled as such rather than being invented as easy.
+Weight axes/point selection retain only genuine measurements. Historical and recorded
+strength evidence share a dated/unknown-date timeline, with separate source labels.
+Set editing, exercise review and vector navigation icons refine the existing flow.
+Weekly reviews group positives/attention and preview changes before acceptance.
+Performance evidence v2 remains conservative and leaves race goals/easy effort alone.
+No schema, backup-format, provider, health-permission or runtime dependency changes.
+
+### Future: provider-independent rich activity data
+
+A separate future increment may evaluate native activity recording, GPX import,
+FIT import or structured sample import. The aim is richer timestamped evidence for
+splits, rolling PBs, durability and pacing analysis without dependence on any one
+provider. No recorder, parser or map is implemented in 0.4.1.
+
 ## 0.4 implementation status
 
 | Area | Implemented | Remaining / limitation |
@@ -22,7 +42,7 @@ honestly.
 | Scheduling/scoring | Race weekday exception, one-off conflicts retained, long horizons/early base, race/time-trial high-RPE execution | Advanced taper intensity and NHS C25K remain separate future work |
 | Onboarding/dates | Card choices, compact weekday selections, help disclosure, Health-first available values, final explicit Create, natural UK dates/pickers | Native wizard remains intentional; physical-device 200% font validation |
 | Calendar/navigation | Remembered List/Week/Month, labelled day details/legend, real running/strength records, routine slots and moved/skipped choices; Home/Plan/Calendar/Progress/Strength with top Settings | Month markers show counts and day labels; no drag/drop editor |
-| Strength | Structured editable/duplicate/removable sets, custom exercises, automatic recorded PB history/e1RM, historical PBs exact/approximate/unknown, kg/lb, routine-date link | Unified historical/recorded chart and arbitrary session editing UI; imported strength sets pending |
+| Strength | Structured editable/duplicate/removable sets, custom exercises, automatic recorded PB history/e1RM, historical PBs exact/approximate/unknown, kg/lb, routine-date link | Unified timeline delivered in 0.4.1; arbitrary saved-session editing UI and imported strength sets pending |
 | Body | Manual weight edit/delete, real-point range graph/text, canonical kg and kg/lb display, provenance, optional HC read | Physical-device HC checks; bounded read refreshes provider deletions only in its window; weight never drives coaching |
 | Providers | Health Connect retained; provider preference, neutral enhanced contract, conservative cross-provider reconciliation synthetic tests | Samsung SDK not included: direct ingestion unavailable pending SDK licence/access review and private adapter mapping |
 | Portability | Envelope 3, evidence section 1, preserved versions 1/2 readers, validation and transactional replace, manual user data included | Merge restore unsupported; raw external provider data omitted |

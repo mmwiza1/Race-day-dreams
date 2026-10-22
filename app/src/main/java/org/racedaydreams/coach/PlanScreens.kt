@@ -34,7 +34,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             val selectedWeek = currentWeek.plusWeeks(week.toLong()).coerceAtLeast(startWeek)
             Text("${version.goalSnapshot().raceGoal().distance().label()} · version ${version.version()}")
             Text("${friendlyDate(plan.startDate())} – ${friendlyDate(plan.endDate())}")
-            Text(version.reason())
+            WhyDetails(version.reason(),"Why this plan version?")
             if (state.profile != version.goalSnapshot()) Text("Your saved goal or availability has changed. This programme still uses its original snapshot. Review and explicitly rebuild when ready.")
             state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -42,9 +42,9 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                 FilterChip(selected = overview, onClick = { overview = true }, label = { Text("Programme") })
             }
             if (overview) {
-                Text("Distant weeks are projections. The next few weeks are planned but adaptable; current-week sessions are concrete prescriptions.")
+                WhyDetails("Distant weeks are projections. The next few weeks are planned but adaptable; current-week sessions are concrete prescriptions.","How certain is the programme?")
                 plan.phases().forEach { phase -> CoachCard {
-                    Text(phase.kind().name.replace('_', ' '), style = MaterialTheme.typography.titleMedium)
+                    Text(phase.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}, style = MaterialTheme.typography.titleMedium)
                     Text("${friendlyDate(phase.startDate())} – ${friendlyDate(phase.endDate())}")
                     WhyDetails(phase.explanation())
                 } }
@@ -82,7 +82,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
 @Composable
 fun WorkoutCard(state: CoachUiState, workout: PlannedWorkout, completed: Boolean, open: () -> Unit) = CoachCard {
     Text("${friendlyDate(workout.date())} · ${if (completed) "Completed" else if (workout.date() < LocalDate.now()) "Workout not completed" else "Planned"}")
-    Text(workout.category().name.replace('_', ' '), style = MaterialTheme.typography.titleMedium)
+    Text(workoutName(workout.category()), style = MaterialTheme.typography.titleMedium)
     Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Prescription in detail")
     TextButton(onClick = open, modifier = Modifier.heightIn(min = 48.dp)) { Text("View workout and purpose") }
 }
@@ -97,7 +97,7 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
     CoachPage {
         if (workout == null) { CoachHeading("Workout unavailable"); Text("The current programme no longer contains this workout. Completed prescriptions remain linked to their preserved version.") }
         else {
-            CoachHeading(workout.category().name.replace('_', ' '))
+            CoachHeading(workoutName(workout.category()))
             Text("${friendlyDate(workout.date())} · plan version ${version.version()}")
             Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Runner-owned race")
             CoachHeading("Workout structure")

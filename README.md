@@ -7,7 +7,13 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## Coaching increment — 0.4.0-test1
+## Refinement release — 0.4.1-test1
+
+Category-labelled calendar markers distinguish easy, quality, long, strength, race
+and planned rest; outlines and fills separate planned/completed sessions. Weight
+charts have axes and selectable genuine measurements. Strength records share a
+provenance-preserving timeline, and weekly changes have a before/after preview.
+Navigation uses proper vector icons. Schema five and backup envelope three are unchanged.
 
 Original deterministic 5K, 10K, half-marathon, marathon and general aerobic plans
 now have raw-evidence weekly reviews, bounded multi-week choices, repeated-day
@@ -34,7 +40,7 @@ boundary**, not operational ingestion; no proprietary SDK ships. See
 
 Use a successful [GitHub Actions run](https://github.com/mmwiza1/Race-day-dreams/actions)
 for the intended main commit. Its API-35 artifact contains
-`Race-Day-Dreams-0.4.0-test1-debug.apk`. Extract the ZIP and install the APK.
+`Race-Day-Dreams-0.4.1-test1-debug.apk`. Extract the ZIP and install the APK.
 GitHub artifact downloads require GitHub sign-in; the app requires no account.
 Export a local backup before upgrading. [VERIFICATION.md](VERIFICATION.md) records
 actual CI and merge results; an open PR is not evidence of a successful APK.

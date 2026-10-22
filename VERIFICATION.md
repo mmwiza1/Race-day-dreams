@@ -111,3 +111,14 @@ confirmed adaptive bitmap artwork, both launcher resources, render sizes and API
 monochrome availability. All 15 generated density PNGs reproduced byte-for-byte locally.
 Seventeen real-app canonical captures and their source fingerprint were refreshed by CI;
 the icon mask previews were reviewed separately. No physical Samsung launcher was tested.
+
+
+## 0.4.1 refinement — verification in progress
+
+Starting main: `7fa431ddc8bb3fa3b73677680a53957ff772cdbc`.
+Local checks: 30,402 domain assertions (including 86 refinement assertions) and
+30 schema tests pass. Android SDK is unavailable; local Gradle download fails
+with `SocketException: Operation not permitted`. Android compile/lint/device and
+canonical screenshot results will be recorded after CI. No destructive migration,
+new dependencies or backup-format change. Schema remains 5, backup envelope 3.
+Samsung/provider/settings source files have not changed.
