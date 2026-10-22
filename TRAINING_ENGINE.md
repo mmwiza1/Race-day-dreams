@@ -82,7 +82,9 @@ reason, goal snapshot, evidence summary, phases and original workouts. One
 SQLite pointer identifies the authoritative current version. Plans are generated
 only on an explicit request. A confirmation is required before rebuilding future
 training. Old versions remain immutable, including prescriptions linked to
-completed runs. A rebuild begins today; earlier completed runs remain attached
+completed runs. Same-day rebuilds freeze targets already linked to completions;
+the database also rejects attempts to overwrite those targets. Restored response
+links stay protected while provider records await re-import. A rebuild begins today; earlier completed runs remain attached
 to their original versions, not rewritten into the new programme.
 
 Current-week sessions are concrete; the next weeks remain adaptable; distant

@@ -36,7 +36,21 @@ public final class CoachingStore implements CoachingRepository {
     public void saveFeedback(String activityId,String versionId,RunFeedback feedback){ContentValues v=new ContentValues();v.put("activity_id",activityId);v.put("plan_version_id",versionId);v.put("payload",CoachingJson.feedback(feedback).toString());upsert(db(),"run_feedback","activity_id",activityId,v);}
     public void saveProposal(AdjustmentProposal p){var v=payload(p.id(),CoachingJson.proposal(p));v.put("base_version_id",p.baseVersionId());db().insertOrThrow("coach_proposals",null,v);}
     public void saveCurrent(PlanVersion version){SQLiteDatabase db=db();db.beginTransaction();try{saveCurrent(db,version);db.setTransactionSuccessful();}finally{db.endTransaction();}}
-    private static void saveCurrent(SQLiteDatabase db,PlanVersion version){var v=payload(version.id(),CoachingJson.version(version));v.put("plan_id",version.planId());v.put("version",version.version());db.insertOrThrow("coach_plan_versions",null,v);
+    private static void saveCurrent(SQLiteDatabase db,PlanVersion version){
+        Map<String,PlannedWorkout> proposed=new HashMap<>();for(var w:version.plan().workouts())proposed.put(w.id(),w);
+        Map<String,PlanVersion> history=new HashMap<>();
+        for(var response:rows(db,"SELECT payload FROM run_responses WHERE plan_version_id IS NOT NULL",CoachingJson::response)){
+            if(!proposed.containsKey(response.plannedWorkoutId()))continue;
+            PlanVersion original=history.get(response.planVersionId());
+            if(original==null){try(Cursor c=db.rawQuery("SELECT payload FROM coach_plan_versions WHERE id=?",new String[]{response.planVersionId()})){
+                if(!c.moveToFirst())throw new IllegalArgumentException("Completed prescription version is missing.");
+                try{original=CoachingJson.version(FeatureJson.object(c.getString(0)));}catch(JSONException e){throw FeatureJson.invalid(e);}
+            }history.put(original.id(),original);}
+            final String workoutId=response.plannedWorkoutId();
+            var prescription=original.plan().workouts().stream().filter(w->w.id().equals(workoutId)).findFirst().orElseThrow(()->new IllegalArgumentException("Completed prescription is missing."));
+            if(!prescription.equals(proposed.get(workoutId)))throw new IllegalArgumentException("A completed prescription cannot be overwritten. Its original targets must be retained.");
+        }
+        var v=payload(version.id(),CoachingJson.version(version));v.put("plan_id",version.planId());v.put("version",version.version());db.insertOrThrow("coach_plan_versions",null,v);
         ContentValues pointer=new ContentValues();pointer.put("id",1);pointer.put("version_id",version.id());upsert(db,"coach_current_plan","id","1",pointer);
         // Only the authoritative current version drives reminders. History lives in immutable versions.
         Map<String,Long> revisions=new HashMap<>();Map<String,String> previous=new HashMap<>();

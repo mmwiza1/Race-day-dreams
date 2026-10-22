@@ -34,7 +34,6 @@ commit loops. `source-commit.txt` identifies the tested source commit.
 
 Review images after a material screen change. Other branches must supply an up-to-date source fingerprint before CI proceeds. The digest detects source changes,
 not visual correctness; it is not pixel-difference approval or physical-device
-validation. CI bot screenshot commits do not themselves trigger a workflow with
-GitHub's default token. A subsequent reviewed documentation/source commit triggers
+validation. CI bot screenshot commits may not run automatically or may require GitHub workflow approval. A subsequent reviewed documentation/source commit triggers
 full verification of the resulting branch head. No claim is made that the images
 are always pixel-identical across Android releases or wall-clock dates.

@@ -281,7 +281,19 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun generatePlan() = mutate {
         val profile = profiles.load().orElse(null) ?: throw IllegalArgumentException("Save your goal and availability first.")
         val baseline = mutableState.value.baseline
-        val generated = OriginalTrainingPlanGenerator().generate(PlanRequest(profile, baseline, LocalDate.now(), emptySet(), coaching.strength()))
+        val candidate = OriginalTrainingPlanGenerator().generate(PlanRequest(profile, baseline, LocalDate.now(), emptySet(), coaching.strength()))
+        val versions = coaching.versions()
+        val responses = coaching.responses().associateBy { it.activityId() }
+        val oldCurrent = coaching.current()
+        val completed = responses.values.mapNotNull { response ->
+            versions.firstOrNull { it.id() == response.planVersionId() }?.plan()?.workouts()?.firstOrNull { it.id() == response.plannedWorkoutId() }
+        }.associateBy { it.id() }.toMutableMap()
+        // Legacy links without a version retain the current prescription rather than guessing
+        // an older one. Restored response links also remain protected while HC awaits re-import.
+        store.activities().forEach { actual ->
+            if (responses[actual.id()] == null) oldCurrent?.plan()?.workouts()?.firstOrNull { it.id() == actual.plannedWorkoutId() }?.let { completed.putIfAbsent(it.id(), it) }
+        }
+        val generated = PlanPreservation.retainCompleted(candidate, completed)
         val evidence = "Baseline window ${baseline.windowStart()} to ${baseline.windowEnd()}; confidence ${baseline.confidence()}; " +
             "weekly km ${baseline.weeklyDistanceKm() ?: "unknown"}; longest km ${baseline.longestRunKm() ?: "unknown"}; " +
             "consistent weeks ${baseline.consistentWeeks() ?: "unknown"}; sources ${baseline.provenance()}. " +

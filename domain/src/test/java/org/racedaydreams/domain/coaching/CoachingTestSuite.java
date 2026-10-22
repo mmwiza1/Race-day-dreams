@@ -162,6 +162,10 @@ public final class CoachingTestSuite {
         var load=TrainingLoadEvidence.window(List.of(actual("a",8,3.0,null),actual("b",8,null,null)),List.of(),NOW.minus(Duration.ofDays(7)),NOW.plusSeconds(1));
         check(load.runningLoad()==150&&load.runsWithRpe()==1&&load.runsObserved()==2,"Missing RPE excluded with coverage, not zero-filled");
         check(load.strengthLoad()==null,"Missing strength workload is unknown, not zero");
+        var rebuilt=new TrainingPlan("adapt",plan.startDate(),plan.endDate(),plan.phases(),List.of(new PlannedWorkout(easy1.id(),easy1.date(),WorkoutCategory.EASY_RUN,6.0,null,easy1.segments(),"New future workload rule"),easy2,quality));
+        var frozen=PlanPreservation.retainCompleted(rebuilt,Map.of(easy1.id(),easy1));
+        check(frozen.workouts().contains(easy1),"Same-day rebuild retains original completed prescription targets");
+        check(frozen.workouts().contains(quality),"Completed preservation leaves future prescriptions intact");
         var weightedBody=new StrengthExercise("weighted","Weighted Pull-Up",StrengthExercise.Region.UPPER,StrengthExercise.Mode.WEIGHTED_BODYWEIGHT,false);
         var bwSession=new StrengthSession("bw",NOW.minusSeconds(3600),ZoneOffset.UTC,Duration.ofMinutes(30),null,"",List.of(new StrengthSession.ExerciseSets(weightedBody,List.of(new StrengthSession.SetEntry("bw-set",5,20,null,false)))));
         check(StrengthAnalytics.progression(List.of(bwSession)).stream().anyMatch(r->r.category().equals("Added load × 5")),"Weighted-bodyweight PB retains added load and reps");

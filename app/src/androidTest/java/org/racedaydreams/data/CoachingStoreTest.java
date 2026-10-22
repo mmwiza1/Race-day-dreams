@@ -50,6 +50,16 @@ public final class CoachingStoreTest extends AndroidTestCase {
     public void testLegacyBackupClearsCoachingWithoutCorruption()throws Exception{
         coaching.saveCurrent(version());JSONObject legacy=features.exportUserData();legacy.remove("coaching");features.restoreUserData(legacy,false);assertNull(coaching.current());assertTrue(coaching.versions().isEmpty());
     }
+    public void testCompletedPrescriptionCannotBeOverwrittenByRebuild(){
+        var v=version();coaching.saveCurrent(v);coaching.saveResponse(new RunExecution("completed","workout",v.id(),null,null,""));
+        var w=v.plan().workouts().get(0);var changed=new PlannedWorkout(w.id(),w.date(),w.category(),3.0,null,w.segments(),"Changed target");
+        var candidate=new TrainingPlan(v.planId(),v.plan().startDate(),v.plan().endDate(),v.plan().phases(),Collections.singletonList(changed));
+        var next=new PlanVersion("rebuild",v.planId(),2,Instant.now(),"Rebuild",v.goalSnapshot(),v.evidenceSnapshot(),candidate);
+        try{coaching.saveCurrent(next);fail("Completed targets must be immutable");}catch(IllegalArgumentException expected){assertEquals(v,coaching.current());assertEquals(1,coaching.versions().size());}
+        var preserved=PlanPreservation.retainCompleted(candidate,Collections.singletonMap(w.id(),w));
+        coaching.saveCurrent(new PlanVersion("preserved",v.planId(),2,Instant.now(),"Rebuild with preserved completion",v.goalSnapshot(),v.evidenceSnapshot(),preserved));
+        assertEquals(w,coaching.current().plan().workouts().get(0));
+    }
     public void testVersionThreeMigrationRetainsExistingActivityAndShoe(){
         var shoe=new Shoe("shoe","Brand","Model",LocalDate.now().minusDays(20),0.0,false,"",true);
         features.saveShoe(shoe);ProfileDatabase.get(getContext()).close();
