@@ -31,6 +31,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - name: Require current canonical screenshots on other branches
+        if: github.head_ref != 'codex/production-coach-test-build'
+        run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
           sh scripts/test-domain.sh

@@ -29,10 +29,10 @@ CI tests API 28/35/36, uploads each API's captures and the named APK **after tes
 pass**, then publishes canonical API-35 PNGs only when all matrix jobs succeed.
 The publisher is restricted to the same-repository
 `codex/production-coach-test-build` PR branch and cannot write main. A changed
-screenshot-source fingerprint causes recapture; an unchanged digest avoids
+screenshot-source fingerprint (including rendering workflow settings) causes recapture; an unchanged digest avoids
 commit loops. `source-commit.txt` identifies the tested source commit.
 
-Review images after a material screen change. The digest detects source changes,
+Review images after a material screen change. Other branches must supply an up-to-date source fingerprint before CI proceeds. The digest detects source changes,
 not visual correctness; it is not pixel-difference approval or physical-device
 validation. CI bot screenshot commits do not themselves trigger a workflow with
 GitHub's default token. A subsequent reviewed documentation/source commit triggers

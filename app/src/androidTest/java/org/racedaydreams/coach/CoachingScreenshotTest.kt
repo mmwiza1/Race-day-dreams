@@ -3,7 +3,7 @@ package org.racedaydreams.coach
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.ui.test.*
-import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -80,14 +80,18 @@ class CoachingScreenshotTest {
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
     private fun alignHeading(text:String){
         compose.onNodeWithText(text).performScrollTo()
-        val scroll=compose.onNode(hasScrollAction())
-        val top=scroll.fetchSemanticsNode().boundsInRoot.top
-        val delta=compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top-top
-        scroll.performSemanticsAction(SemanticsActions.ScrollBy){it(0f,delta)}
+        // A slow real scroll gives the screenshot its own useful viewport instead
+        // of merely making the heading one pixel visible at the bottom edge.
+        compose.onRoot().performTouchInput {
+            swipe(Offset(centerX,height*.8f),Offset(centerX,height*.35f),durationMillis=1000)
+        }
         compose.waitForIdle()
     }
     private fun capture(name:String){
         compose.waitForIdle()
+        // Compose idleness can precede SurfaceFlinger presenting the last frame.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        android.os.SystemClock.sleep(200)
         val bitmap=InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
         Assert.assertNotNull(bitmap)
         val dir=File(context.getExternalFilesDir(null),"screenshots");dir.mkdirs()

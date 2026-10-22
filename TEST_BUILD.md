@@ -82,3 +82,9 @@ Base main: `7624a662c5a52b6cd0ab427c09e17b354b50c62e`.
 Include APK source commit, Android/One UI version, steps, expected/actual behaviour,
 and whether Health Connect was enabled. Avoid posting identifiable health records
 in public issues. A backup contains personal information; do not attach it publicly.
+
+Backup envelope version 2 includes coaching data and prevents old app versions
+from silently discarding it. This reader also restores original version-1
+backups. Core store format 1 and coaching section version 1 are independently
+validated. Export retains the existing 8 MiB/complexity limits: exceeding them
+fails clearly before truncating a destination, without deleting local history.

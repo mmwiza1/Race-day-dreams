@@ -132,3 +132,9 @@ adaptation have explicit extension boundaries or existing domain models. Origina
 production plan generation and the first single-workout adaptive rules are implemented. A
 boundary is not an operational feature. The training engine and whole-plan
 regression harness must grow together; no pretend generated plan is displayed.
+
+Backup envelope version 2 includes coaching data and prevents old app versions
+from silently discarding it. This reader also restores original version-1
+backups. Core store format 1 and coaching section version 1 are independently
+validated. Export retains the existing 8 MiB/complexity limits: exceeding them
+fails clearly before truncating a destination, without deleting local history.

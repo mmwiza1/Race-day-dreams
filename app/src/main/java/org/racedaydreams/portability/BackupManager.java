@@ -27,7 +27,9 @@ import org.racedaydreams.data.FeatureStore;
  */
 public final class BackupManager {
     public static final String FORMAT = "race-day-dreams-backup";
-    public static final int VERSION = 1;
+    // v2 adds the coaching graph. Older apps reject it rather than silently dropping
+    // plan/strength history; this reader still accepts original v1 backups.
+    public static final int VERSION = 2;
     public static final int MAX_BYTES = 8 * 1024 * 1024;
     private static final int MAX_DEPTH = 32;
     private static final int MAX_STRUCTURAL_TOKENS = 200_000;
@@ -78,7 +80,7 @@ public final class BackupManager {
         try {
             JSONObject data = envelope.getJSONObject("data");
             FeatureStore.validateUserData(data);
-            RestoreSummary result = new RestoreSummary(VERSION,
+            RestoreSummary result = new RestoreSummary(envelope.getInt("version"),
                     Instant.parse(envelope.getString("createdAt")),
                     data.getJSONArray("activities").length(), data.getJSONArray("results").length(),
                     data.getJSONArray("shoes").length());
@@ -117,9 +119,11 @@ public final class BackupManager {
             }
             if (!FORMAT.equals(envelope.getString("format"))) throw new IOException("This is not a Race Day Dreams backup.");
             Object version = envelope.get("version");
-            if (!(version instanceof Integer) || ((Integer) version) != VERSION) {
+            if (!(version instanceof Integer) || ((Integer) version) < 1 || ((Integer) version) > VERSION) {
                 throw new IOException("This backup version is not supported by this app.");
             }
+            if (((Integer) version) >= 2 && !envelope.getJSONObject("data").has("coaching"))
+                throw new IOException("This version-two backup is missing its coaching data section.");
             Instant.parse(envelope.getString("createdAt"));
             FeatureStore.validateUserData(envelope.getJSONObject("data"));
             return envelope;

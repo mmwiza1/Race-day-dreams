@@ -58,3 +58,9 @@ isolated synthetic records and clears test storage afterward. The installable
 APK contains no automatic demo-data import. Screenshots published in this repository
 contain only that synthetic fixture, never a user's Health Connect or personal data.
 No additional Health Connect permissions were introduced for coaching/strength.
+
+Backup envelope version 2 includes coaching data and prevents old app versions
+from silently discarding it. This reader also restores original version-1
+backups. Core store format 1 and coaching section version 1 are independently
+validated. Export retains the existing 8 MiB/complexity limits: exceeding them
+fails clearly before truncating a destination, without deleting local history.
