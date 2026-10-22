@@ -97,7 +97,7 @@ jobs:
 
   canonical-screenshots:
     needs: build
-    # This job can only update the explicitly requested test branch, never main.
+    # Capture publication is confined to this same-repository feature branch, never main.
     if: github.event_name == 'pull_request' && github.head_ref == 'codex/weekly-coach-and-simple-ux' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
