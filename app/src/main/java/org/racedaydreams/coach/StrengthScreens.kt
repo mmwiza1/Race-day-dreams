@@ -11,8 +11,9 @@ import java.util.UUID
 import org.racedaydreams.domain.strength.*
 
 @Composable fun StrengthScreen(state:CoachUiState,model:CoachViewModel,planned:String?=null){
-    val plannedDate=planned?.let{runCatching{LocalDate.parse(it)}.getOrNull()}
-    var logging by rememberSaveable{mutableStateOf(plannedDate!=null)};var historical by rememberSaveable{mutableStateOf(false)};var custom by rememberSaveable{mutableStateOf(false)}
+    var routineDate by rememberSaveable(planned){mutableStateOf(planned)}
+    val plannedDate=routineDate?.let{runCatching{LocalDate.parse(it)}.getOrNull()}
+    var logging by rememberSaveable(planned){mutableStateOf(plannedDate!=null)};var historical by rememberSaveable{mutableStateOf(false)};var custom by rememberSaveable{mutableStateOf(false)}
     var name by rememberSaveable{mutableStateOf("")};var error by rememberSaveable{mutableStateOf<String?>(null)};var region by rememberSaveable{mutableStateOf("LOWER")};var mode by rememberSaveable{mutableStateOf("WEIGHTED")}
     val progression=remember(state.strengthSessions){StrengthAnalytics.progression(state.strengthSessions)}
     fun mass(kg:Double)="${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}"
@@ -21,8 +22,13 @@ import org.racedaydreams.domain.strength.*
         Text("Your optional strength training, records and running context.")
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->FilterChip(selected=state.massUnit==u,onClick={model.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
         if(plannedDate!=null)Text("Planned strength · ${friendlyDate(plannedDate)}. Log what you actually did.")
-        CoachButton(if(logging)"Hide workout form"else "Log strength workout",{logging=!logging})
-        if(logging)StrengthForm(state,model,plannedDate){logging=false}
+        if(!logging) {
+            val today=LocalDate.now()
+            val upcoming=(0L..6L).map{today.plusDays(it)}.firstOrNull { day -> state.profile?.preferences()?.gymDays()?.contains(day.dayOfWeek)==true && state.strengthSessions.none{it.startedAt().atOffset(it.offset()).toLocalDate()==day} && state.strengthPlannedDates.values.none{it==day} }
+            upcoming?.let { day -> CoachCard { Text("Next routine strength · ${friendlyDate(day)}");Text("From your normal strength days; actual exercises and effort have not been recorded.");OutlinedButton(onClick={routineDate=day.toString();logging=true},modifier=Modifier.heightIn(min=48.dp)){Text("Log planned strength")}} }
+        }
+        CoachButton(if(logging)"Hide workout form"else "Log strength workout",{if(!logging)routineDate=null;logging=!logging})
+        if(logging)StrengthForm(state,model,plannedDate){logging=false;routineDate=null}
         OutlinedButton(onClick={historical=!historical},modifier=Modifier.heightIn(min=48.dp)){Text("Add historical PB")}
         if(historical)HistoricalForm(state,model){historical=false}
         TextButton(onClick={custom=!custom}){Text("Add custom exercise")}
