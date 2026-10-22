@@ -29,7 +29,7 @@ import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.domain.body.*
-import org.racedaydreams.domain.activity.ProviderReconciliation
+import org.racedaydreams.domain.activity.ActivitySources
 import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.SqliteUserPreferencesRepository
@@ -74,11 +74,11 @@ data class CoachUiState(
     val massUnit: MassUnit = MassUnit.KG,
     val calendarView: String = "List",
     val gymLinks: Map<String,org.racedaydreams.data.DevelopmentStore.GymLink> = emptyMap(),
+    val gymProgressionDecisions: List<org.racedaydreams.data.GymProgrammeStore.Decision> = emptyList(),
     val gymProgramme: org.racedaydreams.domain.strength.GymProgramme? = null,
     val gymVersions: List<org.racedaydreams.domain.strength.GymProgramme> = emptyList(),
     val exerciseChoices: List<org.racedaydreams.data.StrengthUserStore.Choice> = emptyList(),
     val acknowledgedPbs: Set<String> = emptySet(),
-    val providerPreference: String = "HEALTH_CONNECT",
     val workoutDecisions: List<WorkoutDecision> = emptyList(),
     val weeklyReview: WeeklyCoaching.Review? = null,
     val weeklyDecision: String? = null,
@@ -139,8 +139,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         } else emptySet()
         val snapshot = withContext(Dispatchers.IO) {
             val profile = profiles.load().orElse(null)
-            val preference = ProviderReconciliation.normalizePreference(store.getSetting("provider.preference"))
-            val activities = ProviderReconciliation.reconcile(store.activities(), preference).map { it.activity() }
+            val activities = store.activities()
             val results = store.results()
             val manual = store.savedManualBaseline()
             val now = Instant.now()
@@ -168,11 +167,12 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 weights = development.weights(), historicalStrength = development.historical(),
                 massUnit = runCatching { MassUnit.valueOf(store.getSetting("mass.unit") ?: "KG") }.getOrDefault(MassUnit.KG),
                 gymLinks = development.gymLinks(),
+                gymProgressionDecisions = org.racedaydreams.data.GymProgrammeStore(getApplication()).decisions(),
                 gymProgramme = org.racedaydreams.data.GymProgrammeStore(getApplication()).current(),
                 gymVersions = org.racedaydreams.data.GymProgrammeStore(getApplication()).versions(),
                 exerciseChoices = org.racedaydreams.data.StrengthUserStore(getApplication()).choices(),
                 acknowledgedPbs = org.racedaydreams.data.StrengthUserStore(getApplication()).acknowledged(),
-                calendarView = store.getSetting("calendar.view") ?: "List", providerPreference = preference.name,
+                calendarView = store.getSetting("calendar.view") ?: "List",
                 workoutDecisions = development.sessionDecisions(),
                 weeklyReview = review, weeklyDecision = review?.let { development.decisionForReview(it) },
                 proposals = coaching.proposals().filter { it.baseVersionId() == currentPlan?.id() },
@@ -342,6 +342,18 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         val completed = store.activities().mapNotNull { it.plannedWorkoutId() }.toSet()
         require(!store.activities().any { it.plannedWorkoutId() == proposal.workoutId() }) { "This workout has already been completed; refresh the plan." }
         coaching.decide(proposal, optionId, completed)
+    }
+
+    fun gymProgression(base: String, sessionId: String, exerciseId: String, accept: Boolean) = mutate("Strength progression choice recorded. Actual workouts are unchanged.") {
+        val repository=org.racedaydreams.data.GymProgrammeStore(getApplication())
+        val p=repository.current() ?: throw IllegalArgumentException("No current gym programme.")
+        require(org.racedaydreams.data.GymProgrammeStore.key(p)==base){"The programme changed. Review the current suggestion."}
+        val prescription=p.sessions().first{it.id()==sessionId}.exercises().first{it.exerciseId()==exerciseId}
+        val actual=coaching.strength()
+        val advice=org.racedaydreams.domain.strength.StrengthProgressionAdvisor.review(prescription,actual,Instant.now())
+        val evidence=advice.reason()+"\n"+actual.filter{s->s.exercises().any{it.exercise().id()==exerciseId}}.sortedByDescending{it.startedAt()}.take(2).joinToString("\n"){s->s.id()+": "+s.exercises().filter{it.exercise().id()==exerciseId}.joinToString{it.sets().toString()}}
+        val proposed=if(accept){require(advice.action()==org.racedaydreams.domain.strength.StrengthProgressionAdvisor.Action.CONSIDER_INCREASE&&advice.suggestedKilograms()!=null){"Current evidence does not support that increase."};org.racedaydreams.domain.strength.GymPlanEditor.loadReference(p,sessionId,exerciseId,advice.suggestedKilograms(),LocalDate.now(),Instant.now(),development.strengthLinks().values.toSet())}else null
+        repository.decide(p,proposed,sessionId,exerciseId,evidence)
     }
 
     fun saveGym(plan: org.racedaydreams.domain.strength.GymProgramme) = mutate("Strength programme saved. Previous versions are retained.") {

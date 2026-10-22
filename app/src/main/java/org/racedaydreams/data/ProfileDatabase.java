@@ -152,6 +152,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE pb_acknowledgements (id TEXT PRIMARY KEY NOT NULL)");
         db.execSQL("CREATE TABLE gym_plan_versions (version_id TEXT PRIMARY KEY NOT NULL, plan_id TEXT NOT NULL, version INTEGER NOT NULL CHECK(version > 0), payload TEXT NOT NULL, UNIQUE(plan_id,version))");
         db.execSQL("CREATE TABLE gym_current (id INTEGER PRIMARY KEY CHECK(id=1), version_id TEXT NOT NULL REFERENCES gym_plan_versions(version_id))");
+        db.execSQL("CREATE TABLE gym_progression_decisions (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL)");
         // V6_SCHEMA_END
     }
 

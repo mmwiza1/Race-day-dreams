@@ -22,6 +22,7 @@ public final class GymProgrammeTestSuite {
         ok(StrengthProgressionAdvisor.review(p,List.of()).action()==StrengthProgressionAdvisor.Action.GATHER_EVIDENCE,"No fabricated baseline");
         var first=session("a",NOW.minusSeconds(3600),8,7.0);var second=session("b",NOW.minusSeconds(86400),8,7.0);var advice=StrengthProgressionAdvisor.review(p,List.of(first,second));ok(advice.action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,"Repeated controlled top reps");ok(advice.options().contains("Keep current load"),"No forced increase");ok(first.exercises().get(0).sets().get(0).kilograms()==80,"Evidence immutable");
         ok(StrengthProgressionAdvisor.review(p,List.of(session("hard",NOW,5,9.0),second)).action()==StrengthProgressionAdvisor.Action.REDUCE_OR_SIMPLIFY,"High effort -> reduce option");ok(StrengthProgressionAdvisor.review(p,List.of(session("unknown",NOW,8,null),second)).action()==StrengthProgressionAdvisor.Action.HOLD,"Missing effort -> hold");
+        ok(StrengthProgressionAdvisor.review(p,List.of(first,second),NOW.plus(Duration.ofDays(45))).action()==StrengthProgressionAdvisor.Action.HOLD,"Stale evidence cannot drive a load increase");
         ok(!GymProgrammeGenerator.available("back-squat",Set.of("barbell")),"Squat needs rack");ok(!GymProgrammeGenerator.available("bench-press",Set.of("barbell","squat rack")),"Bench needs bench");
         System.out.println("GymProgrammeTestSuite: "+checks+" checks passed.");
     }

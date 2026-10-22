@@ -42,7 +42,10 @@ Running prescriptions and recurring availability are never silently changed.
 Two comparable sessions at the top of the rep range with suitable recorded RPE may
 suggest a small load increase. Missing effort supports holding, not assuming easy
 execution. Repeated difficulty supports a hold/reduction. Suggestions never apply
-weights automatically. Actual sets and immutable prescribed versions stay separate.
+weights automatically. Accepting an optional reference creates a new prescribed version;
+keeping it records a no-change decision. Both retain the evidence and before/after version
+identities in backup. Raw RIR is preserved separately from an approximate coaching RPE.
+Actual sets and immutable prescribed versions stay separate.
 
 ## Deliberate limits
 

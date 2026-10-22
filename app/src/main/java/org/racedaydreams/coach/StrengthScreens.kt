@@ -13,8 +13,8 @@ import org.racedaydreams.domain.strength.*
 @Composable fun StrengthScreen(state:CoachUiState,model:CoachViewModel,planned:String?=null, section:String="log", sourceId:String?=null){
     var routineDate by rememberSaveable(planned){mutableStateOf(planned)}
     val plannedDate=routineDate?.let{runCatching{LocalDate.parse(it)}.getOrNull()}
-    var logging by rememberSaveable(planned){mutableStateOf(plannedDate!=null)};var historical by rememberSaveable{mutableStateOf(false)};var custom by rememberSaveable{mutableStateOf(false)}
-    var name by rememberSaveable{mutableStateOf("")};var error by rememberSaveable{mutableStateOf<String?>(null)};var region by rememberSaveable{mutableStateOf("LOWER")};var mode by rememberSaveable{mutableStateOf("WEIGHTED")}
+    var logging by rememberSaveable(planned){mutableStateOf(plannedDate!=null)};var historical by rememberSaveable{mutableStateOf(false)}
+
     val progression=remember(state.strengthSessions){StrengthAnalytics.progression(state.strengthSessions)}
     val timeline=remember(state.strengthSessions,state.historicalStrength){StrengthProgression.timeline(state.strengthSessions,state.historicalStrength)}
     fun mass(kg:Double)="${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}"

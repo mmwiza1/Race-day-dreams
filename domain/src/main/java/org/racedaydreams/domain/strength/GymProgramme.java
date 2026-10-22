@@ -18,8 +18,10 @@ public record GymProgramme(String id,int version,Instant createdAt,String reason
         }
     }
     public record Prescription(String exerciseId,int sets,int minimumReps,int maximumReps,Integer seconds,Double metres,
-            int minimumRpe,int maximumRpe,int restSeconds,String intent) {
+            int minimumRpe,int maximumRpe,int restSeconds,String intent,Double referenceLoadKg) {
+        public Prescription(String exerciseId,int sets,int minimumReps,int maximumReps,Integer seconds,Double metres,int minimumRpe,int maximumRpe,int restSeconds,String intent){this(exerciseId,sets,minimumReps,maximumReps,seconds,metres,minimumRpe,maximumRpe,restSeconds,intent,null);}
         public Prescription {
+            if(referenceLoadKg!=null&&(!Double.isFinite(referenceLoadKg)||referenceLoadKg<0||referenceLoadKg>1500||minimumReps==0))throw new IllegalArgumentException("Load reference requires a valid repetition prescription.");
             if(exerciseId==null||exerciseId.isEmpty()||sets<1||sets>6||minimumReps<0||maximumReps<minimumReps||maximumReps>100||minimumRpe<1||maximumRpe>10||minimumRpe>maximumRpe||restSeconds<30||restSeconds>300||intent==null)throw new IllegalArgumentException("Invalid strength prescription.");
             if((minimumReps>0?1:0)+(seconds!=null?1:0)+(metres!=null?1:0)!=1||seconds!=null&&(seconds<5||seconds>600)||metres!=null&&(!Double.isFinite(metres)||metres<=0||metres>1000))throw new IllegalArgumentException("Choose one valid measurement for this prescription.");
         }

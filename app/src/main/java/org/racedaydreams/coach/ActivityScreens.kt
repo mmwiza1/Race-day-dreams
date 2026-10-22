@@ -43,7 +43,7 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit) {
                         Text(if (activity.source().provider() == "assessment") "Assessment run" else "Recorded run", style = MaterialTheme.typography.titleMedium)
                         Text(activity.distanceMetres()?.let { formatDistance(it, state) } ?: "Distance unavailable")
                         Text("Elapsed: ${PaceCalculator.formatTime(activity.elapsedTime())}")
-Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
+Text("Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}")
                         val score = remember(activity,state.runResponses,state.planVersions) {
                             val response=state.runResponses.firstOrNull{it.activityId()==activity.id()}
                             val prescription=state.planVersions.firstOrNull{it.id()==response?.planVersionId()}?.plan()?.workouts()?.firstOrNull{it.id()==response?.plannedWorkoutId()}
@@ -108,7 +108,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 }
                 WhyDetails(durability.evidence().explanation()+" These are descriptive equal-time halves, not a precise fitness score. Terrain, stops, conditions and intention matter."+(durability.evidence().heartRateDriftPercent()?.let{" HR-to-pace change: ${decimal(it)}%."}?:" HR context unavailable."),"Durability details")
             }
-            Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
+            Text("Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}")
             WhyDetails("Provider: ${activity.source().provider()}\nOrigin: ${activity.source().originPackage() ?: "Unavailable"}\nRecord: ${activity.source().recordId()}","Technical data source")
 
             Text("Values absent from the source remain unavailable. Elapsed time is not presented as moving time.")

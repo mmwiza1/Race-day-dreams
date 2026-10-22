@@ -197,7 +197,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
     }
     public String getSetting(String key) {try(Cursor c=read().rawQuery("SELECT setting_value FROM settings WHERE setting_key=?",new String[]{required(key,"setting key")})){return c.moveToFirst()?c.getString(0):null;}}
     public void putSetting(String key,String value) {putSetting(write(),key,value);}
-    private static void putSetting(SQLiteDatabase db,String key,String value){ContentValues v=values("setting_key",required(key,"setting key"));v.put("setting_value","provider.preference".equals(key)?"HEALTH_CONNECT":Objects.requireNonNull(value));replace(db,"settings",v);}
+    private static void putSetting(SQLiteDatabase db,String key,String value){ContentValues v=values("setting_key",required(key,"setting key"));v.put("setting_value","provider.preference".equals(key)?org.racedaydreams.domain.activity.ActivitySources.normalizeLegacyPreference(value):Objects.requireNonNull(value));replace(db,"settings",v);}
     public void removeSetting(String key){write().delete("settings","setting_key=?",new String[]{required(key,"setting key")});}
 
     public List<PlannedWorkout> plannedWorkouts() {
