@@ -134,8 +134,8 @@ private fun CoachApp(model: CoachViewModel) {
 
     val tabs = listOf("home" to "Home", "plan" to "Plan", "calendar" to "Calendar", "progress" to "Progress", "strength" to "Strength")
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Race Day Dreams") }, navigationIcon = {
-            if (route != null && route !in tabs.map { it.first } && route != "goals") {
+        topBar = { TopAppBar(title = { Text("Race Day Dreams",maxLines=1,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis) }, navigationIcon = {
+            if (route != null && route !in tabs.map { it.first } && route != "strength?date={date}" && route != "goals") {
                 TextButton(onClick = { if (!nav.popBackStack()) nav.navigate("home") }) { Text("Back") }
             }
         }, actions = { TextButton(onClick={nav.navigate("settings")}) { Text("⚙ Settings") } }) },

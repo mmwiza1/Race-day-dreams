@@ -139,7 +139,7 @@ private fun WeeklyDistanceCard(weeks: List<RecordedWeek>, state: CoachUiState) =
             else -> formatDistance(week.distanceMetres(), state) +
                 if (week.missingDistanceCount() > 0) " known distance; ${week.missingDistanceCount()} other runs have no distance" else " recorded"
         }
-        Text("${week.weekStart()} · $label", style = MaterialTheme.typography.bodyMedium)
+        Text("${shortDate(week.weekStart())} · $label", style = MaterialTheme.typography.bodyMedium)
         val fraction = if (largest != null && week.distanceMetres() != null)
             (week.distanceMetres() / largest).toFloat().coerceIn(0f, 1f) else 0f
         // The complete equivalent is the text above. Bars do not add colour-only information.
