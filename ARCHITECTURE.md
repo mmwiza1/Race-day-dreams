@@ -133,8 +133,34 @@ production plan generation and the first single-workout adaptive rules are imple
 boundary is not an operational feature. The training engine and whole-plan
 regression harness must grow together; no pretend generated plan is displayed.
 
-Backup envelope version 2 includes coaching data and prevents old app versions
-from silently discarding it. This reader also restores original version-1
+Backup envelope version 3 includes coaching data and prevents old app versions
+from silently discarding it. This reader also restores original version-1 and version-2
 backups. Core store format 1 and coaching section version 1 are independently
 validated. Export retains the existing 8 MiB/complexity limits: exceeding them
 fails clearly before truncating a destination, without deleting local history.
+
+
+## Schema five / 0.4 increment
+
+`WeeklyCoaching` and `LongRunDurability` retain Android-independent deterministic
+rules. `DevelopmentStore` adds a typed, kind-keyed evidence table for manual and
+optional provider weights, historical strength records, weekly reviews/decisions,
+interruption state, routine strength links and explicit session decisions. The
+4→5 migration is additive; all supported 1–4 installations upgrade explicitly.
+`development.version=1` is validated before transactional replacement, alongside
+the retained coaching graph. Envelope 3 prevents old readers silently dropping
+new user-owned evidence; readers still accept envelopes 1/2. Provider weight
+payloads are omitted from export and can be re-read.
+
+Compose uses the existing ViewModel snapshot and IO mutex; weekly evidence is
+recomputed on evidence refresh, not every destination composition. Calendar view,
+mass unit and provider preference persist locally. The retained tested native
+onboarding wizard now uses compact weekday selections/card choices, disclosure
+and a date picker; it is intentionally not rewritten merely to use Compose.
+The final explicit Create my programme action saves the goal then generates.
+Manual move/skip and review acceptance create immutable plan versions and update
+reminder mirrors transactionally. Weight has no input path into coaching.
+
+Enhanced provider contracts and conservative reconciliation remain independent of
+proprietary APIs. Samsung's runtime adapter is not included; see its development
+caveat. Health Connect weight permission is isolated from running permissions.

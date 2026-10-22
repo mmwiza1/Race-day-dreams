@@ -22,7 +22,9 @@ public final class ProviderReconciliation {
             for(int j=i+1;j<sorted.size()&&Duration.between(a.start(),sorted.get(j).start()).getSeconds()<=30;j++)if(!used.contains(sorted.get(j).id())&&sameWorkout(a,sorted.get(j)))candidates.add(sorted.get(j));
             // Ambiguous clusters are deliberately not merged.
             if(candidates.size()!=1){out.add(new Canonical(a,Immutable.list(a.source())));continue;}
-            var b=candidates.get(0);long matches=sorted.stream().filter(x->!x.id().equals(b.id())&&sameWorkout(b,x)).count();
+            var b=candidates.get(0);long matches=0;int index=Collections.binarySearch(sorted,b,Comparator.comparing(ActivityRecord::start).thenComparing(ActivityRecord::id));
+            for(int k=index-1;k>=0&&Duration.between(sorted.get(k).start(),b.start()).getSeconds()<=30;k--)if(sameWorkout(b,sorted.get(k)))matches++;
+            for(int k=index+1;k<sorted.size()&&Duration.between(b.start(),sorted.get(k).start()).getSeconds()<=30;k++)if(sameWorkout(b,sorted.get(k)))matches++;
             if(matches!=1){out.add(new Canonical(a,Immutable.list(a.source())));continue;}
             used.add(b.id());ActivityRecord best;
             if(preference==Preference.HEALTH_CONNECT)best="health-connect".equals(a.source().provider())?a:b;

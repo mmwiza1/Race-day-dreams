@@ -74,3 +74,20 @@ Connect/HR/sleep data; no new permission was added. Imported runs are explicitly
 linked by the runner to a preserved prescription version before planned execution
 scoring. Provider payload/source identity remain separate from this app-owned link.
 Strength logging is manual in this build; no provider-specific gym assumptions.
+
+
+## Optional body weight (0.4)
+
+Settings requests READ_WEIGHT separately. It is not added to baseline running
+permissions and denying it does not block manual tracking or running. A staged,
+paginated read covers 29 recent days (84 with extended-history permission), then
+replaces only that provider window transactionally after rechecking consent.
+Metadata IDs deduplicate updates; deletions within the refreshed window disappear.
+Older retained measurements are not deleted by a short window. Missing timezone
+uses explicit UTC rather than guessing the current device offset. No measurement
+is turned into a readiness judgement or exported as unnecessary raw provider data.
+Physical-device permissions and vendor measurement availability remain to verify.
+
+Samsung direct SDK is not included. See [provider caveat](docs/SAMSUNG_PROVIDER.md).
+The provider-neutral reconciliation read model has deterministic synthetic tests;
+real cross-provider ingestion/annotation reconciliation requires the future adapter.

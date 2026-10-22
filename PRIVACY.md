@@ -59,8 +59,16 @@ APK contains no automatic demo-data import. Screenshots published in this reposi
 contain only that synthetic fixture, never a user's Health Connect or personal data.
 No additional Health Connect permissions were introduced for coaching/strength.
 
-Backup envelope version 2 includes coaching data and prevents old app versions
-from silently discarding it. This reader also restores original version-1
+Backup envelope version 3 includes coaching data and prevents old app versions
+from silently discarding it. This reader also restores original version-1 and version-2
 backups. Core store format 1 and coaching section version 1 are independently
 validated. Export retains the existing 8 MiB/complexity limits: exceeding them
 fails clearly before truncating a destination, without deleting local history.
+
+
+Optional weight permission reads Health Connect WeightRecord only for the visible
+body trend. Manual/imported measurements retain provenance and offsets. Weight
+is not used in readiness or coaching. Historical strength PBs, weights, weekly
+reviews, break reports and session decisions stay in private local storage.
+Manual weights and historical PBs are exported only when you choose a backup;
+raw provider weights are omitted. No Samsung SDK or direct Samsung access ships.

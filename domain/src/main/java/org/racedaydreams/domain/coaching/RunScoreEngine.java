@@ -6,7 +6,7 @@ import org.racedaydreams.domain.activity.*;
 
 /** Product heuristics for execution, not fitness, health, effort or a scientifically validated score. */
 public final class RunScoreEngine {
-    public static final int RULE_VERSION = 1;
+    public static final int RULE_VERSION = 2;
     private RunScoreEngine() { }
     public static RunFeedback analyse(PlannedWorkout planned, ActivityRecord actual, RunExecution response) {
         if (planned == null) return new RunFeedback(null, "Run Analysis", org.racedaydreams.domain.coaching.Immutable.list(), org.racedaydreams.domain.coaching.Immutable.list(), org.racedaydreams.domain.coaching.Immutable.list(),
