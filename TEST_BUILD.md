@@ -36,7 +36,8 @@ Base main: `7624a662c5a52b6cd0ab427c09e17b354b50c62e`.
    should not return for identical evidence. No recommendation prevents running.
 8. Change goal/availability. Confirm the saved programme remains unchanged until
    you explicitly approve Rebuild remaining programme. Old linked prescriptions
-   should remain in completed run history.
+   should remain in completed run history. Rebuild once on the same day after
+   recording a session: the completed prescription must keep its original targets.
 9. Enable evening reminders and Android notifications. Move/rest a workout through
    a proposal and confirm the reminder is updated/cancelled. Test actual delivery
    under Samsung battery restrictions, reboot, time-zone and daylight-saving changes.

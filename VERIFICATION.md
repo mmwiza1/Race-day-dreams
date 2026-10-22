@@ -1,5 +1,62 @@
 # Verification record — coaching test build
 
+## Final functional verification — 2026-10-22
+
+[Run 39751194589](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39751194589)
+passed for final functional source
+`03d8a3085d38211d2cd37ddb4636980fdc80549d`.
+
+| Emulator | Domain assertions | Schema tests | Debug/test APK + lint | Instrumentation |
+| --- | --- | --- | --- | --- |
+| API 28 / Android 9 | 30,554 passed | 27 passed | Passed | 100 passed, 0 skipped, 0 failed |
+| API 35 / Android 15 | 30,554 passed | 27 passed | Passed | 100 passed, 0 skipped, 0 failed |
+| API 36 / Android 16 | 30,554 passed | 27 passed | Passed | 100 passed, 0 skipped, 0 failed |
+
+Commands: `sh scripts/test-domain.sh`, `python3 scripts/test-schema.py`,
+`./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest`,
+and `./gradlew :app:connectedDebugAndroidTest` on each emulator. Lint succeeded;
+this does not claim zero informational warnings.
+
+The tests include production plan invariants and eleven full-prescription fixtures,
+raw-evidence adaptation/accept/reject, purpose-based Run Scores without HR/RPE,
+interval/progression boundaries, strength PB/estimated-1RM/deletion, baseline/provider
+fallbacks, real SQLite migration/restore, reminder policy, real coaching forms,
+metric/imperial completion and preservation of completed targets during rebuilds.
+There are 30,554 domain assertions, not that many independently named JUnit cases.
+
+`Race-Day-Dreams-0.3.0-test1-debug.apk` was uploaded after tests passed. The
+[verified API-35 artifact for this functional source](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39751194589/artifacts/12414220991)
+contains the installable APK. A documentation-only follow-up may have a newer
+successful artifact; check the final [draft PR checks](https://github.com/mmwiza1/Race-day-dreams/pull/2/checks).
+No APK is represented as locally built: this workspace has no Android SDK.
+
+Ten canonical screenshots were rendered by the actual app using test-only fixtures,
+published after the complete matrix passed, retrieved and visually reviewed.
+Feedback and workout captures show real computed values with ordinary distance
+precision. Source digest/commit are stored beside the PNGs. Screenshot publication
+is limited to the test branch. Bot-generated capture commits may require GitHub
+workflow approval; a reviewed follow-up commit runs full verification of the final
+branch head without changing application source.
+
+Schema **4** upgrades explicitly from 1/2/3 and retains prior data. Backup envelope
+**2** includes coaching history; original envelope-1 backups remain readable, and
+older app versions reject the new format instead of dropping unknown history.
+The core store format and coaching subsection retain their own version 1.
+
+Resolved findings during this pass: partial-week mileage concentration, transient
+snackbar interception of the rebuild action, screenshot collection after AGP
+uninstall, floating-point display precision, backup-version compatibility and
+same-day completed-prescription immutability. No new runtime dependencies or
+permissions were introduced. The third-party inventory/embedded copy were updated.
+Final diff/secret-pattern review and whitespace checks found no credentials,
+SDK paths, proprietary/GPL source or production demo-seeding path in the changes.
+
+This is a draft physical-device evaluation build. Main remains the baseline SHA;
+no merge is authorised. Remaining feature boundaries and Galaxy S24 checks are
+listed in TEST_BUILD.md, DEVELOPMENT_PLAN.md and TRAINING_ENGINE.md.
+
+## Earlier integration records
+
 ## Base and delivery restriction
 
 Started from exact latest main `7624a662c5a52b6cd0ab427c09e17b354b50c62e`.
@@ -34,10 +91,10 @@ or installed Gradle distribution. One Android repository connectivity check
 failed because the configured proxy was unreachable. It was not retried.
 Android results above come from GitHub Actions, not a local Android build.
 
-`sh scripts/test-domain.sh` currently passes **30,552 assertions**: core 151,
+`sh scripts/test-domain.sh` currently passes **30,554 assertions**: core 151,
 reminders 60, activity/PB/splits/shoes 138, baseline/assessment 157, provider 33,
-synthetic invariant harness 76, production coaching **29,937**. These are assertion
-counts, not 30,552 independently named JUnit tests. Coaching exercises 75 generated
+synthetic invariant harness 76, production coaching **29,939**. These are assertion
+counts, not 30,554 independently named JUnit tests. Coaching exercises 75 generated
 constraint scenarios, focused score/adaptation/strength/load boundaries and eleven
 readable full-plan fixtures plus a compact half-marathon regression fixture.
 `python3 scripts/test-schema.py`: **27 tests passed**. `git diff --check`: passed.
