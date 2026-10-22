@@ -1,6 +1,8 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -38,20 +40,24 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
 }
 @OptIn(ExperimentalLayoutApi::class)
 @Composable fun CalendarLegend(){
-    Text("Legend: workout categories",style=MaterialTheme.typography.titleSmall)
-    FlowRow(Modifier.semantics{contentDescription="Workout category legend"},horizontalArrangement=Arrangement.spacedBy(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-        CalendarData.Category.entries.forEach{c->Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(4.dp)){CalendarMarker(CalendarData.Entry(c,CalendarData.State.PLANNED,markerName(c),null,null));Text(markerName(c),style=MaterialTheme.typography.labelMedium)}}
+    var expanded by rememberSaveable{mutableStateOf(false)}
+    Column(verticalArrangement=Arrangement.spacedBy(4.dp)){
+        FlowRow(Modifier.semantics{contentDescription="Workout category legend"},horizontalArrangement=Arrangement.spacedBy(10.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+            CalendarData.Category.entries.forEach{c->Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(4.dp)){CalendarMarker(CalendarData.Entry(c,CalendarData.State.PLANNED,markerName(c),null,null));Text(markerName(c),style=MaterialTheme.typography.labelMedium)}}
+        }
+        Text("Legend: outline planned · filled completed",style=MaterialTheme.typography.labelMedium)
+        Text("↗ Moved · − Skipped · ? Not completed",style=MaterialTheme.typography.labelSmall)
+        if(expanded)Text("Rest means an available day left free within your programme. Dates outside it and unavailable dates are not rest. U is an unclassified run; no intensity is inferred.",style=MaterialTheme.typography.bodySmall)
+        TextButton(onClick={expanded=!expanded},modifier=Modifier.heightIn(min=48.dp),contentPadding=PaddingValues(0.dp)){Text(if(expanded)"Hide calendar key"else "Calendar key")}
     }
-    Text("Outline: planned · Filled: completed · ↗ Moved · − Skipped · ? Not completed",style=MaterialTheme.typography.labelMedium)
-    WhyDetails("E Easy · Q Quality · L Long · S Strength · R Race · – Rest · U Unclassified run. Moved and skipped sessions are labelled in day details. Rest means an available day deliberately left free within your programme; blank dates outside it are not labelled rest.","Calendar key")
 }
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class,ExperimentalLayoutApi::class)
 @Composable fun ActivityCalendarScreen(state:CoachUiState,model:CoachViewModel,workout:(String)->Unit,strength:(String)->Unit,activity:(String)->Unit){
-    var focus by rememberSaveable{mutableStateOf(LocalDate.now().toString())};val day=LocalDate.parse(focus)
+    var focus by rememberSaveable{mutableStateOf(LocalDate.now().toString())};var showDay by rememberSaveable{mutableStateOf(false)};val day=LocalDate.parse(focus)
     Column(Modifier.fillMaxSize()){
         Row(Modifier.fillMaxWidth().padding(horizontal=16.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("List","Week","Month").forEach{view->FilterChip(selected=state.calendarView==view,onClick={model.setting("calendar.view",view)},label={Text(view)})}}
         if(state.calendarView=="List"){ActivityHistoryScreen(state,activity);return@Column}
-        CoachPage{
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal=16.dp,vertical=8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
             CoachHeading("Training calendar")
             CalendarLegend()
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){TextButton(onClick={focus=(if(state.calendarView=="Month")day.minusMonths(1)else day.minusWeeks(1)).toString()}){Text("Previous")};TextButton(onClick={focus=LocalDate.now().toString()}){Text("Today")};TextButton(onClick={focus=(if(state.calendarView=="Month")day.plusMonths(1)else day.plusWeeks(1)).toString()}){Text("Next")}}
@@ -62,13 +68,15 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
                 Row(Modifier.fillMaxWidth()){listOf("M","T","W","T","F","S","S").forEach{Text(it,Modifier.weight(1f),textAlign=androidx.compose.ui.text.style.TextAlign.Center)}}
                 repeat(6){week->Row(Modifier.fillMaxWidth()){repeat(7){i->val date=start.plusDays((week*7+i).toLong());val sessions=entries[date].orEmpty();val outside=CalendarData.outsideMonth(date,day)
                     val selected=date==day
-                    TextButton(onClick={focus=date.toString()},modifier=Modifier.weight(1f).heightIn(min=76.dp).then(if(selected)Modifier.border(2.dp,MaterialTheme.colorScheme.primary,MaterialTheme.shapes.small)else Modifier).semantics(mergeDescendants=true){contentDescription="${friendlyDate(date)}${if(date==LocalDate.now())", today"else ""}${if(selected)", selected"else ""}. "+if(sessions.isEmpty())"No session planned"else sessions.joinToString("; "){it.description()}},contentPadding=PaddingValues(2.dp)){
+                    TextButton(onClick={focus=date.toString();showDay=true},modifier=Modifier.weight(1f).heightIn(min=48.dp).then(if(selected)Modifier.border(2.dp,MaterialTheme.colorScheme.primary,MaterialTheme.shapes.small)else Modifier).semantics(mergeDescendants=true){contentDescription="${friendlyDate(date)}${if(date==LocalDate.now())", today"else ""}${if(selected)", selected"else ""}. "+if(sessions.isEmpty())"No session planned"else sessions.joinToString("; "){it.description()}},contentPadding=PaddingValues(2.dp)){
                         Column(horizontalAlignment=Alignment.CenterHorizontally){Text("${date.dayOfMonth}",color=if(outside)MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha=.6f)else MaterialTheme.colorScheme.onSurface,modifier=if(date==LocalDate.now())Modifier.background(MaterialTheme.colorScheme.primaryContainer,CircleShape).padding(4.dp)else Modifier)
                             FlowRow(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.Center,verticalArrangement=Arrangement.spacedBy(2.dp)){sessions.take(4).forEach{CalendarMarker(it)};if(sessions.size>4)Text("+${sessions.size-4}",style=MaterialTheme.typography.labelSmall)}
                         }
                     }
                 }}}
-                CalendarDay(state,day,entries[day].orEmpty(),workout,strength,activity)
+                if(showDay)ModalBottomSheet(onDismissRequest={showDay=false}){
+                    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp)){CalendarDay(state,day,entries[day].orEmpty(),workout,strength,activity)}
+                }
             }else repeat(7){val d=start.plusDays(it.toLong());CalendarDay(state,d,entries[d].orEmpty(),workout,strength,activity)}
         }
     }

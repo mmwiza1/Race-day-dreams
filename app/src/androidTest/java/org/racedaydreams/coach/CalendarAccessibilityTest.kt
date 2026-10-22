@@ -20,7 +20,7 @@ class CalendarAccessibilityTest {
         compose.setContent{MaterialTheme(colorScheme=darkColorScheme()){CompositionLocalProvider(LocalDensity provides Density(1f,2f)){Column{CalendarLegend();CalendarMarker(CalendarData.Entry(CalendarData.Category.LONG,CalendarData.State.COMPLETED,"Long run",null,null))}}}}
         listOf("Easy","Quality","Long","Strength","Race","Rest").forEach{compose.onNodeWithText(it).assertExists()}
         compose.onNodeWithContentDescription("Long run: completed").assertExists()
-        compose.onNodeWithText("Outline: planned",substring=true).assertExists()
+        compose.onNodeWithText("Legend: outline planned",substring=true).assertExists()
     }
     @Test fun explicitStatesHaveReadableDescriptions(){
         compose.setContent{MaterialTheme{Column{CalendarData.State.entries.forEach{CalendarMarker(CalendarData.Entry(CalendarData.Category.QUALITY,it,"Tempo run",null,null))}}}}

@@ -92,13 +92,17 @@ class CoachingScreenshotTest {
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
     private fun alignHeading(text:String){
         compose.onNodeWithText(text).performScrollTo()
-        // A slow real scroll gives the screenshot its own useful viewport instead
-        // of merely making the heading one pixel visible at the bottom edge.
-        compose.onRoot().performTouchInput {
-            swipe(Offset(centerX,height*.8f),Offset(centerX,height*.35f),durationMillis=1000)
+        // Anchor the actual heading near the top, independent of content above it.
+        repeat(4){
+            val top=compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top
+            val height=compose.onRoot().fetchSemanticsNode().boundsInRoot.height
+            val shift=(top-160f).coerceAtMost(height*.6f)
+            if(shift<=8f)return
+            compose.onRoot().performTouchInput{swipe(Offset(centerX,height*.85f),Offset(centerX,height*.85f-shift),durationMillis=1000)}
+            compose.waitForIdle()
         }
-        compose.waitForIdle()
     }
+
     private fun capture(name:String){
         compose.waitForIdle()
         // Compose idleness can precede SurfaceFlinger presenting the last frame.

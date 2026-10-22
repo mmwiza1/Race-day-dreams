@@ -56,12 +56,15 @@ import org.racedaydreams.domain.strength.*
             TextButton(onClick={expanded=!expanded},modifier=Modifier.heightIn(min=48.dp)){Text(if(expanded)"Hide progression"else "View progression")}
             if(expanded){val history=timeline.filter{it.exerciseId()==e.id()&&it.category()==category}
                 history.forEach{r->
-                    HorizontalDivider()
-                    Text(when(r.precision()){HistoricalStrengthRecord.DatePrecision.UNKNOWN->"Date unknown · not placed in chronology";HistoricalStrengthRecord.DatePrecision.APPROXIMATE->"Around ${shortDate(r.date())}";else->shortDate(r.date())},style=MaterialTheme.typography.titleSmall)
-                    Text(if(category=="Estimated 1RM")"~${kotlin.math.round(state.massUnit.fromKilograms(r.value())).toInt()} ${state.massUnit.name.lowercase()} · estimated"else if(category=="Bodyweight reps")"${r.reps()} reps"else "${mass(r.kilograms())} × ${r.reps()}")
-                    Text(r.provenance(),style=MaterialTheme.typography.labelMedium)
-                    r.notes()?.takeIf{it.isNotBlank()}?.let{WhyDetails(it,"Notes")}
-                    if(r.sessionId()==null)TextButton(onClick={model.deleteHistorical(r.id())}){Text("Delete historical entry")}
+                    Column(verticalArrangement=Arrangement.spacedBy(4.dp)){
+                        HorizontalDivider()
+                        Text(when(r.precision()){HistoricalStrengthRecord.DatePrecision.UNKNOWN->"Date unknown · not placed in chronology";HistoricalStrengthRecord.DatePrecision.APPROXIMATE->"Around ${shortDate(r.date())}";else->shortDate(r.date())},style=MaterialTheme.typography.titleSmall)
+                        Text(if(category=="Estimated 1RM")"~${kotlin.math.round(state.massUnit.fromKilograms(r.value())).toInt()} ${state.massUnit.name.lowercase()} · estimated"else if(category=="Bodyweight reps")"${r.reps()} reps"else "${mass(r.kilograms())} × ${r.reps()}")
+                        Text(r.provenance(),style=MaterialTheme.typography.labelMedium)
+                        var details by rememberSaveable(r.id(),category){mutableStateOf(false)}
+                        if(r.sessionId()==null||!r.notes().isNullOrBlank())TextButton(onClick={details=!details},modifier=Modifier.heightIn(min=48.dp)){Text(if(details)"Hide record details"else "Record details")}
+                        if(details){r.notes()?.takeIf{it.isNotBlank()}?.let{Text(it)};if(r.sessionId()==null)TextButton(onClick={model.deleteHistorical(r.id())}){Text("Delete historical entry")}}
+                    }
                 }
             }
         }}

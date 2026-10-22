@@ -61,11 +61,12 @@ import org.racedaydreams.domain.body.MassUnit
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable fun WeightSection(s:CoachUiState,model:CoachViewModel){
     var range by rememberSaveable{mutableStateOf("Month")};var value by rememberSaveable{mutableStateOf("")};var date by rememberSaveable{mutableStateOf(LocalDate.now().toString())};var editId by rememberSaveable{mutableStateOf<String?>(null)};var error by rememberSaveable{mutableStateOf<String?>(null)}
     CoachHeading("Body weight")
     Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){MassUnit.entries.forEach{u->FilterChip(selected=s.massUnit==u,onClick={model.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
-    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)){listOf("Week","Month","3 Months","Year","All").forEach{r->FilterChip(selected=range==r,onClick={range=r},modifier=Modifier.weight(1f).heightIn(min=48.dp),label={Text(r)})}}
+    FlowRow(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("Week","Month","3 Months","Year","All").forEach{r->FilterChip(selected=range==r,onClick={range=r},modifier=Modifier.heightIn(min=48.dp),label={Text(r)})}}
     val graph=remember(s.weights,range,s.massUnit){org.racedaydreams.domain.presentation.WeightGraphData.of(s.weights,LocalDate.now(),range,s.massUnit)}
     val points=graph.points()
     var selectedId by rememberSaveable(range){mutableStateOf<String?>(null)}

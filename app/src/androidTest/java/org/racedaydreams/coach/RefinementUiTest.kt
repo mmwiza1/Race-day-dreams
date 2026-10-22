@@ -38,7 +38,10 @@ class RefinementUiTest {
         launch();compose.onNodeWithText("Calendar").performClick();await("Activity calendar");compose.onNodeWithText("Month").performClick();await("Training calendar")
         listOf("Easy","Quality","Long","Strength","Race","Rest").forEach{compose.onAllNodesWithText(it).filter(hasAnyAncestor(hasContentDescription("Workout category legend"))).assertCountEquals(1)}
         Assert.assertTrue(compose.onAllNodesWithContentDescription("Long run: planned",substring=true).fetchSemanticsNodes().isNotEmpty())
-        compose.onNodeWithText("Outline: planned",substring=true).assertExists()
+        compose.onNodeWithText("Legend: outline planned",substring=true).assertExists()
+        compose.onNode(hasContentDescription(friendlyDate(today),substring=true) and hasClickAction()).performScrollTo().performClick()
+        compose.onNodeWithText("Long run · 10.0 km · Planned").assertExists()
+        androidx.test.espresso.Espresso.pressBack()
         compose.onNodeWithText("Week").performClick();await("Training calendar");compose.onNodeWithText("Legend:",substring=true).assertExists()
     }
     @Test fun graphSelectsAStoredMeasurementAndKeepsTextEquivalent(){
