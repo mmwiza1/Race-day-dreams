@@ -79,7 +79,12 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
     entries.forEach{entry->Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)){
         CalendarMarker(entry)
         val status=when(entry.state()){CalendarData.State.COMPLETED->"Completed";CalendarData.State.NOT_COMPLETED->"Not completed";CalendarData.State.SKIPPED->"Skipped by choice";CalendarData.State.MOVED->"Moved";else->"Planned"}
-        val text="${entry.label()} · $status"
+        val volume=if(entry.category()==CalendarData.Category.STRENGTH||entry.category()==CalendarData.Category.REST)null else {
+            val recorded=s.activities.firstOrNull{it.id()==entry.activityId()}
+            val planned=(s.currentPlan?.plan()?.workouts()?:s.plannedWorkouts).firstOrNull{it.id()==entry.id()}
+            recorded?.let{it.distanceMetres()?.let{metres->formatDistance(metres,s)}?:"${it.elapsedTime().toMinutes()} min"}?:planned?.let{it.distanceKm()?.let{km->formatDistance(km*1000,s)}?:it.duration()?.let{time->"${time.toMinutes()} min"}}
+        }
+        val text="${entry.label()}${volume?.let{" · $it"}?:""} · $status"
         when{entry.activityId()!=null->TextButton(onClick={activity(entry.activityId())},modifier=Modifier.heightIn(min=48.dp)){Text(text)}
             entry.category()==CalendarData.Category.STRENGTH&&entry.state()==CalendarData.State.PLANNED->TextButton(onClick={strength(d.toString())},modifier=Modifier.heightIn(min=48.dp)){Text("$text · Log workout")}
             entry.category()==CalendarData.Category.STRENGTH->Text(text)

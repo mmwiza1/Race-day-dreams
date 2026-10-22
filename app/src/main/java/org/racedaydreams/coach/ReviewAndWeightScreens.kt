@@ -39,6 +39,10 @@ import org.racedaydreams.domain.body.MassUnit
         if(preview!=null)AlertDialog(onDismissRequest={previewId=null},title={Text("Preview plan change")},text={Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(12.dp)){
             Text(if(preview.id()=="paces")"Optional quality-pace reassessment"else r.recommendation())
             r.channels().firstOrNull{it.name()=="Performance trend"}?.takeIf{preview.id()=="paces"}?.let{Text(it.reason().substringBefore("."));WhyDetails(it.reason(),"Why these pace ranges?")}
+            if(preview.id()!="paces"){
+                r.observations().firstOrNull{it.contains("effort increased",true)||it.contains("below 80%")||it.contains("slowed") }?.let{Text(it)}
+                WhyDetails(r.observations().joinToString("\n\n"),"Why this change?")
+            }
             preview.replacements().forEach{next->
                 val current=s.currentPlan?.plan()?.workouts()?.firstOrNull{it.id()==next.id()}
                 Text(shortDate(next.date()),style=MaterialTheme.typography.titleSmall)
