@@ -67,5 +67,12 @@ public final class RefinementTestSuite {
         check(perf(same,BaselineConfidence.STRONG,4,false).fasterFraction()==perf(results,BaselineConfidence.STRONG,4,false).fasterFraction(),"Duplicate same-day result does not increase pace proposal");
     }
     static void review(){var r=new WeeklyCoaching.Review("r","v",DAY,3,3,25,1,12.0,List.of("Observation"),List.of(new WeeklyCoaching.Channel("Consistency",WeeklyCoaching.State.STABLE,"Good"),new WeeklyCoaching.Channel("Effort",WeeklyCoaching.State.NEEDS_ATTENTION,"Review")),"No adjustment required",List.of(new WeeklyCoaching.Choice("keep","Keep original",List.of())));var p=WeeklyReviewData.of(r);check(p.noChange(),"Intentional no-change presentation");check(p.positives().size()==1&&p.attention().size()==1,"Evidence grouped without changing outcome");check(p.recommendation().equals(r.recommendation()),"Recommendation preserved");}
-    static void durability(){var d=DurabilityData.of(run("a",DAY,null));check(d.firstHalfSecondsPerKm()==null,"Missing samples never generate halves");check(d.status().equals("Insufficient detailed run data"),"Clear missing-data state");}
+    static void durability(){
+        for(boolean fade:new boolean[]{false,true}){
+            var samples=new ArrayList<DistanceSample>();
+            for(int t=0;t<=3600;t+=10){double metres=t<=1800?t*5000.0/1800:5000+(t-1800)*(fade?4000.0:5000.0)/1800;samples.add(new DistanceSample(Duration.ofSeconds(t),metres,null,null,null,false));}
+            var a=new ActivityRecord("sample",new SourceIdentity("manual","sample",null),NOW,NOW.plusSeconds(3600),ZoneOffset.UTC,ZoneOffset.UTC,fade?9000.0:10000.0,null,null,null,null,null,4.0,"",samples,List.of(),null,null);
+            var halves=DurabilityData.of(a);check(Math.abs(halves.firstHalfSecondsPerKm()-360)<.01,"Qualified first-half pace");check(Math.abs(halves.secondHalfSecondsPerKm()-(fade?450:360))<.01,"Qualified second-half pace");check(halves.status().equals(fade?"Late fade":"Stable pacing"),"Descriptive durability state");
+        }
+        var d=DurabilityData.of(run("a",DAY,null));check(d.firstHalfSecondsPerKm()==null,"Missing samples never generate halves");check(d.status().equals("Insufficient detailed run data"),"Clear missing-data state");}
 }
