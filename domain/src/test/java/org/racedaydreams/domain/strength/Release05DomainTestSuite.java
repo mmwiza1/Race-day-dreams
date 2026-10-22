@@ -1,0 +1,27 @@
+package org.racedaydreams.domain.strength;
+import java.time.*;
+import java.util.*;
+import org.racedaydreams.domain.*;
+import org.racedaydreams.domain.activity.*;
+import org.racedaydreams.domain.coaching.*;
+import org.racedaydreams.domain.presentation.*;
+public final class Release05DomainTestSuite {
+    static int n;static void ok(boolean b,String why){n++;if(!b)throw new AssertionError(why);}static void rejects(Runnable r){try{r.run();throw new AssertionError("Expected rejection");}catch(IllegalArgumentException expected){n++;}}
+    static final LocalDate DAY=LocalDate.of(2026,10,26);static final Instant NOW=Instant.parse("2026-10-26T12:00:00Z");
+    static ActivityRecord run(String id,int days,double metres,int seconds,double rpe,String planned){var start=NOW.minus(Duration.ofDays(days));return new ActivityRecord(id,new SourceIdentity("manual",id,null),start,start.plusSeconds(seconds),ZoneOffset.UTC,ZoneOffset.UTC,metres,null,null,null,null,null,rpe,"",List.of(),List.of(),planned,null);}
+    public static void main(String[] args){
+        var planned=List.of(new PlannedWorkout("easy",DAY,WorkoutCategory.EASY_RUN,5.0,null,List.of(),"Easy"),new PlannedWorkout("easy2",DAY.minusWeeks(1),WorkoutCategory.EASY_RUN,5.0,null,List.of(),"Easy"),new PlannedWorkout("race",DAY.minusDays(2),WorkoutCategory.RACE,5.0,null,List.of(),"Race"));
+        var current=run("current",0,5000,1700,8,"easy");var comparable=run("old",7,5100,1800,5,"easy2");var race=run("race",2,5000,1650,9,"race");var far=run("far",4,8000,2900,5,null);
+        var matches=ComparableRuns.find(current,List.of(current,comparable,race,far),planned);ok(matches.size()==1,"Reject different purposes and distant runs");ok(matches.get(0).activity().id().equals("old"),"Relevant comparison");ok(matches.get(0).confidence().equals("Strong"),"Matching known purpose and distance");ok(ComparableRuns.interpretation(current,comparable).contains("higher reported effort"),"Faster is not automatically better");ok(ComparableRuns.find(current,List.of(far),planned).isEmpty(),"No invented weak comparison");ok(ComparableRuns.find(current,List.of(run("unknown",2,5300,1760,4,null)),List.of()).isEmpty(),"Unknown purpose requires close evidence");
+        var page=WorkoutHistoryQuery.page(List.of(current,comparable,race,far),List.of(),planned,WorkoutHistoryQuery.Kind.RUNNING,WorkoutCategory.EASY_RUN,"",null,null,0,1);ok(page.total()==2&&page.entries().size()==1&&page.hasMore(),"Bounded type-filtered page");ok(WorkoutHistoryQuery.page(List.of(current,comparable),List.of(),planned,WorkoutHistoryQuery.Kind.ALL,null,"",DAY,DAY,0,20).total()==1,"Date range");rejects(()->WorkoutHistoryQuery.page(List.of(),List.of(),planned,WorkoutHistoryQuery.Kind.ALL,null,"",DAY,DAY.minusDays(1),0,20));
+        var empty=HomeCoachingSummary.from(null);ok(empty.title().equals("Still learning your training"),"Missing data stays unknown");
+        var review=new WeeklyCoaching.Review("r","v",DAY,3,3,24,1,12.0,List.of(),List.of(new WeeklyCoaching.Channel("Consistency",WeeklyCoaching.State.STABLE,"Evidence")),"No adjustment required",List.of());ok(HomeCoachingSummary.from(review).title().equals("Training is on track"),"Reuses stable weekly evidence");
+        var attention=new WeeklyCoaching.Review("r","v",DAY,3,1,10,1,5.0,List.of(),List.of(new WeeklyCoaching.Channel("Subjective response",WeeklyCoaching.State.NEEDS_ATTENTION,"Rising effort")),"Hold volume",List.of());ok(HomeCoachingSummary.from(attention).recommendation().equals("Hold volume"),"Keeps recommendation intact");
+        var settings=new GymProgramme.Settings(GymProgramme.Goal.GENERAL,GymProgramme.Priority.BALANCED,GymProgramme.Experience.BEGINNER,Set.of(DayOfWeek.TUESDAY),1,Set.of("bodyweight"),30,GymProgramme.Effort.RPE);
+        var original=new GymProgrammeGenerator().generate("p",1,NOW,"Original",settings,DAY,List.of(),List.of());var s=original.sessions().get(0);
+        var moved=GymPlanEditor.move(original,s.id(),DAY.plusDays(2),DAY,NOW,Set.of());ok(moved.version()==2&&original.sessions().get(0).date().equals(DAY.plusDays(1)),"Old prescription preserved");ok(moved.settings().days().equals(original.settings().days()),"One-off move never changes recurring days");ok(moved.sessions().stream().anyMatch(x->x.id().equals(s.id())&&x.date().equals(DAY.plusDays(2))),"Move outside usual weekdays is explicit");rejects(()->GymPlanEditor.move(original,s.id(),DAY.plusDays(2),DAY,NOW,Set.of(s.date())));ok(GymPlanEditor.skip(original,s.id(),DAY,NOW,Set.of()).sessions().size()==original.sessions().size()-1,"Skip never crams volume");ok(GymPlanEditor.reduce(original,s.id(),DAY,NOW,Set.of()).sessions().get(0).exercises().get(0).sets()==1,"Reduction preview");
+        var plank=ExerciseCatalog.definition("plank").exercise();var historic=new HistoricalStrengthRecord("p",plank,0,0,null,HistoricalStrengthRecord.DatePrecision.UNKNOWN,"",135L,null);ok(StrengthProgression.timeline(List.of(),List.of(historic)).get(0).value()==135,"Manual timed PB without repetitions");rejects(()->new HistoricalStrengthRecord("bad",plank,0,10,null,HistoricalStrengthRecord.DatePrecision.UNKNOWN,""));
+        int guides=0;for(var e:ExerciseCatalog.exercises())if(TechniqueGuide.forExercise(e.id())!=null){guides++;ok(!TechniqueGuide.forExercise(e.id()).movement().isEmpty(),"Real guide instructions");}ok(guides>=25,"Priority exercise guides");
+        System.out.println("Release05DomainTestSuite: "+n+" checks passed; "+ExerciseCatalog.exercises().size()+" exercises, "+guides+" guides.");
+    }
+}

@@ -165,7 +165,7 @@ private fun CoachApp(model: CoachViewModel) {
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
                 composable("weekly") { WeeklyReviewScreen(state,model,{nav.navigate("goals")}) }
-                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
+                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -186,11 +186,13 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("strength?date={date}") { destination -> val date=destination.arguments?.getString("date");if(date!=null)StrengthScreen(state,model,date) else StrengthDashboard(state){nav.navigate(it)} }
                 composable("strength/log") { StrengthScreen(state,model) }
                 composable("strength/pbs") { StrengthScreen(state,model,section="pbs") }
+                composable("strength/source/{id}") { d -> StrengthScreen(state,model,section="history",sourceId=d.arguments?.getString("id")) }
                 composable("strength/history") { StrengthScreen(state,model,section="history") }
                 composable("gym") { GymProgrammeScreen(state,model){nav.navigate("gym/session/${Uri.encode(it)}")} }
                 composable("gym/session/{id}") { destination -> GymSessionScreen(state,model,destination.arguments?.getString("id")){nav.navigate("strength?date=$it")} }
+                composable("history") { WorkoutHistoryScreen(state,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("strength/history")}) }
                 composable("exercises") { ExerciseBrowser(state,model){nav.navigate("exercise/${Uri.encode(it)}")} }
-                composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")) }
+                composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")){nav.navigate("strength/source/${Uri.encode(it)}")} }
 
                 composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("strength?date=$it") }) { nav.navigate("activity/${Uri.encode(it)}") } }
                 composable("activity/{id}") { destination ->

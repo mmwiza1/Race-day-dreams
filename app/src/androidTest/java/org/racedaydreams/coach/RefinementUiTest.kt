@@ -46,7 +46,7 @@ class RefinementUiTest {
     }
     @Test fun graphSelectsAStoredMeasurementAndKeepsTextEquivalent(){
         DevelopmentStore(context).saveWeight(BodyWeight("a",78.4,today.minusDays(2).atTime(12,0).toInstant(ZoneOffset.UTC),ZoneOffset.UTC,"manual","a",null))
-        launch();compose.onNodeWithText("Progress").performClick();await("Body weight")
+        launch();compose.onNodeWithText("Progress").performClick();await("Body weight");compose.onNodeWithText("Body weight").performClick();await("Record a measurement")
         compose.onNodeWithContentDescription("Weight graph in kg.",substring=true).performScrollTo().performTouchInput{click(center)}
         compose.onNodeWithText("Recorded measurement").performScrollTo().assertExists()
         compose.onNodeWithText("Recorded measurements").performScrollTo().performClick()
@@ -56,17 +56,17 @@ class RefinementUiTest {
         val e=StrengthExercise.starters().first()
         DevelopmentStore(context).saveHistorical(HistoricalStrengthRecord("old",e,75.0,5,null,HistoricalStrengthRecord.DatePrecision.UNKNOWN,""))
         CoachingStore(context).saveStrength(StrengthSession("s",Instant.now().minusSeconds(86400),ZoneOffset.UTC,Duration.ofMinutes(45),7.0,"",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("set",5,80.0,7.0,false))))))
-        launch();compose.onNodeWithText("Strength").performClick();await("Exercise progress and PB history")
+        launch();compose.onNodeWithText("Strength").performClick();await("PBs & progression");compose.onNodeWithText("PBs & progression").performClick();await("Exercise progress and PB history")
         compose.onNodeWithText("View progression").performScrollTo().performClick()
         compose.onNodeWithText("Date unknown · not placed in chronology").performScrollTo().assertExists()
         compose.onAllNodesWithText("Recorded workout").fetchSemanticsNodes().let{Assert.assertTrue(it.isNotEmpty())}
         compose.onNodeWithText("Historical/manual PB").assertExists()
     }
     @Test fun editingASetRetainsItUntilUpdated(){
-        launch();compose.onNodeWithText("Strength").performClick();await("Log strength workout");compose.onNodeWithText("Log strength workout").performClick()
+        launch();compose.onNodeWithText("Strength").performClick();await("Log workout");compose.onNodeWithText("Log workout").performClick();await("Log strength workout");compose.onNodeWithText("Log strength workout").performClick()
         enter("Weight (kg)","80");enter("Reps","5");compose.onNodeWithText("Add set").performScrollTo().performClick()
         compose.onNodeWithText("Edit").performScrollTo().performClick();enter("Weight (kg)","85")
-        compose.onNodeWithText("Update set").performScrollTo().performClick();compose.onNodeWithText("1: 85.0 kg × 5").performScrollTo().assertExists()
-        compose.onNodeWithText("Duplicate previous set").performScrollTo().performClick();compose.onNodeWithText("2: 85.0 kg × 5").performScrollTo().assertExists()
+        compose.onNodeWithText("Update set").performScrollTo().performClick();compose.onNodeWithText("1: 85.0 kg × 5 reps").performScrollTo().assertExists()
+        compose.onNodeWithText("Duplicate previous set").performScrollTo().performClick();compose.onNodeWithText("2: 85.0 kg × 5 reps").performScrollTo().assertExists()
     }
 }

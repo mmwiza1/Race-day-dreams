@@ -17,7 +17,7 @@ public final class StrengthMeasurements {
     public static String display(StrengthSession.SetEntry set,MassUnit mass,UnitSystem units) {
         String load=String.format(Locale.UK,"%.1f %s × ",mass.fromKilograms(set.kilograms()),mass.name().toLowerCase(Locale.ROOT));
         if(set.durationSeconds()!=null)return (set.kilograms()>0?load:"")+duration(set.durationSeconds());
-        if(set.distanceMetres()!=null)return load+String.format(Locale.UK,"%.1f %s",units==UnitSystem.IMPERIAL?set.distanceMetres()/0.9144:set.distanceMetres(),units==UnitSystem.IMPERIAL?"yd":"m");
+        if(set.distanceMetres()!=null)return (set.kilograms()>0?load:"")+String.format(Locale.UK,"%.1f %s",units==UnitSystem.IMPERIAL?set.distanceMetres()/0.9144:set.distanceMetres(),units==UnitSystem.IMPERIAL?"yd":"m");
         return (set.kilograms()>0?load:"")+set.reps()+" reps";
     }
 }

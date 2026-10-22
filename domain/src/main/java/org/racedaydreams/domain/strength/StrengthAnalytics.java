@@ -14,9 +14,10 @@ public final class StrengthAnalytics {
     public static Context context(StrengthSession session) {
         int lower = 0, upper = 0; boolean hard = session.rpe() != null && session.rpe() >= 7; boolean hardLower = hard;
         for (var e : session.exercises()) for (var set : e.sets()) if (!set.warmUp()) {
-            if (e.exercise().region() != StrengthExercise.Region.UPPER) lower++;
+            boolean involvesLower = e.exercise().region() != StrengthExercise.Region.UPPER && !(ExerciseCatalog.definition(e.exercise().id()) != null && ExerciseCatalog.definition(e.exercise().id()).category().equals("Core"));
+            if (involvesLower) lower++;
             if (e.exercise().region() != StrengthExercise.Region.LOWER) upper++;
-            if (set.rpe() != null && set.rpe() >= 8) { hard = true; if (e.exercise().region() != StrengthExercise.Region.UPPER) hardLower = true; }
+            if (set.rpe() != null && set.rpe() >= 8) { hard = true; if (involvesLower) hardLower = true; }
         }
         var region = lower == 0 ? StrengthExercise.Region.UPPER : upper == 0 ? StrengthExercise.Region.LOWER : StrengthExercise.Region.FULL;
         var involvement = lower >= 3 && hardLower ? Involvement.HIGH : lower > 0 ? Involvement.MODERATE : Involvement.LOW;
