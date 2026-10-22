@@ -334,8 +334,8 @@ class HealthConnectGateway(
         }
 
         private fun isRunning(session: ExerciseSessionRecord): Boolean =
-            session.exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING ||
-                session.exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
+            session.metadata.dataOrigin.packageName != "org.racedaydreams" && (session.exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING ||
+                session.exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL)
 
         private fun result(status: HealthSyncStatus, message: String) = HealthSyncResult(status, message = message)
     }

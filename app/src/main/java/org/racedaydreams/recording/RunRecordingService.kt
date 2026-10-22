@@ -18,6 +18,7 @@ class RunRecordingService:Service() {
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val io=Dispatchers.IO.limitedParallelism(1)
     private lateinit var store:RecordingStore;private lateinit var location:LocationSource
+    private var hrSource:HeartRateSource?=null;private var motion:MotionSource?=null
     private var engine:RunMetricsEngine?=null;private var session:RecordingStore.Session?=null
     private val commandLock=Mutex();private val flushLock=Mutex()
     private var pointIndex=0;private var eventIndex=0;private var ticker:Job?=null
@@ -28,16 +29,24 @@ class RunRecordingService:Service() {
         if(intent==null){scope.launch{withContext(io){store.recoverable()};message.value="An interrupted recording is available to recover.";stopSelf()};return START_NOT_STICKY}
         if(engine==null&&intent.action!=START){stopSelf();return START_NOT_STICKY}
         // Enter foreground synchronously before any disk operation on an explicit START.
-        if(intent.action==START)startForeground(104,notification("Preparing GPS recording"))
+        if(intent.action==START){if(Build.VERSION.SDK_INT>=29)startForeground(104,notification("Preparing GPS recording"),android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)else startForeground(104,notification("Preparing GPS recording"))}
         scope.launch{commandLock.withLock{try{
             when(intent.action){
-                START->if(engine==null){val unfinished=withContext(io){store.unfinished()};if(unfinished!=null){message.value="Recover the unfinished run before starting another.";stopForeground(STOP_FOREGROUND_REMOVE);stopSelf();return@launch};val now=SystemClock.elapsedRealtime();val wall=Instant.now();val s=RecordingStore.Session(UUID.randomUUID().toString(),"ACTIVE",wall,now,now);withContext(io){store.start(s.id,wall,now)};session=s;engine=RunMetricsEngine(now,wall);location.start{fix->try{engine?.accept(fix);publish()}catch(_:Exception){message.value="GPS observation rejected."}};ticker=scope.launch{var ticks=0;while(isActive){delay(1000);engine?.missingFix(SystemClock.elapsedRealtime(),Instant.now());publish();if(++ticks%5==0)flush()}};flush()}
+                START->if(engine==null){val unfinished=withContext(io){store.unfinished()};if(unfinished!=null){message.value="Recover the unfinished run before starting another.";stopForeground(STOP_FOREGROUND_REMOVE);stopSelf();return@launch};val now=SystemClock.elapsedRealtime();val wall=Instant.now();val s=RecordingStore.Session(UUID.randomUUID().toString(),"ACTIVE",wall,now,now);withContext(io){store.start(s.id,wall,now)};session=s;engine=RunMetricsEngine(now,wall);location.start{fix->try{engine?.accept(fix);publish()}catch(_:Exception){message.value="GPS observation rejected."}};startSensors();ticker=scope.launch{var ticks=0;while(isActive){delay(1000);engine?.missingFix(SystemClock.elapsedRealtime(),Instant.now());publish();if(++ticks%5==0)flush()}};flush()}
                 PAUSE->{engine?.pause(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
                 RESUME->{engine?.resume(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
-                FINISH->{location.stop();ticker?.cancel();engine?.event("FINISH",SystemClock.elapsedRealtime(),Instant.now());flush();val s=withContext(io){store.unfinished()}?:error("No staged recording");val id=withContext(io){store.finish(s,engine?.status(SystemClock.elapsedRealtime())?.movingMillis())};message.value="Run saved: $id";engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}
+                FINISH->{hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();engine?.event("FINISH",SystemClock.elapsedRealtime(),Instant.now());flush();val s=withContext(io){store.unfinished()}?:error("No staged recording");val id=withContext(io){store.finish(s,engine?.status(SystemClock.elapsedRealtime())?.movingMillis())};message.value="Run saved: $id";engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}
             }
         }catch(_:Exception){message.value="Recording operation could not complete. Saved staging is retained for recovery.";if(engine==null){stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}}}}
         return START_STICKY
+    }
+    private fun startSensors(){
+        if(Build.VERSION.SDK_INT<29||checkSelfPermission(android.Manifest.permission.ACTIVITY_RECOGNITION)==android.content.pm.PackageManager.PERMISSION_GRANTED){motion=StepMotionSource(this);motion?.start{value,time->engine?.cadence(value,time)}}
+        val preferred=getSharedPreferences("run-sensors",MODE_PRIVATE).getString("hr-device",null)
+        if(preferred!=null&&(Build.VERSION.SDK_INT<31||checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT)==android.content.pm.PackageManager.PERMISSION_GRANTED))try{
+            if(Build.VERSION.SDK_INT>=29)startForeground(104,notification("Recording with heart-rate monitor"),android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION or android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+            hrSource=BleHeartRateSource(this);hrSource?.connect(preferred,{value->engine?.heartRate(value,SystemClock.elapsedRealtime())},{connected->engine?.event(if(connected)"HR_CONNECTED"else"HR_DISCONNECTED",SystemClock.elapsedRealtime(),Instant.now())})
+        }catch(_:Exception){message.value="Heart-rate monitor unavailable; GPS recording continues."}
     }
     private fun publish(){status.value=engine?.status(SystemClock.elapsedRealtime());getSystemService(NotificationManager::class.java).notify(104,notification(if(status.value?.paused()==true)"Run paused" else "Recording your run"))}
     private suspend fun flush()=flushLock.withLock {val e=engine?:return;val s=session?:return;val points=e.points();val events=e.events();val pi=pointIndex;val ei=eventIndex;val now=SystemClock.elapsedRealtime();val state=if(e.status(now).paused())"PAUSED"else "ACTIVE";withContext(io){store.flush(s.id,points,events,pi,ei,now,state)};pointIndex=points.size;eventIndex=events.size}
@@ -46,5 +55,5 @@ class RunRecordingService:Service() {
         fun action(type:String)=PendingIntent.getService(this,type.hashCode(),Intent(this,RunRecordingService::class.java).setAction(type),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         return Notification.Builder(this,"recording").setContentTitle(text).setContentText("Location is used only during this run. Open the app to review or finish.").setSmallIcon(org.racedaydreams.R.drawable.ic_nav_progress).setOngoing(true).setContentIntent(open).addAction(Notification.Action.Builder(null,if(status.value?.paused()==true)"Resume"else"Pause",action(if(status.value?.paused()==true)RESUME else PAUSE)).build()).build()
     }
-    override fun onDestroy(){location.stop();ticker?.cancel();scope.cancel();super.onDestroy()}
+    override fun onDestroy(){hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();scope.cancel();super.onDestroy()}
 }

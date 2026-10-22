@@ -44,6 +44,7 @@ public final class RunMetricsEngine {
             hr!=null&&f.monotonicMillis()-hrTime<=10000?hr:null,cadence!=null&&f.monotonicMillis()-cadenceTime<=10000?cadence:null));
         gap=false;anchor=f;return true;
     }
+    public void breakSegment(long time,Instant wall){tick(time);anchor=null;gap=true;segment++;events.add(new Event("GPS_LOST",time,wall));}
     private void lost(Fix f){if(!gap){events.add(new Event("GPS_LOST",f.monotonicMillis(),f.timestamp()));segment++;}gap=true;anchor=null;gps="GPS interrupted · distance incomplete";}
     public void missingFix(long time,Instant wall){tick(time);if(anchor!=null&&time-anchor.monotonicMillis()>15000){lost(new Fix(wall,time,anchor.latitude(),anchor.longitude(),99,null,null,null));anchor=null;}}
     private long active(long time){return Math.max(0,time-started-pausedTotal-(pausedSince>=0?time-pausedSince:0));}

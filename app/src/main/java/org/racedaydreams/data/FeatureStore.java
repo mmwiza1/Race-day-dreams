@@ -116,7 +116,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
                 if(source.moveToFirst()) db.delete("activity_annotations","provider=? AND record_id=?",new String[]{source.getString(0),source.getString(1)});
             }
             db.delete("preserved_best_efforts","activity_id=?",new String[]{id});
-            db.delete("activities","id=?",new String[]{id}); db.setTransactionSuccessful();
+            db.delete("recording_sessions","activity_id=?",new String[]{id}); db.delete("activities","id=?",new String[]{id}); db.setTransactionSuccessful();
         } finally {db.endTransaction();}
     }
     @Override public String importToken(String provider) {
@@ -243,7 +243,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         } catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}
     }
     private static JSONArray opaqueRows(SQLiteDatabase db,String table){JSONArray out=new JSONArray();try(Cursor c=db.rawQuery("SELECT payload FROM "+table+" ORDER BY id",null)){while(c.moveToNext())out.put(FeatureJson.object(c.getString(0)));}return out;}
-    private static boolean isUserActivity(ActivityRecord a){return a.source().provider().equals("manual")||a.source().provider().equals("assessment");}
+    private static boolean isUserActivity(ActivityRecord a){return a.source().provider().equals("manual")||a.source().provider().equals("assessment")||a.source().provider().equals("rdd")||a.source().provider().equals("gpx");}
 
     /** Validation is public for backup previews; it never reads or changes the database. */
     public static void validateUserData(JSONObject data){validated(data);}

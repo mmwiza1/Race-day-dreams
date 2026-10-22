@@ -22,5 +22,7 @@ import org.racedaydreams.data.RecordingStore
     if(status==null&&unfinished==null)CoachButton("Start GPS recording"){if(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED)send(RunRecordingService.START)else permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION))}
     if(status==null&&unfinished!=null){Text("An unfinished run was retained. Recovery saves only observed time and samples; time while the process was absent is not invented.");CoachButton("Recover recorded portion"){scope.launch{try{recovery=withContext(Dispatchers.IO){"Saved ${RecordingStore(context).finish(unfinished!!)}"};unfinished=null;model.refresh()}catch(_:Exception){recovery="Not enough usable evidence to finalise. Staging has been retained."}}}}
     notice?.let{Text(it)};recovery?.let{Text(it)}
+    RecordingSensors()
+    RecordingFiles(model)
     Text("Auto-pause is not enabled. Use manual pause for stops. Live coaching and structured workout execution are not part of this recording foundation.")
 }
