@@ -56,9 +56,12 @@ class CoachingInteractionTest {
         launch();compose.onNodeWithText("Progress").performClick();await("Optional strength training")
         compose.onNodeWithText("Optional strength training").performScrollTo().performClick();await("Log strength workout")
         compose.onNodeWithText("Log strength workout").performClick()
-        enter("Date (YYYY-MM-DD)",LocalDate.now().minusDays(1).toString());enter("Start time (HH:mm, local)","12:00")
+        enter("Start time (HH:mm, local)","00:01")
         enter("Duration (minutes)","50");enter("Session RPE 0–10 (optional)","7")
-        enter("Working sets (e.g. 80,5,7)","80,5,7\n90,5,8")
+        enter("Weight (kg)","80");enter("Reps","5");enter("Set RPE 0–10 (optional)","7")
+        compose.onNodeWithText("Add set").performScrollTo().performClick()
+        enter("Weight (kg)","90");enter("Set RPE 0–10 (optional)","8")
+        compose.onNodeWithText("Add set").performScrollTo().performClick()
         compose.onNodeWithText("Add exercise and sets").performScrollTo().performClick()
         compose.onNodeWithText("Save strength workout").performScrollTo().performClick()
         compose.waitUntil(20000){CoachingStore(context).strength().size==1}
@@ -79,7 +82,7 @@ class CoachingInteractionTest {
         compose.onNodeWithText("View workout and purpose").performScrollTo().performClick();await("Record actual run")
         compose.onNodeWithText("Record actual run").performScrollTo().performClick()
         enter(distanceLabel,distance);enter("Actual duration (mm:ss or h:mm:ss)","32:30")
-        enter("Start date (YYYY-MM-DD)",LocalDate.now().minusDays(1).toString());enter("Start time (HH:mm, local)","08:00")
+        enter("Start time (HH:mm, local)","00:01")
         enter("RPE 0–10 (optional)","3")
         compose.onNodeWithText("Save actual run").performScrollTo().performClick()
         compose.waitUntil(20000){FeatureStore(context).activities().size==1}

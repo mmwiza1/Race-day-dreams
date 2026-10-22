@@ -54,10 +54,13 @@ import org.racedaydreams.domain.body.MassUnit
     }
     WhyDetails(description,"Recorded measurements")
     Text("Weight is a neutral personal trend. It does not determine your coaching recommendations.")
-    DateInput("Measurement date",date,{date=it});CoachInput("Weight (${s.massUnit.name.lowercase()})",value,{value=it},true)
+    var adding by rememberSaveable{mutableStateOf(false)}
+    TextButton(onClick={adding=!adding}){Text(if(adding)"Hide weight form" else "Record a measurement")}
+    if(adding){ DateInput("Measurement date",date,{date=it});CoachInput("Weight (${s.massUnit.name.lowercase()})",value,{value=it},true)
     error?.let{Text(it)}
     CoachButton(if(editId==null)"Add weight" else "Save measurement",{try{require(value.toDouble()>0);model.saveWeight(value.toDouble(),LocalDate.parse(date),editId);value="";editId=null;error=null}catch(e:Exception){error="Enter a positive weight."}})
-    points.takeLast(8).reversed().forEach{w->CoachCard{Text("${friendlyDate(w.at().atOffset(w.offset()).toLocalDate())} · ${decimal(s.massUnit.fromKilograms(w.kilograms()))} ${s.massUnit.name.lowercase()}");Text(if(w.provider()=="manual")"Manual entry"else "Health Connect")
-        if(w.provider()=="manual")Row{TextButton(onClick={editId=w.id();value=decimal(s.massUnit.fromKilograms(w.kilograms()));date=w.at().atOffset(w.offset()).toLocalDate().toString()}){Text("Edit")};TextButton(onClick={model.deleteWeight(w.id())}){Text("Delete")}}
+    }
+    points.takeLast(3).reversed().forEach{w->CoachCard{Text("${friendlyDate(w.at().atOffset(w.offset()).toLocalDate())} · ${decimal(s.massUnit.fromKilograms(w.kilograms()))} ${s.massUnit.name.lowercase()}");Text(if(w.provider()=="manual")"Manual entry"else "Health Connect")
+        if(w.provider()=="manual")Row{TextButton(onClick={adding=true;editId=w.id();value=decimal(s.massUnit.fromKilograms(w.kilograms()));date=w.at().atOffset(w.offset()).toLocalDate().toString()}){Text("Edit")};TextButton(onClick={model.deleteWeight(w.id())}){Text("Delete")}}
     }}
 }

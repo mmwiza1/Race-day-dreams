@@ -43,12 +43,12 @@ fun BaselineScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
         BaselineValue("Recent 10K result", baseline.recent10k()?.let(PaceCalculator::formatTime), RunnerBaseline.RECENT_10K, baseline)
         BaselineValue("Recent half-marathon result", baseline.recentHalf()?.let(PaceCalculator::formatTime), RunnerBaseline.RECENT_HALF, baseline)
         Text("Baseline confidence: ${baseline.confidence().name.lowercase().replaceFirstChar { it.uppercase() }}")
-        Text("Confidence describes the amount, recency and quality of evidence. It is not a probability of race success.")
+        WhyDetails("Confidence describes the amount, recency and quality of evidence. It is not a probability of race success.","About confidence")
     }
     WhyDetails(baseline.explanations().joinToString("\n"),"About your baseline")
     if (state.eligibilityReasons.isNotEmpty()) CoachCard {
         Text("Performance-focused training", style = MaterialTheme.typography.titleMedium)
-        state.eligibilityReasons.forEach { Text(it) }
+        WhyDetails(state.eligibilityReasons.joinToString("\n"),"Why this status?")
     }
     Button(onClick = onContinue, enabled = !state.busy,
         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {

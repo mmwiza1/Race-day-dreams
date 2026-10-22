@@ -159,7 +159,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
             long index = ChronoUnit.DAYS.between(start, day);
             TrainingPhase.Kind kind = day.isAfter(end) ? null : race != null && day.equals(race) ? TrainingPhase.Kind.RACE
                 : race != null && !day.isBefore(taper) ? TrainingPhase.Kind.TAPER
-                : race != null && ChronoUnit.DAYS.between(day, race) > 196 ? TrainingPhase.Kind.FOUNDATION
+                : race != null && days > 280 ? (ChronoUnit.DAYS.between(day,race)>196 ? TrainingPhase.Kind.FOUNDATION : ChronoUnit.DAYS.between(day,race)>140 ? TrainingPhase.Kind.ENDURANCE_DEVELOPMENT : ChronoUnit.DAYS.between(day,race)>28 ? TrainingPhase.Kind.RACE_SPECIFIC : TrainingPhase.Kind.PEAK)
                 : index < (established ? weeks >= 20 ? days * .2 : 0 : days * .3) ? TrainingPhase.Kind.FOUNDATION
                 : race == null || index < days * .6 ? TrainingPhase.Kind.ENDURANCE_DEVELOPMENT
                 : index < days * .85 ? TrainingPhase.Kind.RACE_SPECIFIC : TrainingPhase.Kind.PEAK;

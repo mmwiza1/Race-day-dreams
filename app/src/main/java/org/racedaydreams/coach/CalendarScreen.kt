@@ -26,7 +26,7 @@ import org.racedaydreams.domain.coaching.AdaptiveCoachingEngine
                 Row(Modifier.fillMaxWidth()){listOf("M","T","W","T","F","S","S").forEach{Text(it,Modifier.weight(1f))}}
                 repeat(6){week->Row(Modifier.fillMaxWidth()){repeat(7){i->val date=first.plusDays((week*7+i).toLong());val count=calendarLabels(state,date).size
                     TextButton(onClick={focus=date.toString()},modifier=Modifier.weight(1f).heightIn(min=56.dp).semantics{contentDescription="${friendlyDate(date)}, $count sessions"},contentPadding=PaddingValues(0.dp)){Column{Text("${date.dayOfMonth}");if(count>0)Text("•".repeat(count.coerceAtMost(3)))}}
-                }}
+                }}}
                 CalendarDay(state,day,workout,strength,activity)
             }else repeat(7){CalendarDay(state,day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).plusDays(it.toLong()),workout,strength,activity)}
         }

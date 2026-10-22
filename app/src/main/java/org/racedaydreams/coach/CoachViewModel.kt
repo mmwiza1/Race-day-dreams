@@ -161,7 +161,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 weights = development.weights(), historicalStrength = development.historical(),
                 massUnit = runCatching { MassUnit.valueOf(store.getSetting("mass.unit") ?: "KG") }.getOrDefault(MassUnit.KG),
                 calendarView = store.getSetting("calendar.view") ?: "List", providerPreference = preference.name,
-                weeklyReview = review, weeklyDecision = review?.let { development.reviewDecision(it.id()) },
+                weeklyReview = review, weeklyDecision = review?.let { development.decisionForWeek(it.week()) },
                 proposals = coaching.proposals().filter { it.baseVersionId() == currentPlan?.id() },
                 strengthSessions = strength, exercises = coaching.exercises(), runResponses = responses,
                 plannedWorkouts = store.plannedWorkouts(), milestonesEnabled = store.getSetting("milestones.enabled") == "true",
