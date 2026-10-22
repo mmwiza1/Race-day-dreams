@@ -30,7 +30,7 @@ import org.racedaydreams.domain.body.MassUnit
         if(r.observations().any{it.contains("missed or moved")})TextButton(onClick=editRoutine){Text("Review training days")}
         WhyDetails(r.channels().joinToString("\n\n"){"${it.name()}: ${it.state().name.lowercase().replace('_',' ')}\n${it.reason()}"},"Evidence channels")
         CoachHeading("Recommendation")
-        CoachCard{Text(if(presentation.noChange())"No adjustment required"else "Review the next step",style=MaterialTheme.typography.titleMedium);Text(if(presentation.noChange())"Your recent training supports continuing the current plan."else r.recommendation())}
+        CoachCard{Text(if(presentation.noChange())"No adjustment required"else "Review the next step",style=MaterialTheme.typography.titleMedium);Text(if(presentation.noChange())if(r.completed()>=2)"Your recent training supports continuing the current plan."else "Continue the current plan while more training evidence becomes available."else r.recommendation())}
         var previewId by rememberSaveable(r.id()){mutableStateOf<String?>(null)}
         val preview=r.choices().firstOrNull{it.id()==previewId}
         if(s.weeklyDecision!=null)Text("Your decision: ${s.weeklyDecision}. Your choice is retained.")else r.choices().forEach{c->
