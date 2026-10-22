@@ -90,3 +90,16 @@ CI cannot establish Samsung synchronisation, OEM reminder delivery, physical
 TalkBack/200% font behaviour or real-world coaching efficacy. Run TEST_BUILD.md's
 Galaxy S24 checklist, export an existing backup before upgrading, and inspect
 actual recommendations and preserved planned-versus-actual history.
+
+## Approved launcher artwork update
+
+The owner-supplied sleeping/dream-finish illustration replaces the launcher vector.
+Density-specific legacy and adaptive foreground PNGs are reproducible with
+`scripts/generate-launcher-icons.sh`. API 26 adaptive XML and API 33 monochrome XML
+share the production manifest references across debug/release. Notifications keep a
+separate small vector. No behaviour, permissions, dependencies or database changes.
+`LauncherIconTest` checks the packaged manifest, adaptive layers, themed layer on API 33+,
+and rendering at 48/96/192px. Mask previews are in `docs/launcher/`.
+
+Local Android SDK/Gradle are unavailable; APK/build/lint/device results must come from CI.
+Physical One UI checks remain required for launcher masks, themed colours and icon cache.

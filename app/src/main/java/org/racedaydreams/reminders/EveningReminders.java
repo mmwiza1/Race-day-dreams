@@ -205,7 +205,7 @@ public final class EveningReminders implements ReminderScheduleRepository {
         notifications.createNotificationChannel(new NotificationChannel(CHANNEL,
                 "Evening run preparation", NotificationManager.IMPORTANCE_DEFAULT));
         Notification.Builder builder = new Notification.Builder(context, CHANNEL)
-                .setSmallIcon(R.drawable.ic_launcher).setContentTitle(scheduled.title())
+                .setSmallIcon(R.drawable.ic_notification).setContentTitle(scheduled.title())
                 .setContentText(scheduled.message()).setStyle(new Notification.BigTextStyle().bigText(scheduled.message()))
                 .setAutoCancel(true).setOnlyAlertOnce(true).setTimeoutAfter(2 * 60 * 60 * 1000L);
         Intent launch = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
