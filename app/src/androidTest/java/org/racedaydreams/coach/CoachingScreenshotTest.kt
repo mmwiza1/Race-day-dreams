@@ -106,7 +106,25 @@ class CoachingScreenshotTest {
         compose.waitForIdle();capture("onboarding")
         back();click("⚙ Settings");await("Settings")
         compose.onNodeWithText("Shoes and mileage").performScrollTo().performClick();await("Your shoes");capture("shoes")
+        scenario?.close();scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
+        compose.onNodeWithText("View activity history").performScrollTo().performClick();await("Search and date filters");click("Search and date filters");capture("history-filters")
+        val originalFont=shell("settings get system font_scale").trim()
+        val originalNight=shell("cmd uimode night").let{if(it.contains("yes"))"yes"else if(it.contains("auto"))"auto"else "no"}
+        try {
+            shell("cmd uimode night yes")
+            scenario?.close();scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
+            Assert.assertEquals(android.content.res.Configuration.UI_MODE_NIGHT_YES,context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+            capture("home-dark")
+            shell("settings put system font_scale 2.0");scenario?.recreate();await("How am I doing?")
+            Assert.assertTrue(context.resources.configuration.fontScale>=1.99f)
+            capture("home-large-font")
+        } finally {
+            if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+
     }
+    private fun shell(command:String):String=InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command).use{descriptor->java.io.FileInputStream(descriptor.fileDescriptor).use{it.readBytes().toString(Charsets.UTF_8)}}
     private fun back(){androidx.test.espresso.Espresso.closeSoftKeyboard();androidx.test.espresso.Espresso.pressBack();compose.waitForIdle()}
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
