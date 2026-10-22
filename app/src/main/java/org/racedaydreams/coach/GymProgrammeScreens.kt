@@ -51,7 +51,35 @@ private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort)
     fun preview(change:()->GymProgramme){try{proposed=change();error=null}catch(e:Exception){error=e.message}}
     CoachPage{
         CoachHeading(session.title());Text(friendlyDate(session.date()));Text("Plan version ${p.version()}")
-        session.exercises().forEach{e->CoachCard{Text(ExerciseCatalog.definition(e.exerciseId())?.exercise()?.name()?:e.exerciseId(),style=MaterialTheme.typography.titleLarge);Text(prescription(e,p.settings().effort()));e.referenceLoadKg()?.let{Text("Your optional load reference: ${decimal(state.massUnit.fromKilograms(it))} ${state.massUnit.name.lowercase()}")};WhyDetails(e.intent(),"Why this exercise?");if(session.date()>=LocalDate.now()&&session.date() !in completed)TextButton(onClick={swapFor=e.exerciseId();swapQuery=""}){Text("Swap exercise")};val advice=StrengthProgressionAdvisor.review(e,state.strengthSessions,Instant.now());Text(advice.reason());advice.suggestedKilograms()?.let{Text("Optional next load: ~${decimal(state.massUnit.fromKilograms(it))} ${state.massUnit.name.lowercase()}. Keep your current load if preferred.")};val decided=state.gymProgressionDecisions.lastOrNull{it.prescribedSession()==session.id()&&it.exerciseId()==e.exerciseId()&&(it.baseVersion()==org.racedaydreams.data.GymProgrammeStore.key(p)||it.resultingVersion()==org.racedaydreams.data.GymProgrammeStore.key(p))};if(decided!=null)Text(if(decided.choice()=="KEEP")"You chose to keep the current prescription."else "You chose this optional load reference.")else if(advice.action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE&&session.date()>=LocalDate.now()&&session.date() !in completed){TextButton(onClick={progressionPreview=e.exerciseId()}){Text("Preview load suggestion")};TextButton(onClick={model.gymProgression(org.racedaydreams.data.GymProgrammeStore.key(p),session.id(),e.exerciseId(),false)}){Text("Keep current load")}}}
+        session.exercises().forEach { exercise ->
+            CoachCard {
+                Text(ExerciseCatalog.definition(exercise.exerciseId())?.exercise()?.name() ?: exercise.exerciseId(), style=MaterialTheme.typography.titleLarge)
+                Text(prescription(exercise,p.settings().effort()))
+                exercise.referenceLoadKg()?.let { kg ->
+                    Text("Your optional load reference: ${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}")
+                }
+                WhyDetails(exercise.intent(),"Why this exercise?")
+                if(session.date()>=LocalDate.now() && session.date() !in completed) {
+                    TextButton(onClick={swapFor=exercise.exerciseId();swapQuery=""}) { Text("Swap exercise") }
+                }
+                val advice=StrengthProgressionAdvisor.review(exercise,state.strengthSessions,Instant.now())
+                Text(advice.reason())
+                advice.suggestedKilograms()?.let { kg ->
+                    Text("Optional next load: ~${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}. Keep your current load if preferred.")
+                }
+                val version=org.racedaydreams.data.GymProgrammeStore.key(p)
+                val decided=state.gymProgressionDecisions.lastOrNull {
+                    it.prescribedSession()==session.id() && it.exerciseId()==exercise.exerciseId() &&
+                        (it.baseVersion()==version || it.resultingVersion()==version)
+                }
+                if(decided!=null) {
+                    Text(if(decided.choice()=="KEEP") "You chose to keep the current prescription." else "You chose this optional load reference.")
+                } else if(advice.action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE && session.date()>=LocalDate.now() && session.date() !in completed) {
+                    TextButton(onClick={progressionPreview=exercise.exerciseId()}) { Text("Preview load suggestion") }
+                    TextButton(onClick={model.gymProgression(version,session.id(),exercise.exerciseId(),false)}) { Text("Keep current load") }
+                }
+            }
+        }
         WhyDetails(session.explanation(),"Why this session?")
         if(session.date()<=LocalDate.now())CoachButton("Record actual strength workout"){log(session.date().toString())}
         if(session.date()>=LocalDate.now()&&session.date() !in completed){DateInput("Move this session to",move,{move=it});CoachButton("Preview one-off move"){preview{GymPlanEditor.move(p,session.id(),LocalDate.parse(move),LocalDate.now(),Instant.now(),completed)}};OutlinedButton(onClick={preview{GymPlanEditor.reduce(p,session.id(),LocalDate.now(),Instant.now(),completed)}}){Text("Preview fewer sets")};TextButton(onClick={preview{GymPlanEditor.skip(p,session.id(),LocalDate.now(),Instant.now(),completed)}}){Text("Skip this session")}}

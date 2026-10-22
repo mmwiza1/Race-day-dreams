@@ -27,7 +27,7 @@ is supported as a practical compromise, not an optimal universal dose.
 Strength goals use lower rep ranges and longer rests; muscle goals use higher rep
 ranges; running support includes unilateral, calf and trunk work with restrained
 sets. Experience and priority limit working sets. Power preparation uses low reps
-and a speed/control cue; automatic Olympic-lift prescription is deliberately absent.
+and an intentional fast-concentric/control cue for experienced users; automatic Olympic-lift prescription is deliberately absent.
 No estimated 1RM is required for loading. The runner chooses manageable loads.
 
 Exercise selection checks equipment, including bench/rack requirements and bodyweight
