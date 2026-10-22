@@ -35,6 +35,8 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
                 && baseline.weeklyDistanceKm() >= 20 && prefs.runsPerWeek() >= 3;
         int frequency = established ? prefs.runsPerWeek() : Math.min(3, prefs.runsPerWeek());
         double base = established ? baseline.weeklyDistanceKm() : 0;
+        if (established && baseline.runsPerWeek() != null && baseline.runsPerWeek() > frequency)
+            base *= frequency / baseline.runsPerWeek();
         double longBase = established ? Math.min(baseline.longestRunKm(), base * .48) : 0;
         double distance = goal.distance().kilometres();
         int taperDays = race == null ? 0 : goal.distance() == RaceDistance.MARATHON ? (base >= 45 ? 21 : 14)
@@ -74,7 +76,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
             double build = Math.min(volumeCap, base + Math.max(0, index - index / 4) * step);
             if (index % 4 == 3) build *= .8;
             double taperFactor = taper ? (ChronoUnit.DAYS.between(from, end) <= 7 ? .5 : .7) : 1;
-            double weekly = build * taperFactor;
+            double weekly = build * taperFactor * schedule.days().size() / frequency;
             double longKm = Math.min(longCap, Math.min(longBase + Math.max(0, index - index / 4) * .5, weekly * .48));
             if (index % 4 == 3) longKm = Math.min(longKm, longBase * .8 + index * .15);
             longKm *= taperFactor;
@@ -87,9 +89,18 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
                         ? phase == TrainingPhase.Kind.RACE_SPECIFIC || phase == TrainingPhase.Kind.PEAK ? WorkoutCategory.RACE_PACE_RUN : WorkoutCategory.TEMPO_THRESHOLD_RUN
                         : prefs.strategy() == TrainingStrategy.ZONE_2 || goal.distance() == RaceDistance.GENERAL_FITNESS ? WorkoutCategory.ZONE_2_RUN : WorkoutCategory.EASY_RUN;
                 Double km = established ? rounded(n == 1 ? weekly : isLong ? longKm : (weekly - (n >= 2 && !taper ? longKm : 0)) / (n - (n >= 2 && !taper ? 1 : 0))) : null;
+                if (km != null) {
+                    // Availability reductions never concentrate the full week's old volume into
+                    // fewer sessions. No individual run exceeds the supported endurance progression.
+                    km = rounded(Math.min(km, Math.min(longCap, longBase + Math.max(0, index-index/4) * .5)));
+                    if (isQuality && km < 4) {
+                        isQuality = false;
+                        category = WorkoutCategory.EASY_RUN;
+                    }
+                }
                 Duration duration = established ? null : Duration.ofMinutes(Math.min(30, 15 + index / 2 * 2));
                 List<WorkoutSegment> segments = new ArrayList<>();
-                double rpe = isQuality ? 6 : 3;
+                double rpe = isQuality ? prefs.strategy() == TrainingStrategy.PERFORMANCE && performance ? 7 : 6 : 3;
                 if (!established) {
                     segments.add(segment(WorkoutSegment.Kind.WARM_UP, Duration.ofMinutes(5), 2, "Comfortable walk; shorten or pause if needed."));
                     int minutes = (int) duration.toMinutes() - 10;
@@ -109,7 +120,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
                 String reason = (isLong ? "Develop endurance for " + goal.distance().label() + ". Long-run starting evidence: " + rounded(longBase) + " km; progression is limited by the weekly budget. "
                     : isQuality ? "Develop controlled race-specific endurance alongside easy training; recent volume and consistency support one quality session this week. "
                     : "Build aerobic endurance while keeping effort controlled to leave room for recovery. ")
-                    + (established ? "Starting weekly evidence: " + rounded(base) + " km. This week's budget: " + rounded(weekly) + " km. "
+                    + (established ? "Starting availability-adjusted weekly evidence: " + rounded(base) + " km. This week's budget: " + rounded(weekly) + " km. "
                         : "Current workload evidence is missing, low or stale, so this is a short run/walk session rather than a mileage prescription. ")
                     + "Phase: " + phase + ". " + (taper ? "Volume is reduced before race day; arriving recovered is the priority. " : "")
                     + (prefs.strategy() == TrainingStrategy.PERFORMANCE && !performance ? "Current evidence does not support extra Performance intensity; your saved preference is unchanged. " : "")

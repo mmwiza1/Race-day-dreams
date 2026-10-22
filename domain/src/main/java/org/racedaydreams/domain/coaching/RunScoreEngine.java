@@ -19,7 +19,7 @@ public final class RunScoreEngine {
             ? actual.distanceMetres() / (planned.distanceKm() * 1000)
             : planned.duration() != null && !planned.duration().isZero()
                 ? actual.elapsedTime().toMillis() / (double) planned.duration().toMillis() : null;
-        Double completion = ratio == null ? null : Math.max(0, Math.min(1, ratio));
+        Double completion = ratio == null ? null : Math.max(0, Math.min(1, ratio) - Math.max(0, ratio - 1.15) * .5);
         components.add(new RunFeedback.Component("Completion", completion,
             ratio == null ? "Comparable distance or duration is unavailable." : "Completed " + Math.round(ratio * 100) + "% of the prescription; extra distance earns no extra credit."));
         if (ratio != null) { if (ratio >= .95 && ratio <= 1.15) good.add("You completed approximately the prescribed amount.");
@@ -83,6 +83,8 @@ public final class RunScoreEngine {
         }
         // Completion alone cannot demonstrate correct execution. Do not manufacture a score.
         Integer score = known < 2 ? null : Math.max(1, Math.min(10, (int) Math.round(sum / weight * 10)));
+        if (score != null && (planned.category() == WorkoutCategory.PROGRESSION_RUN && stability != null && stability < .6
+                || planned.category() == WorkoutCategory.INTERVALS && reps != null && reps < .8)) score = Math.min(score, 7);
         return new RunFeedback(score, score == null ? "Execution evidence incomplete" : score >= 8 ? "Good execution" : "Against today's objective",
             components, good, differed,
             "This records how the run met its purpose. Completion alone does not prove fitness improved. Missing components are excluded, not scored as zero.",

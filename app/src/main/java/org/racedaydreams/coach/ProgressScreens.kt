@@ -50,6 +50,16 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
         CoachHeading("Progress from your recorded running")
         Text("These are summaries of retained records, not a claim that unrecorded training did not happen. No readiness score or race prediction is generated.")
         WeeklyDistanceCard(weeks, state)
+        val now = java.time.Instant.now()
+        val load = remember(state.activities, state.strengthSessions) {
+            org.racedaydreams.domain.coaching.TrainingLoadEvidence.window(state.activities, state.strengthSessions, now.minus(java.time.Duration.ofDays(7)), now)
+        }
+        CoachCard {
+            Text("Recent session-RPE context", style = MaterialTheme.typography.titleMedium)
+            Text(load.runningLoad()?.let { "Running: ${kotlin.math.round(it).toInt()} min·RPE from ${load.runsWithRpe()}/${load.runsObserved()} runs in the last seven days" } ?: "Running load: unavailable — no RPE recorded in this window")
+            Text(load.strengthLoad()?.let { "Strength: ${kotlin.math.round(it).toInt()} min·RPE from ${load.strengthWithRpe()}/${load.strengthObserved()} sessions" } ?: "Strength load: unavailable — no RPE recorded in this window")
+            Text("Duration × reported RPE. Missing effort is excluded, not filled with zero. Running and strength loads are separate context signals, not injury predictions.")
+        }
         CoachHeading("Personal bests")
         Text("Results retain their date and source. Official chip times are entered by you; they are not independently verified. Rolling efforts require reliable continuous samples.")
         Button(onClick = { enteringResult = !enteringResult }, enabled = !state.busy,

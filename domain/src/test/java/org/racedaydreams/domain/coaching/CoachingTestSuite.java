@@ -12,7 +12,7 @@ public final class CoachingTestSuite {
     static final LocalDate START = LocalDate.of(2026, 10, 26);
     static final Instant NOW = START.atTime(12, 0).toInstant(ZoneOffset.UTC);
     public static void main(String[] args) {
-        plans(); scores(); strength(); adaptations();
+        plans(); scores(); strength(); adaptations(); extraEvidence();
         System.out.println("CoachingTestSuite: " + checks + " checks passed (production generator, constraints, adaptation, scores, strength).");
     }
     static void check(boolean value, String message) { checks++; if (!value) throw new AssertionError(message); }
@@ -131,4 +131,41 @@ public final class CoachingTestSuite {
         check(plan.workouts().contains(quality), "Original prescription retained");
         rejects(() -> AdaptiveCoachingEngine.apply(plan, proposal, easy, Set.of(quality.id())));
     }
+    static void extraEvidence() {
+        var generator=new OriginalTrainingPlanGenerator();
+        for(int days:new int[]{1,2}){
+            var prefs=new TrainingPreferences(TrainingStrategy.BALANCED,EnumSet.of(DayOfWeek.TUESDAY,DayOfWeek.SUNDAY),days,DayOfWeek.SUNDAY,EnumSet.noneOf(DayOfWeek.class),ScheduleType.FLEXIBLE,UnitSystem.METRIC);
+            var p=new UserProfile(new RaceGoal(RaceDistance.GENERAL_FITNESS,"",null,GoalMode.FINISH,null),prefs,true);
+            var plan=generator.generate(p,baseline(60,15),START);
+            check(plan.workouts().stream().allMatch(w->w.distanceKm()<=15),"Reduced availability cannot concentrate 60 km into one/two runs");
+        }
+        var intervalSegments=new ArrayList<WorkoutSegment>();
+        for(int i=0;i<5;i++){intervalSegments.add(new WorkoutSegment(WorkoutSegment.Kind.RUN,1.0,null,290.0,310.0,null,7.0,"Rep"));intervalSegments.add(new WorkoutSegment(WorkoutSegment.Kind.RECOVERY,null,Duration.ofSeconds(90),null,null,null,2.0,"Recovery"));}
+        var intervals=new PlannedWorkout("run",START,WorkoutCategory.INTERVALS,8.0,null,intervalSegments,"Five controlled reps");
+        var complete=RunScoreEngine.analyse(intervals,actual("a",8,7.0,"run"),new RunExecution("a","run","v1",5,true,""));
+        var missed=RunScoreEngine.analyse(intervals,actual("a",8,7.0,"run"),new RunExecution("a","run","v1",3,false,""));
+        check(complete.score()>missed.score()&&missed.score()<=7,"Missed reps/recoveries reduce purpose-based score");
+        var stable=actual("stable",8,6.0,"run");var samples=new ArrayList<DistanceSample>();
+        for(int second=0;second<=3000;second+=10)samples.add(new DistanceSample(Duration.ofSeconds(second),8000.0*second/3000,null,null,null,false));
+        stable=new ActivityRecord(stable.id(),stable.source(),stable.start(),stable.end(),stable.startOffset(),stable.endOffset(),stable.distanceMetres(),null,null,null,null,null,6.0,"",samples,List.of(),"run",null);
+        var progression=RunScoreEngine.analyse(planned(WorkoutCategory.PROGRESSION_RUN),stable,new RunExecution("stable","run","v1",null,null,""));
+        check(progression.score()<=7,"Stable pace does not achieve a progression objective");
+        var p=profile(RaceDistance.HALF_MARATHON,4,12,TrainingStrategy.BALANCED);
+        var easy1=planned(WorkoutCategory.EASY_RUN);var easy2=new PlannedWorkout("run2",START.minusDays(1),WorkoutCategory.EASY_RUN,8.0,null,easy1.segments(),"Easy");
+        var quality=new PlannedWorkout("quality",START.plusDays(2),WorkoutCategory.INTERVALS,8.0,null,intervalSegments,"Quality");
+        var plan=new TrainingPlan("adapt",START.minusDays(1),START.plusDays(6),List.of(),List.of(easy1,easy2,quality));
+        var v=new PlanVersion("adapt-v1","adapt",1,NOW,"Initial",p,"Evidence",plan);
+        check(AdaptiveCoachingEngine.review(v,List.of(actual("a",8,3.0,"run")),List.of(),List.of(),START,NOW).isEmpty(),"Good completion with low RPE needs no change");
+        check(AdaptiveCoachingEngine.review(v,List.of(actual("a",8,7.0,"run")),List.of(),List.of(),START,NOW).isEmpty(),"One noisy hard run alone needs no change");
+        check(AdaptiveCoachingEngine.review(v,List.of(actual("a",8,7.0,"run"),actual("b",8,7.0,"run2")),List.of(),List.of(),START,NOW).isPresent(),"Repeated effort mismatch proposes a small change");
+        check(AdaptiveCoachingEngine.review(v,List.of(actual("a",4,9.0,"run")),List.of(),List.of(),START,NOW).isPresent(),"Low completion plus high RPE supplies two signals");
+        var load=TrainingLoadEvidence.window(List.of(actual("a",8,3.0,null),actual("b",8,null,null)),List.of(),NOW.minus(Duration.ofDays(7)),NOW.plusSeconds(1));
+        check(load.runningLoad()==150&&load.runsWithRpe()==1&&load.runsObserved()==2,"Missing RPE excluded with coverage, not zero-filled");
+        check(load.strengthLoad()==null,"Missing strength workload is unknown, not zero");
+        var weightedBody=new StrengthExercise("weighted","Weighted Pull-Up",StrengthExercise.Region.UPPER,StrengthExercise.Mode.WEIGHTED_BODYWEIGHT,false);
+        var bwSession=new StrengthSession("bw",NOW.minusSeconds(3600),ZoneOffset.UTC,Duration.ofMinutes(30),null,"",List.of(new StrengthSession.ExerciseSets(weightedBody,List.of(new StrengthSession.SetEntry("bw-set",5,20,null,false)))));
+        check(StrengthAnalytics.progression(List.of(bwSession)).stream().anyMatch(r->r.category().equals("Added load × 5")),"Weighted-bodyweight PB retains added load and reps");
+        check(StrengthAnalytics.estimatedOneRepMax(weightedBody,bwSession.exercises().get(0).sets().get(0))==null,"No misleading bodyweight 1RM estimate");
+    }
+
 }

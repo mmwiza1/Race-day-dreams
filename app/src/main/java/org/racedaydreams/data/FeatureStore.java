@@ -265,7 +265,19 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             JSONObject settings=data.getJSONObject("settings");for(Iterator<String> it=settings.keys();it.hasNext();){String key=it.next();required(key,"setting key");if(!(settings.get(key) instanceof String))throw new IllegalArgumentException("Setting values must be text.");}
             JSONArray plans=array(data,"plannedWorkouts");Set<String> planIds=new HashSet<>();for(int i=0;i<plans.length();i++){JSONObject row=plans.getJSONObject(i);PlannedWorkout w=FeatureJson.planned(row.getJSONObject("workout"));unique(planIds,w.id());if(FeatureJson.requiredLong(row,"revision")<1)throw new IllegalArgumentException("Invalid workout revision.");}
             JSONArray assessments=array(data,"assessments"),trainingPlans=array(data,"trainingPlans"),adjustments=array(data,"planAdjustments");validateOpaque(assessments);for(int i=0;i<assessments.length();i++)FeatureJson.assessment(assessments.getJSONObject(i));validateOpaque(trainingPlans);validateOpaque(adjustments);
-            JSONObject coaching=data.has("coaching")?data.getJSONObject("coaching"):null;if(coaching!=null)CoachingStore.validate(coaching);
+            JSONObject coaching=data.has("coaching")?data.getJSONObject("coaching"):null;if(coaching!=null){
+                CoachingStore.validate(coaching);
+                JSONArray current=coaching.getJSONArray("coach_current_plan");
+                if(current.length()==1){
+                    String versionId=current.getJSONObject(0).getString("version_id");
+                    JSONArray versions=coaching.getJSONArray("coach_plan_versions");
+                    for(int i=0;i<versions.length();i++)if(versions.getJSONObject(i).getString("id").equals(versionId)){
+                        var version=CoachingJson.version(FeatureJson.object(versions.getJSONObject(i).getString("payload")));
+                        Set<PlannedWorkout> mirror=new HashSet<>();for(int k=0;k<plans.length();k++)mirror.add(FeatureJson.planned(plans.getJSONObject(k).getJSONObject("workout")));
+                        if(!mirror.equals(new HashSet<>(version.plan().workouts())))throw new IllegalArgumentException("Backup current programme and reminder prescriptions disagree.");
+                    }
+                }
+            }
             return new RestoreData(profile,draft,baseline,baselineAt,activities,shoes,results,bestEfforts,annotations,settings,plans,assessments,trainingPlans,adjustments,coaching);
         }catch(JSONException | java.time.DateTimeException e){throw FeatureJson.invalid(e);}
     }

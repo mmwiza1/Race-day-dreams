@@ -126,7 +126,9 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 lap.plannedSegmentId()?.let { Text("Linked planned segment: $it") }
             }
         }
-        val planned = state.plannedWorkouts.firstOrNull { it.id() == activity.plannedWorkoutId() }
+        val response = state.runResponses.firstOrNull { it.activityId() == activity.id() }
+        val planned = state.planVersions.firstOrNull { it.id() == response?.planVersionId() }?.plan()?.workouts()?.firstOrNull { it.id() == response?.plannedWorkoutId() }
+            ?: state.plannedWorkouts.firstOrNull { it.id() == activity.plannedWorkoutId() }
         CoachHeading("Planned and actual")
         if (planned == null) Text(if (activity.plannedWorkoutId() == null) "No planned workout is linked to this activity."
             else "The linked planned workout is not currently available. The actual result remains retained.")

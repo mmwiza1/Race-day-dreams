@@ -84,5 +84,14 @@ class CoachingScreenshotTest {
         val dir=File(context.getExternalFilesDir(null),"screenshots");dir.mkdirs()
         File(dir,"$name.png").outputStream().use{bitmap.compress(Bitmap.CompressFormat.PNG,100,it)}
         bitmap.recycle()
+        // AGP uninstalls the APK after connected tests, removing app-specific files.
+        // Copy with instrumentation's shell identity before teardown; production has no such path.
+        val shell=InstrumentationRegistry.getInstrumentation().uiAutomation
+        shell.executeShellCommand("mkdir -p /data/local/tmp/racedaydreams-screenshots").use { descriptor ->
+            java.io.FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
+        }
+        shell.executeShellCommand("cp ${File(dir,"$name.png").absolutePath} /data/local/tmp/racedaydreams-screenshots/$name.png").use { descriptor ->
+            java.io.FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
+        }
     }
 }

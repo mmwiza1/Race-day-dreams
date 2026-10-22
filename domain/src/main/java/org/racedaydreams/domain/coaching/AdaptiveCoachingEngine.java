@@ -23,7 +23,7 @@ public final class AdaptiveCoachingEngine {
             if (run.end().isBefore(now.minus(Duration.ofDays(10))) || run.end().isAfter(now)) continue;
             PlannedWorkout planned = prescriptions.get(linked);
             if (planned == null || run.rpe() == null) continue;
-            double expected = isQuality(planned.category()) ? 8 : 4;
+            double expected = isQuality(planned.category()) ? planned.segments().stream().filter(s -> s.rpe() != null).mapToDouble(s -> s.rpe()).max().orElse(6) + 1 : 4;
             if (run.rpe() > expected) { highEffort++; evidenceIds.add(run.id() + ":" + run.rpe()); }
             if (planned.distanceKm() != null && planned.distanceKm() > 0 && run.distanceMetres() != null
                     && run.distanceMetres() < planned.distanceKm() * 750 && run.rpe() >= 8) {

@@ -54,7 +54,7 @@ jobs:
           script: |
             ./gradlew :app:connectedDebugAndroidTest
             mkdir -p build/canonical-screenshots
-            adb pull /sdcard/Android/data/org.racedaydreams/files/screenshots/. build/canonical-screenshots/
+            adb pull /data/local/tmp/racedaydreams-screenshots/. build/canonical-screenshots/
       - name: Prepare named test APK
         run: |
           mkdir -p build/distributions
