@@ -18,7 +18,7 @@ public final class PerformanceReassessment {
         var improvements=new HashMap<String,Double>();var strengths=new HashMap<String,Double>();var winners=new HashMap<String,Evidence>();var reasons=new ArrayList<String>();
         for(var r:evidence){if(r.date().isBefore(end.minusWeeks(4))||!r.date().isBefore(end)||r.metres()<1000)continue;
             var old=evidence.stream().filter(p->Math.abs(p.metres()-r.metres())<1&&p.date().isBefore(r.date())&&!p.date().isBefore(end.minusMonths(6))&&p.authority()>=2).min(Comparator.comparing(Evidence::duration));
-            if(old.isEmpty())continue;
+            if(!old.isPresent())continue;
             double gain=1-r.duration().toMillis()/(double)old.get().duration().toMillis();
             if(gain<.02)continue;
             double weight=r.authority()*(r.metres()<3000?.65:1)*(r.date().isBefore(end.minusWeeks(2))?.75:1);
@@ -32,7 +32,8 @@ public final class PerformanceReassessment {
         double distance=winners.values().stream().mapToDouble(Evidence::metres).max().orElse(0);
         double fraction=propose?Math.min(distance<3000?.015:.03,gain*.4):0;
         var described=new HashSet<String>();
-        for(var e:winners.values().stream().sorted(Comparator.comparing(Evidence::date).thenComparing(Evidence::identity)).toList())if(described.add(e.identity()))reasons.add(String.format(Locale.UK,"%s over %.1f km: approximately %.1f%% faster than prior comparable evidence.",e.source(),e.metres()/1000,improvements.get(e.identity())*100));
+        var sortedEvidence=new ArrayList<>(winners.values());sortedEvidence.sort(Comparator.comparing(Evidence::date).thenComparing(Evidence::identity));
+        for(var e:sortedEvidence)if(described.add(e.identity()))reasons.add(String.format(Locale.UK,"%s over %.1f km: approximately %.1f%% faster than prior comparable evidence.",e.source(),e.metres()/1000,improvements.get(e.identity())*100));
         reasons.add(improvements.size()+" independent recent comparable performance improvements; same-activity efforts count once.");
         reasons.add("Source, distance and recency affect confidence: official results and deliberate best-effort assessments carry more weight than incidental rolling efforts. Manual results are not independently verified.");
         reasons.add("Baseline confidence: "+baseline.name().toLowerCase(Locale.UK)+". Completion: "+Math.round(completion*100)+"%; controlled reported responses: "+controlledResponses+".");

@@ -7,9 +7,9 @@ public final class StrengthProgression {
     public record Point(String id,String exerciseId,String category,double value,double kilograms,int reps,LocalDate date,
             HistoricalStrengthRecord.DatePrecision precision,String provenance,String sessionId,String notes) { }
     public static List<Point> timeline(List<StrengthSession> sessions,List<HistoricalStrengthRecord> manual) {
-        var out=new ArrayList<Point>();
+        var out=new ArrayList<Point>();var byId=new HashMap<String,StrengthSession>();for(var s:sessions)byId.put(s.id(),s);
         for(var r:StrengthAnalytics.progression(sessions)){
-            var session=sessions.stream().filter(s->s.id().equals(r.sessionId())).findFirst().orElseThrow();
+            var session=Objects.requireNonNull(byId.get(r.sessionId()),"PB source session");
             out.add(new Point(r.setId()+r.category(),r.exerciseId(),r.category(),r.value(),r.kilograms(),r.reps(),r.at().atOffset(session.offset()).toLocalDate(),HistoricalStrengthRecord.DatePrecision.EXACT,"Recorded workout",r.sessionId(),r.notes()));
         }
         for(var r:manual){var mode=r.exercise().mode();String prefix=mode==StrengthExercise.Mode.WEIGHTED_BODYWEIGHT?"Added load":"Load";
