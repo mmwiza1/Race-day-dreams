@@ -20,7 +20,7 @@ import org.racedaydreams.domain.coaching.AdaptiveCoachingEngine
             CoachHeading("Training calendar")
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){TextButton(onClick={focus=(if(state.calendarView=="Month")day.minusMonths(1)else day.minusWeeks(1)).toString()}){Text("Previous")};TextButton(onClick={focus=LocalDate.now().toString()}){Text("Today")};TextButton(onClick={focus=(if(state.calendarView=="Month")day.plusMonths(1)else day.plusWeeks(1)).toString()}){Text("Next")}}
             Text(if(state.calendarView=="Month")day.format(java.time.format.DateTimeFormatter.ofPattern("MMMM uuuu",java.util.Locale.UK))else "Week of ${friendlyDate(day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))}")
-            Text("Legend: E Easy · Q Quality · L Long · S Strength · R Race. ✓ Completed · ○ Planned. Labels accompany every marker.")
+            Text("Dots count sessions; tap a date for labels. Legend: E Easy · Q Quality · L Long · S Strength · R Race. ✓ Completed · ○ Planned. Labels accompany every marker.")
             if(state.calendarView=="Month"){
                 val first=day.withDayOfMonth(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 Row(Modifier.fillMaxWidth()){listOf("M","T","W","T","F","S","S").forEach{Text(it,Modifier.weight(1f))}}
@@ -40,7 +40,8 @@ private fun calendarLabels(s:CoachUiState,d:LocalDate):List<String>{val out=muta
     s.activities.filter{runDate(it)==d}.forEach{a->TextButton(onClick={activity(a.id())}){Text("✓ Run · ${a.distanceMetres()?.let{formatDistance(it,s)}?:"Distance unavailable"}")}}
     s.plannedWorkouts.filter{it.date()==d}.forEach{w->val done=s.activities.any{it.plannedWorkoutId()==w.id()};TextButton(onClick={workout(w.id())}){Text("${if(done)"✓" else "○"} ${w.category().name.replace('_',' ').lowercase()}${w.distanceKm()?.let{" · ${decimal(it)} km"}?:""}${if(!done&&d<LocalDate.now())" · Not completed"else ""}")}}
     s.strengthSessions.filter{strengthDate(it)==d}.forEach{Text("✓ Strength · ${it.duration().toMinutes()} min")}
-    if(s.profile?.preferences()?.gymDays()?.contains(d.dayOfWeek)==true&&s.strengthSessions.none{strengthDate(it)==d})TextButton(onClick={strength(d.toString())}){Text("○ Planned strength · Log actual workout")}
+    if(s.profile?.preferences()?.gymDays()?.contains(d.dayOfWeek)==true&&s.strengthSessions.none{strengthDate(it)==d}&&s.strengthPlannedDates.values.none{it==d})TextButton(onClick={strength(d.toString())}){Text("○ Planned strength · Log actual workout")}
+    s.strengthPlannedDates.filterValues{it==d}.forEach{(id,_)->s.strengthSessions.firstOrNull{it.id()==id}?.let{Text("✓ Strength routine logged · ${friendlyDate(strengthDate(it))}")}}
     s.workoutDecisions.filter{it.originalDate()==d}.forEach{decision->Text(if(decision.kind()==org.racedaydreams.domain.coaching.WorkoutDecision.Kind.SKIPPED) "Workout skipped by choice" else "Workout moved to ${decision.movedTo()?.let(::friendlyDate)}")}
     if(calendarLabels(s,d).isEmpty())Text("Rest / no session planned")
 }}

@@ -43,6 +43,8 @@ public final class WeeklyCoaching {
         int faded=0,durable=0;
         Set<String> countedRuns=new HashSet<>();
         for(var a:runs){LocalDate date=date(a);if(!date.isBefore(from)&&date.isBefore(end)&&countedRuns.add(a.id())&&a.distanceMetres()!=null){km+=a.distanceMetres()/1000;longest=Math.max(longest,a.distanceMetres()/1000);}}
+        Map<WorkoutCategory,Integer> difficultTypes=new EnumMap<>(WorkoutCategory.class);int longShortened=0,longDurationMisses=0,strengthPrecededMisses=0;
+        Set<LocalDate> recordedHeavy=StrengthAnalytics.hardLowerBodyDates(strength);
         Map<DayOfWeek,Set<LocalDate>> difficult=new EnumMap<>(DayOfWeek.class);Map<DayOfWeek,Integer> moved=new EnumMap<>(DayOfWeek.class);
         var reviewedWorkouts=new ArrayList<>(version.plan().workouts());
         for(var decision:decisions)if(decision.kind()==WorkoutDecision.Kind.SKIPPED&&original.containsKey(decision.workoutId())&&reviewedWorkouts.stream().noneMatch(w->w.id().equals(decision.workoutId())))reviewedWorkouts.add(original.get(decision.workoutId()));
@@ -53,13 +55,18 @@ public final class WeeklyCoaching {
             if(w.date().isBefore(window)||!w.date().isBefore(end))continue;
             var first=original.getOrDefault(w.id(),w);
             boolean wasMoved=!first.date().equals(w.date())||a!=null&&!date(a).equals(first.date());
+            if(a==null){difficultTypes.merge(w.category(),1,Integer::sum);if(w.duration()!=null&&w.duration().toMinutes()>=60)longDurationMisses++;if(recordedHeavy.contains(first.date().minusDays(1)))strengthPrecededMisses++;}
             if(a==null||wasMoved){var day=first.date().getDayOfWeek();difficult.computeIfAbsent(day,d->new HashSet<>()).add(first.date().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));if(wasMoved&&a!=null)moved.merge(day,1,Integer::sum);}
             if(a==null)continue;
             if(a.rpe()!=null){if(w.date().isBefore(end.minusWeeks(2))){priorEffort+=a.rpe();priorCount++;}else{recentEffort+=a.rpe();recentCount++;}if(a.rpe()>(AdaptiveCoachingEngine.isQuality(w.category())?8:5))hard++;}
-            if(w.distanceKm()!=null&&a.distanceMetres()!=null&&a.distanceMetres()<w.distanceKm()*800)shortened++;
+            if(w.distanceKm()!=null&&a.distanceMetres()!=null&&a.distanceMetres()<w.distanceKm()*800){shortened++;if(w.category()==WorkoutCategory.LONG_RUN)longShortened++;}
             if(w.category()==WorkoutCategory.LONG_RUN){var d=LongRunDurability.analyse(a);if(d.sufficient()){durable++;if(d.paceFadePercent()>8)faded++;}}
         }
         for(var entry:difficult.entrySet())if(entry.getValue().size()>=3){int n=moved.getOrDefault(entry.getKey(),0);observations.add(entry.getKey().toString()+" was missed or moved in "+entry.getValue().size()+" of the last four weeks ("+n+" moved and completed). Consider editing your regular days; no catch-up mileage is suggested.");}
+        for(var entry:difficultTypes.entrySet())if(entry.getValue()>=3)observations.add(entry.getValue()+" "+entry.getKey().name().toLowerCase(java.util.Locale.UK).replace('_',' ')+" sessions were not recorded recently. Consider whether this session type fits your week.");
+        if(longDurationMisses>=3)observations.add("Several prescribed sessions of at least an hour were not recorded. Shorter sessions may fit your routine better.");
+        if(strengthPrecededMisses>=3)observations.add("At least three unrecorded runs followed actual hard lower-body work. Consider separating those sessions.");
+        if(longShortened>=3)observations.add("At least three long runs were shortened. Repeating the current endurance step may fit better than extending it.");
         boolean rising=recentCount>=3&&priorCount>=2&&recentEffort/recentCount-priorEffort/priorCount>=1.5;
         boolean strain=(rising&&shortened>=2)||hard>=3||faded>=2;
         boolean consistent=planned>=2&&completed==planned;

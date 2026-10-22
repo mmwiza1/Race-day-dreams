@@ -18,8 +18,8 @@ race. No race goal or recorded activity is changed by generation.
 Supported goals: 5K, 10K, half marathon, marathon and general aerobic fitness;
 Finish, Target Time and Maximum Performance remain runner-owned choices.
 Without a dated event the engine generates a clearly projected 12-week rolling
-programme. A dated event uses its actual horizon, up to two years. Past dates
-and race dates outside availability are rejected with an actionable message,
+programme. A dated event uses its actual horizon, including multi-year events. Past dates
+and explicitly blocked one-off race dates are rejected with an actionable message,
 leaving the existing plan intact.
 
 ### Workload rules (product heuristics, not scientific safety thresholds)

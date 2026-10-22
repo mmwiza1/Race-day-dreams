@@ -31,7 +31,7 @@ import org.racedaydreams.domain.strength.*
             StrengthExercise.Region.values().forEach{v->FilterChip(selected=region==v.name,onClick={region=v.name},label={Text(v.name.lowercase())})}
             StrengthExercise.Mode.values().forEach{v->FilterChip(selected=mode==v.name,onClick={mode=v.name},label={Text(v.name.lowercase().replace('_',' '))})}
             error?.let{Text(it)}
-            CoachButton("Save exercise",{try{model.saveExercise(StrengthExercise(UUID.randomUUID().toString(),name.trim(),StrengthExercise.Region.valueOf(region),StrengthExercise.Mode.valueOf(mode),mode=="WEIGHTED"));custom=false}catch(e:Exception){error=e.message}})
+            CoachButton("Save exercise",{try{model.saveExercise(StrengthExercise(UUID.randomUUID().toString(),name.trim(),StrengthExercise.Region.valueOf(region),StrengthExercise.Mode.valueOf(mode),false));custom=false}catch(e:Exception){error=e.message}})
         }
         CoachHeading("Exercise progress and PB history")
         if(progression.isEmpty()&&state.historicalStrength.isEmpty())Text("Log working sets or add a historical record. No maximal test is needed.")
@@ -52,6 +52,7 @@ import org.racedaydreams.domain.strength.*
         CoachHeading("Latest sessions")
         state.strengthSessions.sortedByDescending{it.startedAt()}.forEach{s->CoachCard{
             Text("${friendlyDate(s.startedAt().atOffset(s.offset()).toLocalDate())} · ${s.duration().toMinutes()} min")
+            state.strengthPlannedDates[s.id()]?.let{Text("Linked planned strength date: ${friendlyDate(it)}") }
             val context=StrengthAnalytics.context(s);Text("${context.region().name.lowercase().replace('_',' ')} · ${context.effort()} · lower-body involvement ${context.lowerBody().name.lowercase()}")
             WhyDetails(context.reasons().joinToString("\n"),"Why this strength context?")
             s.exercises().forEach{b->Text(b.exercise().name());b.sets().forEachIndexed{i,set->Text("Set ${i+1}: ${mass(set.kilograms())} × ${set.reps()}${set.rpe()?.let{" · RPE $it"}?:""}")}}

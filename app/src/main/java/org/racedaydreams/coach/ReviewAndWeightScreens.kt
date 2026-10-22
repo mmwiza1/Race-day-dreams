@@ -12,13 +12,14 @@ import androidx.compose.ui.unit.dp
 import java.time.*
 import org.racedaydreams.domain.body.MassUnit
 
-@Composable fun WeeklyReviewScreen(s:CoachUiState,model:CoachViewModel)=CoachPage{
+@Composable fun WeeklyReviewScreen(s:CoachUiState,model:CoachViewModel,editRoutine:()->Unit = {})=CoachPage{
     CoachHeading("Weekly coaching review")
     val r=s.weeklyReview
     if(r==null)Text("Create a programme to review its completed weeks.") else{
         Text("Week of ${friendlyDate(r.week())}")
         CoachCard{Text("${r.completed()} / ${r.planned()} planned runs completed");Text("${decimal(r.kilometres())} km · ${r.strengthSessions()} strength sessions");r.longestKm()?.let{Text("Longest run: ${decimal(it)} km")}}
         CoachHeading("What we noticed");r.observations().forEach{Text(it)}
+        if(r.observations().any{it.contains("missed or moved")})TextButton(onClick=editRoutine){Text("Review training days")}
         WhyDetails(r.channels().joinToString("\n\n"){"${it.name()}: ${it.state().name.lowercase().replace('_',' ')}\n${it.reason()}"},"Evidence channels")
         CoachHeading("Recommendation");Text(r.recommendation())
         if(s.weeklyDecision!=null)Text("Your decision: ${s.weeklyDecision}. Your choice is retained.")else r.choices().forEach{c->

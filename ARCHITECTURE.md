@@ -129,7 +129,7 @@ quiet hours invalidate stale messages. Preferences default to disabled.
 
 GPX, GPS recording, route maps, Wear OS, race prediction and advanced multi-week
 adaptation have explicit extension boundaries or existing domain models. Original
-production plan generation and the first single-workout adaptive rules are implemented. A
+production plan generation, single-workout proposals and bounded weekly/multi-week review rules are implemented. A
 boundary is not an operational feature. The training engine and whole-plan
 regression harness must grow together; no pretend generated plan is displayed.
 

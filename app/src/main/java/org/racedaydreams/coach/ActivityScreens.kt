@@ -94,9 +94,9 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             activity.elevationGainMetres()?.let { Text("Recorded elevation gain: ${decimal(it)} m") }
             activity.cadence()?.let { Text("Recorded cadence: ${decimal(it)} steps/min") }
             activity.rpe()?.let { Text("Manually entered effort: ${decimal(it)}/10") }
-                        val durability = remember(activity) { org.racedaydreams.domain.activity.LongRunDurability.analyse(activity) }
+            val durability = remember(activity) { org.racedaydreams.domain.activity.LongRunDurability.analyse(activity) }
             WhyDetails(if(durability.sufficient()) "Second-half pace change: ${decimal(durability.paceFadePercent())}%. ${durability.explanation()}${durability.heartRateDriftPercent()?.let { " HR-to-pace change: ${decimal(it)}%." } ?: " HR context unavailable."}" else durability.explanation(),"Long-run durability")
-                        Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
+            Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
             WhyDetails("Provider: ${activity.source().provider()}\nOrigin: ${activity.source().originPackage() ?: "Unavailable"}\nRecord: ${activity.source().recordId()}","Technical data source")
 
             Text("Values absent from the source remain unavailable. Elapsed time is not presented as moving time.")

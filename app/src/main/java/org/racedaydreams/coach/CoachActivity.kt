@@ -164,7 +164,7 @@ private fun CoachApp(model: CoachViewModel) {
                 }
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
-                composable("weekly") { WeeklyReviewScreen(state,model) }
+                composable("weekly") { WeeklyReviewScreen(state,model,{nav.navigate("goals")}) }
                 composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,

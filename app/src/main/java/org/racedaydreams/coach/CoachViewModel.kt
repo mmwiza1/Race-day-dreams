@@ -65,6 +65,7 @@ data class CoachUiState(
     val currentPlan: PlanVersion? = null,
     val planVersions: List<PlanVersion> = emptyList(),
     val proposals: List<AdjustmentProposal> = emptyList(),
+    val strengthPlannedDates: Map<String,LocalDate> = emptyMap(),
     val strengthSessions: List<StrengthSession> = emptyList(),
     val exercises: List<StrengthExercise> = StrengthExercise.starters(),
     val runResponses: List<RunExecution> = emptyList(),
@@ -165,7 +166,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 workoutDecisions = development.sessionDecisions(),
                 weeklyReview = review, weeklyDecision = review?.let { development.decisionForReview(it) },
                 proposals = coaching.proposals().filter { it.baseVersionId() == currentPlan?.id() },
-                strengthSessions = strength, exercises = coaching.exercises(), runResponses = responses,
+                strengthPlannedDates = development.strengthLinks(), strengthSessions = strength, exercises = coaching.exercises(), runResponses = responses,
                 plannedWorkouts = store.plannedWorkouts(), milestonesEnabled = store.getSetting("milestones.enabled") == "true",
                 reminderPreferences = reminders.preferences(),
                 performanceEligible = eligibility.eligible(), eligibilityReasons = eligibility.reasons(),
@@ -374,7 +375,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun saveStrength(session: StrengthSession, onSuccess: () -> Unit = {}, plannedDate: LocalDate? = null) = mutate("Strength workout saved. PB history is derived from retained sets.", onSuccess) {
         coaching.transaction { coaching.saveStrength(session); if(plannedDate!=null) development.linkStrength(session.id(),plannedDate) }
     }
-    fun deleteStrength(id: String) = mutate("Strength workout removed; PB history has been recalculated.") { coaching.deleteStrength(id) }
+    fun deleteStrength(id: String) = mutate("Strength workout removed; PB history has been recalculated.") { coaching.transaction { coaching.deleteStrength(id);development.deleteStrengthLink(id) } }
     fun saveExercise(exercise: StrengthExercise) = mutate("Exercise saved. Recorded sessions retain their original exercise definition.") { coaching.saveExercise(exercise) }
 
     fun linkRun(activityId: String, versionId: String, workoutId: String, reps: Int? = null) = mutate("Run linked to its preserved prescription.") {
