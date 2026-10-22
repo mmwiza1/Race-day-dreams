@@ -48,6 +48,8 @@ class CoachingScreenshotTest {
         val plan=OriginalTrainingPlanGenerator().generate(profile,baseline,today.minusWeeks(2).with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
         val version=PlanVersion("demo-v1",plan.id(),1,now,"Runner requested programme",profile,"Screenshot fixture: manually entered 25 km/week, 12 km longest run and eight consistent weeks. Not real health data.",plan)
         val coach=CoachingStore(context);coach.saveCurrent(version)
+        val gymSettings=GymProgramme.Settings(GymProgramme.Goal.SUPPORT_RUNNING,GymProgramme.Priority.RUNNING_FIRST,GymProgramme.Experience.INTERMEDIATE,EnumSet.of(DayOfWeek.TUESDAY,DayOfWeek.FRIDAY),2,setOf("full gym"),45,GymProgramme.Effort.RPE)
+        GymProgrammeStore(context).save(GymProgrammeGenerator().generate("demo-gym",1,now,"Test-only deterministic programme",gymSettings,today,plan.workouts(),emptyList()))
         plan.workouts().filter{it.date()<today}.forEachIndexed { i,w ->
             val date=w.date().atTime(8,0).atOffset(ZoneOffset.UTC)
             val km=w.distanceKm() ?: 5.0
@@ -67,27 +69,63 @@ class CoachingScreenshotTest {
     @Test fun capturesCurrentBuildScreensAndVerifiesCoachingNavigation() {
         scenario=ActivityScenario.launch(CoachActivity::class.java)
         await("Your running, your way");capture("home")
-        click("Weekly coaching review");await("Recommendation");capture("weekly-review");pressBack()
+        compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick();await("Recommendation");capture("weekly-review");back()
         click("Plan");await("Your training programme");capture("training-plan")
         compose.onAllNodesWithText("View workout and purpose")[0].performScrollTo().performClick()
         await("Workout structure");capture("planned-workout")
-        pressBack();click("Calendar");await("Activity calendar");capture("history")
+        back();click("Calendar");await("Activity calendar");capture("history")
         click("Week");await("Training calendar");capture("calendar-week")
         click("Month");await(LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("MMMM uuuu",java.util.Locale.UK)));capture("calendar-month")
         click("List");await("Activity calendar")
         // Open the first real retained activity through the Calendar screen.
         compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
         await("Run detail");capture("activity-detail")
+        compose.onNodeWithText("Compare this run").performScrollTo().performClick();alignHeading("Compare this run");capture("run-comparison")
         alignHeading("Run Score and feedback");capture("run-feedback")
-        pressBack();click("Progress");await("Strength progress");capture("progress");alignHeading("Body weight");capture("body-weight")
-        compose.onNodeWithText("View Strength progress").performScrollTo().performClick();await("Latest sessions");capture("strength");alignHeading("Exercise progress and PB history");compose.onAllNodesWithText("View progression")[0].performScrollTo().performClick();capture("strength-pbs")
-        pressBack();click("⚙ Settings");await("Settings")
+        back();click("Progress");await("Running PBs");capture("progress")
+        click("Body weight");await("Record a measurement");capture("body-weight");back()
+        click("Running PBs");await("How PBs are calculated");capture("running-pbs");back()
+        click("Training trends");await("Weekly recorded distance");capture("training-trends");back()
+        click("Strength");await("Log workout");capture("strength")
+        click("PBs & progression");await("Exercise progress and PB history");compose.onAllNodesWithText("View progression")[0].performScrollTo().performClick();alignHeading("Exercise progress and PB history");capture("strength-pbs");back()
+        compose.onNodeWithText("Exercises").performScrollTo().performClick();await("Search exercises or aliases")
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("de");compose.waitForIdle();capture("exercise-search")
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("RDL");compose.onNodeWithText("Romanian Deadlift").performClick();await("Overview");capture("exercise-rdl")
+        click("How to do it");compose.waitForIdle();capture("exercise-rdl-howto");back()
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("BSS");compose.onNodeWithText("Bulgarian Split Squat").performClick();await("Overview");capture("exercise-bulgarian-split-squat");back();back()
+        click("Log workout");await("Log strength workout");click("Log strength workout");alignHeading("Last time");capture("strength-log-previous")
+        compose.onNodeWithText("Back Squat").performScrollTo().performClick();compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank");compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick();compose.onNodeWithText("Duration (seconds or m:ss)").performScrollTo().performTextReplacement("1:30");compose.waitForIdle();capture("strength-log-timed")
+        compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performScrollTo().performClick();compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Farmer");compose.onNodeWithText("Farmer’s Carry").performClick();compose.onNodeWithText("Distance (metres)").performScrollTo().performTextReplacement("60");compose.waitForIdle();capture("strength-log-distance");back()
+        compose.onNodeWithText("Gym programme").performScrollTo().performClick();await("Change programme settings");capture("gym-running-support")
+        val next=GymProgrammeStore(context).current().sessions().first{it.date()>=LocalDate.now()};compose.onNodeWithText("${friendlyDate(next.date())} · ${next.title()}").performScrollTo().performClick();await("Why this session?");capture("gym-workout-detail");back()
+        compose.onNodeWithText("Change programme settings").performScrollTo().performClick();await("Your gym preferences");alignHeading("Your gym preferences");capture("gym-programme-setup")
+        compose.onNodeWithText("Get stronger").performScrollTo().performClick();compose.onNodeWithText("Strength first").performScrollTo().performClick();compose.onNodeWithText("Preview six-week block").performScrollTo().performClick();await("Preview — not applied");compose.onNodeWithText("Accept this programme").performScrollTo().performClick();compose.waitUntil(20000){GymProgrammeStore(context).current().settings().priority()==GymProgramme.Priority.STRENGTH_FIRST};compose.waitForIdle();capture("gym-strength-first");back()
+        click("⚙ Settings");await("Settings")
         capture("settings");alignHeading("Activity data source");capture("data-sources")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle();capture("onboarding")
-        pressBack();click("⚙ Settings");await("Settings")
+        back();click("⚙ Settings");await("Settings")
         compose.onNodeWithText("Shoes and mileage").performScrollTo().performClick();await("Your shoes");capture("shoes")
+        scenario?.close();scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
+        compose.onNodeWithText("View activity history").performScrollTo().performClick();await("Search and date filters");click("Search and date filters");capture("history-filters")
+        val originalFont=shell("settings get system font_scale").trim()
+        val originalNight=shell("cmd uimode night").let{if(it.contains("yes"))"yes"else if(it.contains("auto"))"auto"else "no"}
+        try {
+            shell("cmd uimode night yes")
+            scenario?.close();scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
+            Assert.assertEquals(android.content.res.Configuration.UI_MODE_NIGHT_YES,context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+            capture("home-dark")
+            shell("settings put system font_scale 2.0");scenario?.recreate();await("How am I doing?")
+            Assert.assertTrue(context.resources.configuration.fontScale>=1.99f)
+            capture("home-large-font")
+        } finally {
+            if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+
     }
+    private fun shell(command:String):String=InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command).use{descriptor->java.io.FileInputStream(descriptor.fileDescriptor).use{it.readBytes().toString(Charsets.UTF_8)}}
+    private fun back(){androidx.test.espresso.Espresso.closeSoftKeyboard();androidx.test.espresso.Espresso.pressBack();compose.waitForIdle()}
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
     private fun alignHeading(text:String){

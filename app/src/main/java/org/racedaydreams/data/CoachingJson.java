@@ -12,13 +12,13 @@ import org.racedaydreams.domain.strength.*;
 final class CoachingJson {
     private CoachingJson() { }
     private static String prose(JSONObject j,String key)throws JSONException {String s=text(j,key);if(s==null||s.length()>100000)throw new IllegalArgumentException("Invalid coaching text: "+key);return s;}
-    static JSONObject exercise(StrengthExercise e) { return json("id", e.id(), "name", e.name(), "region", e.region().name(), "mode", e.mode().name(), "estimate", e.estimateOneRepMax()); }
-    static StrengthExercise exercise(JSONObject j) throws JSONException { return new StrengthExercise(required(j,"id"), required(j,"name"), StrengthExercise.Region.valueOf(required(j,"region")), StrengthExercise.Mode.valueOf(required(j,"mode")), bool(j,"estimate")); }
+    static JSONObject exercise(StrengthExercise e) { return json("id", e.id(), "name", e.name(), "region", e.region().name(), "mode", e.mode().name(), "estimate", e.estimateOneRepMax(), "measurement", e.measurement().name()); }
+    static StrengthExercise exercise(JSONObject j) throws JSONException { return new StrengthExercise(required(j,"id"), required(j,"name"), StrengthExercise.Region.valueOf(required(j,"region")), StrengthExercise.Mode.valueOf(required(j,"mode")), bool(j,"estimate"), j.has("measurement") ? StrengthExercise.MeasurementProfile.valueOf(required(j,"measurement")) : (StrengthExercise.Mode.valueOf(required(j,"mode")) == StrengthExercise.Mode.BODYWEIGHT ? StrengthExercise.MeasurementProfile.REPS_ONLY : StrengthExercise.MeasurementProfile.LOAD_REPS)); }
     static JSONObject strength(StrengthSession s) {
         JSONArray exercises = new JSONArray();
         for (var e : s.exercises()) {
             JSONArray sets = new JSONArray();
-            for (var set : e.sets()) sets.put(json("id",set.id(),"reps",set.reps(),"kg",set.kilograms(),"rpe",set.rpe(),"warmUp",set.warmUp()));
+            for (var set : e.sets()) sets.put(json("id",set.id(),"reps",set.reps(),"kg",set.kilograms(),"rpe",set.rpe(),"warmUp",set.warmUp(),"seconds",set.durationSeconds(),"metres",set.distanceMetres(),"rir",set.repetitionsInReserve()));
             exercises.put(json("exercise",exercise(e.exercise()),"sets",sets));
         }
         return json("id",s.id(),"startedAt",s.startedAt().toString(),"offset",s.offset().toString(),"duration",s.duration().toString(),"rpe",s.rpe(),"notes",s.notes(),"exercises",exercises);
@@ -29,7 +29,7 @@ final class CoachingJson {
         for (int i=0;i<rows.length();i++) { JSONObject e=rows.getJSONObject(i); JSONArray sets=e.getJSONArray("sets");
             if (sets.length()>100) throw new IllegalArgumentException("Too many sets.");
             List<StrengthSession.SetEntry> values=new ArrayList<>();
-            for(int k=0;k<sets.length();k++) {JSONObject v=sets.getJSONObject(k);values.add(new StrengthSession.SetEntry(required(v,"id"),requiredInteger(v,"reps"),requiredNumber(v,"kg"),number(v,"rpe"),bool(v,"warmUp")));}
+            for(int k=0;k<sets.length();k++) {JSONObject v=sets.getJSONObject(k);values.add(new StrengthSession.SetEntry(required(v,"id"),requiredInteger(v,"reps"),requiredNumber(v,"kg"),number(v,"rpe"),bool(v,"warmUp"),v.isNull("seconds")?null:requiredLong(v,"seconds"),number(v,"metres"),number(v,"rir")));}
             exercises.add(new StrengthSession.ExerciseSets(exercise(e.getJSONObject("exercise")),values));
         }
         return new StrengthSession(required(j,"id"),Instant.parse(required(j,"startedAt")),ZoneOffset.of(required(j,"offset")),Duration.parse(required(j,"duration")),number(j,"rpe"),prose(j,"notes"),exercises);

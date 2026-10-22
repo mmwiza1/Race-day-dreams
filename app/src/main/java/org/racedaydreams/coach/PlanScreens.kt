@@ -62,7 +62,9 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                     Text("Strength · ${friendlyDate(it.startedAt().atOffset(it.offset()).toLocalDate())} · ${it.duration().toMinutes()} min · recorded")
                 }
                 repeat(7) { offset -> val day=selectedWeek.plusDays(offset.toLong())
-                    if(state.profile?.preferences()?.gymDays()?.contains(day.dayOfWeek)==true) OutlinedButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Strength routine · ${shortDate(day)} · Log workout")}
+                    val programmed=state.gymProgramme?.sessions()?.firstOrNull{it.date()==day}
+                    if(programmed!=null)OutlinedButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("${programmed.title()} · ${shortDate(day)} · View strength workout")}
+                    else if(state.gymProgramme==null&&state.profile?.preferences()?.gymDays()?.contains(day.dayOfWeek)==true) OutlinedButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Strength routine · ${shortDate(day)} · Log workout")}
                 }
             }
             Text("Evidence used", style = MaterialTheme.typography.titleMedium)
@@ -100,6 +102,8 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             CoachHeading(workoutName(workout.category()))
             Text("${friendlyDate(workout.date())} · plan version ${version.version()}")
             Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Runner-owned race")
+            val briefing=org.racedaydreams.domain.coaching.WorkoutContext.briefing(workout,state.plannedWorkouts,state.activities,state.strengthSessions,state.weeklyReview)
+            CoachCard { Text("Today’s focus",style=MaterialTheme.typography.titleMedium);Text(briefing.title());WhyDetails(briefing.observations().joinToString("\n"),"Before you run") }
             CoachHeading("Workout structure")
             workout.segments().forEachIndexed { index, segment -> CoachCard {
                 Text("${index + 1}. ${segment.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}}", style = MaterialTheme.typography.titleMedium)
@@ -113,7 +117,7 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             var moveDate by rememberSaveable { mutableStateOf(workout.date().toString()) }
             if(workout.category()!=WorkoutCategory.RACE && state.runResponses.none{it.plannedWorkoutId()==workout.id()}) {
                 TextButton(onClick={moving=!moving}){Text("Move or skip this session")}
-                if(moving){DateInput("Move to",moveDate,{moveDate=it});Text("Nearby demanding sessions may need recovery. This choice never adds mileage elsewhere.");CoachButton("Confirm move",{model.changeWorkout(workout.id(),LocalDate.parse(moveDate))});OutlinedButton(onClick={model.changeWorkout(workout.id())}){Text("Skip this session")}}
+                if(moving){DateInput("Move to",moveDate,{moveDate=it});val proposed=runCatching{LocalDate.parse(moveDate)}.getOrNull();org.racedaydreams.domain.coaching.WorkoutContext.moveWarnings(workout,proposed,state.plannedWorkouts,state.strengthSessions,state.gymProgramme).forEach{Text(it)};if(proposed!=null&&state.profile?.preferences()?.runningDays()?.contains(proposed.dayOfWeek)==false)Text("Outside your normal running days. This one-off move will not change your regular routine.");CoachButton("Move this workout only",{model.changeWorkout(workout.id(),LocalDate.parse(moveDate))});OutlinedButton(onClick={model.changeWorkout(workout.id())}){Text("Skip this session")}}
             }
             WhyDetails(workout.note() ?: "No explanation was recorded.","Why this workout?")
             Text("Goal: ${version.goalSnapshot().raceGoal().distance().label()} · ${version.goalSnapshot().raceGoal().mode().label()}")
@@ -123,7 +127,10 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             else if (workout.date() <= LocalDate.now()) {
                 CoachButton(if (recording) "Hide completion form" else "Record actual run") { recording = !recording }
                 if (recording) CompletionForm(state, model, version, workout, openActivity)
-                Text("Already imported a run? Open it in Calendar and link it to this prescription instead of creating a duplicate.")
+                var linking by rememberSaveable{mutableStateOf(false)}
+                OutlinedButton(onClick={linking=true},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Link completed activity")}
+                if(linking)AlertDialog(onDismissRequest={linking=false},title={Text("Choose recorded run")},text={androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max=320.dp)){val candidates=state.activities.filter{a->a.plannedWorkoutId()==null}.sortedByDescending{it.start()}.take(100);if(candidates.isEmpty())item{Text("No unlinked activities. Import or record a run first.")};items(candidates.size){i->val a=candidates[i];TextButton(onClick={model.linkRun(a.id(),version.id(),workout.id());linking=false;openActivity(a.id())}){Text("${displayActivityDate(a)} · ${a.distanceMetres()?.let{formatDistance(it,state)}?:"Distance unavailable"}")}}}},confirmButton={TextButton(onClick={linking=false}){Text("Cancel")}})
+
             } else Text("Record completion after the workout takes place. Activity recording with GPS is not included in this test build.")
         }
     }

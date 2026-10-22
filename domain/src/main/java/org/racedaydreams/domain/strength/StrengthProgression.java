@@ -13,7 +13,11 @@ public final class StrengthProgression {
             out.add(new Point(r.setId()+r.category(),r.exerciseId(),r.category(),r.value(),r.kilograms(),r.reps(),r.at().atOffset(session.offset()).toLocalDate(),HistoricalStrengthRecord.DatePrecision.EXACT,"Recorded workout",r.sessionId(),r.notes()));
         }
         for(var r:manual){var mode=r.exercise().mode();String prefix=mode==StrengthExercise.Mode.WEIGHTED_BODYWEIGHT?"Added load":"Load";
-            if(mode==StrengthExercise.Mode.BODYWEIGHT)add(out,r,"Bodyweight reps",r.reps());
+            if(!r.exercise().measurement().usesReps()){
+                String category=r.durationSeconds()!=null?"Duration seconds":"Distance metres";
+                if(r.exercise().measurement().usesLoad())category+=" at "+r.kilograms()+" kg";
+                add(out,r,category,r.durationSeconds()!=null?r.durationSeconds():r.distanceMetres());
+            } else if(mode==StrengthExercise.Mode.BODYWEIGHT)add(out,r,"Bodyweight reps",r.reps());
             else {add(out,r,prefix,r.kilograms());add(out,r,prefix+" × "+r.reps(),r.kilograms());
                 Double estimate=StrengthAnalytics.estimatedOneRepMax(r.exercise(),new StrengthSession.SetEntry(r.id(),r.reps(),r.kilograms(),null,false));if(estimate!=null)add(out,r,"Estimated 1RM",estimate);}
         }

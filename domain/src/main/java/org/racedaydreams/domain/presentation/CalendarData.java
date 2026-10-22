@@ -6,6 +6,7 @@ import org.racedaydreams.domain.*;
 import org.racedaydreams.domain.activity.ActivityRecord;
 import org.racedaydreams.domain.coaching.*;
 import org.racedaydreams.domain.strength.StrengthSession;
+import org.racedaydreams.domain.strength.GymProgramme;
 
 /** Labelled calendar entries. A blank date is never sufficient evidence of rest. */
 public final class CalendarData {
@@ -14,6 +15,18 @@ public final class CalendarData {
     public enum State { PLANNED, COMPLETED, NOT_COMPLETED, MOVED, SKIPPED }
     public record Entry(Category category, State state, String label, String id, String activityId) {
         public String description() { return label + ": " + state.name().toLowerCase(Locale.UK).replace('_',' '); }
+    }
+    /** Decorate the existing calendar without changing its category/state/mask semantics. */
+    public static List<Entry> withGym(LocalDate date,LocalDate today,List<Entry> original,GymProgramme gym,Map<String,String> actualByPrescription){
+        if(gym==null||date.isBefore(gym.start())||date.isAfter(gym.end()))return original;
+        var out=new ArrayList<Entry>();
+        for(var e:original)if(!(e.category()==Category.STRENGTH&&e.state()==State.PLANNED&&e.label().equals("Strength routine")))out.add(e);
+        for(var s:gym.sessions())if(s.date().equals(date)){
+            out.removeIf(e->e.category()==Category.REST);
+            // Actual completion requires an explicit preserved link, not merely a gym visit that day.
+            if(!actualByPrescription.containsKey(s.id()))out.add(new Entry(Category.STRENGTH,date.isBefore(today)?State.NOT_COMPLETED:State.PLANNED,s.title()+" · programmed strength",s.id(),null));
+        }
+        return Immutable.copyList(out);
     }
     public static Category category(WorkoutCategory c) {
         return switch(c) {

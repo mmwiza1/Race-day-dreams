@@ -100,7 +100,7 @@ class CoachOnboardingTest {
 
         scenario!!.recreate()
         waitForText("Review running baseline")
-        compose.onNodeWithText("5K").assertIsDisplayed()
+        compose.onNodeWithText("5K").performScrollTo().assertIsDisplayed()
         assertEquals(profile, SqliteUserPreferencesRepository(context).load().get())
     }
 
@@ -167,7 +167,7 @@ class CoachOnboardingTest {
     @Test fun officialResultIsStoredSeparatelyFromActivitiesAndProgressSurvivesRecreation() {
         launchSavedProfile()
         compose.onNodeWithText("Progress").performClick()
-        waitForText("Progress from your recorded running")
+        waitForText("Running PBs");compose.onNodeWithText("Running PBs").performClick()
         compose.onNodeWithText("Add a race or manual result").performScrollTo().performClick()
         field("Finishing time (MM:SS or H:MM:SS)").performScrollTo().performTextInput("26:00")
         compose.onNodeWithText("Result date: ${friendlyDate(LocalDate.now())}").performScrollTo().performClick()
@@ -187,8 +187,8 @@ class CoachOnboardingTest {
         assertTrue(FeatureStore(context).activities().isEmpty())
 
         scenario!!.recreate()
-        waitForText("Progress from your recorded running")
-        compose.onNodeWithText("Progress from your recorded running").performScrollTo().assertIsDisplayed()
+        waitForText("Running PBs")
+        compose.onNodeWithText("Running PBs").performScrollTo().assertIsDisplayed()
         assertEquals(listOf(result), FeatureStore(context).results())
         assertTrue(FeatureStore(context).activities().isEmpty())
     }
@@ -196,7 +196,7 @@ class CoachOnboardingTest {
     @Test fun shoeFormRetainsExplicitZeroStartingMileageAndDefaultMetadata() {
         launchSavedProfile()
         compose.onNodeWithText("Progress").performClick()
-        waitForText("Progress from your recorded running")
+        waitForText("Training trends");compose.onNodeWithText("Training trends").performClick();waitForText("Progress from your recorded running")
         compose.onNodeWithText("View and manage shoes").performScrollTo().performClick()
         waitForText("Your shoes")
         compose.onNodeWithText("Add shoes").performScrollTo().performClick()

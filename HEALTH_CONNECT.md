@@ -88,6 +88,6 @@ uses explicit UTC rather than guessing the current device offset. No measurement
 is turned into a readiness judgement or exported as unnecessary raw provider data.
 Physical-device permissions and vendor measurement availability remain to verify.
 
-Samsung direct SDK is not included. See [provider caveat](docs/SAMSUNG_PROVIDER.md).
+Health Connect is the supported interface. Legacy provider preferences normalize on upgrade/restore without deleting existing activity records.
 The provider-neutral reconciliation read model has deterministic synthetic tests;
 real cross-provider ingestion/annotation reconciliation requires the future adapter.

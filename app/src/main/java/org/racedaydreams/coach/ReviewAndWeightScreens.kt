@@ -98,7 +98,7 @@ import org.racedaydreams.domain.body.MassUnit
     error?.let{Text(it)}
     CoachButton(if(editId==null)"Add weight" else "Save measurement",{try{require(value.toDouble()>0);model.saveWeight(value.toDouble(),LocalDate.parse(date),editId);value="";editId=null;error=null}catch(e:Exception){error="Enter a positive weight."}})
     }
-    points.takeLast(3).reversed().forEach{w->CoachCard{Text("${friendlyDate(w.at().atOffset(w.offset()).toLocalDate())} · ${decimal(s.massUnit.fromKilograms(w.kilograms()))} ${s.massUnit.name.lowercase()}");Text(org.racedaydreams.domain.activity.ProviderReconciliation.friendly(org.racedaydreams.domain.activity.SourceIdentity(w.provider(),w.sourceId(),w.origin())))
+    points.takeLast(3).reversed().forEach{w->CoachCard{Text("${friendlyDate(w.at().atOffset(w.offset()).toLocalDate())} · ${decimal(s.massUnit.fromKilograms(w.kilograms()))} ${s.massUnit.name.lowercase()}");Text(org.racedaydreams.domain.activity.ActivitySources.friendly(org.racedaydreams.domain.activity.SourceIdentity(w.provider(),w.sourceId(),w.origin())))
         if(w.provider()=="manual")Row{TextButton(onClick={adding=true;editId=w.id();value=decimal(s.massUnit.fromKilograms(w.kilograms()));date=w.at().atOffset(w.offset()).toLocalDate().toString()}){Text("Edit")};TextButton(onClick={model.deleteWeight(w.id())}){Text("Delete")}}
     }}
 }

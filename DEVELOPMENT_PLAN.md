@@ -1,88 +1,55 @@
-# Development plan and feature status
+# Development status — 0.5.0-test1
 
-The 0.3 coaching foundation was merged to `main` at
-`09f2cbf66622c57df1a4b68d5a78bf34c73ce449`.
+The app recommends. The runner decides. The plan adapts.
 
-The 0.4 increment adds multi-week adaptation, weekly coaching
-reviews, improved onboarding/calendar UX, stronger strength integration, body-weight
-progress tracking, and richer health-data ingestion where it can be done safely and
-honestly.
+## Preserved foundations
 
-## 0.4.1 refinement
+Local-first Compose/Java architecture; Health Connect/manual baseline; original
+running plans and versions; weekly reviews; runner-approved adaptations; Run Score;
+qualified splits/PBs; shoes; reminders; body weight; Calendar List/Week/Month semantics.
+No account, Internet permission, analytics, backend or runtime LLM requirement.
 
-Category/state-aware Week/Month markers and visible legends replace generic dots.
-Rest is derived only for an available slot left free inside an active generated
-programme; unavailable dates, dates outside it, and moved/skipped dates are not rest.
-Unclassified actual runs remain labelled as such rather than being invented as easy.
-Weight axes/point selection retain only genuine measurements. Historical and recorded
-strength evidence share a dated/unknown-date timeline, with separate source labels.
-Set editing, exercise review and vector navigation icons refine the existing flow.
-Weekly reviews group positives/attention and preview changes before acceptance.
-Performance evidence v2 remains conservative and leaves race goals/easy effort alone.
-No schema, backup-format, provider, health-permission or runtime dependency changes.
+## This increment
 
-### Future: provider-independent rich activity data
+- Direct Samsung scaffolding removed; old preferences normalize to Health Connect.
+  No imported activity data is deleted. Schema 6; backup envelope 4 reads versions 1–3.
+- 174 canonical exercise IDs, aliases/ranked search, favourites/recents, hide/archive,
+  custom definitions, measurement profiles and kg/metres/seconds storage.
+- Strength dashboard and exercise detail; source-preserving PB progression; manual
+  PB edits/deletion; source-workout edits; timed/distance logging; previous-session
+  reference; persistent explicit PB acknowledgement.
+- 25 offline original schematic guides with instructions, cues, mistakes, equipment,
+  muscles and alternatives. Expert technique review and richer artwork remain desirable.
+- Optional original six-week gym blocks, goals/priorities, 1–6 days, equipment/time
+  constraints, RPE/RIR guidance, immutable versions, move/skip/reduction previews.
+- Progress dashboard; existing-result-first PBs; bounded history filters; run comparison;
+  Home summary reusing weekly evidence; pre-run context and one-off move warnings.
 
-A separate future increment may evaluate native activity recording, GPX import,
-FIT import or structured sample import. The aim is richer timestamped evidence for
-splits, rolling PBs, durability and pacing analysis without dependence on any one
-provider. No recorder, parser or map is implemented in 0.4.1.
+## Verification gate
 
-## 0.4 implementation status
+Android build/lint, migrations/backup/UI tests, API 28/35/36 instrumentation, genuine
+screenshots and final API-35 APK remain gates. VERIFICATION.md records actual results.
 
-| Area | Implemented | Remaining / limitation |
-| --- | --- | --- |
-| Architecture | Kotlin/Compose/Material 3/ViewModel snapshot, Android-independent Java rules, explicit schema 1–5 upgrades | Room remains a separate evaluated migration; tested native goal wizard retained and simplified |
-| Weekly coaching | Completed-week summary, four-week raw-evidence context, explained independent channels, often no adjustment, persisted recommendations/options/decisions | Standalone historical review browser and richer effort-matched analysis |
-| Multi-week choices | Preview/keep/accept two-week hold/reduction, four-week quality pace review, three-week return bridge, immutable history/reminder reconciliation | Automatic broader programme rebuild is deliberately absent |
-| Patterns | Recurring weekday missed/moved evidence, moved-and-completed and explicit skipped distinction, user move/skip history | Type/duration/preceding-strength observations are heuristic; one-tap recurring-day proposal remains future work |
-| Performance | Source/distance/recency/baseline-aware evidence confidence, best-effort assessments, completion/RPE corroboration and bounded relevant-quality pace previews | Terrain/effort-matched modelling and race predictions remain pending; no ranges invented |
-| Durability | Qualified continuous sample halves, fade and optional HR/cadence context, repeat fade review flag | Terrain correction and late-run timestamped subjective RPE |
-| Return | Explicit interruption reason/dates, observed gap, opt-in easy bridge after >=14 days | Medical clearance is outside scope; response-aware bridge evolution beyond ordinary weekly reassessment |
-| Scheduling/scoring | Race weekday exception, one-off conflicts retained, long horizons/early base, race/time-trial high-RPE execution | Advanced taper intensity and NHS C25K remain separate future work |
-| Onboarding/dates | Card choices, compact weekday selections, help disclosure, Health-first available values, final explicit Create, natural UK dates/pickers | Native wizard remains intentional; physical-device 200% font validation |
-| Calendar/navigation | Remembered List/Week/Month, category/state markers, labelled legend, grey planned rest, same-day sessions and vector primary navigation with top Settings | No drag/drop editor; physical-device large-font/contrast checks |
-| Strength | Structured editable/duplicate/removable sets, custom exercises, automatic recorded PB history/e1RM, unified historical/recorded timeline with exact/approximate/unknown dates, kg/lb, routine-date link | Arbitrary saved-session editing UI and imported strength sets pending |
-| Body | Manual weight edit/delete, labelled real-point range graph/text and point inspection, canonical kg and kg/lb display, provenance, optional HC read | Physical-device HC checks; bounded read refreshes provider deletions only in its window; weight never drives coaching |
-| Providers | Health Connect retained; provider preference, neutral enhanced contract, conservative cross-provider reconciliation synthetic tests | Samsung SDK not included: direct ingestion unavailable pending SDK licence/access review and private adapter mapping |
-| Portability | Envelope 3, evidence section 1, preserved versions 1/2 readers, validation and transactional replace, manual user data included | Merge restore unsupported; raw external provider data omitted |
-| Screenshots/CI | Existing real-render pipeline expanded for onboarding/review/Calendar/PBs; API 28/35/36 preserved | Actual latest verification and captures recorded in VERIFICATION.md when observed |
-| Out of scope | Existing extension boundaries retained | GPS, GPX runtime, maps, Wear OS, social, backend and LLM features not added |
+## Deliberate limits
 
-## Samsung Health direct data — experimental and temporary
+No automatic technical Olympic lifting or task-specific timed/distance progression.
+Session length is approximate. Programming is a test-build coaching heuristic, not
+an individually validated physiological model or promise of optimal outcomes.
 
-Race Day Dreams may temporarily prototype a direct Samsung Health provider so that
-Galaxy Watch/Samsung Health running sessions can retain richer exercise detail when
-Health Connect does not expose enough data for reliable splits.
+Provider-independent rich activity data is future work: native recording, GPX/FIT or
+structured imports could improve splits/rolling PBs/durability. None of these recorders,
+parsers or maps is added here. Health Connect is supported; direct Samsung access is not.
 
-The intended test architecture is provider-based rather than Samsung-dependent:
+## Test-build limitations to keep visible
 
-- Health Connect remains the universal/default health-data layer.
-- Samsung Health direct access is optional and must degrade cleanly when unavailable.
-- Users may be offered an automatic/richest-source mode and an explicit provider
-  preference where appropriate.
-- Duplicate activities arriving through both Samsung Health and Health Connect must
-  resolve to one canonical activity while preserving provenance.
-- Splits must only be calculated from sufficiently detailed samples; Race Day Dreams
-  must never fabricate split data from aggregate pace alone.
+History renders bounded results (up to 100 matches per selected date range); narrow
+the range to browse older entries. The background snapshot still reads retained
+history; database-backed paging is a future performance improvement.
 
-**Important distribution caveat:** direct Samsung Health integration is considered
-experimental/test-only because Samsung's Health Data SDK and production-access model
-introduce partnership, registration and proprietary-SDK constraints that do not fit
-cleanly with Race Day Dreams' open-source, low-friction distribution goals.
+Generated gym moves/skips preserve their prescriptions and reasons in block versions.
+The Calendar shows current gym placements; additional old-date gym-edit annotations
+remain a follow-up. Existing running moved/skipped/completion semantics are retained.
 
-Unless those constraints become practical for the project, the direct Samsung Health
-provider is expected to be removed before a normal public release. The provider
-boundary must therefore remain isolated so removing Samsung-specific code does not
-break Health Connect or the rest of the application.
-
-The purpose of the temporary Samsung path is to evaluate whether direct Samsung data
-materially solves split/detail loss on supported Galaxy devices, not to make Samsung
-Health a permanent dependency.
-
-See TRAINING_ENGINE.md for rules/research/limitations and TEST_BUILD.md for the
-Galaxy S24 evaluation checklist. VERIFICATION.md records results actually observed.
-No scaffold returns fabricated health values, predictions or readiness scores.
-
-The open-source 0.4 build contains no Samsung SDK. Direct access is not operational;
-see [reviewed developer boundary](docs/SAMSUNG_PROVIDER.md).
+Automatic time/distance strength progression stays conservative (hold/review);
+repetition/load suggestions have explicit runner approval and retained decisions.
+Technique figures are original schematics, not individual form assessment.

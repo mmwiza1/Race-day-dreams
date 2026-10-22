@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 5;
+    static final int VERSION = 6;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -40,6 +40,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateTwoToThree(db);
         migrateThreeToFour(db);
         migrateFourToFive(db);
+        migrateFiveToSix(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -143,16 +144,29 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V5_SCHEMA_END
     }
 
+    private static void migrateFiveToSix(SQLiteDatabase db) {
+        // V6_SCHEMA_BEGIN
+        db.execSQL("UPDATE settings SET setting_value='HEALTH_CONNECT' WHERE setting_key='provider.preference'");
+        // Local user choices. Legacy activity payloads/identities remain untouched.
+        db.execSQL("CREATE TABLE strength_user_state (exercise_id TEXT PRIMARY KEY NOT NULL, favourite INTEGER NOT NULL DEFAULT 0 CHECK(favourite IN (0,1)), archived INTEGER NOT NULL DEFAULT 0 CHECK(archived IN (0,1)))");
+        db.execSQL("CREATE TABLE pb_acknowledgements (id TEXT PRIMARY KEY NOT NULL)");
+        db.execSQL("CREATE TABLE gym_plan_versions (version_id TEXT PRIMARY KEY NOT NULL, plan_id TEXT NOT NULL, version INTEGER NOT NULL CHECK(version > 0), payload TEXT NOT NULL, UNIQUE(plan_id,version))");
+        db.execSQL("CREATE TABLE gym_current (id INTEGER PRIMARY KEY CHECK(id=1), version_id TEXT NOT NULL REFERENCES gym_plan_versions(version_id))");
+        db.execSQL("CREATE TABLE gym_progression_decisions (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL)");
+        // V6_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 4)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 5)) {
             throw new SQLiteException("An explicit migration is required from schema "
                     + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
         if (oldVersion == 1) migrateOneToTwo(db);
         if (oldVersion <= 2) migrateTwoToThree(db);
         if (oldVersion <= 3) migrateThreeToFour(db);
-        migrateFourToFive(db);
+        if (oldVersion <= 4) migrateFourToFive(db);
+        migrateFiveToSix(db);
     }
 }
