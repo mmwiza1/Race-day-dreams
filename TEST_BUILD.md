@@ -1,6 +1,6 @@
 # Galaxy S24 evaluation — 0.5.0-test1
 
-Refinement release from main `7fa431ddc8bb3fa3b73677680a53957ff772cdbc`.
+0.5 release from main `e395a7c7ceb74f2cfeeafb94bb3466ecc6cb53b1`.
 See VERIFICATION.md and the 0.5 PR/Actions for observed build and device-test results.
 
 Download `Race-Day-Dreams-0.5.0-test1-debug.apk` from a successful intended-commit
@@ -11,8 +11,8 @@ or real-world coaching efficacy.
 
 ## Phone checklist
 
-1. Upgrade from 0.3 with existing data; check goals, plans, runs, shoes, notes,
-   strength history and reminder preferences. Export/restore the new version-three
+1. Upgrade from 0.4.1 (or an older supported version) with existing data; check goals, plans, runs, shoes, notes,
+   strength history and reminder preferences. Export/restore the new version-four
    backup and verify manual historical PBs, weights, breaks and decisions survive.
 2. Continue without Health Connect. Review a concise baseline, optional missing
    fields, goal cards, weekday selections, date picker and final review. The
