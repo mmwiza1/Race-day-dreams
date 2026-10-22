@@ -32,7 +32,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             val currentWeek = today.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
             val selectedWeek = currentWeek.plusWeeks(week.toLong()).coerceAtLeast(startWeek)
             Text("${version.goalSnapshot().raceGoal().distance().label()} · version ${version.version()}")
-            Text("${plan.startDate()} – ${plan.endDate()}")
+            Text("${friendlyDate(plan.startDate())} – ${friendlyDate(plan.endDate())}")
             Text(version.reason())
             if (state.profile != version.goalSnapshot()) Text("Your saved goal or availability has changed. This programme still uses its original snapshot. Review and explicitly rebuild when ready.")
             state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
@@ -44,7 +44,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                 Text("Distant weeks are projections. The next few weeks are planned but adaptable; current-week sessions are concrete prescriptions.")
                 plan.phases().forEach { phase -> CoachCard {
                     Text(phase.kind().name.replace('_', ' '), style = MaterialTheme.typography.titleMedium)
-                    Text("${phase.startDate()} – ${phase.endDate()}")
+                    Text("${friendlyDate(phase.startDate())} – ${friendlyDate(phase.endDate())}")
                     Text(phase.explanation())
                 } }
             } else {
@@ -53,12 +53,12 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                     TextButton(onClick = { week = 0 }) { Text("Current week") }
                     TextButton(onClick = { week++ }, enabled = selectedWeek.plusWeeks(1) <= plan.endDate()) { Text("Next") }
                 }
-                Text("Week of $selectedWeek")
+                Text("Week of ${friendlyDate(selectedWeek)}")
                 val workouts = plan.workouts().filter { it.date() >= selectedWeek && it.date() < selectedWeek.plusWeeks(1) }
                 if (workouts.isEmpty()) Text("No workouts scheduled in this week.")
                 workouts.forEach { workout -> WorkoutCard(state, workout, state.activities.any { it.plannedWorkoutId() == workout.id() }) { open(workout.id()) } }
                 state.strengthSessions.filter { it.startedAt().atOffset(it.offset()).toLocalDate() in selectedWeek..selectedWeek.plusDays(6) }.forEach {
-                    Text("Strength · ${it.startedAt().atOffset(it.offset()).toLocalDate()} · ${it.duration().toMinutes()} min · recorded")
+                    Text("Strength · ${friendlyDate(it.startedAt().atOffset(it.offset()).toLocalDate())} · ${it.duration().toMinutes()} min · recorded")
                 }
                 if (state.profile?.preferences()?.gymDays()?.isNotEmpty() == true) Text("Preferred gym days: ${state.profile.preferences().gymDays().joinToString()}. Run + gym on the same day is allowed; these preferences are not invented workouts.")
             }
@@ -78,7 +78,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
 
 @Composable
 fun WorkoutCard(state: CoachUiState, workout: PlannedWorkout, completed: Boolean, open: () -> Unit) = CoachCard {
-    Text("${workout.date()} · ${if (completed) "Completed" else if (workout.date() < LocalDate.now()) "Workout not completed" else "Planned"}")
+    Text("${friendlyDate(workout.date())} · ${if (completed) "Completed" else if (workout.date() < LocalDate.now()) "Workout not completed" else "Planned"}")
     Text(workout.category().name.replace('_', ' '), style = MaterialTheme.typography.titleMedium)
     Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Prescription in detail")
     TextButton(onClick = open, modifier = Modifier.heightIn(min = 48.dp)) { Text("View workout and purpose") }
@@ -95,7 +95,7 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
         if (workout == null) { CoachHeading("Workout unavailable"); Text("The current programme no longer contains this workout. Completed prescriptions remain linked to their preserved version.") }
         else {
             CoachHeading(workout.category().name.replace('_', ' '))
-            Text("${workout.date()} · plan version ${version.version()}")
+            Text("${friendlyDate(workout.date())} · plan version ${version.version()}")
             Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Runner-owned race")
             CoachHeading("Workout structure")
             workout.segments().forEachIndexed { index, segment -> CoachCard {
@@ -106,7 +106,7 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 Text(segment.guidance() ?: "Adjust to conditions and how you feel.")
             } }
             CoachHeading("Why this workout?")
-            Text(workout.note() ?: "No explanation was recorded.")
+            WhyDetails(workout.note() ?: "No explanation was recorded.","Why this workout?")
             Text("Goal: ${version.goalSnapshot().raceGoal().distance().label()} · ${version.goalSnapshot().raceGoal().mode().label()}")
             Text("You can run a different workout, take it easy or rest. Record what actually happened; your original prescription is retained. No session is blocked by a recommendation.")
             val actual = state.activities.firstOrNull { it.plannedWorkoutId() == workout.id() }
@@ -144,6 +144,7 @@ private fun CompletionForm(state: CoachUiState, model: CoachViewModel, version: 
 
 @Composable
 fun CoachInput(label: String, value: String, change: (String) -> Unit, decimal: Boolean = false) {
+    if(label.contains("YYYY-MM-DD")){DateInput(label.substringBefore(" ("),value,change);return}
     OutlinedTextField(value, change, label={Text(label)}, modifier=Modifier.fillMaxWidth(),
         keyboardOptions=KeyboardOptions(keyboardType=if(decimal) KeyboardType.Decimal else KeyboardType.Text), singleLine=true)
 }

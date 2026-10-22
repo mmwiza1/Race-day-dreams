@@ -28,7 +28,7 @@ public final class RunScoreEngine {
             case RECOVERY_RUN, EASY_RUN, ZONE_2_RUN, LONG_RUN -> true;
             default -> false;
         };
-        double upper = planned.category() == WorkoutCategory.RECOVERY_RUN ? 3 : controlled ? 4 : 8;
+        double upper = planned.category() == WorkoutCategory.RECOVERY_RUN ? 3 : controlled ? 4 : planned.category() == WorkoutCategory.RACE || planned.category() == WorkoutCategory.TIME_TRIAL ? 10 : 8;
         double lower = controlled ? 0 : 5;
         Double effort = actual.rpe() == null ? null : Math.max(0, 1 - Math.max(0, actual.rpe() - upper) * .2 - Math.max(0, lower - actual.rpe()) * .12);
         components.add(new RunFeedback.Component("Effort match", effort, actual.rpe() == null ? "RPE was not recorded. Heart rate is not required."

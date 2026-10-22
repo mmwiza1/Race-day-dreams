@@ -19,9 +19,9 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
         LocalDate start = request.startDate(), race = goal.raceDate();
         LocalDate end = race == null ? start.plusWeeks(12).minusDays(1) : race;
         if (end.isBefore(start)) throw new IllegalArgumentException("The race is in the past. Review its date before generating a plan.");
-        if (ChronoUnit.DAYS.between(start, end) > 730) throw new IllegalArgumentException("Choose a race within two years; a nearer rolling plan can be used meanwhile.");
-        if (race != null && (!prefs.runningDays().contains(race.getDayOfWeek()) || request.unavailableDates().contains(race)))
-            throw new IllegalArgumentException("Race day is outside your running availability. Review availability or the race date; no plan was changed.");
+        if (ChronoUnit.DAYS.between(start, end) > 36525) throw new IllegalArgumentException("Check the race year; dates beyond 100 years are not supported.");
+        if (race != null && request.unavailableDates().contains(race))
+            throw new IllegalArgumentException("Race day is explicitly marked unavailable. Review that one-off conflict; no plan was changed.");
         String id = UUID.nameUUIDFromBytes((start + ":" + goal + ":" + prefs).getBytes(StandardCharsets.UTF_8)).toString();
         int weeks = (int) (ChronoUnit.DAYS.between(start, end) / 7) + 1;
         boolean established = baseline.weeklyDistanceKm() != null && baseline.weeklyDistanceKm() >= 10
@@ -62,7 +62,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
             int index = (int) ChronoUnit.WEEKS.between(start.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)), week);
             TrainingPhase.Kind phase = phaseAt(phases, from);
             boolean taper = race != null && !to.isBefore(taperStart);
-            boolean wantsQuality = qualitySupported && !taper && prefs.strategy() != TrainingStrategy.ZONE_2
+            boolean wantsQuality = qualitySupported && !taper && (race == null || ChronoUnit.DAYS.between(from, race) <= 140) && prefs.strategy() != TrainingStrategy.ZONE_2
                     && goal.distance() != RaceDistance.GENERAL_FITNESS
                     && (prefs.strategy() != TrainingStrategy.PERFORMANCE || performance)
                     && (prefs.strategy() != TrainingStrategy.DISTANCE_FIRST || phase == TrainingPhase.Kind.RACE_SPECIFIC || phase == TrainingPhase.Kind.PEAK);
@@ -159,6 +159,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
             long index = ChronoUnit.DAYS.between(start, day);
             TrainingPhase.Kind kind = day.isAfter(end) ? null : race != null && day.equals(race) ? TrainingPhase.Kind.RACE
                 : race != null && !day.isBefore(taper) ? TrainingPhase.Kind.TAPER
+                : race != null && ChronoUnit.DAYS.between(day, race) > 196 ? TrainingPhase.Kind.FOUNDATION
                 : index < (established ? weeks >= 20 ? days * .2 : 0 : days * .3) ? TrainingPhase.Kind.FOUNDATION
                 : race == null || index < days * .6 ? TrainingPhase.Kind.ENDURANCE_DEVELOPMENT
                 : index < days * .85 ? TrainingPhase.Kind.RACE_SPECIFIC : TrainingPhase.Kind.PEAK;

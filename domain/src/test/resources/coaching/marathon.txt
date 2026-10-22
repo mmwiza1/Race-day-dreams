@@ -4,20 +4,16 @@ PHASE RACE_SPECIFIC 2027-01-27..2027-03-05
 PHASE PEAK 2027-03-06..2027-03-06
 PHASE TAPER 2027-03-07..2027-03-27
 PHASE RACE 2027-03-28..2027-03-28
-2026-10-27|TEMPO_THRESHOLD_RUN|9.0 km|null
-  WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|7.0 km|null|RPE 7.0|pace null..null
-  COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
+2026-10-27|EASY_RUN|9.0 km|null
+  RUN|9.0 km|null|RPE 3.0|pace null..null
 2026-10-29|EASY_RUN|9.0 km|null
   RUN|9.0 km|null|RPE 3.0|pace null..null
 2026-10-31|EASY_RUN|9.0 km|null
   RUN|9.0 km|null|RPE 3.0|pace null..null
 2026-11-01|LONG_RUN|18.0 km|null
   RUN|18.0 km|null|RPE 3.0|pace null..null
-2026-11-03|TEMPO_THRESHOLD_RUN|9.3 km|null
-  WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|7.300000000000001 km|null|RPE 7.0|pace null..null
-  COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
+2026-11-03|EASY_RUN|9.3 km|null
+  RUN|9.3 km|null|RPE 3.0|pace null..null
 2026-11-05|EASY_RUN|9.3 km|null
   RUN|9.3 km|null|RPE 3.0|pace null..null
 2026-11-07|EASY_RUN|9.3 km|null

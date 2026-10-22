@@ -236,6 +236,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             JSONArray plans=new JSONArray();try(Cursor c=db.rawQuery("SELECT payload,revision FROM planned_workouts ORDER BY id",null)){while(c.moveToNext())plans.put(FeatureJson.json("workout",FeatureJson.object(c.getString(0)),"revision",c.getLong(1)));}out.put("plannedWorkouts",plans);
             out.put("assessments",opaqueRows(db,"assessment_results"));out.put("trainingPlans",opaqueRows(db,"training_plans"));out.put("planAdjustments",opaqueRows(db,"plan_adjustments"));
             out.put("coaching",CoachingStore.exportData(db));
+            out.put("development",DevelopmentStore.exportData(db));
             db.setTransactionSuccessful();return out;
         } catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}
     }
@@ -244,7 +245,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
 
     /** Validation is public for backup previews; it never reads or changes the database. */
     public static void validateUserData(JSONObject data){validated(data);}
-    private record RestoreData(UserProfile profile,String draft,ManualBaselineInput baseline,Instant baselineAt,List<ActivityRecord> activities,List<Shoe> shoes,List<RecordedResult> results,JSONArray bestEfforts,JSONArray annotations,JSONObject settings,JSONArray plans,JSONArray assessments,JSONArray trainingPlans,JSONArray adjustments,JSONObject coaching){}
+    private record RestoreData(UserProfile profile,String draft,ManualBaselineInput baseline,Instant baselineAt,List<ActivityRecord> activities,List<Shoe> shoes,List<RecordedResult> results,JSONArray bestEfforts,JSONArray annotations,JSONObject settings,JSONArray plans,JSONArray assessments,JSONArray trainingPlans,JSONArray adjustments,JSONObject coaching,JSONObject development){}
     private record SourceKey(String provider,String recordId){}
     private static RestoreData validated(JSONObject data){
         try {
@@ -278,7 +279,8 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
                     }
                 }
             }
-            return new RestoreData(profile,draft,baseline,baselineAt,activities,shoes,results,bestEfforts,annotations,settings,plans,assessments,trainingPlans,adjustments,coaching);
+            JSONObject development=data.has("development")?data.getJSONObject("development"):null;if(development!=null)DevelopmentStore.validate(development);
+            return new RestoreData(profile,draft,baseline,baselineAt,activities,shoes,results,bestEfforts,annotations,settings,plans,assessments,trainingPlans,adjustments,coaching,development);
         }catch(JSONException | java.time.DateTimeException e){throw FeatureJson.invalid(e);}
     }
     private static JSONArray array(JSONObject data,String key)throws JSONException{JSONArray rows=data.getJSONArray(key);if(rows.length()>100_000)throw new IllegalArgumentException("Too many "+key+" records.");return rows;}
@@ -291,6 +293,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         RestoreData snapshot=validated(FeatureJson.object(Objects.requireNonNull(data).toString()));
         SQLiteDatabase db=write();db.beginTransaction();
         try {
+            DevelopmentStore.clear(db);
             CoachingStore.clear(db);
             for(String table:new String[]{"best_efforts","preserved_best_efforts","activity_annotations","manual_results","activities","shoes","import_checkpoints","baseline_state","settings","assessment_results","planned_workouts","training_plans","plan_adjustments","onboarding_draft","user_profile"})db.delete(table,null,null);
             if(snapshot.profile()!=null)SqliteUserPreferencesRepository.writeProfile(db,snapshot.profile());
@@ -310,6 +313,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             for(int i=0;i<snapshot.trainingPlans().length();i++)putOpaque(db,"training_plans",snapshot.trainingPlans().getJSONObject(i));
             for(int i=0;i<snapshot.adjustments().length();i++)putOpaque(db,"plan_adjustments",snapshot.adjustments().getJSONObject(i));
             if(snapshot.coaching()!=null)CoachingStore.restore(db,snapshot.coaching());
+            if(snapshot.development()!=null)DevelopmentStore.restore(db,snapshot.development());
             db.setTransactionSuccessful();
         }catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}
     }

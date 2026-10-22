@@ -27,14 +27,14 @@ fun BaselineScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
                    connect: (Boolean, Boolean) -> Unit, providerUpdate: () -> Unit,
                    onManual: () -> Unit, onAssessment: () -> Unit, onContinue: () -> Unit) = CoachPage {
     CoachHeading("Start with the running you already do")
-    Text("Health Connect can provide existing runs from compatible apps, including Samsung Health when you have enabled its synchronisation. Your data stays on this device.")
+    WhyDetails("Compatible apps can share existing runs through Health Connect. Your data stays on this device.","How does this work?")
     HealthConnectionCard(state, model, historyAvailable, connect, providerUpdate)
     val baseline = state.baseline
     CoachCard {
         Text("Does this look right?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
         if (baseline.activityCount() > 0) Text("Found ${baseline.activityCount()} recorded runs in the available history window.")
         else Text("No running history is available yet. You can continue without it.")
-        Text("Window: ${baseline.windowStart().atOffset(ZoneOffset.UTC).toLocalDate()} to ${baseline.windowEnd().atOffset(ZoneOffset.UTC).toLocalDate()} (UTC boundaries)")
+        WhyDetails("Window: ${shortDate(baseline.windowStart().atOffset(ZoneOffset.UTC).toLocalDate())} to ${shortDate(baseline.windowEnd().atOffset(ZoneOffset.UTC).toLocalDate())} (UTC boundaries)","History window")
         BaselineValue("Average recorded weekly distance", baseline.weeklyDistanceKm()?.let { formatDistance(it * 1000, state) }, RunnerBaseline.WEEKLY_DISTANCE, baseline)
         BaselineValue("Usual recorded runs/week", baseline.runsPerWeek()?.let { decimal(it) }, RunnerBaseline.RUNS_PER_WEEK, baseline)
         BaselineValue("Longest recent run", baseline.longestRunKm()?.let { formatDistance(it * 1000, state) }, RunnerBaseline.LONGEST_RUN, baseline)
@@ -45,7 +45,7 @@ fun BaselineScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
         Text("Baseline confidence: ${baseline.confidence().name.lowercase().replaceFirstChar { it.uppercase() }}")
         Text("Confidence describes the amount, recency and quality of evidence. It is not a probability of race success.")
     }
-    baseline.explanations().forEach { Text(it) }
+    WhyDetails(baseline.explanations().joinToString("\n"),"About your baseline")
     if (state.eligibilityReasons.isNotEmpty()) CoachCard {
         Text("Performance-focused training", style = MaterialTheme.typography.titleMedium)
         state.eligibilityReasons.forEach { Text(it) }
@@ -197,6 +197,7 @@ fun AssessmentScreen(state: CoachUiState, model: CoachViewModel, onDone: () -> U
 
 @Composable
 fun CoachField(label: String, value: String, update: (String) -> Unit, supporting: String? = null, singleLine: Boolean = true) {
+    if(label.contains("YYYY-MM-DD") && !label.startsWith("Find")){DateInput(label.substringBefore(" ("),value,update);return}
     OutlinedTextField(value, update, label = { Text(label) }, modifier = Modifier.fillMaxWidth(),
         supportingText = if (supporting == null) null else ({ Text(supporting) }), singleLine = singleLine)
 }

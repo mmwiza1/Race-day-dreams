@@ -41,6 +41,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
     var enteringResult by rememberSaveable { mutableStateOf(false) }
     var showAllEntered by rememberSaveable { mutableStateOf(false) }
     CoachPage {
+        WeightSection(state, model)
         if (state.strengthSessions.isNotEmpty()) {
             CoachHeading("Strength progress")
             Text("${state.strengthSessions.size} recorded strength sessions; exercise PB progression is separate from running performance.")
@@ -80,7 +81,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
                     if (expandedDistance == distance.code()) {
                         history.filter { it.result().distance().code() == distance.code() }.forEach { past ->
                             HorizontalDivider()
-                            Text("${past.result().date()} · ${PaceCalculator.formatTime(past.result().duration())} · ${resultSource(past.result())}")
+                            Text("${friendlyDate(past.result().date())} · ${PaceCalculator.formatTime(past.result().duration())} · ${resultSource(past.result())}")
                             past.improvement()?.let { Text("Improvement: ${PaceCalculator.formatTime(it)}") }
                             LinkedActivity(past.result(), state, onActivity)
                         }
@@ -96,7 +97,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
             (if (showAllEntered) entered else entered.take(20)).forEach { result ->
                 CoachCard {
                     Text("${result.distance().label()} · ${PaceCalculator.formatTime(result.duration())}")
-                    Text("${result.date()} · ${resultSource(result)}")
+                    Text("${friendlyDate(result.date())} · ${resultSource(result)}")
                     result.eventName()?.takeIf { it.isNotBlank() }?.let { Text(it) }
                     LinkedActivity(result, state, onActivity)
                     TextButton(onClick = { model.deleteResult(result.id()) }, enabled = !state.busy) { Text("Remove entered result") }
@@ -115,7 +116,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
             if (state.milestonesEnabled) {
                 if (milestones.isEmpty()) Text("No qualifying milestones in the retained evidence yet.")
                 milestones.forEach { milestone ->
-                    Text("${milestone.label()} · ${milestone.date()}")
+                    Text("${milestone.label()} · ${friendlyDate(milestone.date())}")
                     Text(milestone.explanation(), style = MaterialTheme.typography.bodySmall)
                     milestone.activityId()?.takeIf { id -> state.activities.any { it.id() == id } }?.let { id ->
                         TextButton(onClick = { onActivity(id) }) { Text("View milestone activity") }
@@ -166,9 +167,9 @@ private fun ResultEvidence(entry: PersonalBestEntry, state: CoachUiState, onActi
     val units = state.profile?.preferences()?.units() ?: UnitSystem.METRIC
     Text(PaceCalculator.formatTime(entry.result().duration()), style = MaterialTheme.typography.headlineMedium)
     Text("Pace: ${entry.pace(units)}")
-    Text("${entry.result().date()} · ${resultSource(entry.result())}")
+    Text("${friendlyDate(entry.result().date())} · ${resultSource(entry.result())}")
     entry.result().eventName()?.takeIf { it.isNotBlank() }?.let { Text(it) }
-    entry.previousBest()?.let { Text("Previous PB: ${PaceCalculator.formatTime(it.duration())} on ${it.date()}") }
+    entry.previousBest()?.let { Text("Previous PB: ${PaceCalculator.formatTime(it.duration())} on ${friendlyDate(it.date())}") }
         ?: Text("First supported result at this distance.")
     entry.improvement()?.let { Text("Improvement: ${PaceCalculator.formatTime(it)}") }
     LinkedActivity(entry.result(), state, onActivity)
@@ -215,7 +216,7 @@ private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () 
         Text(activityId?.let { "Linked activity: ${state.activities.firstOrNull { a -> a.id() == it }?.let(::displayActivityDate) ?: it}" } ?: "No linked activity")
         TextButton(onClick = { chooseActivity = !chooseActivity }) { Text(if (chooseActivity) "Hide activity choices" else "Choose optional linked activity") }
         if (chooseActivity) {
-            CoachField("Find activity date (YYYY-MM-DD, optional)", activitySearch, { activitySearch = it })
+            CoachField("Find activity date (e.g. 19 October, optional)", activitySearch, { activitySearch = it })
             TextButton(onClick = { activityId = null; chooseActivity = false }) { Text("No linked activity") }
             val matches = state.activities.filter { activitySearch.isBlank() || displayActivityDate(it).contains(activitySearch.trim()) }
             matches.take(100).forEach { activity ->
@@ -270,7 +271,7 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
                 summary.averageRunDistanceMetres()?.let { Text("Average known run distance: ${formatDistance(it, state)}") }
                 summary.longestRunMetres()?.let { Text("Longest assigned run: ${formatDistance(it, state)}") }
                 summary.ageDays()?.let { Text("Age since entered purchase date: $it days") }
-                summary.firstRecordedRun()?.let { Text("First recorded run: ${it.atZone(ZoneId.systemDefault()).toLocalDate()} (device time zone)") }
+                summary.firstRecordedRun()?.let { Text("First recorded run: ${friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate())} (device time zone)") }
                 if (summary.firstRecordedRun() == null) Text("No first recorded run yet.")
                 Text(summary.wearGuidance())
                 shoe.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }

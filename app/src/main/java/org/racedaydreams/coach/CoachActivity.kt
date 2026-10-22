@@ -132,18 +132,18 @@ private fun CoachApp(model: CoachViewModel) {
         }
     }
 
-    val tabs = listOf("home" to "Home", "plan" to "Plan", "calendar" to "Calendar", "progress" to "Progress", "settings" to "Settings")
+    val tabs = listOf("home" to "Home", "plan" to "Plan", "calendar" to "Calendar", "progress" to "Progress", "strength" to "Strength")
     Scaffold(
         topBar = { TopAppBar(title = { Text("Race Day Dreams") }, navigationIcon = {
             if (route != null && route !in tabs.map { it.first } && route != "goals") {
                 TextButton(onClick = { if (!nav.popBackStack()) nav.navigate("home") }) { Text("Back") }
             }
-        }) },
+        }, actions = { TextButton(onClick={nav.navigate("settings")}) { Text("⚙ Settings") } }) },
         bottomBar = {
-            if (state.profile != null && route in tabs.map { it.first }) {
+            if (state.profile != null && route in (tabs.map { it.first } + "strength?date={date}")) {
                 NavigationBar {
                     tabs.forEach { (destination, label) ->
-                        NavigationBarItem(selected = route == destination,
+                        NavigationBarItem(selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
                             icon = { Text(label.take(1), Modifier.clearAndSetSemantics { }) },
                             label = { Text(label) }, onClick = {
                                 nav.navigate(destination) { popUpTo("home"); launchSingleTop = true }
@@ -164,7 +164,9 @@ private fun CoachApp(model: CoachViewModel) {
                 }
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
-                composable("home") { HomeScreen(state, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
+                composable("weekly") { WeeklyReviewScreen(state,model) }
+                composable("home") { if(state.weeklyReview!=null) {}
+                    HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("calendar") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -182,8 +184,8 @@ private fun CoachApp(model: CoachViewModel) {
                 } }
                 composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }) }
                 composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id")) { nav.navigate("activity/${Uri.encode(it)}") } }
-                composable("strength") { StrengthScreen(state, model) }
-                composable("calendar") { ActivityHistoryScreen(state) { nav.navigate("activity/${Uri.encode(it)}") } }
+                composable("strength?date={date}") { destination -> StrengthScreen(state, model, destination.arguments?.getString("date")) }
+                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("strength?date=$it") }) { nav.navigate("activity/${Uri.encode(it)}") } }
                 composable("activity/{id}") { destination ->
                     ActivityDetailScreen(state, model, destination.arguments?.getString("id"))
                 }
@@ -193,7 +195,7 @@ private fun CoachApp(model: CoachViewModel) {
                     providerUpdate, providerSettings,
                     { nav.navigate("goals") }, { nav.navigate("baseline") }, { nav.navigate("shoes") },
                     { export.launch("race-day-dreams-backup.json") }, { restore.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) },
-                    { resetDialog = true }) }
+                    { resetDialog = true }, { permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION)) }) }
             }
         }
     }
@@ -225,8 +227,9 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 }
 
 @Composable
-private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit) = CoachPage {
+private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit) = CoachPage {
     CoachHeading("Your running, your way")
+    if(state.weeklyReview!=null) OutlinedButton(onClick=weekly,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Weekly coaching review")}
     state.currentPlan?.let { version ->
         val today = version.plan().workouts().firstOrNull { it.date() == java.time.LocalDate.now() }
         CoachHeading("Today")
@@ -239,7 +242,7 @@ private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: ()
         CoachCard {
             Text(profile.raceGoal().distance().label(), style = MaterialTheme.typography.headlineSmall)
             if (profile.raceGoal().raceName().isNotBlank()) Text(profile.raceGoal().raceName())
-            profile.raceGoal().raceDate()?.let { Text("Race date: $it") }
+            profile.raceGoal().raceDate()?.let { Text("Race date: ${friendlyDate(it)}") }
             Text("Goal: ${profile.raceGoal().mode().label()}")
             if (profile.raceGoal().mode() == GoalMode.TARGET_TIME) {
                 Text("Target time: ${PaceCalculator.formatTime(profile.raceGoal().targetTime())}")
@@ -249,7 +252,7 @@ private fun HomeScreen(state: CoachUiState, baseline: () -> Unit, assessment: ()
         }
     }
     Text("Your baseline confidence: ${state.baseline.confidence().name.lowercase().replaceFirstChar { it.uppercase() }}")
-    state.baseline.explanations().take(2).forEach { Text(it) }
+    WhyDetails(state.baseline.explanations().joinToString("\n"), "About your baseline")
     if (state.profile?.preferences()?.strategy() == org.racedaydreams.domain.TrainingStrategy.PERFORMANCE && !state.performanceEligible) {
         Text("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
     }
@@ -271,4 +274,4 @@ fun CoachPage(content: @Composable ColumnScope.() -> Unit) {
 }
 
 fun displayActivityDate(activity: org.racedaydreams.domain.activity.ActivityRecord): String =
-    activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).toLocalDate().toString()
+    activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).toLocalDate().let(::friendlyDate)

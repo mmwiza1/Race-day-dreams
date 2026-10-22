@@ -42,7 +42,7 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
     }
     if(planned!=null){CoachCard {
         Text("Preserved planned workout · version ${version.version()}",style=MaterialTheme.typography.titleMedium)
-        Text("${planned.date()} · ${planned.category().name.replace('_',' ')}")
+        Text("${friendlyDate(planned.date())} · ${planned.category().name.replace('_',' ')}")
         planned.distanceKm()?.let {Text("Planned distance: ${formatDistance(it * 1000, state)}")};planned.duration()?.let {Text("Planned duration: ${it.toMinutes()} min")}
         Text(planned.note() ?: "No recorded explanation.")
         Text("Actual results and your response remain separate from this prescription. Fitness improvement requires more evidence than completing one session.")
@@ -52,7 +52,7 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
             TextButton(onClick={showLink=!showLink},modifier=Modifier.heightIn(min=48.dp)){Text("Link to a planned workout…")}
             if(showLink) state.currentPlan.plan().workouts().filter { it.date()<=java.time.LocalDate.now() && state.activities.none { a->a.plannedWorkoutId()==it.id() } }.takeLast(14).forEach { w ->
                 OutlinedButton(onClick={model.linkRun(activity.id(),state.currentPlan.id(),w.id());showLink=false},enabled=!state.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){
-                    Text("${w.date()} · ${w.category().name.replace('_',' ')} · ${w.distanceKm()?.let { formatDistance(it * 1000, state) } ?: "timed"}")
+                    Text("${friendlyDate(w.date())} · ${w.category().name.replace('_',' ')} · ${w.distanceKm()?.let { formatDistance(it * 1000, state) } ?: "timed"}")
                 }
             }
         }

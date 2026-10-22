@@ -13,6 +13,10 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.WeightRecord
+import org.racedaydreams.data.DevelopmentStore
+import org.racedaydreams.domain.body.BodyWeight
+import java.time.ZoneOffset
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.request.AggregateRequest
@@ -77,6 +81,22 @@ class HealthConnectGateway(
         Uri.parse("market://details?id=com.google.android.apps.healthdata"))
 
     fun settingsIntent(): Intent = Intent(HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS)
+
+    /** Optional measurement feature; a completed bounded read replaces only its provider window. */
+    suspend fun syncWeights(store: DevelopmentStore) = withContext(Dispatchers.IO) {
+        if (WEIGHT_PERMISSION !in grantedPermissions()) return@withContext
+        val end=clock.instant()
+        val start=end.minus(Duration.ofDays(if(HISTORY_PERMISSION in grantedPermissions()) 84 else 29))
+        val weights=mutableListOf<BodyWeight>();var page:String?=null;var pages=0
+        do {
+            check(++pages<=MAX_PAGES) { "Weight history exceeds this import limit." }
+            val response=client.readRecords(ReadRecordsRequest(recordType=WeightRecord::class,timeRangeFilter=TimeRangeFilter.between(start,end),pageSize=500,pageToken=page))
+            response.records.forEach { r -> weights.add(BodyWeight("hc-weight:${r.metadata.id}",r.weight.inKilograms,r.time,r.zoneOffset?:ZoneOffset.UTC,PROVIDER,r.metadata.id,r.metadata.dataOrigin.packageName)) }
+            page=response.pageToken
+        } while(page!=null)
+        check(WEIGHT_PERMISSION in grantedPermissions()) { "Weight permission changed; no measurements were replaced." }
+        store.replaceWeightWindow(PROVIDER,start,end,weights)
+    }
 
     override suspend fun sync(store: HealthImportRepository): HealthSyncResult =
         withContext(Dispatchers.IO) {
@@ -299,6 +319,7 @@ class HealthConnectGateway(
         private val SYNC_LOCK = Mutex()
         private const val MAX_PAGES = 1000
         private const val MAX_SESSIONS = 10000
+        val WEIGHT_PERMISSION: String = HealthPermission.getReadPermission(WeightRecord::class)
         val EXERCISE_PERMISSION: String = HealthPermission.getReadPermission(ExerciseSessionRecord::class)
         val DISTANCE_PERMISSION: String = HealthPermission.getReadPermission(DistanceRecord::class)
         val HEART_RATE_PERMISSION: String = HealthPermission.getReadPermission(HeartRateRecord::class)

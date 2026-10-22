@@ -39,7 +39,7 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit) {
                         Text(if (activity.source().provider() == "assessment") "Assessment run" else "Recorded run", style = MaterialTheme.typography.titleMedium)
                         Text(activity.distanceMetres()?.let { formatDistance(it, state) } ?: "Distance unavailable")
                         Text("Elapsed: ${PaceCalculator.formatTime(activity.elapsedTime())}")
-                        Text("Source: ${activity.source().provider()}${activity.source().originPackage()?.takeIf { it.isNotBlank() }?.let { " · $it" } ?: ""}")
+                        Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
                         Text("Completed · tap for details")
                     }
                 }
@@ -83,9 +83,9 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             activity.elevationGainMetres()?.let { Text("Recorded elevation gain: ${decimal(it)} m") }
             activity.cadence()?.let { Text("Recorded cadence: ${decimal(it)} steps/min") }
             activity.rpe()?.let { Text("Manually entered effort: ${decimal(it)}/10") }
-            Text("Source: ${activity.source().provider()}")
-            activity.source().originPackage()?.takeIf { it.isNotBlank() }?.let { Text("Origin app: $it") }
-            Text("Source record: ${activity.source().recordId()}")
+            Text("Source: ${org.racedaydreams.domain.activity.ProviderReconciliation.friendly(activity.source())}")
+            WhyDetails("Provider: ${activity.source().provider()}\nOrigin: ${activity.source().originPackage() ?: "Unavailable"}\nRecord: ${activity.source().recordId()}","Technical data source")
+
             Text("Values absent from the source remain unavailable. Elapsed time is not presented as moving time.")
         }
         RunFeedbackSection(state, model, activity)
