@@ -73,11 +73,18 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
             LocalDate quality = schedule.quality();
             if (quality != null && previousDemanding != null && ChronoUnit.DAYS.between(previousDemanding, quality) < 2) quality = null;
             double step = Math.min(2.0, Math.max(.5, base / 30));
-            double build = Math.min(volumeCap, base + Math.max(0, index - index / 4) * step);
+            int foundationWeeks = race == null ? 0 : Math.max(0,(int)ChronoUnit.DAYS.between(start,race.minusDays(196))/7);
+            boolean distantFoundation = race != null && ChronoUnit.DAYS.between(from,race)>196;
+            int buildIndex = foundationWeeks>0 ? Math.max(0,index-foundationWeeks) : index;
+            double foundationVolume = foundationWeeks>0 ? Math.min(6,Math.max(0,foundationWeeks-foundationWeeks/4)*step) : 0;
+            double build = distantFoundation ? Math.min(volumeCap,Math.min(base+6,base+Math.max(0,index-index/4)*step))
+                : Math.min(volumeCap, base+foundationVolume+Math.max(0,buildIndex-buildIndex/4)*step);
             if (index % 4 == 3) build *= .8;
             double taperFactor = taper ? (ChronoUnit.DAYS.between(from, end) <= 7 ? .5 : .7) : 1;
             double weekly = build * taperFactor * schedule.days().size() / frequency;
-            double longKm = Math.min(longCap, Math.min(longBase + Math.max(0, index - index / 4) * .5, weekly * .48));
+            double longProgress = distantFoundation ? Math.min(3,Math.max(0,index-index/4)*.5)
+                : (foundationWeeks>0 ? Math.min(3,Math.max(0,foundationWeeks-foundationWeeks/4)*.5) : 0)+Math.max(0,buildIndex-buildIndex/4)*.5;
+            double longKm = Math.min(longCap, Math.min(longBase + longProgress, weekly * .48));
             if (index % 4 == 3) longKm = Math.min(longKm, longBase * .8 + index * .15);
             longKm *= taperFactor;
             int n = schedule.days().size();

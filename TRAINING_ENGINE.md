@@ -257,7 +257,9 @@ is never treated as an actually completed hard session.
 
 Race day overrides recurring weekday availability, but not an explicitly blocked
 one-off date. Long horizons retain early foundation work, with quality limited
-to the final 140 days; horizons beyond 280 days allocate phases backwards from
+to the final 140 days. Distant foundation volume is capped at baseline +6 km/week
+and long-run progression at +3 km, with the later build index reset so crossing
+the 196-day boundary cannot jump straight to peak mileage. Horizons beyond 280 days allocate phases backwards from
 the race. The generator guards obviously erroneous dates beyond a century;
 very distant projections are not fitness promises. Race/time-trial Run Scores
 allow RPE 9–10; easy/recovery scores still reward controlled execution.
