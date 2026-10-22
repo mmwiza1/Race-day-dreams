@@ -113,12 +113,34 @@ Seventeen real-app canonical captures and their source fingerprint were refreshe
 the icon mask previews were reviewed separately. No physical Samsung launcher was tested.
 
 
-## 0.4.1 refinement — verification in progress
+## 0.4.1 refinement — verified implementation
 
 Starting main: `7fa431ddc8bb3fa3b73677680a53957ff772cdbc`.
-Local checks: 30,413 domain assertions (including 97 refinement assertions) and
-30 schema tests pass. Android SDK is unavailable; local Gradle download fails
-with `SocketException: Operation not permitted`. Android compile/lint/device and
-canonical screenshot results will be recorded after CI. No destructive migration,
-new dependencies or backup-format change. Schema remains 5, backup envelope 3.
-Samsung/provider/settings source files have not changed.
+Version: **0.4.1-test1**, versionCode **5**. Schema remains **5**, backup envelope **3**.
+No migrations, runtime dependencies, health permissions or Samsung integration/settings
+changes. Provider reconciliation and the Samsung caveat remain unchanged.
+
+Verified source: `2af6d83af1961b2af6d02faf3396b357773d7768`.
+[Workflow 39805597199](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39805597199)
+passed on **API 28, 35 and 36**:
+
+- 30,413 domain assertions, including 97 refinement checks.
+- 30 schema tests, including supported upgrades and transactional rollback.
+- Android debug/test APK assembly and lint.
+- **125 instrumentation tests per API**, including persistence/backup, calendar
+  category/state semantics, day-sheet actions, weight point selection, unified PB
+  provenance, set editing, large-font/dark semantics and minimum-API compatibility.
+- Seventeen real-app canonical captures, reviewed from the actual API-35 build.
+  Month fits the full grid; weight chips retain whole labels; PB timeline actions
+  use disclosure. Fixtures remain instrumentation-only. Source fingerprint matches.
+
+Local domain/schema checks pass too. Local Android builds are unavailable: the SDK
+is absent and the Gradle download fails with `SocketException: Operation not permitted`.
+CI caught a legend-test ambiguity and unsupported newer Java stream/optional calls;
+the API 28-compatible implementation and populated-evidence test now pass.
+
+[PR #5](https://github.com/mmwiza1/Race-day-dreams/pull/5) tracks the final head,
+merge, post-merge CI and verified `Race-Day-Dreams-0.4.1-test1-debug.apk` artifact.
+Physical Galaxy S24 checks remain required for 200% fonts across all screens,
+TalkBack, dark contrast, keyboards/date pickers, scroll behaviour and upgrade/restore.
+CI establishes emulator results, not physical-device UX or coaching efficacy.
