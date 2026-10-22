@@ -24,6 +24,20 @@ public final class GymProgrammeTestSuite {
         ok(StrengthProgressionAdvisor.review(p,List.of(session("hard",NOW,5,9.0),second)).action()==StrengthProgressionAdvisor.Action.REDUCE_OR_SIMPLIFY,"High effort -> reduce option");ok(StrengthProgressionAdvisor.review(p,List.of(session("unknown",NOW,8,null),second)).action()==StrengthProgressionAdvisor.Action.HOLD,"Missing effort -> hold");
         ok(StrengthProgressionAdvisor.review(p,List.of(first,second),NOW.plus(Duration.ofDays(45))).action()==StrengthProgressionAdvisor.Action.HOLD,"Stale evidence cannot drive a load increase");
         ok(!GymProgrammeGenerator.available("back-squat",Set.of("barbell")),"Squat needs rack");ok(!GymProgrammeGenerator.available("bench-press",Set.of("barbell","squat rack")),"Bench needs bench");
+        ok(!GymProgrammeGenerator.available("goblet-squat",Set.of("barbell")),"A barbell is not a goblet weight");
+        ok(!GymProgrammeGenerator.available("split-squat",Set.of("barbell")),"Rear-foot elevated split squat needs support");
+        ok(!GymProgrammeGenerator.available("hip-thrust",Set.of("barbell")),"Hip thrust needs a bench");
+        ok(!GymProgrammeGenerator.available("weighted-pull-up",Set.of("barbell")),"Weighted pull-up also needs a pull-up bar");
+        ok(GymProgrammeGenerator.available("goblet-squat",Set.of("kettlebells")),"Goblet kettlebell alternative");
+        for(var equipment:List.of(Set.of("barbell"),Set.of("dumbbells","bench"),Set.of("kettlebells"))){
+            var restricted=new GymProgramme.Settings(GymProgramme.Goal.SUPPORT_RUNNING,GymProgramme.Priority.RUNNING_FIRST,GymProgramme.Experience.BEGINNER,Set.of(DayOfWeek.TUESDAY,DayOfWeek.FRIDAY),2,equipment,45,GymProgramme.Effort.RPE);
+            var programme=generator.generate("restricted",1,NOW,"Equipment audit",restricted,START,List.of(),List.of());
+            for(var session:programme.sessions())for(var prescribed:session.exercises()){
+                ok(GymProgrammeGenerator.available(prescribed.exerciseId(),equipment),"Restricted equipment respected");
+                if(prescribed.exerciseId().equals("goblet-squat"))ok(equipment.contains("dumbbells")||equipment.contains("kettlebells"),"Independent goblet requirement");
+                if(prescribed.exerciseId().equals("split-squat")||prescribed.exerciseId().equals("hip-thrust"))ok(equipment.contains("bench"),"Independent bench requirement");
+            }
+        }
         System.out.println("GymProgrammeTestSuite: "+checks+" checks passed.");
     }
     static StrengthSession session(String id,Instant at,int reps,Double rpe){var e=ExerciseCatalog.definition("back-squat").exercise();return new StrengthSession(id,at,ZoneOffset.UTC,Duration.ofMinutes(40),rpe,"",List.of(new StrengthSession.ExerciseSets(e,List.of(new StrengthSession.SetEntry(id+"1",reps,80,rpe,false),new StrengthSession.SetEntry(id+"2",reps,80,rpe,false)))));}

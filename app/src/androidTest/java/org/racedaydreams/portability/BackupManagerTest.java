@@ -77,6 +77,25 @@ public final class BackupManagerTest extends AndroidTestCase {
         BackupManager.RestoreSummary summary=manager.restoreFrom(new ByteArrayInputStream(envelope.toString().getBytes(StandardCharsets.UTF_8)));
         assertEquals(1,summary.version());assertEquals(1,store.shoes().size());assertEquals("legacy",store.shoes().get(0).id());
     }
+    public void testVersionThreeBackupRestoresLegacyStrengthAndRemovedProviderPreference() throws Exception {
+        store.saveShoe(shoe("legacy-v3"));
+        var exercise=org.racedaydreams.domain.strength.ExerciseCatalog.definition("back-squat").exercise();
+        var set=new org.racedaydreams.domain.strength.StrengthSession.SetEntry("old-set",5,80,7.0,false);
+        var session=new org.racedaydreams.domain.strength.StrengthSession("legacy-lift",Instant.now().minusSeconds(3600),ZoneOffset.UTC,Duration.ofMinutes(30),7.0,"Legacy note",Collections.singletonList(new org.racedaydreams.domain.strength.StrengthSession.ExerciseSets(exercise,Collections.singletonList(set))));
+        var coaching=new org.racedaydreams.data.CoachingStore(getContext());coaching.saveStrength(session);
+        JSONObject envelope=objectExport();envelope.put("version",3);JSONObject data=envelope.getJSONObject("data");
+        data.remove("strengthState");data.remove("gymProgramming");data.getJSONObject("settings").put("provider.preference","SAMSUNG_EXPERIMENTAL");
+        JSONObject row=data.getJSONObject("coaching").getJSONArray("strength_sessions").getJSONObject(0);
+        JSONObject payload=new JSONObject(row.getString("payload"));JSONObject block=payload.getJSONArray("exercises").getJSONObject(0);
+        block.getJSONObject("exercise").remove("measurement");JSONObject oldSet=block.getJSONArray("sets").getJSONObject(0);
+        oldSet.remove("seconds");oldSet.remove("metres");oldSet.remove("rir");row.put("payload",payload.toString());
+        store.saveShoe(shoe("newer-data"));
+        var result=manager.restoreFrom(new ByteArrayInputStream(envelope.toString().getBytes(StandardCharsets.UTF_8)));
+        assertEquals(3,result.version());assertEquals("HEALTH_CONNECT",store.getSetting("provider.preference"));
+        assertEquals(1,store.shoes().size());assertEquals("legacy-v3",store.shoes().get(0).id());
+        assertEquals(session,coaching.strength().get(0));
+    }
+
     public void testVersionTwoRequiresCoachingSectionBeforeReplacement() throws Exception {
         store.saveShoe(shoe("retained"));JSONObject envelope=objectExport();envelope.getJSONObject("data").remove("coaching");
         rejected(envelope.toString());assertEquals("retained",store.shoes().get(0).id());

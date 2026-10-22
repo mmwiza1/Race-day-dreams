@@ -42,10 +42,26 @@ public final class GymProgrammeGenerator {
         if(actual.contains(day.minusDays(1)))out.add("Hard lower-body work was actually recorded before "+date(day)+". Review the proposed session before training.");return Immutable.copyList(out);}
     private static String date(LocalDate d){return d.format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu",Locale.UK));}
     public static boolean demanding(WorkoutCategory c){return c==WorkoutCategory.LONG_RUN||c==WorkoutCategory.INTERVALS||c==WorkoutCategory.TEMPO_THRESHOLD_RUN||c==WorkoutCategory.RACE_PACE_RUN||c==WorkoutCategory.PROGRESSION_RUN||c==WorkoutCategory.RACE||c==WorkoutCategory.TIME_TRIAL;}
-    public static boolean available(String id,Set<String> equipment){if(equipment.contains("full gym"))return true;var d=ExerciseCatalog.definition(id);if(d==null)return false;var required=d.equipment();if(required.equals("bodyweight"))return !id.contains("pull-up")&&!id.contains("chin-up")&&!id.equals("inverted-row")&&!id.startsWith("hanging-")||equipment.contains("pull-up bar");if(!equipment.contains(required))return false;if(id.equals("back-squat")||id.equals("front-squat"))return equipment.contains("squat rack");if(id.contains("bench-press"))return equipment.contains("bench")&&(required.equals("dumbbells")||equipment.contains("squat rack"));return true;}
+    public static boolean available(String id,Set<String> equipment){
+        if(equipment.contains("full gym"))return ExerciseCatalog.definition(id)!=null;
+        var definition=ExerciseCatalog.definition(id);if(definition==null)return false;
+        boolean freeLoad=equipment.contains("dumbbells")||equipment.contains("kettlebells")||equipment.contains("barbell");
+        if(id.equals("goblet-squat"))return equipment.contains("dumbbells")||equipment.contains("kettlebells");
+        if(id.equals("split-squat"))return equipment.contains("bench")&&freeLoad;
+        if(id.equals("hip-thrust"))return equipment.contains("bench")&&(equipment.contains("barbell")||equipment.contains("dumbbells"));
+        if(id.contains("pull-up")||id.contains("chin-up")||id.startsWith("hanging-")||id.equals("toes-to-bar")||id.equals("dead-hang"))return equipment.contains("pull-up bar")&&(!id.startsWith("weighted-")||freeLoad);
+        if(id.equals("inverted-row"))return equipment.contains("pull-up bar")||equipment.contains("squat rack");
+        if(id.equals("bench-dip"))return equipment.contains("bench");
+        if(id.equals("dip")||id.equals("weighted-dip")||id.equals("ab-wheel")||id.equals("nordic-hamstring-curl")||id.equals("swiss-ball-leg-curl")||id.equals("sliding-leg-curl"))return false;
+        if(id.equals("step-up")||id.equals("box-step-up")||id.equals("high-step-up"))return equipment.contains("bench");
+        String required=definition.equipment();if(required.equals("bodyweight"))return true;if(!equipment.contains(required))return false;
+        if(id.equals("back-squat")||id.equals("front-squat"))return equipment.contains("squat rack");
+        if(id.contains("bench-press"))return equipment.contains("bench")&&(required.equals("dumbbells")||equipment.contains("squat rack"));
+        return true;
+    }
     private static String choose(Set<String> equipment,String...ids){for(String id:ids)if(available(id,equipment))return id;throw new IllegalArgumentException("No suitable exercise for selected equipment.");}
     private static List<GymProgramme.Prescription> prescriptions(GymProgramme.Settings s,String template,int variation){var eq=s.equipment();var ids=new ArrayList<String>();boolean lower=template.equals("Lower")||template.equals("Full body");boolean upper=!template.equals("Lower");
-        if(lower){ids.add(choose(eq,variation%2==0?"back-squat":"romanian-deadlift","goblet-squat","bodyweight-squat"));ids.add(choose(eq,s.goal()==GymProgramme.Goal.SUPPORT_RUNNING?"split-squat":"hip-thrust","reverse-lunge-bodyweight","glute-bridge"));}
+        if(lower){ids.add(choose(eq,variation%2==0?"back-squat":"romanian-deadlift","goblet-squat","deadlift","bodyweight-squat"));ids.add(choose(eq,s.goal()==GymProgramme.Goal.SUPPORT_RUNNING?"split-squat":"hip-thrust","reverse-lunge-bodyweight","glute-bridge"));}
         if(upper){if(!template.equals("Pull"))ids.add(choose(eq,"bench-press","dumbbell-bench-press","push-up"));if(!template.equals("Push"))ids.add(choose(eq,"seated-cable-row","dumbbell-row","barbell-row","bird-dog"));}
         if(s.goal()==GymProgramme.Goal.SUPPORT_RUNNING&&lower)ids.add(choose(eq,"calf-raise","single-leg-calf-raise-bodyweight"));
         if(s.minutes()>=45&&ids.size()<5)ids.add("plank");
