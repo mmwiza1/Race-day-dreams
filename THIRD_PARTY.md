@@ -139,3 +139,12 @@ rendering, landmarks and v2 Dream drawing anchors are original MIT project work.
 No organiser map, GPX, screenshot, logo, typography or map tiles were incorporated.
 Factual course research/reuse assessment is recorded in docs/DREAM_ROUTES.md. A public
 GPX download is not treated as a redistribution licence.
+
+## 0.8.1 artwork checkpoint
+
+New RDL, Bench Press, Walking Lunge and Ankle Rocks WebPs are original generated
+illustrations created for this project from original movement descriptions. They
+are bundled offline and contributed under the project MIT licence. No third-party
+exercise photographs/assets or organiser graphics were copied. Owner references
+are development acceptance documents, separate from production assets. Coverage
+and review are tracked in docs/exercise-artwork/README.md; full174 is not yet met.

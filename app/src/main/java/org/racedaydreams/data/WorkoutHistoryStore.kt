@@ -15,9 +15,10 @@ class WorkoutHistoryStore(context:Context) {
     data class Cursor(val millis:Long,val id:String,val kind:Int)
     data class Row(val id:String,val kind:Kind,val date:LocalDate,val label:String,val distanceMetres:Double?,val minutes:Long?,val exerciseCount:Int?)
     data class Page(val rows:List<Row>,val next:Cursor?)
-    fun page(kind:Kind,type:WorkoutCategory?,exerciseQuery:String,from:LocalDate?,through:LocalDate?,prescriptions:List<PlannedWorkout>,after:Cursor?=null,limit:Int=30):Page {
+    fun page(kind:Kind,type:WorkoutCategory?,exerciseQuery:String,from:LocalDate?,through:LocalDate?,prescriptions:List<PlannedWorkout>,after:Cursor?=null,limit:Int=30,versions:List<org.racedaydreams.domain.coaching.PlanVersion> = emptyList()):Page {
         check(Looper.myLooper()!=Looper.getMainLooper()) { "History storage requires an IO thread." }
         require(limit in 1..100 && (from==null||through==null||!through.isBefore(from))) { "Check the selected date range." }
+        val preservedTypes=versions.associate{v->v.id() to v.plan().workouts().associate{it.id() to it.category()}}
         val types=prescriptions.associate{it.id() to it.category()}
         val search=exerciseQuery.trim()
         val allowed=if(search.isEmpty())null else ExerciseSearch.search(CoachingStore(helperContext()).exercises(),search,emptySet(),emptyList(),emptySet()).map{it.id()}.toSet()
@@ -30,10 +31,10 @@ class WorkoutHistoryStore(context:Context) {
         val latest=through?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.plusSeconds(18*3600)?.toEpochMilli()?:Long.MAX_VALUE
         while(true) {
             val args=mutableListOf(earliest.toString(),latest.toString())
-            val seek=scanned?.let { args.addAll(listOf(it.millis.toString(),it.millis.toString(),it.id,it.id,it.kind.toString()));" AND (at<CAST(? AS INTEGER) OR (at=CAST(? AS INTEGER) AND (id>? OR (id=? AND kind>?))))" }?:""
+            val seek=scanned?.let { args.addAll(listOf(it.millis.toString(),it.millis.toString(),it.id,it.id,it.kind.toString()));" AND (at<CAST(? AS INTEGER) OR (at=CAST(? AS INTEGER) AND (id>? OR (id=? AND kind>CAST(? AS INTEGER)))))" }?:""
             val sql="SELECT * FROM ("+
-                "SELECT a.id,0 kind,a.start_millis at,a.payload,r.planned_workout_id linked FROM activities a LEFT JOIN run_responses r ON r.activity_id=a.id WHERE ${if(includeRuns)"1"else"0"} UNION ALL "+
-                "SELECT id,1 kind,CAST(ROUND((julianday(started_at)-2440587.5)*86400000) AS INTEGER) at,payload,NULL linked FROM strength_sessions WHERE ${if(includeStrength)"1"else"0"}"+
+                "SELECT a.id,0 kind,a.start_millis at,a.payload,r.planned_workout_id linked,r.plan_version_id version FROM activities a LEFT JOIN run_responses r ON r.activity_id=a.id WHERE ${if(includeRuns)"1"else"0"} UNION ALL "+
+                "SELECT id,1 kind,CAST(ROUND((julianday(started_at)-2440587.5)*86400000) AS INTEGER) at,payload,NULL linked,NULL version FROM strength_sessions WHERE ${if(includeStrength)"1"else"0"}"+
                 ") WHERE at>=CAST(? AS INTEGER) AND at<=CAST(? AS INTEGER)"+seek+" ORDER BY at DESC,id,kind LIMIT 100"
             var count=0
             helper.readableDatabase.rawQuery(sql,args.toTypedArray()).use { c ->
@@ -44,7 +45,8 @@ class WorkoutHistoryStore(context:Context) {
                     val offset=if(run)j.optString("startOffset").takeIf{it.isNotBlank()&&it!="null"}?.let(ZoneOffset::of)?:ZoneOffset.UTC else ZoneOffset.of(j.getString("offset"))
                     val date=start.atOffset(offset).toLocalDate()
                     if(from!=null&&date<from||through!=null&&date>through)continue
-                    val category=if(run)types[if(c.isNull(4))j.optString("plannedWorkoutId")else c.getString(4)]else null
+                    val workoutId=if(c.isNull(4))j.optString("plannedWorkoutId")else c.getString(4)
+                    val category=if(!run)null else if(!c.isNull(5)&&versions.isNotEmpty())preservedTypes[c.getString(5)]?.get(workoutId)else types[workoutId]
                     if(run&&type!=null&&category!=type)continue
                     val exercises=if(run)null else j.getJSONArray("exercises")
                     if(allowed!=null&&(0 until exercises!!.length()).none{exercises.getJSONObject(it).getJSONObject("exercise").getString("id") in allowed})continue

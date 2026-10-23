@@ -45,3 +45,9 @@ Original three-frame technique and Dream landmark/drawing code remains MIT proje
 artwork. No external visual asset or proprietary course file was ingested. See
 docs/DREAM_ROUTES.md for per-city factual references and explicit geometry limitations.
 Dependencies/notices remain unchanged.
+
+0.8.1's new bundled exercise illustrations are original generated project assets,
+contributed under MIT; see docs/exercise-artwork/README.md for creation and review.
+The five owner-provided design references remain separate development references,
+not production assets or claimed actual screenshots. No new runtime library or
+third-party geographic dataset has been incorporated at this checkpoint.

@@ -19,6 +19,11 @@ public final class GuidancePresentationTestSuite {
         check(engine.pointCount()==14401);check(engine.pointsFrom(14400).size()==1);check(engine.pointsFrom(engine.pointCount()).isEmpty());
         check(engine.eventsFrom(engine.eventCount()).isEmpty());
         var retained=engine.pointsFrom(14400);try{retained.clear();throw new AssertionError("Mutable persistence snapshot");}catch(UnsupportedOperationException expected){checks++;}
+        var pause=new org.racedaydreams.domain.recording.RunMetricsEngine.Event("PAUSE",1000,wall);
+        var resume=new org.racedaydreams.domain.recording.RunMetricsEngine.Event("RESUME",3000,wall);
+        check(org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(0,2000,java.util.Arrays.asList(resume,pause)));
+        check(!org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(0,4000,java.util.Arrays.asList(resume,pause)));
+        check(!org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(0,500,java.util.Arrays.asList(pause)));
         System.out.println("GuidancePresentationTestSuite: "+checks+" checks passed.");
     }
 }
