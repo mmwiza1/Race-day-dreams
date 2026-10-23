@@ -391,7 +391,8 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun chooseEasy(workoutId:String,reason:String) = mutate("Your selected easy alternative was saved. Other sessions are unchanged.") {
         val current=coaching.current()?:error("No current plan")
         val original=current.plan().workouts().first{it.id()==workoutId}
-        require(coaching.responses().none{it.plannedWorkoutId()==workoutId}){"Completed sessions cannot be changed."}
+        require(original.date()>=LocalDate.now()){"Only current or future sessions can be changed."}
+        require(coaching.responses().none{it.plannedWorkoutId()==workoutId}&&store.activitySummaries().none{it.plannedWorkoutId()==workoutId}){"Completed sessions cannot be changed."}
         val easy=org.racedaydreams.domain.health.RecoveryCoaching.easyAlternative(original,reason)
         val p=current.plan();val updated=org.racedaydreams.domain.TrainingPlan(p.id(),p.startDate(),p.endDate(),p.phases(),p.workouts().map{if(it.id()==workoutId)easy else it})
         coaching.saveCurrent(PlanVersion(UUID.randomUUID().toString(),current.planId(),current.version()+1,Instant.now(),"Runner chose easy: $reason",current.goalSnapshot(),current.evidenceSnapshot(),updated))
