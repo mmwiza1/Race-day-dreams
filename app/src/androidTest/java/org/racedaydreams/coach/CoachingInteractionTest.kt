@@ -81,8 +81,8 @@ class CoachingInteractionTest {
         Assert.assertEquals(5.0,CoachingStore(context).current()!!.plan().workouts()[0].distanceKm()!!,0.00001)
     }
     private fun recordActualRun(distanceLabel:String,distance:String){
-        launch();compose.onNodeWithText("Plan").performClick();await("View workout and purpose")
-        compose.onNodeWithText("View workout and purpose").performScrollTo().performClick();await("Record actual run")
+        launch();compose.onNodeWithText("Plan").performClick();compose.waitUntil(20000){compose.onAllNodesWithContentDescription("View workout and purpose").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithContentDescription("View workout and purpose").performScrollTo().performClick();await("Record actual run")
         compose.onNodeWithText("Record actual run").performScrollTo().performClick()
         enter(distanceLabel,distance);enter("Actual duration (mm:ss or h:mm:ss)","32:30")
         choosePastDate("Start date")
