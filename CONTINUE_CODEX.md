@@ -158,8 +158,9 @@ publish skipped. Whole workflow is therefore NOT GREEN, do not describe it as su
 Earlier195/API checkpoint39983046389 source5791d537 passed; its APK34940358bytes.
 0.8 baseline APK raw size/delta still unmeasured; do not compare artifact ZIP size.
 
-**The latest seven artwork assets / Berlin code /53-screen fixture /198th Android
-backup test have NOT yet passed Android CI at this handoff. Push/verify next.**
+The latest seven assets and Berlin backup code passed build/lint and their tests in
+39994147090. Full198/API and53captures are NOT green yet because the screenshot
+selector failed identically on everyAPI. Fix is present; verify next.
 Local Android SDK/download unavailable previously; actual builds run in GitHub CI.
 Physical S24 GNSS/BLE/TTS/music/HealthConnect/battery/TalkBack unverified; checklist
 inTEST_BUILD. No physical passes inferred from emulator success.
@@ -187,10 +188,12 @@ follow the actual50capture review; they still require current-build verification
 
 Latest pushed source1ac6f0170584ccef1c261313c48fb79463e9c9a4 matches local74c11e1
 (tree75e6898be2b3ccd42b924ffaed18d3f7e084d0c9), preserving bot00b8ac6519c648bed1ce722ef151e2cf159fbbbf.
-Its workflow39994147090 is in progress with build/lint passed and instrumentation
-running on all3APIs. Strict guidance gate fails163missing as expected. Recheck actual
-status and bot captures before next push. Only4679585 plus this handoff update are
-not yet pushed; new assets/geography are already uploaded.
+Workflow39994147090 completed all198tests on all3APIs. Each had exactly one failure:
+new screenshot query matched both Seated Cable Row search field and result. Build,
+lint and other197tests/API (including new Berlin backup test) passed. The selector
+now targets the clickable non-editable result. Strict guidance fails163missing as
+expected. Next push includes that fix and4679585compact Plan; no new bot commit
+was created by the failed matrix. Recheck before pushing.
 Use actual current remote tree as base; preserve all bot screenshot assets.
 `/workspace/scratch/publish05.py 74c11e1` emits pending text chunks (rerun after docs).
 No further binary upload is needed for the existing22art assets. All new seven
@@ -223,3 +226,11 @@ with expected_sha lease, never force. Current scratch chunks predate handoff upd
 Preserved source/output PNGs are workspace files, not uploaded mocked screenshots.
 CI screenshot metadata /workspace/scratch/081c-capture-*.json and metadatafile
 081c-capture-meta.json. New runtime environment may change; inspect before network.
+
+## Network download blocker
+
+Do not repeat shell network permission requests. A sandboxed signed-artifact fetch
+failedOperation not permitted; requesting additional network permission then stalled
+and was user-aborted after2577seconds. No APK was downloaded/size baseline verified.
+Use working GitHub connectors/CI and report unmeasured baseline honestly. This did
+not change repository files/commits. Latest user explicitly requested continuation.
