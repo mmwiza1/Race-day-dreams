@@ -54,10 +54,18 @@ import org.racedaydreams.domain.support.DreamRoutes
             for(row in 0..1)for(col in 0..1)drawRect(if((row+col)%2==0)paper else ink,end+Offset((col-1)*r,(row-1)*r),Size(r,r))
         }
     }
-    if(landmarks.isNotEmpty())Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
-        landmarks.forEachIndexed{i,l->Column(Modifier.weight(1f),horizontalAlignment=androidx.compose.ui.Alignment.CenterHorizontally){
-            CityLandmarkArtwork(l.shape(),Modifier.size(48.dp))
-            Text("${i+1} · ${l.label()}",style=MaterialTheme.typography.labelSmall,textAlign=androidx.compose.ui.text.style.TextAlign.Center)
-        }}
+    if(landmarks.isNotEmpty()) {
+        val largeText=androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.15f
+        if(largeText) Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            landmarks.forEachIndexed{i,l->Row(Modifier.fillMaxWidth(),verticalAlignment=androidx.compose.ui.Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+                CityLandmarkArtwork(l.shape(),Modifier.size(48.dp))
+                Text("${i+1} · ${l.label()}",style=MaterialTheme.typography.labelMedium,modifier=Modifier.weight(1f))
+            }}
+        } else Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+            landmarks.forEachIndexed{i,l->Column(Modifier.weight(1f),horizontalAlignment=androidx.compose.ui.Alignment.CenterHorizontally){
+                CityLandmarkArtwork(l.shape(),Modifier.size(48.dp))
+                Text("${i+1} · ${l.label()}",style=MaterialTheme.typography.labelSmall,textAlign=androidx.compose.ui.text.style.TextAlign.Center)
+            }}
+        }
     }
 }

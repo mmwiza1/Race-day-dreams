@@ -194,15 +194,20 @@ class CoachingScreenshotTest {
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
     private fun alignHeading(text:String){
         compose.onNodeWithText(text).performScrollTo()
-        // Anchor the actual heading near the top, independent of content above it.
-        repeat(4){
+        // Scroll the actual semantic container; a root swipe can hit an interactive
+        // chart above the target and leave the requested card off screen.
+        val container=compose.onNode(hasScrollAction() and hasAnyDescendant(hasText(text)))
+        repeat(6){
+            compose.waitForIdle()
             val top=compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top
             val height=compose.onRoot().fetchSemanticsNode().boundsInRoot.height
             val shift=(top-160f).coerceAtMost(height*.6f)
             if(shift<=8f)return
-            compose.onRoot().performTouchInput{swipe(Offset(centerX,height*.85f),Offset(centerX,height*.85f-shift),durationMillis=1000)}
-            compose.waitForIdle()
+            container.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy){it(0f,shift)}
         }
+        compose.onNodeWithText(text).assertIsDisplayed()
+        Assert.assertTrue("Requested capture heading remains too far down the screen: $text",
+            compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top<300f)
     }
 
     private fun capture(name:String){
