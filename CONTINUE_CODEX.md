@@ -72,30 +72,33 @@ Version0.8.1-test1/code10; schema10 (two additive metadata-history indexes only)
 JSON7 / raw2 / complete1 unchanged. No Internet permission/runtime dependencies,
 accounts, tracking or backend. Existing coaching/recorder architecture retained.
 
-## Latest exact state
+## Latest exact state (authoritative)
 
-Latest pushed source `ff349be8174930a0dd46a9cb88f9926ec01ddfbc` matches locald0d9527,
-tree`c369c32b0a6bf6a206f8ffbb3f00098c61aac0a3`. Workflow**40002513476** is running;
-recheck actual results before next push. JobsAPI28/35/36:
-120581979294 /120581979428 /120581979419. Guidance-completeness deliberately fails
-159missing canonical exercises; no release can publish. Whole workflow is NOT green.
+Current remote head is capture bot**0e1780cdb3f132c6c675e1b150e2285388d1045e**,
+tree**859c445343ab12d1c39a9a1115f23db458bdd574**. Parent verifiedsource:
+**f61d7ac38d1aab6f4fd481e37a35d7171d06d5d5**, matching local341ced4.
+Localb402f94adopts all53PNGs+2metadata files byte-for-byte from that bot.
 
-Pending local docs-only commit8c3c095 adds docs/VISUAL_REVIEW_0_8_1.md and fixes the
-stale screenshot-branch name. This handoff update is also docs-only. No source changes
-sinceff349; all26illustration resources already uploaded. Working tree was clean
-before this handoff rewrite; inspect git status/log for the containing commit.
+Workflow**40003600528**: pinnedemulator37.2.12.0/build16428233; build/lint/domain/
+instrumentation compilation PASS and**198tests/API28/35/36 PASS**.
+Jobs28/35/36:120585761004 /120585761167 /120585761156.
+Canonical53capture job120589093869 PASS. Sourcefingerprint:
+cb1d7f46efd3a7ff06f5c010222f12f9346c1aea434f16223dac4a904122b951.
+API35APK**35762063bytes**, artifact**12523133161**, name
+Race-Day-Dreams-0.8.1-test1-debug-api-35. Screenshotartifact**12522469468**.
+This verifies all**15canonical**/26resource assets and the phase-caption spacingfix.
+Whole workflow remains red solely from strictguidance159missing; no release.
 
-Last FULL VERIFIED Android source **f55f346404d02ed5a30aa44f108b894b62816c33**:
-workflow**40001032343**, build/lint/domain/instrumentation compilation PASS,
-**198 instrumentation tests perAPI28/35/36 PASS**. Jobs28/35/36:
-120576844171 /120576844320 /120576844204. Canonical53capture job120580197027 PASS.
-Bot**13d08e4f2546cf2bc05acc5d7e7f9a520c618edb**, tree20b43cb43b2d0487734134b1c45c058cc059d544.
-All55screenshot-directory files (53PNG+source+fingerprint) adopted exactly inae98bc3.
-Source fingerprint95186626f4320de395326ef1bce3c46dce398af4fb5eec56c7b04d5c10d6a618.
-API35APK35552978bytes, artifact12521324947:
-Race-Day-Dreams-0.8.1-test1-debug-api-35. Screenshot artifact12521379670.
-This captures11canonical assets; next sourceff349 adds4more/caption-spacing fix.
-Do not certify later changes using this earlier successful matrix.
+Pending f7b0afa synchronizes app's bundledthird_party.md with root inventory and adds
+CIcmp to enforce equality. Other pending changes are docs/review/handoff. No new
+runtime code after the verifiedsource; this bundlednotice/workflow change still needs
+a freshmatrix/sourcefingerprint. All26art assets alreadyremote; no binaryupload.
+Currentlocalhead includes f7b0afa+b402f94plus thishandoff; inspect gitlog/status.
+
+NEXT PUSH: `publish05.py 341ced4` over ACTUAL bot tree859c..., preserve53PNGs.
+Comparecreatedtree tolocalHEADtree before leasedupdate_ref expected0e1780c....
+Allnewsource/notice/docs are then protected remotely. Recheckfreshworkflow afterward.
+No shell network permission requests: they stalled and were user-aborted.
 
 ## Completed engineering and UX
 
@@ -183,7 +186,7 @@ Berlinprojection/checksums/YAMLparse/bashsyntax/diffwhitespace PASS. Logs:
 Baseline0.8:59755assertions/40schema/187instrumentation perAPI.
 Eightnew Android reliability tests include2000activities+100000invalidrawpoints
 proving listqueries do not hydrate GPS. One additionalnew/legacyBerlinbackuptest.
-The latest four added assets/captionfix still need running40002513476 result.
+All15canonical assets and the caption fix are verified in40003600528.
 
 Observed earlierfailures fixed:
 - API28 SQLiteUNION numeric-affinity: explicitCASTbounds/kind.
@@ -196,7 +199,7 @@ Observed earlierfailures fixed:
 53actualcaptures retained; ownerreferences unchanged. Viewed compactPlan,Plan200%-dark,
 Bench,AnkleRocks,mobility-dark,Berlin,cable-row. Routinefamily recognisable/legible;
 Plan now~5days visible in realcombined-sessionfixture; all7scrollable. Cablephase
-captions touched and6195d59adds16dpgap, pendingnewcapture. Fullfidelitygate OPEN.
+captions touched;6195d59adds16dpgap, now visually verified in the pinned-run capture. Fullfidelitygate OPEN.
 README final8-screen curation stillpending; don'tmarketmockups asactualbuilds.
 AllphysicalS24GNSS/HC/BLE/TTS/music/battery/TalkBack checks UNVERIFIED (TEST_BUILD).
 0.8baselineAPKbytes/delta unmeasured. OldcheckpointAPK34940358 and35204614bytes;
@@ -204,20 +207,17 @@ latestfullverified11-guideAPK35552978bytes; current15-guide size awaitsCI.
 
 ## Next exact actions
 
-1. Inspect40002513476 (sourceff349) fullmatrix. Fix actualfailures, don'tblindrerun.
-   It should run198tests/API and53captures; strictguidance fails159asexpected.
-2. If canonicalbot advanced, adopt53exactPNGs+source metadata before pushingdocs.
-   Current docs-only commits afterd0d9527:8c3c095plus thishandoff. No newbinary uploads.
-   Use actualremoteheadtree, neverdiscardbotfiles. Compare localHEADtree to created
-   tree before leased update_ref. publish05.py d0d9527 emits pending textchunks;
-   replay overactualbottree, not old source tree. All26assets already remote.
+1. Push pending notice/workflow/docs over actualbot tree as above, inspect freshCI.
+   Runtime/UI/sourceassets all passed198/API in40003600528; don't infer a pass for
+   the newer inventory/workflow check. Strictcatalogue gate remains159missing.
+2. Preserve/adopt anynewbot53PNGs andsource metadata; neverdiscardbotfiles.
 3. Continuecanonicalcontent/art for159remaining IDs. FilesTechniqueIllustrations.java,
    TechniqueGuide.java, GuidanceArtwork.kt, TechniqueScreens.kt, resourcecreation/review.
 4. Four remaining licensedgeographies, originalofflinepresentation and cityart;
    preservegeometryIDs/assignments/preferences/backups. DreamRoutes.java/DreamDrawing.kt.
-5. Completevisualacceptance againstownerreferences inclfreshdark/200%, allrequired
+5. Completevisualacceptance againstownerreferences inclfreshdark/200%, required
    representativeguides. README/docs/releasenotes need accuratefinalupdates.
-6. Reviewremaininghistoryaggregateperformance/recoveryacceptance where justified;
+6. Assessremaininghistoryaggregateperformance/recoveryacceptance where justified;
    no seamlesscontinuity claim. Finalfullregression/backup/migrations/privacy/licences.
 7. Only afterallrequestedgates/CIgreen mergecoherentPR,postmergeverify/release/APK.
    No permanenttag now. No physicalacceptanceinvented.
@@ -229,8 +229,8 @@ additionalnetworkpermission thenstalled anduseraborted after2577seconds. No base
 APK downloaded. UseworkingGitHubconnectors/CI andhonestlyreportunmeasuredsize.
 LocalAndroidSDK/Gradledownload unavailable; observedAndroidresults areactualGitHubCI.
 Connector/localSHAsdiffer; comparetrees. Source/botmetadata infunctionsstoremaypersist,
-butverifyactualrepo. Currentcapturebytes /workspace/scratch/081d-capture-*.json and
-081d-capture-meta.json; earlier50capture081c. Helperpublish05.py BASE_LOCAL emits
+butverifyactualrepo. Currentcapturebytes /workspace/scratch/081e-capture-*.json and
+081e-capture-meta.json; earlier53capture081d and50capture081c. Helperpublish05.py BASE_LOCAL emits
 50KBtextchunks; binaryuploadonlywhennewart. No needuploadexisting26again.
 
 ## Emulator infrastructure diagnosis at latest check
@@ -242,3 +242,19 @@ Successful40001032343logs identify emulator37.2.12.0/build16428233. CI now pins 
 exact observed-good emulator build using the action's documentedemulator-buildinput;
 allAPI28/35/36 remain. This needs a fresh fullrun. It is an infrastructurepin, not
 weakening an app test. Recheck current remotehead before pushing this sourcechange.
+
+## Bundled notice consistency
+
+The final audit found the Settings third-party inventory asset still described older
+schematic artwork. It is now synchronized byte-for-byte with rootTHIRD_PARTY.md,
+including Berlin attribution, and CI checks that equality. The dedicated complete
+Berlin MIT notice remains bundled/readable. This changes only bundled documentation
+and the build check; re-run current-source CI/captures before claiming final verification.
+
+## Final observed visual review at pinned checkpoint
+
+Viewed freshcable-row andPlan200%-dark. Captions are separated and wrap cleanly;
+largefont navigation/date/cards remain legible. All53actual files retain exactbot
+hashes. Fullfidelitygate remainsOPEN, because only15/174canonical exercises and one
+geographiccity are complete. No physicalS24acceptance claimed. LatestAPKbaseline0.8
+comparison remains unmeasured; current15guideAPK size is35762063bytes.

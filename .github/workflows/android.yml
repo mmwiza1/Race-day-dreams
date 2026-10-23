@@ -40,6 +40,7 @@ jobs:
           sh scripts/test-domain.sh
           python3 scripts/test-schema.py
           python3 scripts/test-release-notes.py
+          cmp THIRD_PARTY.md app/src/main/assets/third_party.md
           python3 scripts/generate-berlin-geometry.py --check
           java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java --report
       - name: Build, lint and compile instrumentation tests

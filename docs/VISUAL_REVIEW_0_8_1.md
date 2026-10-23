@@ -3,7 +3,8 @@
 Reviewed against the five untouched owner references. This is an engineering
 checkpoint, **not final design approval**. Actual sourcef55f346404d02ed5a30aa44f108b894b62816c33,
 workflow40001032343;53realAPI35captures retained frombot13d08e4f2546cf2bc05acc5d7e7f9a520c618edb.
-Later15-guide assets and phase-caption spacing need a new actual-build capture.
+Later15-guide assets and phase-caption spacing were recaptured/verified in
+sourcef61d7ac38d1aab6f4fd481e37a35d7171d06d5d5 /workflow40003600528.
 The current linked files update with canonical capture; the source record identifies
 what was inspected for this review. References are never shipped as app screenshots.
 
@@ -14,7 +15,7 @@ what was inspected for this review. References are never shipped as app screensh
 | RDL / Bench | [Strength reference](design-reference/1-1000157280.jpg) | [RDL](screenshots/exercise-rdl-howto.png), [Bench](screenshots/exercise-bench-howto.png) | Recognisable filled human figures and equipment replace primitive schematics for these movements. Separate movement phases, blue panel, cues/mistakes and written guidance follow the reference family. Coverage is only15/174 overall; full release gate fails. |
 | Walking Lunge | [Lunge reference](design-reference/5-1000157282.jpg) | [Lunge](screenshots/exercise-walking-lunge.png) | Large two-phase illustration, clear dose, concise instruction, mint tip, pink mistake, progress and48dp+Back/Next follow the requested hierarchy. |
 | Ankle Rocks | [Ankle reference](design-reference/4-1000157281.jpg) | [Ankle](screenshots/exercise-ankle-rocks.png) | Half-kneeling figure shows heel-down movement, clear arrow and guidance; routine controls remain visible. |
-| Cable movement | [Shared guidance style](design-reference/1-1000157280.jpg) | [Cable Row](screenshots/exercise-cable-row-howto.png) | Correct machine/handle positions and distinct frames. Long phase captions touched; explicit column spacing added after inspection, awaiting fresh capture. |
+| Cable movement | [Shared guidance style](design-reference/1-1000157280.jpg) | [Cable Row](screenshots/exercise-cable-row-howto.png) | Correct machine/handle positions and distinct frames. Long phase captions touched; explicit column spacing added after inspection and verified in the fresh pinned-run capture. |
 | Dark mode | Same family with dark tonal adaptation | [Routine](screenshots/mobility-dark.png), [Plan](screenshots/plan-dark.png) | Text, mint/pink cards and controls remain legible; images use self-contained pale illustration panels. This is visual inspection, not measured physical sunlight contrast or a human TalkBack pass. |
 |200%font| Responsive adaptation | [Plan](screenshots/plan-large-font.png) | Actionable icon-only navigation has semantic labels. Date controls stack separately; content wraps and scrolls. No Calen/dar-style bottom labels. Physical TalkBack and moving-run usability remain unchecked. |
 
