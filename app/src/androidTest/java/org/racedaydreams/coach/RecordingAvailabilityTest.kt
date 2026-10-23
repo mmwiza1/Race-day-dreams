@@ -34,6 +34,7 @@ class RecordingAvailabilityTest {
   compose.onNodeWithText("Record a run").performScrollTo().performClick()
   compose.waitUntil(20000){compose.onAllNodesWithText("Start GPS recording").fetchSemanticsNodes().isNotEmpty()}
   compose.onNodeWithText("Start GPS recording").assertIsEnabled()
+  compose.waitUntil(20000){compose.onAllNodes(hasText("to Health Connect",substring=true) and hasClickAction()).fetchSemanticsNodes().isNotEmpty()}
   val write=compose.onNode(hasText("to Health Connect",substring=true) and hasClickAction()).performScrollTo()
   if(available)write.assertIsEnabled()else{write.assertIsNotEnabled();compose.onNodeWithText("Health Connect is not currently available. Local recording and route export still work.").assertExists()}
  }
