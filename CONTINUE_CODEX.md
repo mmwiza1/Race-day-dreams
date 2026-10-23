@@ -242,3 +242,11 @@ Successful40001032343logs identify emulator37.2.12.0/build16428233. CI now pins 
 exact observed-good emulator build using the action's documentedemulator-buildinput;
 allAPI28/35/36 remain. This needs a fresh fullrun. It is an infrastructurepin, not
 weakening an app test. Recheck current remotehead before pushing this sourcechange.
+
+## Bundled notice consistency
+
+The final audit found the Settings third-party inventory asset still described older
+schematic artwork. It is now synchronized byte-for-byte with rootTHIRD_PARTY.md,
+including Berlin attribution, and CI checks that equality. The dedicated complete
+Berlin MIT notice remains bundled/readable. This changes only bundled documentation
+and the build check; re-run current-source CI/captures before claiming final verification.

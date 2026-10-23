@@ -122,4 +122,37 @@ no parser/sensor runtime dependency added. Official AndroidX Health Connect API 
 (Metadata/Device, Apache-2.0) was consulted for record identifiers/write metadata.
 No GPL/AGPL source, Garmin FIT SDK, proprietary provider SDK or map library was added.
 
-Prompt2 adds original MIT supportive line figures and city-inspired marathon schematics, not official course data or copied assets. Platform TTS/audio/vibration add no runtime dependency. See THIRD_PARTY.md.
+## Prompt 2 original content
+
+No runtime dependency, external route dataset, official marathon graphic, GPL code or
+photograph is added. The 14 supportive movement descriptions/line figures, 13 routines,
+execution/cue/prediction rules and five city-inspired Dream Route schematics are original
+Race Day Dreams work under this repository's MIT licence. The drawings are not actual
+or official surveyed marathon courses. No source geometry was copied. Platform Android
+TextToSpeech/AudioFocusRequest/VibrationEffect are used directly; no OpenTracks audio
+source was adapted. Existing Apache-compatible engineering references remain references.
+
+## 0.8 original assets and research
+
+No runtime/build dependency added. Semantic surfaces, technique figures, offline route
+rendering, landmarks and v2 Dream drawing anchors are original MIT project work.
+No organiser map, GPX, screenshot, logo, typography or map tiles were incorporated.
+Factual course research/reuse assessment is recorded in docs/DREAM_ROUTES.md. A public
+GPX download is not treated as a redistribution licence.
+
+## 0.8.1 artwork checkpoint
+
+New RDL, Bench Press, Walking Lunge and Ankle Rocks WebPs are original generated
+illustrations created for this project from original movement descriptions. They
+are bundled offline and contributed under the project MIT licence. No third-party
+exercise photographs/assets or organiser graphics were copied. Owner references
+are development acceptance documents, separate from production assets. Coverage
+and review are tracked in docs/exercise-artwork/README.md; full174 is not yet met.
+
+The Berlin2014 geographic dataset in docs/dream-route-data derives
+only coordinates from alexdjulin/running-events-map's participant GPX, under MIT
+(copyright2023 Alexandre Donciu-Julin). The original licence/source blob and
+transformations are retained there. New Berlin assignments use its separately versioned
+`berlin-2014-geo-v1` projection; historical assignments keep their old geometry.
+The full source MIT notice is bundled in assets/licences/berlin-2014-MIT.txt
+and readable in Settings. No provider metadata or health samples are included.
