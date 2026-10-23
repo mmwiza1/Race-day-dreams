@@ -48,4 +48,6 @@ class RunRecordingStoreTest:AndroidTestCase(){
     for(t in tables){val rows=mutableListOf<String>();upgraded.rawQuery("SELECT * FROM $t ORDER BY 1",null).use{c->while(c.moveToNext())rows.add((0 until c.columnCount).joinToString("|"){i->if(c.isNull(i))"<null>"else c.getString(i)})};assertEquals(t,before[t],rows)}
  }
 
+ fun testExternalGpxDoesNotInventMovingTimeOrAccuracy(){val xml="<gpx version='1.1'><trk><trkseg><trkpt lat='0' lon='0'><time>2026-10-01T00:00:00Z</time></trkpt><trkpt lat='0' lon='0.00003'><time>2026-10-01T00:00:01Z</time></trkpt><trkpt lat='0' lon='0.00006'><time>2026-10-01T00:00:02Z</time></trkpt></trkseg></trk></gpx>";val id=GpxFiles(context).importFrom(ByteArrayInputStream(xml.toByteArray()));val activity=FeatureStore(context).activities().first{it.id()==id};assertEquals("gpx",activity.source().provider());assertNull(activity.movingTime());assertTrue(RecordingStore(context).points(activity.source().recordId()).all{it.fix().accuracy()==null});assertNull(activity.averageHeartRate())}
+
 }
