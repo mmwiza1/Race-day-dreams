@@ -420,3 +420,8 @@ art assets and phase-caption spacing fix are later changes needing a fresh matri
 Actual compact Plan/Berlin/cable-row captures were reviewed. Full fidelity gate still
 open: geographic replacement is complete for onlyBerlin, guides15/174. Physical S24
 remains unverified. These are checkpoints, not a completed0.8.1 release claim.
+
+The later40002513476 API36 attempt stopped before tests on a corrupt latest-emulator
+SDK ZIP. Emulator37.2.12.0/build16428233 is the observed-good version from the earlier
+full matrix; CI now pins that version. Fresh verification of the pin is pending.
+This infrastructure failure is not counted as an application test pass/failure.
