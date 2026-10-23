@@ -68,3 +68,18 @@ interpolation, full-polyline clipping, old IDs and immutable registry reuse.
 Actual-build screenshot/reference acceptance is documented separately in
 [VISUAL_REVIEW_0_8_1.md](VISUAL_REVIEW_0_8_1.md). A passing data test does not prove
 visual fidelity, physical GNSS accuracy or a human accessibility check.
+
+### Five-city offline context follow-up
+
+Original RDD styling now draws sourced streets, green-space and water polygons behind
+the preserved full course and equivalent section. Selected ODbL geographic data come
+from a bounded, expressly permitted OpenFreeMap extract (not downloaded imagery or
+styles). There is no map SDK, runtime tile client, Internet permission or added runtime
+dependency. Exact source snapshot, per-tile checksums, retained positions, licensing
+and transformations are recorded in dream-route-data/basemap-*.json.
+
+The parser bounds input and verifies course-frame identity. Immutable data are loaded
+on an IO dispatcher and paths prepared on a background dispatcher; the canvas draws
+three cached context paths, retaining the route/highlight/markers on top. Existing
+legacy frames use their original presentation. Actual-build five-city/dark/large-font
+captures must still be reviewed after this change before closing the fidelity gate.

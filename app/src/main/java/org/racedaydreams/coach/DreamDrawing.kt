@@ -24,6 +24,12 @@ import org.racedaydreams.domain.support.DreamRoutes
     val panel=MaterialTheme.colorScheme.surfaceContainerLow
     val accent=MaterialTheme.colorScheme.primary
     val water=accent.copy(alpha=.14f)
+    val map=rememberDreamBasemap(route.id())
+    val dark=androidx.compose.foundation.isSystemInDarkTheme()
+    val mapPaper=if(dark) Color(0xff192936) else Color(0xffF2F5F8)
+    val mapGreen=if(dark) Color(0xff29493F) else Color(0xffDDEFE2)
+    val mapWater=if(dark) Color(0xff284E6B) else Color(0xffC6E4F6)
+    val mapRoad=if(dark) Color(0xff405362) else Color.White
     val highlighted=remember(route,start,finish){DreamRoutes.section(route,start,finish)}
     val landmarks=remember(route.id()){DreamRoutes.landmarks(route)}
     val rivers=remember(route.id()){DreamCartography.rivers(route.id())}
@@ -31,8 +37,9 @@ import org.racedaydreams.domain.support.DreamRoutes
         val vertices=route.vertices()+landmarks.map{DreamRoutes.Vertex(it.x(),it.y())}
         listOf(vertices.minOf{it.x()}-.75,vertices.maxOf{it.x()}+.75,vertices.minOf{it.y()}-.75,vertices.maxOf{it.y()}+.75)
     }
-    Canvas(Modifier.fillMaxWidth().height(280.dp).clip(RoundedCornerShape(20.dp)).background(panel).semantics{
-        contentDescription="Dream Route ${route.name()}. Full course in grey; highlighted equivalent ${decimal(start/1000)}–${decimal(finish/1000)} km. Ring marks section start; checkered marker marks section finish. Five kilometre markers. Numbered landmarks: ${landmarks.mapIndexed{i,l->"${i+1}, ${l.label()}"}.joinToString()}. Approximate geographic visual, not navigation or your physical location."
+    Canvas(Modifier.fillMaxWidth().height(280.dp).clip(RoundedCornerShape(20.dp)).background(if(map!=null)mapPaper else panel).semantics{
+        stateDescription=if(map!=null) "Offline city context ready" else "Course overview"
+        contentDescription="Dream Route ${route.name()}. Full course in grey; highlighted equivalent ${decimal(start/1000)}–${decimal(finish/1000)} km. Ring marks section start; checkered marker marks section finish. Five kilometre markers. Numbered landmarks: ${landmarks.mapIndexed{i,l->"${i+1}, ${l.label()}"}.joinToString()}. Simplified offline geographic context; not navigation or your physical location."
     }){
         val(minX,maxX,minY,maxY)=bounds
         val scale=minOf(size.width/(maxX-minX),size.height/(maxY-minY))
@@ -40,8 +47,22 @@ import org.racedaydreams.domain.support.DreamRoutes
         fun p(v:DreamRoutes.Vertex)=origin+Offset(((v.x()-minX)*scale).toFloat(),((v.y()-minY)*scale).toFloat())
         fun path(points:List<DreamRoutes.Vertex>)=Path().apply{points.forEachIndexed{i,v->val o=p(v);if(i==0)moveTo(o.x,o.y)else lineTo(o.x,o.y)}}
         clipRect{
-            // Symbolic river width; these are small-scale centrelines, not surveyed banks.
-            rivers.forEach{drawPath(path(it.vertices()),water,style=Stroke(16.dp.toPx(),cap=StrokeCap.Round,join=StrokeJoin.Round))}
+            val basemap=map
+            if(basemap!=null) {
+                // Unit-space geometry/path preparation is cached off-main. Three draw calls,
+                // irrespective of source feature count; raw user routes are never read here.
+                withTransform({
+                    translate(origin.x-(minX*scale).toFloat(),origin.y-(minY*scale).toFloat())
+                    scale(scale.toFloat(),scale.toFloat(),Offset.Zero)
+                }) {
+                    drawPath(basemap.green,mapGreen)
+                    drawPath(basemap.water,mapWater)
+                    drawPath(basemap.roads,mapRoad,style=Stroke(.85.dp.toPx()/scale.toFloat(),cap=StrokeCap.Round,join=StrokeJoin.Round))
+                }
+            } else {
+                // Legacy drawings retain their original frame and sourced river context.
+                rivers.forEach{drawPath(path(it.vertices()),water,style=Stroke(16.dp.toPx(),cap=StrokeCap.Round,join=StrokeJoin.Round))}
+            }
             drawPath(path(route.vertices()),paper,style=Stroke(7.dp.toPx(),cap=StrokeCap.Round,join=StrokeJoin.Round))
             drawPath(path(route.vertices()),outline,style=Stroke(3.dp.toPx(),cap=StrokeCap.Round,join=StrokeJoin.Round))
             drawPath(path(highlighted),accent.copy(alpha=.12f),style=Stroke(12.dp.toPx(),cap=StrokeCap.Round,join=StrokeJoin.Round))

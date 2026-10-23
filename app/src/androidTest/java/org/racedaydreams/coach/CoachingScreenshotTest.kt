@@ -225,6 +225,9 @@ class CoachingScreenshotTest {
     }
 
     private fun capture(name:String){
+        if(name.startsWith("dream-route")) {
+            compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Offline city context ready")).fetchSemanticsNodes().isNotEmpty()}
+        }
         compose.waitForIdle()
         // Compose idleness can precede SurfaceFlinger presenting the last frame.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()

@@ -47,6 +47,8 @@ jobs:
           python3 scripts/generate-new-york-geometry.py --check
           python3 scripts/generate-paris-geometry.py --check
           python3 scripts/generate-dream-context.py --check
+          python3 scripts/generate-dream-basemaps.py --check
+          python3 scripts/test-dream-map-source.py
           python3 scripts/verify-guidance-assets.py
           java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java --report
       - name: Build, lint and compile instrumentation tests

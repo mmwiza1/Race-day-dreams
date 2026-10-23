@@ -1,0 +1,33 @@
+Race Day Dreams offline geographic context, version1, checked23October2026
+
+OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors
+Data is available under the Open Database Licence (ODbL-1.0).
+https://www.openstreetmap.org/copyright
+https://opendatacommons.org/licenses/odbl/1-0/
+Full ODbL licence is bundled alongside this notice.
+
+Source: OpenFreeMap planet20261018_080001_pt, OpenMapTiles schema.
+https://tiles.openfreemap.org/planet
+https://openfreemap.org/tos/
+The provider explicitly permits bounded offline use (up to3000tiles or50MB,
+at most4parallelrequests, identifyingUser-Agent). Development extraction used
+40tiles/7,639,166bytes/3parallelrequests. OSMF vector tile servers were NOT used
+for this bundled dataset: their separate policy prohibits offline bulk downloads.
+
+Only selected street lines, green-space and water polygons are retained as DATA.
+No map images, styles, fonts, icons, renderer, SDK or source application code copied.
+The app has no network/map-tile client and no Internet permission. Original app
+styling, coordinate reader and Canvas renderer are MIT. Retained and projected
+geographic databases remain ODbL and are offered in machine-readable form at:
+https://github.com/mmwiza1/Race-day-dreams/tree/feature/0.8.1-design-guidance-reliability/docs/dream-route-data
+Each basemap-*.json includes retained latitude/longitude, exact frozen source URLs,
+source checksums, bounds, simplification details and licence/projection limitations.
+The app's matching .rddmap extracts are independently reproducible offline using
+scripts/generate-dream-basemaps.py. Original development source reader/preparation
+scripts are included; they are not part of the Android runtime.
+
+Overview only. Data can be incomplete/outdated. Course edition and underlying
+street snapshot can differ. NYC projection has metre-scale datum uncertainty.
+Neither this context nor course-equivalent progress is navigation, certified race
+geometry, the runner's GPS or training evidence. Existing saved course assignments
+are never reinterpreted in a different frame. No official event partnership.

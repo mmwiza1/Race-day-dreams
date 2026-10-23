@@ -65,3 +65,11 @@ Route assignment keeps its original geometry; preferences affect future runs onl
 No new runtime dependencies, permissions, Internet access, tracking, accounts or data
 uploads are introduced. Original artwork and application code are MIT; individual
 geographic datasets retain their documented MIT, CC0 or ODbL licences.
+
+### Offline city presentation follow-up
+
+All five geographic Dream Routes now include sourced street, green-space and water
+context with original light/dark styling. The data are bundled, so this works offline
+without map downloads, a map SDK or Internet permission. Sources/ODbL rights are
+recorded and credited. This follow-up still needs fresh actual-build screenshot
+comparison before the whole-release fidelity gate can be closed.

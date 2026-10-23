@@ -45,8 +45,8 @@ public final class DreamRoutes {
         "Original v2 course-inspired schematic; geographic replacement is still in progress. Not official course artwork or navigation.";}
     /** Visible produced-work attribution; full data notices remain available offline. */
     public static String attribution(Route route) {return switch(route.id()) {
-        case "new-york-2026-geo-v1" -> "Route data © OpenStreetMap contributors · ODbL";
-        case "paris-2024-olympic-geo-v1" -> "Route data: Thomas Krakow · ODbL";
+        case "new-york-2026-geo-v1", "london-historical-geo-v1", "berlin-2014-geo-v1", "tokyo-2026-geo-v1" -> "OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL";
+        case "paris-2024-olympic-geo-v1" -> "OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL. Course: Thomas Krakow · ODbL";
         default -> "";
     };}
     public record Landmark(String label,double x,double y,String shape){}

@@ -83,6 +83,7 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
         TextButton(onClick = { noticeAsset = "licences/new-york-2026-NOTICE.txt" }) { Text("New York route source attribution") }
         TextButton(onClick = { noticeAsset = "licences/paris-2024-NOTICE.txt" }) { Text("Paris2024 route source attribution") }
         TextButton(onClick = { noticeAsset = "licences/ODbL-1.0.txt" }) { Text("Open Database Licence") }
+        TextButton(onClick = { noticeAsset = "licences/dream-basemaps-NOTICE.txt" }) { Text("Offline city context attribution") }
         TextButton(onClick = { noticeAsset = "transitive-NOTICES.txt" }) { Text("Dependency notices") }
     }
     OutlinedButton(reset, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Delete local app data") }

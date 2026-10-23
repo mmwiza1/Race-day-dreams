@@ -122,3 +122,14 @@ Miniature landmark illustrations are original RDD Canvas work. No building image
 organiser maps, remote tiles or source application code copied. Source links:
 https://www.wikidata.org/wiki/Wikidata:Licensing
 https://www.naturalearthdata.com/about/terms-of-use/
+
+### Offline geographic context
+
+OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL-1.0.
+All five Dream Route contexts retain selected factual road/water/green-space DATA
+from the frozen20261018OpenFreeMap dataset, not downloaded artwork/styles or code.
+ODbL retained/projected databases are offered in docs/dream-route-data and app
+assets/dream-basemaps; source URLs/checksums and transformations are recorded per
+city. The provider explicitly permits the bounded development offline extract;
+see THIRD_PARTY.md and bundled licences/dream-basemaps-NOTICE.txt. Original reader,
+projection and styling remain MIT. Nothing is fetched by the app at runtime.

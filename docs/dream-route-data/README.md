@@ -107,3 +107,38 @@ London OSM relation 2086183/version 642 was examined, but naive ordered concaten
 would create 23 discontinuities/about 5.3 km of artificial connectors. It was not
 bundled. No official map image, logo, proprietary tile or uncertain geometry is
 substituted merely to make the visual look complete.
+
+## Offline geographic context (all five cities)
+
+The `basemap-*.json` databases contain factual road lines and water/green-space
+polygons from OpenFreeMap's frozen `planet/20261018_080001_pt` dataset, OpenMapTiles
+schema, OpenStreetMap data (ODbL-1.0). Each records the exact tile URLs/SHA256s,
+checked date, source bounds, retained latitude/longitude, licence and simplification.
+These data are separately ODbL, not relicensed MIT with the original app renderer.
+No map images, styles, proprietary tiles, fonts, icons or source code are copied.
+
+OpenFreeMap explicitly allows bounded offline use under https://openfreemap.org/tos/.
+Development preparation used40tiles/7,639,166bytes/3parallelrequests and an app-specific
+User-Agent. The OSMF vector endpoint has a different policy prohibiting offline bulk
+use; its research download is excluded. The Android app never requests either service.
+
+`prepare-dream-basemaps.py --cache /path/to/source-cache` can reconstruct the retained
+inputs from that existing cache. Only an explicit `--fetch` allows bounded development
+network retrieval. Review changes; this is not an automatic regeneration of stable
+user assignments. The original MVT wire-format decoder is development-only.
+`generate-dream-basemaps.py --check` reproduces the compact bundled `.rddmap` files
+entirely offline from the committed retained data. No source tiles ship in the APK.
+
+Projection uses each unchanged course frame. NYC context converts WGS84 through
+UTM18; metre-scale WGS84/NAD83 datum uncertainty is acceptable only for this decorative
+overview. No converted context becomes user distance, GPS or analysis evidence.
+Road fragments below roughly120m are omitted; RDP retains original positions with
+0.00007degree tolerance. This is incomplete overview context, not navigation or a
+claim that historical course editions match the2026street snapshot exactly.
+
+The parser bounds bytes/features/positions, rejects nonfinite/mismatched data and
+requires closed polygons. Domain tests load all five shipped files. Android tests
+also parse every packaged extract on API28/35/36. Three cached unit-space Canvas
+paths are prepared off-main, so redraw does not iterate/decode all source features.
+Landmark labels remain separate accessible text. Attribution is visible on every
+geographic card and full data/ODbL notices are available offline in Settings.

@@ -270,3 +270,15 @@ Canvas city vignettes are supplemental to numbered/labelled accessible anchors.
 ODbL coordinate databases remain separately licensed from MIT application code.
 Neither geography nor presentation modifies actual GPS, stored equivalent offsets,
 runner decisions, training load or the authoritative recording/execution engines.
+
+### 0.8.1 offline city context
+
+DreamBasemap is a bounded Android-independent parser for bundled ODbL geographic
+extracts, separate from run samples and the immutable DreamRoutes course registry.
+DreamBasemapArtwork loads only the selected frozen frame off-main, caches immutable
+data for five cities and prepares three unit-space paths off-main. DreamDrawing
+renders original water/green/road styling plus preserved course/progress markers.
+No runtime tile client, network SDK or user GPS query is involved. Failed/mismatched
+context cannot alter a course assignment, recording or actual distance. Data-notice
+links and attribution remain readable offline; source preparation is a development
+tool, never part of the Android runtime.

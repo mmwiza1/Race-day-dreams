@@ -228,3 +228,26 @@ Miniature landmark illustrations are original RDD Canvas work. No building image
 organiser maps, remote tiles or source application code copied. Source links:
 https://www.wikidata.org/wiki/Wikidata:Licensing
 https://www.naturalearthdata.com/about/terms-of-use/
+
+## Offline geographic context data (0.8.1)
+
+All five geographic Dream Routes now use original RDD styling of a bounded ODbL
+extract from OpenFreeMap's frozen `planet/20261018_080001_pt` OpenMapTiles-schema
+OpenStreetMap data. Visible credit: **OpenFreeMap © OpenMapTiles · © OpenStreetMap
+contributors · ODbL**. The database remains ODbL; original reader/projection/renderer
+code remains MIT. No third-party code, images, map styles, icons, fonts, SDK or
+runtime network client is incorporated. No runtime dependency/permission added.
+
+The provider explicitly permits bounded offline downloads at
+https://openfreemap.org/tos/ . Development used40tiles/7,639,166bytes/3parallel
+requests with an identifying User-Agent, below its3000tile/50MB/4request limits.
+The OSMF vector service's different no-offline policy was reviewed and respected;
+its research tile is excluded from all retained data. No proprietary tiles used.
+
+Machine-readable retained coordinates, exact frozen URLs/SHA256s, bounds and
+simplification notes: `docs/dream-route-data/basemap-*.json`. These derived
+geographic databases and the projected `assets/dream-basemaps/*.rddmap` are offered
+under ODbL. Full licence and attribution notice are bundled/readable in Settings.
+The app ships compact data only, not source tile archives. Original lightweight
+MVT wire/geometry decoder is a development tool, not copied software or a new app
+dependency. Context is decorative/approximate, never used as run distance evidence.
