@@ -33,7 +33,7 @@ Implementation checkpoint; not yet a completed/released build.
 
 ## Known limitations
 
-- This checkpoint has 11 canonical illustrated exercise entries and complete14/14
+- This checkpoint has 15 canonical illustrated exercise entries and complete14/14
   built-in routine artwork; full174/174 canonical coverage is **not** complete.
 - Berlin now has a separately versioned historical geographic trace. The other
   four Dream Route geography replacements and full screenshot/reference acceptance

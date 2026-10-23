@@ -33,6 +33,13 @@ public record TechniqueGuide(String pattern,String setup,String movement,List<St
             case "curl" -> {cues=Immutable.list("Adjust the pad and pivot to your leg length","Keep the hips supported","Control both directions");mistakes=Immutable.list("Lifting the hips to move the load","Swinging the lower legs","Using an uncomfortable machine setup");}
             default -> {cues=Immutable.list("Use a stable support","Pause and control the lowering","Choose a comfortable range");mistakes=Immutable.list("Bouncing instead of controlled movement","Losing balance","Using a load that changes the intended action");}
         }
+        if(id.equals("deadlift")||id.equals("trap-bar-deadlift")) {
+            cues=Immutable.list("Brace before lifting","Keep the whole foot stable","Extend hips and knees together","Lower under control");
+            mistakes=Immutable.list("Jerking the load from the floor","Leaning backwards at the finish","Letting the back position change uncontrollably");
+            if(id.equals("deadlift"))setup="Place the bar over your mid-foot close to the shins; bend hips and knees, grip outside your legs and brace before lifting.";
+        }
+        if(id.equals("back-squat"))setup="Set suitable rack safeties, support the bar across the upper back rather than the neck, grip securely and take a stable stance before bending.";
+        if(id.equals("pull-up"))cues=Immutable.list("Grip a secure bar","Keep your trunk and legs controlled","Lower your body smoothly without swinging");
         return new TechniqueGuide(pattern,setup,movement,cues,mistakes,muscles,alternatives);
     }
 }

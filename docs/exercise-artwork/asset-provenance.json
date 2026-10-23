@@ -23,6 +23,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_barbell_row.webp",
+      "bytes": 66168,
+      "sha256": "62e74724feb1ee216215aecd6b37b2dc3c25a22e2566636a5a65d8d387b70da2",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_bench_press.webp",
       "bytes": 45130,
       "sha256": "19e032bbe6712e84f4247350f712b427e6876247389d03c00a983afcb0092265",
@@ -79,6 +86,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_hip_thrust.webp",
+      "bytes": 34192,
+      "sha256": "94433f8952172b0b58a07d7b47d26b959a09aed11c83b4f230aad5d9fe09b3b3",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_leg_swings.webp",
       "bytes": 38448,
       "sha256": "939af4ed4252f315bf42e18c263f6cb4b6a289bc02298e461eee49e39c294180",
@@ -103,6 +117,13 @@
       "file": "app/src/main/res/drawable-nodpi/guide_plank.webp",
       "bytes": 25956,
       "sha256": "51db165c2d554d8230f29b281c344c6490f43001b17ea2420428f9299041f3ce",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_pull_up.webp",
+      "bytes": 44250,
+      "sha256": "d0398fd70fab5f75d779d4b67e1332c0e2b656b9654928d0b993dacadcc61053",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
       "licence": "MIT project contribution"
     },
@@ -138,6 +159,13 @@
       "file": "app/src/main/res/drawable-nodpi/guide_strides.webp",
       "bytes": 41650,
       "sha256": "e3376bda8c2e46f9e58e647242f4ef7e8f0cb5af1518da41d5c8056d1f65a170",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_trap_bar_deadlift.webp",
+      "bytes": 63284,
+      "sha256": "a99ec7a9b449e1285285567626362ddfff3dd7b1717d88da9a17b84a6a21d5a8",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
       "licence": "MIT project contribution"
     },

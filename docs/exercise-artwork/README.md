@@ -64,3 +64,13 @@ are in asset-provenance.json. The originals remain under /workspace/generated_im
 for this execution workspace; the distributable reviewed assets are version-controlled.
 No unsupported canonical movement is counted as illustrated. The strict audit still
 fails163 missing canonical IDs, recorded in missing-canonical-ids.txt.
+
+## Further canonical movement review
+
+Trap-Bar Deadlift, Barbell Row, Pull-Up and Hip Thrust now have distinct reviewed
+sequences. Coverage is **15/174**,26 packaged WebPs;14/14 routine art unchanged.
+The hip-thrust draft was regenerated with full bench/foot margins. Trap-bar imagery
+shows the athlete inside the hexagonal frame with side handles; it is not a reused
+straight-bar deadlift. Deadlift cues now correctly permit the intended knee bend,
+rather than inheriting the RDL-specific warning against turning a hinge into a squat.
+Exact159missing canonical IDs remain in missing-canonical-ids.txt.
