@@ -5,7 +5,8 @@ conditions, guarantee race outcomes or promise to prevent injury.
 
 The 0.3.0-test1 app generates original heuristic training prescriptions and offers
 specific runner-controlled adjustments from raw evidence. It does not diagnose
-recovery conditions, estimate injury probability or predict race results. A calculated target pace
+recovery conditions, estimate injury probability or guarantee race results. The current race engine shows evidence-qualified ranges,
+not exact outcomes. A calculated target pace
 is arithmetic from the runner's selected finish time, not an assessment that the
 pace is suitable.
 
@@ -77,3 +78,17 @@ not the rounded score. A short preparation horizon is explained without forcing
 rapid mileage increases. Session-RPE and lower-body strength classifications are
 context heuristics, not medical fatigue/fitness measurements. See TRAINING_ENGINE.md
 for exact rules and limitations. Real-world coaching efficacy is not established.
+
+## Live guidance and supporting routines
+
+Pace/audio are optional guidance. Effort, conditions and runner judgement take
+precedence; pause, skip or finish remain available. No device signal establishes
+medical readiness. Recovery suggestions need corroborated context and explicit
+runner choice. Race estimates are ranges with evidence limitations, never guarantees.
+
+Warm-up/cool-down/mobility copy and line figures provide general movement guidance,
+not individual form assessment or injury treatment. Keep movements comfortable;
+stop if painful and seek qualified in-person advice when unsure. Mobility completion
+never changes training adherence, produces missed-workout warnings or promises injury
+prevention. Count preparation jogging within prescribed warm-ups rather than adding
+catch-up mileage. Marathon preparation conserves energy rather than copying a 5K routine.

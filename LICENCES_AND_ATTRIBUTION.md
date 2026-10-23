@@ -32,3 +32,9 @@ Native recording, health-context rules, GPX adapter and archive implementation a
 Race Day Dreams code (MIT). OpenTracks (Apache-2.0) was an engineering reference, with no
 source/assets copied. Android's bundled XML parser supplies XML parsing; no additional
 library licence or proprietary FIT/Samsung binary is incorporated. See THIRD_PARTY.md.
+
+Supportive movement drawings and the five Dream Route schematics introduced in Prompt2
+are original MIT Race Day Dreams work. The route drawings are abstract city-inspired
+marathon equivalents, not official courses or navigation. No event branding, third-party
+route geometry, commercial illustrations or GPL source was incorporated. Platform
+audio/TTS/vibration APIs add no bundled third-party dependency.

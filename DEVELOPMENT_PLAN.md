@@ -1,4 +1,4 @@
-# Development status — 0.6.0-test1
+# Development status — 0.7.0-test1
 
 The app recommends. The runner decides. The plan adapts.
 
@@ -54,10 +54,10 @@ Automatic time/distance strength progression stays conservative (hold/review);
 repetition/load suggestions have explicit runner approval and retained decisions.
 Technique figures are original schematics, not individual form assessment.
 
-## 0.6 Prompt 1 increment (current feature branch)
+## Preserved 0.6 Prompt 1 increment
 
-Health Intelligence and native recording are being verified on
-`codex/health-intelligence-run-engine`, PR #7. Optional health records and personal
+Health Intelligence and native recording merged via PR #7, verified on main
+`e381231f8a4c7483dea1c869df2f114a2bf2ba5f`. Optional health records and personal
 trends; foreground GNSS service and monotonic metrics; pause/auto-pause/gap policies;
 crash staging; BLE HR/real cadence; GPX; separate write-back; companion recording archive
 are implemented. This section supersedes earlier statements that GPX/native recording
@@ -65,5 +65,21 @@ are future-only boundaries. Hardware behaviour remains subject to TEST_BUILD.md 
 
 See docs/RUN_ENGINE.md for genuine limits (recover-finalize rather than continue after
 process death; two-file backup; no GPX sensor extensions; no route/HR HC write-back).
-Prompt 2 Live Coach/structured execution/Race Day/routes/routines remains deferred.
+Prompt 2 implementation and remaining limits are recorded below.
 No direct Samsung integration, map dependency, Internet or account was added.
+
+## 0.7 Prompt 2 increment
+
+Branch codex/live-coach-race-day, PR #8. Deterministic service-owned execution,
+qualified cues/local TTS/haptics, corroborated optional recovery alternatives, race
+ranges/strategy/official result links, support routines/original figures, persisted
+Dream Route equivalents, combined backup and bounded native sample hydration.
+Schema8, JSON6 (reads1–5), recording archive2 (reads1), complete ZIP1.
+
+Verification is incremental; consult VERIFICATION.md for actual observed source/run
+results. Physical audio/GPS/BLE/OEM battery/accessibility behaviour remains unverified.
+Course drawings are original city-inspired schematics, not verified event geometry.
+The planner's existing prescriptions remain intact; arbitrary interval authoring,
+repeat/restart-rep UI, configurable race checklist and targeted late-run RPE are
+not implemented. Richer course data needs a separately verified provenance/licence.
+Wear OS, maps/tiles, public release, cloud/accounts/LLM/social remain out of scope.

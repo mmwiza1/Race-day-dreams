@@ -67,8 +67,10 @@ class CoachingScreenshotTest {
         evidence.saveHistorical(HistoricalStrengthRecord("demo-approx",exercise,72.5,5,today.minusDays(60),HistoricalStrengthRecord.DatePrecision.APPROXIMATE,"Approximate date; test-only"))
         coach.saveStrength(StrengthSession("demo-strength",plan.workouts().filter{it.date()<today}.maxBy{it.date()}.date().atTime(18,0).toInstant(ZoneOffset.UTC),ZoneOffset.UTC,Duration.ofMinutes(50),7.0,"Test-only fixture",
             listOf(StrengthSession.ExerciseSets(exercise,listOf(StrengthSession.SetEntry("demo-set1",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set2",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set3",5,80.0,7.0,false))))))
+        // Fix only the test assignment; production still randomly assigns and persists once.
+        store.activitySummaries().forEachIndexed{i,a->a.distanceMetres()?.takeIf{it>0}?.let{metres->val route=org.racedaydreams.domain.support.DreamRoutes.routes()[i%5];SupportStore(context).save("dream",a.id(),org.json.JSONObject().put("version",1).put("route",route.id()).put("start",kotlin.math.min(10000.0,kotlin.math.max(0.0,42195-metres))).put("distance",metres))}}
     }
-    @After fun clear(){scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
+    @After fun clear(){org.racedaydreams.recording.RunRecordingService.status.value=null;org.racedaydreams.recording.RunRecordingService.workoutState.value=null;org.racedaydreams.recording.RunRecordingService.savedActivity.value=null;scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
     @Test fun capturesCurrentBuildScreensAndVerifiesCoachingNavigation() {
         scenario=ActivityScenario.launch(CoachActivity::class.java)
         await("Your running, your way");capture("home")
@@ -76,6 +78,8 @@ class CoachingScreenshotTest {
         click("Plan");await("Your training programme");capture("training-plan")
         compose.onAllNodesWithText("View workout and purpose")[0].performScrollTo().performClick()
         await("Workout structure");capture("planned-workout")
+        compose.onNode(hasText("Warm-up ·",substring=true)).performScrollTo().performClick();compose.waitUntil(20000){compose.onAllNodes(hasText("1 of ",substring=true)).fetchSemanticsNodes().isNotEmpty()};capture("warm-up");back()
+
         back();click("Calendar");await("Activity calendar");capture("history")
         click("Week");await("Training calendar");capture("calendar-week")
         click("Month");await(LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("MMMM uuuu",java.util.Locale.UK)));capture("calendar-month")
@@ -83,6 +87,7 @@ class CoachingScreenshotTest {
         // Open the first real retained activity through the Calendar screen.
         compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
         await("Run detail");capture("activity-detail")
+        val dreamHeading=compose.onNode(hasText("Your Dream Route ·",substring=true)).fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].first().text;alignHeading(dreamHeading);capture("dream-route")
         compose.onNodeWithText("Compare this run").performScrollTo().performClick();alignHeading("Compare this run");capture("run-comparison")
         alignHeading("Run Score and feedback");capture("run-feedback")
         back();click("Progress");await("Running PBs");capture("progress")
@@ -106,7 +111,14 @@ class CoachingScreenshotTest {
         click("⚙ Settings");await("Settings")
         capture("settings");alignHeading("Activity data source");capture("data-sources")
         compose.onNodeWithText("Personal health context").performScrollTo().performClick();await("Personal health context");compose.waitForIdle();capture("health-context");back();back()
-        click("Home");compose.onNodeWithText("Record a run").performScrollTo().performClick();await("Start GPS recording");capture("record-run");back();click("⚙ Settings");await("Settings")
+        click("Home");compose.onNodeWithText("Record a run").performScrollTo().performClick();await("Start GPS recording");capture("record-run")
+        val live=org.racedaydreams.domain.execution.WorkoutExecutionEngine(listOf(org.racedaydreams.domain.execution.WorkoutExecutionEngine.Step("Controlled interval",WorkoutSegment.Kind.RUN,800.0,null,295.0,305.0,7.0)))
+        val liveState=live.update(org.racedaydreams.domain.execution.WorkoutExecutionEngine.Input(200.0,60000,60000,300.0,true,false))
+        InstrumentationRegistry.getInstrumentation().runOnMainSync{org.racedaydreams.recording.RunRecordingService.workoutState.value=liveState;org.racedaydreams.recording.RunRecordingService.status.value=org.racedaydreams.domain.recording.RunMetricsEngine.Status(200.0,60000,60000,300.0,"Synthetic GPS trace (test fixture)",false)}
+        await("600 m remaining");capture("live-coach")
+        InstrumentationRegistry.getInstrumentation().runOnMainSync{org.racedaydreams.recording.RunRecordingService.status.value=null;org.racedaydreams.recording.RunRecordingService.workoutState.value=null}
+        back();click("Home");compose.onNodeWithText("Race preparation & Race Day").performScrollTo().performClick();await("Your pacing strategy");capture("race-day");back()
+        click("Plan");compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility");back();back();click("⚙ Settings");await("Settings")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle();capture("onboarding")
         back();click("⚙ Settings");await("Settings")

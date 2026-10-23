@@ -50,3 +50,9 @@ onboarding, settings/Health Connect and shoes. File names are listed by the capt
 fixture and in `docs/screenshots`; `source-commit.txt` records their verified source.
 
 The 0.6 fixture includes `health-context.png` and `record-run.png`. Health observations are explicitly test-only cache fixtures; the recording capture shows the ready screen, not fabricated live GNSS.
+
+0.7 captures add warm-up, optional mobility, race preparation, a stored Dream equivalent
+and the actual active-run panel. The latter receives a deterministic execution-engine
+trace through test-only StateFlows; no such seeding path is compiled into production.
+These captures do not establish physical GNSS, BLE, TTS or music behaviour. Test teardown
+always clears injected recording state, including when a capture fails.

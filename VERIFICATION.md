@@ -1,3 +1,46 @@
+# Verification — Live Coach / race support (0.7.0-test1)
+
+Starting main e381231f8a4c7483dea1c869df2f114a2bf2ba5f. Branch
+codex/live-coach-race-day; PR #8. Version0.7.0-test1/code8, schema8, JSON6,
+raw recording archive2 and complete package1. Existing schema/JSON readers remain.
+
+Observed local results: 59,582 domain assertions (including1,850 LiveCoach checks),
+38 actual-DDL schema tests. These are assertion counts, not59,582 named test cases.
+Tests include distance/time/repetitions, interpolated boundaries, pauses/skips/early
+finish, cue grace/hysteresis/priority and injectable sink, work-only pace scoring,
+corroborated health, evidence-gated race ranges, stable route bounds and 2/4/5.5-hour
+execution replay. Schema coverage tests every1–7 upgrade and rollback.
+
+Checkpoint e1209923e5bd3c6092f00c838a9d876f30e33864 passed Actions39914879539:
+Android build/lint/test assembly and160 instrumentation tests per API28/35/36.
+Checkpoint53eafc337e321f2d33e22adbd7eca1a4de1f289b passed Actions39915839214:
+Android build/lint/test assembly and170 tests per API28/35/36, including combined
+backup, sample/assignment restore, corruption retention, optional routines without
+calendar entries and schema7→8 retention. Authentic capture publication also passed.
+Final source `42a7cf1ae66a82bf0937627341322d7a40b0f238` passed
+[workflow39920357014](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39920357014):
+59,582 domain assertions, 38 schema tests, debug/test APK assembly and lint,
+and **174 instrumentation tests on each API28/35/36**. The canonical screenshot
+job120306521330 passed and published 41 real-build PNGs; final captures were reviewed
+and adopted without modification. Screenshot source fingerprint:
+`e09acea76c0152d868a19f0bcdb7fce547f5feaf1f7df34a92ce70178788aabb`.
+API35 artifact [12486989330](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39920357014/artifacts/12486989330)
+is `Race-Day-Dreams-0.7.0-test1-debug-api-35`, containing
+`Race-Day-Dreams-0.7.0-test1-debug.apk`. This is the verified source build;
+PR8 and Actions track final documentation-head and merged-main verification.
+No merge or post-merge result is inferred from this source run.
+
+Local Android invocation was attempted: default cache is unwritable; with a workspace
+Gradle cache the distribution download fails with SocketException: Operation not
+permitted. Do not repeatedly retry it. Actual Android results come from GitHub-hosted
+builds/emulators. No physical S24, GPS/BLE/music/battery/coaching-efficacy pass is claimed.
+Follow TEST_BUILD.md. Complete-backup limits and intentionally absent UI/features are
+explicit in docs/LIVE_COACH.md and DEVELOPMENT_PLAN.md. Dream drawings are original
+city-inspired schematics, not verified course geometry. No Internet permission,
+new runtime dependency, official event asset, proprietary SDK or copied source added.
+
+The records below describe earlier releases.
+
 # Verification — Health Intelligence + native Run Engine (0.6.0-test1)
 
 Starting main `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba`; owner handoff update

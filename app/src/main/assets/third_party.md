@@ -121,3 +121,5 @@ LocationManager, Bluetooth SIG Heart Rate profile and Android XmlPullParser are 
 no parser/sensor runtime dependency added. Official AndroidX Health Connect API source
 (Metadata/Device, Apache-2.0) was consulted for record identifiers/write metadata.
 No GPL/AGPL source, Garmin FIT SDK, proprietary provider SDK or map library was added.
+
+Prompt2 adds original MIT supportive line figures and city-inspired marathon schematics, not official course data or copied assets. Platform TTS/audio/vibration add no runtime dependency. See THIRD_PARTY.md.

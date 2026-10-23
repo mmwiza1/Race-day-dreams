@@ -13,7 +13,7 @@ import org.racedaydreams.domain.*
 import org.racedaydreams.domain.coaching.*
 
 @Composable
-fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String) -> Unit, editGoal: () -> Unit, strength: (LocalDate) -> Unit = {}) {
+fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String) -> Unit, editGoal: () -> Unit, strength: (LocalDate) -> Unit = {},routines:()->Unit={}) {
     var confirm by rememberSaveable { mutableStateOf(false) }
     var overview by rememberSaveable { mutableStateOf(false) }
     var week by rememberSaveable { mutableIntStateOf(0) }
@@ -72,6 +72,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             Text("${state.planVersions.size} preserved plan versions. Earlier prescriptions remain available when linked to a completed run.")
             OutlinedButton(onClick = { confirm = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Rebuild remaining programme…") }
         }
+        MobilitySupportCard(routines)
         CoachButton("Edit goal and routine", editGoal)
         Text("Fitness guidance, not medical care. Stop exercise and seek appropriate medical advice for chest pain, fainting or severe difficulty breathing.")
     }
@@ -90,7 +91,7 @@ fun WorkoutCard(state: CoachUiState, workout: PlannedWorkout, completed: Boolean
 }
 
 @Composable
-fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?, openActivity: (String) -> Unit) {
+fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?, openActivity: (String) -> Unit, startRun: (String,String) -> Unit = {_,_->}, routine:(String,String?)->Unit={_,_->}) {
     val version = state.currentPlan
     val workout = version?.plan()?.workouts()?.firstOrNull { it.id() == id }
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
@@ -104,6 +105,11 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Runner-owned race")
             val briefing=org.racedaydreams.domain.coaching.WorkoutContext.briefing(workout,state.plannedWorkouts,state.activities,state.strengthSessions,state.weeklyReview)
             CoachCard { Text("Today’s focus",style=MaterialTheme.typography.titleMedium);Text(briefing.title());WhyDetails(briefing.observations().joinToString("\n"),"Before you run") }
+            if(workout.date()>=LocalDate.now()&&state.activities.none{it.plannedWorkoutId()==workout.id()})RecoveryContextSection(state,model,if(workout.category()==WorkoutCategory.RACE)null else workout.id())
+            CoachButton("Start with Live Coach"){startRun(version.id(),workout.id())}
+            val warm=org.racedaydreams.domain.support.RunningRoutines.warmup(workout.category(),version.goalSnapshot().raceGoal().distance().kilometres())
+            WarmupSupportLink(warm,workout.id()){routine(warm,workout.id())}
+            TextButton(onClick={routine(if(workout.category()==WorkoutCategory.LONG_RUN||org.racedaydreams.domain.coaching.AdaptiveCoachingEngine.isQuality(workout.category())||workout.category()==WorkoutCategory.RACE)"cool-demanding"else"cool-easy",workout.id())}){Text("View optional cool-down")}
             CoachHeading("Workout structure")
             workout.segments().forEachIndexed { index, segment -> CoachCard {
                 Text("${index + 1}. ${segment.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}}", style = MaterialTheme.typography.titleMedium)

@@ -121,3 +121,17 @@ Native run write-back is separate and explicit: WRITE_EXERCISE and WRITE_DISTANC
 Stable client IDs prevent duplicate retries; records with this app's origin are excluded
 from exercise import. Sleep/HRV/resting-HR/steps are read-only. Route, HR and cadence
 write-back remain deliberately unimplemented. See docs/RUN_ENGINE.md.
+
+## Corroborated coaching context (0.7)
+
+RecoveryCoaching uses the measured personal trends plus actual running/RPE/strength
+evidence. A low sleep trend alone does not cancel training. Suggestions require low
+sleep + elevated RHR + high recent running load, low comparable-source HRV + repeated
+high RPE, or low sleep + repeated high RPE + hard lower-body work. Steps remain an
+independent activity observation, not invented running stress. These are original
+product heuristics, not diagnoses. Missing/poor coverage contributes no concern.
+
+The planned-workout screen explains corroboration and previews a runner-chosen easy
+alternative. Acceptance creates one new plan version at the same distance/time ceiling;
+other workouts, goal and recurring days stay unchanged. Existing move/skip/review
+controls remain. There is no new Health Connect permission in this increment.
