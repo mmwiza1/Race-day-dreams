@@ -18,17 +18,19 @@ import org.racedaydreams.domain.strength.TechniqueGuide
     val guide=TechniqueGuide.forExercise(id)
     if(guide==null){Text("A visual guide for this exercise is not available yet. Choose a familiar movement or seek qualified coaching.");return}
     Text("How to do it",style=MaterialTheme.typography.titleLarge)
-    listOf("Setup" to guide.setup(),"Movement" to guide.movement(),"Controlled return" to "Reverse the movement under control. Keep the same stable support and comfortable range.").forEachIndexed{i,pair->SemanticCard(Tile.Strength){
-        Text("${i+1}. ${pair.first}",style=MaterialTheme.typography.titleMedium)
-        TechniqueDrawing(id,guide.pattern(),i,pair.second)
-        Text(pair.second)
-    }}
-    Text("Key cues",style=MaterialTheme.typography.titleMedium);guide.cues().forEach{Text("• $it")}
-    if(id=="romanian-deadlift")Text("Brace your trunk · hinge at the hips · keep the bar close · control the lowering phase")
-    Text("Common mistakes",style=MaterialTheme.typography.titleMedium);guide.mistakes().forEach{Text("• $it")}
+    val art=exerciseArtwork(id)
+    if(art!=null) {
+        IllustratedMovement(art)
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround) { art.phases.forEachIndexed { i,label -> Text("${i+1}. $label",style=MaterialTheme.typography.labelMedium,modifier=Modifier.weight(1f)) } }
+        GuidanceCard { Text("How to do it",style=MaterialTheme.typography.titleMedium);Text("1. ${guide.setup()}");Text("2. ${guide.movement()}");Text("3. Return under control and reset before the next repetition.") }
+    } else {
+        listOf("Setup" to guide.setup(),"Movement" to guide.movement()).forEachIndexed { i,pair -> GuidanceCard { Text("${i+1}. ${pair.first}",style=MaterialTheme.typography.titleMedium);TechniqueDrawing(id,guide.pattern(),i,pair.second);Text(pair.second) } }
+    }
+    GuidanceNote("Key cues",guide.cues().joinToString("\n"){"✓ $it"})
+    GuidanceNote("Common mistakes",guide.mistakes().joinToString("\n"){"• $it"},caution=true)
     Text("Primary muscles: ${guide.muscles()}")
     Text("Alternatives: ${guide.alternatives().joinToString()}")
-    WhyDetails("General technique guidance. Start conservatively and seek qualified in-person coaching if you are unsure about a movement. Drawings are schematic and do not prescribe an exact joint angle.","About this guidance")
+    WhyDetails("General technique guidance. Start conservatively and seek qualified in-person coaching if you are unsure about a movement. Illustrations are general guidance, not individual form assessment or an exact joint-angle prescription.","About this guidance")
 }
 @Composable private fun TechniqueDrawing(id:String,pattern:String,frame:Int,description:String){
     val ink=MaterialTheme.colorScheme.onSurface;val load=MaterialTheme.colorScheme.primary;val muscle=MaterialTheme.colorScheme.tertiary;val skin=Color(0xFFCF9B7C);val hair=Color(0xFF4A3028)

@@ -36,7 +36,7 @@ public final class FeatureStoreTest extends AndroidTestCase {
         assertTrue(profile.preferences().runningDays().contains(DayOfWeek.TUESDAY));
         assertTrue(profile.preferences().gymDays().contains(DayOfWeek.TUESDAY));
         assertEquals("{\"step\":2}",profiles.loadDraft().get());
-        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){assertEquals(9,db.getVersion());}
+        try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){assertEquals(10,db.getVersion());}
         store.saveShoe(shoe("new",true));assertEquals(1,store.shoes().size());
     }
     public void testPublishedVersionTwoUpgradesWithoutChangingNotesOrOtherData() throws Exception {
@@ -289,7 +289,7 @@ public final class FeatureStoreTest extends AndroidTestCase {
         assertEquals("migration-shoe",store.shoes().get(0).id());assertEquals("official",store.results().get(0).id());
         assertEquals("planned",store.plannedWorkouts().get(0).id());assertEquals(7L,store.plannedWorkoutRevision("planned"));
         try(SQLiteDatabase db=getContext().openOrCreateDatabase(ProfileDatabase.NAME,0,null)){
-            assertEquals(9,db.getVersion());
+            assertEquals(10,db.getVersion());
             try(Cursor c=db.rawQuery("SELECT name FROM sqlite_master WHERE name='activity_annotations_v3'",null)){assertFalse(c.moveToFirst());}
             try(Cursor c=db.rawQuery("PRAGMA table_info(activity_annotations)",null)){while(c.moveToNext())if(c.getString(1).equals("notes"))assertEquals(0,c.getInt(3));}
             db.setForeignKeyConstraintsEnabled(true);

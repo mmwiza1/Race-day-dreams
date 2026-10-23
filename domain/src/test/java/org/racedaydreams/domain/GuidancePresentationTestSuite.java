@@ -14,6 +14,11 @@ public final class GuidancePresentationTestSuite {
         var elevated=HealthContextSummary.of(new Trend(Metric.RESTING_HR,"source",62.0,55.0,4,14,"Above recent personal baseline","Context"));check(elevated.context().equals("Above your recent baseline"));
         var steps=HealthContextSummary.of(new Trend(Metric.STEPS,"aggregate",12345.0,9000.0,7,28,"Above recent personal baseline","Context"));check(steps.value().equals("12,345 steps/day"));
         check(HealthContextSummary.of(new Trend(Metric.SLEEP_MINUTES,"source",390.0,450.0,4,14,"Below recent personal baseline","Context")).context().equals("Below your usual range"));
+        var wall=java.time.Instant.parse("2026-10-01T00:00:00Z");var engine=new org.racedaydreams.domain.recording.RunMetricsEngine(0,wall);
+        for(int i=0;i<=14400;i++)engine.accept(new org.racedaydreams.domain.recording.RunMetricsEngine.Fix(wall.plusSeconds(i),i*1000L,0,i*.00003,3.0,null,null,3.0));
+        check(engine.pointCount()==14401);check(engine.pointsFrom(14400).size()==1);check(engine.pointsFrom(engine.pointCount()).isEmpty());
+        check(engine.eventsFrom(engine.eventCount()).isEmpty());
+        var retained=engine.pointsFrom(14400);try{retained.clear();throw new AssertionError("Mutable persistence snapshot");}catch(UnsupportedOperationException expected){checks++;}
         System.out.println("GuidancePresentationTestSuite: "+checks+" checks passed.");
     }
 }

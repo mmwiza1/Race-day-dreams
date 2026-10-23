@@ -33,12 +33,18 @@ import org.racedaydreams.data.SupportStore
     val movement=routine.movements()[index]
     Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
         Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)){
-        CoachHeading(routine.title());Text("${index+1} of ${routine.movements().size}")
-        MovementIllustration(movement)
-        Text(movement.title(),style=MaterialTheme.typography.headlineMedium);Text(movement.dose(),style=MaterialTheme.typography.headlineSmall)
-        Text(movement.instructions());Text(movement.cue())
-        WhyDetails(movement.mistake(),"Common mistake")
-        Text("Keep the range comfortable. Stop if painful; this is general guidance, not treatment.")
+        CoachHeading(routine.title())
+        LinearProgressIndicator(progress={ (index+1f)/routine.movements().size },modifier=Modifier.fillMaxWidth().height(6.dp))
+        Text("${index+1} of ${routine.movements().size}",style=MaterialTheme.typography.labelLarge)
+        val art=routineArtwork(movement.id())
+        if(art!=null)IllustratedMovement(art)else MovementIllustration(movement)
+        Text(movement.title(),style=MaterialTheme.typography.headlineLarge)
+        Surface(color=guidanceBlue(),shape=MaterialTheme.shapes.large){Text(movement.dose(),Modifier.padding(horizontal=14.dp,vertical=8.dp),style=MaterialTheme.typography.titleMedium)}
+        Text(movement.instructions(),style=MaterialTheme.typography.bodyLarge)
+        GuidanceNote("Tip",movement.cue())
+        GuidanceNote("Common mistake",movement.mistake(),caution=true)
+        WhyDetails("Keep movements comfortable and stop if painful. General guidance, not individual assessment or treatment.","About this routine")
+
         }
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
             OutlinedButton(onClick={index--},enabled=index>0,modifier=Modifier.weight(1f).heightIn(min=56.dp)){Text("Back")}
@@ -91,7 +97,13 @@ import org.racedaydreams.data.SupportStore
 @Composable fun MobilitySupportCard(open:()->Unit){
     val context=LocalContext.current
     val count by produceState(0){value=withContext(Dispatchers.IO){SupportStore(context).routineCount(java.time.LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant(),mobilityOnly=true)}}
-    SemanticCard(Tile.Insight){Text("Mobility this week",style=MaterialTheme.typography.titleMedium);Text("$count optional routines recorded");Text("Two to four short sessions can be useful when they fit. This is not an adherence target.");TextButton(onClick=open){Text("View routines")}}
+    GuidanceCard(guidanceMint()) {
+        Text("Mobility this week",style=MaterialTheme.typography.titleMedium)
+        Text("$count optional sessions · 2–4 short sessions suggested")
+        Text("Next: Hips & glutes · 8 min",style=MaterialTheme.typography.bodyMedium)
+        TextButton(onClick=open){Text("View routines")}
+    }
+
 }
 @Composable fun WarmupSupportLink(id:String,related:String,open:()->Unit){
     val context=LocalContext.current

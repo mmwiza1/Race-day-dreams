@@ -253,6 +253,7 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
             val summary = metrics.getValue(shoe.id())
             CoachCard {
                 Text("${shoe.brand()} ${shoe.model()}".trim(), style = MaterialTheme.typography.titleLarge)
+                Text(when { shoe.retired() -> "Retired"; shoe.defaultShoe() -> "Default for newly added runs"; else -> "Active" },style=MaterialTheme.typography.labelMedium)
                 Text(summary.totalDistanceMetres()?.let{formatDistance(it,state)}?:formatDistance(summary.recordedDistanceMetres(),state)+" recorded",style=MaterialTheme.typography.headlineMedium)
                 Text("${summary.runCount()} runs"+(summary.ageDays()?.let{" · ${if(it<60)"$it days"else"${it/30} months"}"}?:""))
                 Text(summary.wearGuidance())
