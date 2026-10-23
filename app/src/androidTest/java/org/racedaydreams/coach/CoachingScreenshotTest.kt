@@ -107,6 +107,11 @@ class CoachingScreenshotTest {
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Bench");compose.onNodeWithText("Bench Press").performClick();await("Overview");click("How to do it");capture("exercise-bench-howto");back()
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("BSS");compose.onNodeWithText("Bulgarian Split Squat").performClick();await("Overview");capture("exercise-bulgarian-split-squat");click("How to do it");capture("exercise-bulgarian-howto");back()
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Seated Cable Row");compose.onNode(hasText("Seated Cable Row") and hasClickAction() and !hasSetTextAction()).performClick();await("Overview");click("How to do it");capture("exercise-cable-row-howto");back()
+        for((exercise,filename) in listOf("Front Squat" to "exercise-front-squat-howto", "Leg Press" to "exercise-leg-press-howto", "Lat Pulldown" to "exercise-lat-pulldown-howto", "Seated Leg Curl" to "exercise-seated-leg-curl-howto", "Farmer’s Carry" to "exercise-farmers-carry-howto")) {
+            compose.onNodeWithText("Search exercises or aliases").performTextReplacement(exercise)
+            compose.onNode(hasText(exercise) and hasClickAction() and !hasSetTextAction()).performClick()
+            await("Overview");click("How to do it");capture(filename);back()
+        }
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank");compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick();await("Overview");click("How to do it");capture("exercise-plank-howto");back();back()
         click("Log workout");await("Log strength workout");click("Log strength workout");alignHeading("Last time");capture("strength-log-previous")
         compose.onNodeWithText("Back Squat").performScrollTo().performClick();compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank");compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick();compose.onNodeWithText("Duration (seconds or m:ss)").performScrollTo().performTextReplacement("1:30");compose.waitForIdle();capture("strength-log-timed")

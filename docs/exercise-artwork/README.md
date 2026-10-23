@@ -74,3 +74,27 @@ shows the athlete inside the hexagonal frame with side handles; it is not a reus
 straight-bar deadlift. Deadlift cues now correctly permit the intended knee bend,
 rather than inheriting the RDL-specific warning against turning a hinge into a squat.
 Exact159missing canonical IDs remain in missing-canonical-ids.txt.
+
+## Expanded canonical coverage — current checkpoint
+
+Accepted visual guidance is now **47/174**, with **57 original local assets**
+(2,518,644 bytes) and all14/14 supporting-routine movements covered. The exact
+127 missing canonical IDs are regenerated in missing-canonical-ids.txt. This is
+still incomplete; the strict catalogue gate must remain red and PR10 draft.
+
+The new illustrations cover machine leg press/curls/extensions, seated and standing
+calf raises, front/goblet squats, unilateral work, carries, dumbbell presses/rows,
+arm movements and static/dynamic trunk movements. Seated curl artwork was corrected
+so the resistance roller acts behind the lower calves; cropped machines were
+regenerated. Dead Hang uses one static frame rather than duplicate poses. Related
+Calf Raise/Standing Calf Raise IDs share the exact appropriate machine movement;
+they do not use the unloaded routine image. Other variants are not counted from
+unrelated poses. Instructions explicitly distinguish front rack, machine setup,
+seated pressing, neutral-grip curls and non-overhead kettlebell swings.
+
+New movement copy is maintained in AdditionalTechniqueGuides.java and the shared
+TechniqueGuide/TechniqueIllustrations registry. Existing identity/search/history/PB
+models are unchanged. scripts/verify-guidance-assets.py verifies complete manifest
+membership and exact SHA256/byte counts for all packaged original artwork in CI.
+Each visible screen loads only its own asset. Full actual-build fidelity and all174
+coverage remain mandatory before release.

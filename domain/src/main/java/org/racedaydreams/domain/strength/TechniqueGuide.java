@@ -14,11 +14,11 @@ public record TechniqueGuide(String pattern,String setup,String movement,List<St
             case "barbell-row","seated-cable-row" -> {pattern="row";setup=id.equals("barbell-row")?"Hinge at the hips with a braced trunk and arms hanging below the shoulders.":"Sit with feet supported, hold the handle and keep a comfortable upright trunk.";movement="Pull toward the lower ribs while keeping your trunk steady; extend the arms under control.";muscles="Upper back and elbow flexors";alternatives=Immutable.list("Chest-Supported Row","Dumbbell Row");}
             case "lat-pulldown","pull-up" -> {pattern="pull";setup=id.equals("pull-up")?"Grip a secure bar and start from a controlled hang.":"Sit with thighs secured and take a comfortable grip on the bar.";movement=id.equals("pull-up")?"Pull your body upward without swinging, then lower with control.":"Pull the bar toward your upper chest, then allow a controlled return overhead.";muscles="Lats, upper back and elbow flexors";alternatives=Immutable.list("Lat Pulldown","Inverted Row");}
             case "hip-thrust","glute-bridge" -> {pattern="bridge";setup=id.equals("glute-bridge")?"Lie on your back on a mat with knees bent, feet flat and arms alongside your body.":"Support your upper back on a stable bench and plant your feet; pad the load over the hips.";movement="Extend the hips with your ribs controlled; pause near level, then lower without overextending the back.";muscles="Glutes";alternatives=Immutable.list("Barbell Glute Bridge","Romanian Deadlift");}
-            case "calf-raise" -> {pattern="calf";setup="Stand with stable foot support and hold something for balance if needed.";movement="Rise onto the balls of your feet, pause briefly, then lower your heels slowly through a comfortable range.";muscles="Calves";alternatives=Immutable.list("Seated Calf Raise","Single-Leg Calf Raise");}
+            case "calf-raise","standing-calf-raise" -> {pattern="calf";setup="Stand with stable foot support and hold something for balance if needed.";movement="Rise onto the balls of your feet, pause briefly, then lower your heels slowly through a comfortable range.";muscles="Calves";alternatives=Immutable.list("Seated Calf Raise","Single-Leg Calf Raise");}
             case "plank","side-plank" -> {pattern="plank";setup=id.equals("side-plank")?"Lie on your side with the elbow beneath the shoulder and legs stacked or staggered.":"Place your forearms on the floor with elbows under the shoulders and legs extended.";movement=id.equals("side-plank")?"Lift the hips into a straight supported line and breathe steadily; lower to finish.":"Lift into a supported line, brace gently and breathe; end the hold when control becomes difficult.";muscles="Trunk stabilisers";alternatives=Immutable.list("Dead Bug","Bird Dog");}
             case "farmers-carry" -> {pattern="carry";setup="Stand between two manageable loads and lift with a braced trunk. Record whether load is per hand in your notes.";movement="Walk with controlled steps and steady posture; place the weights down under control.";muscles="Grip, trunk and upper back";alternatives=Immutable.list("Suitcase Carry","Front Rack Carry");}
             case "lying-leg-curl" -> {pattern="curl";setup="Adjust the machine pivot near your knee and the pad above your heels; keep your hips supported.";movement="Bend the knees to curl the pad toward you, then extend under control without lifting the hips.";muscles="Hamstrings";alternatives=Immutable.list("Seated Leg Curl","Sliding Leg Curl");}
-            default -> {return null;}
+            default -> {return AdditionalTechniqueGuides.forExercise(id);}
         }
         List<String> cues,mistakes;
         switch(pattern){
@@ -39,6 +39,13 @@ public record TechniqueGuide(String pattern,String setup,String movement,List<St
             if(id.equals("deadlift"))setup="Place the bar over your mid-foot close to the shins; bend hips and knees, grip outside your legs and brace before lifting.";
         }
         if(id.equals("back-squat"))setup="Set suitable rack safeties, support the bar across the upper back rather than the neck, grip securely and take a stable stance before bending.";
+        if(id.equals("dumbbell-shoulder-press"))setup="Sit against an upright bench with feet planted and a dumbbell at each shoulder; keep the trunk supported and brace gently.";
+        if(id.equals("front-squat"))setup="Set suitable rack safeties, support the bar across the front of your shoulders with elbows pointing forwards and hands steadying it; choose a grip you can maintain without discomfort.";
+        if(id.equals("calf-raise")||id.equals("standing-calf-raise"))setup="Adjust the machine shoulder pads, support your forefeet on its platform and use the handles for balance; choose a comfortable ankle range.";
+        if(id.equals("kettlebell-swing")) {
+            cues=Immutable.list("Brace with ribs controlled","Drive the swing with hip extension","Let the bell float to around chest height","Guide the returning bell into a hinge");
+            mistakes=Immutable.list("Lifting the bell mainly with the arms","Leaning backwards at the top","Turning the swing into a deep squat","Using a bell you cannot stop safely");
+        }
         if(id.equals("pull-up"))cues=Immutable.list("Grip a secure bar","Keep your trunk and legs controlled","Lower your body smoothly without swinging");
         return new TechniqueGuide(pattern,setup,movement,cues,mistakes,muscles,alternatives);
     }

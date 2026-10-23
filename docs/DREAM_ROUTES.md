@@ -53,3 +53,13 @@ accepted recorder distance; it does not replace navigation or the actual route.
 
 A future exact open dataset needs a separately documented licence/edition assessment,
 a new geometry ID and preserved old geometries. Do not silently replace these assets.
+
+## Tokyo geographic upgrade
+
+New Tokyo assignments now use tokyo-2026-geo-v1, a separately versioned approximate
+participant trace from an explicit CC0-1.0 dataset. It retains91 original position
+vertices without timestamps or health data. Source hashes, original point indices,
+simplification, limitations and reproduction are in dream-route-data/README.md and
+tokyo-2026.json. Old Tokyo assignments and city preferences remain stable. Berlin
+and Tokyo now have geographic revisions; London/Paris/New York and richer original
+city presentation remain unfinished. Do not call this the completed0.8.1visual gate.
