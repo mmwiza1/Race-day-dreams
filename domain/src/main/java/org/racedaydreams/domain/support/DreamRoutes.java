@@ -9,20 +9,33 @@ public final class DreamRoutes {
         public Route {if(id==null||id.trim().isEmpty()||name==null||name.trim().isEmpty()||vertices==null||vertices.size()<2||vertices.size()>10000)throw new IllegalArgumentException("Invalid Dream geometry");vertices=Collections.unmodifiableList(new ArrayList<>(vertices));boolean length=false;for(int i=0;i<vertices.size();i++){var v=vertices.get(i);if(!Double.isFinite(v.x())||!Double.isFinite(v.y())||v.x()<0||v.x()>10||v.y()<0||v.y()>10)throw new IllegalArgumentException("Invalid drawing bounds");if(i>0&&distance(vertices.get(i-1),v)>0)length=true;}if(!length)throw new IllegalArgumentException("Empty route geometry");}
     }
     public record Assignment(String routeId,double startMetres,double coveredMetres) {
-        public Assignment {if(allRoutes().stream().noneMatch(r->r.id().equals(routeId))||!Double.isFinite(startMetres)||!Double.isFinite(coveredMetres)||coveredMetres<=0||startMetres<0||startMetres+Math.min(42195,coveredMetres)>42195.001)throw new IllegalArgumentException("Invalid Dream Route segment");}
+        public Assignment {if(!GeometryRegistry.BY_ID.containsKey(routeId)||!Double.isFinite(startMetres)||!Double.isFinite(coveredMetres)||coveredMetres<=0||startMetres<0||startMetres+Math.min(42195,coveredMetres)>42195.001)throw new IllegalArgumentException("Invalid Dream Route segment");}
     }
     private static List<Route> legacyRoutes(){return Arrays.asList(route("london","London",0,8,2,7,3,9,5,8,4,6,7,6,8,4,6,3,4,4,2,2,5,1,8,2,9,1),route("berlin","Berlin",1,5,2,2,5,1,8,2,9,5,7,7,5,6,3,8,1,6,2,4,5,4,7,5),route("paris","Paris",2,2,5,1,8,2,9,4,7,5,8,8,5,9,3,7,1,6,2,4,4,4,6,5),route("tokyo","Tokyo",2,1,3,3,6,3,8,1,9,3,7,5,5,5,5,8,3,9,2,7,4,6,1,4),route("new-york","New York",5,9,4,7,5,5,4,3,5,1,7,2,6,4,7,6,6,8,4,6,2,7,1,5,2,3,4,4));}
     /** V2 independently drawn course-inspired anchors, drawing units rather than geographic data. */
-    public static List<Route> routes(){return Arrays.asList(
+    private static List<Route> cityRoutes(){return Arrays.asList(
         route("london-v2","London",7,8,8,8,9,7.5,9.3,7,8,6.9,7,7.1,6,7.2,5.5,6.5,4.7,6.5,4.3,5.8,5,5.5,5.5,5.7,6,5.3,6,4.5,7,4.4,8,4.8,8.7,4.4,8.5,3.6,7.8,3.2,7.1,3.7,6.7,4.3,5.7,4.1,4.8,4.4,4,4.8,3.1,5.1,2.2,5.7,1.4,5.4,1.1,4.9,1.7,4.7),
         route("berlin-v2","Berlin",4.5,3,3.5,3,2.7,2.4,3,1.8,4.2,1.7,5.3,1.9,6.4,2.2,7.4,2,8.1,2.8,8.6,3.7,7.5,4,6.7,4.1,6.2,5.1,6.7,6,7.4,6.6,6.9,7.5,5.7,7.8,4.4,7.5,3.3,8.2,2.3,8,1.4,7.2,1.3,6.1,2.1,5.4,3,5.8,3.8,5.3,3.3,4.7,3.5,4,4.1,3.4,4.7,3.3),
         route("paris-v2","Paris",3.1,3,4.3,2.9,5.2,3.2,6.2,3.7,7.3,3.8,8.2,4.3,9.1,4.8,9.2,5.9,8.5,6.6,7.6,6.8,7,6,7.5,5.3,6.7,4.9,5.9,4.9,5.1,5.1,4.2,5.4,3.3,5.8,2.5,6.2,1.6,6.8,.9,6.5,.8,5.5,1.2,4.8,1.7,4,2,3.4,1.7,2.8,1.8,2,2.4,1.5,3.2,1.7,3.3,2.4,2.8,2.8),
         route("tokyo-v2","Tokyo",1,3,1.9,3.2,2.7,3,3.4,2.8,4.2,2.7,4.8,3.3,5.4,3.7,5.8,3.3,6.3,2.7,7.2,2.6,8,2.2,8.6,1.5,9,1.8,8.8,2.7,8,3,7.1,3.3,6.6,4,7.4,4.7,8.2,4.5,8.8,4.1,8.3,4.7,7.6,5.1,6.7,4.8,6.2,5.5,6.1,6.5,5.8,7.5,5.6,8.7,5.2,8.8,5.5,7.4,5.8,6.2,5.5,5.2,5,4.6,4.8,4),
         route("new-york-v2","New York",4.7,9.2,6,8.5,6.6,8,6.3,7.1,6.4,6.2,6.7,5.5,7.2,4.8,7,4,6.7,3.6,6.1,3.8,5.7,4.3,5.2,3.8,5.6,3.1,6,2.4,6.1,1.6,5.8,1.1,5,1.5,4.5,2.2,4,2.7,3.5,3.4,3.3,4.1,3,4.8,2.7,5.1,2.1,4.6,2.3,3.8,2.8,3.1,3,2.6));}
-    private static List<Route> allRoutes(){var out=new ArrayList<>(legacyRoutes());out.addAll(routes());out.add(Berlin2014Geometry.route());out.add(Tokyo2026Geometry.route());out.add(LondonHistoricalGeometry.route());out.add(NewYork2026Geometry.route());out.add(Paris2024Geometry.route());return out;}
-    public static Route forId(String id){return allRoutes().stream().filter(r->r.id().equals(id)).findFirst().orElseThrow(()->new IllegalArgumentException("Unknown route geometry"));}
+    /** Immutable geometry is built once, never rehydrated for each card/recomposition. */
+    private static final class GeometryRegistry {
+        static final List<Route> CITIES=List.copyOf(cityRoutes());
+        static final Map<String,Route> BY_ID=build();
+        private static Map<String,Route> build() {
+            var routes=new ArrayList<>(legacyRoutes());routes.addAll(CITIES);
+            routes.add(Berlin2014Geometry.route());routes.add(Tokyo2026Geometry.route());
+            routes.add(LondonHistoricalGeometry.route());routes.add(NewYork2026Geometry.route());routes.add(Paris2024Geometry.route());
+            var index=new LinkedHashMap<String,Route>();
+            for(var route:routes)if(index.put(route.id(),route)!=null)throw new IllegalStateException("Duplicate geometry revision");
+            return Collections.unmodifiableMap(index);
+        }
+    }
+    public static List<Route> routes(){return GeometryRegistry.CITIES;}
+    public static Route forId(String id){var route=GeometryRegistry.BY_ID.get(id);if(route==null)throw new IllegalArgumentException("Unknown route geometry");return route;}
     /** City preference IDs stay stable; only new assignments use a new geometry revision. */
-    public static Route currentGeometry(Route city) {return city.id().equals("paris-v2")?Paris2024Geometry.route():city.id().equals("new-york-v2")?NewYork2026Geometry.route():city.id().equals("london-v2")?LondonHistoricalGeometry.route():city.id().equals("berlin-v2")?Berlin2014Geometry.route():city.id().equals("tokyo-v2")?Tokyo2026Geometry.route():city;}
+    public static Route currentGeometry(Route city) {return city.id().equals("paris-v2")?forId("paris-2024-olympic-geo-v1"):city.id().equals("new-york-v2")?forId("new-york-2026-geo-v1"):city.id().equals("london-v2")?forId("london-historical-geo-v1"):city.id().equals("berlin-v2")?forId("berlin-2014-geo-v1"):city.id().equals("tokyo-v2")?forId("tokyo-2026-geo-v1"):city;}
     public static String provenance(Route route) {return route.id().equals("paris-2024-olympic-geo-v1")?
         "Paris2024 Olympic marathon community geometry by Thomas Krakow (Running-tomy), via Wikimedia Commons, ODbL-1.0. This is not the annual Paris Marathon, official/certified geometry or navigation. The marathon-equivalent axis is separate from the source line.":route.id().equals("new-york-2026-geo-v1")?
         "Approximate New York2026 road centreline, © OpenStreetMap contributors, prepared by MARATHON TRIP; ODbL-1.0 data. Not official/certified geometry or navigation. The marathon-equivalent axis is separate from the approximate42.67 km retained line.":route.id().equals("london-historical-geo-v1")?

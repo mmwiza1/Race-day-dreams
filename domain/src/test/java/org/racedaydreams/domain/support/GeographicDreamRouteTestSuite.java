@@ -95,6 +95,15 @@ public final class GeographicDreamRouteTestSuite {
         check(DreamCartography.rivers(london.id()).get(0).vertices().size()==14,"Thames source positions retained without invented banks");
         check(DreamCartography.rivers(paris.id()).size()==2,"Disjoint Seine source lines stay separate");
         check(DreamCartography.landmarks("london-v2").isEmpty()&&DreamCartography.rivers("london-v2").isEmpty(),"Geographic context never overlaid on legacy drawing frames");
+        for(var city:DreamRoutes.routes()) {
+            var current=DreamRoutes.currentGeometry(city);
+            check(current==DreamRoutes.forId(current.id()),"Course registry reuses immutable geometry across cards");
+            check(city==DreamRoutes.forId(city.id()),"Legacy preference geometry also retained once");
+        }
+        check(DreamRoutes.routes()==DreamRoutes.routes(),"City choices do not reconstruct all coordinate arrays");
+        boolean immutable=false;
+        try {DreamRoutes.routes().set(0,DreamRoutes.routes().get(1));}catch(UnsupportedOperationException expected){immutable=true;}
+        check(immutable,"Shared city registry cannot be mutated by a caller");
         System.out.println("GeographicDreamRouteTestSuite: " + checks + " checks passed.");
     }
 }
