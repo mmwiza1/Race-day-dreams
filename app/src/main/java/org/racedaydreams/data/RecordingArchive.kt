@@ -46,7 +46,7 @@ class RecordingArchive(private val context:Context) {
                 "recordings.jsonl"->{data=true;file.outputStream().use{out->val b=ByteArray(32768);var count=0L;while(true){val n=zip.read(b);if(n<0)break;count+=n;require(count<=MAX_BYTES){"Expanded archive too large"};out.write(b,0,n)}}}
                 else->error("Unsupported archive entry")
             };zip.closeEntry()}
-            val m=manifest?:error("Missing manifest");require(data&&m.getString("format")=="rdd-owned-recordings"&&m.getInt("version")==1&&m.getLong("bytes")==file.length()&&m.getString("sha256")==digest(file)){"Archive integrity/version mismatch"}
+            val m=manifest?:error("Missing manifest");require(data&&m.getString("format")=="rdd-owned-recordings"&&m.get("version") is Int&&m.getInt("version")==1&&m.getLong("bytes")==file.length()&&m.getString("sha256")==digest(file)){"Archive integrity/version mismatch"}
             val ids=mutableSetOf<String>();val seq=mutableMapOf<String,Int>();val lastMono=mutableMapOf<String,Long>();val lastDistance=mutableMapOf<String,Double>()
             lines(file){j->val id=j.getString("id");require(id.length in 1..256);when(j.getString("kind")){
                 "session"->{require(ids.add(id)&&ids.size<=1000);Instant.parse(j.getString("start"));require(j.getLong("mono")>=0&&j.getLong("last")>=j.getLong("mono"));require(j.getString("state") in listOf("ACTIVE","PAUSED","RECOVERABLE","FINISHED"))}
@@ -62,7 +62,7 @@ class RecordingArchive(private val context:Context) {
                     "session"->{db.rawQuery("SELECT state,started_at,started_mono,last_mono FROM recording_sessions WHERE id=?",arrayOf(id)).use{c->if(c.moveToFirst()){require(c.getString(1)==j.getString("start")&&c.getLong(2)==j.getLong("mono")&&c.getLong(3)==j.getLong("last")){"Existing recording conflict"};skip.add(id)}else db.insertOrThrow("recording_sessions",null,ContentValues().apply{put("id",id);put("state",if(j.getString("state")=="FINISHED")"FINISHED"else"RECOVERABLE");put("started_at",j.getString("start"));put("started_mono",j.getLong("mono"));put("last_mono",j.getLong("last"));if(j.has("activity"))put("activity_id",j.getString("activity"))})}}
                     "point","event"->{val table=if(j.getString("kind")=="point")"recording_points"else"recording_events";if(id !in skip)db.insertOrThrow(table,null,ContentValues().apply{put("session_id",id);put("sequence",j.getInt("seq"));put("payload",j.getJSONObject("payload").toString())})else db.rawQuery("SELECT payload FROM $table WHERE session_id=? AND sequence=?",arrayOf(id,j.getInt("seq").toString())).use{c->require(c.moveToFirst()&&c.getString(0)==j.getJSONObject("payload").toString()){ "Existing sample conflict" }}}
                     "activity"->{val a=FeatureJson.activity(j.getJSONObject("payload"));db.rawQuery("SELECT payload FROM activities WHERE id=?",arrayOf(a.id())).use{c->if(!c.moveToFirst()||FeatureJson.activity(JSONObject(c.getString(0))).samples().isEmpty())FeatureStore.putActivity(db,a,false)}}
-                }};db.setTransactionSuccessful()
+                }};RecordingStore.restoreRetainedSamples(db);db.setTransactionSuccessful()
             }finally{db.endTransaction()}
         }finally{file.delete()}
     }

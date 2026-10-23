@@ -40,12 +40,20 @@ class RecordingStore(context:Context) {
     fun importRecording(id:String,wall:Instant,last:Long,points:List<RunMetricsEngine.Point>,events:List<RunMetricsEngine.Event>){val db=helper.writableDatabase;db.beginTransaction();try{start(id,wall,0);flush(id,points,events,0,0,last,"ACTIVE");db.setTransactionSuccessful()}finally{db.endTransaction()}}
     fun finished():List<Pair<String,String>>{val out=mutableListOf<Pair<String,String>>();helper.readableDatabase.rawQuery("SELECT id,started_at FROM recording_sessions WHERE state='FINISHED' ORDER BY started_at DESC",null).use{while(it.moveToNext())out.add(it.getString(0) to it.getString(1))};return out}
     companion object {
-        /** Reattach only real retained samples after compact app-metadata restore. */
+        /** Native sample streams are normalized rows, not a multi-MiB SQLite cursor cell. */
+        @JvmStatic fun withRetainedSamples(db:android.database.sqlite.SQLiteDatabase,a:ActivityRecord):ActivityRecord {
+            if(a.samples().isNotEmpty()||a.source().provider() !in listOf("rdd","gpx"))return a
+            var id:String?=null;var mono=0L
+            db.rawQuery("SELECT id,started_mono FROM recording_sessions WHERE activity_id=? AND state='FINISHED'",arrayOf(a.id())).use{c->if(c.moveToFirst()){id=c.getString(0);mono=c.getLong(1)}}
+            val key=id?:return a;val samples=mutableListOf<DistanceSample>()
+            db.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(key)).use{c->while(c.moveToNext()){val p=decode(JSONObject(c.getString(0)));samples.add(DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-mono),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity()))}}
+            return ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),a.notes(),samples,a.laps(),a.plannedWorkoutId(),a.shoeId())
+        }
+        /** Recompute qualified PB evidence after metadata and companion archive restore. */
         @JvmStatic fun restoreRetainedSamples(db:android.database.sqlite.SQLiteDatabase){
-            data class Retained(val id:String,val mono:Long,val payload:String)
-            val retained=mutableListOf<Retained>()
-            db.rawQuery("SELECT s.id,s.started_mono,a.payload FROM recording_sessions s JOIN activities a ON a.id=s.activity_id WHERE s.state='FINISHED' AND a.provider IN ('rdd','gpx')",null).use{c->while(c.moveToNext())retained.add(Retained(c.getString(0),c.getLong(1),c.getString(2)))}
-            for(r in retained){val a=FeatureJson.activity(JSONObject(r.payload));if(a.samples().isNotEmpty())continue;val samples=mutableListOf<DistanceSample>();db.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(r.id)).use{c->while(c.moveToNext()){val p=decode(JSONObject(c.getString(0)));samples.add(DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-r.mono),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity()))}};if(samples.isNotEmpty())FeatureStore.putActivity(db,ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),a.notes(),samples,a.laps(),a.plannedWorkoutId(),a.shoeId()),false)}
+            val payloads=mutableListOf<String>()
+            db.rawQuery("SELECT a.payload FROM recording_sessions s JOIN activities a ON a.id=s.activity_id WHERE s.state='FINISHED' AND a.provider IN ('rdd','gpx')",null).use{c->while(c.moveToNext())payloads.add(c.getString(0))}
+            for(payload in payloads){val a=FeatureJson.activity(JSONObject(payload));val full=withRetainedSamples(db,a);if(full.samples().isNotEmpty())FeatureStore.putActivity(db,full,false)}
         }
 
         fun encode(p:RunMetricsEngine.Point):JSONObject=JSONObject().put("wall",p.fix().timestamp().toString()).put("mono",p.fix().monotonicMillis()).put("lat",p.fix().latitude()).put("lon",p.fix().longitude()).put("accuracy",p.fix().accuracy() as Any?).put("alt",p.fix().altitude() as Any?).put("vertical",p.fix().verticalAccuracy() as Any?).put("speed",p.fix().speed() as Any?).put("distance",p.cumulativeMetres()).put("active",p.activeMillis()).put("segment",p.segment()).put("gap",p.discontinuity()).put("hr",p.heartRate() as Any?).put("cadence",p.cadence() as Any?)

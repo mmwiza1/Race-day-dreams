@@ -43,7 +43,8 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         if (db.insertWithOnConflict(table,null,values,SQLiteDatabase.CONFLICT_REPLACE) == -1) throw new SQLiteException("Local data could not be saved.");
     }
 
-    @Override public List<ActivityRecord> activities() {
+    @Override public List<ActivityRecord> activities() {return activitySnapshot(true);}
+    private List<ActivityRecord> activitySnapshot(boolean includeSamples) {
         SQLiteDatabase db=read();
         List<ActivityRecord> out=new ArrayList<>();
         try(Cursor cursor=db.rawQuery("SELECT a.payload, n.provider, n.notes, n.rpe, n.shoe_id, r.planned_workout_id FROM activities a LEFT JOIN activity_annotations n ON a.provider=n.provider AND a.record_id=n.record_id LEFT JOIN run_responses r ON r.activity_id=a.id ORDER BY a.start_millis DESC, a.id",null)) {
@@ -51,6 +52,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
                 ActivityRecord a=FeatureJson.activity(FeatureJson.object(cursor.getString(0)));
                 if(!cursor.isNull(1)) a=annotated(a,cursor.isNull(2)?a.notes():cursor.getString(2),cursor.isNull(3)?null:cursor.getDouble(3),cursor.getString(4));
                 if(!cursor.isNull(5)) a=new ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),a.notes(),a.samples(),a.laps(),cursor.getString(5),a.shoeId());
+                if(includeSamples)a=RecordingStore.withRetainedSamples(db,a);
                 out.add(a);
             }
         }
@@ -90,7 +92,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         try(Cursor existing=db.rawQuery("SELECT id,provider,record_id FROM activities WHERE id=? OR (provider=? AND record_id=?)",new String[]{a.id(),a.source().provider(),a.source().recordId()})) {
             while(existing.moveToNext()) {existed=true;if(!existing.getString(0).equals(a.id()) || !existing.getString(1).equals(a.source().provider()) || !existing.getString(2).equals(a.source().recordId())) throw new IllegalArgumentException("Activity identity conflicts with existing data.");}
         }
-        ContentValues v=values("id",a.id()); v.put("provider",a.source().provider());v.put("record_id",a.source().recordId());v.put("origin_package",a.source().originPackage());v.put("start_millis",a.start().toEpochMilli());v.put("end_millis",a.end().toEpochMilli());v.put("payload",FeatureJson.activity(a).toString());
+        ContentValues v=values("id",a.id()); v.put("provider",a.source().provider());v.put("record_id",a.source().recordId());v.put("origin_package",a.source().originPackage());v.put("start_millis",a.start().toEpochMilli());v.put("end_millis",a.end().toEpochMilli());v.put("payload",FeatureJson.activity(backupActivity(a)).toString());
         if(db.update("activities",v,"id=?",new String[]{a.id()})==0) db.insertOrThrow("activities",null,v);
         if(userOwned) {
             String shoe=a.shoeId();if(!existed&&assignDefault&&shoe==null)shoe=defaultShoe(db);
@@ -225,7 +227,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             JSONObject out=FeatureJson.json("storeVersion",EXPORT_STORE_VERSION,"profile",profile==null?null:FeatureJson.profile(profile),"draft",null,"manualBaseline",null,"manualBaselineRecordedAt",null);
             try(Cursor c=db.rawQuery("SELECT payload FROM onboarding_draft WHERE id=1",null)){if(c.moveToFirst())out.put("draft",c.getString(0));}
             try(Cursor c=db.rawQuery("SELECT manual_json,manual_recorded_at FROM baseline_state WHERE id=1",null)){if(c.moveToFirst()){out.put("manualBaseline",FeatureJson.object(c.getString(0)));out.put("manualBaselineRecordedAt",c.isNull(1)?JSONObject.NULL:c.getString(1));}}
-            JSONArray activities=new JSONArray();for(ActivityRecord a:activities())if(isUserActivity(a))activities.put(FeatureJson.activity(backupActivity(a)));out.put("activities",activities);
+            JSONArray activities=new JSONArray();for(ActivityRecord a:activitySnapshot(false))if(isUserActivity(a))activities.put(FeatureJson.activity(backupActivity(a)));out.put("activities",activities);
             JSONArray shoes=new JSONArray();for(Shoe shoe:shoes())shoes.put(FeatureJson.shoe(shoe));out.put("shoes",shoes);
             JSONArray results=new JSONArray();for(RecordedResult result:results())if(result.source()!=ResultSource.ROLLING)results.put(FeatureJson.result(result));out.put("results",results);
             JSONArray bestEfforts=new JSONArray();Set<String> effortIds=new HashSet<>();

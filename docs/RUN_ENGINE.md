@@ -39,7 +39,9 @@ Schema 7 adds recording_sessions / recording_points / recording_events and an op
 health cache. Five-second batches journal accepted points and events on serialized IO;
 at most the last unflushed batch may be lost on abrupt kill. Pauses/finish flush
 immediately. Finalization shares a database transaction with canonical activity/PBs;
-a failure retains staging. Raw recording data remains after completion for export.
+a failure retains staging. Raw recording data remains after completion for export. Canonical native activity
+rows contain compact metadata; normalized points hydrate real samples on read, avoiding
+SQLite CursorWindow limits for multi-hour traces. App JSON export reads metadata only.
 Process/reboot recovery offers saving only the observed portion, not automatic sensor
 restart or invented downtime. The runner can explicitly discard with confirmation.
 A run with no usable samples cannot become a fictitious completed activity.
