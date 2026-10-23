@@ -84,12 +84,12 @@ class CoachingScreenshotTest {
         await("Workout structure");capture("planned-workout")
         compose.onNode(hasText("Warm-up ·",substring=true)).performScrollTo().performClick();compose.waitUntil(20000){compose.onAllNodes(hasText("1 of ",substring=true)).fetchSemanticsNodes().isNotEmpty()};capture("warm-up");back()
 
-        back();click("Calendar");await("Activity calendar");capture("history")
+        back();click("Calendar");await("Activity calendar");compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()};capture("history")
         click("Week");await("Training calendar");capture("calendar-week")
         click("Month");await(LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("MMMM uuuu",java.util.Locale.UK)));capture("calendar-month")
         click("List");await("Activity calendar")
         // Open the first real retained activity through the Calendar screen.
-        compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
+        compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()};compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"));compose.onAllNodesWithText("Recorded run")[0].performClick()
         await("Run detail");capture("activity-detail");alignHeading("Your recorded route");capture("post-run-route")
         val dreamHeading=compose.onNode(hasText("Dream Route ·",substring=true)).fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].first().text;alignHeading(dreamHeading);capture("dream-route")
         compose.onNodeWithText("Compare this run").performScrollTo().performClick();alignHeading("Compare this run");capture("run-comparison")
