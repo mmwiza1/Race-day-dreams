@@ -72,6 +72,20 @@ Version0.8.1-test1/code10; schema10 (two additive metadata-history indexes only)
 JSON7 / raw2 / complete1 unchanged. No Internet permission/runtime dependencies,
 accounts, tracking or backend. Existing coaching/recorder architecture retained.
 
+## Post-push observation (read first)
+
+Latest source pushed**c04143d587d63c05976cc54bfbdd63e59ed6019d** matches local
+**d2fb78f835a9e56df4eff6bdf66b98d1ecd78904**, tree7181276ef1b1d1dba79b0a89a2f0b2d275ebd1cf.
+It includes bundled-notice synchronization/CIcmp, all15guides, current53capturedPNGs,
+and precise verification docs. Freshworkflow**40005151891** is running; inspect it
+before anynextpush. Its strictguidance159missing will still blockrelease.
+No other source change after the fully verifiedf61d7ac runtime/UI; latest notice
+change needs this freshrun. The handoff-only commit containing this paragraph is
+local-only to avoid cancelling that running verification; preserve/commit/push it
+after inspecting anynewbotcapture commit. Workingtree is clean after this checkpoint.
+The older NEXT PUSH instructions below describe the already-completed source push;
+do NOT replay341ced4chunks blindly. Useactualremotehead and preserve newest captures.
+
 ## Latest exact state (authoritative)
 
 Current remote head is capture bot**0e1780cdb3f132c6c675e1b150e2285388d1045e**,
