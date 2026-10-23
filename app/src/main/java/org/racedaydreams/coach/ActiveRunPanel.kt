@@ -1,0 +1,32 @@
+package org.racedaydreams.coach
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import org.racedaydreams.domain.recording.RunMetricsEngine
+import org.racedaydreams.domain.execution.WorkoutExecutionEngine
+import org.racedaydreams.domain.PaceCalculator
+import java.time.Duration
+
+/** Glanceable primary controls. All state is supplied by the service, never timed here. */
+@Composable fun ActiveRunPanel(s:RunMetricsEngine.Status,w:WorkoutExecutionEngine.State?,hr:Double?,cue:String?,race:String?,send:(String)->Unit){
+    Text(if(s.paused())"PAUSED"else w?.let{if(it.complete())"Workout steps finished"else "Step ${it.index()+1} of ${it.total()}"}?:"Recording",style=MaterialTheme.typography.headlineMedium)
+    if(w!=null&&!w.complete()){
+        Text(w.current()?.kind()?.name?.lowercase()?.replace('_',' ')?:"Run",style=MaterialTheme.typography.titleLarge)
+        Text(w.metresRemaining()?.let{"${it.toInt()} m remaining"}?:w.millisRemaining()?.let{"${it/1000} sec remaining"}?:"Continue by effort",style=MaterialTheme.typography.headlineLarge)
+    }
+    Text(s.secondsPerKm()?.let{"${formatPaceSeconds(it)} /km"}?:"Pace unavailable",style=MaterialTheme.typography.displaySmall)
+    w?.current()?.let{step->if(step.fastPace()!=null&&step.slowPace()!=null)Text("Target ${formatPaceSeconds(step.fastPace())}–${formatPaceSeconds(step.slowPace())}/km")else step.rpe()?.let{Text("Effort approximately ${it.toInt()}/10")}}
+    Text("${decimal(s.metres()/1000)} km",style=MaterialTheme.typography.headlineMedium)
+    Text("Elapsed ${PaceCalculator.formatTime(Duration.ofMillis(s.elapsedMillis()))} · Active ${PaceCalculator.formatTime(Duration.ofMillis(s.movingMillis()))}")
+    hr?.let{Text("Heart rate ${it.toInt()} bpm")}
+    Text(s.gps())
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
+        Button(onClick={send(if(s.paused())"RESUME"else"PAUSE")},modifier=Modifier.weight(1f).heightIn(min=64.dp)){Text(if(s.paused())"Resume"else"Pause")}
+        OutlinedButton(onClick={send("FINISH")},modifier=Modifier.weight(1f).heightIn(min=64.dp)){Text("Finish & save")}
+    }
+    var details by remember{mutableStateOf(false)}
+    TextButton(onClick={details=!details},modifier=Modifier.heightIn(min=48.dp)){Text(if(details)"Hide details"else"Workout details / controls")}
+    if(details){w?.current()?.let{Text(it.label())};w?.next()?.let{Text("Next: ${it.label()}")};cue?.let{Text(it)};race?.let{Text(it)};if(w!=null&&!w.complete()&&!w.early())OutlinedButton(onClick={send("SKIP_STEP")},modifier=Modifier.heightIn(min=56.dp)){Text("Skip current step")};Text("You can finish early. Unobserved distance and incomplete steps are never filled in.")}
+}

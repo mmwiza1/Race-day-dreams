@@ -49,10 +49,10 @@ class RecordingArchive(private val context:Context) {
             };zip.closeEntry()}
             val m=manifest?:error("Missing manifest");require(data&&m.getString("format")=="rdd-owned-recordings"&&m.get("version") is Int&&m.getInt("version") in 1..2&&m.getLong("bytes")==file.length()&&m.getString("sha256")==digest(file)){"Archive integrity/version mismatch"}
             val bounds=mutableMapOf<String,LongRange>();val completed=mutableSetOf<String>();val activityRows=mutableSetOf<String>();val activityIds=mutableMapOf<String,String>();val eventSeq=mutableMapOf<String,Int>()
-            val ids=mutableSetOf<String>();val seq=mutableMapOf<String,Int>();val lastMono=mutableMapOf<String,Long>();val lastDistance=mutableMapOf<String,Double>()
+            val contexts=mutableSetOf<String>();val ids=mutableSetOf<String>();val seq=mutableMapOf<String,Int>();val lastMono=mutableMapOf<String,Long>();val lastDistance=mutableMapOf<String,Double>()
             lines(file){j->val id=j.getString("id");require(id.length in 1..256);when(j.getString("kind")){
                 "session"->{require(ids.add(id)&&ids.size<=1000);Instant.parse(j.getString("start"));require(j.getLong("mono")>=0&&j.getLong("last")>=j.getLong("mono"));require(j.getString("state") in listOf("ACTIVE","PAUSED","RECOVERABLE","FINISHED"));bounds[id]=j.getLong("mono")..j.getLong("last");if(j.getString("state")=="FINISHED"){completed.add(id);activityIds[id]=j.getString("activity")}}
-                "context"->{require(id in ids);SupportStore.validatePayload("execution",j.getJSONObject("payload"))}
+                "context"->{require(id in ids&&contexts.add(id));SupportStore.validatePayload("execution",j.getJSONObject("payload"))}
                 "point"->{require(id in ids);val expected=seq[id]?:0;require(j.getInt("seq")==expected&&expected<100000);seq[id]=expected+1;val p=RecordingStore.decode(j.getJSONObject("payload"));require(p.fix().monotonicMillis() in bounds.getValue(id)&&p.activeMillis()<=p.fix().monotonicMillis()-bounds.getValue(id).first&&p.fix().monotonicMillis()>(lastMono[id]?:-1)&&p.cumulativeMetres()>=(lastDistance[id]?:0.0)&&p.activeMillis()>=0&&p.segment()>=0);lastMono[id]=p.fix().monotonicMillis();lastDistance[id]=p.cumulativeMetres()}
                 "event"->{require(id in ids&&j.getInt("seq")== (eventSeq[id]?:0));eventSeq[id]=(eventSeq[id]?:0)+1;val p=j.getJSONObject("payload");require(p.getString("type").length in 1..64&&p.getLong("mono") in bounds.getValue(id));if(p.has("value")&&!p.isNull("value"))require(p.getDouble("value").isFinite());Instant.parse(p.getString("wall"))}
                 "activity"->{require(id in ids&&activityRows.add(id));val a=FeatureJson.activity(j.getJSONObject("payload"));require(a.id()==activityIds[id]&&a.source().recordId()==id&&a.source().provider() in listOf("rdd","gpx"))}
@@ -67,7 +67,9 @@ class RecordingArchive(private val context:Context) {
                     "context"->{val old=SupportStore(context).get("execution",id);require(old==null||old.toString()==j.getJSONObject("payload").toString()){ "Existing execution conflict" };SupportStore.put(db,"execution",id,j.getJSONObject("payload"))}
                     "point","event"->{val table=if(j.getString("kind")=="point")"recording_points"else"recording_events";if(id !in skip)db.insertOrThrow(table,null,ContentValues().apply{put("session_id",id);put("sequence",j.getInt("seq"));put("payload",j.getJSONObject("payload").toString())})else db.rawQuery("SELECT payload FROM $table WHERE session_id=? AND sequence=?",arrayOf(id,j.getInt("seq").toString())).use{c->require(c.moveToFirst()&&c.getString(0)==j.getJSONObject("payload").toString()){ "Existing sample conflict" }}}
                     "activity"->{val a=FeatureJson.activity(j.getJSONObject("payload"));db.rawQuery("SELECT payload FROM activities WHERE id=?",arrayOf(a.id())).use{c->if(!c.moveToFirst()||FeatureJson.activity(JSONObject(c.getString(0))).samples().isEmpty())FeatureStore.putActivity(db,a,false)}}
-                }};RecordingStore.restoreRetainedSamples(db);db.setTransactionSuccessful()
+                }}
+                for(id in skip)for((table,count) in listOf("recording_points" to (seq[id]?:0),"recording_events" to (eventSeq[id]?:0)))db.rawQuery("SELECT COUNT(*) FROM $table WHERE session_id=?",arrayOf(id)).use{c->require(c.moveToFirst()&&c.getInt(0)==count){"Existing recording has different evidence coverage"}}
+                RecordingStore.restoreRetainedSamples(db);db.setTransactionSuccessful()
             }finally{db.endTransaction()}
         }finally{file.delete()}
     }

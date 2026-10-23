@@ -4,6 +4,7 @@ import java.util.*;
 
 /** Sustained smoothed evidence, transition grace, hysteresis and bounded cue arbitration. */
 public final class CoachCues {
+    public interface Sink { void deliver(Cue cue); }
     public record Cue(String id,String text,int priority,long atMillis,boolean haptic) {
         public Cue {if(id==null||text==null||priority<0||atMillis<0)throw new IllegalArgumentException("Invalid cue");}
     }

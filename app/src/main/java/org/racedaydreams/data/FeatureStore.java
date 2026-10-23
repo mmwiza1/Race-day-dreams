@@ -46,7 +46,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
     @Override public List<ActivityRecord> activities() {return activitySnapshot(true);}
     public List<ActivityRecord> activitySummaries() {return activitySnapshot(false);}
     public ActivityRecord activityDetail(String id) {
-        for(ActivityRecord a:activitySnapshot(false))if(a.id().equals(id))return RecordingStore.withRetainedSamples(read(),a);
+        for(ActivityRecord a:activitySnapshot(false,id))if(a.id().equals(id))return RecordingStore.withRetainedSamples(read(),a);
         return null;
     }
     /** Bounded sample hydration for recent coaching, never every route in calendar history. */
@@ -54,12 +54,16 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         List<ActivityRecord> summary=activitySnapshot(false);Set<String> detailed=new HashSet<>();
         summary.stream().filter(a->!a.start().isBefore(today.minusDays(28).atStartOfDay(java.time.ZoneOffset.UTC).toInstant()))
             .sorted(java.util.Comparator.comparing(ActivityRecord::start).reversed()).limit(12).forEach(a->detailed.add(a.id()));
-        List<ActivityRecord> out=new ArrayList<>();for(ActivityRecord a:summary)out.add(detailed.contains(a.id())?RecordingStore.withRetainedSamples(read(),a):a);return out;
+        List<ActivityRecord> out=new ArrayList<>();int remaining=60000;
+        for(ActivityRecord a:summary){int count=0;if(detailed.contains(a.id()))try(Cursor c=read().rawQuery("SELECT COUNT(*) FROM recording_points p JOIN recording_sessions s ON s.id=p.session_id WHERE s.activity_id=?",new String[]{a.id()})){if(c.moveToFirst())count=c.getInt(0);}
+            if(count<=remaining&&detailed.contains(a.id())){out.add(RecordingStore.withRetainedSamples(read(),a));remaining-=count;}else out.add(a);
+        }return out;
     }
-    private List<ActivityRecord> activitySnapshot(boolean includeSamples) {
+    private List<ActivityRecord> activitySnapshot(boolean includeSamples) {return activitySnapshot(includeSamples,null);}
+    private List<ActivityRecord> activitySnapshot(boolean includeSamples,String onlyId) {
         SQLiteDatabase db=read();
         List<ActivityRecord> out=new ArrayList<>();
-        try(Cursor cursor=db.rawQuery("SELECT a.payload, n.provider, n.notes, n.rpe, n.shoe_id, r.planned_workout_id FROM activities a LEFT JOIN activity_annotations n ON a.provider=n.provider AND a.record_id=n.record_id LEFT JOIN run_responses r ON r.activity_id=a.id ORDER BY a.start_millis DESC, a.id",null)) {
+        try(Cursor cursor=db.rawQuery("SELECT a.payload, n.provider, n.notes, n.rpe, n.shoe_id, r.planned_workout_id FROM activities a LEFT JOIN activity_annotations n ON a.provider=n.provider AND a.record_id=n.record_id LEFT JOIN run_responses r ON r.activity_id=a.id"+(onlyId==null?"":" WHERE a.id=?")+" ORDER BY a.start_millis DESC, a.id",onlyId==null?null:new String[]{onlyId})) {
             while(cursor.moveToNext()) {
                 ActivityRecord a=FeatureJson.activity(FeatureJson.object(cursor.getString(0)));
                 if(!cursor.isNull(1)) a=annotated(a,cursor.isNull(2)?a.notes():cursor.getString(2),cursor.isNull(3)?null:cursor.getDouble(3),cursor.getString(4));

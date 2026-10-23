@@ -248,6 +248,7 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit, record: () -> Unit = {}, race:()->Unit={}) = CoachPage {
     CoachHeading("Your running, your way")
     CoachButton("Record a run", record)
+    TextButton(onClick=weekly){Text("Not feeling 100%? Review today or report a break")}
     if(state.profile?.raceGoal()?.raceDate()!=null)TextButton(onClick=race){Text("Race preparation & Race Day")}
     val summary=org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
     CoachCard { Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("View details")} }

@@ -23,20 +23,10 @@ import org.racedaydreams.data.RecordingStore
     val hr by RunRecordingService.heartRate.collectAsState()
     val workout by RunRecordingService.workoutState.collectAsState()
     val cue by RunRecordingService.cue.collectAsState()
+    val race by RunRecordingService.raceContext.collectAsState()
+    status?.let{ActiveRunPanel(it,workout,hr,cue,race,::send);return@CoachPage}
     CoachHeading(if(workoutId!=null)"Live Coach"else "Record a run")
-    workout?.let{w->CoachCard {
-        Text(if(w.complete())"Workout steps finished"else if(w.early())"Workout ended early"else "Step ${w.index()+1} of ${w.total()}",style=MaterialTheme.typography.headlineMedium)
-        w.current()?.let{step->Text(step.label(),style=MaterialTheme.typography.titleLarge);step.fastPace()?.let{fast->step.slowPace()?.let{slow->Text("Target ${formatPaceSeconds(fast)}–${formatPaceSeconds(slow)}/km")}};step.rpe()?.let{Text("Effort approximately ${it.toInt()}/10")}}
-        w.metresRemaining()?.let{Text("${it.toInt()} m remaining",style=MaterialTheme.typography.headlineLarge)}
-        w.millisRemaining()?.let{Text("${it/1000} sec remaining",style=MaterialTheme.typography.headlineLarge)}
-        if(w.paused())Text("Paused — workout clock stopped",style=MaterialTheme.typography.titleLarge)
-        w.next()?.let{Text("Next: ${it.label()}")}
-        cue?.let{Text(it)}
-        if(!w.complete()&&!w.early())OutlinedButton(onClick={send(RunRecordingService.SKIP)},modifier=androidx.compose.ui.Modifier.heightIn(min=56.dp)){Text("Skip this step")}
-    }}
-    hr?.let{Text("Heart rate: ${it.toInt()} bpm")}
     if(status==null)WhyDetails("Phone GPS stays active with the screen locked. No route leaves your device. Elapsed time includes pauses; moving time excludes manual pauses. Poor fixes and gaps are excluded from distance.","Recording and privacy")
-    status?.let{s->CoachCard{Text(String.format(java.util.Locale.UK,"%.2f km",s.metres()/1000),style=MaterialTheme.typography.headlineLarge);Text("Elapsed ${s.elapsedMillis()/1000} sec · Moving ${s.movingMillis()/1000} sec");Text(s.secondsPerKm()?.let{"Smoothed pace ${it.toInt()/60}:${(it.toInt()%60).toString().padStart(2,'0')}/km"}?:"Pace: waiting for continuous GPS evidence");Text(s.gps())};CoachButton(if(s.paused())"Resume"else"Pause"){send(if(s.paused())RunRecordingService.RESUME else RunRecordingService.PAUSE)};CoachButton("Finish and save"){send(RunRecordingService.FINISH)}}
     if(!running&&status==null&&unfinished==null)CoachButton("Start GPS recording"){if(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED)send(RunRecordingService.START)else permission.launch((listOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)+if(android.os.Build.VERSION.SDK_INT>=33)listOf(Manifest.permission.POST_NOTIFICATIONS)else emptyList()).toTypedArray())}
     if(!running&&status==null&&unfinished!=null){Text("An unfinished run was retained. Recovery saves only observed time and samples; time while the process was absent is not invented.");CoachButton("Recover recorded portion"){scope.launch{try{recovery=withContext(Dispatchers.IO){RecordingStore(context).finish(unfinished!!);"Recorded portion recovered. Open Calendar to view it."};unfinished=null;model.refresh()}catch(_:Exception){recovery="Not enough usable evidence to finalise. Staging has been retained."}}}}
     if(!running&&status==null&&unfinished!=null)TextButton(onClick={discard=true}){Text("Discard unfinished recording…")}

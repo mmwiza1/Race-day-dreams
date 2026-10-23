@@ -13,7 +13,7 @@ public final class RacePredictionEngine {
         var reasons=new ArrayList<String>();var estimates=new ArrayList<Double>();var sources=new HashSet<String>();int authoritative=0;
         for(var r:results.stream().sorted(Comparator.comparing(RecordedResult::date).reversed().thenComparing(RecordedResult::id)).collect(java.util.stream.Collectors.toList())){
             long days=java.time.temporal.ChronoUnit.DAYS.between(r.date(),today);if(days<0||days>120||r.distance().metres()<Math.min(5000,metres*.4))continue;
-            String key=r.activityId()==null?r.id():r.activityId();if(!sources.add(key))continue;
+            String key=r.activityId()==null?r.date()+":"+r.distance().code()+":"+r.duration():r.activityId();if(!sources.add(key))continue;
             if(r.source()==ResultSource.ROLLING&&r.distance().metres()<metres*.5)continue;
             // Conventional distance scaling is only a starting signal, gated by actual endurance.
             estimates.add(r.duration().toMillis()/1000.0*Math.pow(metres/r.distance().metres(),1.07)*(1+days/120.0*.02));

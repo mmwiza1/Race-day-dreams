@@ -25,7 +25,10 @@ class RunRecordingService:Service() {
     private var seenExecutionEvents=0
     private var lastSplit=0
     private var audio:CoachAudio?=null
-    private var currentCue:String?=null
+    private var gpsWasLost=false
+    private var hadHr=false
+    private var raceHalf=false
+    private var raceFive=false
     private var wake:PowerManager.WakeLock?=null
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val io=Dispatchers.IO.limitedParallelism(1)
@@ -35,7 +38,7 @@ class RunRecordingService:Service() {
     private var engine:RunMetricsEngine?=null;private var session:RecordingStore.Session?=null
     private val commandLock=Mutex();private val flushLock=Mutex()
     private var pointIndex=0;private var eventIndex=0;private var ticker:Job?=null
-    companion object {val workoutState=MutableStateFlow<WorkoutExecutionEngine.State?>(null);val cue=MutableStateFlow<String?>(null);const val SKIP="SKIP_STEP";val running=MutableStateFlow(false);val heartRate=MutableStateFlow<Double?>(null);val status=MutableStateFlow<RunMetricsEngine.Status?>(null);val message=MutableStateFlow<String?>(null);const val START="START";const val PAUSE="PAUSE";const val RESUME="RESUME";const val FINISH="FINISH"}
+    companion object {val workoutState=MutableStateFlow<WorkoutExecutionEngine.State?>(null);val cue=MutableStateFlow<String?>(null);val raceContext=MutableStateFlow<String?>(null);const val SKIP="SKIP_STEP";val running=MutableStateFlow(false);val heartRate=MutableStateFlow<Double?>(null);val status=MutableStateFlow<RunMetricsEngine.Status?>(null);val message=MutableStateFlow<String?>(null);const val START="START";const val PAUSE="PAUSE";const val RESUME="RESUME";const val FINISH="FINISH"}
     override fun onCreate(){super.onCreate();store=RecordingStore(this);location=AndroidLocationSource(this);audio=CoachAudio(this);getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel("recording","Active run",NotificationManager.IMPORTANCE_LOW))}
     override fun onBind(intent:Intent?)=null
     override fun onStartCommand(intent:Intent?,flags:Int,startId:Int):Int {
@@ -64,17 +67,31 @@ class RunRecordingService:Service() {
         val preferred=getSharedPreferences("run-sensors",MODE_PRIVATE).getString("hr-device",null)
         if(preferred!=null&&(Build.VERSION.SDK_INT<31||checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT)==android.content.pm.PackageManager.PERMISSION_GRANTED))try{
             if(Build.VERSION.SDK_INT>=29)startForeground(104,notification("Recording with heart-rate monitor"),android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION or android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
-            hrSource=BleHeartRateSource(this);hrSource?.connect(preferred,{value->heartRate.value=value;engine?.heartRate(value,SystemClock.elapsedRealtime());value?.let{engine?.sensorEvent("HEART_RATE",it,SystemClock.elapsedRealtime(),Instant.now())}},{connected->engine?.event(if(connected)"HR_CONNECTED"else"HR_DISCONNECTED",SystemClock.elapsedRealtime(),Instant.now())})
+            hrSource=BleHeartRateSource(this);hrSource?.connect(preferred,{value->heartRate.value=value;engine?.heartRate(value,SystemClock.elapsedRealtime());value?.let{engine?.sensorEvent("HEART_RATE",it,SystemClock.elapsedRealtime(),Instant.now())}},{connected->if(connected)hadHr=true else if(hadHr){hadHr=false;announce("Heart-rate monitor disconnected. Recording continues.",0,false)};engine?.event(if(connected)"HR_CONNECTED"else"HR_DISCONNECTED",SystemClock.elapsedRealtime(),Instant.now())})
         }catch(_:Exception){message.value="Heart-rate monitor unavailable; GPS recording continues."}
     }
     private fun announce(text:String,priority:Int=1,haptic:Boolean=true){
         cue.value=text;audio?.deliver(CoachCues.Cue("state-${SystemClock.elapsedRealtime()}",text,priority,SystemClock.elapsedRealtime(),haptic))
     }
     private fun updateExecution(s:RunMetricsEngine.Status){
+        val candidates=mutableListOf<CoachCues.Cue>()
+        val lost=s.gps().contains("interrupted")
+        if(lost&&!gpsWasLost)candidates.add(CoachCues.Cue("gps-lost","GPS interrupted. Distance is incomplete; continue by effort.",0,s.movingMillis(),false))
+        gpsWasLost=lost
+        executionContext?.takeIf{it.optString("mode")=="race"}?.let{race->
+            val distance=race.getDouble("goalMetres")
+            val target=if(race.has("targetSeconds")&&!race.isNull("targetSeconds"))race.getLong("targetSeconds")else null
+            raceContext.value=if(target==null)"Race elapsed time includes pauses."else{
+                val margin=target*s.metres()/distance-s.elapsedMillis()/1000.0
+                "${kotlin.math.abs(margin).toInt()} sec ${if(margin>=0)"ahead of"else"behind"} chosen average, relative to recorded GPS distance. Elapsed timing includes pauses."
+            }
+            if(!raceHalf&&s.metres()>=distance/2){raceHalf=true;candidates.add(CoachCues.Cue("race-half","Halfway by recorded distance. Keep your effort controlled.",2,s.movingMillis(),false))}
+            if(!raceFive&&distance>10000&&s.metres()>=distance-5000){raceFive=true;candidates.add(CoachCues.Cue("race-five","Five kilometres remaining by recorded distance.",2,s.movingMillis(),false))}
+        }
+
         val e=execution?:return
         val input=WorkoutExecutionEngine.Input(s.metres(),s.movingMillis(),s.elapsedMillis(),s.secondsPerKm(),s.secondsPerKm()!=null&&!s.paused(),s.paused())
         val state=e.update(input);workoutState.value=state
-        val candidates=mutableListOf<CoachCues.Cue>()
         val events=e.events()
         for(i in seenExecutionEvents until events.size){val event=events[i];engine?.sensorEvent(event.type(),event.step().toDouble(),SystemClock.elapsedRealtime(),Instant.now())
             if(event.type()=="STEP_STARTED"){
@@ -96,5 +113,5 @@ class RunRecordingService:Service() {
         fun action(type:String)=PendingIntent.getService(this,type.hashCode(),Intent(this,RunRecordingService::class.java).setAction(type),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         return Notification.Builder(this,"recording").setContentTitle(text).setContentText("Location is used only during this run. Open the app to review or finish.").setSmallIcon(org.racedaydreams.R.drawable.ic_nav_progress).setOngoing(true).setContentIntent(open).addAction(Notification.Action.Builder(null,if(status.value?.paused()==true)"Resume"else"Pause",action(if(status.value?.paused()==true)RESUME else PAUSE)).build()).build()
     }
-    override fun onDestroy(){audio?.close();workoutState.value=null;running.value=false;if(wake?.isHeld==true)wake?.release();heartRate.value=null;status.value=null;hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();scope.cancel();super.onDestroy()}
+    override fun onDestroy(){audio?.close();workoutState.value=null;raceContext.value=null;running.value=false;if(wake?.isHeld==true)wake?.release();heartRate.value=null;status.value=null;hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();scope.cancel();super.onDestroy()}
 }
