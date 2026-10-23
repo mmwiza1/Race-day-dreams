@@ -108,4 +108,12 @@ Front Squat, Leg Press, Lat Pulldown, Seated Leg Curl and Farmer’s Carry (58to
 These will verify machine/squat/distance guide presentation in addition to the existing
 RDL/Bench/BSS/routine/light/dark/200% family. They must be regenerated and visually
 reviewed, not substituted with generated artwork or the design mockups. Full approved
-reference fidelity remains an open mandatory gate; catalogue coverage is still47/174.
+reference fidelity remains an open mandatory gate; catalogue coverage at that captured checkpoint was 47/174. The later 174/174 source
+checkpoint requires fresh actual-build captures; do not treat these older images as
+visual evidence for the expanded catalogue.
+
+The 58-capture request passed in workflow40014032752. Exact bot30b5291d captures
+are adopted in f9b06c4; all60 PNG/metadata blob hashes matched. Five added actual
+machine/squat/carry guides were visually inspected. Full mandatory reference fidelity
+still remains open; these captures do not certify the missing127canonical guides or
+three unfinished geographic routes. Source fingerprint d385f63ff4b97230cea4ecc923ff4bb8f43cbab32f642a2cfbd7c972ba4f2692.

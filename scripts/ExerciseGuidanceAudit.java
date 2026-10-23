@@ -24,6 +24,6 @@ class ExerciseGuidanceAudit {
     }
     static void check(Path root,TechniqueIllustrations.Artwork art) throws Exception {
         Path file=root.resolve("app/src/main/res/drawable-nodpi/"+art.asset()+".webp");
-        if(art.description().trim().isEmpty()||art.phases().stream().anyMatch(String::isBlank)||!Files.isRegularFile(file)||Files.size(file)<1024||art.asset().matches(".*(placeholder|demo|schematic|fallback).*"))throw new IllegalStateException("Missing real instructional asset: "+art.asset());
+        if(art.description().trim().isEmpty()||art.phases().isEmpty()||art.phases().stream().anyMatch(String::isBlank)||!Files.isRegularFile(file)||Files.size(file)<1024||art.asset().matches(".*(placeholder|demo|schematic|fallback).*"))throw new IllegalStateException("Missing real instructional asset: "+art.asset());
     }
 }

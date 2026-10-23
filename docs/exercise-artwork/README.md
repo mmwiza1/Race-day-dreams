@@ -1,100 +1,57 @@
-# Original instructional artwork — 0.8.1 work in progress
+# Original instructional artwork — 0.8.1
 
-The new assets are original images created for Race Day Dreams in this development
-session with OpenAI image generation from original written movement specifications.
-No existing app artwork, photographs, web imagery, event graphics or reference JPEG
-pixels were incorporated. The user-provided mockups guide layout/style, not assets.
-The project distributes its contributed assets under MIT; no third-party artwork
-licence is asserted or required. Generated artwork is not individual form assessment.
+## Current coverage
 
-`drawable-nodpi/guide_*.webp` stores one 1200×800 combined movement sequence per guide,
-encoded at quality84 from the original 1536×1024 output. Only the visible asset is
-loaded; no catalogue-wide bitmap decoding. Four assets total approximately 152 KiB.
-Text instructions/accessibility descriptions are authoritative and supplemental.
+All **174/174 canonical exercises** have movement-specific illustrated guidance.
+All **14/14 supporting-routine movements** have artwork. The strict catalogue audit
+passes; no canonical exercise uses a schematic or a generic unrelated-pose fallback.
 
-| Asset | Identity | Frames |
-| --- | --- | --- |
-| guide_romanian_deadlift | Romanian Deadlift | Standing / hip hinge |
-| guide_bench_press | Barbell Bench Press | Controlled lowering / press |
-| guide_walking_lunge | Walking Lunge (also bodyweight routine) | Standing / lunge |
-| guide_ankle_rocks | Ankle rocks routine | Half-kneeling ankle movement |
+There are **177 original local WebP assets**, totalling **9,198,660 bytes** before APK
+packaging. Each is a 1200×800 sequence encoded at quality 84. Only the displayed
+asset is decoded. Single-frame holds, two-frame movements and three-frame technical
+lifts retain meaningful captions and complete written/screen-reader instructions.
+The exact byte sizes, SHA256 checksums and creation/licence records are in
+`asset-provenance.json`. Adding an exercise without a guide fails domain tests and
+the strict packaged-file audit. `missing-canonical-ids.txt` is currently empty.
 
-These four were visually inspected for complete bodies, equipment, neutral posture,
-recognisable human proportions and reference palette. Qualified movement review and
-actual-build light/dark/large-text comparison remain required. **Coverage is not yet
-174/174.** The old 25-guide system remains for other movements until individually
-reviewed replacements exist. Do not count generic fallback drawings as accepted art.
-No release may claim complete coverage from this checkpoint.
+## Authorship and review
 
-## Routine coverage checkpoint
+These are original project images generated from original written movement
+specifications with OpenAI image generation. No photographs, scraped exercise art,
+organiser graphics or owner-reference JPEG pixels were incorporated. The supplied
+mockups determine visual direction; they remain separate in `docs/design-reference`.
+The project distributes the contributed artwork under MIT.
 
-All14 built-in routine movements now have reviewed original illustrations:
-walk/jog (shared walking option), ankle rocks, ankle circles, calf raises, leg
-swings, walking lunge, marching, controlled strides, glute bridge, hip-flexor,
-seated glute, calf and supported quad stretches. Unsupported custom guidance
-never inherits an unrelated pose. The old routine stick-figure renderer is removed.
-The calf-stretch draft with a raised rear heel was rejected and replaced with
-an explicitly corrected heel-down image. A duplicate marching pose was also
-replaced with distinct standing/raised-knee phases before bundling.
+Every added sequence was inspected for movement, equipment and framing before
+bundling. Incorrect drafts were corrected: low-bar shelf, belt-squat clearance,
+weighted push-up vest, landmine orientation, block-pull clearance, standing tibialis
+raise and cable/machine framing. Technical lifts distinguish hang/floor starts,
+shallow/deep receiving positions and press/jerk finishes. Related named variants
+share art only when the illustrated equipment and movement are appropriate; variant
+instructions remain explicit. No load/repetition values are fabricated for holds or
+carries. Text and illustration are general guidance, not individual form assessment.
+Qualified movement review on a real device remains valuable and is not claimed.
 
-The bodyweight Glute Bridge now has exact setup/movement text and shares its
-appropriate mat illustration with routines. Canonical accepted artwork coverage
-is **4/174**, with26 text guides in the older technique model. Strict coverage
-still blocks release. `scripts/ExerciseGuidanceAudit.java` derives missing IDs
-from the real catalogue, checks required copy/accessibility and actual local
-assets; `--report` is only for this development branch. Before final delivery,
-require strict mode in the normal build as well as release publication.
+## Maintainable implementation
 
-Packaged-resource instrumentation checks every built-in routine and every
-registered canonical asset without decoding the entire catalogue into bitmaps.
-It does not certify human form or imply unregistered exercises are complete.
+- `TechniqueGuide` resolves canonical movement copy through small catalogue content
+  classes; unknown/custom exercises remain unknown.
+- `TechniqueIllustrations` and `CatalogueTechniqueIllustrations` explicitly map
+  accepted IDs to assets, meaningful accessibility descriptions and frame captions.
+- `GuidanceArtwork.kt` loads only the requested local resource.
+- `TechniqueScreens.kt` provides one shared guide template. Cues/mistakes sit beside
+  each other at normal text size and stack at larger font scales.
+- No new database, backup format, runtime permission or dependency is needed.
 
-## Continued canonical artwork checkpoint
+## Validation commands
 
-Reviewed additional sequences: Back Squat, Bulgarian Split Squat, Seated Cable Row,
-Forearm Plank, Conventional Deadlift, Standing Overhead Press and Dumbbell Bench Press.
-Canonical accepted coverage is now **11/174**; all14 routine movements remain covered.
-Bodyweight Bulgarian movement is explicitly labelled; weights are not falsely drawn.
-The calf-raise routine image is NOT counted for machine-based canonical calf exercises.
-Dumbbell-bench draft with a clipped shoe was rejected and regenerated with full margins.
-The guide template no longer appends repetition instructions to timed/static movements.
+```sh
+sh scripts/test-domain.sh
+java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java
+python3 scripts/verify-guidance-assets.py
+```
 
-Twenty-two optimized1200×800 WebPs are bundled; the exact byte sizes and SHA256 values
-are in asset-provenance.json. The originals remain under /workspace/generated_images
-for this execution workspace; the distributable reviewed assets are version-controlled.
-No unsupported canonical movement is counted as illustrated. The strict audit still
-fails163 missing canonical IDs, recorded in missing-canonical-ids.txt.
-
-## Further canonical movement review
-
-Trap-Bar Deadlift, Barbell Row, Pull-Up and Hip Thrust now have distinct reviewed
-sequences. Coverage is **15/174**,26 packaged WebPs;14/14 routine art unchanged.
-The hip-thrust draft was regenerated with full bench/foot margins. Trap-bar imagery
-shows the athlete inside the hexagonal frame with side handles; it is not a reused
-straight-bar deadlift. Deadlift cues now correctly permit the intended knee bend,
-rather than inheriting the RDL-specific warning against turning a hinge into a squat.
-Exact159missing canonical IDs remain in missing-canonical-ids.txt.
-
-## Expanded canonical coverage — current checkpoint
-
-Accepted visual guidance is now **47/174**, with **57 original local assets**
-(2,518,644 bytes) and all14/14 supporting-routine movements covered. The exact
-127 missing canonical IDs are regenerated in missing-canonical-ids.txt. This is
-still incomplete; the strict catalogue gate must remain red and PR10 draft.
-
-The new illustrations cover machine leg press/curls/extensions, seated and standing
-calf raises, front/goblet squats, unilateral work, carries, dumbbell presses/rows,
-arm movements and static/dynamic trunk movements. Seated curl artwork was corrected
-so the resistance roller acts behind the lower calves; cropped machines were
-regenerated. Dead Hang uses one static frame rather than duplicate poses. Related
-Calf Raise/Standing Calf Raise IDs share the exact appropriate machine movement;
-they do not use the unloaded routine image. Other variants are not counted from
-unrelated poses. Instructions explicitly distinguish front rack, machine setup,
-seated pressing, neutral-grip curls and non-overhead kettlebell swings.
-
-New movement copy is maintained in AdditionalTechniqueGuides.java and the shared
-TechniqueGuide/TechniqueIllustrations registry. Existing identity/search/history/PB
-models are unchanged. scripts/verify-guidance-assets.py verifies complete manifest
-membership and exact SHA256/byte counts for all packaged original artwork in CI.
-Each visible screen loads only its own asset. Full actual-build fidelity and all174
-coverage remain mandatory before release.
+The audit proves coverage and asset integrity. It does **not** prove final design
+fidelity. New actual-build captures, light/dark/200% review against the untouched
+owner references and current Android matrix verification remain required before
+release. The previous 47-guide captures do not certify the expanded catalogue.

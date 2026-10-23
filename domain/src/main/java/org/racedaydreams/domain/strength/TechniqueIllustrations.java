@@ -61,7 +61,7 @@ public final class TechniqueIllustrations {
         case "glute-bridge" -> new Artwork("guide_glute_bridge","Bodyweight glute bridge: begin lying on a mat with bent knees and flat feet; then lift the hips while the shoulders remain supported, keeping ribs controlled.",Arrays.asList("Feet flat; knees bent","Lift hips under control"));
         case "bench-press" -> new Artwork("guide_bench_press","Bench press: lie supported with feet planted, lower the bar over the chest with bent elbows, then press above the chest with arms extended.",Arrays.asList("Controlled lowering","Press above the chest"));
         case "walking-lunge" -> new Artwork("guide_walking_lunge","Walking lunge: begin standing; step forward and bend both knees with the front foot flat, torso upright and back knee lowered under control.",Arrays.asList("Stand tall","Step and lower"));
-        default -> null;
+        default -> CatalogueTechniqueIllustrations.forExercise(id);
     };}
     public static Artwork forRoutine(String id) {return switch(id) {
         case "lunge" -> forExercise("walking-lunge");

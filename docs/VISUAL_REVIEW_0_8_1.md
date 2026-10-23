@@ -1,3 +1,19 @@
+# Current 174-guide checkpoint — fresh design review still required
+
+All174canonical exercises and14routine movements now resolve to reviewed original
+filled-athlete illustrations with movement-specific text. Strict completeness passes.
+This is asset/content acceptance, **not** actual-build design approval. Technique
+screens now put mint/pink cue/mistake cards beside each other at normal font and
+stack at large font; primitive schematic fallback code is removed. Five more
+representative captures are requested. Review all fresh63actual captures against
+`docs/design-reference` after current-source Android verification.
+
+London/Paris/NewYork geography, richer city presentation and final README curation
+remain open. No physical device acceptance is claimed. The table below records
+historical images and observations; its older coverage counts are historical.
+
+---
+
 # 0.8.1 visual acceptance checkpoint
 
 Reviewed against the five untouched owner references. This is an engineering
@@ -41,3 +57,12 @@ filled-athlete design family, not circles-and-lines schematics. This asset revie
 not actual-build screenshot acceptance. New five representative guide captures and
 all47resource resolutions still need the fresh Android matrix.127canonical guides,
 London/Paris/NewYork geography and richer city visual presentation remain unfinished.
+
+The five new guide captures from workflow40014032752 were then inspected in the
+actual build: Front Squat, Leg Press, Lat Pulldown, Seated Leg Curl, Farmer’s Carry.
+Figures and equipment fit; the corrected calf-side curl roller is visible; captions
+wrap separately and copy is readable. These match the filled blue/navy illustration
+family. Setup copy remains too long on some screens to show tips/mistakes together
+in the first viewport. Continue refining progressive disclosure/concise copy and
+responsive card arrangement without dropping safety instructions. No full fidelity
+pass is claimed; remaining127guides/three geographic cities are release blockers.
