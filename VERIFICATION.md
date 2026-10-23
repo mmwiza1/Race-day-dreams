@@ -1,3 +1,28 @@
+# Current London geographic checkpoint — 23 October 2026
+
+Release remains incomplete; PR #10 stays draft. All174 canonical exercises and14
+routine movements pass strict guidance completeness and all177 artwork checksums.
+
+Source29d34585873669668b43bcb4254a39a8addd4989 passed the entire automated workflow
+[40027830067](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40027830067):
+strict guidance, build/lint/domain and199instrumentation tests perAPI28/35/36.
+API35 job120668355415 records APK_BYTES=44119738. API35 APK artifact12533792261,
+`Race-Day-Dreams-0.8.1-test1-debug-api-35`; screenshots12533906801. Canonical capture
+job120671084775 passed; all63actualPNG files and source metadata adopted exactly
+from botc59eabcdec06070b8f19cf9bd5f875e7229686ca. Publication skipped as intended.
+This is an automated source checkpoint, not physical S24 or full design acceptance.
+
+London now has a separately versioned historical geographic line under explicit MIT
+licence,164retained original positions. Edition/survey accuracy are unspecified;
+source publication2023 is not presented as race edition. Old drawings/assignments
+remain unchanged. New-source local domain checks:61,131 across18suites; schema43;
+release-note5; strict guidance and three geographic projections pass. New London
+complete-backup instrumentation and London capture still require the next CI run.
+Paris/NewYork geography and richer five-city presentation remain release blockers.
+Version/code/schema/backup formats remain0.8.1-test1/10/10/JSON7/raw2/complete1.
+
+---
+
 # Verification — 0.8.1-test1 current 174-guide checkpoint
 
 Release remains **incomplete**; keep PR #10 draft. Version0.8.1-test1/code10,

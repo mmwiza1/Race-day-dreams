@@ -1,3 +1,19 @@
+# Actual 174-guide build review — 23 October 2026
+
+The63canonical captures now come from source29d3458/workflow40027830067.
+All174canonical guides and14routine guides pass strict completeness, and the old
+primitive canonical renderer is removed. The current RDL capture was inspected:
+recognisable two-phase athlete/equipment, blue panel, distinct captions, concise
+instructions and adjacent mint/pink cards follow the required reference family.
+Some content remains below the fold on the540px-wide test device; it is scrollable.
+
+London geography is implemented for the next capture, joining Berlin/Tokyo.
+Paris/NewYork and richer city surroundings/verified landmarks remain open.
+This is not full visual acceptance. The historical coverage counts below refer to
+older checkpoints; they must not be read as current missing-guide counts.
+
+---
+
 # Current 174-guide checkpoint — fresh design review still required
 
 All174canonical exercises and14routine movements now resolve to reviewed original

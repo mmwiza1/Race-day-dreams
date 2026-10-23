@@ -43,6 +43,7 @@ jobs:
           cmp THIRD_PARTY.md app/src/main/assets/third_party.md
           python3 scripts/generate-berlin-geometry.py --check
           python3 scripts/generate-tokyo-geometry.py --check
+          python3 scripts/generate-london-geometry.py --check
           python3 scripts/verify-guidance-assets.py
           java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java --report
       - name: Build, lint and compile instrumentation tests

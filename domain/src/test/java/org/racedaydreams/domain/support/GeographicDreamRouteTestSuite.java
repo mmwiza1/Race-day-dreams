@@ -32,6 +32,26 @@ public final class GeographicDreamRouteTestSuite {
         check(DreamRoutes.provenance(geographic).contains("CC0"), "Source licence inspectable");
         check(DreamRoutes.provenance(geographic).contains("participant"), "No official-geometry claim");
         check(DreamRoutes.section(geographic, 0, 42195).size() == 91, "Full polyline keeps retained corners");
+        var londonOld = new DreamRoutes.Assignment("london-v2", 1000, 5000);
+        var londonFresh = DreamRoutes.assign(5020, new Random(19), Set.of("london-v2"));
+        check(londonFresh.routeId().equals("london-historical-geo-v1"), "London preference selects geographic source only for future assignments");
+        var london = DreamRoutes.forId(londonFresh.routeId());
+        check(london.vertices().size()==164,"All source line positions retained, without fabricated densification");
+        check(DreamRoutes.forId(londonOld.routeId()).vertices().get(0).equals(new DreamRoutes.Vertex(7,8)),"Old London drawings remain unchanged");
+        check(DreamRoutes.at(london,0).equals(london.vertices().get(0)),"London start exact");
+        check(DreamRoutes.at(london,42195).equals(london.vertices().get(163)),"London equivalent finish exact");
+        check(DreamRoutes.at(london,50000).equals(london.vertices().get(163)),"London over-marathon progress clamps safely");
+        check(london.vertices().get(0).x()>london.vertices().get(163).x(),"Greenwich start east of Mall finish");
+        check(london.vertices().get(0).y()>london.vertices().get(163).y(),"Geographic north-up London retained");
+        check(DreamRoutes.provenance(london).contains("edition")&&DreamRoutes.provenance(london).contains("unspecified"),"Unknown historical edition is not invented");
+        check(DreamRoutes.provenance(london).contains("MIT"),"Source licence is inspectable");
+        check(DreamRoutes.landmarks(london).isEmpty(),"Old drawing-unit landmark anchors must not appear at false geographic positions");
+        check(DreamRoutes.section(london,0,42195).size()==164,"Full London highlight preserves source corners");
+        for(double metres:new double[]{0,1000,21097.5,42194.9,42195}) {
+            var p=DreamRoutes.at(london,metres);var section=DreamRoutes.section(london,0,metres);
+            check(Double.isFinite(p.x())&&Double.isFinite(p.y()),"London interpolation remains finite");
+            check(section.get(section.size()-1).equals(p),"London equivalent section ends exactly at progress");
+        }
         System.out.println("GeographicDreamRouteTestSuite: " + checks + " checks passed.");
     }
 }

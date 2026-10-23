@@ -1,3 +1,35 @@
+# Current geographic source inventory
+
+Three accepted geographic revisions are now available for new assignments:
+Berlin2014 (MIT participant trace), Tokyo2026 (CC0 participant trace), and
+London historical line published2023 (MIT GeoJSON, edition unspecified).
+Paris and New York remain unfinished. Old geometry/assignments are retained.
+
+## London historical source
+
+- Source: Georgios Karamanis, `gkaramanis/tidytuesday`, week17of2023.
+- Frozen commit `f56d74b9e21891c67a9f616b2ccfc7bbcba74a74`, file
+  `2023/2023-week_17/data/london-marathon.geojson`, blob
+  `f187e1367cd1bfd8c1444d84cc2ccccf41f77e4b`.
+- Repository explicitly grants MIT reuse of software and associated documentation;
+  no separate restriction is declared for its GeoJSON. Exact original notice retained
+  in LONDON_SOURCE_LICENCE.txt and bundled in the APK. No source R implementation,
+  output image, organiser artwork, photograph, logo or map tiles copied.
+- Retain all164positions of the named London Marathon Course line. Alternative-start
+  features, placemark and source zero-altitude values excluded. No invented positions,
+  smoothing or fake GPS timestamps. Existing source is coarse (largest segment1.41km),
+  approximate42,781.8m, edition/survey accuracy unspecified. Do not label it official
+  or a current event edition. North-up projection preserves its geographic shape.
+- Research alternative OSM relation2086183/version642 is not ingested: naive ordered
+  concatenation would create23gaps/about5.3km of artificial connectors. Overpass
+  endpoints returned406 or timed out; Nominatim text searches found unrelated POIs.
+- Machine-readable provenance, licence assessment and retained positions:
+  `london-historical.json`. Reproduce with `generate-london-geometry.py --check`.
+- Landmarks from older schematic drawing units are intentionally not overlaid at
+  incorrect geographic positions. Richer original cartography remains a release gate.
+
+## Earlier research notes (historical)
+
 # Geographic route data and research
 
 Checked23 October2026. Do not claim these candidates are live app routes or current

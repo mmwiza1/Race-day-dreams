@@ -1,3 +1,32 @@
+# Current geographic checkpoint — three cities
+
+New London assignments use `london-historical-geo-v1`: all164positions of the
+historical course line published in2023 in Georgios Karamanis' MIT-licensed
+TidyTuesday repository. The source does not specify the race edition or survey
+accuracy; the app explicitly says so. This is an already simplified geographic
+line, **not** a participant recording, current certified course or official map.
+Only the named full-course feature is retained, without its zero-altitude values
+or alternative starts. Approximate observed length42.78km is distinct from the
+42.195km equivalent-progress axis. Source commit/blob/licence and all positions are
+in `dream-route-data/london-historical.json`; the original MIT notice is bundled and
+readable in Settings. Reproduce with `generate-london-geometry.py --check`.
+
+Berlin2014 and Tokyo2026 geographic traces remain unchanged. Paris and New York
+still need safely redistributable geographic replacements. Rich original five-city
+presentation and actual screenshot/reference fidelity remain unfinished.
+
+All legacy geometry IDs and assignments remain valid. City preferences stay stable;
+only future London assignments select the new revision. New and old London complete
+backup round trips have instrumentation coverage. Equivalent start/finish boundaries
+now return the exact retained endpoints, avoiding floating-point finish drift.
+
+London OSM relation2086183/version642 was investigated but rejected for this import:
+its ordered way list has23discontinuities. No false straight-line bridges from that
+candidate are bundled. No organiser artwork, map tiles or runtime network dependency
+has been introduced.
+
+## Earlier geographic checkpoints (historical)
+
 # 0.8.1 geographic upgrade checkpoint
 
 New Berlin assignments use `berlin-2014-geo-v1`:191 original retained vertices from

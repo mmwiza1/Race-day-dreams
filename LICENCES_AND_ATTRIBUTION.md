@@ -63,3 +63,12 @@ are bundled; no biometric data, timestamps or identity. Not certified/official c
 geometry. See docs/dream-route-data/tokyo-2026.json and TOKYO_SOURCE_LICENCE.txt.
 Full CC0 text is bundled in assets/licences/tokyo-2026-CC0.txt and readable in Settings.
 No source implementation, Garmin SDK, remote tiles or runtime download was added.
+
+## London historical coordinate line (0.8.1 checkpoint)
+
+Georgios Karamanis' MIT-licensed TidyTuesday GeoJSON contributes164retained
+positions. Source publication2023; race edition and survey accuracy unspecified.
+No visual artwork or source implementation copied. The exact copyright/licence
+notice is preserved in docs/dream-route-data/LONDON_SOURCE_LICENCE.txt and
+assets/licences/london-historical-MIT.txt. See london-historical.json for frozen
+source commit/blob and transformation. No current/official-course claim is made.

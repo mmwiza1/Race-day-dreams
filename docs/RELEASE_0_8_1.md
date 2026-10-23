@@ -36,8 +36,9 @@ Implementation checkpoint; not yet a completed/released build.
 - This checkpoint has illustrated guidance for all 174 canonical exercises and all
   14 built-in routine movements. Strict catalogue and packaged-asset checks pass;
   final actual-build visual acceptance remains required.
-- Berlin and Tokyo now have separately versioned participant geographic traces.
-  The other three Dream Route geography replacements and full screenshot/reference acceptance
+- Berlin and Tokyo have separately versioned participant geographic traces; London
+  has a historical MIT-licensed geographic line with unspecified edition.
+  The other two Dream Route geography replacements and full screenshot/reference acceptance
   remain in progress. Existing assignments and backups are preserved.
 - Recovery saves the durable interrupted portion; it does not fabricate continuous
   tracking across process death/reboot. The last unflushed batch may still be lost.
