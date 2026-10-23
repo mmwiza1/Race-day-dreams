@@ -72,3 +72,20 @@ No visual artwork or source implementation copied. The exact copyright/licence
 notice is preserved in docs/dream-route-data/LONDON_SOURCE_LICENCE.txt and
 assets/licences/london-historical-MIT.txt. See london-historical.json for frozen
 source commit/blob and transformation. No current/official-course claim is made.
+
+## New York2026 geographic course data (ODbL-1.0)
+
+New assignments use `new-york-2026-geo-v1`,371 retained XY positions from
+MARATHON TRIP's explicitly offered ODbL course-line data. © OpenStreetMap
+contributors; course-line preparation by MARATHON TRIP. The documented source
+EPSG:26918 frame/anchor is preserved; uniform north-up scaling adds no invented
+coordinates. The approximate42.67km retained centreline is separate from the
+42.195km equivalent-progress axis. Not official/certified geometry or navigation.
+
+The source, SHA256, transformation and complete retained coordinate database are
+in `docs/dream-route-data/new-york-2026.json`. That data and its generated coordinate
+array remain ODbL-1.0; original application code remains MIT. Source attribution and
+full ODbL text are bundled and readable in Settings. No third-party application
+code, tiles, buildings, films, photographs, elevation or marketing art are copied.
+Old geometry IDs/preferences/assignments remain unchanged. The source's2026 context
+is documented without claiming survey accuracy or verification of every start variant.

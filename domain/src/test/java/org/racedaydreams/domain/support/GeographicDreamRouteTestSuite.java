@@ -52,6 +52,23 @@ public final class GeographicDreamRouteTestSuite {
             check(Double.isFinite(p.x())&&Double.isFinite(p.y()),"London interpolation remains finite");
             check(section.get(section.size()-1).equals(p),"London equivalent section ends exactly at progress");
         }
+        var nyFresh=DreamRoutes.assign(8400,new Random(7),Set.of("new-york-v2"));
+        check(nyFresh.routeId().equals("new-york-2026-geo-v1"),"NY preference selects geographic revision only for new assignments");
+        var ny=DreamRoutes.forId(nyFresh.routeId());
+        check(ny.vertices().size()==371,"All delivered ODbL vertices retained");
+        check(DreamRoutes.forId("new-york-v2").vertices().get(0).equals(new DreamRoutes.Vertex(4.7,9.2)),"Legacy NYC assignment geometry unchanged");
+        check(ny.vertices().get(0).y()>ny.vertices().get(370).y(),"Staten Island start south of Central Park finish");
+        check(ny.vertices().get(0).x()<ny.vertices().get(370).x(),"Projected NYC west-east shape retained");
+        check(DreamRoutes.provenance(ny).contains("ODbL")&&DreamRoutes.provenance(ny).contains("OpenStreetMap"),"Data licence and contributor attribution inspectable");
+        check(DreamRoutes.landmarks(ny).isEmpty(),"No misplaced old schematic landmarks");
+        check(DreamRoutes.section(ny,0,42195).size()==371,"Full NYC highlight retains all geographic corners");
+        for(double metres:new double[]{0,1000,5000,21097.5,42194.9,42195,50000}) {
+            var p=DreamRoutes.at(ny,metres);var section=DreamRoutes.section(ny,0,metres);
+            check(Double.isFinite(p.x())&&Double.isFinite(p.y()),"NYC interpolation finite");
+            check(section.get(section.size()-1).equals(p),"NYC highlight ends at progress");
+        }
+        check(DreamRoutes.at(ny,0).equals(ny.vertices().get(0)),"NYC exact start");
+        check(DreamRoutes.at(ny,42195).equals(ny.vertices().get(370)),"NYC exact equivalent finish");
         System.out.println("GeographicDreamRouteTestSuite: " + checks + " checks passed.");
     }
 }

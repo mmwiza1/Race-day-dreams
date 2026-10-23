@@ -1,3 +1,15 @@
+# Geographic status — London, Berlin, Tokyo and New York
+
+New New York assignments select an explicitly ODbL-licensed geographic road
+centreline with371retained source vertices. Source attribution/licence/projection
+are recorded in dream-route-data/new-york-2026.json. The data remain ODbL while
+original application code remains MIT. No organiser artwork or third-party software
+is copied. Settings expose source notice/full licence. Prior stored assignments
+keep their exact geometry; new/legacy complete-backup tests cover this revision.
+Paris geography and richer five-city presentation remain unfinished.
+
+## Earlier checkpoints (historical)
+
 # Current geographic checkpoint — three cities
 
 New London assignments use `london-historical-geo-v1`: all164positions of the

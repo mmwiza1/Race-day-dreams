@@ -1,3 +1,31 @@
+# Current geographic status — four cities
+
+London, Berlin, Tokyo and New York now have separately versioned geographic
+revisions. Paris remains unfinished. Richer original offline city presentation
+and actual screenshot/reference acceptance remain release gates.
+
+## New York2026 ODbL source
+
+- Course-line data: https://www.marathontrip.com/map3d/new-york-city-marathon/course.json
+- Explicit data offer: https://www.marathontrip.com/map3d/new-york-city-marathon/credits.json
+- Licence assessment: https://www.marathontrip.com/data/ and /terms/ explicitly
+  distinguish ODbL course geometry from copyrighted films/text/images.
+- Only371 delivered line positions/frame are adapted, from14237upstream positions
+  simplified by the publisher at1m. All371are retained, no fabricated densification.
+- EPSG:26918, offsets from E579000/N4495000, uniform north-up scale. Full coordinate
+  database and sourceSHA256: new-york-2026.json; reproducible offline projection:
+  `python3 scripts/generate-new-york-geometry.py --check`.
+- Source reports42.706km; retained rounded1m-simplified line measures42.673km.
+  Neither is confused with the42.195km equivalent-progress axis or certified distance.
+- Coordinate database/derived array remain ODbL-1.0, separately from MIT code.
+  Source notice/full licence included in repository and APK, readable in Settings.
+  No source JavaScript, art, buildings, elevation, films, identity or sensor data copied.
+- Stable `new-york-v2` city preference affects future assignment only; old IDs remain.
+- Mavr Paris was investigated but not ingested: OSM credit alone does not grant
+  reuse of the entire mixed-source line; its terms reserve content/data rights.
+
+## Earlier checkpoints (historical)
+
 # Current geographic source inventory
 
 Three accepted geographic revisions are now available for new assignments:
