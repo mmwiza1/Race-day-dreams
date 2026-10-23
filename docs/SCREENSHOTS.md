@@ -1,13 +1,20 @@
-# Current 0.8.1 capture checkpoint
+# Current0.8.1 capture checkpoint
 
-All63actual-build screenshots from verified London sourceb56b118 were adopted from
-bot1faa9c39e084c9e432efc83f4de80bf6d7d10ed0. Workflow40030105708 passed the fullAPI
-28/35/36 matrix (200tests/API), strict174/174guidance and canonical captures.
-The source now adds New York/Paris revisions and sourced city context; these need
-fresh verification. Seven extra real navigation captures request all five cities,
-London dark mode and200%text, bringing the set to70. Owner JPEG references remain
-untouched in design-reference. Full visual fidelity still requires human inspection
-of the new actual screenshots; neither coverage nor pixel consistency proves it.
+All70committed actual-build PNGs now come from source745b148, successful
+workflow40041166325 and exact bot2d2b16b. API28/35/36 passed build/lint/domain,
+204instrumentation tests/API and strict174/174canonical+14/14routine guidance.
+Fingerprinta4adfe699b08cbbe85afabe59053b48332a8a1331a91e79950abbc4a4afd2629.
+
+Actual review compared all five geographic city cards, dark/200%London, Plan and
+representative guides/summary screens against the separate untouched ownerJPEGs.
+The final fitted5:4 context extent corrects blank bands seen in earlier captures.
+Tokyo's overlapping35km/40km text prompted a final nearby-label-placement follow-up;
+its new actual captures still need review. Keep source metadata andPNGbytes exact.
+
+Completeness and screenshot consistency do not certify design fidelity. The review
+is recorded in VISUAL_REVIEW_0_8_1.md, and physicalS24 acceptance remains entirely
+unperformed. Capture waits for real background context preparation, while Android
+also parses every packaged extract. PR#10 remains draft until the full acceptance.
 
 ## Earlier records (historical)
 

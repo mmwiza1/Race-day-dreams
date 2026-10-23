@@ -68,7 +68,24 @@ import org.racedaydreams.domain.support.DreamRoutes
             drawPath(path(highlighted),accent.copy(alpha=.12f),style=Stroke(12.dp.toPx(),cap=StrokeCap.Round,join=StrokeJoin.Round))
             drawPath(path(highlighted),accent,style=Stroke(5.dp.toPx(),cap=StrokeCap.Round,join=StrokeJoin.Round))
             val paint=android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply{color=ink.toArgb();textSize=10.dp.toPx();typeface=android.graphics.Typeface.create("sans-serif-medium",android.graphics.Typeface.NORMAL)}
-            for(km in 5..40 step 5){val o=p(DreamRoutes.at(route,km*1000.0));drawCircle(paper,4.dp.toPx(),o);drawCircle(outline,2.dp.toPx(),o);drawContext.canvas.nativeCanvas.drawText("$km",o.x+5.dp.toPx(),o.y-5.dp.toPx(),paint)}
+            // Out-and-back courses can put35km and40km almost on top of each other.
+            // Keep each true marker and place its label nearby; never move the course.
+            val occupied=landmarks.map{l->val o=p(DreamRoutes.Vertex(l.x(),l.y()));Rect(o-Offset(10.dp.toPx(),10.dp.toPx()),Size(20.dp.toPx(),20.dp.toPx()))}.toMutableList()
+            for(km in 5..40 step 5){
+                val o=p(DreamRoutes.at(route,km*1000.0));drawCircle(paper,4.dp.toPx(),o);drawCircle(outline,2.dp.toPx(),o)
+                val label="$km";val width=paint.measureText(label);val gap=5.dp.toPx()
+                val candidates=listOf(Offset(o.x+gap,o.y-gap),Offset(o.x+gap,o.y+14.dp.toPx()),Offset(o.x-width-gap,o.y-gap),Offset(o.x-width-gap,o.y+14.dp.toPx()))
+                val position=candidates.firstOrNull {v->
+                    val rect=Rect(v.x-1.dp.toPx(),v.y+paint.fontMetrics.ascent-1.dp.toPx(),v.x+width+1.dp.toPx(),v.y+paint.fontMetrics.descent+1.dp.toPx())
+                    rect.left>=0&&rect.top>=0&&rect.right<=size.width&&rect.bottom<=size.height&&occupied.none{it.overlaps(rect)}
+                }
+                if(position!=null){
+                    val rect=Rect(position.x-1.dp.toPx(),position.y+paint.fontMetrics.ascent-1.dp.toPx(),position.x+width+1.dp.toPx(),position.y+paint.fontMetrics.descent+1.dp.toPx())
+                    occupied.add(rect)
+                    drawRoundRect(paper.copy(alpha=.85f),rect.topLeft,rect.size,CornerRadius(2.dp.toPx()))
+                    drawContext.canvas.nativeCanvas.drawText(label,position.x,position.y,paint)
+                }
+            }
             landmarks.forEachIndexed{i,l->val o=p(DreamRoutes.Vertex(l.x(),l.y()));drawCircle(paper,9.dp.toPx(),o);drawCircle(ink,7.dp.toPx(),o);paint.color=paper.toArgb();paint.textSize=10.dp.toPx();paint.textAlign=android.graphics.Paint.Align.CENTER;drawContext.canvas.nativeCanvas.drawText("${i+1}",o.x,o.y+3.5.dp.toPx(),paint)}
             val first=p(DreamRoutes.at(route,start));drawCircle(paper,7.dp.toPx(),first);drawCircle(accent,5.dp.toPx(),first);drawCircle(paper,2.dp.toPx(),first)
             val end=p(DreamRoutes.at(route,finish));val r=4.dp.toPx();drawCircle(paper,r*2.1f,end);drawCircle(ink,r*1.7f,end)

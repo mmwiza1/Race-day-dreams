@@ -1,29 +1,62 @@
-# Verified geographic/capture checkpoint — 23 October 2026
+# Verification —0.8.1-test1
 
-Source84397e3a00a1ff6101f9ba5cee2fda61c2ca2b9e passed
-[workflow40036694153](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40036694153):
-build/lint/domain and203instrumentation tests on each API28/35/36, strict174/174
-canonical plus14/14routine guidance, and70actual captures. Matrix jobs28/35/36:
-120698212643 /120698212784 /120698212372. Exact canonical bot
-**a0363d60fbb262684f6e34a0eea2e9adf56c289a** was fast-forwarded locally, preserving
-all70PNGs and source metadata. Fingerprint:
-9a881b71b5c0e3034b5ef6a9581e73487e85d0eafc394a8cee15a45331d770db.
-No physical S24 acceptance or full design-fidelity pass is claimed.
+Version0.8.1-test1/code10; schema10; JSON7/raw2/complete1. No new runtime dependency,
+manifest permission, Internet, account, analytics or backend.
 
-Actual images were inspected for all five cities, dark/200% London, Plan,
-RDL/Bench/Lunge/Ankle and other summary screens. Course/section/progress now appear
-in-frame, and large-font landmarks no longer split words into narrow columns.
-New York's generic masonry bridge vignettes were identified as inappropriate:
-the current follow-up gives Verrazzano a suspension silhouette and Queensboro a
-cantilever silhouette, plus visible ODbL card attribution. That follow-up needs its
-own fresh Android matrix/captures. Source61221domain checks/18suites pass locally;
-135geographic checks,43schema tests,5release-note tests,177art hashes and all geographic
-projection checks pass. Version/code/schema/backup remain0.8.1-test1/10/10/JSON7/raw2/complete1.
+## Latest completed full source verification
 
-The source audit confirms unchanged manifest permissions and runtime dependencies.
-The174exercise/14routine strict gate is complete. Dream Route reference fidelity,
-final city-art review and physical S24 checks remain separate open release gates;
-PR#10 remains draft and no version release is published.
+Source745b1482e9909a2fe46c9e68563cc27e031df614 passed
+[workflow40041166325](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40041166325):
+Android build/lint/domain and **204instrumentation tests on each API28/35/36**,
+strict174/174canonical plus14/14routine guidance and70actual captures. Matrix jobs
+28/35/36:120712332348 /120712332093 /120712332168. Exact canonical bot
+**2d2b16b1ccc5362734b1bc5e2800704355d37516** was fast-forwarded locally.
+Fingerprinta4adfe699b08cbbe85afabe59053b48332a8a1331a91e79950abbc4a4afd2629.
+
+Actual London/Berlin/Paris/Tokyo/NY, London dark/200%, Plan,RDL,Bench,Lunge,Ankle,
+LiveCoach,Health,Shoes,WeeklyReview,RunNow and Trends captures were visually inspected.
+Sourced context now fills the fitted viewport without abrupt extract edges. Tokyo's
+out-and-back35km/40km labels overlapped; the next small presentation follow-up tries
+non-overlapping label positions/halos, retaining all true markers/course coordinates.
+Fresh source/capture verification for that follow-up remains pending, not assumed.
+
+## APK downloaded and inspected
+
+API35artifact12539423377, `Race-Day-Dreams-0.8.1-test1-debug-api-35`.
+Local path: `build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk`.
+ZIPCRC checked; binary AndroidManifest verified org.racedaydreams/0.8.1-test1/code10;
+merged permission list inspected and **no INTERNET permission** exists.
+Source745b148;46,006,970bytes;SHA256
+0d3770b2fc5490ecf0c792ad48f7deb122d21e4aedab5f3e36d3ca60b0918214.
+Original verified0.8.0/code9 baseline34,566,254bytes: increase11,440,716bytes(33.10%).
+This is a CI debug/test APK, not a production-signed PlayStore binary. Refresh after
+any later production-source change, including the pending label-placement follow-up.
+
+## Latest local tests and data audit
+
+**61,263checks/19domain suites**;43schema tests;5release-note tests;10development
+format/projection tests. Strict174/174canonical+14/14routine audit;177original artwork
+hashes/provenance; all5coursegenerators,15landmark/river context and5basemap reproductions.
+YAML,noticescmp,sourceprivacy/manifest and whitespace checks pass. No localAndroidSDK
+build is claimed; Gradle/Android results above are actual GitHubCI.
+
+Development prepared67permitted OpenFreeMap source extracts/10,342,383bytes/3parallel
+requests. Only selected ODbL geographic DATA ship, separately from original MIT code.
+235,998retained context positions;5compact app extracts total4,012,113bytes before
+APKcompression. Bounded parsing, off-main loading/path preparation, cached original
+light/dark drawing and source notices add no runtime map SDK/tile/networkclient.
+
+## Design/device acceptance limits
+
+Actual filled-athlete guidance and the full-viewport geographic presentation now
+follow the supplied design family. Tests/coverage alone do not establish this review;
+see docs/VISUAL_REVIEW_0_8_1.md. Final marker-label capture review remains pending.
+PR#10 remains draft; no version tag/release published.
+
+All physicalGalaxyS24 outdoor/GNSS/HC/BLE/TTS/music/battery/TalkBack checks remain
+UNPERFORMED. TEST_BUILD.md contains the explicit acceptance checklist. Recorder
+recovery preserves durable partial evidence; it does not invent continuity after
+termination/reboot. Paris is explicitly2024Olympic course, not annual ParisMarathon.
 
 ## Earlier checkpoints (historical)
 

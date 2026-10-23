@@ -12,8 +12,9 @@ advertising, analytics, subscriptions, backend or LLM dependency.
 Today puts your planned session and Run Now first. Free runs, quick distance/time
 choices, custom structured workouts and repeat favourites all use one native recorder.
 Spontaneous runs stay independent unless you explicitly associate them with a plan.
-Offline route traces, evidence-backed Route Story, original Dream visuals and optional
-routines extend the preserved Live Coach and race preparation foundations.
+Offline route traces, evidence-backed Route Story, five geographic Dream Routes with
+original street/water/green-space styling and optional routines extend the preserved
+Live Coach and race preparation foundations. No map tiles are downloaded by the app.
 See [0.8.1 release notes](docs/RELEASE_0_8_1.md) for current refinements and limitations.
 
 Strength and Progress use summary dashboards with dedicated detail screens. The

@@ -9,7 +9,8 @@ This is a test release in preparation, not a Play Store production release.
   routine movements. Every guide includes movement-specific instructions, cues,
   mistakes and accessible descriptions. All artwork is bundled offline.
 - Five sourced geographic Dream Route revisions with stable per-activity assignments,
-  equivalent-distance progress, numbered landmarks and original city vignettes.
+  equivalent-distance progress, numbered landmarks, original city vignettes and bundled
+  street/water/green-space context. No runtime tile client or map SDK is needed.
 - A week-first Plan with clear day/date rows and attached preparation links. Programme
   history, rationale and rebuild controls remain under Programme details.
 - A selectable weekly-distance chart using actual recorded evidence.
@@ -71,5 +72,13 @@ geographic datasets retain their documented MIT, CC0 or ODbL licences.
 All five geographic Dream Routes now include sourced street, green-space and water
 context with original light/dark styling. The data are bundled, so this works offline
 without map downloads, a map SDK or Internet permission. Sources/ODbL rights are
-recorded and credited. This follow-up still needs fresh actual-build screenshot
-comparison before the whole-release fidelity gate can be closed.
+recorded and credited. Actual full-viewport captures have been compared against the references. A final
+Tokyo distance-label-placement follow-up still needs its fresh capture review.
+Physical GalaxyS24 acceptance remains unverified; PR#10 stays draft.
+
+## APK size at the verified geographic checkpoint
+
+Source745b148/API35debugAPK:46,006,970bytes. Verified0.8.0baseline:34,566,254bytes;
+increase11,440,716bytes(33.10%), including complete original exercise art and offline
+geographic context. No runtime dependency or Internet permission added. Refresh final
+size after any source follow-up. This is a debug/test build, not production signing.

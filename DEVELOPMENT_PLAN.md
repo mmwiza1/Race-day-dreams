@@ -1,4 +1,4 @@
-# Development status — 0.8.0-test1
+# Development status — 0.8.1-test1
 
 The app recommends. The runner decides. The plan adapts.
 
@@ -42,9 +42,9 @@ future work. Health Connect is supported; direct Samsung access is not.
 
 ## Test-build limitations to keep visible
 
-History renders bounded results (up to 100 matches per selected date range); narrow
-the range to browse older entries. The background snapshot still reads retained
-history; database-backed paging is a future performance improvement.
+History uses SQL keyset paging over metadata with activity-type/exercise/date filters
+and additive schema10 indexes. List cards do not load raw GPS. Detail samples load
+only when needed. Large synthetic history/query tests protect paging and filters.
 
 Generated gym moves/skips preserve their prescriptions and reasons in block versions.
 The Calendar shows current gym placements; additional old-date gym-edit annotations
@@ -81,16 +81,33 @@ results. Physical audio/GPS/BLE/OEM battery/accessibility behaviour remains unve
 Current city choices use sourced geographic revisions; old assignments retain their
 original drawings. Paris is explicitly the2024 Olympic course. These approximate
 lines are not certified current event geometry or navigation.
-The planner's existing prescriptions remain intact; arbitrary interval authoring,
-repeat/restart-rep UI, configurable race checklist and targeted late-run RPE are
-not implemented. Richer course data needs a separately verified provenance/licence.
+The planner's existing prescriptions remain intact. Custom interval authoring and
+race-week checklist were added in0.8. Repeating/restarting an active rep and targeted
+late-run RPE remain future work. Geographic course/data limitations are recorded in
+docs/DREAM_ROUTES.md rather than claiming current certified geometry.
 Wear OS, maps/tiles, public release, cloud/accounts/LLM/social remain out of scope.
 
 ## 0.8 Today / Run Now / offline polish
 
 See docs/RELEASE_0_8.md for implemented functionality and explicit limits. New work uses
-the existing recorder, execution and versioning rules. Dream v2 drawings are original,
-course-inspired assets; docs/DREAM_ROUTES.md records factual sources and why unlicensed
-exact geometry is not bundled. Known-duration plans respect a saved time budget;
+the existing recorder, execution and versioning rules. 0.8.1 now uses separately versioned licensed geographic revisions;
+docs/DREAM_ROUTES.md records factual sources and the explicit ParisOlympic fallback. Known-duration plans respect a saved time budget;
 distance-only prescriptions disclose uncertainty rather than inventing pace. Source,
 CI, capture and delivery results belong in VERIFICATION.md.
+
+## 0.8.1 design/guidance/reliability increment
+
+All174canonical exercises and14supporting movements have original offline illustrated
+guidance, enforced by strict content/resource/provenance tests. Week-first Plan,
+compact Calendar key, Live Coach range visual, human Health/Shoe/WeeklyReview summaries,
+weekly-distance chart and Run Now hierarchy are implemented. Recorder staging/start
+is atomic, retries are idempotent and interrupted recovery preserves honest partial
+evidence. Versioned/rolling-development GitHub prerelease workflows are gated by full
+API28/35/36 verification and current actual screenshots. No permanent release yet.
+
+Five sourced geographic Dream Routes retain old IDs/assignments. Original offline
+context styling adds ODbL road/water/green-space extracts; no runtime tiles, map SDK,
+Internet permission, accounts, analytics or new runtime dependency. Schema10 only
+adds history indexes; JSON7/raw2/complete1 remain compatible. Current CI and visual
+acceptance state belong in VERIFICATION.md and docs/VISUAL_REVIEW_0_8_1.md. KeepPR10
+draft until the whole release gate is met; no S24 physical results are inferred.

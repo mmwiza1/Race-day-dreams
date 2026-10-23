@@ -1,9 +1,9 @@
 # Galaxy S24 evaluation — 0.8.1-test1
 
-0.8 starts from verified0.7 main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec`.
-See VERIFICATION.md and PR9/Actions for observed build and emulator-test results.
+0.8.1 continues the preserved0.8 implementation. See VERIFICATION.md and draft
+PR#10/Actions for exact verified source commits and emulator-test results.
 
-Download `Race-Day-Dreams-0.8.0-test1-debug.apk` from a successful intended-commit
+Download `Race-Day-Dreams-0.8.1-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
 Debug signing keys may differ between workflows; preserve your backup before any
 uninstall Android requires. CI does not establish physical-device interoperability
@@ -32,7 +32,7 @@ or real-world coaching efficacy.
    Unplanned runs must show analysis rather than invented plan adherence.
 7. Use Calendar List/Week/Month; check remembered view, multiple sessions,
    run+strength, race, completed/moved/skipped sessions, labelled day details and
-   visible legend. Move/skip a future session, check version history/reminders,
+   expandable Calendar key. Move/skip a future session, check version history/reminders,
    and verify missed mileage is not added elsewhere.
 8. Use the Strength primary tab. Log separate load/reps/RPE fields, add/duplicate/
    remove/edit sets, multiple/custom exercises and an unplanned session. Open a
@@ -231,3 +231,16 @@ a screenshot, an interface existing, or a green GitHub Actions result.
 
 No box above has been ticked by Codex. Record actual device observations before
 calling the physical baseline accepted.
+
+### Offline geographic context checks
+
+- In airplane mode reopen each city card: full course, highlighted equivalent
+  section, source street/water/green-space context,5km ticks, start/finish and
+  attribution should remain visible. Paris must say2024Olympic course.
+- At200%text and in dark mode check complete landmark words, route contrast,
+  progress/distance and readable source credit. This context is an overview,
+  not navigation, not your actual GPS and not a claim of current certified routes.
+- Changing city preferences affects future assignments only; reopen an existing
+  run and complete-backup/restore it to verify its original assignment is retained.
+
+These physical checks remain UNPERFORMED until a human records results.

@@ -1,45 +1,49 @@
 # 0.8.1 design-reference review
 
-The owner JPEGs under design-reference are unchanged and distinct from actual PNGs.
-The current70real captures were generated from source84397e3 in workflow40036694153,
-which passed203tests perAPI28/35/36 plus strict catalogue completeness. Captures were
-adopted exactly from bota0363d6. Coverage and screenshot consistency do not alone
-prove design fidelity. **The whole-release fidelity gate remains open.**
+The five owner JPEGs in design-reference remain unchanged and distinct from actual
+PNGcaptures. The70current captures come from source745b148 in successful full-matrix
+workflow40041166325, adopted exactly via bot2d2b16b. Source fingerprint:
+a4adfe699b08cbbe85afabe59053b48332a8a1331a91e79950abbc4a4afd2629.
+Build/lint,204instrumentation tests perAPI28/35/36 and strict174/174canonical+14/14
+routine guidance pass. This review is actual visual inspection, not an inference
+from those tests and not physical-device acceptance.
 
-| Area | Actual-build observation against the owner references |
+| Area | Observed comparison with the supplied references |
 | --- | --- |
-| RDL and Bench | Recognisable filled athlete figures/equipment, distinct phases, blue/navy illustration panel, concise instructions and adjacent mint/pink cue/mistake cards follow the requested family. Some copy remains scrollable on the narrow test device. |
-| Walking Lunge and Ankle Rocks | Large movement illustration, short dose/instruction, mint tip, pink mistake, progress and large Back/Next controls match the required hierarchy. |
-| Catalogue coverage | All174canonical exercises and14routine movements have appropriate registered guidance/artwork;177original local WebPs. The primitive canonical fallback is removed. Strict coverage/resource audits pass. |
-| Plan | Week/date header and compact running/rest/strength rows lead. Programme metadata is disclosed. The real fixture has combined-session days; about five day rows fit, with all seven scrollable. The owner reference is denser. |
-| Five Dream Routes | All five now have sourced geographic revisions and visible full course/highlight/progress. Paris explicitly says2024Olympic course, not the annual Paris Marathon. The neutral offline canvas, sourced rivers and miniature city vignettes are still less rich than the supplied illustrated basemap. Do not claim full reference fidelity from geometry tests. |
-| Landmark content | Actual New York imagery exposed inappropriate London-style masonry towers. The follow-up now has distinct suspension/cantilever forms and visible ODbL credit; fresh captures still need review. |
-| Dark and200%text | London route/section remain distinct; stacked landmark rows retain complete words. Large-font content scrolls naturally. Human TalkBack/sunlight/moving-run checks are not performed. |
-| Live Coach / Health / Shoes / Trends | Large pace/remaining distance and persistent controls, human-readable health signals, concise shoe summaries and a real selectable weekly-distance chart were inspected. This is visual inspection, not physical sensor/audio testing. |
+| RDL and Bench | Recognisable filled athletes/equipment, distinct start/end phases, blue/navy illustration panels, concise instructions and mint/pink cue/mistake cards belong to the requested fitness-guidance family. Narrow-device detail pages scroll rather than shrinking text. |
+| Walking Lunge and Ankle Rocks | Large original illustration dominates; movement dose, short instruction, progress, mint tip, pink mistake and persistent large Back/Next follow the required hierarchy. |
+| Complete catalogue | All174canonical and14routine entries have explicit appropriate artwork/content/accessibility;177original localWebPs. No primitive canonical fallback or missing canonical ID. Strict resource/content/provenance checks pass. |
+| Static / machine / cable guidance | The same shared template applies, preserving actual equipment, movement phases and written instructions; no generic unrelated pose is counted. |
+| Plan | Week/date heading and concise run/rest/strength day rows lead. Programme metadata is disclosed. Fixture combined-session days require scrolling to all seven rows; content is retained rather than hidden to force the reference's taller-phone viewport. |
+| Five Dream Routes | Geographic full course and contrasting blue equivalent section overlay original offline street/water/green-space styling. Start ring/checkered finish,5km dots, numbered real landmark anchors, original city vignettes, percentage and Xkm/42.20km make the intended meaning clear. This replaces the earlier sparse/schematic presentation. |
+| Geographic limitations | London edition/accuracy are unspecified. Paris PRIMARY LABEL explicitly says2024Olympic course, not the annual ParisMarathon. Neither context nor historical line is navigation/current certified geometry. No organiser artwork/logos/copied styles are used. |
+| Dark /200% | Original dark tonal map colours retain selected-section contrast. Landmark words stack fully at200%; content grows/scrolls. No narrow broken-word legend columns. HumanTalkBack/sunlight/moving-run checks remain unperformed. |
+| LiveCoach | Large pace/remaining distance, target range and persistent Pause/Finish dominate; technical controls are secondary. The existing authoritative execution engine remains intact. |
+| Health /Shoes /WeeklyReview /RunNow /Trends | Human-readable separate health signals, concise shoe summaries, leading weekly observations, primary FreeRun/secondary choices and a real selectable weekly-distance chart were visually inspected. Missing evidence is not filled in. |
 
-## Capture failures found and corrected
+## Defects caught by actual review and corrected
 
-- Large-font navigation intentionally has semantic icons rather than wrapping labels;
-  tests now use the actionable Calendar text OR content description.
-- History readiness could be stale during parent refresh; it now stays pending.
-- Android font changes already recreate activities; capture configuration is now
-  applied while the activity is closed. Independent recreation tests remain.
-- Clipped bounds can be zero for offscreen headings. Captures now use unclipped
-  positions and require the intended Dream heading to be visible at capture time.
-- Retained route/story/durability analyses load asynchronously above the Dream card.
-  The native fixture waits for their actual evidence before aligning the screenshot.
+- Wrong-frame screenshot captures were fixed using unclipped semantic positions,
+  actual-analysis readiness and capture-time heading assertions. Old incorrect frames
+  were not adopted as proof. Font/night configuration is changed with the activity
+  closed; independent recreation tests remain.
+- NYC's former generic masonry towers were replaced by distinct original steel
+  suspension/cantilever forms. Produced-work ODbL/data credits are visible.
+- The first geographic context stopped inside the canvas, leaving abrupt empty bands.
+  The current67source extracts cover the fitted5:4 viewport plus4%margin. Actual
+  five-city captures now show continuous sourced context to the card edges.
+- Tokyo's out-and-back35km/40km text overlapped. A final label-placement follow-up
+  tries nearby non-overlapping positions/halos while keeping all real markers and
+  course coordinates fixed. Its fresh actual capture still needs review.
 
-These fixes were driven by actual failures and visible wrong frames, not retries
-until a lucky render. Incorrect earlier city frames were not adopted as final proof.
+## Acceptance boundary
 
-## Remaining acceptance work
+The inspected exercise/routine/Plan and full-viewport Dream presentation now follow
+the requested design family: soft cards, blue/navy hierarchy, original recognisable
+instructional figures, real geographic context and clear equivalent progress. They
+are responsive adaptations, not pixel copies of the reference artwork.
 
-1. Review the latest bridge/attribution follow-up in an actual green build.
-2. Bring original city presentation closer to the supplied richer offline basemap
-   and landmark quality; do not invent street geometry or copy organiser artwork.
-   A large London OSM map API bbox returned400 during research; smaller lawful
-   extracts or other explicit open data remain possible. No such raw extract is bundled.
-3. Re-review the full actual set after any presentation change, including dark/200%.
-4. Physical GalaxyS24 checklist inTEST_BUILD.md remains entirely unperformed.
-
-No canonical guide remains missing. Do not restart completed guidance generation.
+Final marker-label capture/source verification remains pending for the latest small
+presentation follow-up. PR#10 remains draft until the entire release gate is met.
+The GalaxyS24 checklist in TEST_BUILD.md is entirely UNPERFORMED; no emulator image
+passes outdoorGPS,BLE,HC,TTS/music,battery,sunlight or humanTalkBack acceptance.
