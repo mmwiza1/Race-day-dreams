@@ -53,3 +53,17 @@ remain a follow-up. Existing running moved/skipped/completion semantics are reta
 Automatic time/distance strength progression stays conservative (hold/review);
 repetition/load suggestions have explicit runner approval and retained decisions.
 Technique figures are original schematics, not individual form assessment.
+
+## 0.6 Prompt 1 increment (current feature branch)
+
+Health Intelligence and native recording are being verified on
+`codex/health-intelligence-run-engine`, PR #7. Optional health records and personal
+trends; foreground GNSS service and monotonic metrics; pause/auto-pause/gap policies;
+crash staging; BLE HR/real cadence; GPX; separate write-back; companion recording archive
+are implemented. This section supersedes earlier statements that GPX/native recording
+are future-only boundaries. Hardware behaviour remains subject to TEST_BUILD.md checks.
+
+See docs/RUN_ENGINE.md for genuine limits (recover-finalize rather than continue after
+process death; two-file backup; no GPX sensor extensions; no route/HR HC write-back).
+Prompt 2 Live Coach/structured execution/Race Day/routes/routines remains deferred.
+No direct Samsung integration, map dependency, Internet or account was added.

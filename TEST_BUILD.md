@@ -89,3 +89,33 @@ CI debug builds may use a different debug signing certificate from an older down
 If Android rejects an in-place installation, retain/export the old app's backup before
 considering uninstall/reinstall. Restore the backup and re-import Health Connect data.
 No production signing key or credential is bundled in this repository.
+
+## 0.6 Prompt 1 — Galaxy S24 health/recording evaluation
+
+- Samsung Health → Health Connect → RDD: allow sleep/RHR/HRV/steps selectively. Check
+  actual dates/origins, source changes, missing HRV and mirrored providers. Deny/revoke
+  each permission; manual plans/runs/strength must remain usable. Compare sleep-session
+  duration cautiously (it may contain awake time). No readiness number should appear.
+- Outdoors, start GPS recording explicitly; check notification, precise-location denial,
+  screen lock, opening another app, a 2–4 hour run and battery usage. No tracking should
+  occur after finish. Check smoothed pace and compare measured distance with a known route.
+- Pause for several minutes, move while paused, resume: elapsed/active time differ and
+  distance does not bridge the pause. Test a tunnel/GPS off/on, poor fixes and return.
+  Check genuine interpolated splits after 1 km, save, restart and inspect history/samples.
+- Keep auto-pause disabled initially. If testing it, check long stationary stops, hysteresis,
+  slow climbing/recovery jogging/crowds and degraded GPS. Manual pause must not auto-resume.
+- Kill the process or reboot during a staged run where practical. Recover only retained
+  evidence; downtime must not appear as recorded movement. Test explicit discard separately.
+- Pair a standard BLE HR monitor if available; disconnect/reconnect it during a run. Check
+  events, missing HR and uninterrupted GPS. Deny sensor permissions; cadence remains absent
+  without a supported step sensor. Do not assume a phone carried differently counts every step.
+- Export GPX, reimport the unchanged file, check exact-route duplicate handling and samples/
+  splits; malformed/no-time/DTD files must fail. Routes must not gain fabricated HR or accuracy.
+- Export BOTH normal app JSON and raw recordings ZIP. Test restore on a spare/empty install,
+  checksum corruption, conflicting merge, interrupted staging and retained sensor/events.
+- Explicitly write a native run's totals to Health Connect after separate consent. Retry;
+  verify one session/distance record and no duplicate reimport. No automatic location/health
+  upload and no sleep write permission. Device tests must confirm platform client-ID behaviour.
+
+CI/synthetic traces do not prove GNSS accuracy, OEM background survival, physical BLE,
+provider interoperability, battery efficiency or coaching efficacy.

@@ -167,7 +167,7 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("record-run") { RecordingScreen(model) }
                 composable("health-intelligence") { HealthIntelligenceScreen(model) }
                 composable("weekly") { WeeklyReviewScreen(state,model,{nav.navigate("goals")}) }
-                composable("home") { TextButton(onClick={nav.navigate("record-run")}){Text("Record a run")}; HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }) }
+                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }, record = {nav.navigate("record-run")}) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -203,11 +203,11 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("progress") { ProgressDashboard(state){nav.navigate(it)} }
                 listOf("pbs","trends","weight").forEach { section -> composable("progress/$section") { ProgressScreen(state,model,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("shoes")},{nav.navigate("strength")},section) } }
                 composable("shoes") { ShoesScreen(state, model) }
-                composable("settings") { TextButton(onClick={nav.navigate("health-intelligence")}){Text("Sleep, HRV and personal health trends")}; SettingsScreen(state, model, model.health.historyPermissionAvailable(), connect,
+                composable("settings") { SettingsScreen(state, model, model.health.historyPermissionAvailable(), connect,
                     providerUpdate, providerSettings,
                     { nav.navigate("goals") }, { nav.navigate("baseline") }, { nav.navigate("shoes") },
                     { export.launch("race-day-dreams-backup.json") }, { restore.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) },
-                    { resetDialog = true }, { permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION)) }) }
+                    { resetDialog = true }, { permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION)) }, {nav.navigate("health-intelligence")}) }
             }
         }
     }
@@ -239,8 +239,9 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 }
 
 @Composable
-private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit) = CoachPage {
+private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit, record: () -> Unit = {}) = CoachPage {
     CoachHeading("Your running, your way")
+    CoachButton("Record a run", record)
     val summary=org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
     CoachCard { Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("View details")} }
     if(state.weeklyReview!=null) OutlinedButton(onClick=weekly,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Weekly coaching review")}

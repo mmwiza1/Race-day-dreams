@@ -21,8 +21,9 @@ class RecordingStore(context:Context) {
         }finally{db.endTransaction()}
     }
     fun points(id:String):List<RunMetricsEngine.Point>{val out=mutableListOf<RunMetricsEngine.Point>();helper.readableDatabase.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext())out.add(decode(JSONObject(c.getString(0))))};return out}
+    fun discardUnfinished(id:String){helper.writableDatabase.delete("recording_sessions","id=? AND state IN ('ACTIVE','PAUSED','RECOVERABLE')",arrayOf(id))}
     fun recoverable(){helper.writableDatabase.execSQL("UPDATE recording_sessions SET state='RECOVERABLE' WHERE state IN ('ACTIVE','PAUSED')")}
-    fun finish(session:Session,movingMillis:Long?=null,provider:String="rdd"):String {
+    fun finish(session:Session,movingMillis:Long?=null,provider:String=if(session.id.startsWith("gpx-"))"gpx"else"rdd"):String {
         val db=helper.writableDatabase;db.beginTransaction();try{
             val points=points(session.id);require(points.size>=2){"At least two usable GPS points are needed. Staged evidence is retained."}
             val elapsed=(session.last-session.mono).coerceAtLeast(1);val samples=points.map{p->DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-session.mono),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity())}

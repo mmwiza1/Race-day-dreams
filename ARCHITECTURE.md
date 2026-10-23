@@ -178,3 +178,20 @@ manual PBs retain their recorded definitions and source/date precision.
 GymProgrammeGenerator, GymPlanEditor, StrengthProgressionAdvisor, ComparableRuns,
 WorkoutHistoryQuery and HomeCoachingSummary are Android-independent. Compose shows
 these decisions; explicit runner action alone persists a changed prescription.
+
+## Prompt 1: Health Intelligence and native recording
+
+Schema 7 is additive from every supported 1–6 version. HealthIntelligence exposes
+source-specific, coverage-aware trends; its optional HC cache is separate from goals
+and coaching decisions. RunMetricsEngine owns deterministic trace/time rules. The
+foreground service owns sensors and serialized five-second staging batches, never
+Compose. RecordingStore finalizes canonical activity/PB data in the same transaction
+as staging state. Raw points/events remain retained; process recovery finalizes only
+observed time. Standard BLE and step detector adapters implement sensor boundaries.
+GPX uses Android XML infrastructure. Explicit optional HC totals write-back uses
+stable client IDs and excludes own-origin import. See docs/RUN_ENGINE.md for limits.
+
+JSON backup envelope 5 still reads 1–4. The companion version-one ZIP archive streams
+user-owned raw routes/sensors/events with SHA-256 verification and transactional merge.
+This is explicitly a two-file backup workflow; a unified whole-app container is not
+claimed. Restore refuses removing retained user-owned recordings or an active stage.

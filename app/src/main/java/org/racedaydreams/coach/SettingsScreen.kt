@@ -25,17 +25,18 @@ import kotlinx.coroutines.withContext
 fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable: Boolean,
                    connect: (Boolean, Boolean) -> Unit, providerUpdate: () -> Unit, providerSettings: () -> Unit,
                    editGoals: () -> Unit, reviewBaseline: () -> Unit, shoes: () -> Unit,
-                   export: () -> Unit, restore: () -> Unit, reset: () -> Unit, weightPermissions: () -> Unit = {}) = CoachPage {
+                   export: () -> Unit, restore: () -> Unit, reset: () -> Unit, weightPermissions: () -> Unit = {}, healthContext: () -> Unit = {}) = CoachPage {
     val context = LocalContext.current
     var showLicence by rememberSaveable { mutableStateOf(false) }
     var noticeAsset by rememberSaveable { mutableStateOf<String?>(null) }
     CoachHeading("Settings")
+    CoachButton("Personal health context",healthContext)
     CoachButton("Edit race goal and availability", editGoals)
     OutlinedButton(reviewBaseline, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Review running baseline") }
     OutlinedButton(shoes, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Shoes and mileage") }
     HealthConnectionCard(state, model, historyAvailable, connect, providerUpdate)
     TextButton(providerSettings) { Text("Manage Health Connect permissions") }
-    Text("Revoking access stops future reads. Existing locally imported records remain until you delete local data. The app never writes or deletes Health Connect records.")
+    Text("Revoking access stops future reads. Existing locally imported records remain until you delete local data. Optional native-run totals are written only through your explicit Record a run → Write action. The app never deletes Health Connect records.")
     CoachCard {
         Text("Activity data source",style=MaterialTheme.typography.titleMedium)
         Text("Health Connect")
@@ -46,7 +47,7 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
     ReminderSettings(state, model)
     CoachCard {
         Text("Local backup and restore", style = MaterialTheme.typography.titleLarge)
-        Text("A backup preserves your app-specific goals, manual entries, shoes, notes and results in an inspectable JSON file. Raw Health Connect records are omitted; they can be imported again. Your chosen file provider controls where the file is stored.")
+        Text("A backup preserves your app-specific goals, manual entries, shoes, notes and results in an inspectable JSON file. Also use Record a run → Back up raw recordings to preserve GPS coordinates, sensor observations and unfinished runs in a checksummed archive. Raw Health Connect records are omitted; they can be imported again. Your chosen file provider controls where the file is stored.")
         Button(export, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Export local backup") }
         OutlinedButton(restore, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Choose backup to restore") }
         Text("Restore validates the file before replacing local app data. Merge restore is not currently supported.")

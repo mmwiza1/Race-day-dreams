@@ -76,3 +76,23 @@ raw provider weights are omitted. No Samsung SDK or direct Samsung access ships.
 The 0.5 user-directed backup also includes exercise favourites/archive choices, PB
 acknowledgements, generated strength prescriptions and runner progression decisions.
 Actual workouts and chosen plan references remain separate. No data is uploaded.
+
+## Native routes and optional health context
+
+Explicit native recording uses precise GNSS location in a visible foreground service.
+No background-location or Internet permission is added. Location/sensors stop when the
+run finishes or service stops. Raw routes, timestamps, HR observations and events remain
+in application-private SQLite storage. Optional BLE scan/connect permissions find a
+runner-selected standard HR monitor; optional activity recognition reads genuine cadence.
+No nearby-device data is uploaded. A run-scoped bounded wakelock supports locked-screen
+recording; real battery behaviour requires physical testing.
+
+Optional sleep-session duration, RHR, HRV RMSSD and steps are cached locally with origin
+and timestamps. They are supporting personal context, not a diagnosis/readiness score.
+Revoking permission stops future reads; retained data can be removed with explicit local
+reset. Health caches are not included in portable backups.
+
+Route export, the companion raw-recording ZIP archive and explicit Health Connect totals
+write-back are user actions. Exported route/archive files are sensitive and unencrypted;
+choose a trusted destination. Standard app JSON alone does not preserve raw coordinates;
+export both app backup and raw recording archive before reinstall. See docs/RUN_ENGINE.md.

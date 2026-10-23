@@ -23,7 +23,7 @@ class RecordingArchive(private val context:Context) {
         try{
             val db=helper.readableDatabase;db.beginTransaction();try{
                 file.bufferedWriter().use{w->
-                    fun row(j:JSONObject){w.write(j.toString());w.newLine()}
+                    fun row(j:JSONObject){val text=j.toString();require(text.length<=MAX_LINE){"Recording payload exceeds archive row limit"};w.write(text);w.newLine()}
                     db.rawQuery("SELECT id,state,started_at,started_mono,last_mono,activity_id FROM recording_sessions ORDER BY id",null).use{c->var sessions=0;while(c.moveToNext()){
                         require(++sessions<=1000){"Archive exceeds 1000 recordings; export routes separately"};val id=c.getString(0)
                         row(JSONObject().put("kind","session").put("id",id).put("state",c.getString(1)).put("start",c.getString(2)).put("mono",c.getLong(3)).put("last",c.getLong(4)).put("activity",c.getString(5)))

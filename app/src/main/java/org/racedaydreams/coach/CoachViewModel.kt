@@ -483,6 +483,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     }
 
     fun reset() {
+        if(org.racedaydreams.recording.RunRecordingService.status.value!=null){mutableState.update{it.copy(error="Finish the active recording before deleting app data.")};return}
         draftWritesSuspended = true
         draftJob?.cancel()
         mutate("Local app data deleted.", onSuccess = {

@@ -110,3 +110,14 @@ The exercise catalogue, technique copy and schematic Compose drawings are origin
 Race Day Dreams work licensed with this MIT repository. No exercise photography,
 commercial schedules or GPL/AGPL source/assets were incorporated. Scientific papers
 are references, not copied programme tables: see docs/STRENGTH_PROGRAMMING.md.
+
+## Native run increment — engineering references
+
+OpenTracksApp/OpenTracks (Apache-2.0), services/TrackRecordingService.java and recording
+manager separation, reviewed 23 October 2026: foreground ownership, sensor lifecycle,
+notification and bounded recording context informed the original RDD implementation.
+No OpenTracks source/assets were copied or materially adapted. Existing platform Android
+LocationManager, Bluetooth SIG Heart Rate profile and Android XmlPullParser are used;
+no parser/sensor runtime dependency added. Official AndroidX Health Connect API source
+(Metadata/Device, Apache-2.0) was consulted for record identifiers/write metadata.
+No GPL/AGPL source, Garmin FIT SDK, proprietary provider SDK or map library was added.
