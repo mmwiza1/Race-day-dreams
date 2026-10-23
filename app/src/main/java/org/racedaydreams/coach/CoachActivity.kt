@@ -129,8 +129,8 @@ private fun CoachApp(model: CoachViewModel) {
         when {
             org.racedaydreams.recording.RunRecordingService.running.value -> "record-run"
             state.profile != null -> "home"
-            state.baselineReviewed -> "goals"
             state.startingPath=="record" -> "home"
+            state.baselineReviewed -> "goals"
             else -> "welcome"
         }
     }

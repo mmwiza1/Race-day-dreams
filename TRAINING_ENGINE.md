@@ -322,3 +322,21 @@ linked sessions, with genuine slow step execution and RPE>=8, can corroborate ex
 minimum-change proposals. A lone slow rep does not rebuild a programme. Health context
 uses separate comparable-source channels (HEALTH_CONNECT.md); no Run Score or weight
 is converted into readiness. Support routines are not load or adherence evidence.
+
+## 0.8 evidence refinements
+
+Starting-load references require at least two non-warm-up working sets from the exact
+weighted exercise within28days, suitable reps and known appropriate RPE/RIR. The upper
+reference never exceeds the minimum proven load from that session; lower end is95%,
+rounded down to0.5kg. No stale PB or related exercise substitutes for evidence. The
+reference is optional and never changes actual sets. Automatic featured records now
+include6RM; actual1RM and estimated1RM remain separate. Suitable favourites only reorder
+the generator's already compatible candidates with matching measurement and pattern.
+
+Spontaneous origins do not create run responses. Only runner-confirmed associations
+link the retained actual to its preserved plan version. Custom steps/repeats use the
+same monotonic execution engine. Open completion is distinct from skip. Route Story
+uses uninterrupted full kilometres and explicit pauses, never inferred stop reasons.
+Four-week volume insights require four runs in each comparison window; recording gaps
+are not interpreted as zero training. More/shorter preference limits long-run share;
+fewer/longer reduces requested frequency without adding weekly catch-up volume.

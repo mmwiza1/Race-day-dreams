@@ -38,3 +38,10 @@ are original MIT Race Day Dreams work. The route drawings are abstract city-insp
 marathon equivalents, not official courses or navigation. No event branding, third-party
 route geometry, commercial illustrations or GPL source was incorporated. Platform
 audio/TTS/vibration APIs add no bundled third-party dependency.
+
+## 0.8 assets
+
+Original three-frame technique and Dream landmark/drawing code remains MIT project
+artwork. No external visual asset or proprietary course file was ingested. See
+docs/DREAM_ROUTES.md for per-city factual references and explicit geometry limitations.
+Dependencies/notices remain unchanged.

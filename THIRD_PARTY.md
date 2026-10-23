@@ -131,3 +131,11 @@ Race Day Dreams work under this repository's MIT licence. The drawings are not a
 or official surveyed marathon courses. No source geometry was copied. Platform Android
 TextToSpeech/AudioFocusRequest/VibrationEffect are used directly; no OpenTracks audio
 source was adapted. Existing Apache-compatible engineering references remain references.
+
+## 0.8 original assets and research
+
+No runtime/build dependency added. Semantic surfaces, technique figures, offline route
+rendering, landmarks and v2 Dream drawing anchors are original MIT project work.
+No organiser map, GPX, screenshot, logo, typography or map tiles were incorporated.
+Factual course research/reuse assessment is recorded in docs/DREAM_ROUTES.md. A public
+GPX download is not treated as a redistribution licence.

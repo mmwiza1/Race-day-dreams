@@ -39,6 +39,7 @@ import org.racedaydreams.domain.strength.TechniqueGuide
         var knee=if(horizontal).65f to .63f else if(bent&&pattern in listOf("squat","split")) .60f to .68f else .48f to .70f
         var foot=if(horizontal).80f to .72f else .48f to .92f
         var hand=when(pattern){"overhead","pull"-> .62f to (if(bent).06f else .32f);"press"-> .30f to (if(bent).15f else .43f);"row"->if(bent).53f to .45f else .62f to .68f;else-> .62f to (if(bent).65f else .49f)}
+        if(pattern=="hinge")hand=if(bent).53f to .76f else .53f to .55f
         if(pattern=="row"){hip=.42f to .62f;shoulder=.60f to .40f}
         if(pattern=="press"){shoulder=.28f to .5f;hip=.50f to .5f;knee=.65f to .7f;foot=.65f to .92f;hand=.30f to (if(bent).18f else .43f);drawLine(ink,point(.22f,.60f),point(.57f,.60f),5f)}
         if(pattern=="bridge"){shoulder=.28f to .5f;hip=.50f to (if(bent).50f else .74f);knee=.68f to .58f;foot=.68f to .92f;drawLine(ink,point(.2f,.60f),point(.34f,.60f),5f)}

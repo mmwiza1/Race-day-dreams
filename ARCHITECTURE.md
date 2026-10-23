@@ -220,3 +220,14 @@ JSON envelope 6 carries support records and reads 1–5. Raw archive 2 includes 
 snapshots and reads format 1. CompleteBackup format 1 nests app.json/recordings.zip
 with SHA-256/length manifest, bounded extraction to private temporary files and one
 outer SQLite transaction. A conflict or invalid inner document rolls back both stores.
+
+## 0.8 presentation and app-owned data
+
+SemanticTiles supplies restrained light/dark surfaces. Today and Run Now sit over the
+existing service and WorkoutExecutionEngine, including explicit open-step completion.
+CustomWorkout, StartingLoad, RoutePresentation and TrainingInsights are independent Java
+rules. Release08Store stores typed, versioned definitions, origins, decisions, preferences
+and checklist rows. Schema9 is additive. JSON7 reads1–6; complete package1 and recording
+archive2 remain. DiagnosticReport has a small allow-list and no database dependency.
+Route rendering loads selected activity samples on IO and projects off-main; visual
+sampling never changes raw observations. No new runtime dependency or Internet permission.

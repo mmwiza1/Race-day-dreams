@@ -83,3 +83,12 @@ The planner's existing prescriptions remain intact; arbitrary interval authoring
 repeat/restart-rep UI, configurable race checklist and targeted late-run RPE are
 not implemented. Richer course data needs a separately verified provenance/licence.
 Wear OS, maps/tiles, public release, cloud/accounts/LLM/social remain out of scope.
+
+## 0.8 Today / Run Now / offline polish
+
+See docs/RELEASE_0_8.md for implemented functionality and explicit limits. New work uses
+the existing recorder, execution and versioning rules. Dream v2 drawings are original,
+course-inspired assets; docs/DREAM_ROUTES.md records factual sources and why unlicensed
+exact geometry is not bundled. Known-duration plans respect a saved time budget;
+distance-only prescriptions disclose uncertainty rather than inventing pace. Source,
+CI, capture and delivery results belong in VERIFICATION.md.

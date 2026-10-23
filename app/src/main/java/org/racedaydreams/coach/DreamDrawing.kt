@@ -28,7 +28,8 @@ import org.racedaydreams.domain.support.DreamRoutes
         }
         route.vertices().zipWithNext().forEach{(a,b)->drawLine(outline,p(a),p(b),3.dp.toPx(),StrokeCap.Round)}
         var previous=DreamRoutes.at(route,start);repeat(300){i->val next=DreamRoutes.at(route,start+(finish-start)*(i+1)/300);drawLine(accent,p(previous),p(next),5.dp.toPx(),StrokeCap.Round);previous=next}
-        for(km in 5..40 step 5)drawCircle(ink,2.5.dp.toPx(),p(DreamRoutes.at(route,km*1000.0)))
+        val textPaint=android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply{color=ink.toArgb();textSize=10.dp.toPx()}
+        for(km in 5..40 step 5){val marker=p(DreamRoutes.at(route,km*1000.0));drawCircle(ink,2.5.dp.toPx(),marker);drawContext.canvas.nativeCanvas.drawText(km.toString(),marker.x+4.dp.toPx(),marker.y-4.dp.toPx(),textPaint)}
         drawCircle(accent,5.dp.toPx(),p(DreamRoutes.at(route,start)))
         val end=p(DreamRoutes.at(route,finish));val r=4.dp.toPx();drawCircle(ink,r,end-Offset(0f,r*3));drawLine(ink,end-Offset(0f,r*2),end+Offset(0f,r),r*.7f);drawLine(ink,end-Offset(r*2,r),end+Offset(r*2,-r),r*.6f);drawLine(ink,end+Offset(0f,r),end+Offset(-r*2,r*3),r*.6f);drawLine(ink,end+Offset(0f,r),end+Offset(r*2,r*2),r*.6f)
     }

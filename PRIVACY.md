@@ -111,3 +111,13 @@ map requests. Complete backup format1 contains sensitive app JSON and recordings
 choose a trusted destination. It is not encrypted by RDD. Both checksums and all inner
 validation precede core replacement, under one transaction. Earlier separate exports
 are still readable. Provider health caches remain excluded and re-importable.
+
+## 0.8 diagnostics and spontaneous training
+
+Diagnostic export is explicit SAF output. Its allow-list includes app/schema/backup
+versions, Android/device model and permission/Health Connect availability states. It
+contains no GPS, health values, weight, personal notes, history or internal log dump.
+Inspect the file before choosing to share it. No upload occurs. Custom workouts,
+recording origins, association choices, Dream preferences, race checklist and optional
+shoe observations stay private locally and are included in user-chosen backups.
+No Internet permission, direct Samsung SDK, account or analytics is added.
