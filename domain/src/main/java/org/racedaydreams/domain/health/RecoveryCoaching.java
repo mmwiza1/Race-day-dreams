@@ -18,7 +18,7 @@ public final class RecoveryCoaching {
             if(t.metric()==HealthIntelligence.Metric.RESTING_HR&&high){rhr=true;reasons.add("Resting heart rate is above your recent baseline.");}
             if(t.metric()==HealthIntelligence.Metric.STEPS&&high)reasons.add("General activity has been higher than usual; it is not converted into running stress.");
         }
-        if(highRunningLoad)reasons.add("Recent running load is above your usual workload.");if(repeatedHighRpe)reasons.add("Several recent runs felt harder than intended.");if(hardLowerBody)reasons.add("Hard lower-body strength was recorded recently.");
+        if(highRunningLoad)reasons.add("Recent running load is above your usual workload.");if(repeatedHighRpe)reasons.add("Several recent sessions had high reported effort.");if(hardLowerBody)reasons.add("Hard lower-body strength was recorded recently.");
         boolean suggest=sleep&&rhr&&highRunningLoad||hrv&&repeatedHighRpe||sleep&&repeatedHighRpe&&hardLowerBody;
         if(reasons.isEmpty())reasons.add("No corroborated recovery concern is available. Missing signals remain unknown.");
         return new Context(Collections.unmodifiableList(reasons),suggest?Arrays.asList("Keep planned workout","Run by effort","Choose easy instead","Move workout","Rest"):Collections.singletonList("Keep planned workout"),suggest);

@@ -38,6 +38,7 @@ public final class RunningRoutines {
         routine("ankles","Calves & ankles","Gentle ankle and calf movement.",6,"circles","ankle","calf","calf-stretch"),
         routine("post-long","Post-long-run mobility","Optional gentle movement after a long run.",8,"walk","calf-stretch","quad","hip","glute")
     );}
+    public static boolean isMobility(String id){return Arrays.asList("mobility-five","mobility-ten","hips","ankles","post-long").contains(id);}
     public static Routine get(String id){return all().stream().filter(r->r.id().equals(id)).findFirst().orElseThrow(()->new IllegalArgumentException("Unknown routine"));}
     public static String warmup(org.racedaydreams.domain.WorkoutCategory category,double raceKm){if(category==org.racedaydreams.domain.WorkoutCategory.RACE)return raceKm>=40?"warm-race-marathon":raceKm>=20?"warm-race-half":"warm-race-short";if(category==org.racedaydreams.domain.WorkoutCategory.LONG_RUN)return "warm-long";return org.racedaydreams.domain.coaching.AdaptiveCoachingEngine.isQuality(category)?"warm-quality":"warm-easy";}
 }

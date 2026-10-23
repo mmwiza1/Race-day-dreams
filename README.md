@@ -156,3 +156,14 @@ validated app JSON and checksummed raw recordings, restored in one SQLite transa
 Legacy JSON and raw archive readers remain supported. Export requires finishing or
 recovering any unfinished run; an emergency raw archive remains available separately.
 See TEST_BUILD.md and docs/LIVE_COACH.md for physical-device checks and explicit limits.
+
+| Live workout | Race preparation | Optional mobility |
+| --- | --- | --- |
+| ![Actual Live Coach UI using an instrumentation-only deterministic trace](docs/screenshots/live-coach.png) | ![Race goal and strategy](docs/screenshots/race-day.png) | ![Original movement support](docs/screenshots/mobility.png) |
+
+| Attached warm-up | Offline marathon equivalent |
+| --- | --- |
+| ![Warm-up guide](docs/screenshots/warm-up.png) | ![City-inspired Dream Route schematic](docs/screenshots/dream-route.png) |
+
+The live-workout capture uses deterministic instrumentation-only engine input, not a
+claim of physical GPS testing. Dream drawings are original schematics, not real maps.

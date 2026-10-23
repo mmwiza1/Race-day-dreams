@@ -1,3 +1,7 @@
+> This describes the preserved Prompt1 /0.6 recorder. Current0.7 execution and complete
+> app+recording backup supersede the earlier two-file-only limitation. See
+> [LIVE_COACH.md](LIVE_COACH.md) for schema8/JSON6/archive2/complete ZIP1 policies.
+
 # Native run foundation — Prompt 1
 
 Original implementation inspired by OpenTracks' foreground-service/recording-manager

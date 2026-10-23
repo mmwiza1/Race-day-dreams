@@ -24,6 +24,9 @@ class SupportStore(context:Context) {
             db.setTransactionSuccessful();return result
         }finally{db.endTransaction()}
     }
+    fun routineCount(from:Instant,routine:String?=null,related:String?=null,mobilityOnly:Boolean=false):Int {
+        var count=0;db.rawQuery("SELECT payload FROM coach_support WHERE kind='routine'",null).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));if((!mobilityOnly||RunningRoutines.isMobility(j.getString("routine")))&&!Instant.parse(j.getString("at")).isBefore(from)&&(routine==null||j.getString("routine")==routine)&&(related==null||j.optString("related")==related))count++}};return count
+    }
     fun completeRoutine(id:String,related:String?){RunningRoutines.get(id);save("routine",java.util.UUID.randomUUID().toString(),JSONObject().put("version",1).put("routine",id).put("at",Instant.now().toString()).put("related",related))}
     fun prepare(versionId:String,workoutId:String,hilly:Boolean):JSONObject {
         val version=CoachingStore(contextRef).versions().first{it.id()==versionId}

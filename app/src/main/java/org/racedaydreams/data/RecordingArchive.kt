@@ -22,13 +22,14 @@ class RecordingArchive(private val context:Context) {
         val file=File.createTempFile("route-export-",".jsonl",context.cacheDir)
         try{
             val db=helper.readableDatabase;db.beginTransaction();try{
+                var writtenBytes=0L
                 file.bufferedWriter().use{w->
-                    fun row(j:JSONObject){val text=j.toString();require(text.length<=MAX_LINE){"Recording payload exceeds archive row limit"};w.write(text);w.newLine()}
+                    fun row(j:JSONObject){val text=j.toString();writtenBytes+=text.toByteArray(Charsets.UTF_8).size+1;require(writtenBytes<=MAX_BYTES){"Recording archive exceeds 512 MiB"};require(text.length<=MAX_LINE){"Recording payload exceeds archive row limit"};w.write(text);w.newLine()}
                     db.rawQuery("SELECT id,state,started_at,started_mono,last_mono,activity_id FROM recording_sessions ORDER BY id",null).use{c->var sessions=0;while(c.moveToNext()){
                         require(++sessions<=1000){"Archive exceeds 1000 recordings; export routes separately"};val id=c.getString(0)
                         row(JSONObject().put("kind","session").put("id",id).put("state",c.getString(1)).put("start",c.getString(2)).put("mono",c.getLong(3)).put("last",c.getLong(4)).put("activity",c.getString(5)))
                         SupportStore(context).get("execution",id)?.let{row(JSONObject().put("kind","context").put("id",id).put("payload",it))}
-                        for((table,kind) in listOf("recording_points" to "point","recording_events" to "event"))db.rawQuery("SELECT sequence,payload FROM $table WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{p->while(p.moveToNext())row(JSONObject().put("kind",kind).put("id",id).put("seq",p.getInt(0)).put("payload",JSONObject(p.getString(1))))}
+                        for((table,kind) in listOf("recording_points" to "point","recording_events" to "event"))db.rawQuery("SELECT sequence,payload FROM $table WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{p->var count=0;while(p.moveToNext()){if(kind=="point")require(++count<=100000){"Recording exceeds archive point limit"};row(JSONObject().put("kind",kind).put("id",id).put("seq",p.getInt(0)).put("payload",JSONObject(p.getString(1))))}}
                         if(!c.isNull(5))db.rawQuery("SELECT payload FROM activities WHERE id=?",arrayOf(c.getString(5))).use{a->if(a.moveToFirst())row(JSONObject().put("kind","activity").put("id",id).put("payload",JSONObject(a.getString(0))))}
                     }}
                 };db.setTransactionSuccessful()

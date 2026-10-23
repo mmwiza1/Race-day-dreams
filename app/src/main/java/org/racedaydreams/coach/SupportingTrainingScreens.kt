@@ -88,3 +88,14 @@ import org.racedaydreams.data.SupportStore
         if(metres>42195)Text("One full marathon equivalent plus ${decimal((metres-42195)/1000)} km. Your recorded run is unchanged.")
     }
 }
+
+@Composable fun MobilitySupportCard(open:()->Unit){
+    val context=LocalContext.current
+    val count by produceState(0){value=withContext(Dispatchers.IO){SupportStore(context).routineCount(java.time.LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant(),mobilityOnly=true)}}
+    CoachCard{Text("Mobility this week",style=MaterialTheme.typography.titleMedium);Text("$count optional routines recorded");Text("Two to four short sessions can be useful when they fit. This is not an adherence target.");TextButton(onClick=open){Text("View routines")}}
+}
+@Composable fun WarmupSupportLink(id:String,related:String,open:()->Unit){
+    val context=LocalContext.current
+    val completed by produceState(false,id,related){value=withContext(Dispatchers.IO){SupportStore(context).routineCount(java.time.Instant.EPOCH,id,related)>0}}
+    TextButton(onClick=open){Text(if(completed)"✓ Warm-up"else"Warm-up · ${RunningRoutines.get(id).minutes()} min")}
+}
