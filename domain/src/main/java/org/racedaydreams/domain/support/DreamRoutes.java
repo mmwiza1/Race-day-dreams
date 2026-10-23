@@ -31,7 +31,7 @@ public final class DreamRoutes {
         "Approximate Berlin2014 participant GPS trace, simplified from an MIT-licensed source by Alexandre Donciu-Julin. Not a current official course or navigation. The marathon-equivalent axis is separate from the observed43.01 km trace.":
         "Original v2 course-inspired schematic; geographic replacement is still in progress. Not official course artwork or navigation.";}
     public record Landmark(String label,double x,double y,String shape){}
-    public static List<Landmark> landmarks(Route r){if(r.id().equals("paris-2024-olympic-geo-v1")||r.id().equals("new-york-2026-geo-v1")||r.id().equals("london-historical-geo-v1")||r.id().equals("berlin-2014-geo-v1")||r.id().equals("tokyo-2026-geo-v1"))return Collections.emptyList();String id=r.id().replace("-v2","");return switch(id){
+    public static List<Landmark> landmarks(Route r){var geographic=DreamCartography.landmarks(r.id());if(!geographic.isEmpty())return geographic;String id=r.id().replace("-v2","");return switch(id){
         case "london"->Arrays.asList(new Landmark("Tower Bridge",5,6,"bridge"),new Landmark("Thames",3,6.8,"river"),new Landmark("Palace",1.4,4,"gate"));
         case "berlin"->Arrays.asList(new Landmark("Brandenburg Gate",4.7,2.6,"gate"),new Landmark("Tiergarten",2.2,3.2,"park"),new Landmark("City skyline",7.4,1,"tower"));
         case "paris"->Arrays.asList(new Landmark("Eiffel Tower",3.7,6.7,"tower"),new Landmark("Seine",5.8,5.7,"river"),new Landmark("Arc",2.2,2.2,"gate"));

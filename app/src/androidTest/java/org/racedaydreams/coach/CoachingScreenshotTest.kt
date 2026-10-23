@@ -156,6 +156,36 @@ class CoachingScreenshotTest {
         }
 
     }
+    @Test fun capturesSourcedCityRoutesWithDarkAndLargeText() {
+        fun openCity(city:org.racedaydreams.domain.support.DreamRoutes.Route) {
+            scenario?.close()
+            val route=org.racedaydreams.domain.support.DreamRoutes.currentGeometry(city)
+            val metres=FeatureStore(context).activitySummaries().first{it.id()=="rdd:demo-native-route"}.distanceMetres()!!
+            SupportStore(context).save("dream","rdd:demo-native-route",org.json.JSONObject()
+                .put("version",1).put("route",route.id()).put("start",minOf(1000.0,maxOf(0.0,42195.0-metres)))
+                .put("distance",metres).put("assignedAt",Instant.now().toString()))
+            scenario=ActivityScenario.launch(CoachActivity::class.java)
+            await("Today");click("Calendar");await("Activity calendar")
+            compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()}
+            compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
+            compose.onAllNodesWithText("Recorded run")[0].performClick();await("Run detail")
+            alignHeading("Dream Route · ${route.name()}")
+        }
+        val originalFont=shell("settings get system font_scale").trim()
+        val originalNight=shell("cmd uimode night").let{if(it.contains("yes"))"yes"else if(it.contains("auto"))"auto"else "no"}
+        try {
+            shell("cmd uimode night no");shell("settings put system font_scale 1.0")
+            for(city in org.racedaydreams.domain.support.DreamRoutes.routes()) {
+                openCity(city);capture("dream-route-${city.id().removeSuffix("-v2")}")
+            }
+            val london=org.racedaydreams.domain.support.DreamRoutes.routes().first()
+            shell("cmd uimode night yes");openCity(london);capture("dream-route-dark")
+            shell("settings put system font_scale 2.0");openCity(london);capture("dream-route-large-font")
+        } finally {
+            if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+    }
     private fun shell(command:String):String=InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command).use{descriptor->java.io.FileInputStream(descriptor.fileDescriptor).use{it.readBytes().toString(Charsets.UTF_8)}}
     private fun back(){androidx.test.espresso.Espresso.closeSoftKeyboard();androidx.test.espresso.Espresso.pressBack();compose.waitForIdle()}
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}

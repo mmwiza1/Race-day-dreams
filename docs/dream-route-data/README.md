@@ -1,3 +1,23 @@
+# Current city context
+
+## Original city context (0.8.1)
+
+Landmark anchors use twelve verified Wikidata P625 positions (CC0-1.0), plus three
+New York anchors from the explicitly ODbL-offered MARATHON TRIP course data. Thames
+and Seine centrelines retain original Natural Earth10m source positions (public
+domain). These are symbolic-width centrelines, not surveyed river banks/street maps.
+Exact sources, statement IDs, frozen Natural Earth commit/hash, licences, retained
+coordinates and limitations: docs/dream-route-data/city-context.json. Reproduce all
+projections offline with scripts/generate-dream-context.py --check. The NYC anchor
+database retains ODbL; app wrapper and original Canvas illustrations remain MIT.
+
+Miniature landmark illustrations are original RDD Canvas work. No building images,
+organiser maps, remote tiles or source application code copied. Source links:
+https://www.wikidata.org/wiki/Wikidata:Licensing
+https://www.naturalearthdata.com/about/terms-of-use/
+
+## Earlier source checkpoints
+
 # Current geography — all five city choices have sourced revisions
 
 ## Paris2024 geographic fallback (ODbL-1.0)

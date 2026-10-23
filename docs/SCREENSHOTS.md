@@ -1,3 +1,16 @@
+# Current 0.8.1 capture checkpoint
+
+All63actual-build screenshots from verified London sourceb56b118 were adopted from
+bot1faa9c39e084c9e432efc83f4de80bf6d7d10ed0. Workflow40030105708 passed the fullAPI
+28/35/36 matrix (200tests/API), strict174/174guidance and canonical captures.
+The source now adds New York/Paris revisions and sourced city context; these need
+fresh verification. Seven extra real navigation captures request all five cities,
+London dark mode and200%text, bringing the set to70. Owner JPEG references remain
+untouched in design-reference. Full visual fidelity still requires human inspection
+of the new actual screenshots; neither coverage nor pixel consistency proves it.
+
+## Earlier records (historical)
+
 # Authentic app screenshots
 
 Canonical images are captured by `CoachingScreenshotTest` from the real

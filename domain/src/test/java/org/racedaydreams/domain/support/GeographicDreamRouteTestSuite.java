@@ -45,7 +45,7 @@ public final class GeographicDreamRouteTestSuite {
         check(london.vertices().get(0).y()>london.vertices().get(163).y(),"Geographic north-up London retained");
         check(DreamRoutes.provenance(london).contains("edition")&&DreamRoutes.provenance(london).contains("unspecified"),"Unknown historical edition is not invented");
         check(DreamRoutes.provenance(london).contains("MIT"),"Source licence is inspectable");
-        check(DreamRoutes.landmarks(london).isEmpty(),"Old drawing-unit landmark anchors must not appear at false geographic positions");
+        check(DreamRoutes.landmarks(london).size()==3&&DreamRoutes.landmarks(london).get(0).label().equals("Tower Bridge"),"Sourced London landmarks replace misplaced old schematic anchors");
         check(DreamRoutes.section(london,0,42195).size()==164,"Full London highlight preserves source corners");
         for(double metres:new double[]{0,1000,21097.5,42194.9,42195}) {
             var p=DreamRoutes.at(london,metres);var section=DreamRoutes.section(london,0,metres);
@@ -60,7 +60,7 @@ public final class GeographicDreamRouteTestSuite {
         check(ny.vertices().get(0).y()>ny.vertices().get(370).y(),"Staten Island start south of Central Park finish");
         check(ny.vertices().get(0).x()<ny.vertices().get(370).x(),"Projected NYC west-east shape retained");
         check(DreamRoutes.provenance(ny).contains("ODbL")&&DreamRoutes.provenance(ny).contains("OpenStreetMap"),"Data licence and contributor attribution inspectable");
-        check(DreamRoutes.landmarks(ny).isEmpty(),"No misplaced old schematic landmarks");
+        check(DreamRoutes.landmarks(ny).size()==3&&DreamRoutes.landmarks(ny).get(0).label().equals("Verrazzano Bridge"),"NYC context uses source-projected bridge positions");
         check(DreamRoutes.section(ny,0,42195).size()==371,"Full NYC highlight retains all geographic corners");
         for(double metres:new double[]{0,1000,5000,21097.5,42194.9,42195,50000}) {
             var p=DreamRoutes.at(ny,metres);var section=DreamRoutes.section(ny,0,metres);
@@ -77,7 +77,7 @@ public final class GeographicDreamRouteTestSuite {
         check(DreamRoutes.provenance(paris).contains("not the annual Paris Marathon"),"No false annual-course claim");
         check(DreamRoutes.provenance(paris).contains("ODbL"),"Paris data licence inspectable");
         check(DreamRoutes.forId("paris-v2").vertices().get(0).equals(new DreamRoutes.Vertex(3.1,3)),"Old Paris assignments unchanged");
-        check(DreamRoutes.landmarks(paris).isEmpty(),"No misplaced legacy Paris landmarks");
+        check(DreamRoutes.landmarks(paris).size()==3&&DreamRoutes.landmarks(paris).get(1).label().equals("Versailles"),"Paris2024 landmarks match this course, not the annual event");
         check(DreamRoutes.section(paris,0,42195).size()==328,"Full Paris highlight retains source corners");
         for(double metres:new double[]{0,1000,5000,21097.5,42194.9,42195,50000}) {
             var p=DreamRoutes.at(paris,metres);var section=DreamRoutes.section(paris,0,metres);
@@ -86,6 +86,15 @@ public final class GeographicDreamRouteTestSuite {
         }
         for(var city:DreamRoutes.routes())
             check(DreamRoutes.currentGeometry(city).id().contains("geo-v1"),"Every city has licensed geographic revision");
+        for(var city:DreamRoutes.routes()) {
+            var geographicRoute=DreamRoutes.currentGeometry(city);
+            check(DreamRoutes.landmarks(geographicRoute).size()==3,"Three sourced geographic landmark anchors per city");
+            for(var l:DreamRoutes.landmarks(geographicRoute))
+                check(Double.isFinite(l.x()+l.y())&&l.x()>-1&&l.x()<11&&l.y()>-1&&l.y()<11,"Landmark within researched city frame");
+        }
+        check(DreamCartography.rivers(london.id()).get(0).vertices().size()==14,"Thames source positions retained without invented banks");
+        check(DreamCartography.rivers(paris.id()).size()==2,"Disjoint Seine source lines stay separate");
+        check(DreamCartography.landmarks("london-v2").isEmpty()&&DreamCartography.rivers("london-v2").isEmpty(),"Geographic context never overlaid on legacy drawing frames");
         System.out.println("GeographicDreamRouteTestSuite: " + checks + " checks passed.");
     }
 }
