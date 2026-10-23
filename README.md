@@ -7,20 +7,21 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.8.0-test1
+## 0.8.1-test1 — test release in preparation
 
 Today puts your planned session and Run Now first. Free runs, quick distance/time
 choices, custom structured workouts and repeat favourites all use one native recorder.
 Spontaneous runs stay independent unless you explicitly associate them with a plan.
 Offline route traces, evidence-backed Route Story, original Dream visuals and optional
 routines extend the preserved Live Coach and race preparation foundations.
-See [0.8 release notes](docs/RELEASE_0_8.md) for rules and limitations.
+See [0.8.1 release notes](docs/RELEASE_0_8_1.md) for current refinements and limitations.
 
 Strength and Progress use summary dashboards with dedicated detail screens. The
 local catalogue has 174 canonical exercises, live name/alias search, favourites,
 recents and hide/archive choices. Sets and PBs support repetitions, duration and
-distance without invented reps. Twenty-five priority movements have original
-schematic guides and local technique instructions.
+distance without invented reps. Every canonical exercise has original illustrated guidance, movement-specific
+instructions, cues, mistakes and accessible descriptions. All174 entries are checked
+by strict catalogue and packaged-resource tests; assets work offline.
 
 Optional original six-week gym blocks support 1–6 days, equipment/time constraints,
 experience, goals and running/strength priority. Versions retain old prescriptions;
@@ -39,9 +40,15 @@ Actual build/CI results are recorded in [VERIFICATION.md](VERIFICATION.md).
 
 ## Install the test APK
 
+[GitHub Releases](https://github.com/mmwiza1/Race-day-dreams/releases) is the download
+location for verified tagged test releases and the rolling development build once
+published by the green main/tag workflow. The0.8.1 refinement PR remains draft pending
+final visual acceptance; no0.8.1 permanent release is claimed yet. These APKs are
+debug signed test builds, not Play Store production packages.
+
 Use a successful [GitHub Actions run](https://github.com/mmwiza1/Race-day-dreams/actions)
 for the intended main commit. Its API-35 artifact contains
-`Race-Day-Dreams-0.8.0-test1-debug.apk`. Extract the ZIP and install the APK.
+`Race-Day-Dreams-0.8.1-test1-debug.apk`. Extract the ZIP and install the APK.
 GitHub artifact downloads require GitHub sign-in; the app requires no account.
 Export a local backup before upgrading. [VERIFICATION.md](VERIFICATION.md) records
 actual CI and merge results; an open PR is not evidence of a successful APK.
@@ -54,16 +61,18 @@ Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
-| Today | Run Now | Live Coach | Your recorded route |
+| Today | Weekly Plan | Live Coach | Dream Route |
 | --- | --- | --- | --- |
-| ![Today](docs/screenshots/home.png) | ![Run Now](docs/screenshots/run-now.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Offline recorded route](docs/screenshots/post-run-route.png) |
+| ![Today](docs/screenshots/home.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Dream Route](docs/screenshots/dream-route.png) |
 
-| Race preparation | Progress | Original technique guide | Dream Route |
+| Race preparation | Training trends | Romanian Deadlift | Bench Press |
 | --- | --- | --- | --- |
-| ![Race preparation](docs/screenshots/race-day.png) | ![Progress](docs/screenshots/progress.png) | ![RDL technique](docs/screenshots/exercise-rdl-howto.png) | ![Stylised Dream Route](docs/screenshots/dream-route.png) |
+| ![Race preparation](docs/screenshots/race-day.png) | ![Training trends](docs/screenshots/training-trends.png) | ![RDL technique](docs/screenshots/exercise-rdl-howto.png) | ![Bench Press technique](docs/screenshots/exercise-bench-howto.png) |
 
 The route is drawn from retained observations on an offline canvas, not street tiles.
-Dream Routes are original course-inspired visuals, not official maps or navigation.
+Dream Routes use versioned sourced geographic lines and original city illustrations,
+not official maps or navigation. Paris is explicitly the2024 Olympic course, rather
+than the annual Paris Marathon. Old assignments retain their original drawings.
 Physical sensor/audio behaviour still requires the Galaxy S24 checklist.
 
 ## Build and tests

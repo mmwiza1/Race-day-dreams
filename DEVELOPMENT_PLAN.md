@@ -18,7 +18,7 @@ No account, Internet permission, analytics, backend or runtime LLM requirement.
 - Strength dashboard and exercise detail; source-preserving PB progression; manual
   PB edits/deletion; source-workout edits; timed/distance logging; previous-session
   reference; persistent explicit PB acknowledgement.
-- 25 offline original schematic guides with instructions, cues, mistakes, equipment,
+- 174 offline original illustrated guides with instructions, cues, mistakes, equipment,
   muscles and alternatives. Expert technique review and richer artwork remain desirable.
 - Optional original six-week gym blocks, goals/priorities, 1–6 days, equipment/time
   constraints, RPE/RIR guidance, immutable versions, move/skip/reduction previews.
@@ -52,7 +52,7 @@ remain a follow-up. Existing running moved/skipped/completion semantics are reta
 
 Automatic time/distance strength progression stays conservative (hold/review);
 repetition/load suggestions have explicit runner approval and retained decisions.
-Technique figures are original schematics, not individual form assessment.
+Technique figures are original movement-specific illustrations, not individual form assessment.
 
 ## Preserved 0.6 Prompt 1 increment
 
@@ -78,7 +78,9 @@ Schema8, JSON6 (reads1–5), recording archive2 (reads1), complete ZIP1.
 
 Verification is incremental; consult VERIFICATION.md for actual observed source/run
 results. Physical audio/GPS/BLE/OEM battery/accessibility behaviour remains unverified.
-Course drawings are original city-inspired schematics, not verified event geometry.
+Current city choices use sourced geographic revisions; old assignments retain their
+original drawings. Paris is explicitly the2024 Olympic course. These approximate
+lines are not certified current event geometry or navigation.
 The planner's existing prescriptions remain intact; arbitrary interval authoring,
 repeat/restart-rep UI, configurable race checklist and targeted late-run RPE are
 not implemented. Richer course data needs a separately verified provenance/licence.

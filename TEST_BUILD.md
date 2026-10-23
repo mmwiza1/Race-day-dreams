@@ -1,4 +1,4 @@
-# Galaxy S24 evaluation — 0.8.0-test1
+# Galaxy S24 evaluation — 0.8.1-test1
 
 0.8 starts from verified0.7 main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec`.
 See VERIFICATION.md and PR9/Actions for observed build and emulator-test results.
@@ -216,3 +216,18 @@ outdoor run is required before calling the Android baseline locked.
 
 Physical acceptance status: **UNVERIFIED**. Do not tick boxes from synthetic replay,
 a screenshot, an interface existing, or a green GitHub Actions result.
+
+### 0.8.1 guidance and geographic context additions
+
+- [ ] Offline: browse several guides from each equipment class, timed holds and
+  carries. Check whole figures/equipment, written cues and common mistakes. All174
+  assets resolve automatically, but that is not an individual form assessment.
+- [ ] Dream Routes: generate a new activity for each eligible city and reopen it.
+  Check visible progress/distance, full route, section markers and numbered landmarks.
+  Existing assignments must retain their old geometry. Paris must say2024 Olympic
+  course; it must not masquerade as the annual Paris Marathon.
+- [ ] Open each geographic licence/source notice in Settings; check dark/200%text
+  and TalkBack's route summary. No remote maps or image downloads should occur.
+
+No box above has been ticked by Codex. Record actual device observations before
+calling the physical baseline accepted.

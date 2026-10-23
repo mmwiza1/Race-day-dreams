@@ -52,5 +52,5 @@ Actual sets and immutable prescribed versions stay separate.
 The generator is a conservative test-build implementation. It is not a substitute for
 individual technique coaching and does not claim an optimal hypertrophy dose for every
 frequency/time budget. Advanced power methods and automatic task-specific time/distance
-progression are not prescribed. All technique diagrams are original schematic drawings;
+progression are not prescribed. All174canonical exercises have original illustrated technique guidance;
 qualified review and physical-device inspection remain necessary.

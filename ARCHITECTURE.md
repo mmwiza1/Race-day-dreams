@@ -250,3 +250,23 @@ stages cannot be revived. Recovery reports the durable cutoff/active time/pause 
 saved prescription; it still finalises only the retained portion, not unobserved
 movement or seamless cross-reboot tracking. The last unflushed batch remains a
 physical reliability limit; automatic secret GPS restart is deliberately absent.
+
+## 0.8.1 guidance and geographic content
+
+All174canonical exercises resolve through one guide/artwork registry and shared
+responsive screen; the strict release audit rejects missing text/art/accessibility
+content. Bundled artwork is decoded only for the displayed guide. There is no old
+schematic fallback for canonical exercises. Content and resource changes need no
+schema/backup bump.
+
+DreamRoutes retains immutable geometry IDs for every old assignment. Stable city
+preferences choose currentGeometry only when assigning a new activity. London,
+Berlin, Tokyo, New York and Paris have separately sourced geographic revisions;
+Paris is explicitly the2024 Olympic course. Generated projection scripts retain
+source coordinates and licensing; all run offline. DreamCartography projects sourced
+landmark/river context in the same frozen course frame. River geometry is clipped
+in the renderer, never used to shrink the full course or fabricate streets. Original
+Canvas city vignettes are supplemental to numbered/labelled accessible anchors.
+ODbL coordinate databases remain separately licensed from MIT application code.
+Neither geography nor presentation modifies actual GPS, stored equivalent offsets,
+runner decisions, training load or the authoritative recording/execution engines.

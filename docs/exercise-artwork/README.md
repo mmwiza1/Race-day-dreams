@@ -52,6 +52,10 @@ python3 scripts/verify-guidance-assets.py
 ```
 
 The audit proves coverage and asset integrity. It does **not** prove final design
-fidelity. New actual-build captures, light/dark/200% review against the untouched
-owner references and current Android matrix verification remain required before
-release. The previous 47-guide captures do not certify the expanded catalogue.
+fidelity. The174-guide source passed strict completeness, Android build/lint and the supported
+API28/35/36 matrix in workflow40027830067. Fresh London sourceb56b118 then passed
+200tests perAPI and63actual captures in40030105708. RDL, Bench, Walking Lunge and
+Ankle Rocks actual screens were compared with the untouched owner references: the
+filled-athlete, blue-panel, mint-tip/pink-mistake family is present; guidance remains
+scrollable on narrow screens. Final whole-product acceptance and physical movement/
+TalkBack checks are separate and remain unclaimed.

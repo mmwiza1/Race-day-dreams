@@ -11,9 +11,12 @@ Implementation checkpoint; not yet a completed/released build.
 
 ## What's new
 
-- Original detailed RDL, Bench Press, Walking Lunge, Glute Bridge and routine illustrations,
-  bundled offline in efficient WebP assets. Complete canonical exercise coverage
-  is still required before this release can publish.
+- Original illustrated guidance for all174canonical exercises and14routine movements,
+  bundled offline as177efficient WebP assets. Strict catalogue/resource audits reject
+  missing guides, instructions or artwork. Actual-build visual review remains separate.
+- Five versioned geographic Dream Routes with stable per-activity assignments,
+  sourced landmark anchors, original city vignettes and equivalent-distance progress.
+  Paris is explicitly the2024 Olympic course; see the clarification above.
 - Week-first Plan with day/date rows and attached preparation links. Programme
   versions, rationale, evidence and rebuild actions remain under Programme details.
 - A real weekly-distance chart with selectable weeks and accessible descriptions.
@@ -43,10 +46,10 @@ Implementation checkpoint; not yet a completed/released build.
 - This checkpoint has illustrated guidance for all 174 canonical exercises and all
   14 built-in routine movements. Strict catalogue and packaged-asset checks pass;
   final actual-build visual acceptance remains required.
-- Berlin and Tokyo have separately versioned participant geographic traces; London
-  has a historical MIT-licensed geographic line with unspecified edition.
-  The other two Dream Route geography replacements and full screenshot/reference acceptance
-  remain in progress. Existing assignments and backups are preserved.
+- Geographic sources are approximate historical/community data, not certified current
+  courses or navigation. London edition is unspecified; Paris is the2024 Olympic
+  course, not the annual event. Final screenshot/reference acceptance remains open.
+  Existing assignments and backups are preserved.
 - Recovery saves the durable interrupted portion; it does not fabricate continuous
   tracking across process death/reboot. The last unflushed batch may still be lost.
 - Physical S24 GNSS, Health Connect, BLE, TTS/music, battery and accessibility checks
