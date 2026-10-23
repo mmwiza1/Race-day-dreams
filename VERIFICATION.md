@@ -1,3 +1,32 @@
+# Verified geographic/capture checkpoint — 23 October 2026
+
+Source84397e3a00a1ff6101f9ba5cee2fda61c2ca2b9e passed
+[workflow40036694153](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40036694153):
+build/lint/domain and203instrumentation tests on each API28/35/36, strict174/174
+canonical plus14/14routine guidance, and70actual captures. Matrix jobs28/35/36:
+120698212643 /120698212784 /120698212372. Exact canonical bot
+**a0363d60fbb262684f6e34a0eea2e9adf56c289a** was fast-forwarded locally, preserving
+all70PNGs and source metadata. Fingerprint:
+9a881b71b5c0e3034b5ef6a9581e73487e85d0eafc394a8cee15a45331d770db.
+No physical S24 acceptance or full design-fidelity pass is claimed.
+
+Actual images were inspected for all five cities, dark/200% London, Plan,
+RDL/Bench/Lunge/Ankle and other summary screens. Course/section/progress now appear
+in-frame, and large-font landmarks no longer split words into narrow columns.
+New York's generic masonry bridge vignettes were identified as inappropriate:
+the current follow-up gives Verrazzano a suspension silhouette and Queensboro a
+cantilever silhouette, plus visible ODbL card attribution. That follow-up needs its
+own fresh Android matrix/captures. Source61221domain checks/18suites pass locally;
+135geographic checks,43schema tests,5release-note tests,177art hashes and all geographic
+projection checks pass. Version/code/schema/backup remain0.8.1-test1/10/10/JSON7/raw2/complete1.
+
+The source audit confirms unchanged manifest permissions and runtime dependencies.
+The174exercise/14routine strict gate is complete. Dream Route reference fidelity,
+final city-art review and physical S24 checks remain separate open release gates;
+PR#10 remains draft and no version release is published.
+
+## Earlier checkpoints (historical)
+
 # Current London geographic checkpoint — 23 October 2026
 
 Release remains incomplete; PR #10 stays draft. All174 canonical exercises and14

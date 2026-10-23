@@ -67,6 +67,7 @@ import org.racedaydreams.data.SupportStore
         LinearProgressIndicator(progress={progress.fraction().toFloat()},modifier=Modifier.fillMaxWidth().height(10.dp))
         Text(progress.distanceLabel(),style=MaterialTheme.typography.labelLarge)
         if(progress.extraMetres()>0)Text("One full marathon equivalent plus ${decimal(progress.extraMetres()/1000)} km. Your recorded run is unchanged.")
+        DreamRoutes.attribution(route).takeIf{it.isNotEmpty()}?.let{Text(it,style=MaterialTheme.typography.labelSmall)}
         WhyDetails("${DreamRoutes.provenance(route)} Your stable equivalent assignment is saved for this activity; it does not claim you ran in ${route.name()}.","About this route ⓘ")
     }
 

@@ -414,7 +414,7 @@
       "landmarks": [
         {
           "label": "Verrazzano Bridge",
-          "shape": "bridge",
+          "shape": "suspension-bridge",
           "x": 1818.6,
           "y": 526,
           "source": "https://www.marathontrip.com/map3d/new-york-city-marathon/course.json",
@@ -422,7 +422,7 @@
         },
         {
           "label": "Queensboro Bridge",
-          "shape": "bridge",
+          "shape": "cantilever-bridge",
           "x": 9293.2,
           "y": 17308.5,
           "source": "https://www.marathontrip.com/map3d/new-york-city-marathon/course.json",

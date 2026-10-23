@@ -104,6 +104,10 @@ public final class GeographicDreamRouteTestSuite {
         boolean immutable=false;
         try {DreamRoutes.routes().set(0,DreamRoutes.routes().get(1));}catch(UnsupportedOperationException expected){immutable=true;}
         check(immutable,"Shared city registry cannot be mutated by a caller");
+        check(DreamRoutes.landmarks(ny).get(0).shape().equals("suspension-bridge"),"Verrazzano is not drawn as London's masonry Tower Bridge");
+        check(DreamRoutes.landmarks(ny).get(1).shape().equals("cantilever-bridge"),"Queensboro has its own truss/cantilever silhouette");
+        check(DreamRoutes.attribution(ny).contains("OpenStreetMap")&&DreamRoutes.attribution(ny).contains("ODbL"),"NYC produced-work credit is visible");
+        check(DreamRoutes.attribution(paris).contains("Thomas Krakow"),"Paris dataset author credit visible");
         System.out.println("GeographicDreamRouteTestSuite: " + checks + " checks passed.");
     }
 }

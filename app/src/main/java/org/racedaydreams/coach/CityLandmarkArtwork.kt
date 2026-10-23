@@ -23,6 +23,35 @@ import androidx.compose.ui.graphics.drawscope.*
             fun polygon(c:Color,vararg points:Float){val p=Path();points.asList().chunked(2).forEachIndexed{i,xy->if(i==0)p.moveTo(xy[0],xy[1])else p.lineTo(xy[0],xy[1])};p.close();drawPath(p,c)}
             fun windows(x:Float,y:Float,n:Int,rows:Int,spacing:Float=9f){for(row in 0 until rows)for(col in 0 until n)rect(x+col*spacing,y+row*10,4f,6f,blue.copy(alpha=.6f))}
             when(shape) {
+                "suspension-bridge" -> {
+                    for(x in listOf(25f,73f)){
+                        rect(x-4,24f,8f,61f,stone);rect(x-6,22f,12f,5f,navy)
+                        rect(x-2,34f,4f,8f,window);rect(x-2,48f,4f,8f,window)
+                    }
+                    val cable=Path().apply{moveTo(6f,70f);quadraticBezierTo(18f,55f,25f,27f);quadraticBezierTo(49f,79f,73f,27f);quadraticBezierTo(82f,56f,95f,70f)}
+                    drawPath(cable,blue,style=Stroke(2.5f))
+                    for(x in 32..67 step 7)line(x.toFloat(),if(x<40||x>60)47f else 51f,x.toFloat(),72f,1f,blue)
+                    line(5f,73f,95f,73f,5f);line(5f,77f,95f,77f,1f,blue)
+                }
+                "cantilever-bridge" -> {
+                    rect(27f,55f,7f,30f);rect(67f,55f,7f,30f)
+                    line(5f,68f,96f,68f,5f)
+                    val truss=Path().apply{moveTo(5f,65f);lineTo(30f,29f);lineTo(50f,57f);lineTo(70f,29f);lineTo(96f,65f)}
+                    drawPath(truss,blue,style=Stroke(3f,join=StrokeJoin.Round))
+                    for(x in listOf(15f,24f,36f,44f,56f,64f,76f,85f)){
+                        val top=if(x<50)65f-kotlin.math.min(x-5,50-x)*1.2f else 65f-kotlin.math.min(x-50,96-x)*1.2f
+                        line(x,top,x,66f,1.5f,navy)
+                    }
+                    line(9f,78f,92f,78f,2f,stone)
+                }
+                "gate" -> {
+                    rect(15f,30f,70f,10f,navy);rect(19f,25f,62f,5f,stone)
+                    for(x in 22..77 step 11){rect(x.toFloat(),42f,5f,38f);rect(x-2f,40f,9f,4f,blue);rect(x-2f,79f,9f,4f,blue)}
+                    rect(12f,83f,77f,4f,navy)
+                    // An original small quadriga cue above the horizontal entablature.
+                    rect(38f,19f,25f,5f,blue);for(x in 41..59 step 6){drawOval(blue,Offset(x.toFloat(),12f),Size(6f,5f));line(x+2f,17f,x+1f,20f,1f)}
+                    drawCircle(navy,2f,Offset(51f,7f));line(51f,9f,51f,18f,2f);line(51f,11f,58f,8f,1.5f)
+                }
                 "river" -> {
                     val river=Path().apply{moveTo(9f,24f);cubicTo(91f,15f,12f,59f,65f,60f);cubicTo(99f,61f,63f,80f,92f,84f)}
                     drawPath(river,stone,style=Stroke(18f,cap=StrokeCap.Round))

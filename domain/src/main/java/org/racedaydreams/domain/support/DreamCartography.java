@@ -27,8 +27,8 @@ public final class DreamCartography {
             case "tokyo-2026-geo-v1" -> List.of(new DreamRoutes.Landmark("Tokyo Tower",4.97410241,7.04803257,"tower"),
                 new DreamRoutes.Landmark("Tokyo Station",6.76750581,4.75393490,"station"),
                 new DreamRoutes.Landmark("Sensō-ji",9.25730871,1.27264169,"temple"));
-            case "new-york-2026-geo-v1" -> List.of(new DreamRoutes.Landmark("Verrazzano Bridge",3.28037253,9.34829619,"bridge"),
-                new DreamRoutes.Landmark("Queensboro Bridge",6.12943105,2.95138871,"bridge"),
+            case "new-york-2026-geo-v1" -> List.of(new DreamRoutes.Landmark("Verrazzano Bridge",3.28037253,9.34829619,"suspension-bridge"),
+                new DreamRoutes.Landmark("Queensboro Bridge",6.12943105,2.95138871,"cantilever-bridge"),
                 new DreamRoutes.Landmark("Central Park finish",5.33969456,2.28358702,"park"));
             default -> List.of();
         };

@@ -1,84 +1,45 @@
-# Actual 174-guide build review — 23 October 2026
+# 0.8.1 design-reference review
 
-The63canonical captures now come from source29d3458/workflow40027830067.
-All174canonical guides and14routine guides pass strict completeness, and the old
-primitive canonical renderer is removed. The current RDL capture was inspected:
-recognisable two-phase athlete/equipment, blue panel, distinct captions, concise
-instructions and adjacent mint/pink cards follow the required reference family.
-Some content remains below the fold on the540px-wide test device; it is scrollable.
+The owner JPEGs under design-reference are unchanged and distinct from actual PNGs.
+The current70real captures were generated from source84397e3 in workflow40036694153,
+which passed203tests perAPI28/35/36 plus strict catalogue completeness. Captures were
+adopted exactly from bota0363d6. Coverage and screenshot consistency do not alone
+prove design fidelity. **The whole-release fidelity gate remains open.**
 
-London geography is implemented for the next capture, joining Berlin/Tokyo.
-Paris/NewYork and richer city surroundings/verified landmarks remain open.
-This is not full visual acceptance. The historical coverage counts below refer to
-older checkpoints; they must not be read as current missing-guide counts.
+| Area | Actual-build observation against the owner references |
+| --- | --- |
+| RDL and Bench | Recognisable filled athlete figures/equipment, distinct phases, blue/navy illustration panel, concise instructions and adjacent mint/pink cue/mistake cards follow the requested family. Some copy remains scrollable on the narrow test device. |
+| Walking Lunge and Ankle Rocks | Large movement illustration, short dose/instruction, mint tip, pink mistake, progress and large Back/Next controls match the required hierarchy. |
+| Catalogue coverage | All174canonical exercises and14routine movements have appropriate registered guidance/artwork;177original local WebPs. The primitive canonical fallback is removed. Strict coverage/resource audits pass. |
+| Plan | Week/date header and compact running/rest/strength rows lead. Programme metadata is disclosed. The real fixture has combined-session days; about five day rows fit, with all seven scrollable. The owner reference is denser. |
+| Five Dream Routes | All five now have sourced geographic revisions and visible full course/highlight/progress. Paris explicitly says2024Olympic course, not the annual Paris Marathon. The neutral offline canvas, sourced rivers and miniature city vignettes are still less rich than the supplied illustrated basemap. Do not claim full reference fidelity from geometry tests. |
+| Landmark content | Actual New York imagery exposed inappropriate London-style masonry towers. The follow-up now has distinct suspension/cantilever forms and visible ODbL credit; fresh captures still need review. |
+| Dark and200%text | London route/section remain distinct; stacked landmark rows retain complete words. Large-font content scrolls naturally. Human TalkBack/sunlight/moving-run checks are not performed. |
+| Live Coach / Health / Shoes / Trends | Large pace/remaining distance and persistent controls, human-readable health signals, concise shoe summaries and a real selectable weekly-distance chart were inspected. This is visual inspection, not physical sensor/audio testing. |
 
----
+## Capture failures found and corrected
 
-# Current 174-guide checkpoint — fresh design review still required
+- Large-font navigation intentionally has semantic icons rather than wrapping labels;
+  tests now use the actionable Calendar text OR content description.
+- History readiness could be stale during parent refresh; it now stays pending.
+- Android font changes already recreate activities; capture configuration is now
+  applied while the activity is closed. Independent recreation tests remain.
+- Clipped bounds can be zero for offscreen headings. Captures now use unclipped
+  positions and require the intended Dream heading to be visible at capture time.
+- Retained route/story/durability analyses load asynchronously above the Dream card.
+  The native fixture waits for their actual evidence before aligning the screenshot.
 
-All174canonical exercises and14routine movements now resolve to reviewed original
-filled-athlete illustrations with movement-specific text. Strict completeness passes.
-This is asset/content acceptance, **not** actual-build design approval. Technique
-screens now put mint/pink cue/mistake cards beside each other at normal font and
-stack at large font; primitive schematic fallback code is removed. Five more
-representative captures are requested. Review all fresh63actual captures against
-`docs/design-reference` after current-source Android verification.
+These fixes were driven by actual failures and visible wrong frames, not retries
+until a lucky render. Incorrect earlier city frames were not adopted as final proof.
 
-London/Paris/NewYork geography, richer city presentation and final README curation
-remain open. No physical device acceptance is claimed. The table below records
-historical images and observations; its older coverage counts are historical.
+## Remaining acceptance work
 
----
+1. Review the latest bridge/attribution follow-up in an actual green build.
+2. Bring original city presentation closer to the supplied richer offline basemap
+   and landmark quality; do not invent street geometry or copy organiser artwork.
+   A large London OSM map API bbox returned400 during research; smaller lawful
+   extracts or other explicit open data remain possible. No such raw extract is bundled.
+3. Re-review the full actual set after any presentation change, including dark/200%.
+4. Physical GalaxyS24 checklist inTEST_BUILD.md remains entirely unperformed.
 
-# 0.8.1 visual acceptance checkpoint
-
-Reviewed against the five untouched owner references. This is an engineering
-checkpoint, **not final design approval**. Actual sourcef55f346404d02ed5a30aa44f108b894b62816c33,
-workflow40001032343;53realAPI35captures retained frombot13d08e4f2546cf2bc05acc5d7e7f9a520c618edb.
-Later15-guide assets and phase-caption spacing were recaptured/verified in
-sourcef61d7ac38d1aab6f4fd481e37a35d7171d06d5d5 /workflow40003600528.
-The current linked files update with canonical capture; the source record identifies
-what was inspected for this review. References are never shipped as app screenshots.
-
-| Area | Owner reference | Actual build | Observed assessment |
-| --- | --- | --- | --- |
-| Weekly Plan | [Weekly reference](design-reference/2-1000157284.jpg) | [Plan](screenshots/training-plan.png) | Week/date header and compact blue/white day rows now lead; programme metadata is disclosed. The real fixture has combined run/strength days and shows around five days in the viewport. Still less dense than the reference; all seven days remain scrollable. |
-| Dream Route | [London reference](design-reference/3-1000157283.jpg) | [Berlin](screenshots/dream-route.png) | Real approximate historical geographic outline, retained section, checkered finish, percentage and equivalent distance now work. Blank background and missing richer city illustration do not yet meet the reference quality. Four other geographic replacements remain open. |
-| RDL / Bench | [Strength reference](design-reference/1-1000157280.jpg) | [RDL](screenshots/exercise-rdl-howto.png), [Bench](screenshots/exercise-bench-howto.png) | Recognisable filled human figures and equipment replace primitive schematics for these movements. Separate movement phases, blue panel, cues/mistakes and written guidance follow the reference family. Coverage is only15/174 overall; full release gate fails. |
-| Walking Lunge | [Lunge reference](design-reference/5-1000157282.jpg) | [Lunge](screenshots/exercise-walking-lunge.png) | Large two-phase illustration, clear dose, concise instruction, mint tip, pink mistake, progress and48dp+Back/Next follow the requested hierarchy. |
-| Ankle Rocks | [Ankle reference](design-reference/4-1000157281.jpg) | [Ankle](screenshots/exercise-ankle-rocks.png) | Half-kneeling figure shows heel-down movement, clear arrow and guidance; routine controls remain visible. |
-| Cable movement | [Shared guidance style](design-reference/1-1000157280.jpg) | [Cable Row](screenshots/exercise-cable-row-howto.png) | Correct machine/handle positions and distinct frames. Long phase captions touched; explicit column spacing added after inspection and verified in the fresh pinned-run capture. |
-| Dark mode | Same family with dark tonal adaptation | [Routine](screenshots/mobility-dark.png), [Plan](screenshots/plan-dark.png) | Text, mint/pink cards and controls remain legible; images use self-contained pale illustration panels. This is visual inspection, not measured physical sunlight contrast or a human TalkBack pass. |
-|200%font| Responsive adaptation | [Plan](screenshots/plan-large-font.png) | Actionable icon-only navigation has semantic labels. Date controls stack separately; content wraps and scrolls. No Calen/dar-style bottom labels. Physical TalkBack and moving-run usability remain unchecked. |
-
-## Still required before merge/release
-
-- Every canonical exercise needs reviewed, appropriate artwork and instructional
-  copy;159remain missing. Generic family diagrams do not count as accepted coverage.
-- Four remaining cities need safely reusable geography; all five need final original
-  offline visual treatment without fake streets, official artwork or navigation claims.
-- Review fresh actual images after subsequent changes, including representative
-  barbell/dumbbell/machine/cable/bodyweight/static/dynamic guidance.
-- Curate final README images only after the release source passes all gates.
-- Complete GalaxyS24 checks inTEST_BUILD; no physical checks are claimed here.
-
-## Additional artwork review (before fresh build capture)
-
-Reviewed original detailed candidates for32additional canonical entries, including
-static holds, loaded carries and distinct machine movements. Framing corrections
-were regenerated for Leg Press, Dumbbell Shoulder Press, Lat Pulldown and Triceps
-Pressdown. The Seated Leg Curl roller was corrected to act behind the lower calves;
-Dead Hang was replaced with a single static frame. These assets continue the blue/navy
-filled-athlete design family, not circles-and-lines schematics. This asset review is
-not actual-build screenshot acceptance. New five representative guide captures and
-all47resource resolutions still need the fresh Android matrix.127canonical guides,
-London/Paris/NewYork geography and richer city visual presentation remain unfinished.
-
-The five new guide captures from workflow40014032752 were then inspected in the
-actual build: Front Squat, Leg Press, Lat Pulldown, Seated Leg Curl, Farmer’s Carry.
-Figures and equipment fit; the corrected calf-side curl roller is visible; captions
-wrap separately and copy is readable. These match the filled blue/navy illustration
-family. Setup copy remains too long on some screens to show tips/mistakes together
-in the first viewport. Continue refining progressive disclosure/concise copy and
-responsive card arrangement without dropping safety instructions. No full fidelity
-pass is claimed; remaining127guides/three geographic cities are release blockers.
+No canonical guide remains missing. Do not restart completed guidance generation.
