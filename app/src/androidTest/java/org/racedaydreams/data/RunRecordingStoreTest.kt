@@ -22,4 +22,30 @@ class RunRecordingStoreTest:AndroidTestCase(){
  fun testOldBackupCannotEraseNativeRecording(){val features=FeatureStore(context);val old=features.exportUserData();val session=trace();RecordingStore(context).finish(session,100000);try{features.restoreUserData(old,false);fail("Owned recording must not be removed")}catch(_:IllegalArgumentException){};assertEquals(1,features.activities().size);assertEquals(101,RecordingStore(context).points(session.id).size)}
  fun testOptionalHealthCacheDoesNotSumMirroredSources(){val today=java.time.LocalDate.now();val at=today.atStartOfDay(java.time.ZoneOffset.UTC).toInstant();val m=org.racedaydreams.domain.health.HealthIntelligence.Metric.STEPS;val one=org.racedaydreams.domain.health.HealthIntelligence.Observation("a",m,today,at,at,1000.0,"one",at);val two=org.racedaydreams.domain.health.HealthIntelligence.Observation("b",m,today,at,at,1000.0,"two",at);val store=HealthIntelligenceStore(context);store.replace(setOf(m),today,today,listOf(one,two));val trend=org.racedaydreams.domain.health.HealthIntelligence.evaluate(store.recent(today),today).last();assertEquals(1000.0,trend.recent()!!,0.001);assertEquals(1,trend.recentDays());assertEquals("Insufficient evidence",trend.interpretation())}
 
+ fun testV6UpgradeRetainsExistingActivityPlanStrengthWeightAndFeedbackPayloads(){
+    val helper=ProfileDatabase.get(context);helper.close()
+    val tables=listOf("user_profile","race_goal","activities","shoes","manual_results","coach_plan_versions","coach_current_plan","strength_exercises","strength_sessions","run_responses","run_feedback","coach_evidence","settings","planned_workouts")
+    val before=linkedMapOf<String,List<String>>()
+    context.openOrCreateDatabase(ProfileDatabase.NAME,0,null).use{db->
+        db.execSQL("INSERT OR REPLACE INTO user_profile VALUES(1,0)")
+        db.execSQL("INSERT OR REPLACE INTO race_goal VALUES(1,'TEN_K','Kept race','2027-03-01','FINISH',NULL)")
+        db.execSQL("INSERT INTO activities VALUES('kept-run','health-connect','kept-source','source',1,2,'retained activity')")
+        db.execSQL("INSERT INTO shoes VALUES('kept-shoe','retained shoe',0)")
+        db.execSQL("INSERT INTO manual_results VALUES('kept-result',NULL,'5K',5000,'2026-10-22','retained result')")
+        db.execSQL("INSERT INTO coach_plan_versions VALUES('kept-version','kept-plan',1,'retained plan')")
+        db.execSQL("INSERT OR REPLACE INTO coach_current_plan VALUES(1,'kept-version')")
+        db.execSQL("INSERT INTO strength_exercises VALUES('kept-lift','retained exercise')")
+        db.execSQL("INSERT INTO strength_sessions VALUES('kept-strength','2026-10-22T00:00:00Z','retained sets')")
+        db.execSQL("INSERT INTO run_responses VALUES('kept-run',NULL,'kept-version','retained response')")
+        db.execSQL("INSERT INTO run_feedback VALUES('kept-run','kept-version','retained feedback')")
+        db.execSQL("INSERT INTO coach_evidence VALUES('WEIGHT','kept-weight','retained weight'),('WEEKLY_REVIEW','kept-review','retained review')")
+        db.execSQL("INSERT OR REPLACE INTO settings VALUES('reminders','retained preferences')")
+        db.execSQL("INSERT INTO planned_workouts VALUES('kept-workout','2026-10-23',1,'retained prescription')")
+        for(t in tables){val rows=mutableListOf<String>();db.rawQuery("SELECT * FROM $t ORDER BY 1",null).use{c->while(c.moveToNext())rows.add((0 until c.columnCount).joinToString("|"){i->if(c.isNull(i))"<null>"else c.getString(i)})};before[t]=rows}
+        for(t in listOf("recording_points","recording_events","recording_sessions","health_observations"))db.execSQL("DROP TABLE $t");db.version=6
+    }
+    val upgraded=helper.writableDatabase;assertEquals(7,upgraded.version)
+    for(t in tables){val rows=mutableListOf<String>();upgraded.rawQuery("SELECT * FROM $t ORDER BY 1",null).use{c->while(c.moveToNext())rows.add((0 until c.columnCount).joinToString("|"){i->if(c.isNull(i))"<null>"else c.getString(i)})};assertEquals(t,before[t],rows)}
+ }
+
 }
