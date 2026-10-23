@@ -74,8 +74,9 @@ pass and no sleep/HRV/resting-HR data is ever written.
 ## Backup
 
 The normal JSON envelope is now 5 (reads 1–4), retaining its 8 MiB limits and existing
-transactional validation. It includes native/GPX canonical distance samples but not raw
-coordinates. A replacement that would remove retained native/GPX runs or interrupt an
+transactional validation. It includes compact native/GPX metadata, not unbounded sample arrays or raw
+coordinates. Retained raw samples are reattached transactionally on this device; a
+fresh installation requires the companion archive to restore detailed evidence. A replacement that would remove retained native/GPX runs or interrupt an
 active recording is rejected before changes.
 
 Use the **companion recording archive** as well as the app JSON backup. Archive format

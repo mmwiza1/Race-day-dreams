@@ -225,7 +225,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             JSONObject out=FeatureJson.json("storeVersion",EXPORT_STORE_VERSION,"profile",profile==null?null:FeatureJson.profile(profile),"draft",null,"manualBaseline",null,"manualBaselineRecordedAt",null);
             try(Cursor c=db.rawQuery("SELECT payload FROM onboarding_draft WHERE id=1",null)){if(c.moveToFirst())out.put("draft",c.getString(0));}
             try(Cursor c=db.rawQuery("SELECT manual_json,manual_recorded_at FROM baseline_state WHERE id=1",null)){if(c.moveToFirst()){out.put("manualBaseline",FeatureJson.object(c.getString(0)));out.put("manualBaselineRecordedAt",c.isNull(1)?JSONObject.NULL:c.getString(1));}}
-            JSONArray activities=new JSONArray();for(ActivityRecord a:activities())if(isUserActivity(a))activities.put(FeatureJson.activity(a));out.put("activities",activities);
+            JSONArray activities=new JSONArray();for(ActivityRecord a:activities())if(isUserActivity(a))activities.put(FeatureJson.activity(backupActivity(a)));out.put("activities",activities);
             JSONArray shoes=new JSONArray();for(Shoe shoe:shoes())shoes.put(FeatureJson.shoe(shoe));out.put("shoes",shoes);
             JSONArray results=new JSONArray();for(RecordedResult result:results())if(result.source()!=ResultSource.ROLLING)results.put(FeatureJson.result(result));out.put("results",results);
             JSONArray bestEfforts=new JSONArray();Set<String> effortIds=new HashSet<>();
@@ -243,6 +243,10 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         } catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}
     }
     private static JSONArray opaqueRows(SQLiteDatabase db,String table){JSONArray out=new JSONArray();try(Cursor c=db.rawQuery("SELECT payload FROM "+table+" ORDER BY id",null)){while(c.moveToNext())out.put(FeatureJson.object(c.getString(0)));}return out;}
+    private static ActivityRecord backupActivity(ActivityRecord a) {
+        if(!a.source().provider().equals("rdd")&&!a.source().provider().equals("gpx"))return a;
+        return new ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),a.notes(),java.util.Collections.emptyList(),a.laps(),a.plannedWorkoutId(),a.shoeId());
+    }
     private static boolean isUserActivity(ActivityRecord a){return a.source().provider().equals("manual")||a.source().provider().equals("assessment")||a.source().provider().equals("rdd")||a.source().provider().equals("gpx");}
 
     /** Validation is public for backup previews; it never reads or changes the database. */
@@ -328,6 +332,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             if(snapshot.development()!=null)DevelopmentStore.restore(db,snapshot.development());
             if(snapshot.strengthState()!=null)StrengthUserStore.restore(db,snapshot.strengthState());
             if(snapshot.gymProgramming()!=null)GymProgrammeStore.restore(db,snapshot.gymProgramming());
+            RecordingStore.restoreRetainedSamples(db);
             db.setTransactionSuccessful();
         }catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}
     }
