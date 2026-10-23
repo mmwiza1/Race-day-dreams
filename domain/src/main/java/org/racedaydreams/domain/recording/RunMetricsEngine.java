@@ -60,8 +60,8 @@ public final class RunMetricsEngine {
         }
         return new Status(distance,now-started,active(now),pace,gps,pausedSince>=0);
     }
-    public List<Point> points(){return List.copyOf(points);}public List<Event> events(){return List.copyOf(events);}
+    public List<Point> points(){return Collections.unmodifiableList(new ArrayList<>(points));}public List<Event> events(){return Collections.unmodifiableList(new ArrayList<>(events));}
     /** Elapsed samples retain pauses/gaps; existing qualified calculators cannot bridge them. */
-    public List<DistanceSample> samples(){return points.stream().map(p->new DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-started),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity())).toList();}
+    public List<DistanceSample> samples(){return points.stream().map(p->new DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-started),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity())).collect(java.util.stream.Collectors.toList());}
     public static double metres(Fix a,Fix b){double lat=Math.toRadians(b.latitude()-a.latitude()),lon=Math.toRadians(b.longitude()-a.longitude());double h=Math.sin(lat/2)*Math.sin(lat/2)+Math.cos(Math.toRadians(a.latitude()))*Math.cos(Math.toRadians(b.latitude()))*Math.sin(lon/2)*Math.sin(lon/2);return 6371000*2*Math.atan2(Math.sqrt(h),Math.sqrt(Math.max(0,1-h)));}
 }

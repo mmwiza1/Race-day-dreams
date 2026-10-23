@@ -1,3 +1,27 @@
+# Verification — Health Intelligence + native Run Engine increment
+
+Starting main `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba`; branch
+`codex/health-intelligence-run-engine`; PR #7. Version 0.6.0-test1 / 7;
+schema 7; app JSON backup envelope 5; companion raw recording archive version 1.
+
+Observed local results: full domain scripts pass **57,726 assertions** (1,053 new
+trace/personal-baseline checks); schema scripts pass **36 tests**, including every
+supported 1–6 upgrade, retained old rows, one-active-run/FK constraints and failed
+migration rollback. Existing suites/assertions were retained. Android instrumentation
+adds recovery/finalization failure, GPX round-trip/dedup/malformed/DTD and raw-archive
+round-trip/conflict tests. Android build/lint/device results must be read from PR #7's
+actual intended-head Actions run; an in-progress run is not a pass.
+
+Local Android build remains unavailable due missing SDK/restricted Gradle download;
+CI runs actual build/lint/instrumentation on API 28/35/36. An earlier API-35 job hit
+an invalid emulator archive before tests (not counted as success). No physical device
+has been used. No Internet permission, runtime parser/sensor dependency, copied GPL
+source or proprietary binary was introduced.
+
+See docs/RUN_ENGINE.md and TEST_BUILD.md for explicit recording/backup/hardware limits.
+Final source/CI/screenshot/APK results are recorded on PR #7 as they become available.
+The following verification records apply to previous releases only.
+
 # Verification record — 0.5.0-test1
 
 Starting main: `e395a7c7ceb74f2cfeeafb94bb3466ecc6cb53b1`.

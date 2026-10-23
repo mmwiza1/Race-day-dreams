@@ -12,7 +12,7 @@ public final class HealthIntelligence {
         public Observation {
             Objects.requireNonNull(id);Objects.requireNonNull(metric);Objects.requireNonNull(date);
             Objects.requireNonNull(start);Objects.requireNonNull(end);Objects.requireNonNull(importedAt);
-            if(id.isBlank()||source==null||source.isBlank()||end.isBefore(start)||!Double.isFinite(value)||value<0)
+            if(id.trim().isEmpty()||source==null||source.trim().isEmpty()||end.isBefore(start)||!Double.isFinite(value)||value<0)
                 throw new IllegalArgumentException("Invalid health observation");
             if((metric==Metric.RESTING_HR||metric==Metric.HRV_RMSSD)&&value==0)throw new IllegalArgumentException("Missing is not zero");
         }
@@ -23,7 +23,7 @@ public final class HealthIntelligence {
     public static List<Trend> evaluate(List<Observation> input, LocalDate today) {
         List<Trend> out=new ArrayList<>();
         for(Metric m:Metric.values()) {
-            List<Observation> rows=input.stream().filter(x->x.metric()==m&&!x.date().isAfter(today)&&!x.date().isBefore(today.minusDays(34))).sorted(Comparator.comparing(Observation::start).reversed().thenComparing(Observation::source)).toList();
+            List<Observation> rows=input.stream().filter(x->x.metric()==m&&!x.date().isAfter(today)&&!x.date().isBefore(today.minusDays(34))).sorted(Comparator.comparing(Observation::start).reversed().thenComparing(Observation::source)).collect(java.util.stream.Collectors.toList());
             if(rows.isEmpty()){out.add(new Trend(m,"Unavailable",null,null,0,0,"Insufficient evidence","Optional data is missing."));continue;}
             String source=rows.get(0).source();Map<LocalDate,Observation> days=new TreeMap<>();
             // One comparable-source observation per day. Never sum mirrored raw records.
@@ -39,7 +39,7 @@ public final class HealthIntelligence {
             out.add(new Trend(m,source,r,b,recent.size(),base.size(),state,
                 "7-day trend / preceding 28-day reference; at least 4 and 14 measured days required. Source changes are not combined. Supporting context, not diagnosis."));
         }
-        return List.copyOf(out);
+        return Collections.unmodifiableList(new ArrayList<>(out));
     }
     private static Double average(List<Double> x){return x.isEmpty()?null:x.stream().mapToDouble(Double::doubleValue).average().orElseThrow();}
 }
