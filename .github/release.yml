@@ -1,0 +1,13 @@
+changelog:
+  exclude:
+    labels: [internal, skip-release-notes]
+  categories:
+    - title: What's new
+      labels: [feature, enhancement]
+    - title: Improvements
+      labels: [ux, accessibility, performance]
+    - title: Fixes
+      labels: [bug, reliability]
+    - title: Other changes
+      labels: ['*']
+# Maintained docs/RELEASE_X_Y_Z.md remains authoritative; raw commits are not notes.

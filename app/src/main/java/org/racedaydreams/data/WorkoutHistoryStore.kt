@@ -30,11 +30,11 @@ class WorkoutHistoryStore(context:Context) {
         val latest=through?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.plusSeconds(18*3600)?.toEpochMilli()?:Long.MAX_VALUE
         while(true) {
             val args=mutableListOf(earliest.toString(),latest.toString())
-            val seek=scanned?.let { args.addAll(listOf(it.millis.toString(),it.millis.toString(),it.id,it.id,it.kind.toString()));" AND (at<? OR (at=? AND (id>? OR (id=? AND kind>?))))" }?:""
+            val seek=scanned?.let { args.addAll(listOf(it.millis.toString(),it.millis.toString(),it.id,it.id,it.kind.toString()));" AND (at<CAST(? AS INTEGER) OR (at=CAST(? AS INTEGER) AND (id>? OR (id=? AND kind>?))))" }?:""
             val sql="SELECT * FROM ("+
                 "SELECT a.id,0 kind,a.start_millis at,a.payload,r.planned_workout_id linked FROM activities a LEFT JOIN run_responses r ON r.activity_id=a.id WHERE ${if(includeRuns)"1"else"0"} UNION ALL "+
                 "SELECT id,1 kind,CAST(ROUND((julianday(started_at)-2440587.5)*86400000) AS INTEGER) at,payload,NULL linked FROM strength_sessions WHERE ${if(includeStrength)"1"else"0"}"+
-                ") WHERE at>=? AND at<=?"+seek+" ORDER BY at DESC,id,kind LIMIT 100"
+                ") WHERE at>=CAST(? AS INTEGER) AND at<=CAST(? AS INTEGER)"+seek+" ORDER BY at DESC,id,kind LIMIT 100"
             var count=0
             helper.readableDatabase.rawQuery(sql,args.toTypedArray()).use { c ->
                 while(c.moveToNext()) {
