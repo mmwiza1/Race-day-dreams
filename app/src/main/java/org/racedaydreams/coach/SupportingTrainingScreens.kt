@@ -1,6 +1,8 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,16 +31,18 @@ import org.racedaydreams.data.SupportStore
     val context=LocalContext.current;val scope=rememberCoroutineScope()
     var index by rememberSaveable(id){mutableIntStateOf(0)};var saving by remember{mutableStateOf(false)};var error by remember{mutableStateOf<String?>(null)}
     val movement=routine.movements()[index]
-    CoachPage {
+    Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)){
         CoachHeading(routine.title());Text("${index+1} of ${routine.movements().size}")
         MovementIllustration(movement)
         Text(movement.title(),style=MaterialTheme.typography.headlineMedium);Text(movement.dose(),style=MaterialTheme.typography.headlineSmall)
         Text(movement.instructions());Text(movement.cue())
         WhyDetails(movement.mistake(),"Common mistake")
         Text("Keep the range comfortable. Stop if painful; this is general guidance, not treatment.")
-        Row(horizontalArrangement=Arrangement.spacedBy(12.dp)){
-            OutlinedButton(onClick={index--},enabled=index>0,modifier=Modifier.heightIn(min=56.dp)){Text("Back")}
-            Button(onClick={if(index+1<routine.movements().size)index++ else{saving=true;scope.launch{try{withContext(Dispatchers.IO){SupportStore(context).completeRoutine(routine.id(),related)};done()}catch(_:Exception){error="Completion could not be saved. Your training plan is unchanged."}finally{saving=false}}}},enabled=!saving,modifier=Modifier.heightIn(min=56.dp)){Text(if(index+1<routine.movements().size)"Next"else"Finish routine")}
+        }
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
+            OutlinedButton(onClick={index--},enabled=index>0,modifier=Modifier.weight(1f).heightIn(min=56.dp)){Text("Back")}
+            Button(onClick={if(index+1<routine.movements().size)index++ else{saving=true;scope.launch{try{withContext(Dispatchers.IO){SupportStore(context).completeRoutine(routine.id(),related)};done()}catch(_:Exception){error="Completion could not be saved. Your training plan is unchanged."}finally{saving=false}}}},enabled=!saving,modifier=Modifier.weight(1f).heightIn(min=56.dp)){Text(if(index+1<routine.movements().size)"Next"else"Finish routine")}
         };error?.let{Text(it)}
     }
 }

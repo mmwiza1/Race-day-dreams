@@ -67,6 +67,8 @@ class CoachingScreenshotTest {
         evidence.saveHistorical(HistoricalStrengthRecord("demo-approx",exercise,72.5,5,today.minusDays(60),HistoricalStrengthRecord.DatePrecision.APPROXIMATE,"Approximate date; test-only"))
         coach.saveStrength(StrengthSession("demo-strength",plan.workouts().filter{it.date()<today}.maxBy{it.date()}.date().atTime(18,0).toInstant(ZoneOffset.UTC),ZoneOffset.UTC,Duration.ofMinutes(50),7.0,"Test-only fixture",
             listOf(StrengthSession.ExerciseSets(exercise,listOf(StrengthSession.SetEntry("demo-set1",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set2",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set3",5,80.0,7.0,false))))))
+        // Fix only the test assignment; production still randomly assigns and persists once.
+        store.activitySummaries().forEachIndexed{i,a->a.distanceMetres()?.takeIf{it>0}?.let{metres->val route=org.racedaydreams.domain.support.DreamRoutes.routes()[i%5];SupportStore(context).save("dream",a.id(),org.json.JSONObject().put("version",1).put("route",route.id()).put("start",kotlin.math.min(10000.0,kotlin.math.max(0.0,42195-metres))).put("distance",metres))}}
     }
     @After fun clear(){org.racedaydreams.recording.RunRecordingService.status.value=null;org.racedaydreams.recording.RunRecordingService.workoutState.value=null;org.racedaydreams.recording.RunRecordingService.savedActivity.value=null;scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
     @Test fun capturesCurrentBuildScreensAndVerifiesCoachingNavigation() {
@@ -85,7 +87,7 @@ class CoachingScreenshotTest {
         // Open the first real retained activity through the Calendar screen.
         compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
         await("Run detail");capture("activity-detail")
-        compose.onNode(hasText("Your Dream Route ·",substring=true)).performScrollTo();capture("dream-route")
+        val dreamHeading=compose.onNode(hasText("Your Dream Route ·",substring=true)).fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].first().text;alignHeading(dreamHeading);capture("dream-route")
         compose.onNodeWithText("Compare this run").performScrollTo().performClick();alignHeading("Compare this run");capture("run-comparison")
         alignHeading("Run Score and feedback");capture("run-feedback")
         back();click("Progress");await("Running PBs");capture("progress")
