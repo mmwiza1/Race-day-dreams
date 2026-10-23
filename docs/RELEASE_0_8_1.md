@@ -1,63 +1,67 @@
-# Geographic fallback clarification
+# Race Day Dreams 0.8.1-test1
 
-Paris uses the explicitly labelled2024 Olympic marathon course under ODbL, not the
-annual Paris Marathon. All five city choices now have sourced geographic revisions;
-richer city presentation and final actual-build design acceptance remain open.
-See DREAM_ROUTES.md for exact sources, licences and limitations.
-
-# 0.8.1-test1 — design fidelity, guidance and reliability
-
-Implementation checkpoint; not yet a completed/released build.
+Design fidelity, complete exercise guidance and recording reliability.
+This is a test release in preparation, not a Play Store production release.
 
 ## What's new
 
-- Original illustrated guidance for all174canonical exercises and14routine movements,
-  bundled offline as177efficient WebP assets. Strict catalogue/resource audits reject
-  missing guides, instructions or artwork. Actual-build visual review remains separate.
-- Five versioned geographic Dream Routes with stable per-activity assignments,
-  sourced landmark anchors, original city vignettes and equivalent-distance progress.
-  Paris is explicitly the2024 Olympic course; see the clarification above.
-- Week-first Plan with day/date rows and attached preparation links. Programme
-  versions, rationale, evidence and rebuild actions remain under Programme details.
-- A real weekly-distance chart with selectable weeks and accessible descriptions.
+- Original illustrated guidance for all 174 canonical exercises and all 14 supporting
+  routine movements. Every guide includes movement-specific instructions, cues,
+  mistakes and accessible descriptions. All artwork is bundled offline.
+- Five sourced geographic Dream Route revisions with stable per-activity assignments,
+  equivalent-distance progress, numbered landmarks and original city vignettes.
+- A week-first Plan with clear day/date rows and attached preparation links. Programme
+  history, rationale and rebuild controls remain under Programme details.
+- A selectable weekly-distance chart using actual recorded evidence.
 
 ## Improvements
 
-- Shared blue/navy guidance surfaces with distinct dark-mode tones, mint tips and
-  pink mistake cards; large Back/Next controls for optional movement routines.
-- Compact Calendar key; human-readable health summaries with exact evidence/source
-  disclosure; shoe summaries with retained detail; clearer Run Now hierarchy.
-- Live Coach target-range visual uses existing smoothed evidence and pause state.
-  The authoritative execution engine and cue rules remain unchanged.
-- Database-backed history pages replace the newest-100 ceiling in workout history.
-  Lists query metadata, never raw recording points; details load on demand.
+- Blue/navy guidance surfaces, mint tip cards and pink mistake cards, with responsive
+  layouts and large routine controls.
+- Compact Calendar key, human-readable Health Intelligence summaries with evidence
+  disclosure, concise shoe cards and clearer Run Now hierarchy.
+- Live Coach target-range presentation uses existing smoothed evidence and pause state.
+  The authoritative recorder, execution state machine and cue rules are preserved.
+- Database-backed history paging replaces the newest-100 ceiling. List cards query
+  metadata; raw recording samples load only for details.
+- Large-font landmark labels stack, and navigation retains accessible icon actions.
+- Version-tag and rolling development-release workflows package verified debug APKs,
+  checksums and maintained human-readable notes after required automated checks pass.
 
 ## Fixes
 
-- Session start now saves the staging row, origin and exact prescription together.
-- Exact sample/event batch retries are idempotent; conflicting retries, missing
-  sequence positions, reversed clocks and reactivation of finished recordings fail
-  without replacing retained evidence.
-- Incremental recording flushes copy only new points/events rather than repeatedly
-  copying a whole multi-hour trace.
+- Recording start saves staging, origin and exact prescription atomically.
+- Identical sample/event retries are idempotent; conflicting retries, sequence holes,
+  reversed clocks and finished-session reactivation fail without replacing evidence.
+- Incremental flushes copy only newly accepted samples/events, rather than copying
+  an entire multi-hour recording again.
+- History readiness remains pending while its parent source is refreshing.
+- Dream Route lookups reuse immutable geometry instead of rebuilding coordinates for
+  every card or redraw. Captures align semantic scroll containers deterministically.
 
 ## Known limitations
 
-- This checkpoint has illustrated guidance for all 174 canonical exercises and all
-  14 built-in routine movements. Strict catalogue and packaged-asset checks pass;
-  final actual-build visual acceptance remains required.
-- Geographic sources are approximate historical/community data, not certified current
-  courses or navigation. London edition is unspecified; Paris is the2024 Olympic
-  course, not the annual event. Final screenshot/reference acceptance remains open.
-  Existing assignments and backups are preserved.
-- Recovery saves the durable interrupted portion; it does not fabricate continuous
-  tracking across process death/reboot. The last unflushed batch may still be lost.
-- Physical S24 GNSS, Health Connect, BLE, TTS/music, battery and accessibility checks
-  remain unverified. Do not treat an emulator run as the physical-device gate.
+- Geographic data are approximate historical/community lines, not certified current
+  courses or navigation. London edition and survey accuracy are unspecified.
+- **Paris is explicitly the 2024 Olympic course, not the annual Paris Marathon.**
+  No redistribution grant was established for an annual-course candidate. This
+  geographic fallback is labelled in the primary UI and its source information.
+- Recorder recovery preserves the durable interrupted portion. It does not fabricate
+  uninterrupted tracking after process death/reboot; the last unflushed batch can
+  still be lost.
+- Physical Galaxy S24 GNSS, Health Connect, BLE, TTS/music, battery, TalkBack and
+  meaningful outdoor-run acceptance remain unverified. Follow TEST_BUILD.md.
+- Final actual-build visual acceptance remains a separate gate; completeness and
+  screenshot consistency alone do not certify design fidelity. PR #10 stays draft
+  until the full requested definition is satisfied.
 
 ## Data compatibility
 
-Schema10 adds two metadata-history indexes only. There are no new user-data tables
-or destructive changes. JSON envelope7, recording archive2 and complete package1
-remain unchanged, retaining supported old readers and transactional restore.
-No new runtime dependencies, permissions, Internet access or data uploads.
+Schema 10 adds two metadata-history indexes only, with no destructive migration.
+JSON envelope 7, recording archive 2 and complete package 1 remain unchanged.
+Supported old backups remain readable with transactional restore. Every stored Dream
+Route assignment keeps its original geometry; preferences affect future runs only.
+
+No new runtime dependencies, permissions, Internet access, tracking, accounts or data
+uploads are introduced. Original artwork and application code are MIT; individual
+geographic datasets retain their documented MIT, CC0 or ODbL licences.

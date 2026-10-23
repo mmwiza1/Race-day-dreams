@@ -1,188 +1,109 @@
-# Current city context
+# Dream Route source data
 
-## Original city context (0.8.1)
+These are bundled visualisation datasets, not user GPS, training evidence, certified
+race courses or navigation. The application uses a separate 42,195 m equivalent axis.
+No raw trace length, course landmark or city geometry becomes an actual run metric.
 
-Landmark anchors use twelve verified Wikidata P625 positions (CC0-1.0), plus three
-New York anchors from the explicitly ODbL-offered MARATHON TRIP course data. Thames
-and Seine centrelines retain original Natural Earth10m source positions (public
-domain). These are symbolic-width centrelines, not surveyed river banks/street maps.
-Exact sources, statement IDs, frozen Natural Earth commit/hash, licences, retained
-coordinates and limitations: docs/dream-route-data/city-context.json. Reproduce all
-projections offline with scripts/generate-dream-context.py --check. The NYC anchor
-database retains ODbL; app wrapper and original Canvas illustrations remain MIT.
+## Retained geographic datasets
 
-Miniature landmark illustrations are original RDD Canvas work. No building images,
-organiser maps, remote tiles or source application code copied. Source links:
-https://www.wikidata.org/wiki/Wikidata:Licensing
-https://www.naturalearthdata.com/about/terms-of-use/
+| Dataset | Retained positions | Licence | Exact provenance |
+| --- | ---: | --- | --- |
+| London historical line | 164 | MIT | [london-historical.json](london-historical.json) |
+| Berlin participant trace, 2014 | 191 | MIT | [berlin-2014-candidate.json](berlin-2014-candidate.json) |
+| Tokyo participant trace, 2026 | 91 | CC0-1.0 | [tokyo-2026.json](tokyo-2026.json) |
+| New York road centreline, 2026 context | 371 | ODbL-1.0 | [new-york-2026.json](new-york-2026.json) |
+| Paris Olympic course, 2024 | 328 | ODbL-1.0 | [paris-2024-olympic.json](paris-2024-olympic.json) |
 
-## Earlier source checkpoints
+Every JSON includes its source URL/revision or commit, checked date, licence
+assessment, source checksum/blob identity, retained coordinate sequence and limitations.
+Original notices ship in the APK and are readable in Settings. ODbL databases and
+derived coordinate arrays retain ODbL separately from the original MIT application.
 
-# Current geography — all five city choices have sourced revisions
+### London
 
-## Paris2024 geographic fallback (ODbL-1.0)
+Source: Georgios Karamanis' `gkaramanis/tidytuesday`, week 17 of 2023, commit
+`f56d74b9e21891c67a9f616b2ccfc7bbcba74a74`, GeoJSON blob
+`f187e1367cd1bfd8c1444d84cc2ccccf41f77e4b`. All 164 positions of the named full-course
+feature are retained. Alternative starts and zero-altitude values are excluded.
+This is an already simplified historical geographic drawing, **not a participant
+trace**. The edition and original survey accuracy are unspecified; publication in
+2023 is not a claimed race edition. Its approximate 42.78 km line has a largest
+source segment of about 1.41 km. See [the exact MIT notice](LONDON_SOURCE_LICENCE.txt).
 
-Paris now uses the2024 Olympic marathon course, explicitly named in the primary
-city label. It is NOT the annual Champs-Élysées Paris Marathon. This is the safe
-geographic fallback: no redistribution grant was established for an annual-course
-candidate. Do not conceal this distinction or label the geometry official.
+### Berlin and Tokyo
 
-All328positions from Thomas Krakow / Running-tomy's Wikimedia Commons data revision
-931916019 are retained. The data file explicitly declares ODbL-1.0. The coordinate
-database and generated array retain that licence, separate from original MIT app
-code. Source hash/revision/transformation and all retained positions are in
-`docs/dream-route-data/paris-2024-olympic.json`; attribution/full licence are bundled
-and readable in Settings. No Olympic logos, marks, map artwork or software copied.
-The approximate42.10km source line is separate from42.195km equivalent progress.
-Old Paris assignments remain unchanged. This geographic milestone does not certify
-richer five-city visual fidelity, which remains open.
+Berlin adapts position-only evidence from Alexandre Donciu-Julin's MIT-licensed
+`alexdjulin/running-events-map` 2014 participant GPX. Approximate measured source
+length is 43.01 km. See [the original notice](BERLIN_SOURCE_LICENCE.txt).
 
-## Earlier geographic checkpoints (historical)
+Tokyo adapts `kekomat/marathon-gpx-dataset`, commit
+`5bff087d82353ec64df84873bbc1a246f8a25aae`, source blob
+`c5baee9ad663325e99042b03614ff6af514ebd57`, explicitly dedicated under CC0.
+Its 10,872 positions are reduced to 91 retained original vertices at 25 m tolerance;
+source indices are recorded. Approximate source length is 42.75 km. See
+[the full CC0 notice](TOKYO_SOURCE_LICENCE.txt).
 
-# Current geographic status — four cities
+No identity, timestamps, biometric samples or fabricated elevation are retained in
+these visual datasets. Approximate historical GPS evidence is not a current certified
+course, even when the event name is recognisable.
 
-London, Berlin, Tokyo and New York now have separately versioned geographic
-revisions. Paris remains unfinished. Richer original offline city presentation
-and actual screenshot/reference acceptance remain release gates.
+### New York
 
-## New York2026 ODbL source
+MARATHON TRIP explicitly offers its course line as ODbL data in its machine-readable
+credits, data page and terms. Only the delivered line's XY arrays and frame are
+extracted, retaining all 371 vertices. The original source frame is EPSG:26918,
+with metre offsets from E 579000 / N 4495000. No source application code, films,
+pictures, buildings, elevation or marketing artwork is adapted.
 
-- Course-line data: https://www.marathontrip.com/map3d/new-york-city-marathon/course.json
-- Explicit data offer: https://www.marathontrip.com/map3d/new-york-city-marathon/credits.json
-- Licence assessment: https://www.marathontrip.com/data/ and /terms/ explicitly
-  distinguish ODbL course geometry from copyrighted films/text/images.
-- Only371 delivered line positions/frame are adapted, from14237upstream positions
-  simplified by the publisher at1m. All371are retained, no fabricated densification.
-- EPSG:26918, offsets from E579000/N4495000, uniform north-up scale. Full coordinate
-  database and sourceSHA256: new-york-2026.json; reproducible offline projection:
-  `python3 scripts/generate-new-york-geometry.py --check`.
-- Source reports42.706km; retained rounded1m-simplified line measures42.673km.
-  Neither is confused with the42.195km equivalent-progress axis or certified distance.
-- Coordinate database/derived array remain ODbL-1.0, separately from MIT code.
-  Source notice/full licence included in repository and APK, readable in Settings.
-  No source JavaScript, art, buildings, elevation, films, identity or sensor data copied.
-- Stable `new-york-v2` city preference affects future assignment only; old IDs remain.
-- Mavr Paris was investigated but not ingested: OSM credit alone does not grant
-  reuse of the entire mixed-source line; its terms reserve content/data rights.
+The publisher reports 42.706 km for its unsimplified line; the delivered rounded,
+1 m-simplified line measures about 42.673 km. Both remain separate from equivalent
+progress and certified race distance. See [source attribution](NEW_YORK_SOURCE_NOTICE.txt)
+and [the full ODbL text](ODbL-1.0.txt). The retained database and its transformation
+are offered in this repository under ODbL, with contributor attribution in the app.
 
-## Earlier checkpoints (historical)
+### Paris — explicitly different event
 
-# Current geographic source inventory
+The primary label says **Paris · 2024 Olympic course**. It is not the annual
+Champs-Élysées Paris Marathon. No redistribution grant was established for an
+annual-course candidate, so a geographically meaningful licensed fallback is used.
 
-Three accepted geographic revisions are now available for new assignments:
-Berlin2014 (MIT participant trace), Tokyo2026 (CC0 participant trace), and
-London historical line published2023 (MIT GeoJSON, edition unspecified).
-Paris and New York remain unfinished. Old geometry/assignments are retained.
+Thomas Krakow / Running-tomy's Wikimedia Commons data revision `931916019`
+explicitly declares ODbL-1.0. All 328 positions of its one line are retained;
+approximate length is 42.10 km. No official Olympic artwork, marks, photographs,
+branding or affiliation is implied. See [source notice](PARIS_SOURCE_NOTICE.txt).
 
-## London historical source
+## City context and original artwork
 
-- Source: Georgios Karamanis, `gkaramanis/tidytuesday`, week17of2023.
-- Frozen commit `f56d74b9e21891c67a9f616b2ccfc7bbcba74a74`, file
-  `2023/2023-week_17/data/london-marathon.geojson`, blob
-  `f187e1367cd1bfd8c1444d84cc2ccccf41f77e4b`.
-- Repository explicitly grants MIT reuse of software and associated documentation;
-  no separate restriction is declared for its GeoJSON. Exact original notice retained
-  in LONDON_SOURCE_LICENCE.txt and bundled in the APK. No source R implementation,
-  output image, organiser artwork, photograph, logo or map tiles copied.
-- Retain all164positions of the named London Marathon Course line. Alternative-start
-  features, placemark and source zero-altitude values excluded. No invented positions,
-  smoothing or fake GPS timestamps. Existing source is coarse (largest segment1.41km),
-  approximate42,781.8m, edition/survey accuracy unspecified. Do not label it official
-  or a current event edition. North-up projection preserves its geographic shape.
-- Research alternative OSM relation2086183/version642 is not ingested: naive ordered
-  concatenation would create23gaps/about5.3km of artificial connectors. Overpass
-  endpoints returned406 or timed out; Nominatim text searches found unrelated POIs.
-- Machine-readable provenance, licence assessment and retained positions:
-  `london-historical.json`. Reproduce with `generate-london-geometry.py --check`.
-- Landmarks from older schematic drawing units are intentionally not overlaid at
-  incorrect geographic positions. Richer original cartography remains a release gate.
+[city-context.json](city-context.json) retains twelve Wikidata P625 landmark positions
+under CC0, three New York projected anchors under the explicit ODbL offer, and original
+Natural Earth public-domain Thames/Seine centreline vertices. Claim IDs, URLs, frozen
+Natural Earth commit/hash and checked date are included. No river endpoints are
+bridged and no streets are invented. River width is symbolic, not surveyed banks.
 
-## Earlier research notes (historical)
+The city vignettes are original RDD Canvas work. Position data do not include copied
+building images. Geographic anchors use the same frozen projection as their route;
+legacy drawing-unit anchors are never silently reused in the new coordinate frame.
 
-# Geographic route data and research
+## Reproduction and compatibility
 
-Checked23 October2026. Do not claim these candidates are live app routes or current
-certified courses. Existing stable assignments and v2 geometries remain untouched. New Berlin
-assignments now use `berlin-2014-geo-v1`; the other four replacements remain pending.
+Run all five `scripts/generate-*-geometry.py --check` commands and
+`scripts/generate-dream-context.py --check` from the repository root. They use retained
+source data, need no network and regenerate the exact Java drawing coordinates.
+Projections use a uniform north-up scale, without invented/densified positions.
 
-## Berlin2014 candidate
+The old unversioned and `*-v2` drawing IDs remain readable. Stable city preferences
+select a new revision only for a future assignment; existing assignments never reroll.
+All five new/legacy pairs have complete-backup instrumentation coverage. Geometry
+and context are bundled resources, so no schema or user-backup bump was needed.
 
-- Source: https://github.com/alexdjulin/running-events-map
-- File: tutorial/berlin_marathon_2014.gpx, Git blob
-  `a335969fe4d2b55fc6d25a5b96ed20add29d4ff1`.
-- Repository tree inspected: `eec8c14f25a7795cee9f36542c6cad7f6e95e4eb`.
-- Track name:41. Berlin Marathon. The repository describes event traces as recorded
-  by the author's watch. Licence: MIT, copyright2023 Alexandre Donciu-Julin;
-  the original licence is preserved in BERLIN_SOURCE_LICENCE.txt. No separate GPX
-  restriction was found. This is participant data, not organiser map artwork.
-- Only geographic coordinates are retained in the candidate. No timestamps, HR,
-  cadence, athlete identity or other health observations are bundled.
-- Original4623 points measure43,760.4m by spherical segment sum; the15m-tolerance
-  Douglas–Peucker simplification retains191 original vertices and43,008.3m.
-  GPS error and simplification mean this is an **approximate historical trace**,
-  not42,195m-certified geometry. Its shape/start/finish are geographically meaningful.
-- Production projection: `Berlin2014Geometry.java`, reproducible offline with
-  `python3 scripts/generate-berlin-geometry.py --check`. Equirectangular projection
-  around the retained mean latitude, north up, uniformly scaled into drawing bounds.
-  No coordinates are invented. New geometry ID `berlin-2014-geo-v1`; city preference
-  remains `berlin-v2`. Existing IDs/assignments/backup readers are preserved.
-  The42,195m equivalent axis remains distinct from observed geographic trace length.
-- Full MIT source notice is bundled in the APK and visible in Settings. No landmarks
-  with invented locations are overlaid on this geographic version. Original source
-  vertices are retained when clipping the highlighted section; no shortcut chords.
+## Research exclusions
 
-London/Paris/Tokyo/New York still require source/licence assessment. Public GPX
-availability alone is not permission. Do not replace missing data with invented
-coordinates or falsely describe this historical trace as a current official course.
+Public downloadability is not a redistribution grant. Unlicensed GPX candidates from
+funmaps, datanews/ny-marathon and xavierchia/runwithfriends were not ingested. GPL
+source was not copied. Mavr's OSM footer does not establish rights to its entire
+mixed-source Paris line; its terms reserve associated data, so it was excluded.
 
-## Additional source decisions (checked23 October2026)
-
-- https://github.com/ThomasParistech/pretty-gpx has relevant GPX examples, but its
-  LICENSE at treefb67ddb52cc7b6c717fb9c2a85dfdc09a27120a4 is CC BY-NC-SA4.0.
-  Noncommercial restrictions do not fit the project's unrestricted MIT distribution;
-  no example GPX, poster SVG, source implementation or coordinates were incorporated.
-- https://github.com/joinusinchance/funmaps includes London/Tokyo/NewYork GPX files,
-  but tree703e7f2f54261c5c4dcc2876567633c53eb27d5b has no redistribution licence.
-  No geometry was ingested. Public access is not permission.
-- https://github.com/datanews/ny-marathon describes2014NYC geometry, but
-  treefc41f1b520a335073ab373f6d7c8bbb1d5c75c5f has no licence. Not ingested.
-- OpenStreetMap's current copyright page explicitly supports attributed ODbL data
-  adaptation: https://www.openstreetmap.org/copyright . Its community wiki identifies
-  London Marathon relation2086183. The API response could not be retrieved with the
-  available web connector, so no nodes/ways were imported or fabricated. Any future
-  derived database must retain ODbL attribution/share-alike separately from MIT code.
-  No runtime map tiles or network permission are proposed.
-
-These exclusions narrow research; they do not make the four remaining schematics
-acceptable as final0.8.1geography. Continue with a verifiable reusable dataset.
-
-## Tokyo2026 geographic revision — current checkpoint
-
-- Source: https://github.com/kekomat/marathon-gpx-dataset ; explicit CC0-1.0 dataset.
-  README describes participant GPS, not official race records, with private locations
-  removed. No additional file-specific restriction was found.
-- Pinned commit5bff087d82353ec64df84873bbc1a246f8a25aae; source blob
-  c5baee9ad663325e99042b03614ff6af514ebd57, gpx/Tokyo_Marathon_2026.gpx.
-  Checked23October2026. Full CC0 text is retained and bundled in the APK.
-- Original10872 position points; approximate projected segment sum42,746.8m,
-  largest individual source step9.5m. Iterative Douglas–Peucker at25m retains91
-  original vertices, recorded with source indices in tokyo-2026.json. No invented
-  coordinates, timestamps, athlete identity, elevation or biometric observations
-  are bundled. North-up equirectangular projection uses a single uniform scale.
-- New immutable geometry IDtokyo-2026-geo-v1; stable city preference tokyo-v2.
-  New assignments use this revision; old assignments retain their exact geometry.
-  The42,195m marathon-equivalent axis is separate from approximate GPS length.
-- Reproduce with python3 scripts/generate-tokyo-geometry.py --check. Domain tests
-  cover start/middle/finish/overshoot, retained corners and old/new identity. Android
-  complete-backup coverage now includes Tokyo old/new assignments and city setting.
-- No invented landmark positions are placed on this geographic revision. Richer
-  original city presentation and source-verified landmarks still remain to implement.
-
-London, Paris and New York remain unfinished geographic replacements. Their legacy
-schematics are not acceptable final0.8.1geography. The GPL-3.0 collection
-Likenttt/awesome-marathon-routes-gpx-collection was excluded; London candidates
-kncube-stack/MarathonMap and air-aware-labs/wef-marathon-air-quality, and NYC candidates
-alainlucas/Marathon-NewYork, dbarlett/nycmspectator, maxailloud/shmmnye and
-MikeTeixeira/NYCOnTheRun had no declared reusable licence on inspection. No coordinates
-were ingested from these sources. This assessment is not a substitute for completing
-all five cities or the mandatory design fidelity gate.
+London OSM relation 2086183/version 642 was examined, but naive ordered concatenation
+would create 23 discontinuities/about 5.3 km of artificial connectors. It was not
+bundled. No official map image, logo, proprietary tile or uncertain geometry is
+substituted merely to make the visual look complete.

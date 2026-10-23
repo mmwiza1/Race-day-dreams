@@ -8,6 +8,56 @@ Main last verified515fe538de1302dd83ee05fc9ca131c7afb7d520.
 Version0.8.1-test1/code10; schema10; JSON7/raw2/complete1. No Internet permission,
 new runtime dependency, account, tracking, backend or direct Samsung integration.
 
+## Latest capture hardening — authoritative before the notes below
+
+Current source parent **6138837** follows e356729. The latest two commits change
+instrumentation only; production runtime remains5c75ed4. e356729 closes activities
+BEFORE changing Android font/night configuration and launches a new capture activity,
+avoiding API28's automatic-config-recreation race. Existing independent recreation
+tests are retained. 6138837 uses SemanticsNode.positionInRoot (unclipped) and requires
+visible aligned headings: clipped boundsInRoot could return zero for an OFFSCREEN
+heading and previously let incorrect London/Berlin/Tokyo/NY frames pass. This was
+caught by actual visual inspection, not hidden. Do not adopt those incorrect frames.
+
+Workflow40035322561 on5c75ed4: API35 and36 passed203tests; API28passed202/203,
+with ONLY the old capture recreate() versus automatic font-change destruction race.
+Build/lint/domain/strict guidance passed allAPIs. The latest instrumentation fixes
+still require a fresh full matrix/70capture visual review. Inspect the latest run
+for the exact new head after this documentation checkpoint; do not infer a pass.
+
+Current pending doc cleanup consolidates DREAM_ROUTES, source provenance README
+and release notes. This commit preserves it. No further product code change after
+5c75ed4; all runtime/data changes are protected. Physical S24 checks remain unperformed.
+
+## Earlier source follow-up (historical)
+
+Current source **5c75ed49f219560d2714527b922e9fd2d20ebce5**, workflow
+**40035322561** is running. Preserve subsequent commits if main/branch advanced.
+8613b99 stacks large-font city legends and replaces gesture-based capture alignment
+with semantic ScrollBy. Actual API35 captures from46dfb87 showed London/NewYork
+frames missing their intended card and Buckingham Palace splitting at200%; those
+files are QA research only and MUST NOT be adopted as final canonical images.
+46dfb87 passed203tests/API35and28; API36's new city test intermittently found no
+Recorded run while the source refreshed. 5c75ed4 keeps history readiness pending
+while state.busy or loadedSource differs from the current parent source. Certify
+this fix with the running full matrix; diagnose any remaining failure instead of
+rerunning blindly. No tests removed. The next captured set must be visually checked.
+
+A verified previous API35 APK (source46dfb87, NOT the latest UI) is currently at
+build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk,44215004bytes,
+SHA256844d7445127e321ad3d5c4a310bc745d724f62beab3bc0e47ea95fb8712b00a6,
+artifact12536447247/run40034032450. ZIPCRC and binary AndroidManifest were inspected:
+org.racedaydreams /0.8.1-test1 /code10. Replace this local APK with the new green
+source artifact before calling it the latest build. Previous API35screens12536557071
+are in /workspace/scratch/current-081-captures, not canonical. Baseline APK binary
+manifest confirms0.8.0-test1/code9/34566254bytes. Current measured increase9648750bytes
+(27.91%) is for46dfb87; remeasure the final source.
+
+Pending documentation cleanups (preserve): docs/DREAM_ROUTES.md and
+RELEASE_0_8_1.md consolidate stale checkpoint narratives into current source/licence
+and user-facing release notes. This handoff update may also be uncommitted; inspect
+actual status. These doc changes do not change the screenshot source fingerprint.
+
 ## Protected work
 
 - Every canonical exercise now has appropriate original illustrated guidance:

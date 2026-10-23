@@ -1,127 +1,70 @@
-# Current geography — all five city choices have sourced revisions
+# Dream Routes — 0.8.1
 
-## Paris2024 geographic fallback (ODbL-1.0)
+Dream Routes show how a completed run compares with a section of a marathon-distance
+course. They never claim that the runner physically visited the city. All geometry,
+city illustrations and progress rendering work offline, without tiles or Internet
+permission. They are not official race maps or suitable for navigation.
 
-Paris now uses the2024 Olympic marathon course, explicitly named in the primary
-city label. It is NOT the annual Champs-Élysées Paris Marathon. This is the safe
-geographic fallback: no redistribution grant was established for an annual-course
-candidate. Do not conceal this distinction or label the geometry official.
+## Current geographic revisions
 
-All328positions from Thomas Krakow / Running-tomy's Wikimedia Commons data revision
-931916019 are retained. The data file explicitly declares ODbL-1.0. The coordinate
-database and generated array retain that licence, separate from original MIT app
-code. Source hash/revision/transformation and all retained positions are in
-`docs/dream-route-data/paris-2024-olympic.json`; attribution/full licence are bundled
-and readable in Settings. No Olympic logos, marks, map artwork or software copied.
-The approximate42.10km source line is separate from42.195km equivalent progress.
-Old Paris assignments remain unchanged. This geographic milestone does not certify
-richer five-city visual fidelity, which remains open.
+| City choice | Geometry ID | Source and limitation |
+| --- | --- | --- |
+| London | `london-historical-geo-v1` | 164 original positions from Georgios Karamanis' MIT-licensed historical GeoJSON, published in 2023. Race edition and survey accuracy are unspecified. |
+| Berlin | `berlin-2014-geo-v1` | 191 retained positions from an MIT-licensed 2014 participant trace by Alexandre Donciu-Julin. Historical approximate GPS evidence. |
+| Tokyo | `tokyo-2026-geo-v1` | 91 retained original positions from kekomat's explicitly CC0 2026 participant trace, simplified at 25 m. |
+| New York | `new-york-2026-geo-v1` | All 371 delivered projected positions from MARATHON TRIP's explicitly ODbL-offered road-centreline data. Approximate 2026 context, not certified geometry. |
+| Paris | `paris-2024-olympic-geo-v1` | All 328 positions from Thomas Krakow / Running-tomy's ODbL Commons data. **The primary label says 2024 Olympic course. This is not the annual Paris Marathon.** |
 
-## Earlier geographic checkpoints (historical)
+Paris uses a clearly labelled geographic fallback because redistribution rights for
+an annual-course candidate could not be established. It is not silently relabelled.
+No organiser map artwork, logos, sponsor branding, photographs or third-party
+application source were copied. Source hashes, revision IDs, notices and retained
+coordinates are in [dream-route-data](dream-route-data/README.md).
 
-# Geographic status — London, Berlin, Tokyo and New York
+## Progress and presentation
 
-New New York assignments select an explicitly ODbL-licensed geographic road
-centreline with371retained source vertices. Source attribution/licence/projection
-are recorded in dream-route-data/new-york-2026.json. The data remain ODbL while
-original application code remains MIT. No organiser artwork or third-party software
-is copied. Settings expose source notice/full licence. Prior stored assignments
-keep their exact geometry; new/legacy complete-backup tests cover this revision.
-Paris geography and richer five-city presentation remain unfinished.
+The full course remains visible, with a contrasting equivalent section, a ring for
+its start and a checkered finish marker. Five-kilometre ticks, numbered landmark
+anchors, labels, percentage and equivalent distance provide non-colour information.
+A small About this route control exposes the source and limitations.
 
-## Earlier checkpoints (historical)
+The 42,195 m progress axis is an **equivalent-distance axis**, separate from measured
+source trace length. Participant traces and simplified road centrelines can measure
+longer or shorter. The app neither edits actual GPS nor calls those lengths certified.
+Sections retain intervening original vertices; they do not cut chords across corners.
+Exact start/finish boundaries and over-marathon handling are tested.
 
-# Current geographic checkpoint — three cities
+Fifteen landmark anchors use sourced positions in each course's exact projection:
+twelve Wikidata P625 statements (CC0) and three New York ODbL anchors. The miniature
+Canvas illustrations are original RDD work. Thames and Seine context retains original
+Natural Earth public-domain centreline vertices. Their symbolic width does not claim
+surveyed river banks. No streets or scenery are invented to fill blank space.
 
-New London assignments use `london-historical-geo-v1`: all164positions of the
-historical course line published in2023 in Georgios Karamanis' MIT-licensed
-TidyTuesday repository. The source does not specify the race edition or survey
-accuracy; the app explicitly says so. This is an already simplified geographic
-line, **not** a participant recording, current certified course or official map.
-Only the named full-course feature is retained, without its zero-altitude values
-or alternative starts. Approximate observed length42.78km is distinct from the
-42.195km equivalent-progress axis. Source commit/blob/licence and all positions are
-in `dream-route-data/london-historical.json`; the original MIT notice is bundled and
-readable in Settings. Reproduce with `generate-london-geometry.py --check`.
+The renderer caches bounds and highlighted sections. The immutable geometry registry
+is built once and reused for assignment, history and redraw lookups. Landmark labels
+stack at large font sizes. Canvas accessibility describes the course, equivalent
+section and numbered landmarks; written labels remain available independently.
 
-Berlin2014 and Tokyo2026 geographic traces remain unchanged. Paris and New York
-still need safely redistributable geographic replacements. Rich original five-city
-presentation and actual screenshot/reference fidelity remain unfinished.
+## Stable assignments and compatibility
 
-All legacy geometry IDs and assignments remain valid. City preferences stay stable;
-only future London assignments select the new revision. New and old London complete
-backup round trips have instrumentation coverage. Equivalent start/finish boundaries
-now return the exact retained endpoints, avoiding floating-point finish drift.
+City preferences remain `london-v2`, `berlin-v2`, `paris-v2`, `tokyo-v2` and
+`new-york-v2`. Only new assignments choose the current geometry revision. Changing
+preferences never rerolls an existing activity. Every old unversioned/v2 geometry
+remains readable, with its original stored offset and distance.
 
-London OSM relation2086183/version642 was investigated but rejected for this import:
-its ordered way list has23discontinuities. No false straight-line bridges from that
-candidate are bundled. No organiser artwork, map tiles or runtime network dependency
-has been introduced.
+Complete-backup instrumentation covers old and new assignments for all five cities.
+No schema or backup-format change was necessary for these bundled data revisions.
+ODbL coordinate databases remain separately licensed from MIT application code;
+full notices and the ODbL text are bundled and readable in Settings.
 
-## Earlier geographic checkpoints (historical)
+## Reproduce and verify
 
-# 0.8.1 geographic upgrade checkpoint
+Run `scripts/generate-berlin-geometry.py`, `generate-tokyo-geometry.py`,
+`generate-london-geometry.py`, `generate-new-york-geometry.py`,
+`generate-paris-geometry.py` and `generate-dream-context.py` with `--check` from the
+repository root. These checks need no network. Domain tests also cover bounds,
+interpolation, full-polyline clipping, old IDs and immutable registry reuse.
 
-New Berlin assignments use `berlin-2014-geo-v1`:191 original retained vertices from
-an MIT-licensed participant GPS trace. Source/edition/licence/transformation and the
-reproducible offline projection are in [dream-route-data](dream-route-data/README.md).
-This is approximate2014 participant evidence, not current/certified course geometry.
-It carries no timestamps, HR or athlete identity. The marathon-equivalent axis is
-separate from its observed43.01km geographic trace length.
-
-The stable `berlin-v2` city preference selects the new revision only for future
-assignments. All stored v1/v2 assignments continue using their exact old geometries.
-Complete-backup tests cover old and new assignments plus the unchanged city setting.
-The full source MIT notice ships in the APK and can be opened from Settings.
-
-The highlighted polyline retains every intervening source vertex; it no longer
-samples straight chords across corners. Rendering caches that section independently
-of recomposition. Duplicate zero-length vertices do not produce NaN positions.
-The section finish uses a checkered marker rather than the old schematic runner.
-
-London, Paris, Tokyo and New York remain legacy schematics pending licence-safe,
-geographically meaningful replacements. **The full five-city design gate has not
-passed.** The historical documentation below describes those retained v2 assets.
-
-# Dream Routes v2 provenance
-
-Checked 23 October 2026. These are original, independently drawn **stylised course-inspired
-visuals**, not surveyed routes, official race maps or navigation. No organiser GPX,
-GeoJSON, map artwork, logos, typography, tiles or images are bundled. Public availability
-of a download is not a reuse licence; no clear redistribution grant was established.
-
-| Geometry ID | City / factual edition reference | Factual source reviewed | Original drawing cues |
-| --- | --- | --- | --- |
-| london-v2 | London / 2026 course context | https://www.londonmarathonevents.co.uk/london-marathon/course | southeast start, westward section, bridge, east loop and central finish; Thames/bridge/palace icons |
-| berlin-v2 | Berlin / current 2026 course page | https://www.bmw-berlin-marathon.com/en/your-race/course/ | central start/finish and broad city loop; gate, park, skyline icons |
-| paris-v2 | Paris / 2026 | https://www.schneiderelectricparismarathon.com/en/information/route-and-profiles | eastward leg, riverward return and western loop; tower/river/arch icons |
-| tokyo-v2 | Tokyo / 2027 published course context | https://www.marathon.tokyo/en/about/course/ | west-to-central approach, eastern excursions and southern return; skyline/gate/tower icons |
-| new-york-v2 | New York / 2026 | https://prod.nyrr.org/tcsnycmarathon/the-course | southern bridge approach, northward borough progression and park finish cue; bridge/skyline/park icons |
-
-Edition references identify the factual pages, **not accuracy certification of the
-geometry**. NYRR documents a 2026 Bronx adjustment; this drawing does not promise those
-street-level details. Berlin offers GPX but its legal notice protects website content:
-https://www.bmw-berlin-marathon.com/impressum . No GPX was ingested or traced.
-The drawings are original MIT project assets in `DreamRoutes.java`, in normalized
-0–10 drawing units. Segment lengths normalize to a **42,195 m equivalent**, not real
-geographic distance. Landmarks are illustrative cues, not precise waypoint coordinates.
-All have 28–34 independent anchors, 5 km progress markers and original Canvas symbols.
-
-The old `london`, `berlin`, `paris`, `tokyo`, `new-york` geometries are retained unchanged
-for old assignments. New assignments use `*-v2`; existing assignments never reroll.
-Preferences affect future assignments only. Live selection is persisted with recording
-origin and transferred to the finished activity. The live secondary panel consumes
-accepted recorder distance; it does not replace navigation or the actual route.
-
-A future exact open dataset needs a separately documented licence/edition assessment,
-a new geometry ID and preserved old geometries. Do not silently replace these assets.
-
-## Tokyo geographic upgrade
-
-New Tokyo assignments now use tokyo-2026-geo-v1, a separately versioned approximate
-participant trace from an explicit CC0-1.0 dataset. It retains91 original position
-vertices without timestamps or health data. Source hashes, original point indices,
-simplification, limitations and reproduction are in dream-route-data/README.md and
-tokyo-2026.json. Old Tokyo assignments and city preferences remain stable. Berlin
-and Tokyo now have geographic revisions; London/Paris/New York and richer original
-city presentation remain unfinished. Do not call this the completed0.8.1visual gate.
+Actual-build screenshot/reference acceptance is documented separately in
+[VISUAL_REVIEW_0_8_1.md](VISUAL_REVIEW_0_8_1.md). A passing data test does not prove
+visual fidelity, physical GNSS accuracy or a human accessibility check.
