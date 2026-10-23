@@ -26,6 +26,18 @@ class Release08StoreTest:AndroidTestCase(){
   assertEquals("berlin-v2",SupportStore(context).dream("old-berlin",5000.0)!!.routeId())
   assertEquals(setOf("berlin-v2"),Release08Store(context).dreamPreferences().second)
  }
+ fun testGeographicTokyoAndLegacyAssignmentsSurviveCompleteBackup() {
+  val store=Release08Store(context)
+  store.save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",true).put("cities",JSONArray().put("tokyo-v2")))
+  val support=SupportStore(context);val fresh=support.dream("fresh-tokyo",10000.0)!!
+  assertEquals("tokyo-2026-geo-v1",fresh.routeId())
+  support.save("dream","old-tokyo",JSONObject().put("version",1).put("route","tokyo-v2").put("start",1000.0).put("distance",5000.0).put("assignedAt",Instant.now().toString()))
+  val bytes=ByteArrayOutputStream();CompleteBackup(context).exportTo(bytes)
+  SqliteUserPreferencesRepository(context).clear();CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()))
+  assertEquals(fresh,SupportStore(context).dream("fresh-tokyo",10000.0))
+  assertEquals("tokyo-v2",SupportStore(context).dream("old-tokyo",5000.0)!!.routeId())
+  assertEquals(setOf("tokyo-v2"),Release08Store(context).dreamPreferences().second)
+ }
  fun testNoSelectedCityUsesStandardPresentation(){Release08Store(context).save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",true).put("cities",JSONArray()));assertNull(SupportStore(context).dream("new",5000.0))}
  fun testBackupRestoresWorkoutsAndPreferences(){val s=Release08Store(context);s.save(workout());s.save("checklist","race:kit",JSONObject().put("version",1).put("label","Kit").put("checked",true));val bytes=ByteArrayOutputStream();CompleteBackup(context).exportTo(bytes);SqliteUserPreferencesRepository(context).clear();CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()));assertEquals(workout(),Release08Store(context).workouts().single());assertTrue(Release08Store(context).get("checklist","race:kit")!!.getBoolean("checked"))}
  fun testInvalidNewPayloadRollsBack(){Release08Store(context).save(workout());val store=FeatureStore(context);val before=store.exportUserData();val bad=JSONObject(before.toString());bad.getJSONObject("release08").getJSONArray("rows").getJSONObject(0).getJSONObject("payload").put("groups",JSONArray());try{store.restoreUserData(bad,false);fail("Invalid custom workout")}catch(_:Exception){};assertEquals(before.toString(),store.exportUserData().toString())}

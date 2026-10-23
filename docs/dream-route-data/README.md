@@ -54,3 +54,34 @@ coordinates or falsely describe this historical trace as a current official cour
 
 These exclusions narrow research; they do not make the four remaining schematics
 acceptable as final0.8.1geography. Continue with a verifiable reusable dataset.
+
+## Tokyo2026 geographic revision — current checkpoint
+
+- Source: https://github.com/kekomat/marathon-gpx-dataset ; explicit CC0-1.0 dataset.
+  README describes participant GPS, not official race records, with private locations
+  removed. No additional file-specific restriction was found.
+- Pinned commit5bff087d82353ec64df84873bbc1a246f8a25aae; source blob
+  c5baee9ad663325e99042b03614ff6af514ebd57, gpx/Tokyo_Marathon_2026.gpx.
+  Checked23October2026. Full CC0 text is retained and bundled in the APK.
+- Original10872 position points; approximate projected segment sum42,746.8m,
+  largest individual source step9.5m. Iterative Douglas–Peucker at25m retains91
+  original vertices, recorded with source indices in tokyo-2026.json. No invented
+  coordinates, timestamps, athlete identity, elevation or biometric observations
+  are bundled. North-up equirectangular projection uses a single uniform scale.
+- New immutable geometry IDtokyo-2026-geo-v1; stable city preference tokyo-v2.
+  New assignments use this revision; old assignments retain their exact geometry.
+  The42,195m marathon-equivalent axis is separate from approximate GPS length.
+- Reproduce with python3 scripts/generate-tokyo-geometry.py --check. Domain tests
+  cover start/middle/finish/overshoot, retained corners and old/new identity. Android
+  complete-backup coverage now includes Tokyo old/new assignments and city setting.
+- No invented landmark positions are placed on this geographic revision. Richer
+  original city presentation and source-verified landmarks still remain to implement.
+
+London, Paris and New York remain unfinished geographic replacements. Their legacy
+schematics are not acceptable final0.8.1geography. The GPL-3.0 collection
+Likenttt/awesome-marathon-routes-gpx-collection was excluded; London candidates
+kncube-stack/MarathonMap and air-aware-labs/wef-marathon-air-quality, and NYC candidates
+alainlucas/Marathon-NewYork, dbarlett/nycmspectator, maxailloud/shmmnye and
+MikeTeixeira/NYCOnTheRun had no declared reusable licence on inspection. No coordinates
+were ingested from these sources. This assessment is not a substitute for completing
+all five cities or the mandatory design fidelity gate.

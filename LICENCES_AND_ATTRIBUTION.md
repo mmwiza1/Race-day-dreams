@@ -53,3 +53,13 @@ not production assets or claimed actual screenshots. No new runtime library is b
 projected for new Berlin assignments, with a new immutable geometry ID. The MIT
 source, transformation and original Alexandre Donciu-Julin notice are recorded in
 docs/dream-route-data and bundled in assets/licences/berlin-2014-MIT.txt.
+
+## Tokyo2026 position dataset (0.8.1 checkpoint)
+
+Approximate participant coordinates adapted from kekomat/marathon-gpx-dataset,
+explicitly dedicated under CC0-1.0. Source https://github.com/kekomat/marathon-gpx-dataset
+at commit5bff087d82353ec64df84873bbc1a246f8a25aae. Only simplified original positions
+are bundled; no biometric data, timestamps or identity. Not certified/official course
+geometry. See docs/dream-route-data/tokyo-2026.json and TOKYO_SOURCE_LICENCE.txt.
+Full CC0 text is bundled in assets/licences/tokyo-2026-CC0.txt and readable in Settings.
+No source implementation, Garmin SDK, remote tiles or runtime download was added.
