@@ -147,9 +147,11 @@ private fun CoachApp(model: CoachViewModel) {
             if (route in (tabs.map { it.first } + "strength?date={date}")) {
                 NavigationBar {
                     tabs.forEach { (destination, label) ->
-                        NavigationBarItem(selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
-                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=label) },
-                            label = { if(androidx.compose.ui.platform.LocalDensity.current.fontScale<1.5f)Text(label,maxLines=1,softWrap=false) }, onClick = {
+                        val largeFont=androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.5f
+                        val navLabel: (@Composable () -> Unit)? = if(largeFont)null else ({Text(label,maxLines=1,softWrap=false)})
+                        NavigationBarItem(modifier=if(largeFont)Modifier.semantics{contentDescription=label}else Modifier,selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
+                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=null) },
+                            label = navLabel, onClick = {
                                 nav.navigate(destination) { popUpTo("home"); launchSingleTop = true }
                             })
                     }
