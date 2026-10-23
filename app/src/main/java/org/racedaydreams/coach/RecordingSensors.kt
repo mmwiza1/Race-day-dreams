@@ -12,7 +12,7 @@ import org.racedaydreams.recording.BleHeartRateSource
 
 @Composable fun RecordingSensors(){
     val context=LocalContext.current;val sensor=remember{BleHeartRateSource(context)};val devices by BleHeartRateSource.devices.collectAsState();var text by remember{mutableStateOf<String?>(null)}
-    val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){r->try{if(r.values.all{it})sensor.scan()else text="Sensor access declined. GPS recording still works."}catch(_:Exception){text="Bluetooth unavailable."}}
+    val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){r->try{if((if(Build.VERSION.SDK_INT>=31)listOf(Manifest.permission.BLUETOOTH_SCAN,Manifest.permission.BLUETOOTH_CONNECT)else listOf(Manifest.permission.ACCESS_FINE_LOCATION)).all{context.checkSelfPermission(it)==android.content.pm.PackageManager.PERMISSION_GRANTED})sensor.scan()else text="Sensor access declined. GPS recording still works."}catch(_:Exception){text="Bluetooth unavailable."}}
     DisposableEffect(Unit){onDispose{try{sensor.stop()}catch(_:Exception){}}}
     var autoPause by remember{mutableStateOf(context.getSharedPreferences("run-sensors",0).getBoolean("auto-pause",false))}
     CoachCard{Text("Optional sensors",style=MaterialTheme.typography.titleMedium);Text("Choose a standard BLE heart-rate monitor for your next run. Motion permission enables actual step-sensor cadence where supported.")

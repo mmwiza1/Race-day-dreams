@@ -39,7 +39,7 @@ class RunRecordingService:Service() {
                 RESUME->{manualPause=false;autoPause.reset();engine?.resume(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
                 FINISH->{check((engine?.points()?.size?:0)>=2){"Waiting for usable GPS"};hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();engine?.event("FINISH",SystemClock.elapsedRealtime(),Instant.now());flush();val s=withContext(io){store.unfinished()}?:error("No staged recording");val id=withContext(io){store.finish(s,engine?.status(SystemClock.elapsedRealtime())?.movingMillis())};message.value="Run saved: $id";engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}
             }
-        }catch(_:Exception){message.value="Recording operation could not complete. Saved staging is retained for recovery.";if(engine==null||intent.action==FINISH){engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}}}}
+        }catch(_:Exception){message.value="Recording operation could not complete. Saved staging is retained for recovery.";if(engine==null||intent.action==FINISH||intent.action==START){engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}}}}
         return START_STICKY
     }
     private fun startSensors(){
