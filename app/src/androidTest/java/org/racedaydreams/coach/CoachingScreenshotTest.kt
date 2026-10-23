@@ -33,7 +33,7 @@ class CoachingScreenshotTest {
         EveningReminders(context,FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
         val today=LocalDate.now()
-        val profile=UserProfile(RaceGoal(RaceDistance.HALF_MARATHON,"Demo Riverside Half",today.plusWeeks(12),GoalMode.TARGET_TIME,Duration.ofSeconds(7199)),
+        val profile=UserProfile(RaceGoal(RaceDistance.HALF_MARATHON,"Riverside Half",today.plusWeeks(12),GoalMode.TARGET_TIME,Duration.ofSeconds(7199)),
             TrainingPreferences(TrainingStrategy.BALANCED,EnumSet.allOf(DayOfWeek::class.java),4,today.dayOfWeek,EnumSet.of(DayOfWeek.TUESDAY,DayOfWeek.FRIDAY),ScheduleType.FLEXIBLE,UnitSystem.METRIC),false)
         SqliteUserPreferencesRepository(context).save(profile)
         val store=FeatureStore(context)

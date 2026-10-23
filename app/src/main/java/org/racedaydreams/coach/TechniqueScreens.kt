@@ -5,6 +5,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -28,10 +31,10 @@ import org.racedaydreams.domain.strength.TechniqueGuide
     WhyDetails("General technique guidance. Start conservatively and seek qualified in-person coaching if you are unsure about a movement. Drawings are schematic and do not prescribe an exact joint angle.","About this guidance")
 }
 @Composable private fun TechniqueDrawing(id:String,pattern:String,frame:Int,description:String){
-    val ink=MaterialTheme.colorScheme.onSurface;val load=MaterialTheme.colorScheme.primary;val muscle=MaterialTheme.colorScheme.tertiary;val skin=MaterialTheme.colorScheme.secondary
+    val ink=MaterialTheme.colorScheme.onSurface;val load=MaterialTheme.colorScheme.primary;val muscle=MaterialTheme.colorScheme.tertiary;val skin=Color(0xFFCF9B7C);val hair=Color(0xFF4A3028)
     Canvas(Modifier.fillMaxWidth().height(190.dp).semantics{contentDescription="Original illustrated $pattern, ${if(frame==0)"setup"else if(frame==1)"working position"else"controlled return"}: $description"}){
         fun point(x:Float,y:Float)=Offset(size.width/2+(x-.5f)*size.height,size.height*y)
-        fun limb(a:Pair<Float,Float>,b:Pair<Float,Float>)=drawLine(ink,point(a.first,a.second),point(b.first,b.second),9f,androidx.compose.ui.graphics.StrokeCap.Round)
+        fun limb(a:Pair<Float,Float>,b:Pair<Float,Float>,colour:Color=ink)=drawLine(colour,point(a.first,a.second),point(b.first,b.second),9f,androidx.compose.ui.graphics.StrokeCap.Round)
         val bent=frame==1
         val horizontal=pattern in listOf("plank","press","bridge","curl")
         var hip=if(horizontal) .48f to .58f else if(bent&&pattern in listOf("hinge","row","squat","split")) .42f to .62f else .48f to .48f
@@ -50,18 +53,25 @@ import org.racedaydreams.domain.strength.TechniqueGuide
         if(pattern=="calf")drawLine(ink,point(foot.first,foot.second),point(.56f,.92f),9f,androidx.compose.ui.graphics.StrokeCap.Round)
         if(pattern=="plank"){shoulder=.30f to .64f;hip=.52f to .73f;knee=if(bent).69f to .79f else .60f to .96f;foot=if(bent).85f to .85f else .80f to .96f;hand=.48f to .94f}
         if(pattern=="carry"){hand=.62f to .60f;if(bent){knee=.52f to .70f;foot=.60f to .92f;limb(hip,.40f to .68f);limb(.40f to .68f,.36f to .92f)}}
-        drawLine(load.copy(alpha=.7f),point(shoulder.first,shoulder.second),point(hip.first,hip.second),size.height*.085f,androidx.compose.ui.graphics.StrokeCap.Round)
+        val shoulderPoint=point(shoulder.first,shoulder.second);val hipPoint=point(hip.first,hip.second);val axis=hipPoint-shoulderPoint;val axisLength=axis.getDistance().coerceAtLeast(1f);val side=Offset(-axis.y,axis.x)/axisLength*size.height*.045f
+        val shirt=Path().apply{moveTo((shoulderPoint-side).x,(shoulderPoint-side).y);lineTo((shoulderPoint+side).x,(shoulderPoint+side).y);lineTo((hipPoint+side*.8f).x,(hipPoint+side*.8f).y);lineTo((hipPoint-side*.8f).x,(hipPoint-side*.8f).y);close()}
+        drawPath(shirt,load);drawPath(shirt,ink.copy(alpha=.5f),style=Stroke(1.5f))
+        if(!horizontal&&pattern!="split"){val secondKnee=(knee.first-.065f) to (knee.second+.015f);val secondFoot=(foot.first-.065f) to foot.second;limb(hip,secondKnee);limb(secondKnee,secondFoot);drawLine(load,point(secondFoot.first-.02f,secondFoot.second),point(secondFoot.first+.06f,secondFoot.second),7f,androidx.compose.ui.graphics.StrokeCap.Round)}
         val emphasis=when(pattern){"press","pull","row","overhead"->shoulder;"calf"->knee.first to ((knee.second+foot.second)/2);"plank","carry"->((shoulder.first+hip.first)/2) to ((shoulder.second+hip.second)/2);else->hip}
         drawCircle(muscle.copy(alpha=.35f),size.height*.06f,point(emphasis.first,emphasis.second))
-        limb(shoulder,hip);limb(hip,knee);limb(knee,foot)
+        limb(hip,knee);limb(knee,foot)
+        drawLine(load,point(foot.first-.02f,foot.second),point(foot.first+.07f,foot.second),7f,androidx.compose.ui.graphics.StrokeCap.Round)
         if(frame==1){
             val start=if(pattern=="hinge")point(.40f,.54f)else point(.77f,.32f);val end=if(pattern=="hinge")point(.27f,.54f)else point(.77f,.60f)
             drawLine(load,start,end,3f);val dir=end-start;val len=dir.getDistance().coerceAtLeast(1f);val unit=dir/len;val wing=androidx.compose.ui.geometry.Offset(-unit.y,unit.x);drawLine(load,end,end-unit*12f+wing*7f,3f);drawLine(load,end,end-unit*12f-wing*7f,3f)
             if(pattern=="hinge")drawLine(muscle.copy(alpha=.7f),point(shoulder.first,shoulder.second),point(hip.first,hip.second),2f)
         }
-        if(pattern=="plank"){limb(shoulder,.32f to .90f);limb(.32f to .90f,hand);if(bent)limb(foot,.90f to .96f)}else limb(shoulder,hand)
+        if(pattern=="plank"){limb(shoulder,.32f to .90f);limb(.32f to .90f,hand);if(bent)limb(foot,.90f to .96f)}else limb(shoulder,hand,skin)
         if(pattern=="split"){limb(hip,.30f to .76f);val rear=if(id=="split-squat").24f to .63f else .24f to .92f;limb(.30f to .76f,rear);if(id=="split-squat"){drawLine(ink,point(.17f,.66f),point(.30f,.66f),4f);drawLine(ink,point(.20f,.66f),point(.20f,.96f),4f)}}
-        drawCircle(skin,size.height*.065f,if(horizontal)point(shoulder.first-.07f,shoulder.second)else point(shoulder.first,shoulder.second-.10f))
+        val head=if(horizontal)point(shoulder.first-.07f,shoulder.second)else point(shoulder.first,shoulder.second-.10f);val headRadius=size.height*.065f
+        drawCircle(skin,headRadius,head)
+        drawArc(hair,190f,180f,true,head-Offset(headRadius,headRadius),androidx.compose.ui.geometry.Size(headRadius*2,headRadius*2))
+        drawCircle(hair,headRadius*.35f,head-Offset(headRadius*.9f,0f));drawCircle(ink,headRadius*.08f,head+Offset(headRadius*.45f,0f))
         drawLine(ink.copy(alpha=.3f),point(.15f,.96f),point(.85f,.96f),3f)
         if(pattern !in listOf("plank","calf")&&id!="leg-press"){
             val location=when(pattern){"squat"->shoulder;"bridge"->hip;"curl"->foot;else->hand}

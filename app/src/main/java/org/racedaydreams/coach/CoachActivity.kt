@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -137,7 +138,7 @@ private fun CoachApp(model: CoachViewModel) {
 
     val tabs = listOf("home" to "Home", "plan" to "Plan", "calendar" to "Calendar", "progress" to "Progress", "strength" to "Strength")
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Race Day Dreams",maxLines=1,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis) }, navigationIcon = {
+        topBar = { TopAppBar(title = { Text(if(androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.5f)"RDD"else"Race Day Dreams",maxLines=1,modifier=Modifier.semantics{contentDescription="Race Day Dreams"}) }, navigationIcon = {
             if (route != null && route !in tabs.map { it.first } && route != "strength?date={date}" && route != "goals") {
                 TextButton(onClick = { if (!nav.popBackStack()) nav.navigate("home") }) { Text("Back") }
             }

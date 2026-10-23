@@ -80,7 +80,8 @@ import org.racedaydreams.data.SupportStore
     val outline=MaterialTheme.colorScheme.outline;val highlight=MaterialTheme.colorScheme.primary
     SemanticCard(Tile.Race) {
         Text("Dream Route · ${route.name()}",style=MaterialTheme.typography.titleMedium)
-        Text(String.format(java.util.Locale.UK,"You covered the equivalent of %.2f km of a marathon. Original stylised %s route visual inspired by a marathon course. Not an official race map and not suitable for navigation.",metres/1000,route.name()))
+        Text(String.format(java.util.Locale.UK,"You covered %.2f km of a marathon equivalent.",metres/1000))
+        Text("Original stylised course-inspired visual · not official or for navigation.",style=MaterialTheme.typography.bodySmall)
         DreamDrawing(route,a.startMetres(),a.startMetres()+kotlin.math.min(42195.0,a.coveredMetres()))
         Text("● Start · ◉ Finish · highlighted segment")
         if(metres>42195)Text("One full marathon equivalent plus ${decimal((metres-42195)/1000)} km. Your recorded run is unchanged.")
