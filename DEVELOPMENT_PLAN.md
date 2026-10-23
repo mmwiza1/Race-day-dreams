@@ -1,4 +1,4 @@
-# Development status — 0.5.0-test1
+# Development status — 0.6.0-test1
 
 The app recommends. The runner decides. The plan adapts.
 
@@ -9,7 +9,7 @@ running plans and versions; weekly reviews; runner-approved adaptations; Run Sco
 qualified splits/PBs; shoes; reminders; body weight; Calendar List/Week/Month semantics.
 No account, Internet permission, analytics, backend or runtime LLM requirement.
 
-## This increment
+## Preserved 0.5 increment
 
 - Direct Samsung scaffolding removed; old preferences normalize to Health Connect.
   No imported activity data is deleted. Schema 6; backup envelope 4 reads versions 1–3.
@@ -36,9 +36,9 @@ No automatic technical Olympic lifting or task-specific timed/distance progressi
 Session length is approximate. Programming is a test-build coaching heuristic, not
 an individually validated physiological model or promise of optimal outcomes.
 
-Provider-independent rich activity data is future work: native recording, GPX/FIT or
-structured imports could improve splits/rolling PBs/durability. None of these recorders,
-parsers or maps is added here. Health Connect is supported; direct Samsung access is not.
+Native recording and GPX now supply provider-independent rich activity evidence
+(see the 0.6 section below). FIT, maps and additional structured adapters remain
+future work. Health Connect is supported; direct Samsung access is not.
 
 ## Test-build limitations to keep visible
 
@@ -53,3 +53,17 @@ remain a follow-up. Existing running moved/skipped/completion semantics are reta
 Automatic time/distance strength progression stays conservative (hold/review);
 repetition/load suggestions have explicit runner approval and retained decisions.
 Technique figures are original schematics, not individual form assessment.
+
+## 0.6 Prompt 1 increment (current feature branch)
+
+Health Intelligence and native recording are being verified on
+`codex/health-intelligence-run-engine`, PR #7. Optional health records and personal
+trends; foreground GNSS service and monotonic metrics; pause/auto-pause/gap policies;
+crash staging; BLE HR/real cadence; GPX; separate write-back; companion recording archive
+are implemented. This section supersedes earlier statements that GPX/native recording
+are future-only boundaries. Hardware behaviour remains subject to TEST_BUILD.md checks.
+
+See docs/RUN_ENGINE.md for genuine limits (recover-finalize rather than continue after
+process death; two-file backup; no GPX sensor extensions; no route/HR HC write-back).
+Prompt 2 Live Coach/structured execution/Race Day/routes/routines remains deferred.
+No direct Samsung integration, map dependency, Internet or account was added.

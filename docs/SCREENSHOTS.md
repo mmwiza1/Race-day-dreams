@@ -28,7 +28,7 @@ is not available to or used by production code.
 CI tests API 28/35/36, uploads each API's captures and the named APK **after tests
 pass**, then publishes canonical API-35 PNGs only when all matrix jobs succeed.
 The publisher is restricted to the same-repository
-`codex/0.5-strength-and-coach` PR branch and cannot write main. A changed
+`codex/health-intelligence-run-engine` PR branch and cannot write main. A changed
 screenshot-source fingerprint (including rendering workflow settings) causes recapture; an unchanged digest avoids
 commit loops. `source-commit.txt` identifies the tested source commit.
 
@@ -48,3 +48,5 @@ and technique, Bulgarian Split Squat detail, previous/timed/carry logging, gym s
 running-support and strength-first blocks, gym workout detail, filtered history,
 onboarding, settings/Health Connect and shoes. File names are listed by the capture
 fixture and in `docs/screenshots`; `source-commit.txt` records their verified source.
+
+The 0.6 fixture includes `health-context.png` and `record-run.png`. Health observations are explicitly test-only cache fixtures; the recording capture shows the ready screen, not fabricated live GNSS.

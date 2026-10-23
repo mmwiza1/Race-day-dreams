@@ -43,6 +43,9 @@ class CoachingScreenshotTest {
         val evidence=DevelopmentStore(context)
         for(i in 0..5) {val at=today.minusWeeks((5-i).toLong()).atTime(12,0).atOffset(ZoneOffset.UTC);evidence.saveWeight(org.racedaydreams.domain.body.BodyWeight("demo-weight-$i",75.0+i*.15,at.toInstant(),at.offset,"manual","demo-weight-$i",null))}
         evidence.saveHistorical(HistoricalStrengthRecord("demo-historical",StrengthExercise.starters().first(),75.0,5,null,HistoricalStrengthRecord.DatePrecision.UNKNOWN,"Before using the app; test-only fixture"))
+        val observations=mutableListOf<org.racedaydreams.domain.health.HealthIntelligence.Observation>()
+        for(i in 0..34)for(metric in org.racedaydreams.domain.health.HealthIntelligence.Metric.values()){val day=today.minusDays(i.toLong());val time=day.atStartOfDay(ZoneOffset.UTC).toInstant();val value=when(metric){org.racedaydreams.domain.health.HealthIntelligence.Metric.SLEEP_MINUTES->450.0;org.racedaydreams.domain.health.HealthIntelligence.Metric.RESTING_HR->55.0;org.racedaydreams.domain.health.HealthIntelligence.Metric.HRV_RMSSD->48.0;else->8000.0};observations.add(org.racedaydreams.domain.health.HealthIntelligence.Observation("demo-health-$metric-$i",metric,day,time,time,value,"Test-only demo source",Instant.now()))}
+        HealthIntelligenceStore(context).replace(org.racedaydreams.domain.health.HealthIntelligence.Metric.values().toSet(),today.minusDays(34),today,observations)
         val now=Instant.now()
         val baseline=RunnerBaseline(25.0,4.0,12.0,45.0,390.0,8,Duration.ofMinutes(27),null,null,24,8,now.minus(Duration.ofDays(84)),now,now.minus(Duration.ofDays(1)),BaselineConfidence.STRONG,emptyMap(),emptyList(),emptyList(),emptyList())
         val plan=OriginalTrainingPlanGenerator().generate(profile,baseline,today.minusWeeks(2).with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
@@ -102,6 +105,8 @@ class CoachingScreenshotTest {
         compose.onNodeWithText("Get stronger").performScrollTo().performClick();compose.onNodeWithText("Strength first").performScrollTo().performClick();compose.onNodeWithText("Preview six-week block").performScrollTo().performClick();await("Preview — not applied");compose.onNodeWithText("Accept this programme").performScrollTo().performClick();compose.waitUntil(20000){GymProgrammeStore(context).current().settings().priority()==GymProgramme.Priority.STRENGTH_FIRST};compose.waitForIdle();capture("gym-strength-first");back()
         click("⚙ Settings");await("Settings")
         capture("settings");alignHeading("Activity data source");capture("data-sources")
+        compose.onNodeWithText("Personal health context").performScrollTo().performClick();await("Personal health context");compose.waitForIdle();capture("health-context");back();back()
+        click("Home");compose.onNodeWithText("Record a run").performScrollTo().performClick();await("Start GPS recording");capture("record-run");back();click("⚙ Settings");await("Settings")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle();capture("onboarding")
         back();click("⚙ Settings");await("Settings")

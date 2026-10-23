@@ -61,37 +61,66 @@ At the end, give a concise summary containing:
 
 ---
 
-# Race Day Dreams — current handoff
+# Current task: Health Intelligence + native Run Engine (Prompt 1)
 
-## Current delivery
+Continue from `codex/health-intelligence-run-engine`, PR #7. Do not reset or recreate
+files. Starting main e6763ef4aa56af012950dd2eb7490f4c4c3a7eba remains the verified v0.5.
+Local git history and connector-published commit IDs may differ but matching tree IDs
+are verified when publishing; preserve both checkpoint histories.
 
-- PR [#6](https://github.com/mmwiza1/Race-day-dreams/pull/6) is merged into `main`.
-- Release merge: `89110a25c1e8b3a0af7b1a1ab4bac224e6477bde` (from verified PR head `1078844db43bc0d736f5a5d6b4c828bfafb067ac`).
-- Version `0.5.0-test1`, versionCode **6**, database schema **6**, backup envelope **4**.
-- The approval restriction that previously blocked delivery was removed by the owner. No safeguard was bypassed by Codex.
-- The existing implementation and feature-branch checkpoints are preserved. No post-v0.5 feature work was started during delivery.
-- The previously blocked phone-check documentation correction is included on main after the release merge.
+## Completed implementation
 
-## Verification and APK
+Optional HC sleep-session duration/RHR/HRV RMSSD/aggregate steps, source-specific
+7-day vs preceding-28-day personal context and coverage. No readiness number or forced
+plan change. Schema7 additive staging/cache; Java deterministic monotonic RunMetricsEngine,
+GNSS foreground service, five-second batched persistence and transactional finish;
+manual/optional conservative auto-pause, GPS gap/jump rejection, real interpolated splits;
+standard BLE HR and real step-sensor cadence, timestamped sensor events; bounded original
+platform-parser GPX import/export, exact-route duplicate handling; explicit HC totals
+write-back with stable client IDs and own-origin exclusion; raw recording ZIP archive
+with checksums/limits/transactional merge. Discoverable Home run screen/Settings health
+context and current recording-file/sensor actions. App version0.6.0-test1/code7,
+JSON backup5 reads1–4; raw archive1. See docs/RUN_ENGINE.md for architecture/limits.
 
-Pre-merge [workflow 39857845819](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39857845819) passed build/lint, 56,673 domain assertions, 33 schema tests, 140 instrumentation tests on each of API 28/35/36, and canonical screenshot verification. Thirty-four authentic captures are in `docs/screenshots/`; production source fingerprint is unchanged by the delivery documentation.
+## Verification and delivery
 
-The merged source also passes `sh scripts/test-domain.sh` (56,673 assertions) and `python3 scripts/test-schema.py` (33 tests) locally. Local Android build execution remains unavailable because SDK/Gradle network setup is restricted; Android build, lint and device verification use GitHub Actions.
+Prompt1 implementation is complete to the documented scope. Verified production
+source `b19bb77542ba461dfb9ae6e6b27ad9ea50fbcd8e` passed workflow39903824374:
+57,732 domain assertions,36 schema tests, Android build/lint and160 instrumentation
+tests per API28/35/36. This includes the four-hour synthetic storage trace and optional
+HC-unavailable write UI. No physical-device success is claimed.
 
-Main-branch verification began with [run 39873297659](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39873297659). Documentation-only delivery commits also run the full matrix. Use the [latest main workflow](https://github.com/mmwiza1/Race-day-dreams/actions?query=branch%3Amain) and its exact head SHA for current status; do not mistake the earlier PR artifact for a post-merge build.
+Thirty-six authentic captures were reviewed and adopted. Their source fingerprint is
+03740acea4f555128e3f8be4cc5d83ae354694ca242a460570c8a5a57e2d659b.
+The verified source API35 artifact is12480321523. Final documentation-head and merged-main
+status/artifacts are recorded on PR7 and main Actions; inspect the actual latest state
+before any continuation. Do not recreate implemented phases or repeat work blindly.
+No known source/test failure remains after the passing source run. Initial null JSON,
+permission-scope and midnight fixture failures were fixed without weakening assertions.
 
-The successful API-35 main job publishes artifact `Race-Day-Dreams-0.5.0-test1-debug-api-35`, containing `Race-Day-Dreams-0.5.0-test1-debug.apk`. Artifacts appear under that workflow's Summary and are uploaded only after build, lint and device tests pass. Final delivery reporting must confirm the exact successful run/artifact URL rather than infer success from this document.
+Preserve normalized native sample rows: canonical activity JSON contains metadata,
+with raw samples hydrated through RecordingStore.withRetainedSamples. App JSON export
+reads metadata only. Raw archives restore samples and qualified PB evidence atomically.
+Do not reintroduce multi-MiB SQLite payload cells or unbounded raw arrays into app backup.
+Personal sleep trends use the longest same-source session/day rather than a later nap.
 
-## Completed v0.5 scope
+Do not begin Prompt2 until the user supplies it. Keep the owner's reusable continuation
+instructions at the top of this file. Consult VERIFICATION.md and docs/RUN_ENGINE.md for
+actual results, policies, limits and the required Galaxy S24 checklist.
 
-Strength/Progress dashboards; 174 canonical exercises; ranked alias search and favourites/recents; measurement-aware strength logging/PBs; 25 original offline schematic guides; source-preserving PB editing and acknowledgement; optional versioned original gym programmes with concurrent scheduling and runner-approved progression; comparable runs; rich workout/pre-run/move context; Home coaching summary; filtered history; safe schema/backup upgrades; removal of direct Samsung scaffolding while retaining Health Connect and imported provenance.
+## Known deliberate limits
 
-## Deferred — do not implement without a new task
+Recovery finalizes retained portion; continuing an interrupted recording is not implemented.
+Last unflushed five-second batch may be lost on abrupt kill. Current trace is kept in memory;
+multi-hour physical testing is mandatory. Sleep-session minutes may include awake time;
+naps/stages are not reconstructed. HRV sources remain separate. One metric never drives
+an automatic adaptation; deeper coaching use remains a boundary. BLE/device/HC/OEM
+behaviour not physically verified. GPX has no HR/cadence extension import/export yet.
+HC write-back only exercise/distance totals, no route/HR/cadence. Raw sample arrays stay outside bounded app JSON; raw backup is a separate
+companion archive, not a unified whole-app container; preserve both app JSON and ZIP.
+Explicit safeguards reject destructive restore over active/user-owned recordings.
 
-Health Connect improvements, Run Engine, Live Coach, Race Day, hardening, richer gym/calendar functionality and other post-v0.5 enhancements are future work. Existing documented limits include database-backed history paging, old-date gym-edit calendar annotations and automatic time/distance strength progression. Technique figures are schematics, not individual form assessment.
-
-Keep the five-tab architecture, local-first/account-free privacy guarantees, original deterministic training rules and runner choice. Never fabricate splits, PBs, health data or readiness. The app recommends. The runner decides. The plan adapts.
-
-## Physical Galaxy S24 evaluation
-
-Export a backup before upgrading. Check install/restore (CI debug keys may differ), Health Connect sync and denied permissions, OEM notification timing, TalkBack, 200% fonts, dark mode, keyboards/date pickers, units, exercise logging and programme-change previews. See `TEST_BUILD.md`; emulator CI does not establish physical-device interoperability or coaching efficacy.
+Prompt2: Live Coach/TTS/haptics/alerts, structured workout execution, Race Day/Dream Routes,
+routines and final hardening remain deferred. No direct Samsung SDK work. Existing
+v0.5 features and all valid work must remain intact. The app recommends. The runner
+ decides. The plan adapts.

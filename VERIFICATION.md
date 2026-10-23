@@ -1,3 +1,74 @@
+# Verification — Health Intelligence + native Run Engine (0.6.0-test1)
+
+Starting main `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba`; owner handoff update
+`2099560bdbdb8520f8e9ba66a2b6f5fca4b20d26` preserved. Branch
+`codex/health-intelligence-run-engine`; PR [#7](https://github.com/mmwiza1/Race-day-dreams/pull/7).
+Version **0.6.0-test1**, code **7**, schema **7**, app JSON envelope **5** (reads1–4),
+companion raw-recording ZIP format **1**.
+
+## Observed results
+
+Production source `b19bb77542ba461dfb9ae6e6b27ad9ea50fbcd8e` passed
+[workflow39903824374](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39903824374):
+
+| Check | Actual result |
+| --- | --- |
+| Domain scripts / Gradle domain check | 57,732 assertions passed (1,059 new recording/health checks) |
+| Actual schema-DDL scripts | 36 tests passed; supported1–6 upgrades and rollback |
+| Android debug assembly, lint, instrumentation compilation | Passed |
+| API28 instrumentation | 160 tests passed; job120251471247 |
+| API35 instrumentation | 160 tests passed; job120251471448 |
+| API36 instrumentation | 160 tests passed; job120251471384 |
+| Authentic canonical API35 capture | 36 PNGs published; job120252842355 |
+
+The API35 artifact12480321523 is `Race-Day-Dreams-0.6.0-test1-debug-api-35`,
+containing `Race-Day-Dreams-0.6.0-test1-debug.apk`. Final documentation/capture-head
+and any merged-main runs are recorded on PR7/Actions; the final report identifies
+the exact delivered commit and artifact rather than inferring success.
+
+New coverage includes deterministic5K replay/interpolated splits, rejected jump,
+GPS gap, manual/automatic pause, monotonic clock changes, missing/future HR,
+comparable-source health coverage and primary sleep vs nap. Real Android stores
+exercise crash staging/recovery, failed finalization, GPX round-trip/dedup/DTD and
+multi-track rejection, archive checksums/version rejection/rollback, compact app
+backup + raw restore, SDK-unavailable write UI, and retained legacy payloads.
+The four-hour test is **synthetic replay**, with14,401 points, a compact SQLite
+metadata row and genuine calculated splits. It is not four hours of physical GPS,
+BLE or battery testing. Existing tests and assertions remain in the matrix.
+
+CI caught nullable Kotlin/JSON primitive-overload crashes, obsolete permission
+expectations and completion fixtures that could extend into the future at midnight.
+They were fixed; the full passing runs verify the corrections. Earlier corrupt
+emulator downloads failed before tests and are not counted as passes.
+
+Local domain/schema scripts pass. Actual Android build/lint/device results above
+come from GitHub-hosted emulators; no local or physical-device build result is
+invented. Screenshots were reviewed for health context, recording setup, Home,
+Settings, dark mode and200% fonts. Fixtures remain androidTest-only; the ready
+recording screen does not fabricate live GPS. Fingerprint:
+`03740acea4f555128e3f8be4cc5d83ae354694ca242a460570c8a5a57e2d659b`.
+
+No Internet permission, runtime parser/sensor dependency, copied GPL source,
+proprietary SDK, account or backend was introduced. See THIRD_PARTY.md.
+
+## Physical checks and deliberate limits
+
+Follow TEST_BUILD.md on the Galaxy S24 for Health Connect/provider availability,
+consent/revocation, GNSS quality/background/screen-lock/OEM survival, real multi-hour
+battery/memory, BLE disconnect/reconnect, step cadence and HC client-ID retries.
+CI does not establish real interoperability or coaching efficacy.
+
+Recovery finalizes the retained portion; continuation after process death is not
+implemented. Up to the last unflushed five-second batch may be lost. Backups use
+paired app JSON and raw ZIP, not a unified whole-app container; each file validates
+and restores transactionally. GPX supports chronological single-track files up to
+24 hours, without HR/cadence extensions. HC writes only native exercise/distance
+totals. Health trends are informational inputs; deeper coaching integration and
+all Prompt2 features remain deferred. History paging/large-history optimisation
+and physical-device hardening remain follow-ups. See docs/RUN_ENGINE.md.
+
+The following records apply to earlier releases only.
+
 # Verification record — 0.5.0-test1
 
 Starting main: `e395a7c7ceb74f2cfeeafb94bb3466ecc6cb53b1`.

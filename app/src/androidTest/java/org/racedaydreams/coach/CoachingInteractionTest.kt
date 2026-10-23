@@ -56,6 +56,7 @@ class CoachingInteractionTest {
         launch();compose.onNodeWithText("Strength").performClick();await("Log workout")
         compose.onNodeWithText("Log workout").performScrollTo().performClick();await("Log strength workout")
         compose.onNodeWithText("Log strength workout").performClick()
+        choosePastDate("Session date")
         enter("Start time (HH:mm, local)","00:01")
         enter("Duration (minutes)","50");enter("Session RPE 0–10 (optional)","7")
         enter("Weight (kg)","80");enter("Reps","5");enter("Set RPE 0–10 (optional)","7")
@@ -82,6 +83,7 @@ class CoachingInteractionTest {
         compose.onNodeWithText("View workout and purpose").performScrollTo().performClick();await("Record actual run")
         compose.onNodeWithText("Record actual run").performScrollTo().performClick()
         enter(distanceLabel,distance);enter("Actual duration (mm:ss or h:mm:ss)","32:30")
+        choosePastDate("Start date")
         enter("Start time (HH:mm, local)","00:01")
         enter("RPE 0–10 (optional)","3")
         compose.onNodeWithText("Save actual run").performScrollTo().performClick()
@@ -98,5 +100,12 @@ class CoachingInteractionTest {
     }
     private fun launch(){scenario=ActivityScenario.launch(CoachActivity::class.java);await("Your running, your way")}
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
+    private fun choosePastDate(label:String){
+        compose.onNodeWithText("$label: ${friendlyDate(LocalDate.now())}").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Switch to text input mode").performClick()
+        val pattern=android.text.format.DateFormat.getDateFormatOrder(context).joinToString(""){when(it){'M'->"MM";'d'->"dd";else->"yyyy"}}
+        compose.onNode(hasSetTextAction() and hasAnyAncestor(isDialog())).performTextReplacement(LocalDate.now().minusDays(1).format(java.time.format.DateTimeFormatter.ofPattern(pattern)))
+        compose.onNodeWithText("Choose date").performClick();compose.waitForIdle()
+    }
     private fun enter(label:String,value:String){compose.onNodeWithText(label).performScrollTo().performTextReplacement(value)}
 }

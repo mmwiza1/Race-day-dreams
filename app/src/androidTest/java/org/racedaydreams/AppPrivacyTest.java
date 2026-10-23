@@ -13,19 +13,21 @@ import java.util.List;
 /** Checks the merged application manifest and packaged notices, including transitive libraries. */
 @SuppressWarnings("deprecation")
 public final class AppPrivacyTest extends AndroidTestCase {
-    public void testMergedManifestHasNoNetworkLocationOrUnusedHealthAccess() throws Exception {
+    public void testMergedManifestHasNoNetworkBackgroundLocationOrUnusedHealthAccess() throws Exception {
         PackageInfo info = getContext().getPackageManager().getPackageInfo(
                 getContext().getPackageName(), PackageManager.GET_PERMISSIONS);
         List<String> permissions = info.requestedPermissions == null
                 ? Collections.emptyList() : Arrays.asList(info.requestedPermissions);
         for (String forbidden : new String[]{"android.permission.INTERNET",
-                "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION",
-                "android.permission.SCHEDULE_EXACT_ALARM", "android.permission.health.READ_SLEEP",
+                "android.permission.ACCESS_BACKGROUND_LOCATION", "android.permission.MANAGE_EXTERNAL_STORAGE",
+                "android.permission.SCHEDULE_EXACT_ALARM", "android.permission.health.WRITE_SLEEP",
+                "android.permission.health.WRITE_HEART_RATE_VARIABILITY", "android.permission.health.WRITE_STEPS",
                 "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND"}) {
             assertFalse("Unexpected application permission: " + forbidden, permissions.contains(forbidden));
         }
         assertTrue(permissions.contains("android.permission.health.READ_EXERCISE"));
         assertTrue(permissions.contains("android.permission.health.READ_DISTANCE"));
+        for(String required:new String[]{"android.permission.ACCESS_FINE_LOCATION","android.permission.FOREGROUND_SERVICE_LOCATION","android.permission.health.READ_SLEEP","android.permission.health.READ_RESTING_HEART_RATE","android.permission.health.READ_HEART_RATE_VARIABILITY","android.permission.health.READ_STEPS","android.permission.health.WRITE_EXERCISE","android.permission.health.WRITE_DISTANCE"})assertTrue("Implemented optional permission missing: "+required,permissions.contains(required));
         assertEquals(0, info.applicationInfo.flags & ApplicationInfo.FLAG_ALLOW_BACKUP);
     }
 
@@ -36,6 +38,7 @@ public final class AppPrivacyTest extends AndroidTestCase {
                 "org.racedaydreams.coach.CoachActivity"), 0).exported);
         assertFalse(manager.getActivityInfo(new ComponentName(application,
                 "org.racedaydreams.ui.MainActivity"), 0).exported);
+        assertFalse(manager.getServiceInfo(new ComponentName(application,"org.racedaydreams.recording.RunRecordingService"),0).exported);
         assertFalse(manager.getReceiverInfo(new ComponentName(application,
                 "org.racedaydreams.reminders.ReminderReceiver"), 0).exported);
     }

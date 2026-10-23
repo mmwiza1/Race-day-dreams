@@ -19,8 +19,9 @@ revoking access leaves manual baseline, goals, shoes and results usable.
 | Read heart rate (optional) | Available session average and maximum HR |
 | Read history (optional, feature guarded) | Up to 84 days of baseline evidence |
 
-No write, background-read, sleep, location, cadence or elevation permission is
-requested. Those metrics are not invented when absent. With standard access the
+The baseline flow requests only the read scopes above. Separate optional health
+context, recording and totals write-back flows are described below; no background
+health/location read is requested. Metrics are not invented when absent. With standard access the
 adapter uses an explicit conservative 29-day window; Health Connect may otherwise
 silently omit older data. Extended history is requested only when supported and
 chosen. The review screen reports its actual window and limitations.
@@ -91,3 +92,32 @@ Physical-device permissions and vendor measurement availability remain to verify
 Health Connect is the supported interface. Legacy provider preferences normalize on upgrade/restore without deleting existing activity records.
 The provider-neutral reconciliation read model has deterministic synthetic tests;
 real cross-provider ingestion/annotation reconciliation requires the future adapter.
+
+## Health Intelligence / native run increment (0.6 test)
+
+Optional READ_SLEEP, READ_RESTING_HEART_RATE, READ_HEART_RATE_VARIABILITY (RMSSD)
+and READ_STEPS are used by Personal health context in Settings. Permission rationale
+precedes the system chooser. No permission is required to use running/strength/manual
+features. A bounded authorized read is staged, consent rechecked, then each permitted
+metric window is replaced transactionally; denied metrics and older data remain.
+
+Sleep-session duration may include awake time; stages do not control coaching. Raw
+sleep sessions are not summed across apps. The longest comparable-source sleep session per day
+is used; a later short nap cannot replace the main session. Naps/overlapping nights
+are not synthesized into a daily sleep total. RHR/HRV
+use the latest source and latest daily measurement only. Source changes restart evidence
+coverage rather than mixing device ecosystems. Steps use Health Connect's aggregate
+API and provider priority, never summed mirrored raw step records. Complete days only
+are used for steps. Missing is null, not zero.
+
+Trends compare seven recent days with the preceding 28, requiring four and fourteen
+measured days respectively. Normal range uses mean absolute deviation and a documented
+relative tolerance (HRV 15%, steps 25%, other signals 8%). These are explainable product
+heuristics, not validated clinical thresholds. Each result exposes source/coverage and
+limitations. No readiness score or automatic plan mutation is implemented. Trend models
+are clean supporting inputs for deeper corroborated coaching in Prompt 2.
+
+Native run write-back is separate and explicit: WRITE_EXERCISE and WRITE_DISTANCE only.
+Stable client IDs prevent duplicate retries; records with this app's origin are excluded
+from exercise import. Sleep/HRV/resting-HR/steps are read-only. Route, HR and cadence
+write-back remain deliberately unimplemented. See docs/RUN_ENGINE.md.

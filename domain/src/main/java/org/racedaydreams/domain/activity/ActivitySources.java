@@ -9,6 +9,8 @@ public final class ActivitySources {
             if("com.fitbit.FitbitMobile".equals(source.originPackage()))return "Fitbit";
             return "Health Connect";
         }
+        if("rdd".equals(source.provider()))return "Recorded by Race Day Dreams";
+        if("gpx".equals(source.provider()))return "Imported GPX";
         return "manual".equals(source.provider())?"Manual entry":"Activity provider";
     }
 }

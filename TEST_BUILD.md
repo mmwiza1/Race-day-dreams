@@ -1,9 +1,10 @@
-# Galaxy S24 evaluation — 0.5.0-test1
+# Galaxy S24 evaluation — 0.6.0-test1
 
-0.5 release from main `e395a7c7ceb74f2cfeeafb94bb3466ecc6cb53b1`.
+Health Intelligence/Run Engine increment from verified 0.5 main
+`e6763ef4aa56af012950dd2eb7490f4c4c3a7eba` (owner handoff update preserved).
 See VERIFICATION.md and the 0.5 PR/Actions for observed build and device-test results.
 
-Download `Race-Day-Dreams-0.5.0-test1-debug.apk` from a successful intended-commit
+Download `Race-Day-Dreams-0.6.0-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
 Debug signing keys may differ between workflows; preserve your backup before any
 uninstall Android requires. CI does not establish physical-device interoperability
@@ -12,7 +13,7 @@ or real-world coaching efficacy.
 ## Phone checklist
 
 1. Upgrade from 0.4.1 (or an older supported version) with existing data; check goals, plans, runs, shoes, notes,
-   strength history and reminder preferences. Export/restore the new version-four
+   strength history and reminder preferences. Export/restore the new version-five
    backup and verify manual historical PBs, weights, breaks and decisions survive.
 2. Continue without Health Connect. Review a concise baseline, optional missing
    fields, goal cards, weekday selections, date picker and final review. The
@@ -89,3 +90,33 @@ CI debug builds may use a different debug signing certificate from an older down
 If Android rejects an in-place installation, retain/export the old app's backup before
 considering uninstall/reinstall. Restore the backup and re-import Health Connect data.
 No production signing key or credential is bundled in this repository.
+
+## 0.6 Prompt 1 — Galaxy S24 health/recording evaluation
+
+- Samsung Health → Health Connect → RDD: allow sleep/RHR/HRV/steps selectively. Check
+  actual dates/origins, source changes, missing HRV and mirrored providers. Deny/revoke
+  each permission; manual plans/runs/strength must remain usable. Compare sleep-session
+  duration cautiously (it may contain awake time). No readiness number should appear.
+- Outdoors, start GPS recording explicitly; check notification, precise-location denial,
+  screen lock, opening another app, a 2–4 hour run and battery usage. No tracking should
+  occur after finish. Check smoothed pace and compare measured distance with a known route.
+- Pause for several minutes, move while paused, resume: elapsed/active time differ and
+  distance does not bridge the pause. Test a tunnel/GPS off/on, poor fixes and return.
+  Check genuine interpolated splits after 1 km, save, restart and inspect history/samples.
+- Keep auto-pause disabled initially. If testing it, check long stationary stops, hysteresis,
+  slow climbing/recovery jogging/crowds and degraded GPS. Manual pause must not auto-resume.
+- Kill the process or reboot during a staged run where practical. Recover only retained
+  evidence; downtime must not appear as recorded movement. Test explicit discard separately.
+- Pair a standard BLE HR monitor if available; disconnect/reconnect it during a run. Check
+  events, missing HR and uninterrupted GPS. Deny sensor permissions; cadence remains absent
+  without a supported step sensor. Do not assume a phone carried differently counts every step.
+- Export GPX, reimport the unchanged file, check exact-route duplicate handling and samples/
+  splits; malformed/no-time/DTD files must fail. Routes must not gain fabricated HR or accuracy.
+- Export BOTH normal app JSON and raw recordings ZIP. Test restore on a spare/empty install,
+  checksum corruption, conflicting merge, interrupted staging and retained sensor/events.
+- Explicitly write a native run's totals to Health Connect after separate consent. Retry;
+  verify one session/distance record and no duplicate reimport. No automatic location/health
+  upload and no sleep write permission. Device tests must confirm platform client-ID behaviour.
+
+CI/synthetic traces do not prove GNSS accuracy, OEM background survival, physical BLE,
+provider interoperability, battery efficiency or coaching efficacy.
