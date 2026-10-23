@@ -14,7 +14,7 @@ import org.racedaydreams.domain.support.DreamRoutes
 @Composable fun DreamDrawing(route:DreamRoutes.Route,start:Double,finish:Double){
     val outline=MaterialTheme.colorScheme.outline.copy(alpha=.45f);val ink=MaterialTheme.colorScheme.onSurface;val accent=MaterialTheme.colorScheme.primary;val landmark=MaterialTheme.colorScheme.tertiary.copy(alpha=.5f)
     Canvas(Modifier.fillMaxWidth().height(260.dp).semantics{contentDescription="Dream Route ${route.name()}. Stylised course-inspired visual, not navigation. Highlighted equivalent ${decimal(start/1000)}–${decimal(finish/1000)} km; runner at the end. Five kilometre markers. Landmarks: ${DreamRoutes.landmarks(route).joinToString{it.label()}}"}){
-        val vertices=route.vertices();val minX=vertices.minOf{it.x()}-.5;val maxX=vertices.maxOf{it.x()}+.5;val minY=vertices.minOf{it.y()}-.5;val maxY=vertices.maxOf{it.y()}+.5
+        val vertices=route.vertices()+DreamRoutes.landmarks(route).map{DreamRoutes.Vertex(it.x(),it.y())};val minX=vertices.minOf{it.x()}-.5;val maxX=vertices.maxOf{it.x()}+.5;val minY=vertices.minOf{it.y()}-.5;val maxY=vertices.maxOf{it.y()}+.5
         val scale=kotlin.math.min(size.width/(maxX-minX),size.height/(maxY-minY));val side=(scale*10).toFloat();val origin=Offset(((size.width-(maxX-minX)*scale)/2).toFloat(),((size.height-(maxY-minY)*scale)/2).toFloat())
         fun p(x:Double,y:Double)=origin+Offset(((x-minX)*scale).toFloat(),((y-minY)*scale).toFloat())
         fun p(v:DreamRoutes.Vertex)=p(v.x(),v.y())
