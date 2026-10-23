@@ -44,7 +44,10 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit, allStreng
         finally{loading=false}
     }
     val groups = remember(visible) { visible.groupBy(::displayActivityDate) }
-    LazyColumn(Modifier.fillMaxSize().semantics{stateDescription=if(loading)"Loading recorded history"else if(error)"History unavailable"else"Recorded history ready"}, contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    // A parent refresh can replace the source before LaunchedEffect starts its new
+    // query. Do not advertise the old page as ready during that transition.
+    val historyPending=loading||state.busy||loadedSource!=state.activities
+    LazyColumn(Modifier.fillMaxSize().semantics{stateDescription=if(historyPending)"Loading recorded history"else if(error)"History unavailable"else"Recorded history ready"}, contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             CoachHeading("Activity calendar")
             Text("Recorded runs · list view", Modifier.padding(top = 8.dp))
