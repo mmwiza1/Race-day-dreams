@@ -165,7 +165,9 @@ class CoachingScreenshotTest {
                 .put("version",1).put("route",route.id()).put("start",minOf(1000.0,maxOf(0.0,42195.0-metres)))
                 .put("distance",metres).put("assignedAt",Instant.now().toString()))
             scenario=ActivityScenario.launch(CoachActivity::class.java)
-            await("Today");click("Calendar");await("Activity calendar")
+            await("Today")
+            compose.onNode((hasText("Calendar") or hasContentDescription("Calendar")) and hasClickAction()).performClick()
+            await("Activity calendar")
             compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()}
             compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
             compose.onAllNodesWithText("Recorded run")[0].performClick();await("Run detail")
