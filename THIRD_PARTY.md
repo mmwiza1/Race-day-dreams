@@ -148,3 +148,8 @@ are bundled offline and contributed under the project MIT licence. No third-part
 exercise photographs/assets or organiser graphics were copied. Owner references
 are development acceptance documents, separate from production assets. Coverage
 and review are tracked in docs/exercise-artwork/README.md; full174 is not yet met.
+
+The Berlin2014 geographic **research candidate** in docs/dream-route-data derives
+only coordinates from alexdjulin/running-events-map's participant GPX, under MIT
+(copyright2023 Alexandre Donciu-Julin). The original licence/source blob and
+transformations are retained there. It is not yet a bundled/live Dream Route.

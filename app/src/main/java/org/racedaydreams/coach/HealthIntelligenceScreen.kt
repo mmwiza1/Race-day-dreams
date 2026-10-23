@@ -25,6 +25,7 @@ import java.time.LocalDate
         GuidanceCard {
             Text(summary.title(),style=MaterialTheme.typography.titleMedium)
             Text(summary.value(),style=MaterialTheme.typography.headlineMedium)
+            if(t.recent()!=null)Text("Recent daily average",style=MaterialTheme.typography.labelSmall)
             Text(summary.context())
             WhyDetails("Recent: ${t.recent()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"} · Reference: ${t.baseline()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"}\n${t.recentDays()}/7 recent days · ${t.referenceDays()}/28 reference days\nSource: ${t.source()}\n${t.limitation()}" + if(t.metric()==HealthIntelligence.Metric.SLEEP_MINUTES)"\nSleep-session duration may include awake time; sleep stages are not used." else "", "View evidence & sources")
         }

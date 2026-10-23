@@ -4,7 +4,7 @@ Implementation checkpoint; not yet a completed/released build.
 
 ## What's new
 
-- Original detailed RDL, Bench Press, Walking Lunge and Ankle Rocks illustrations,
+- Original detailed RDL, Bench Press, Walking Lunge, Glute Bridge and routine illustrations,
   bundled offline in efficient WebP assets. Complete canonical exercise coverage
   is still required before this release can publish.
 - Week-first Plan with day/date rows and attached preparation links. Programme
@@ -33,8 +33,8 @@ Implementation checkpoint; not yet a completed/released build.
 
 ## Known limitations
 
-- This checkpoint has 3 canonical illustrated exercise entries plus 2 routine
-  entries (Walking Lunge is shared); full 174/174 coverage is **not** complete.
+- This checkpoint has 4 canonical illustrated exercise entries and complete14/14
+  built-in routine artwork; full174/174 canonical coverage is **not** complete.
 - Dream Route geography/presentation and full screenshot/reference acceptance
   remain in progress. Existing assignments and backups are preserved.
 - Recovery saves the durable interrupted portion; it does not fabricate continuous

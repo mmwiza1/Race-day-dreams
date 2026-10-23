@@ -11,13 +11,14 @@ class ExerciseGuidanceAudit {
         for(var definition:ExerciseCatalog.definitions()) {
             String id=definition.exercise().id();var guide=TechniqueGuide.forExercise(id);var art=TechniqueIllustrations.forExercise(id);
             if(guide==null||art==null){missing.add(id);continue;}
-            if(guide.setup().trim().isEmpty()||guide.movement().trim().isEmpty()||guide.cues().isEmpty()||guide.mistakes().isEmpty()||guide.muscles().trim().isEmpty())throw new IllegalStateException("Incomplete text: "+id);
+            if(guide.setup().trim().isEmpty()||guide.movement().trim().isEmpty()||guide.cues().isEmpty()||guide.cues().stream().anyMatch(String::isBlank)||guide.mistakes().isEmpty()||guide.mistakes().stream().anyMatch(String::isBlank)||guide.muscles().trim().isEmpty())throw new IllegalStateException("Incomplete text: "+id);
             check(root,art);complete++;
         }
         var routineMissing=new ArrayList<String>();
         for(var movement:RunningRoutines.MOVEMENTS) {var art=TechniqueIllustrations.forRoutine(movement.id());if(art==null)routineMissing.add(movement.id());else check(root,art);}
         System.out.println("Accepted canonical visual guides: "+complete+"/"+ExerciseCatalog.definitions().size());
         System.out.println("Missing canonical IDs: "+String.join(", ",missing));
+        System.out.println("Routine visual guides: "+(RunningRoutines.MOVEMENTS.size()-routineMissing.size())+"/"+RunningRoutines.MOVEMENTS.size());
         System.out.println("Missing routine art: "+String.join(", ",routineMissing));
         if(!report&&(!missing.isEmpty()||!routineMissing.isEmpty()))throw new IllegalStateException("Visual coverage incomplete. Report mode is for development only; releases require every canonical exercise and routine.");
     }
