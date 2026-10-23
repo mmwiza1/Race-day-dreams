@@ -43,7 +43,7 @@ class RunRecordingService:Service() {
         return START_STICKY
     }
     private fun startSensors(){
-        if(Build.VERSION.SDK_INT<29||checkSelfPermission(android.Manifest.permission.ACTIVITY_RECOGNITION)==android.content.pm.PackageManager.PERMISSION_GRANTED){motion=StepMotionSource(this);motion?.start{value,time->engine?.cadence(value,time);value?.let{engine?.sensorEvent("CADENCE",it,SystemClock.elapsedRealtime(),Instant.now())}}}
+        if(Build.VERSION.SDK_INT<29||checkSelfPermission(android.Manifest.permission.ACTIVITY_RECOGNITION)==android.content.pm.PackageManager.PERMISSION_GRANTED){try{motion=StepMotionSource(this);motion?.start{value,time->engine?.cadence(value,time);value?.let{engine?.sensorEvent("CADENCE",it,SystemClock.elapsedRealtime(),Instant.now())}}}catch(_:Exception){message.value="Cadence unavailable; GPS recording continues."}}
         val preferred=getSharedPreferences("run-sensors",MODE_PRIVATE).getString("hr-device",null)
         if(preferred!=null&&(Build.VERSION.SDK_INT<31||checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT)==android.content.pm.PackageManager.PERMISSION_GRANTED))try{
             if(Build.VERSION.SDK_INT>=29)startForeground(104,notification("Recording with heart-rate monitor"),android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION or android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
