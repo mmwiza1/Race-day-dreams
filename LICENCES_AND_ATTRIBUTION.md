@@ -49,5 +49,6 @@ Dependencies/notices remain unchanged.
 0.8.1's new bundled exercise illustrations are original generated project assets,
 contributed under MIT; see docs/exercise-artwork/README.md for creation and review.
 The five owner-provided design references remain separate development references,
-not production assets or claimed actual screenshots. No new runtime library or
-third-party geographic dataset has been incorporated at this checkpoint.
+not production assets or claimed actual screenshots. No new runtime library or production geographic dataset is bundled. The separately
+attributed MIT Berlin2014 coordinate research candidate lives in docs/dream-route-data,
+with Alexandre Donciu-Julin's original licence; it is not yet used by app rendering.

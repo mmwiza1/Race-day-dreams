@@ -25,3 +25,26 @@ actual-build light/dark/large-text comparison remain required. **Coverage is not
 174/174.** The old 25-guide system remains for other movements until individually
 reviewed replacements exist. Do not count generic fallback drawings as accepted art.
 No release may claim complete coverage from this checkpoint.
+
+## Routine coverage checkpoint
+
+All14 built-in routine movements now have reviewed original illustrations:
+walk/jog (shared walking option), ankle rocks, ankle circles, calf raises, leg
+swings, walking lunge, marching, controlled strides, glute bridge, hip-flexor,
+seated glute, calf and supported quad stretches. Unsupported custom guidance
+never inherits an unrelated pose. The old routine stick-figure renderer is removed.
+The calf-stretch draft with a raised rear heel was rejected and replaced with
+an explicitly corrected heel-down image. A duplicate marching pose was also
+replaced with distinct standing/raised-knee phases before bundling.
+
+The bodyweight Glute Bridge now has exact setup/movement text and shares its
+appropriate mat illustration with routines. Canonical accepted artwork coverage
+is **4/174**, with26 text guides in the older technique model. Strict coverage
+still blocks release. `scripts/ExerciseGuidanceAudit.java` derives missing IDs
+from the real catalogue, checks required copy/accessibility and actual local
+assets; `--report` is only for this development branch. Before final delivery,
+require strict mode in the normal build as well as release publication.
+
+Packaged-resource instrumentation checks every built-in routine and every
+registered canonical asset without decoding the entire catalogue into bitmaps.
+It does not certify human form or imply unregistered exercises are complete.

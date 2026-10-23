@@ -21,6 +21,15 @@ public final class TechniqueIllustrations {
         case "lunge" -> forExercise("walking-lunge");
         case "bridge" -> forExercise("glute-bridge");
         case "swing" -> new Artwork("guide_leg_swings","Supported leg swings: hold a stable rail, move one leg gently forward and back while the other foot stays planted and trunk stays upright.",Arrays.asList("Swing gently forward","Return gently behind"));
+        case "walk","jog" -> new Artwork("guide_walk","Easy walking option: use a comfortable stride, upright relaxed posture and natural arm movement. An easy jog is optional if comfortable.",Arrays.asList("Walk comfortably"));
+        case "march" -> new Artwork("guide_march","Controlled marching: stand tall, then lift one knee comfortably with the opposite arm; lower and alternate sides without leaning back.",Arrays.asList("Stand tall","Lift; lower and alternate"));
+        case "calf" -> new Artwork("guide_calf_raise","Supported calf raises: hold a stable rail, start with heels down, then lift both heels gently onto the forefoot and lower under control.",Arrays.asList("Heels down","Rise and lower slowly"));
+        case "hip" -> new Artwork("guide_hip_flexor","Hip-flexor stretch: half-kneel on a mat with the front foot flat, keep the trunk upright and gently move the pelvis forward without arching the back.",Arrays.asList("Half-kneel; gentle forward shift"));
+        case "quad" -> new Artwork("guide_quad_stretch","Supported quad stretch: hold a stable rail, bend the other knee and gently support the ankle behind you, keeping balance and avoiding force.",Arrays.asList("Stand supported; hold gently"));
+        case "glute" -> new Artwork("guide_seated_glute","Seated glute stretch: sit on a stable chair with one foot flat, rest the other ankle across the opposite thigh and hinge forward gently without forcing the knee down.",Arrays.asList("Sit securely; gentle stretch"));
+        case "stride" -> new Artwork("guide_strides","Controlled strides: build gradually into relaxed brisk running with smooth steps and arm movement, then ease down and walk to recover. Not maximal sprinting.",Arrays.asList("Build smoothly","Relax and ease down"));
+        case "circles" -> new Artwork("guide_ankle_circles","Ankle circles: hold a stable rail, lift one foot slightly and rotate the ankle slowly while the supporting leg and trunk stay steady.",Arrays.asList("Supported gentle ankle rotation"));
+        case "calf-stretch" -> new Artwork("guide_calf_stretch","Calf stretch: hold a stable wall, front knee softly bent and back leg comfortable with the whole back foot including heel down; lean gently without bouncing.",Arrays.asList("Back heel down; gentle stretch"));
         case "ankle" -> new Artwork("guide_ankle_rocks","Ankle rocks: half-kneeling with the front foot flat, move the front knee gently forward over the toes while keeping the heel down.",Arrays.asList("Half-kneeling","Rock gently; heel down"));
         default -> null;
     };}

@@ -23,10 +23,10 @@ import org.racedaydreams.domain.body.MassUnit
         Text("Week of ${friendlyDate(r.week())}")
         val presentation=org.racedaydreams.domain.presentation.WeeklyReviewData.of(r)
         GuidanceCard(if(presentation.noChange())guidanceMint()else guidanceBlue()) {
-            Text(if(presentation.noChange())"Training is on track"else"Something may need adjusting",style=MaterialTheme.typography.headlineSmall)
+            Text(if(!presentation.noChange()||presentation.attention().isNotEmpty())"Something may need adjusting"else if(r.completed()<2)"Still learning your training"else"Training is on track",style=MaterialTheme.typography.headlineSmall)
             Text("${r.completed()} of ${r.planned()} planned runs completed")
             Text("${decimal(r.kilometres())} km"+(r.longestKm()?.let{" · longest ${decimal(it)} km"}?:""))
-            Text(if(presentation.attention().isEmpty())"No meaningful warning signals in this week's recorded evidence."else presentation.attention().first())
+            Text(if(presentation.attention().isNotEmpty())presentation.attention().first()else if(r.completed()<2)"More recorded training will help us understand your response."else"No meaningful warning signals in this week's recorded evidence.")
             WhyDetails((presentation.positives().map{"✓ $it"}+presentation.attention().map{"△ $it"}).joinToString("\n\n").ifBlank{"More recorded training will help us see your response."},"Why?")
         }
         WhyDetails(r.observations().joinToString("\n\n"),"Week observations")

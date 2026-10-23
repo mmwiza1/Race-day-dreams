@@ -82,7 +82,7 @@ class CoachingScreenshotTest {
         click("Plan");await("This week");capture("training-plan")
         compose.onAllNodesWithContentDescription("View workout and purpose")[0].performScrollTo().performClick()
         await("Workout structure");capture("planned-workout")
-        compose.onNode(hasText("Warm-up ·",substring=true)).performScrollTo().performClick();compose.waitUntil(20000){compose.onAllNodes(hasText("1 of ",substring=true)).fetchSemanticsNodes().isNotEmpty()};capture("warm-up");back()
+        compose.onNode(hasText("Warm-up ·",substring=true)).performScrollTo().performClick();compose.waitUntil(20000){compose.onAllNodes(hasText("1 of ",substring=true)).fetchSemanticsNodes().isNotEmpty()};capture("warm-up");click("Next");await("Ankle rocks");capture("exercise-ankle-rocks");back()
 
         back();click("Calendar");await("Activity calendar");compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()};capture("history")
         click("Week");await("Training calendar");capture("calendar-week")
@@ -104,6 +104,7 @@ class CoachingScreenshotTest {
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("de");compose.waitForIdle();capture("exercise-search")
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("RDL");compose.onNodeWithText("Romanian Deadlift").performClick();await("Overview");capture("exercise-rdl")
         click("How to do it");compose.waitForIdle();capture("exercise-rdl-howto");back()
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Bench");compose.onNodeWithText("Bench Press").performClick();await("Overview");click("How to do it");capture("exercise-bench-howto");back()
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("BSS");compose.onNodeWithText("Bulgarian Split Squat").performClick();await("Overview");capture("exercise-bulgarian-split-squat");back();back()
         click("Log workout");await("Log strength workout");click("Log strength workout");alignHeading("Last time");capture("strength-log-previous")
         compose.onNodeWithText("Back Squat").performScrollTo().performClick();compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank");compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick();compose.onNodeWithText("Duration (seconds or m:ss)").performScrollTo().performTextReplacement("1:30");compose.waitForIdle();capture("strength-log-timed")
@@ -122,7 +123,7 @@ class CoachingScreenshotTest {
         await("600 m remaining");capture("live-coach")
         InstrumentationRegistry.getInstrumentation().runOnMainSync{org.racedaydreams.recording.RunRecordingService.status.value=null;org.racedaydreams.recording.RunRecordingService.workoutState.value=null}
         back();back();click("Home");compose.onNodeWithText("Race preparation").performScrollTo().performClick();await("Your pacing strategy");capture("race-day");back()
-        click("Plan");compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility");back();back();click("⚙ Settings");await("Settings")
+        click("Plan");compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility");click("Next");await("Walking lunges");capture("exercise-walking-lunge");click("Next");click("Next");await("Hip-flexor stretch");capture("exercise-static-stretch");back();back();click("⚙ Settings");await("Settings")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle();capture("onboarding")
         back();click("⚙ Settings");await("Settings")
@@ -136,9 +137,12 @@ class CoachingScreenshotTest {
             scenario?.close();scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
             Assert.assertEquals(android.content.res.Configuration.UI_MODE_NIGHT_YES,context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK)
             capture("home-dark")
+            click("Plan");await("This week");capture("plan-dark")
+            compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility-dark");back();back();click("Home");await("How am I doing?")
             shell("settings put system font_scale 2.0");scenario?.recreate();await("How am I doing?")
             Assert.assertTrue(context.resources.configuration.fontScale>=1.99f)
             capture("home-large-font")
+            compose.onNodeWithContentDescription("Plan").performClick();await("This week");capture("plan-large-font")
         } finally {
             if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
             shell("cmd uimode night $originalNight")
