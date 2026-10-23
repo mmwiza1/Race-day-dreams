@@ -99,6 +99,19 @@ jobs:
           path: app/build/reports/androidTests/connected/
           if-no-files-found: ignore
 
+  guidance-completeness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile and verify Android-independent guidance
+        run: sh scripts/test-domain.sh
+      - name: Require every canonical exercise and routine illustration
+        run: java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java
+
   canonical-screenshots:
     needs: build
     # Capture publication is confined to this same-repository feature branch, never main.
@@ -144,7 +157,7 @@ jobs:
           PYSCREEN
 
   publish-test-release:
-    needs: build
+    needs: [build, guidance-completeness]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-latest
     permissions:

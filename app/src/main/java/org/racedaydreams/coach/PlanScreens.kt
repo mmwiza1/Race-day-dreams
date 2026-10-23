@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import org.racedaydreams.domain.presentation.CalendarData
 import java.time.temporal.ChronoUnit
@@ -67,9 +68,9 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                             entries.forEach { entry ->
                                 val workout=runs.firstOrNull{it.id()==entry.id()}
                                 if(workout!=null) {
-                                    TextButton(onClick={open(workout.id())},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp).semantics{contentDescription="View workout and purpose"},contentPadding=PaddingValues(0.dp)) {
+                                    TextButton(onClick={open(workout.id())},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp).semantics{contentDescription="View workout and purpose";stateDescription=entry.state().name.lowercase().replace('_',' ')},shape=MaterialTheme.shapes.small,contentPadding=PaddingValues(horizontal=8.dp,vertical=4.dp)) {
                                         Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)) {
-                                            Text(entry.label(),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold,color=MaterialTheme.colorScheme.onSurface)
+                                            Text(entry.label()+(if(entry.state()==CalendarData.State.COMPLETED)" ✓"else""),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold,color=MaterialTheme.colorScheme.onSurface)
                                             Text(workout.distanceKm()?.let{formatDistance(it*1000,state)}?:workout.duration()?.let{"${it.toMinutes()} min"}?:"Run by effort",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
                                         }
                                         Text("›",style=MaterialTheme.typography.titleLarge)
@@ -81,7 +82,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                                     }
                                 } else when {
                                     entry.category()==CalendarData.Category.REST -> {Text("Rest Day",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold);Text("Recover and prepare for your next session.",style=MaterialTheme.typography.bodySmall)}
-                                    entry.category()==CalendarData.Category.STRENGTH -> TextButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp),contentPadding=PaddingValues(0.dp)) {Column(Modifier.weight(1f)){Text(entry.label(),style=MaterialTheme.typography.titleMedium,color=MaterialTheme.colorScheme.onSurface);Text(if(entry.state()==CalendarData.State.COMPLETED)"View strength"else"View strength workout",style=MaterialTheme.typography.bodySmall)};Text("›")}
+                                    entry.category()==CalendarData.Category.STRENGTH -> TextButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp),shape=MaterialTheme.shapes.small,contentPadding=PaddingValues(horizontal=8.dp,vertical=4.dp)) {Column(Modifier.weight(1f)){Text(entry.label()+(if(entry.state()==CalendarData.State.COMPLETED)" ✓"else""),style=MaterialTheme.typography.titleMedium,color=MaterialTheme.colorScheme.onSurface);Text(if(entry.state()==CalendarData.State.COMPLETED)"Recorded · View strength"else"View strength workout",style=MaterialTheme.typography.bodySmall)};Text("›")}
                                     else -> {Text(entry.label(),style=MaterialTheme.typography.titleMedium);Text(entry.state().name.lowercase().replace('_',' '),style=MaterialTheme.typography.bodySmall)}
                                 }
 

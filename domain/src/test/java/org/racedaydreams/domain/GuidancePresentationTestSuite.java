@@ -28,6 +28,11 @@ public final class GuidancePresentationTestSuite {
         check(small.percentage()==12);check(small.distanceLabel().equals("5.02 km / 42.20 km"));check(small.extraMetres()==0);
         var full=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-v2",0,42195));check(full.percentage()==100);check(full.fraction()==1);check(full.distanceLabel().equals("42.20 km / 42.20 km"));
         var over=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-v2",0,50000));check(over.percentage()==100);check(over.extraMetres()==7805);check(over.highlightedMetres()==42195);
+        check(new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS available",false).hasReliablePace());
+        check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS jump rejected",false).hasReliablePace());
+        check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS interrupted · distance incomplete",false).hasReliablePace());
+        check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS available",true).hasReliablePace());
+        check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,null,"GPS available",false).hasReliablePace());
         System.out.println("GuidancePresentationTestSuite: "+checks+" checks passed.");
     }
 }
