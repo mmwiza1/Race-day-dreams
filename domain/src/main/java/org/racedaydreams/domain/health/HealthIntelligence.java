@@ -27,7 +27,7 @@ public final class HealthIntelligence {
             if(rows.isEmpty()){out.add(new Trend(m,"Unavailable",null,null,0,0,"Insufficient evidence","Optional data is missing."));continue;}
             String source=rows.get(0).source();Map<LocalDate,Observation> days=new TreeMap<>();
             // One comparable-source observation per day. Never sum mirrored raw records.
-            rows.stream().filter(x->x.source().equals(source)).forEach(x->days.putIfAbsent(x.date(),x));
+            rows.stream().filter(x->x.source().equals(source)).forEach(x->{if(m==Metric.SLEEP_MINUTES){Observation old=days.get(x.date());if(old==null||x.value()>old.value())days.put(x.date(),x);}else days.putIfAbsent(x.date(),x);});
             List<Double> recent=new ArrayList<>(),base=new ArrayList<>();
             days.forEach((date,x)->{if(!date.isBefore(today.minusDays(6)))recent.add(x.value());else base.add(x.value());});
             Double r=average(recent),b=average(base);String state="Insufficient evidence";

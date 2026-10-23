@@ -26,6 +26,9 @@ public final class RunEngineTestSuite {
   delayed.heartRate(150.0,5000);delayed.accept(fix(3000,6));check(delayed.points().get(delayed.points().size()-1).heartRate()==null);delayed.accept(fix(6000,15));check(delayed.points().get(delayed.points().size()-1).heartRate()==150.0);
   check(RecordingTimeline.activeMillis(0,65000,List.of(new RunMetricsEngine.Event("PAUSE",2000,Instant.EPOCH),new RunMetricsEngine.Event("RESUME",62000,Instant.EPOCH.minusSeconds(3600))))==5000);
   check(RecordingTimeline.activeMillis(0,65000,List.of(new RunMetricsEngine.Event("AUTO_PAUSE",2000,Instant.EPOCH)))==2000);
+  for(int i=0;i<35;i++){var day=today.minusDays(i);var time=day.atStartOfDay(ZoneOffset.UTC).toInstant();obs.add(new HealthIntelligence.Observation("sleep"+i,HealthIntelligence.Metric.SLEEP_MINUTES,day,time,time.plusSeconds(27000),450,"sleep-source",Instant.EPOCH));}
+  obs.add(new HealthIntelligence.Observation("nap",HealthIntelligence.Metric.SLEEP_MINUTES,today,today.atTime(15,0).toInstant(ZoneOffset.UTC),today.atTime(16,0).toInstant(ZoneOffset.UTC),60,"sleep-source",Instant.EPOCH));check(HealthIntelligence.evaluate(obs,today).get(0).recent()==450.0);
+  try{new RunMetricsEngine.Point(fix(0,0),Double.NaN,0,0,false,null,null);check(false);}catch(IllegalArgumentException expected){check(true);}
   System.out.println("RunEngineTestSuite: "+n+" checks passed (traces, split interpolation, gaps, pauses, clock change, HR, personal baselines).");
  }
 }

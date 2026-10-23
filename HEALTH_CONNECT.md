@@ -102,8 +102,9 @@ features. A bounded authorized read is staged, consent rechecked, then each perm
 metric window is replaced transactionally; denied metrics and older data remain.
 
 Sleep-session duration may include awake time; stages do not control coaching. Raw
-sleep sessions are not summed across apps. One comparable-source observation per day
-is used; naps/overlapping nights are not synthesized into a daily sleep total. RHR/HRV
+sleep sessions are not summed across apps. The longest comparable-source sleep session per day
+is used; a later short nap cannot replace the main session. Naps/overlapping nights
+are not synthesized into a daily sleep total. RHR/HRV
 use the latest source and latest daily measurement only. Source changes restart evidence
 coverage rather than mixing device ecosystems. Steps use Health Connect's aggregate
 API and provider priority, never summed mirrored raw step records. Complete days only

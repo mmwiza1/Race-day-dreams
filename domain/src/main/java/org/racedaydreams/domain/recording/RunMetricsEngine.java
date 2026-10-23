@@ -14,7 +14,9 @@ public final class RunMetricsEngine {
             if(altitude!=null&&!Double.isFinite(altitude)||verticalAccuracy!=null&&(!Double.isFinite(verticalAccuracy)||verticalAccuracy<0)||speed!=null&&(!Double.isFinite(speed)||speed<0))throw new IllegalArgumentException("Invalid optional location evidence");
         }
     }
-    public record Point(Fix fix,double cumulativeMetres,long activeMillis,int segment,boolean discontinuity,Double heartRate,Double cadence) {}
+    public record Point(Fix fix,double cumulativeMetres,long activeMillis,int segment,boolean discontinuity,Double heartRate,Double cadence) {
+        public Point {Objects.requireNonNull(fix);if(!Double.isFinite(cumulativeMetres)||cumulativeMetres<0||activeMillis<0||segment<0||heartRate!=null&&(!Double.isFinite(heartRate)||heartRate<=0)||cadence!=null&&(!Double.isFinite(cadence)||cadence<0))throw new IllegalArgumentException("Invalid recorded point");}
+    }
     public record Event(String type,long monotonicMillis,Instant timestamp,Double value) {public Event(String type,long monotonicMillis,Instant timestamp){this(type,monotonicMillis,timestamp,null);}}
     public record Status(double metres,long elapsedMillis,long movingMillis,Double secondsPerKm,String gps,boolean paused) {}
     private final long started;private long minimumFixTime;private long lastTime,pausedSince=-1,pausedTotal;private int segment;
