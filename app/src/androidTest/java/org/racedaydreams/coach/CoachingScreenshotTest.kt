@@ -177,6 +177,10 @@ class CoachingScreenshotTest {
             compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()}
             compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
             compose.onAllNodesWithText("Recorded run")[0].performClick();await("Run detail")
+            // This fixture has genuine retained samples. Wait for both asynchronous
+            // analyses ABOVE Dream Routes before positioning the target card.
+            compose.waitUntil(20000){compose.onAllNodes(hasText("Fastest complete kilometre:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
+            compose.waitUntil(20000){compose.onAllNodes(hasText("Late-run pace change:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
             alignHeading("Dream Route · ${route.name()}")
         }
         val originalFont=shell("settings get system font_scale").trim()
@@ -225,6 +229,12 @@ class CoachingScreenshotTest {
         // Compose idleness can precede SurfaceFlinger presenting the last frame.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         android.os.SystemClock.sleep(200)
+        if(name.startsWith("dream-route")) {
+            val heading=compose.onNode(hasText("Dream Route ·",substring=true))
+            heading.assertIsDisplayed()
+            val top=heading.fetchSemanticsNode().positionInRoot.y
+            Assert.assertTrue("Dream Route capture must show its own heading: $name at $top",top in 100f..300f)
+        }
         val semantics=compose.onRoot(useUnmergedTree=true).printToString()
         Assert.assertFalse("Raw ISO date in normal UI",Regex("Text = .*\\b[0-9]{4}-[0-9]{2}-[0-9]{2}").containsMatchIn(semantics))
         val bitmap=InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
