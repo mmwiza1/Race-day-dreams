@@ -35,11 +35,12 @@ import org.json.*
         CoachHeading(if(section=="Overview")"Run now"else section)
         if(section!="Overview")TextButton(onClick={section="Overview"}){Text("Back to Run Now")}
         if(section=="Overview"){
-        SemanticCard(Tile.Planned){Text("No programme required",style=MaterialTheme.typography.titleLarge);Text("Record a spontaneous run. It stays separate from planned training unless you choose to link it afterwards.");CoachButton("Free run"){start(null)}}
-        SemanticCard(Tile.Neutral){Text("A simple distance or time target");CoachButton("Quick run"){section="Quick run"}}
-        SemanticCard(Tile.Progress){Text("Build steps, recoveries and repeats");CoachButton("Custom workout"){section="Custom workout"}}
-        SemanticCard(Tile.Achievement){CoachButton("Favourite workouts"){section="Favourite workouts"}}
-        SemanticCard(Tile.Planned){CoachButton("Repeat previous workout"){section="Repeat previous workout"}}
+        GuidanceCard{Text("Your run, your way",style=MaterialTheme.typography.titleLarge);Text("No programme or target required. Spontaneous runs stay separate from planned training.");Button(onClick={start(null)},modifier=Modifier.fillMaxWidth().heightIn(min=64.dp)){Text("Free run",style=MaterialTheme.typography.titleMedium)}}
+        OutlinedButton(onClick={section="Quick run"},modifier=Modifier.fillMaxWidth().heightIn(min=64.dp)){Column(Modifier.fillMaxWidth().padding(6.dp)){Text("Quick run",style=MaterialTheme.typography.titleMedium);Text("Choose a distance or time",style=MaterialTheme.typography.bodySmall)}}
+        OutlinedButton(onClick={section="Custom workout"},modifier=Modifier.fillMaxWidth().heightIn(min=64.dp)){Column(Modifier.fillMaxWidth().padding(6.dp)){Text("Custom workout",style=MaterialTheme.typography.titleMedium);Text("Build steps, recoveries and repeats",style=MaterialTheme.typography.bodySmall)}}
+        TextButton(onClick={section="Favourite workouts"},modifier=Modifier.heightIn(min=48.dp)){Text("Favourite workouts")}
+        TextButton(onClick={section="Repeat previous workout"},modifier=Modifier.heightIn(min=48.dp)){Text("Repeat previous workout")}
+
         }
         if(section=="Quick run"){
         CoachHeading("Choose a target")

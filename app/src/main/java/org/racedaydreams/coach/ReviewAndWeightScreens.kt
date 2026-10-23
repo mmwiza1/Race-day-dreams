@@ -21,11 +21,14 @@ import org.racedaydreams.domain.body.MassUnit
     val r=s.weeklyReview
     if(r==null)Text("Create a programme to review its completed weeks.") else{
         Text("Week of ${friendlyDate(r.week())}")
-        CoachCard{Text("${r.completed()} / ${r.planned()} planned runs completed");Text("${decimal(r.kilometres())} km · ${r.strengthSessions()} strength sessions");r.longestKm()?.let{Text("Longest run: ${decimal(it)} km")}}
         val presentation=org.racedaydreams.domain.presentation.WeeklyReviewData.of(r)
-        CoachHeading("What went well")
-        if(presentation.positives().isEmpty())Text("More recorded training will help us see your response.")else presentation.positives().forEach{Text("✓ $it")}
-        if(presentation.attention().isNotEmpty()){CoachHeading("What needs attention");presentation.attention().forEach{Text("△ $it")}}
+        GuidanceCard(if(presentation.noChange())guidanceMint()else guidanceBlue()) {
+            Text(if(presentation.noChange())"Training is on track"else"Something may need adjusting",style=MaterialTheme.typography.headlineSmall)
+            Text("${r.completed()} of ${r.planned()} planned runs completed")
+            Text("${decimal(r.kilometres())} km"+(r.longestKm()?.let{" · longest ${decimal(it)} km"}?:""))
+            Text(if(presentation.attention().isEmpty())"No meaningful warning signals in this week's recorded evidence."else presentation.attention().first())
+            WhyDetails((presentation.positives().map{"✓ $it"}+presentation.attention().map{"△ $it"}).joinToString("\n\n").ifBlank{"More recorded training will help us see your response."},"Why?")
+        }
         WhyDetails(r.observations().joinToString("\n\n"),"Week observations")
         if(r.observations().any{it.contains("missed or moved")})TextButton(onClick=editRoutine){Text("Review training days")}
         WhyDetails(r.channels().joinToString("\n\n"){"${it.name()}: ${it.state().name.lowercase().replace('_',' ')}\n${it.reason()}"},"Evidence channels")
