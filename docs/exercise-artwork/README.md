@@ -48,3 +48,19 @@ require strict mode in the normal build as well as release publication.
 Packaged-resource instrumentation checks every built-in routine and every
 registered canonical asset without decoding the entire catalogue into bitmaps.
 It does not certify human form or imply unregistered exercises are complete.
+
+## Continued canonical artwork checkpoint
+
+Reviewed additional sequences: Back Squat, Bulgarian Split Squat, Seated Cable Row,
+Forearm Plank, Conventional Deadlift, Standing Overhead Press and Dumbbell Bench Press.
+Canonical accepted coverage is now **11/174**; all14 routine movements remain covered.
+Bodyweight Bulgarian movement is explicitly labelled; weights are not falsely drawn.
+The calf-raise routine image is NOT counted for machine-based canonical calf exercises.
+Dumbbell-bench draft with a clipped shoe was rejected and regenerated with full margins.
+The guide template no longer appends repetition instructions to timed/static movements.
+
+Twenty-two optimized1200×800 WebPs are bundled; the exact byte sizes and SHA256 values
+are in asset-provenance.json. The originals remain under /workspace/generated_images
+for this execution workspace; the distributable reviewed assets are version-controlled.
+No unsupported canonical movement is counted as illustrated. The strict audit still
+fails163 missing canonical IDs, recorded in missing-canonical-ids.txt.
