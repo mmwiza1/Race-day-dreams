@@ -11,7 +11,7 @@ public record CustomWorkout(String id,String title,List<Group> groups) {
     }
     public record Totals(double knownMetres,long knownMillis,boolean distanceComplete,boolean durationComplete) {}
     public CustomWorkout {
-        if(id==null||id.isBlank()||id.length()>256||title==null||title.isBlank()||title.length()>120||groups==null||groups.isEmpty())throw new IllegalArgumentException("Name the workout and add a step");
+        if(id==null||id.trim().isEmpty()||id.length()>256||title==null||title.trim().isEmpty()||title.length()>120||groups==null||groups.isEmpty())throw new IllegalArgumentException("Name the workout and add a step");
         groups=Immutable.copyList(groups);for(var g:groups)for(var s:g.steps()){Objects.requireNonNull(s);if(s.metres()!=null&&s.metres()>300000||s.millis()!=null&&s.millis()>21600000)throw new IllegalArgumentException("A step must be at most 300 km or six hours");}int n=0;for(var g:groups)n+=g.repeats()*g.steps().size();if(n>500)throw new IllegalArgumentException("At most 500 executed steps");
     }
     public List<WorkoutExecutionEngine.Step> flattened(){var out=new ArrayList<WorkoutExecutionEngine.Step>();for(var g:groups)for(int i=0;i<g.repeats();i++)out.addAll(g.steps());return Immutable.copyList(out);}
