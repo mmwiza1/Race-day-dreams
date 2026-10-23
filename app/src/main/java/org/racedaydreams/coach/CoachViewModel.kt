@@ -342,7 +342,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         val evidence = "Baseline window ${baseline.windowStart()} to ${baseline.windowEnd()}; confidence ${baseline.confidence()}; " +
             "weekly km ${baseline.weeklyDistanceKm() ?: "unknown"}; longest km ${baseline.longestRunKm() ?: "unknown"}; " +
             "consistent weeks ${baseline.consistentWeeks() ?: "unknown"}; sources ${baseline.provenance()}. " +
-            "History, manual inputs and assessment evidence remain distinct. No race prediction is inferred."
+            "History, manual inputs and assessment evidence remain distinct. No race prediction is inferred. Schedule preferences: ${schedule?.toString()?:"defaults"}."
         coaching.saveCurrent(PlanVersion(UUID.randomUUID().toString(), generated.id(),
             (coaching.versions().filter { it.planId() == generated.id() }.maxOfOrNull { it.version() } ?: 0) + 1,
             Instant.now(), if (coaching.current() == null) "Runner requested initial programme" else "Runner explicitly requested remaining programme rebuild",

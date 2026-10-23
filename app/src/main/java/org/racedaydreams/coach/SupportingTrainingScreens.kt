@@ -21,7 +21,7 @@ import org.racedaydreams.data.SupportStore
 @Composable fun RoutineLibrary(open:(String)->Unit)=CoachPage {
     CoachHeading("Movement support")
     Text("Optional short routines. Two to four short mobility sessions can be useful when they fit your week. There is no compliance target, load or missed-mobility warning.")
-    RunningRoutines.all().forEach{r->CoachCard{Text(r.title(),style=MaterialTheme.typography.titleMedium);Text("${r.minutes()} min · ${r.purpose()}");CoachButton("Start ${r.title()}"){open(r.id())}}}
+    RunningRoutines.all().forEach{r->SemanticCard(Tile.Planned){Text(r.title(),style=MaterialTheme.typography.titleMedium);Text("${r.minutes()} min · ${r.purpose()}");CoachButton("Start ${r.title()}"){open(r.id())}}}
     Text("General movement guidance. Keep movements comfortable, stop if they cause pain and seek qualified advice when unsure. This is not injury treatment or a recovery guarantee.")
 }
 
@@ -90,7 +90,7 @@ import org.racedaydreams.data.SupportStore
 @Composable fun MobilitySupportCard(open:()->Unit){
     val context=LocalContext.current
     val count by produceState(0){value=withContext(Dispatchers.IO){SupportStore(context).routineCount(java.time.LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant(),mobilityOnly=true)}}
-    CoachCard{Text("Mobility this week",style=MaterialTheme.typography.titleMedium);Text("$count optional routines recorded");Text("Two to four short sessions can be useful when they fit. This is not an adherence target.");TextButton(onClick=open){Text("View routines")}}
+    SemanticCard(Tile.Insight){Text("Mobility this week",style=MaterialTheme.typography.titleMedium);Text("$count optional routines recorded");Text("Two to four short sessions can be useful when they fit. This is not an adherence target.");TextButton(onClick=open){Text("View routines")}}
 }
 @Composable fun WarmupSupportLink(id:String,related:String,open:()->Unit){
     val context=LocalContext.current

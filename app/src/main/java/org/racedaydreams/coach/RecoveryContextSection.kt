@@ -21,7 +21,7 @@ import org.racedaydreams.domain.health.*
         }
     }
     val r=recovery?:return
-    if(r.reviewSuggested())CoachCard{
+    if(r.reviewSuggested())SemanticCard(Tile.Insight){
         Text("Consider an easier option",style=MaterialTheme.typography.titleMedium)
         Text("Several signals support reviewing today's demand. This is training context, not a diagnosis.")
         WhyDetails(r.evidence().joinToString("\n"),"Why?")

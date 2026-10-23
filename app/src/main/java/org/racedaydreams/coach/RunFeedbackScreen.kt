@@ -21,7 +21,7 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
     }
     CoachHeading(if(planned==null) "Run Analysis" else "Run Score and feedback")
     feedback?.let { result -> CoachCard {
-        Text(result.score()?.let { "$it/10 — ${result.label()}" } ?: result.label(),style=MaterialTheme.typography.headlineSmall)
+        if(result.score()!=null||result.label()!="Run Analysis")Text(result.score()?.let { "$it/10 — ${result.label()}" } ?: result.label(),style=MaterialTheme.typography.headlineSmall)
         WhyDetails("RPE describes how hard this felt. Run Score describes execution of the intended purpose; neither is a health or fitness-improvement score.","What does this score mean?")
         WhyDetails(result.components().joinToString("\n\n"){c->"${c.name()}: ${c.fraction()?.let{"${kotlin.math.round(it*100).toInt()}%"}?:"Unavailable"}\n${c.explanation()}"},"Score components")
         if(result.wentWell().isNotEmpty()){Text("What went well",style=MaterialTheme.typography.titleMedium);result.wentWell().forEach{Text(it)}}

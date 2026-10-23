@@ -15,7 +15,7 @@ import org.racedaydreams.domain.strength.TechniqueGuide
     val guide=TechniqueGuide.forExercise(id)
     if(guide==null){Text("A visual guide for this exercise is not available yet. Choose a familiar movement or seek qualified coaching.");return}
     Text("How to do it",style=MaterialTheme.typography.titleLarge)
-    listOf("Setup" to guide.setup(),"Movement" to guide.movement(),"Controlled return" to "Reverse the movement under control. Keep the same stable support and comfortable range.").forEachIndexed{i,pair->CoachCard{
+    listOf("Setup" to guide.setup(),"Movement" to guide.movement(),"Controlled return" to "Reverse the movement under control. Keep the same stable support and comfortable range.").forEachIndexed{i,pair->SemanticCard(Tile.Strength){
         Text("${i+1}. ${pair.first}",style=MaterialTheme.typography.titleMedium)
         TechniqueDrawing(id,guide.pattern(),i,pair.second)
         Text(pair.second)
@@ -51,7 +51,8 @@ import org.racedaydreams.domain.strength.TechniqueGuide
         if(pattern=="plank"){shoulder=.30f to .64f;hip=.52f to .73f;knee=if(bent).69f to .79f else .60f to .96f;foot=if(bent).85f to .85f else .80f to .96f;hand=.48f to .94f}
         if(pattern=="carry"){hand=.62f to .60f;if(bent){knee=.52f to .70f;foot=.60f to .92f;limb(hip,.40f to .68f);limb(.40f to .68f,.36f to .92f)}}
         drawLine(load.copy(alpha=.7f),point(shoulder.first,shoulder.second),point(hip.first,hip.second),size.height*.085f,androidx.compose.ui.graphics.StrokeCap.Round)
-        drawCircle(muscle.copy(alpha=.35f),size.height*.06f,point(hip.first,hip.second))
+        val emphasis=when(pattern){"press","pull","row","overhead"->shoulder;"calf"->knee.first to ((knee.second+foot.second)/2);"plank","carry"->((shoulder.first+hip.first)/2) to ((shoulder.second+hip.second)/2);else->hip}
+        drawCircle(muscle.copy(alpha=.35f),size.height*.06f,point(emphasis.first,emphasis.second))
         limb(shoulder,hip);limb(hip,knee);limb(knee,foot)
         if(frame==1){
             val start=if(pattern=="hinge")point(.40f,.54f)else point(.77f,.32f);val end=if(pattern=="hinge")point(.27f,.54f)else point(.77f,.60f)
