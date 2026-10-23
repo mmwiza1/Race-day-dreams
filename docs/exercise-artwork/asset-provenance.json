@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_ankle_circles.webp",
+      "bytes": 22886,
+      "sha256": "b6e2da3a01965ddecc54039ef5199be2ed6eb07f30a3c9df2f2c579da454d427",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_ankle_rocks.webp",
+      "bytes": 25852,
+      "sha256": "ce0a6b534a185cb0c3fea27c966621edeb119439f939355dd7f41bf1d865b9fd",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_bench_press.webp",
+      "bytes": 45130,
+      "sha256": "19e032bbe6712e84f4247350f712b427e6876247389d03c00a983afcb0092265",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_calf_raise.webp",
+      "bytes": 33876,
+      "sha256": "6c39d99832a36047600a1c8233d0324e75be5ab4212643eefc118a2632df4375",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_calf_stretch.webp",
+      "bytes": 23138,
+      "sha256": "c9105a8c8ad15c474136b5d083922bb0b02f3e610942dcdfdb1c6c7f3b5665c2",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_glute_bridge.webp",
+      "bytes": 27348,
+      "sha256": "56888d9f11e53f942e6f0a2102ccd6d634d08bf398fc5825c766f5c86ba508ad",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_hip_flexor.webp",
+      "bytes": 27362,
+      "sha256": "2cddbf9560a3ac3c11b6495591ea76ddd2932e00ba3fbdb46e291bae002715b4",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_leg_swings.webp",
+      "bytes": 38448,
+      "sha256": "939af4ed4252f315bf42e18c263f6cb4b6a289bc02298e461eee49e39c294180",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_march.webp",
+      "bytes": 37332,
+      "sha256": "4155de68b3340a5d4870d37eae84e9dbda1c30d6a61dca085c4253e105a6b8ad",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_quad_stretch.webp",
+      "bytes": 22368,
+      "sha256": "355523c03fddd794844b489cd65dd64db0849da6d57f285fe7dd698f711a7b8c",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_romanian_deadlift.webp",
+      "bytes": 45062,
+      "sha256": "90b06e8654480b0e7559853973c5caccd733e5ab936c6e2a042207ff7fc27e11",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_seated_glute.webp",
+      "bytes": 29614,
+      "sha256": "95611cc2b1686b8b3d94b4e1cc35d6727543fed8d610f4f17c254ce87e9b1695",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_strides.webp",
+      "bytes": 41650,
+      "sha256": "e3376bda8c2e46f9e58e647242f4ef7e8f0cb5af1518da41d5c8056d1f65a170",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_walk.webp",
+      "bytes": 23418,
+      "sha256": "9c8491724174645c65a77107b87fdfeaa22e798146a4bfcc585953a5bcdeb2c9",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_walking_lunge.webp",
+      "bytes": 26418,
+      "sha256": "fc1563cf9cf1716d56439568124328d0659e84d83c3531fd444457e75c879216",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    }
+  ]
+}

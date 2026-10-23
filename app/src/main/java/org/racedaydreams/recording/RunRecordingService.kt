@@ -96,7 +96,7 @@ class RunRecordingService:Service() {
 
         val e=execution
         if(e==null){deliverMetrics(s,candidates);return}
-        val input=WorkoutExecutionEngine.Input(s.metres(),s.movingMillis(),s.elapsedMillis(),s.secondsPerKm(),s.secondsPerKm()!=null&&!s.paused(),s.paused())
+        val input=WorkoutExecutionEngine.Input(s.metres(),s.movingMillis(),s.elapsedMillis(),s.secondsPerKm(),s.hasReliablePace(),s.paused())
         val state=e.update(input);workoutState.value=state
         val events=e.events()
         for(i in seenExecutionEvents until events.size){val event=events[i];engine?.sensorEvent(event.type(),event.step().toDouble(),SystemClock.elapsedRealtime(),Instant.now())
