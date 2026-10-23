@@ -60,7 +60,7 @@ final class CatalogueTechniqueGuides {
             case "weighted-dip" -> g("press", "Secure a manageable dip-belt load and take support on stable parallel bars with the plate clear below.", "Lower through a controlled comfortable depth and press up, keeping the plate from swinging.", "Triceps, chest and front shoulders", "Check belt and chain|Keep the plate steady|Use a modest addition", "Loose weight attachment|Forcing shoulder depth|Kicking to finish", "Dip|Close-Grip Bench Press");
             case "cable-fly" -> g("fly", "Set opposing pulleys near shoulder height; hold both handles with softly bent elbows and a stable stance.", "Bring the hands together in front of the chest in a controlled arc, then open only through a comfortable range.", "Chest and front shoulders", "Keep the elbow angle steady|Keep ribs controlled|Use light manageable resistance", "Turning it into a press|Overstretching the shoulders|Leaning forwards to finish", "Pec Deck|Dumbbell Fly");
             case "pec-deck" -> g("fly", "Sit with your back against the pad; adjust the arm pads so shoulders can move comfortably.", "Bring the pads together in front of the chest, then open them slowly without losing back support.", "Chest and front shoulders", "Adjust the starting width|Keep back supported|Control both directions", "Forcing an excessive stretch|Slamming the pads together|Lifting off the seat", "Cable Fly|Dumbbell Fly");
-            default -> null;
+            default -> UpperBodyTechniqueGuides.forExercise(id);
         };
     }
 

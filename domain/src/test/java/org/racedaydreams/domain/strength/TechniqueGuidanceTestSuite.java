@@ -38,6 +38,23 @@ public final class TechniqueGuidanceTestSuite {
         check(TechniqueGuide.forExercise("custom-unrecognised") == null, "Custom copy must remain unknown");
         check(!TechniqueGuide.forExercise("kettlebell-swing").mistakes().contains("Turning the hinge into a squat"), "Swing-specific advice retained");
         check(TechniqueIllustrations.forExercise("kettlebell-swing").description().contains("not an overhead"), "Distinct from American swing");
+        for(String id:List.of("low-bar-squat","belt-squat","hack-squat","sumo-deadlift","single-leg-rdl",
+                "bodyweight-squat","weighted-side-plank","wall-sit","weighted-wall-sit","cable-crunch",
+                "weighted-sit-up","weighted-pull-up","weighted-chin-up","chin-up","neutral-grip-pull-up",
+                "pendlay-row","t-bar-row","smith-machine-bench-press","weighted-push-up","pec-deck")) {
+            check(known.contains(id),"Expanded guide retains canonical identity: "+id);
+            check(TechniqueIllustrations.forExercise(id)!=null,"Reviewed catalogue artwork: "+id);
+        }
+        check(TechniqueGuide.forExercise("weighted-push-up").setup().contains("vest"),"Weighted push-up uses secured vest rather than a loose plate");
+        check(TechniqueGuide.forExercise("sumo-deadlift").setup().contains("inside your knees"),"Sumo stance and grip differ from conventional");
+        check(TechniqueGuide.forExercise("low-bar-squat").setup().contains("below the upper traps"),"Low-bar shelf is explicit");
+        check(TechniqueGuide.forExercise("cable-crunch").movement().contains("curling the trunk"),"Cable crunch is trunk movement, not an arm pressdown");
+        check(TechniqueGuide.forExercise("pendlay-row").movement().contains("reset"),"Floor reset retained for Pendlay row");
+        check(!TechniqueIllustrations.forExercise("chin-up").asset().equals(TechniqueIllustrations.forExercise("weighted-chin-up").asset()),"Weighted chin-up shows actual belt equipment");
+        for(String id:List.of("wall-sit","weighted-wall-sit","weighted-side-plank"))
+            check(TechniqueIllustrations.forExercise(id).phases().size()==1,"Static hold has a single meaningful frame: "+id);
+        check(TechniqueIllustrations.forExercise("high-bar-squat").asset().equals(TechniqueIllustrations.forExercise("back-squat").asset()),"Exact high-bar equipment/pose may share art");
+        check(TechniqueGuide.forExercise("pause-squat").movement().contains("pause"),"Shared squat pose retains variant-specific timing");
         System.out.println("TechniqueGuidanceTestSuite: " + checks + " checks passed.");
     }
 }
