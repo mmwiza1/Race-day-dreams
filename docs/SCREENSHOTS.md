@@ -28,7 +28,7 @@ is not available to or used by production code.
 CI tests API 28/35/36, uploads each API's captures and the named APK **after tests
 pass**, then publishes canonical API-35 PNGs only when all matrix jobs succeed.
 The publisher is restricted to the same-repository
-`feature/0.8-today-routes-strength-polish` PR branch and cannot write main. A changed
+`feature/0.8.1-design-guidance-reliability` PR branch and cannot write main. A changed
 screenshot-source fingerprint (including rendering workflow settings) causes recapture; an unchanged digest avoids
 commit loops. `source-commit.txt` identifies the tested source commit.
 
@@ -96,3 +96,6 @@ and produced53captures (workflow40001032343). Those exact PNGs are now adopted.
 Reviewed compact Plan, geographicBerlin and cable-row guide; long phase captions
 needed explicit spacing, now fixed for next capture. The Berlin source is geographic,
 not final visual-reference approval. New four canonical assets also need fresh capture.
+
+A concrete reference-versus-build review is recorded in
+[0.8.1 visual review](VISUAL_REVIEW_0_8_1.md). Open gates remain explicit there.
