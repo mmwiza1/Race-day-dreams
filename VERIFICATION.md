@@ -1,3 +1,42 @@
+# Verification — 0.8.1-test1 (incomplete release checkpoint)
+
+Starting main515fe538de1302dd83ee05fc9ca131c7afb7d520; feature branch
+`feature/0.8.1-design-guidance-reliability`, draft PR10. Version0.8.1-test1/code10,
+schema10 additive history indexes; JSON7/raw2/complete1 unchanged.
+
+Observed local current: **59,804 domain assertions**, **43 schema tests**,
+**5 release-note tests**, reproducible Berlin projection check and diff whitespace
+check pass. Schema tests retain all supported1–9 upgrade paths and rollback checks.
+No Internet permission or runtime dependency added.
+
+Source8aadbf9e3c677f478cf9196244fe7d78323998d2 passed domain/Gradle/build/lint and
+**197 instrumentation tests perAPI28/35/36** in
+[workflow39986988491](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39986988491).
+API28 initially stopped before tests on an invalid emulator SDK ZIP; one diagnosed
+infrastructure rerun passed. Attempt2 jobs28/35/36:120540931684/120540933765/120540933742.
+Canonical job120543678173 captured50actualPNG files, adopted byte-for-byte from
+bot00b8ac6519c648bed1ce722ef151e2cf159fbbbf. APK size at that source35204614bytes.
+
+The strict guidance-completeness job fails because canonical visual coverage is
+unfinished; **the whole workflow is not green and publication was skipped**.
+Current coverage11/174 canonical visual guides,26 text guides;14/14 routine art.
+New seven images/geographic Berlin/backup test/53-screen fixture are later changes
+and need their own Android matrix verification. They are not certified by the
+197-test checkpoint. Full design acceptance remains open; Plan density, remaining
+canonical guides and four other geographic Dream Routes still require work.
+
+Visual inspection of actual Plan/200%-dark, Bench, Ankle Rocks and mobility-dark
+confirmed navigation labels no longer wrap and routine illustrations/tips/mistakes
+now use the supplied reference family. It did not certify the whole product.
+References remain separate underdocs/design-reference. Existing screenshots are
+checkpoint evidence, not proof that the unfinished0.8.1release is complete.
+
+No physical S24 verification performed. Recorder recovery remains explicit partial
+finalisation, not seamless tracking across process death/reboot. Last unflushed
+batch can be lost. Physical acceptance checklist remains inTEST_BUILD.md.
+
+The records below describe earlier releases and checkpoints.
+
 # Verification — 0.8.0-test1
 
 Starting live main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec` confirmed through GitHub.

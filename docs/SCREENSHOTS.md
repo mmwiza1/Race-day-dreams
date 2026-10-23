@@ -79,3 +79,14 @@ blue/navy hierarchy, mint tips/pink mistakes, touch targets, dark contrast and l
 text. Document specific mismatches and refine. Hash equality/regression consistency
 alone does not pass this gate. Current committed PNGs still describe0.8 until the
 0.8.1 capture/review/adoption work completes; do not market them as the final redesign.
+
+## 0.8.1 observed checkpoint
+
+Source8aadbf9e3c677f478cf9196244fe7d78323998d2 /workflow39986988491 produced50
+actual build PNGs. They are retained byte-for-byte with the source fingerprint.
+Plan, Bench, Ankle Rocks, mobility-dark and Plan200%-dark were visually inspected.
+Routine layout and recognisable human artwork now match the reference family;
+Plan density and complete catalogue/Dream geography acceptance still remain open.
+These captures predate the later seven canonical assets/geographic Berlin changes.
+The next fixture requests53captures including BSSHowTo, cable row and plank.
+No design JPEG is presented as an actual app capture or substituted for one.
