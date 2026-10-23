@@ -28,7 +28,7 @@ is not available to or used by production code.
 CI tests API 28/35/36, uploads each API's captures and the named APK **after tests
 pass**, then publishes canonical API-35 PNGs only when all matrix jobs succeed.
 The publisher is restricted to the same-repository
-`codex/health-intelligence-run-engine` PR branch and cannot write main. A changed
+`feature/0.8-today-routes-strength-polish` PR branch and cannot write main. A changed
 screenshot-source fingerprint (including rendering workflow settings) causes recapture; an unchanged digest avoids
 commit loops. `source-commit.txt` identifies the tested source commit.
 
@@ -56,3 +56,11 @@ and the actual active-run panel. The latter receives a deterministic execution-e
 trace through test-only StateFlows; no such seeding path is compiled into production.
 These captures do not establish physical GNSS, BLE, TTS or music behaviour. Test teardown
 always clears injected recording state, including when a capture fails.
+
+## 0.8 canonical set
+
+43 authentic captures include Run Now and native post-run route presentation. README
+curates eight current-build images; QA captures retain Calendar, dark/200%, guides,
+gym and settings. Public Live Coach uses neutral fixture wording; its production UI
+is unchanged. Actual native trace analysis uses deterministic androidTest-only input,
+not a mock route widget. No test data enters the installable app.

@@ -1,8 +1,7 @@
 # Galaxy S24 evaluation — 0.8.0-test1
 
-Health Intelligence/Run Engine increment from verified 0.5 main
-`e6763ef4aa56af012950dd2eb7490f4c4c3a7eba` (owner handoff update preserved).
-See VERIFICATION.md and the 0.5 PR/Actions for observed build and device-test results.
+0.8 starts from verified0.7 main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec`.
+See VERIFICATION.md and PR9/Actions for observed build and emulator-test results.
 
 Download `Race-Day-Dreams-0.8.0-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
@@ -12,9 +11,8 @@ or real-world coaching efficacy.
 
 ## Phone checklist
 
-1. Upgrade from 0.4.1 (or an older supported version) with existing data; check goals, plans, runs, shoes, notes,
-   strength history and reminder preferences. Export/restore the new version-five
-   backup and verify manual historical PBs, weights, breaks and decisions survive.
+1. Upgrade from 0.7 (or an older supported version) with existing data; check goals, plans, runs, shoes, notes,
+   strength history and reminder preferences. Export/restore the new version-seven JSON backup and complete package1 and verify manual historical PBs, weights, breaks and decisions survive.
 2. Continue without Health Connect. Review a concise baseline, optional missing
    fields, goal cards, weekday selections, date picker and final review. The
    explicit Create my programme action saves your goal and creates a programme.

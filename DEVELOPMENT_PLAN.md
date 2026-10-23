@@ -1,4 +1,4 @@
-# Development status — 0.7.0-test1
+# Development status — 0.8.0-test1
 
 The app recommends. The runner decides. The plan adapts.
 

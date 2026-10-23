@@ -61,42 +61,34 @@ At the end, give a concise summary containing:
 
 ---
 
-# Current task: 0.8.0-test1 — Today / routes / strength polish
+# Current task: 0.8.0-test1 — final delivery
 
-Start main6ebd53c3e102f5ccbef957f68d5dad19f7112eec. Feature
-feature/0.8-today-routes-strength-polish, draft PR9. Local checkpoints05fc465,
-652a47a,b68075f,8ea40e6 retained; connector commit IDs differ, compare trees.
-Remote source after8ea40e6 is ec69b6260b2f6538dea2f3ceb48b3f4330e2a841.
-Inspect actual PR/head/CI before changing anything. No reset or discarded work.
+Starting main6ebd53c3e102f5ccbef957f68d5dad19f7112eec. Branch
+feature/0.8-today-routes-strength-polish; PR9. Preserve all local checkpoints through
+c398411 (adopted final captures). Connector commit IDs differ; compare trees, never reset.
 
-Implemented: Today semantic tiles, recorder-only onboarding, Run Now free/quick/custom/
-repeat/favourites, immutable step groups/reorder/edit/open manual completion on ONE
-recorder; origin and explicit plan associations; actual route fitting/markers/qualified
-altitude/Route Story; Dream v2 original geometry/landmarks/live panel/preferences with
-legacy geometry preserved; favourite star/library filter/generator preference;6RM;
-exact-exercise recent starting-load reference;3-frame original technique refinements;
-race-week checklist/taper;4-week trends/shoe use and optional discomfort observations;
-scheduling dates/time/distribution with honest distance-duration trade-off; safe diagnostics.
-Schema9 additive release08. JSON7 reads1–6, raw2/complete1 unchanged and transactional.
-See docs/RELEASE_0_8.md and docs/DREAM_ROUTES.md. No Internet/dependencies/assets added.
+Implementation is complete within documented data/licensing/device limits. Do not
+restart it or add future features. See docs/RELEASE_0_8.md and docs/DREAM_ROUTES.md.
+Schema9, JSON7 reads1–6, raw archive2 and complete package1. No Internet/dependencies.
 
-Observed local59,740 domain assertions and40 schema tests. Android builds on earlier
-0.8 checkpoints passed; CI caught ambiguous onboarding click (fixed unique headings)
-and missing preserved performance warning (restored). Current source needs its own full
-CI. New Android store/UI coverage and canonical capture changes are present. No physical
-checks done. Do not infer later source passed from a superseded/cancelled run.
+Verified final production source6a44bf72886fc93b65825625edb741a2cd495e1c passed
+workflow39959962732:59,755 domain assertions,40 schema tests, build/lint/test compilation,
+187 instrumentation tests on EACH API28/35/36 and43 real-build screenshots. Captures
+adopted unchanged; eight showcase screens and Home dark/200% reviewed. Fingerprint
+c14081311d15761f6e42175d0a2da48a942c87ec958c551e9765d915b0a7baa5.
+Capture bot06e96e786f6e0195e4510ce2a5a2b4e32decd7a9/localc398411 trees match
+7b09cde42c66f952021e277420b60af0a197a4e2. Source API35 APK artifact12504592213;
+screenshot artifact12504268052. No known source failures or uncommitted source work.
 
-Remaining delivery: inspect latest CI and fix actual failures; validate final migration/
-backup/UI suites on APIs28/35/36; review complete diff and permissions; ensure real capture
-job passes, adopt exact PNGs/source metadata locally and visually review. README is now
-curated to8 actual-build images including new run-now/post-run-route capture names; never
-publish stale screenshots. Final verification docs/PR body must identify actual results.
-Only once complete/green, mark PR9 ready, merge with expected head, verify exact main and
-post-merge CI/API35 APK. Preserve screenshot-bot commits and all local checkpoints.
+At this documentation checkpoint, remaining delivery is final docs-head CI, PR ready/
+merge, exact main verification and fresh post-merge API35 APK. These steps may already
+be complete when resumed: inspect PR9, current main and latest Actions BEFORE doing
+anything. PR9's delivery record/final report should identify the actual main/run/artifact.
+Do not repeat implementation or disregard screenshot-bot commits. No force/reset.
 
-Known limitations: no licensed exact event geometry; original course-inspired drawings
-with factual-source/reuse notes, clearly not navigation. Time budget is hard for known
-prescribed durations but disclosed soft trade-off for distance-only sessions without
-trustworthy pace evidence. Physical S24 GNSS/audio/BLE/battery/Health Connect/200%-TalkBack
-checks remain. Recovery, backup bounds and existing0.7 limitations still apply.
-No future Wear OS/maps/cloud/LLM/medical feature work. Do not redo completed implementation.
+Known limits: original course-inspired geometry, not verified official routes; no
+unlicensed organiser data bundled. Usual duration is a disclosed soft trade-off for
+distance-only sessions without trustworthy pace evidence; known-duration prescriptions
+are capped. Technique art remains stylised and requires qualified review. Physical S24
+GNSS/locked-screen/BLE/TTS/music/battery/Health Connect/TalkBack checks remain. Existing
+recovery/backup bounds apply. No Wear OS/maps/cloud/LLM/medical/public-release work.
