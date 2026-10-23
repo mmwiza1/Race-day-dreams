@@ -61,47 +61,42 @@ At the end, give a concise summary containing:
 
 ---
 
-# Current task: Prompt 2 — Live Coach / race support
+# Current task: 0.8.0-test1 — Today / routes / strength polish
 
-Start from the actual working tree. Branch codex/live-coach-race-day; PR #8.
-Starting main e381231f8a4c7483dea1c869df2f114a2bf2ba5f is the verified Prompt1 release.
-Local checkpoints3800f00, f7b4ff9, d9de057 are preserved. Connector-published commit IDs
-can differ from local IDs; compare trees/source blobs and preserve screenshot-bot commits.
+Start main6ebd53c3e102f5ccbef957f68d5dad19f7112eec. Feature
+feature/0.8-today-routes-strength-polish, draft PR9. Local checkpoints05fc465,
+652a47a,b68075f,8ea40e6 retained; connector commit IDs differ, compare trees.
+Remote source after8ea40e6 is ec69b6260b2f6538dea2f3ceb48b3f4330e2a841.
+Inspect actual PR/head/CI before changing anything. No reset or discarded work.
 
-Implemented domain: WorkoutExecutionEngine, CoachCues/Sink, RecoveryCoaching,
-RacePredictionEngine/Strategy, RunningRoutines and DreamRoutes. One recorder service
-owns execution/audio/sensors, fixed-footer live UI and finish→activity navigation.
-SupportStore schema8 retains prescription/strategy snapshots, actual step evidence,
-routine completions and stable Dream assignments. Work-only Run Score excludes
-recoveries; raw evidence can corroborate existing bounded adaptation. New optional
-health alternatives preview one explicit easy version without changing race/availability.
-Race dashboard/official result linkage, original support figures/routines, history
-summaries/detail loading and CompleteBackup format1 are wired. JSON6 reads1–5; raw
-archive2 reads1. No Internet/new runtime dependency. VIBRATE is added for local haptics.
+Implemented: Today semantic tiles, recorder-only onboarding, Run Now free/quick/custom/
+repeat/favourites, immutable step groups/reorder/edit/open manual completion on ONE
+recorder; origin and explicit plan associations; actual route fitting/markers/qualified
+altitude/Route Story; Dream v2 original geometry/landmarks/live panel/preferences with
+legacy geometry preserved; favourite star/library filter/generator preference;6RM;
+exact-exercise recent starting-load reference;3-frame original technique refinements;
+race-week checklist/taper;4-week trends/shoe use and optional discomfort observations;
+scheduling dates/time/distribution with honest distance-duration trade-off; safe diagnostics.
+Schema9 additive release08. JSON7 reads1–6, raw2/complete1 unchanged and transactional.
+See docs/RELEASE_0_8.md and docs/DREAM_ROUTES.md. No Internet/dependencies/assets added.
 
-Final source42a7cf1ae66a82bf0937627341322d7a40b0f238 passed workflow39920357014:
-59,582 domain assertions,38 schema tests, debug/test APK assembly, lint and174
-instrumentation tests on EACH API28/35/36. Canonical job120306521330 published41
-real-build PNGs, reviewed and adopted in local3ac4bd9. Remote screenshot bot head
-was a4fac024b9313fb19ae2c608f4ca380321a77b11. Both complete trees matched
-921fb4fddf8b4cb093808f8c6783a0eb51309a75 before this documentation update.
-Fingerprint e09acea76c0152d868a19f0bcdb7fce547f5feaf1f7df34a92ce70178788aabb.
-API35 APK artifact12486989330, run39920357014, is the verified source build.
-No known source/test failure. Android unavailable locally (default cache unwritable;
-workspace Gradle download SocketException); use established GitHub CI.
+Observed local59,740 domain assertions and40 schema tests. Android builds on earlier
+0.8 checkpoints passed; CI caught ambiguous onboarding click (fixed unique headings)
+and missing preserved performance warning (restored). Current source needs its own full
+CI. New Android store/UI coverage and canonical capture changes are present. No physical
+checks done. Do not infer later source passed from a superseded/cancelled run.
 
-Implementation is complete within the explicit limitations below. Do not redo it or
-start future features. Remaining delivery: publish this docs-only checkpoint atop
-the actual PR8 head, ensure final-head CI green, mark ready and merge under the
-established workflow, verify exact main SHA/post-merge CI and fresh API35 artifact.
-Inspect PR8/main/Actions first: these steps may have completed since this note.
-Keep all local checkpoints and screenshot-bot history; compare trees when connector
-commit IDs differ. No reset/discard. Final report must identify actual merge/CI/APK.
+Remaining delivery: inspect latest CI and fix actual failures; validate final migration/
+backup/UI suites on APIs28/35/36; review complete diff and permissions; ensure real capture
+job passes, adopt exact PNGs/source metadata locally and visually review. README is now
+curated to8 actual-build images including new run-now/post-run-route capture names; never
+publish stale screenshots. Final verification docs/PR body must identify actual results.
+Only once complete/green, mark PR9 ready, merge with expected head, verify exact main and
+post-merge CI/API35 APK. Preserve screenshot-bot commits and all local checkpoints.
 
-Key limits: recovery finalizes partial portion (no restart tracking), final5sec may
-be lost. Backup bounded8MiB JSON/512MiB raw,1000 recordings/100k points each. Dream
-Routes are original abstract city-inspired drawings, not actual official courses.
-Arbitrary interval authoring UI, repeat/restart rep, custom race checklist and verified
-course datasets are absent; planner flat segments are preserved rather than invented.
-Physical S24 GNSS/background/BLE/TTS/music/haptics/battery/permission/accessibility tests
-remain. No Wear OS/cloud/LLM/public-release/map tiles. Do not add them or discard work.
+Known limitations: no licensed exact event geometry; original course-inspired drawings
+with factual-source/reuse notes, clearly not navigation. Time budget is hard for known
+prescribed durations but disclosed soft trade-off for distance-only sessions without
+trustworthy pace evidence. Physical S24 GNSS/audio/BLE/battery/Health Connect/200%-TalkBack
+checks remain. Recovery, backup bounds and existing0.7 limitations still apply.
+No future Wear OS/maps/cloud/LLM/medical feature work. Do not redo completed implementation.

@@ -19,7 +19,10 @@ class SupportStore(context:Context) {
     fun dream(activity:String,metres:Double):DreamRoutes.Assignment? {
         db.beginTransaction();try {
             val retained=get("dream",activity)
-            val prefs=Release08Store(contextRef).dreamPreferences()
+            val release=Release08Store(contextRef)
+            val origin=if(activity.startsWith("rdd:"))release.get("origin",activity.removePrefix("rdd:"))else null
+            if(retained==null&&origin!=null&&!origin.has("dreamRoute")){db.setTransactionSuccessful();return null}
+            val prefs=release.dreamPreferences()
             if(retained==null&&(!prefs.first||prefs.second.isEmpty())){db.setTransactionSuccessful();return null}
             val result=if(retained!=null)DreamRoutes.Assignment(retained.getString("route"),retained.getDouble("start"),retained.getDouble("distance"))else DreamRoutes.assign(metres,java.security.SecureRandom(),prefs.second)
             if(retained==null)save("dream",activity,JSONObject().put("version",1).put("route",result.routeId()).put("start",result.startMetres()).put("distance",result.coveredMetres()).put("assignedAt",Instant.now().toString()))

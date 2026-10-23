@@ -79,7 +79,7 @@ def migrate_to_latest(connection, target=9):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
     if old not in (1, 2, 3, 4, 5, 6, 7, 8) or target != 9:
-        raise ValueError("Only explicit version 1/2/3/4/5 to 7 paths are supported")
+        raise ValueError("Only explicit schemas 1–8 to schema 9 paths are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:

@@ -1,3 +1,28 @@
+# Verification — 0.8.0-test1
+
+Starting live main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec` confirmed through GitHub.
+Branch `feature/0.8-today-routes-strength-polish`; PR #9. Version0.8.0-test1/code9,
+schema9, JSON envelope7 (reads1–6), raw archive2 and complete package1 unchanged.
+
+Baseline passed locally:59,582 domain assertions and38 actual-DDL schema tests.
+Current local suite: **59,740 domain assertions** (158 new0.8 checks), **40 schema tests**.
+New coverage includes custom/repeated/open prescriptions, invalid/oversized definitions,
+execution boundaries, geometry fitting/interpolation/bounds, exact-exercise recent load
+references, unknown effort,6RM and compatible favourite selection. Schema tests cover
+all1–8 upgrades and rollback; retained old fixtures/assertions remain.
+
+Android verification runs through GitHub Actions because this environment cannot fetch
+Gradle/SDK locally. PR9 records exact passing/failing heads. An early checkpoint compiled
+but UI tests caught ambiguous onboarding text and a missing preserved performance warning;
+corrected selectors/UI and later source need their own full green run. Superseded runs
+are cancelled by workflow concurrency, not counted as passes. Final source, instrumentation
+totals, canonical captures, merged-main CI and API35 APK must be recorded after observation.
+No physical GPS/BLE/TTS/music/battery/accessibility pass is claimed. TEST_BUILD.md lists
+Galaxy S24 checks. Dream v2 is original stylised artwork, not verified official course
+geometry. No Internet permission, runtime dependency or third-party visual asset added.
+
+The records below describe earlier releases.
+
 # Verification — Live Coach / race support (0.7.0-test1)
 
 Starting main e381231f8a4c7483dea1c869df2f114a2bf2ba5f. Branch
