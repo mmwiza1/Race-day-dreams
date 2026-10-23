@@ -79,19 +79,24 @@ Race dashboard/official result linkage, original support figures/routines, histo
 summaries/detail loading and CompleteBackup format1 are wired. JSON6 reads1–5; raw
 archive2 reads1. No Internet/new runtime dependency. VIBRATE is added for local haptics.
 
-Local full domain59,582 assertions and schema38 pass. Remote checkpoint53eafc3 passed
-workflow39915839214: build/lint and170 device tests on each28/35/36; canonical captures
-passed. Later local d9de057 source (plus docs) still needs publishing/full verification.
-Do not claim those changes passed because the earlier source did. Main is not updated.
-No known local domain/schema failure; Android unavailable locally (unwritable default
-cache, workspace-cache Gradle download SocketException). Use established GitHub CI.
+Final source42a7cf1ae66a82bf0937627341322d7a40b0f238 passed workflow39920357014:
+59,582 domain assertions,38 schema tests, debug/test APK assembly, lint and174
+instrumentation tests on EACH API28/35/36. Canonical job120306521330 published41
+real-build PNGs, reviewed and adopted in local3ac4bd9. Remote screenshot bot head
+was a4fac024b9313fb19ae2c608f4ca380321a77b11. Both complete trees matched
+921fb4fddf8b4cb093808f8c6783a0eb51309a75 before this documentation update.
+Fingerprint e09acea76c0152d868a19f0bcdb7fce547f5feaf1f7df34a92ce70178788aabb.
+API35 APK artifact12486989330, run39920357014, is the verified source build.
+No known source/test failure. Android unavailable locally (default cache unwritable;
+workspace Gradle download SocketException); use established GitHub CI.
 
-Next: preserve current uncommitted docs, publish source/docs atop actual PR8 head,
-inspect full Android CI, fix genuine failures, inspect new screenshots (warm-up,
-mobility, Dream Route, Live Coach, race dashboard), adopt exact canonical PNGs/meta,
-review complete diff/privacy/backup and final PR state. Keep draft until verified.
-If green, follow established repository workflow and verify main/post-merge APK.
-Update this section and VERIFICATION.md with actual final results, not inferred ones.
+Implementation is complete within the explicit limitations below. Do not redo it or
+start future features. Remaining delivery: publish this docs-only checkpoint atop
+the actual PR8 head, ensure final-head CI green, mark ready and merge under the
+established workflow, verify exact main SHA/post-merge CI and fresh API35 artifact.
+Inspect PR8/main/Actions first: these steps may have completed since this note.
+Keep all local checkpoints and screenshot-bot history; compare trees when connector
+commit IDs differ. No reset/discard. Final report must identify actual merge/CI/APK.
 
 Key limits: recovery finalizes partial portion (no restart tracking), final5sec may
 be lost. Backup bounded8MiB JSON/512MiB raw,1000 recordings/100k points each. Dream

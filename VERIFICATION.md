@@ -17,8 +17,18 @@ Checkpoint53eafc337e321f2d33e22adbd7eca1a4de1f289b passed Actions39915839214:
 Android build/lint/test assembly and170 tests per API28/35/36, including combined
 backup, sample/assignment restore, corruption retention, optional routines without
 calendar entries and schema7→8 retention. Authentic capture publication also passed.
-Final source after these checkpoints still needs its own full CI run; do not infer
-that later changes passed from an earlier checkpoint. PR8/Actions record exact heads.
+Final source `42a7cf1ae66a82bf0937627341322d7a40b0f238` passed
+[workflow39920357014](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39920357014):
+59,582 domain assertions, 38 schema tests, debug/test APK assembly and lint,
+and **174 instrumentation tests on each API28/35/36**. The canonical screenshot
+job120306521330 passed and published 41 real-build PNGs; final captures were reviewed
+and adopted without modification. Screenshot source fingerprint:
+`e09acea76c0152d868a19f0bcdb7fce547f5feaf1f7df34a92ce70178788aabb`.
+API35 artifact [12486989330](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39920357014/artifacts/12486989330)
+is `Race-Day-Dreams-0.7.0-test1-debug-api-35`, containing
+`Race-Day-Dreams-0.7.0-test1-debug.apk`. This is the verified source build;
+PR8 and Actions track final documentation-head and merged-main verification.
+No merge or post-merge result is inferred from this source run.
 
 Local Android invocation was attempted: default cache is unwritable; with a workspace
 Gradle cache the distribution download fails with SocketException: Operation not
