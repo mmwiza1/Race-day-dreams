@@ -425,3 +425,18 @@ The later40002513476 API36 attempt stopped before tests on a corrupt latest-emul
 SDK ZIP. Emulator37.2.12.0/build16428233 is the observed-good version from the earlier
 full matrix; CI now pins that version. Fresh verification of the pin is pending.
 This infrastructure failure is not counted as an application test pass/failure.
+
+## Pinned-emulator checkpoint — observed complete Android matrix
+
+Sourcef61d7ac38d1aab6f4fd481e37a35d7171d06d5d5 /workflow40003600528 passed
+build/lint and**198tests perAPI28/35/36** using the documented emulatorbuild16428233.
+Jobs28/35/36:120585761004/120585761167/120585761156. All15canonical art entries,
+26resources and the caption-spacing fix are covered by the current resource tests.
+Canonical53PNGjob120589093869passed; exactbot0e1780cdb3f132c6c675e1b150e2285388d1045e
+files were adopted. Freshcable-row/Plan200%-dark were visually reviewed; captions
+no longer touch and controls/text remain legible. Fullfidelitygate is stillOPEN.
+API35APK35762063bytes, artifact12523133161; screenshotartifact12522469468.
+Strictguidance-completeness still fails159missing canonical entries, so the whole
+workflow is not green and publication is skipped. No physicalS24check performed.
+Later bundled-inventory synchronization/CIequality check needs a fresh matrix; it
+changes documentation/workflow, not the recorder/coaching logic or runtime libraries.
