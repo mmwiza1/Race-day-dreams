@@ -12,7 +12,7 @@ class Release08Store(context:Context) {
     private val db=ProfileDatabase.get(context).writableDatabase
     fun get(kind:String,id:String):JSONObject?=db.rawQuery("SELECT payload FROM release08 WHERE kind=? AND id=?",arrayOf(kind,id)).use{if(it.moveToFirst())JSONObject(it.getString(0))else null}
     fun save(kind:String,id:String,j:JSONObject)=put(db,kind,id,j)
-    fun workouts():List<CustomWorkout> {val out=mutableListOf<CustomWorkout>();db.rawQuery("SELECT payload FROM release08 WHERE kind='custom' ORDER BY id",null).use{while(it.moveToNext())out.add(decode(JSONObject(it.getString(0))))};return out}
+    fun workouts(offset:Int=0,limit:Int=20):List<CustomWorkout> {require(offset>=0&&limit in 1..100);val out=mutableListOf<CustomWorkout>();db.rawQuery("SELECT payload FROM release08 WHERE kind='custom' ORDER BY id LIMIT ? OFFSET ?",arrayOf(limit.toString(),offset.toString())).use{while(it.moveToNext())out.add(decode(JSONObject(it.getString(0))))};return out}
     fun save(w:CustomWorkout)=save("custom",w.id(),encode(w))
     fun previous():List<CustomWorkout>{val out=mutableListOf<CustomWorkout>();db.rawQuery("SELECT id,payload FROM coach_support WHERE kind='execution' ORDER BY rowid DESC LIMIT 50",null).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(1));if(j.has("activityId")&&j.optString("mode")!="race")out.add(CustomWorkout(c.getString(0),j.optString("title","Previous structured run"),listOf(CustomWorkout.Group(1,SupportStore.steps(j)))))}};return out}
     fun removeWorkout(id:String){db.delete("release08","kind='custom' AND id=?",arrayOf(id))}
