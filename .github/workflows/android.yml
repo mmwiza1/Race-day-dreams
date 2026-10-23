@@ -2,6 +2,7 @@ name: Android coaching test build
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
 
 permissions:
@@ -38,6 +39,8 @@ jobs:
         run: |
           sh scripts/test-domain.sh
           python3 scripts/test-schema.py
+          python3 scripts/test-release-notes.py
+          java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java --report
       - name: Build, lint and compile instrumentation tests
         run: ./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
       - name: Resolved runtime dependency inventory
@@ -64,6 +67,7 @@ jobs:
         run: |
           mkdir -p build/distributions
           cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk
+          stat --format='APK_BYTES=%s' app/build/outputs/apk/debug/app-debug.apk
       - name: Upload verified debug APK
         uses: actions/upload-artifact@v4
         with:
@@ -138,3 +142,72 @@ jobs:
           for image in sorted(Path('docs/screenshots').glob('*.png')):
               print('SCREENSHOT_REVIEW ' + json.dumps({'path': str(image), 'base64': base64.b64encode(image.read_bytes()).decode()}))
           PYSCREEN
+
+  publish-test-release:
+    needs: build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release-publication
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Require complete instructional coverage before publication
+        run: |
+          sh scripts/test-domain.sh
+          java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java
+          test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
+      - uses: actions/download-artifact@v4
+        with:
+          name: Race-Day-Dreams-0.8.1-test1-debug-api-35
+          path: build/verified-apk
+      - name: Publish verified APK and maintained release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_SHA: ${{ github.sha }}
+          BUILD_REF: ${{ github.ref }}
+          BUILD_TAG: ${{ github.ref_name }}
+          BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(python3 -c "import re;print(re.search(r\"versionName\\s+'([^']+)'\",open('app/build.gradle').read()).group(1))")
+          apk="Race-Day-Dreams-$version.apk"
+          cp build/verified-apk/*.apk "$apk"
+          sha256sum "$apk" > "$apk.sha256"
+          if [ "$BUILD_REF" = 'refs/heads/main' ]; then
+            # An older successful workflow must not overwrite a newer main build.
+            live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
+            if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
+            python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --development --output build/release-notes.md
+            if gh api "repos/$GH_REPO/git/ref/tags/development" >/dev/null 2>&1; then
+              gh api --method PATCH "repos/$GH_REPO/git/refs/tags/development" -f sha="$BUILD_SHA" -F force=true
+            else
+              gh api --method POST "repos/$GH_REPO/git/refs" -f ref='refs/tags/development' -f sha="$BUILD_SHA"
+            fi
+            if gh release view development >/dev/null 2>&1; then
+              gh release edit development --title 'Latest Development Build' --notes-file build/release-notes.md --prerelease --latest=false
+              gh release upload development "$apk" "$apk.sha256" --clobber
+            else
+              gh release create development "$apk" "$apk.sha256" --verify-tag --title 'Latest Development Build' --notes-file build/release-notes.md --prerelease --latest=false
+            fi
+            # Keep one rolling development release; leave immutable version releases alone.
+            gh api "repos/$GH_REPO/releases/tags/development" --jq ".assets[] | select(.name != \"$apk\" and .name != \"$apk.sha256\") | .id" | while read -r asset; do
+              gh api --method DELETE "repos/$GH_REPO/releases/assets/$asset"
+            done
+          else
+            python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --tag "$BUILD_TAG" --output build/release-notes.md
+            # Permanent tags/releases are never overwritten, including accidental retries.
+            if gh release view "$BUILD_TAG" >/dev/null 2>&1; then
+              echo 'Version release already exists; refusing to overwrite it.' >&2
+              exit 1
+            fi
+            gh release create "$BUILD_TAG" "$apk" "$apk.sha256" --verify-tag --title "Race Day Dreams $version" --notes-file build/release-notes.md --prerelease --latest=false
+          fi
