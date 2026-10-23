@@ -98,7 +98,7 @@ No new permissions, Internet permission, runtime dependency or network image/map
 - 7c078bc: seven more reviewed original canonical sequences; no timed-guide fake
   repetition instruction. 37c922b: Berlin geographic integration/exact section clip/
   old+new backup compatibility test. 2058748:53-screen fixture and missing-ID list.
-- Latest local checkpoint before this handoff9ed3c9f adopts all50 real screenshots
+- Local checkpoint9ed3c9f adopts all50 real screenshots
   from source8aadbf9e3c677f478cf9196244fe7d78323998d2. All52 screenshot-directory
   blobs (50PNG+source SHA+fingerprint) match bot00b8ac6519c648bed1ce722ef151e2cf159fbbbf.
 
@@ -176,16 +176,27 @@ Latest fixture adds BSSHowTo/cable-row/plank, explicitly exercises new Berlin.
 Do not claim50captures represent new seven assets or new geographic rendering.
 README final8-screen curation and release declaration remain pending.
 
+## Additional visual refinement
+
+4679585 reduces the week header spacing, keeps This week/date controls on one row
+at default font and separate rows above115% font, and groups seven day cards with
+8dp gaps. It removes the duplicated HowTo heading above the artwork. Both changes
+follow the actual50capture review; they still require current-build verification.
+
 ## Remote/publish next
 
-Last inspected remote feature head is screenshot bot
-00b8ac6519c648bed1ce722ef151e2cf159fbbbf, tree64204d29e597d5e354a7e426e0fd89656e91e86b.
-Local source matches its parentfe1d356 tree before subsequent committed work.
+Latest pushed source1ac6f0170584ccef1c261313c48fb79463e9c9a4 matches local74c11e1
+(tree75e6898be2b3ccd42b924ffaed18d3f7e084d0c9), preserving bot00b8ac6519c648bed1ce722ef151e2cf159fbbbf.
+Its workflow39994147090 is in progress with build/lint passed and instrumentation
+running on all3APIs. Strict guidance gate fails163missing as expected. Recheck actual
+status and bot captures before next push. Only4679585 plus this handoff update are
+not yet pushed; new assets/geography are already uploaded.
 Use actual current remote tree as base; preserve all bot screenshot assets.
-`/workspace/scratch/publish05.py fe1d356` emits text chunks (rerun after docs),
-binaries must upload separately via github_create_blob base64. Seven new WebPs
-(guide_back_squat,bulgarian_split_squat,plank,seated_cable_row,deadlift,overhead_press,
-dumbbell_bench_press). All other binary changes are already in bot remote tree.
+`/workspace/scratch/publish05.py 74c11e1` emits pending text chunks (rerun after docs).
+No further binary upload is needed for the existing22art assets. All new seven
+WebPs are already uploaded on1ac6f017. The current source tree was compared exactly
+before update_ref. Local raw download of an older APK via signed URL failedsandbox
+Operation not permitted; baseline byte size remains unmeasured, not a release pass.
 Compare resulting tree SHA to local HEAD tree before creating commit; update_ref
 with expected_sha lease, never force. Current scratch chunks predate handoff updates.
 
