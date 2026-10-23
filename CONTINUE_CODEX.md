@@ -104,11 +104,12 @@ No new permissions, Internet permission, runtime dependency or network image/map
 
 ## Exercise artwork — hard gate still unmet
 
-Canonical accepted visual guides **11/174**, text guides26/174. Exact art IDs:
+Canonical accepted visual guides **15/174**, text guides26/174. Exact art IDs:
 romanian-deadlift, bench-press, walking-lunge, glute-bridge, back-squat, split-squat
-(Bulgarian), plank, seated-cable-row, deadlift, overhead-press, dumbbell-bench-press.
+(Bulgarian), plank, seated-cable-row, deadlift, overhead-press, dumbbell-bench-press, trap-bar-deadlift, barbell-row,
+pull-up, hip-thrust.
 All14 routine movements have reviewed original artwork; old routine renderer removed.
-22WebPs1200x800/q84 total798940bytes. Asset hashes/bytes/provenance in
+26WebPs1200x800/q84 total1006834bytes. Asset hashes/bytes/provenance in
 `docs/exercise-artwork/asset-provenance.json`. Original PNGs preserved in
 /workspace/generated_images. No reference JPEG pixels or web artwork copied.
 Rejected drafts: raised-heel calf stretch; duplicate march; clipped DB-bench shoe.
@@ -117,7 +118,7 @@ Canonical calf exercise is machine-based: routine bodyweight art is NOT counted 
 `TechniqueIllustrations.java` is a curated registry, not a fallback generator.
 `TechniqueGuide.java` still has only26 text entries. Unregistered guides still use
 old diagrams/missing text; this must be replaced before delivery. Do not pretend
-sharing an unrelated pose makes174 complete. Exact163 missing IDs are recorded in
+sharing an unrelated pose makes174 complete. Exact159 missing IDs are recorded in
 `docs/exercise-artwork/missing-canonical-ids.txt`. Strict audit deliberately fails:
 `java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java`.
 `--report` is development only. Packaged-resource instrumentation validates every
@@ -209,7 +210,7 @@ with expected_sha lease, never force. Current scratch chunks predate handoff upd
    expected and53actualPNG captures. Fix real failures; preserve bot assets.
 2. Canonical174 artwork+text entries: TechniqueIllustrations.java, TechniqueGuide.java,
    GuidanceArtwork.kt/TechniqueScreens.kt, original resource creation/review. Strict
-   CI remains red163missing until honestly completed. Add no generic placeholder.
+   CI remains red159missing until honestly completed. Add no generic placeholder.
 3. Four remaining geographic Dream Routes and polished original offline presentation;
    new IDs, old assignment/backups retained. DreamRoutes.java/DreamDrawing.kt,
    docs/DREAM_ROUTES.md. Review Berlin actual screenshot too.
@@ -234,3 +235,38 @@ failedOperation not permitted; requesting additional network permission then sta
 and was user-aborted after2577seconds. No APK was downloaded/size baseline verified.
 Use working GitHub connectors/CI and report unmeasured baseline honestly. This did
 not change repository files/commits. Latest user explicitly requested continuation.
+
+## Latest verified checkpoint / push next (supersedes older remote notes)
+
+Full matrix sourcef55f346404d02ed5a30aa44f108b894b62816c33:
+workflow40001032343, build/lint/domain/instrumentation **198tests/API28/35/36 PASS**.
+Jobs28=120576844171,35=120576844320,36=120576844204.
+Canonical53PNG job120580197027 passed. Bot13d08e4f2546cf2bc05acc5d7e7f9a520c618edb,
+tree20b43cb43b2d0487734134b1c45c058cc059d544, preserved locally inae98bc3.
+All55directoryfiles match bot exactly. Fingerprint95186626f4320de395326ef1bce3c46dce398af4fb5eec56c7b04d5c10d6a618.
+API35APK35552978bytes; artifact12521324947, name
+Race-Day-Dreams-0.8.1-test1-debug-api-35. Screenshot artifact12521379670.
+Whole workflow still red solely from strict catalogue completeness; no release.
+
+Viewed actual compact Plan, geographicBerlin and cable-row guide. Plan now shows
+about5days at normal scale with the real multi-session fixture; header no longer
+wastes a full row. Berlin outline is now geographic and stable but still lacks
+polished basemap/city illustration of the reference; other4geographies pending.
+Cable-row phase captions touched each other; fixed with16dp column spacing in6195d59.
+No design gate is declared passed.
+
+0f9a6b9 adds four reviewed illustrations (trapbar/row/pullup/hipthrust), bringing
+canonical15/174. Latest four not yet Android-verified; existing resource test will
+validate them next matrix. Deadlift copy now permits appropriate knee bend instead
+of inheriting an RDL-specific warning. Local domain59804 still passes. Source images
+for these four are original imagegen outputs; hipthrust regenerated with full margins.
+Extra licensing research exclusions recorded in docs/dream-route-data/README.md:
+pretty-gpx isCC BY-NC-SA, funmaps/datanews have no licence. None ingested.
+
+NEXT PUSH: runpublish05.py cb3e747 over ACTUAL bot tree20b43...; new binary uploads
+onlyguide_trap_bar_deadlift,guide_barbell_row,guide_pull_up,guide_hip_thrust.
+Existing26assets total1006834bytes after those uploads. Preserve53PNGbotassets.
+Check localHEADtree equals resultingremote tree before update_ref. Recheck remotehead
+lease13d08e... first. Full fresh matrix needed for latest assets/caption fix.
+Don't re-request shell network permission; it stalled again and was user-aborted.
+Use GitHub connectors and actual CI. No baseline APK size has been measured.

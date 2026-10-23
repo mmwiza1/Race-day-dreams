@@ -19,7 +19,7 @@ bot00b8ac6519c648bed1ce722ef151e2cf159fbbbf. APK size at that source35204614byte
 
 The strict guidance-completeness job fails because canonical visual coverage is
 unfinished; **the whole workflow is not green and publication was skipped**.
-Current coverage11/174 canonical visual guides,26 text guides;14/14 routine art.
+Current coverage15/174 canonical visual guides,26 text guides;14/14 routine art.
 New seven images/geographic Berlin/backup test ran in workflow39994147090:
 build/lint and197 of198tests/API passed, including the new backup test. The single
 failure on everyAPI was an ambiguous screenshot selector matching search input and
@@ -407,3 +407,16 @@ merge, post-merge CI and verified `Race-Day-Dreams-0.4.1-test1-debug.apk` artifa
 Physical Galaxy S24 checks remain required for 200% fonts across all screens,
 TalkBack, dark contrast, keyboards/date pickers, scroll behaviour and upgrade/restore.
 CI establishes emulator results, not physical-device UX or coaching efficacy.
+
+## Later observed 0.8.1 checkpoint
+
+Sourcef55f346404d02ed5a30aa44f108b894b62816c33 inworkflow40001032343 passed
+build/lint and198instrumentation tests on eachAPI28/35/36. This fixes the previously
+recorded screenshot ambiguity and includes the Berlin new/legacy complete-backup test.
+Canonical53PNGcaptures were adopted exactly frombot13d08e4f2546cf2bc05acc5d7e7f9a520c618edb.
+API35APK35552978bytes, artifact12521324947. Screenshot artifact12521379670.
+Strict catalogue gate remains red; no publication. Latest four added canonical
+art assets and phase-caption spacing fix are later changes needing a fresh matrix.
+Actual compact Plan/Berlin/cable-row captures were reviewed. Full fidelity gate still
+open: geographic replacement is complete for onlyBerlin, guides15/174. Physical S24
+remains unverified. These are checkpoints, not a completed0.8.1 release claim.

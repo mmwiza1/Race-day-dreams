@@ -90,3 +90,9 @@ Plan density and complete catalogue/Dream geography acceptance still remain open
 These captures predate the later seven canonical assets/geographic Berlin changes.
 The next fixture requests53captures including BSSHowTo, cable row and plank.
 No design JPEG is presented as an actual app capture or substituted for one.
+
+Sourcef55f346404d02ed5a30aa44f108b894b62816c33 subsequently passed all198tests/API
+and produced53captures (workflow40001032343). Those exact PNGs are now adopted.
+Reviewed compact Plan, geographicBerlin and cable-row guide; long phase captions
+needed explicit spacing, now fixed for next capture. The Berlin source is geographic,
+not final visual-reference approval. New four canonical assets also need fresh capture.
