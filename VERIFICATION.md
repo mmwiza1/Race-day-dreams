@@ -1,45 +1,73 @@
-# Verification — Health Intelligence + native Run Engine increment
+# Verification — Health Intelligence + native Run Engine (0.6.0-test1)
 
-Starting main `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba`; branch
-`codex/health-intelligence-run-engine`; PR #7. Version 0.6.0-test1 / 7;
-schema 7; app JSON backup envelope 5; companion raw recording archive version 1.
+Starting main `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba`; owner handoff update
+`2099560bdbdb8520f8e9ba66a2b6f5fca4b20d26` preserved. Branch
+`codex/health-intelligence-run-engine`; PR [#7](https://github.com/mmwiza1/Race-day-dreams/pull/7).
+Version **0.6.0-test1**, code **7**, schema **7**, app JSON envelope **5** (reads1–4),
+companion raw-recording ZIP format **1**.
 
-Observed local results: full domain scripts pass **57,728 assertions** (1,055 new
-trace/personal-baseline checks); schema scripts pass **36 tests**, including every
-supported 1–6 upgrade, retained old rows, one-active-run/FK constraints and failed
-migration rollback. Existing suites/assertions were retained. Android instrumentation
-adds recovery/finalization failure, GPX round-trip/dedup/malformed/DTD and raw-archive
-round-trip/conflict tests.
+## Observed results
 
-Verified production source `eb7d778344d31944aef5035a325ac781b973440a`:
-[workflow 39879428544](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39879428544)
-passed domain/schema checks, Android debug assembly, lint and instrumentation compilation.
-**154 instrumentation tests passed on each of API 28, 35 and 36** (jobs
-120173258800 / 120173258655 / 120173259105). Canonical capture job120175133853
-published 36 authentic API-35 PNGs, reviewed including health context, recording setup,
-Home, Settings, dark mode and 200% font. Fingerprint matches production source.
-The API-35 artifact is `Race-Day-Dreams-0.6.0-test1-debug-api-35`, containing
-`Race-Day-Dreams-0.6.0-test1-debug.apk` (artifact12469858749).
-Documentation/capture-head and any merged-main checks remain linked from PR #7;
-final delivery must report their actual states.
+Production source `b19bb77542ba461dfb9ae6e6b27ad9ea50fbcd8e` passed
+[workflow39903824374](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39903824374):
 
-Observed earlier run 39878289161 (source5279ae4) passed Android build/lint but
-failed device tests: Kotlin JSON overloads unboxed missing sensor fields, the
-old privacy test forbade newly implemented permissions, and completion fixtures
-could extend into the future after midnight. These were fixed, not bypassed;
-the successful source run above confirms the corrections on all three APIs.
+| Check | Actual result |
+| --- | --- |
+| Domain scripts / Gradle domain check | 57,732 assertions passed (1,059 new recording/health checks) |
+| Actual schema-DDL scripts | 36 tests passed; supported1–6 upgrades and rollback |
+| Android debug assembly, lint, instrumentation compilation | Passed |
+| API28 instrumentation | 160 tests passed; job120251471247 |
+| API35 instrumentation | 160 tests passed; job120251471448 |
+| API36 instrumentation | 160 tests passed; job120251471384 |
+| Authentic canonical API35 capture | 36 PNGs published; job120252842355 |
 
-Local Android build remains unavailable due missing SDK/restricted Gradle download;
-CI runs actual build/lint/instrumentation on API 28/35/36. An earlier API-35 job hit
-an invalid emulator archive before tests (not counted as success). No physical device
-has been used. No Internet permission, runtime parser/sensor dependency, copied GPL
-source or proprietary binary was introduced.
+The API35 artifact12480321523 is `Race-Day-Dreams-0.6.0-test1-debug-api-35`,
+containing `Race-Day-Dreams-0.6.0-test1-debug.apk`. Final documentation/capture-head
+and any merged-main runs are recorded on PR7/Actions; the final report identifies
+the exact delivered commit and artifact rather than inferring success.
 
-See docs/RUN_ENGINE.md and TEST_BUILD.md for explicit recording/backup/hardware limits.
-Final source/CI/screenshot/APK results are recorded on PR #7 as they become available.
-The current domain suite additionally covers pause-event recovery (57,730 local assertions); recovery no longer truncates active time at the last GPS point. GPX standard escaped metadata and separate-track rejection have additional device tests pending the final source run.
+New coverage includes deterministic5K replay/interpolated splits, rejected jump,
+GPS gap, manual/automatic pause, monotonic clock changes, missing/future HR,
+comparable-source health coverage and primary sleep vs nap. Real Android stores
+exercise crash staging/recovery, failed finalization, GPX round-trip/dedup/DTD and
+multi-track rejection, archive checksums/version rejection/rollback, compact app
+backup + raw restore, SDK-unavailable write UI, and retained legacy payloads.
+The four-hour test is **synthetic replay**, with14,401 points, a compact SQLite
+metadata row and genuine calculated splits. It is not four hours of physical GPS,
+BLE or battery testing. Existing tests and assertions remain in the matrix.
 
-The following verification records apply to previous releases only.
+CI caught nullable Kotlin/JSON primitive-overload crashes, obsolete permission
+expectations and completion fixtures that could extend into the future at midnight.
+They were fixed; the full passing runs verify the corrections. Earlier corrupt
+emulator downloads failed before tests and are not counted as passes.
+
+Local domain/schema scripts pass. Actual Android build/lint/device results above
+come from GitHub-hosted emulators; no local or physical-device build result is
+invented. Screenshots were reviewed for health context, recording setup, Home,
+Settings, dark mode and200% fonts. Fixtures remain androidTest-only; the ready
+recording screen does not fabricate live GPS. Fingerprint:
+`03740acea4f555128e3f8be4cc5d83ae354694ca242a460570c8a5a57e2d659b`.
+
+No Internet permission, runtime parser/sensor dependency, copied GPL source,
+proprietary SDK, account or backend was introduced. See THIRD_PARTY.md.
+
+## Physical checks and deliberate limits
+
+Follow TEST_BUILD.md on the Galaxy S24 for Health Connect/provider availability,
+consent/revocation, GNSS quality/background/screen-lock/OEM survival, real multi-hour
+battery/memory, BLE disconnect/reconnect, step cadence and HC client-ID retries.
+CI does not establish real interoperability or coaching efficacy.
+
+Recovery finalizes the retained portion; continuation after process death is not
+implemented. Up to the last unflushed five-second batch may be lost. Backups use
+paired app JSON and raw ZIP, not a unified whole-app container; each file validates
+and restores transactionally. GPX supports chronological single-track files up to
+24 hours, without HR/cadence extensions. HC writes only native exercise/distance
+totals. Health trends are informational inputs; deeper coaching integration and
+all Prompt2 features remain deferred. History paging/large-history optimisation
+and physical-device hardening remain follow-ups. See docs/RUN_ENGINE.md.
+
+The following records apply to earlier releases only.
 
 # Verification record — 0.5.0-test1
 

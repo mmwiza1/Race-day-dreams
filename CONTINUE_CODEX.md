@@ -82,25 +82,31 @@ with checksums/limits/transactional merge. Discoverable Home run screen/Settings
 context and current recording-file/sensor actions. App version0.6.0-test1/code7,
 JSON backup5 reads1–4; raw archive1. See docs/RUN_ENGINE.md for architecture/limits.
 
-## Verification checkpoint and delivery
+## Verification and delivery
 
-Production source `eb7d778344d31944aef5035a325ac781b973440a` passed workflow39879428544:
-57,728 domain assertions, 36 schema tests, Android build/lint and 154 instrumentation
-tests on each API28/35/36. The 36 real captures were reviewed and adopted, including
-health-context and record-run; no fabricated live GPS was shown. API35 artifact
-12469858749 contains the verified 0.6.0-test1 debug APK.
+Prompt1 implementation is complete to the documented scope. Verified production
+source `b19bb77542ba461dfb9ae6e6b27ad9ea50fbcd8e` passed workflow39903824374:
+57,732 domain assertions,36 schema tests, Android build/lint and160 instrumentation
+tests per API28/35/36. This includes the four-hour synthetic storage trace and optional
+HC-unavailable write UI. No physical-device success is claimed.
 
-Final documentation/capture follow-up should preserve the verified source fingerprint
-245f7644605232fafe62d52f202c3641c83d7e4498805e8e53dea5f4b72f02df.
-Inspect PR7/current head and Actions before doing anything further. Do not recreate
-implemented phases. Only delivery verification remains: green final-head checks,
-PR state/merge as appropriate and any post-merge main verification. No known source
-failure remains after the successful source run. Previous null-field encoding,
-privacy-scope and midnight fixture failures were fixed without dropping assertions.
+Thirty-six authentic captures were reviewed and adopted. Their source fingerprint is
+03740acea4f555128e3f8be4cc5d83ae354694ca242a460570c8a5a57e2d659b.
+The verified source API35 artifact is12480321523. Final documentation-head and merged-main
+status/artifacts are recorded on PR7 and main Actions; inspect the actual latest state
+before any continuation. Do not recreate implemented phases or repeat work blindly.
+No known source/test failure remains after the passing source run. Initial null JSON,
+permission-scope and midnight fixture failures were fixed without weakening assertions.
 
-Do not start Prompt2 until the user supplies that task. Update actual delivery IDs
-on PR7/report rather than claiming a pending run succeeded. Preserve the owner's
-reusable instructions at the top of this file.
+Preserve normalized native sample rows: canonical activity JSON contains metadata,
+with raw samples hydrated through RecordingStore.withRetainedSamples. App JSON export
+reads metadata only. Raw archives restore samples and qualified PB evidence atomically.
+Do not reintroduce multi-MiB SQLite payload cells or unbounded raw arrays into app backup.
+Personal sleep trends use the longest same-source session/day rather than a later nap.
+
+Do not begin Prompt2 until the user supplies it. Keep the owner's reusable continuation
+instructions at the top of this file. Consult VERIFICATION.md and docs/RUN_ENGINE.md for
+actual results, policies, limits and the required Galaxy S24 checklist.
 
 ## Known deliberate limits
 
