@@ -9,6 +9,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_american_kettlebell_swing.webp",
+      "bytes": 47130,
+      "sha256": "e22a09a894be033a5e2bd12794ce9734677c0e274f0fd7b117259bbb6b5480be",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_ankle_circles.webp",
       "bytes": 22886,
       "sha256": "b6e2da3a01965ddecc54039ef5199be2ed6eb07f30a3c9df2f2c579da454d427",
@@ -184,6 +191,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_clean.webp",
+      "bytes": 52094,
+      "sha256": "701f1dd709c926b2284d5e82f8de530037d0ec537a90a4da7e1756a911d11254",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_clean_jerk.webp",
+      "bytes": 56736,
+      "sha256": "6d5b06348aa90bd6680d078762858bc7c56f476f7169bc813e92601f61270b3c",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_close_grip_bench_press.webp",
       "bytes": 66894,
       "sha256": "fe10be1474210f92aaa1b23568bb1039ecbde34eabcaa6ec03942b7bba85172e",
@@ -268,6 +289,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_devil_press.webp",
+      "bytes": 47742,
+      "sha256": "eb938e30c5db7d0dcb24dc838bc89c27b5ffe9c44ad90e0168375ea42c821637",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_dip.webp",
       "bytes": 52292,
       "sha256": "1226c265a2f7d1ceb41c596558297dbb41f305f59515f19595267531885bb267",
@@ -286,6 +314,13 @@
       "bytes": 41490,
       "sha256": "7875302b581ff1300530dee454940db643afd2f6779025d91929f42b71c8df1b",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_dumbbell_clean_jerk.webp",
+      "bytes": 58564,
+      "sha256": "b77fe0dac26ddfb4f40d97d4f3aca5753d5b3ef2ff9d60b76ebffd7bfe5fb49d",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -321,6 +356,13 @@
       "bytes": 47736,
       "sha256": "11d10210ac361272762900e54a226749d21c4c273590b3a249193d8c3d20e066",
       "creation": "Original project image generation,23 October2026; reviewed movement, equipment and framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_dumbbell_snatch.webp",
+      "bytes": 53652,
+      "sha256": "e88ef17edac2ffd196dc2b830f7492a100a4afa5eddfc536d8ce2f095f7d37d2",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -373,6 +415,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_ghd_sit_up.webp",
+      "bytes": 58402,
+      "sha256": "677396e67150bb6aa6d69aec32de80b83fcc62423fa824dfc40a67871c2d67a3",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_glute_bridge.webp",
       "bytes": 27348,
       "sha256": "56888d9f11e53f942e6f0a2102ccd6d634d08bf398fc5825c766f5c86ba508ad",
@@ -415,6 +464,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_hang_clean.webp",
+      "bytes": 60480,
+      "sha256": "27ebe744b44b6c1f4aebaf4dac91a8435ce37f2bab35707963246eff9527f568",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_hang_snatch.webp",
+      "bytes": 56704,
+      "sha256": "c1229866ac1d46848a8659d1ba03d413960f4724b2cae1f6a2586dde5df5bc47",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_hanging_knee_raise.webp",
       "bytes": 54192,
       "sha256": "fa4cf15ee66eccbc58917c990cb1126dde7096887b9f152ef41f778a130b45ed",
@@ -426,6 +489,13 @@
       "bytes": 51698,
       "sha256": "563786786dcae9a6b1ac123c06d40a4e509674768c101178558353290dfc1cf3",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_high_pull.webp",
+      "bytes": 63318,
+      "sha256": "1770584b5386609a3e2d1121a1a635af7e3e31f3e7b6fd25340954bcea23cab3",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -485,10 +555,24 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_kettlebell_clean.webp",
+      "bytes": 58280,
+      "sha256": "67a7472e6718aaef848435981f6af363a414e6464041aa15bb47aaa48b33dfad",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_kettlebell_goblet_squat.webp",
       "bytes": 36456,
       "sha256": "2518ccb4be95177a32d4e80f763fd08f527adcc481843ef119069a2e74a8f50e",
       "creation": "Original project image generation, 23 October 2026; individually reviewed movement, equipment and corrected framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_kettlebell_snatch.webp",
+      "bytes": 51216,
+      "sha256": "7f6be6438cd75ca0c2d4b74ef61c3899ce855f8ac8f5534596c50709b7d8cc0b",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -681,6 +765,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_power_clean.webp",
+      "bytes": 54830,
+      "sha256": "b24a38363e377d747ad7e44fb02022e233d82aa858c113dd920e868a86c73f27",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_power_snatch.webp",
+      "bytes": 50984,
+      "sha256": "caf2211f75b83ed840b5f644e419781df440cb7db28cb6fa53f11b0dc12272b9",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_preacher_curl.webp",
       "bytes": 70706,
       "sha256": "6d354d1e8fcd2a6a601183947918a18d1e07ccba9696cf6a7376e179723e9ce3",
@@ -692,6 +790,20 @@
       "bytes": 44250,
       "sha256": "d0398fd70fab5f75d779d4b67e1332c0e2b656b9654928d0b993dacadcc61053",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_push_jerk.webp",
+      "bytes": 53126,
+      "sha256": "b7e287bb9acc73012730c9ec1ee26bba1d94167637f2b3e59f13d76e2a80e569",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_push_press.webp",
+      "bytes": 52362,
+      "sha256": "789c869d7448334c3b6272508c88358ed855a3adf0bf6de31d2fe1f2f0f4b5bb",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -762,6 +874,20 @@
       "bytes": 53464,
       "sha256": "b604d5f6dbea68d003d93b545397ef5a43e1295788027a94f953986d1d9a4b80",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_sandbag_carry.webp",
+      "bytes": 60694,
+      "sha256": "ad96469dfa750244ae95eee9b9cfbc79960cc3e5e332591b2c601d6b9e10e2f2",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_sandbag_clean.webp",
+      "bytes": 55924,
+      "sha256": "65a0e5bb103349b0d1d47b942918c53f17bb07620c6f5567642b6a3300265713",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -849,6 +975,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_sled_pull.webp",
+      "bytes": 54060,
+      "sha256": "42024f6fd2d264da85994e567b0a8cf8627b5d9ba00608348760ece4ee37fd6d",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_sled_push.webp",
+      "bytes": 45452,
+      "sha256": "0c4d83c8051b54eed4c5dbc01e6fed27b079df429382a1b6cbf30137dc5aaa7f",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_sliding_leg_curl.webp",
       "bytes": 28150,
       "sha256": "d1afa0d7d05ad3b9df18e2395ef3140ea50469e4a4d912668b71b69162b41438",
@@ -870,6 +1010,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_snatch.webp",
+      "bytes": 55696,
+      "sha256": "4d80bf53368ed6d73405cb288ba18f5432ed4d223f2ed277733ffa975a8e86cf",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_snatch_grip_deadlift.webp",
       "bytes": 55230,
       "sha256": "bfbb50be53b3406d164a37e613ae0410ebf39567db7b6edfefc5694202e81420",
@@ -881,6 +1028,13 @@
       "bytes": 61488,
       "sha256": "64ef548f9a0b194668f887dd1ff5448d4aa31eaf4dbf1f7cfcf61da28083ea84",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_split_jerk.webp",
+      "bytes": 58938,
+      "sha256": "d0e72e3a5a85220cb7bc63a4ffd6e4248c24fa81cac6a827b601df740c3106e3",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -947,6 +1101,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_thruster.webp",
+      "bytes": 45884,
+      "sha256": "3a163014f2780fa8a608e6f30d49e1ba19e09b40213c5ba6c9d778374637d94b",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_tibialis_raise.webp",
       "bytes": 34118,
       "sha256": "ac3e6550ef341c2f1c6cfb90d2317557f0943934190e77430b3e97bcb3316216",
@@ -993,6 +1154,13 @@
       "bytes": 26418,
       "sha256": "fc1563cf9cf1716d56439568124328d0659e84d83c3531fd444457e75c879216",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_wall_ball.webp",
+      "bytes": 62650,
+      "sha256": "8874848dc6e17352842acd9213f00873c09d49d613cef58cdf28c97d10f627bf",
+      "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
       "licence": "MIT project contribution"
     },
     {

@@ -1,3 +1,46 @@
+# Verification — 0.8.1-test1 current 174-guide checkpoint
+
+Release remains **incomplete**; keep PR #10 draft. Version0.8.1-test1/code10,
+schema10, JSON7/raw2/complete1 unchanged. No new runtime dependency/permission.
+
+Observed local on23October2026:
+
+- **61,109 domain checks across18 suites pass** (`/tmp/rdd-100-domain.log`).
+- **43 schema tests** and **5 release-note tests pass**.
+- Strict `ExerciseGuidanceAudit` passes **174/174 canonical** and **14/14 routine**
+  movements, with no missing IDs. The ordinary domain test now also requires every
+  canonical ID to have artwork; Android packaged-resource assertions cover all IDs.
+- **177 original WebPs /9,198,660bytes**, all provenance checksums verified.
+- Berlin/Tokyo projection reproduction and whitespace checks pass.
+- Equipment labels were corrected where old generic barbell/bodyweight labels
+  contradicted the actual implement (for example Arnold Press, Pallof Press,
+  sandbag carry and ball curl). IDs, measurement profiles and logged history remain
+  unchanged. Tests reject unavailable equipment rather than substituting it.
+
+The old primitive technique renderer is removed. Normal-font tips/mistakes use two
+columns; large text stacks them. This needs fresh actual-build visual review.
+Five representative capture requests were added: Hack Squat, Weighted Wall Sit,
+Arnold Press, Cable Crunch and Clean & Jerk, bringing the requested set to63.
+
+Local Android validation was attempted with a workspace Gradle cache, but the
+Gradle8.11.1 wrapper download failed with `java.net.ConnectException: Connection
+refused`. No local APK/build/lint/instrumentation pass is claimed. New-source CI,
+new APK-size measurement and fresh screenshots remain pending at this record.
+
+Previous sourcebfab6e1/workflow40014032752 passed build/lint and199instrumentation
+tests on eachAPI28/35/36; those results verify the earlier47-guide tree, not this
+expanded source. Its58actual captures remain retained and are not mockups. Strict
+coverage failed then; it now passes locally. No release has been published.
+
+London OSM relation2086183/version642 was retrieved for research but has23ordered
+way discontinuities (about5.3km of artificial connectors if concatenated naively).
+It was **not** bundled or falsely described as connected official geometry.
+London, Paris and New York geography and richer five-city presentation remain open.
+Fresh source/capture comparison against the untouched owner JPEGs remains mandatory.
+No physical GalaxyS24 checks have been performed.
+
+## Earlier verification records (historical)
+
 # Verification — 0.8.1-test1 (incomplete release checkpoint)
 
 Starting main515fe538de1302dd83ee05fc9ca131c7afb7d520; feature branch

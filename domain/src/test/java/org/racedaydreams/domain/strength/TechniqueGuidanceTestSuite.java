@@ -3,7 +3,7 @@ package org.racedaydreams.domain.strength;
 import java.util.HashSet;
 import java.util.List;
 
-/** Content/identity regressions. Full asset coverage is separately enforced by ExerciseGuidanceAudit. */
+/** Catalogue-wide content/identity gate. Packaged file integrity also runs in ExerciseGuidanceAudit. */
 public final class TechniqueGuidanceTestSuite {
     private static int checks;
     private static void check(boolean value, String message) {
@@ -16,13 +16,13 @@ public final class TechniqueGuidanceTestSuite {
             String id = definition.exercise().id();
             known.add(id);
             var art = TechniqueIllustrations.forExercise(id);
-            if (art == null) continue;
+            check(art != null, "Every canonical exercise requires reviewed illustrated guidance: " + id);
             var guide = TechniqueGuide.forExercise(id);
             check(guide != null, "Illustration must have corresponding movement copy: " + id);
             check(!guide.setup().isBlank() && !guide.movement().isBlank(), "Setup and movement: " + id);
             check(!guide.cues().isEmpty() && !guide.mistakes().isEmpty(), "Cues and mistakes: " + id);
             check(art.description().length() > 60, "Meaningful nonvisual instructions: " + id);
-            check(art.phases().stream().noneMatch(String::isBlank), "Frame captions: " + id);
+            check(!art.phases().isEmpty() && art.phases().stream().noneMatch(String::isBlank), "Frame captions: " + id);
         }
         for (String id : List.of("front-squat", "leg-press", "reverse-lunge", "step-up", "calf-raise",
                 "standing-calf-raise", "side-plank", "farmers-carry", "lying-leg-curl", "kettlebell-swing",
@@ -55,6 +55,13 @@ public final class TechniqueGuidanceTestSuite {
             check(TechniqueIllustrations.forExercise(id).phases().size()==1,"Static hold has a single meaningful frame: "+id);
         check(TechniqueIllustrations.forExercise("high-bar-squat").asset().equals(TechniqueIllustrations.forExercise("back-squat").asset()),"Exact high-bar equipment/pose may share art");
         check(TechniqueGuide.forExercise("pause-squat").movement().contains("pause"),"Shared squat pose retains variant-specific timing");
+        check(ExerciseCatalog.definition("arnold-press").equipment().equals("dumbbells"),"Arnold press metadata agrees with its actual equipment");
+        check(!GymProgrammeGenerator.available("arnold-press",java.util.Set.of("barbell")),"Barbell alone cannot satisfy a dumbbell movement");
+        check(GymProgrammeGenerator.available("arnold-press",java.util.Set.of("dumbbells")),"Correct dumbbell equipment remains available");
+        check(!GymProgrammeGenerator.available("pallof-press",java.util.Set.of("barbell")),"Barbell is not a substitute for a cable attachment");
+        check(GymProgrammeGenerator.available("pallof-press",java.util.Set.of("cables")),"Pallof press retains cable availability");
+        check(!GymProgrammeGenerator.available("sandbag-carry",java.util.Set.of("dumbbells")),"A sandbag carry requires the actual implement");
+        check(!GymProgrammeGenerator.available("swiss-ball-leg-curl",java.util.Set.of("bodyweight")),"A ball curl requires a ball rather than bodyweight alone");
         System.out.println("TechniqueGuidanceTestSuite: " + checks + " checks passed.");
     }
 }

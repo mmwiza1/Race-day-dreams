@@ -142,12 +142,14 @@ GPX download is not treated as a redistribution licence.
 
 ## 0.8.1 artwork checkpoint
 
-New RDL, Bench Press, Walking Lunge and Ankle Rocks WebPs are original generated
+The catalogue-wide exercise and routine WebPs are original generated
 illustrations created for this project from original movement descriptions. They
 are bundled offline and contributed under the project MIT licence. No third-party
 exercise photographs/assets or organiser graphics were copied. Owner references
 are development acceptance documents, separate from production assets. Coverage
-and review are tracked in docs/exercise-artwork/README.md; full174 is not yet met.
+and review are tracked in docs/exercise-artwork/README.md; all174 canonical exercises
+and14 routine movements have illustrated guidance. Actual-build design acceptance
+is a separate release gate and is not implied by the completeness test.
 
 The Berlin2014 geographic dataset in docs/dream-route-data derives
 only coordinates from alexdjulin/running-events-map's participant GPX, under MIT

@@ -33,8 +33,9 @@ Implementation checkpoint; not yet a completed/released build.
 
 ## Known limitations
 
-- This checkpoint has 47 canonical illustrated exercise entries and complete14/14
-  built-in routine artwork; full174/174 canonical coverage is **not** complete.
+- This checkpoint has illustrated guidance for all 174 canonical exercises and all
+  14 built-in routine movements. Strict catalogue and packaged-asset checks pass;
+  final actual-build visual acceptance remains required.
 - Berlin and Tokyo now have separately versioned participant geographic traces.
   The other three Dream Route geography replacements and full screenshot/reference acceptance
   remain in progress. Existing assignments and backups are preserved.

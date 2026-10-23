@@ -1,3 +1,19 @@
+# Current 174-guide checkpoint — fresh design review still required
+
+All174canonical exercises and14routine movements now resolve to reviewed original
+filled-athlete illustrations with movement-specific text. Strict completeness passes.
+This is asset/content acceptance, **not** actual-build design approval. Technique
+screens now put mint/pink cue/mistake cards beside each other at normal font and
+stack at large font; primitive schematic fallback code is removed. Five more
+representative captures are requested. Review all fresh63actual captures against
+`docs/design-reference` after current-source Android verification.
+
+London/Paris/NewYork geography, richer city presentation and final README curation
+remain open. No physical device acceptance is claimed. The table below records
+historical images and observations; its older coverage counts are historical.
+
+---
+
 # 0.8.1 visual acceptance checkpoint
 
 Reviewed against the five untouched owner references. This is an engineering
