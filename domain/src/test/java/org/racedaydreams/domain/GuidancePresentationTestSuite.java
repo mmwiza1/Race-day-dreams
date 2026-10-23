@@ -33,6 +33,27 @@ public final class GuidancePresentationTestSuite {
         check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS interrupted · distance incomplete",false).hasReliablePace());
         check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS available",true).hasReliablePace());
         check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,null,"GPS available",false).hasReliablePace());
+        var geographic=org.racedaydreams.domain.support.DreamRoutes.assign(5020,new java.util.Random(5),java.util.Collections.singleton("berlin-v2"));
+        check(geographic.routeId().equals("berlin-2014-geo-v1"));
+        var berlin=org.racedaydreams.domain.support.DreamRoutes.forId(geographic.routeId());
+        check(berlin.vertices().size()==191);
+        check(berlin.vertices().stream().allMatch(v->v.x()>=0&&v.x()<=10&&v.y()>=0&&v.y()<=10));
+        check(org.racedaydreams.domain.support.DreamRoutes.forId("berlin-v2").vertices().size()==29);
+        var legacyAssignment=new org.racedaydreams.domain.support.DreamRoutes.Assignment("berlin-v2",1000,5000);
+        check(legacyAssignment.routeId().equals("berlin-v2"));
+        check(org.racedaydreams.domain.support.DreamRoutes.provenance(berlin).contains("2014"));
+        check(!org.racedaydreams.domain.support.DreamRoutes.provenance(berlin).contains("schematic"));
+        check(org.racedaydreams.domain.support.DreamRoutes.at(berlin,0).equals(berlin.vertices().get(0)));
+        var endpoint=org.racedaydreams.domain.support.DreamRoutes.at(berlin,42195);var last=berlin.vertices().get(190);
+        check(Math.hypot(endpoint.x()-last.x(),endpoint.y()-last.y())<.0000001);
+        check(org.racedaydreams.domain.support.DreamRoutes.at(berlin,50000).equals(endpoint));
+        var fullSection=org.racedaydreams.domain.support.DreamRoutes.section(berlin,0,42195);
+        check(fullSection.size()==191);check(fullSection.get(0).equals(berlin.vertices().get(0)));
+        check(org.racedaydreams.domain.support.DreamRoutes.section(berlin,10000,15000).size()>2);
+        var duplicates=new org.racedaydreams.domain.support.DreamRoutes.Route("test","Test",java.util.Arrays.asList(new org.racedaydreams.domain.support.DreamRoutes.Vertex(1,1),new org.racedaydreams.domain.support.DreamRoutes.Vertex(1,1),new org.racedaydreams.domain.support.DreamRoutes.Vertex(2,2)));
+        check(org.racedaydreams.domain.support.DreamRoutes.at(duplicates,0).equals(duplicates.vertices().get(0)));
+        check(org.racedaydreams.domain.support.DreamRoutes.section(duplicates,0,0).size()==1);
+        try{org.racedaydreams.domain.support.DreamRoutes.section(berlin,10,5);throw new AssertionError("Reversed section");}catch(IllegalArgumentException expected){checks++;}
         System.out.println("GuidancePresentationTestSuite: "+checks+" checks passed.");
     }
 }

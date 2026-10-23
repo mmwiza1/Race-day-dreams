@@ -1,7 +1,8 @@
-# Geographic route research — not yet production geometry
+# Geographic route data and research
 
 Checked23 October2026. Do not claim these candidates are live app routes or current
-certified courses. Existing stable assignments and v2 geometries remain untouched.
+certified courses. Existing stable assignments and v2 geometries remain untouched. New Berlin
+assignments now use `berlin-2014-geo-v1`; the other four replacements remain pending.
 
 ## Berlin2014 candidate
 
@@ -19,9 +20,15 @@ certified courses. Existing stable assignments and v2 geometries remain untouche
   Douglas–Peucker simplification retains191 original vertices and43,008.3m.
   GPS error and simplification mean this is an **approximate historical trace**,
   not42,195m-certified geometry. Its shape/start/finish are geographically meaningful.
-- Production integration must introduce a new geometry ID, preserve old IDs and
-  handle saved city preferences/legacy backups safely. The42,195m equivalent axis
-  remains distinct from observed geographic trace length.
+- Production projection: `Berlin2014Geometry.java`, reproducible offline with
+  `python3 scripts/generate-berlin-geometry.py --check`. Equirectangular projection
+  around the retained mean latitude, north up, uniformly scaled into drawing bounds.
+  No coordinates are invented. New geometry ID `berlin-2014-geo-v1`; city preference
+  remains `berlin-v2`. Existing IDs/assignments/backup readers are preserved.
+  The42,195m equivalent axis remains distinct from observed geographic trace length.
+- Full MIT source notice is bundled in the APK and visible in Settings. No landmarks
+  with invented locations are overlaid on this geographic version. Original source
+  vertices are retained when clipping the highlighted section; no shortcut chords.
 
 London/Paris/Tokyo/New York still require source/licence assessment. Public GPX
 availability alone is not permission. Do not replace missing data with invented
