@@ -9,12 +9,23 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.racedaydreams.coach.CoachActivity
 import org.racedaydreams.data.RecordingStore
+import org.racedaydreams.data.SupportStore
+import org.racedaydreams.domain.execution.*
+import org.json.JSONObject
+import org.json.JSONArray
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import java.time.Instant
 import java.util.UUID
 
 /** The service owns recording. UI merely sends explicit actions and observes status. */
 class RunRecordingService:Service() {
+    private var execution:WorkoutExecutionEngine?=null
+    private var executionContext:JSONObject?=null
+    private val paceCues=CoachCues()
+    private var seenExecutionEvents=0
+    private var lastSplit=0
+    private var audio:CoachAudio?=null
+    private var currentCue:String?=null
     private var wake:PowerManager.WakeLock?=null
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val io=Dispatchers.IO.limitedParallelism(1)
@@ -24,8 +35,8 @@ class RunRecordingService:Service() {
     private var engine:RunMetricsEngine?=null;private var session:RecordingStore.Session?=null
     private val commandLock=Mutex();private val flushLock=Mutex()
     private var pointIndex=0;private var eventIndex=0;private var ticker:Job?=null
-    companion object {val running=MutableStateFlow(false);val heartRate=MutableStateFlow<Double?>(null);val status=MutableStateFlow<RunMetricsEngine.Status?>(null);val message=MutableStateFlow<String?>(null);const val START="START";const val PAUSE="PAUSE";const val RESUME="RESUME";const val FINISH="FINISH"}
-    override fun onCreate(){super.onCreate();store=RecordingStore(this);location=AndroidLocationSource(this);getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel("recording","Active run",NotificationManager.IMPORTANCE_LOW))}
+    companion object {val workoutState=MutableStateFlow<WorkoutExecutionEngine.State?>(null);val cue=MutableStateFlow<String?>(null);const val SKIP="SKIP_STEP";val running=MutableStateFlow(false);val heartRate=MutableStateFlow<Double?>(null);val status=MutableStateFlow<RunMetricsEngine.Status?>(null);val message=MutableStateFlow<String?>(null);const val START="START";const val PAUSE="PAUSE";const val RESUME="RESUME";const val FINISH="FINISH"}
+    override fun onCreate(){super.onCreate();store=RecordingStore(this);location=AndroidLocationSource(this);audio=CoachAudio(this);getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel("recording","Active run",NotificationManager.IMPORTANCE_LOW))}
     override fun onBind(intent:Intent?)=null
     override fun onStartCommand(intent:Intent?,flags:Int,startId:Int):Int {
         if(intent==null){scope.launch{withContext(io){store.recoverable()};message.value="An interrupted recording is available to recover.";stopSelf()};return START_NOT_STICKY}
@@ -34,10 +45,16 @@ class RunRecordingService:Service() {
         if(intent.action==START){running.value=true;if(Build.VERSION.SDK_INT>=29)startForeground(104,notification("Preparing GPS recording"),android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)else startForeground(104,notification("Preparing GPS recording"))}
         scope.launch{commandLock.withLock{try{
             when(intent.action){
-                START->if(engine==null){val unfinished=withContext(io){store.unfinished()};if(unfinished!=null){message.value="Recover the unfinished run before starting another.";stopForeground(STOP_FOREGROUND_REMOVE);stopSelf();return@launch};val now=SystemClock.elapsedRealtime();val wall=Instant.now();val s=RecordingStore.Session(UUID.randomUUID().toString(),"ACTIVE",wall,now,now);withContext(io){store.start(s.id,wall,now)};session=s;engine=RunMetricsEngine(now,wall);publish();location.start{fix->try{if(!manualPause&&getSharedPreferences("run-sensors",MODE_PRIVATE).getBoolean("auto-pause",false)){when(autoPause.observe(fix)){org.racedaydreams.domain.recording.AutoPausePolicy.Decision.PAUSE->engine?.pause(fix.monotonicMillis(),fix.timestamp(),true);org.racedaydreams.domain.recording.AutoPausePolicy.Decision.RESUME->engine?.resume(fix.monotonicMillis(),fix.timestamp(),true);else->Unit}};engine?.accept(fix);publish()}catch(_:Exception){message.value="GPS observation rejected."}};wake=(getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"RaceDayDreams:recording")).apply{acquire(30*60*1000L)};startSensors();ticker=scope.launch{var ticks=0;while(isActive){delay(1000);if(wake?.isHeld==false)wake?.acquire(30*60*1000L);engine?.missingFix(SystemClock.elapsedRealtime(),Instant.now());publish();if(++ticks%5==0)try{flush()}catch(_:Exception){message.value="Disk staging delayed; recording remains in memory. Free storage and finish the run."}}};flush()}
-                PAUSE->{manualPause=true;autoPause.reset();engine?.pause(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
-                RESUME->{manualPause=false;autoPause.reset();engine?.resume(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
-                FINISH->{check((engine?.points()?.size?:0)>=2){"Waiting for usable GPS"};hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();engine?.event("FINISH",SystemClock.elapsedRealtime(),Instant.now());flush();val s=withContext(io){store.unfinished()}?:error("No staged recording");withContext(io){store.finish(s,engine?.status(SystemClock.elapsedRealtime())?.movingMillis())};message.value="Run saved. Open Calendar to view it.";engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}
+                START->if(engine==null){val unfinished=withContext(io){store.unfinished()};if(unfinished!=null){message.value="Recover the unfinished run before starting another.";stopForeground(STOP_FOREGROUND_REMOVE);stopSelf();return@launch};val now=SystemClock.elapsedRealtime();val wall=Instant.now();val s=RecordingStore.Session(UUID.randomUUID().toString(),"ACTIVE",wall,now,now);withContext(io){
+                    val version=intent.getStringExtra("planVersion");val workout=intent.getStringExtra("workoutId")
+                    if(version!=null&&workout!=null)executionContext=SupportStore(this@RunRecordingService).prepare(version,workout,intent.getBooleanExtra("hilly",false))
+                    store.start(s.id,wall,now)
+                    executionContext?.let{SupportStore(this@RunRecordingService).save("execution",s.id,it)}
+                };executionContext?.let{execution=WorkoutExecutionEngine(SupportStore.steps(it))};session=s;engine=RunMetricsEngine(now,wall);publish();location.start{fix->try{if(!manualPause&&getSharedPreferences("run-sensors",MODE_PRIVATE).getBoolean("auto-pause",false)){when(autoPause.observe(fix)){org.racedaydreams.domain.recording.AutoPausePolicy.Decision.PAUSE->engine?.pause(fix.monotonicMillis(),fix.timestamp(),true);org.racedaydreams.domain.recording.AutoPausePolicy.Decision.RESUME->engine?.resume(fix.monotonicMillis(),fix.timestamp(),true);else->Unit}};engine?.accept(fix);publish()}catch(_:Exception){message.value="GPS observation rejected."}};wake=(getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"RaceDayDreams:recording")).apply{acquire(30*60*1000L)};startSensors();ticker=scope.launch{var ticks=0;while(isActive){delay(1000);if(wake?.isHeld==false)wake?.acquire(30*60*1000L);engine?.missingFix(SystemClock.elapsedRealtime(),Instant.now());publish();if(++ticks%5==0)try{flush()}catch(_:Exception){message.value="Disk staging delayed; recording remains in memory. Free storage and finish the run."}}};flush()}
+                SKIP->{execution?.skip();publish();flush()}
+                PAUSE->{audio?.silence();announce("Run paused.",0);manualPause=true;autoPause.reset();engine?.pause(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
+                RESUME->{announce("Run resumed.",0);manualPause=false;autoPause.reset();engine?.resume(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
+                FINISH->{check((engine?.points()?.size?:0)>=2){"Waiting for usable GPS"};hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();execution?.finishEarly();publish();engine?.event("FINISH",SystemClock.elapsedRealtime(),Instant.now());flush();val s=withContext(io){store.unfinished()}?:error("No staged recording");withContext(io){store.finish(s,engine?.status(SystemClock.elapsedRealtime())?.movingMillis(),recovered=false)};message.value="Run saved. Open Calendar to view it.";engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}
             }
         }catch(_:Exception){message.value="Recording operation could not complete. Saved staging is retained for recovery.";if(engine==null||intent.action==FINISH||intent.action==START){engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}}}}
         return START_STICKY
@@ -50,12 +67,34 @@ class RunRecordingService:Service() {
             hrSource=BleHeartRateSource(this);hrSource?.connect(preferred,{value->heartRate.value=value;engine?.heartRate(value,SystemClock.elapsedRealtime());value?.let{engine?.sensorEvent("HEART_RATE",it,SystemClock.elapsedRealtime(),Instant.now())}},{connected->engine?.event(if(connected)"HR_CONNECTED"else"HR_DISCONNECTED",SystemClock.elapsedRealtime(),Instant.now())})
         }catch(_:Exception){message.value="Heart-rate monitor unavailable; GPS recording continues."}
     }
-    private fun publish(){status.value=engine?.status(SystemClock.elapsedRealtime());if(Build.VERSION.SDK_INT<33||checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)==android.content.pm.PackageManager.PERMISSION_GRANTED)getSystemService(NotificationManager::class.java).notify(104,notification(if(status.value?.paused()==true)"Run paused" else "Recording your run"))}
-    private suspend fun flush()=flushLock.withLock {val e=engine?:return;val s=session?:return;val points=e.points();val events=e.events();val pi=pointIndex;val ei=eventIndex;val now=SystemClock.elapsedRealtime();val state=if(e.status(now).paused())"PAUSED"else "ACTIVE";withContext(io){store.flush(s.id,points,events,pi,ei,now,state)};pointIndex=points.size;eventIndex=events.size}
+    private fun announce(text:String,priority:Int=1,haptic:Boolean=true){
+        cue.value=text;audio?.deliver(CoachCues.Cue("state-${SystemClock.elapsedRealtime()}",text,priority,SystemClock.elapsedRealtime(),haptic))
+    }
+    private fun updateExecution(s:RunMetricsEngine.Status){
+        val e=execution?:return
+        val input=WorkoutExecutionEngine.Input(s.metres(),s.movingMillis(),s.elapsedMillis(),s.secondsPerKm(),s.secondsPerKm()!=null&&!s.paused(),s.paused())
+        val state=e.update(input);workoutState.value=state
+        val candidates=mutableListOf<CoachCues.Cue>()
+        val events=e.events()
+        for(i in seenExecutionEvents until events.size){val event=events[i];engine?.sensorEvent(event.type(),event.step().toDouble(),SystemClock.elapsedRealtime(),Instant.now())
+            if(event.type()=="STEP_STARTED"){
+                val step=e.steps().getOrNull(event.step());if(step!=null)candidates.add(CoachCues.Cue("step-${event.step()}","Step ${event.step()+1} of ${e.steps().size}. ${step.label()}",1,s.movingMillis(),true))
+            }else if(event.type()=="WORKOUT_COMPLETED")candidates.add(CoachCues.Cue("complete","Workout complete. Recording continues until you finish and save.",1,s.movingMillis(),true))
+        };seenExecutionEvents=events.size
+        if(executionContext?.optBoolean("hilly",false)!=true)paceCues.pace(state,input,getSharedPreferences("live-coach",MODE_PRIVATE).getLong("sustained",45000L))?.let{candidates.add(it);engine?.event(if(it.id().startsWith("pace-in"))"TARGET_RANGE_REENTERED"else"TARGET_RANGE_EXITED",SystemClock.elapsedRealtime(),Instant.now())}
+        val unit=if(getSharedPreferences("live-coach",MODE_PRIVATE).getBoolean("miles",false))1609.344 else 1000.0
+        val split=(s.metres()/unit).toInt();if(split>lastSplit){lastSplit=split;if(getSharedPreferences("live-coach",MODE_PRIVATE).getBoolean("splits",true))candidates.add(CoachCues.Cue("split-$split","$split ${if(unit>1000)"miles"else"kilometres"} recorded.",5,s.movingMillis(),false))}
+        CoachCues.select(candidates,s.movingMillis())?.let{cue.value=it.text();audio?.deliver(it)}
+    }
+    private fun publish(){status.value=engine?.status(SystemClock.elapsedRealtime());status.value?.let{updateExecution(it)};if(Build.VERSION.SDK_INT<33||checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)==android.content.pm.PackageManager.PERMISSION_GRANTED)getSystemService(NotificationManager::class.java).notify(104,notification(if(status.value?.paused()==true)"Run paused" else "Recording your run"))}
+    private suspend fun flush()=flushLock.withLock {val e=engine?:return;val s=session?:return;val points=e.points();val events=e.events();val pi=pointIndex;val ei=eventIndex;val now=SystemClock.elapsedRealtime();val state=if(e.status(now).paused())"PAUSED"else "ACTIVE";val context=executionContext?.let{j->
+            val rows=JSONArray();execution?.events()?.forEach{rows.put(JSONObject().put("type",it.type()).put("step",it.step()).put("metres",it.metres()).put("active",it.activeMillis()))};JSONObject(j.toString()).put("events",rows)
+        }
+        withContext(io){store.flush(s.id,points,events,pi,ei,now,state);context?.let{SupportStore(this@RunRecordingService).save("execution",s.id,it)}};pointIndex=points.size;eventIndex=events.size}
     private fun notification(text:String):Notification {
         val open=PendingIntent.getActivity(this,0,Intent(this,CoachActivity::class.java),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         fun action(type:String)=PendingIntent.getService(this,type.hashCode(),Intent(this,RunRecordingService::class.java).setAction(type),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         return Notification.Builder(this,"recording").setContentTitle(text).setContentText("Location is used only during this run. Open the app to review or finish.").setSmallIcon(org.racedaydreams.R.drawable.ic_nav_progress).setOngoing(true).setContentIntent(open).addAction(Notification.Action.Builder(null,if(status.value?.paused()==true)"Resume"else"Pause",action(if(status.value?.paused()==true)RESUME else PAUSE)).build()).build()
     }
-    override fun onDestroy(){running.value=false;if(wake?.isHeld==true)wake?.release();heartRate.value=null;status.value=null;hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();scope.cancel();super.onDestroy()}
+    override fun onDestroy(){audio?.close();workoutState.value=null;running.value=false;if(wake?.isHeld==true)wake?.release();heartRate.value=null;status.value=null;hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();scope.cancel();super.onDestroy()}
 }

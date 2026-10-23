@@ -139,7 +139,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         } else emptySet()
         val snapshot = withContext(Dispatchers.IO) {
             val profile = profiles.load().orElse(null)
-            val activities = store.activities()
+            val activities = store.coachingActivities(LocalDate.now())
             val results = store.results()
             val manual = store.savedManualBaseline()
             val now = Instant.now()
@@ -386,6 +386,15 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun reportInterruption(from: LocalDate,returned: LocalDate,reason:String) = mutate {
         require(returned<=LocalDate.now()) { "Return date cannot be in the future." }
         development.saveInterruption(WeeklyCoaching.Interruption(from,returned,reason))
+    }
+
+    fun chooseEasy(workoutId:String,reason:String) = mutate("Your selected easy alternative was saved. Other sessions are unchanged.") {
+        val current=coaching.current()?:error("No current plan")
+        val original=current.plan().workouts().first{it.id()==workoutId}
+        require(coaching.responses().none{it.plannedWorkoutId()==workoutId}){"Completed sessions cannot be changed."}
+        val easy=org.racedaydreams.domain.health.RecoveryCoaching.easyAlternative(original,reason)
+        val p=current.plan();val updated=org.racedaydreams.domain.TrainingPlan(p.id(),p.startDate(),p.endDate(),p.phases(),p.workouts().map{if(it.id()==workoutId)easy else it})
+        coaching.saveCurrent(PlanVersion(UUID.randomUUID().toString(),current.planId(),current.version()+1,Instant.now(),"Runner chose easy: $reason",current.goalSnapshot(),current.evidenceSnapshot(),updated))
     }
 
     fun changeWorkout(workoutId:String,movedTo:LocalDate? = null) = mutate {

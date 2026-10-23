@@ -165,9 +165,15 @@ private fun CoachApp(model: CoachViewModel) {
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
                 composable("record-run") { RecordingScreen(model) }
+                composable("execute/{version}/{workout}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout")) }
+                composable("race") { RaceScreen(state,model,{v,w,h->nav.navigate("race-run/${Uri.encode(v)}/${Uri.encode(w)}/$h")},{nav.navigate("progress/pbs")},{r->nav.navigate("routine/$r")}) }
+                composable("race-run/{version}/{workout}/{hilly}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),d.arguments?.getString("hilly")=="true") }
+                composable("routines") { RoutineLibrary {nav.navigate("routine/$it")} }
+                composable("routine/{id}?related={related}") { d -> RoutineScreen(d.arguments?.getString("id"),d.arguments?.getString("related")){nav.popBackStack()} }
+
                 composable("health-intelligence") { HealthIntelligenceScreen(model) }
                 composable("weekly") { WeeklyReviewScreen(state,model,{nav.navigate("goals")}) }
-                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }, record = {nav.navigate("record-run")}) }
+                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }, record = {nav.navigate("record-run")}, race={nav.navigate("race")}) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -183,8 +189,8 @@ private fun CoachApp(model: CoachViewModel) {
                     model.cancelGoalEditing()
                     if (state.profile == null) nav.navigate("baseline") else nav.navigate("home") { launchSingleTop = true }
                 } }
-                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") }) }
-                composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id")) { nav.navigate("activity/${Uri.encode(it)}") } }
+                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") },{nav.navigate("routines")}) }
+                composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id"), { nav.navigate("activity/${Uri.encode(it)}") }, {v,w->nav.navigate("execute/${Uri.encode(v)}/${Uri.encode(w)}")},{r,w->nav.navigate("routine/$r?related=${Uri.encode(w?:"")}")}) }
                 composable("strength?date={date}") { destination -> val date=destination.arguments?.getString("date");if(date!=null)StrengthScreen(state,model,date) else StrengthDashboard(state){nav.navigate(it)} }
                 composable("strength/log") { StrengthScreen(state,model) }
                 composable("strength/pbs") { StrengthScreen(state,model,section="pbs") }
@@ -239,9 +245,10 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 }
 
 @Composable
-private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit, record: () -> Unit = {}) = CoachPage {
+private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit, record: () -> Unit = {}, race:()->Unit={}) = CoachPage {
     CoachHeading("Your running, your way")
     CoachButton("Record a run", record)
+    if(state.profile?.raceGoal()?.raceDate()!=null)TextButton(onClick=race){Text("Race preparation & Race Day")}
     val summary=org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
     CoachCard { Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("View details")} }
     if(state.weeklyReview!=null) OutlinedButton(onClick=weekly,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Weekly coaching review")}

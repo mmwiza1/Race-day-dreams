@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 7;
+    static final int VERSION = 8;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -42,6 +42,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateFourToFive(db);
         migrateFiveToSix(db);
         migrateSixToSeven(db);
+        migrateSevenToEight(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -168,10 +169,16 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V7_SCHEMA_END
     }
 
+    private static void migrateSevenToEight(SQLiteDatabase db) {
+        // V8_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE coach_support (kind TEXT NOT NULL CHECK(kind IN ('execution','dream','routine')), id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(kind,id))");
+        // V8_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 6)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 7)) {
             throw new SQLiteException("An explicit migration is required from schema "
                     + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
@@ -180,6 +187,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 3) migrateThreeToFour(db);
         if (oldVersion <= 4) migrateFourToFive(db);
         if (oldVersion <= 5) migrateFiveToSix(db);
-        migrateSixToSeven(db);
+        if (oldVersion <= 6) migrateSixToSeven(db);
+        migrateSevenToEight(db);
     }
 }

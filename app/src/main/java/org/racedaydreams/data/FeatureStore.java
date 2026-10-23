@@ -44,6 +44,18 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
     }
 
     @Override public List<ActivityRecord> activities() {return activitySnapshot(true);}
+    public List<ActivityRecord> activitySummaries() {return activitySnapshot(false);}
+    public ActivityRecord activityDetail(String id) {
+        for(ActivityRecord a:activitySnapshot(false))if(a.id().equals(id))return RecordingStore.withRetainedSamples(read(),a);
+        return null;
+    }
+    /** Bounded sample hydration for recent coaching, never every route in calendar history. */
+    public List<ActivityRecord> coachingActivities(java.time.LocalDate today) {
+        List<ActivityRecord> summary=activitySnapshot(false);Set<String> detailed=new HashSet<>();
+        summary.stream().filter(a->!a.start().isBefore(today.minusDays(28).atStartOfDay(java.time.ZoneOffset.UTC).toInstant()))
+            .sorted(java.util.Comparator.comparing(ActivityRecord::start).reversed()).limit(12).forEach(a->detailed.add(a.id()));
+        List<ActivityRecord> out=new ArrayList<>();for(ActivityRecord a:summary)out.add(detailed.contains(a.id())?RecordingStore.withRetainedSamples(read(),a):a);return out;
+    }
     private List<ActivityRecord> activitySnapshot(boolean includeSamples) {
         SQLiteDatabase db=read();
         List<ActivityRecord> out=new ArrayList<>();
@@ -241,6 +253,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             out.put("development",DevelopmentStore.exportData(db));
             out.put("strengthState", StrengthUserStore.exportData(db));
             out.put("gymProgramming",GymProgrammeStore.exportData(db));
+            out.put("support",SupportStore.exportData(db));
             db.setTransactionSuccessful();return out;
         } catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}
     }
@@ -252,11 +265,12 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
     private static boolean isUserActivity(ActivityRecord a){return a.source().provider().equals("manual")||a.source().provider().equals("assessment")||a.source().provider().equals("rdd")||a.source().provider().equals("gpx");}
 
     /** Validation is public for backup previews; it never reads or changes the database. */
-    public static void validateUserData(JSONObject data){validated(data);}
-    private record RestoreData(UserProfile profile,String draft,ManualBaselineInput baseline,Instant baselineAt,List<ActivityRecord> activities,List<Shoe> shoes,List<RecordedResult> results,JSONArray bestEfforts,JSONArray annotations,JSONObject settings,JSONArray plans,JSONArray assessments,JSONArray trainingPlans,JSONArray adjustments,JSONObject coaching,JSONObject development,JSONObject strengthState,JSONObject gymProgramming){}
+    public static void validateUserData(JSONObject data){validated(data);if(data.has("support"))SupportStore.validate(data.optJSONObject("support"));}
+    private record RestoreData(UserProfile profile,String draft,ManualBaselineInput baseline,Instant baselineAt,List<ActivityRecord> activities,List<Shoe> shoes,List<RecordedResult> results,JSONArray bestEfforts,JSONArray annotations,JSONObject settings,JSONArray plans,JSONArray assessments,JSONArray trainingPlans,JSONArray adjustments,JSONObject coaching,JSONObject development,JSONObject strengthState,JSONObject gymProgramming,JSONObject support){}
     private record SourceKey(String provider,String recordId){}
     private static RestoreData validated(JSONObject data){
         try {
+            if(data.has("support"))SupportStore.validate(data.getJSONObject("support"));
             if(FeatureJson.requiredInteger(data,"storeVersion")!=EXPORT_STORE_VERSION)throw new IllegalArgumentException("Unsupported backup store version.");
             UserProfile profile=data.isNull("profile")?null:FeatureJson.profile(data.getJSONObject("profile"));
             String draft=FeatureJson.text(data,"draft");if(draft!=null)FeatureJson.object(draft);
@@ -291,7 +305,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             JSONObject development=data.has("development")?data.getJSONObject("development"):null;if(development!=null)DevelopmentStore.validate(development);
             if(data.has("gymProgramming"))GymProgrammeStore.validate(data.getJSONObject("gymProgramming"));
             GymProgrammeStore.validateLinks(development,coaching,data.optJSONObject("gymProgramming"));
-            return new RestoreData(profile,draft,baseline,baselineAt,activities,shoes,results,bestEfforts,annotations,settings,plans,assessments,trainingPlans,adjustments,coaching,development,data.optJSONObject("strengthState"),data.optJSONObject("gymProgramming"));
+            return new RestoreData(profile,draft,baseline,baselineAt,activities,shoes,results,bestEfforts,annotations,settings,plans,assessments,trainingPlans,adjustments,coaching,development,data.optJSONObject("strengthState"),data.optJSONObject("gymProgramming"),data.optJSONObject("support"));
         }catch(JSONException | java.time.DateTimeException e){throw FeatureJson.invalid(e);}
     }
     private static JSONArray array(JSONObject data,String key)throws JSONException{JSONArray rows=data.getJSONArray(key);if(rows.length()>100_000)throw new IllegalArgumentException("Too many "+key+" records.");return rows;}
@@ -334,6 +348,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             if(snapshot.development()!=null)DevelopmentStore.restore(db,snapshot.development());
             if(snapshot.strengthState()!=null)StrengthUserStore.restore(db,snapshot.strengthState());
             if(snapshot.gymProgramming()!=null)GymProgrammeStore.restore(db,snapshot.gymProgramming());
+            SupportStore.restore(db,snapshot.support());
             RecordingStore.restoreRetainedSamples(db);
             db.setTransactionSuccessful();
         }catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}

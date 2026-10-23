@@ -29,7 +29,7 @@ public final class BackupManager {
     public static final String FORMAT = "race-day-dreams-backup";
     // v2 adds the coaching graph. Older apps reject it rather than silently dropping
     // plan/strength history; this reader still accepts original v1 backups.
-    public static final int VERSION = 5;
+    public static final int VERSION = 6;
     public static final int MAX_BYTES = 8 * 1024 * 1024;
     private static final int MAX_DEPTH = 32;
     private static final int MAX_STRUCTURAL_TOKENS = 200_000;
@@ -126,6 +126,7 @@ public final class BackupManager {
             if (((Integer) version) >= 3 && !envelope.getJSONObject("data").has("development")) throw new IOException("Version-three backup is missing its evidence section.");
             if (((Integer) version) >= 2 && !envelope.getJSONObject("data").has("coaching"))
                 throw new IOException("This version-two backup is missing its coaching data section.");
+            if (((Integer) version) >= 6 && !envelope.getJSONObject("data").has("support")) throw new IOException("Backup is missing support evidence.");
             Instant.parse(envelope.getString("createdAt"));
             FeatureStore.validateUserData(envelope.getJSONObject("data"));
             return envelope;

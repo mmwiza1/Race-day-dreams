@@ -61,7 +61,9 @@ Text("Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activ
 
 @Composable
 fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?) {
-    val activity = state.activities.firstOrNull { it.id() == id }
+    val context=androidx.compose.ui.platform.LocalContext.current
+    val retained by produceState<ActivityRecord?>(null,id,state.activities){value=withContext(Dispatchers.IO){id?.let{org.racedaydreams.data.FeatureStore(context).activityDetail(it)}}}
+    val activity = retained ?: state.activities.firstOrNull { it.id() == id }
     if (activity == null) { CoachPage { CoachHeading("Activity unavailable"); Text("This activity is no longer in local history. A source may have updated or removed it.") }; return }
     var imperial by rememberSaveable(activity.id()) { mutableStateOf(state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) }
     val splitUnits = if (imperial) UnitSystem.IMPERIAL else UnitSystem.METRIC
@@ -113,6 +115,8 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
 
             Text("Values absent from the source remain unavailable. Elapsed time is not presented as moving time.")
         }
+        StructuredRunSection(state,model,activity)
+        DreamRouteSection(activity)
         RunComparisonSection(state,activity)
         RunFeedbackSection(state, model, activity)
         assessmentSummary?.let { summary ->
