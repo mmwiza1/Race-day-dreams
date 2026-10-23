@@ -298,6 +298,11 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         RestoreData snapshot=validated(FeatureJson.object(Objects.requireNonNull(data).toString()));
         SQLiteDatabase db=write();db.beginTransaction();
         try {
+            try(Cursor owned=db.rawQuery("SELECT id FROM activities WHERE provider IN ('rdd','gpx')",null)) {
+                Set<String> restoredIds=new HashSet<>(); for(ActivityRecord a:snapshot.activities())restoredIds.add(a.id());
+                while(owned.moveToNext()) if(!restoredIds.contains(owned.getString(0)))throw new IllegalArgumentException("This backup would remove user-owned recordings. Export raw recordings first and restore into an empty installation, or use a current app backup.");
+            }
+            try(Cursor active=db.rawQuery("SELECT 1 FROM recording_sessions WHERE state IN ('ACTIVE','PAUSED','RECOVERABLE')",null)){if(active.moveToFirst())throw new IllegalArgumentException("Finish or recover the active recording before replacing app data.");}
             GymProgrammeStore.clear(db);
             StrengthUserStore.clear(db);
             DevelopmentStore.clear(db);

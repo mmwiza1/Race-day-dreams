@@ -584,5 +584,30 @@ class StrengthChoicesSchemaTest(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO strength_user_state VALUES ('x',2,0)")
         db.close()
 
+class RecordingMigrationSchemaTest(unittest.TestCase):
+    def test_every_supported_version_retains_old_rows_and_adds_recording_tables(self):
+        for old in range(1,7):
+            db=sqlite3.connect(":memory:");create_schema(db,version=old)
+            db.execute("INSERT INTO user_profile VALUES (1,0)");db.commit()
+            before={name:db.execute("SELECT * FROM "+name).fetchall() for (name,) in db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            migrate_to_latest(db)
+            for name,rows in before.items():self.assertEqual(rows,db.execute("SELECT * FROM "+name).fetchall())
+            self.assertEqual(7,db.execute("PRAGMA user_version").fetchone()[0]);db.close()
+
+    def test_only_one_unfinished_run_and_orphan_points_rejected(self):
+        db=sqlite3.connect(":memory:");create_schema(db)
+        db.execute("INSERT INTO recording_sessions VALUES ('one','ACTIVE','2026-10-22T00:00:00Z',1,1,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO recording_sessions VALUES ('two','PAUSED','2026-10-22T00:00:00Z',1,1,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO recording_points VALUES ('missing',0,'{}')")
+        db.close()
+
+    def test_failed_v7_upgrade_preserves_all_old_tables_and_version(self):
+        db=sqlite3.connect(":memory:");create_schema(db,version=6)
+        db.execute("INSERT INTO settings VALUES ('keep','yes')");db.execute("CREATE TABLE recording_points (collision TEXT)");db.commit()
+        with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db)
+        self.assertEqual(6,db.execute("PRAGMA user_version").fetchone()[0]);self.assertEqual('yes',db.execute("SELECT setting_value FROM settings WHERE setting_key='keep'").fetchone()[0])
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='health_observations'").fetchone());db.close()
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

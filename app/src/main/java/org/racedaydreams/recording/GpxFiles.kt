@@ -35,7 +35,7 @@ class GpxFiles(private val context:Context):ActivityFileImporter {
                     "time"->if(inPoint)time=Instant.parse(parser.nextText())
                 }}
                 if(event==XmlPullParser.END_TAG&&parser.name=="trkpt"){
-                    require(inPoint&&lat!=null&&lon!=null&&time!=null){"Every imported track point needs coordinates and a timestamp"};val p=RoutePoint(time!!,lat!!,lon!!,altitude,segment);RunMetricsEngine.Fix(p.time,0,p.lat,p.lon,5.0,p.altitude,null,null)
+                    require(inPoint&&lat!=null&&lon!=null&&time!=null){"Every imported track point needs coordinates and a timestamp"};val p=RoutePoint(time!!,lat!!,lon!!,altitude,segment);RunMetricsEngine.Fix(p.time,0,p.lat,p.lon,null,p.altitude,null,null)
                     require(out.isEmpty()||p.time>out.last().time){"GPX times must increase"};require(out.size<MAX_POINTS){"Too many GPX points"};out.add(p);inPoint=false
                 }
                 event=parser.nextToken()
@@ -45,10 +45,12 @@ class GpxFiles(private val context:Context):ActivityFileImporter {
     }
     override fun importFrom(input:InputStream):String {
         val route=parse(input);val start=route.first().time;val engine=RunMetricsEngine(0,start);var previous=-1
-        for(p in route){val t=java.time.Duration.between(start,p.time).toMillis();if(previous!=-1&&previous!=p.segment)engine.breakSegment(t,p.time);engine.accept(RunMetricsEngine.Fix(p.time,t,p.lat,p.lon,5.0,p.altitude,null,null));previous=p.segment}
+        for(p in route){val t=java.time.Duration.between(start,p.time).toMillis();if(previous!=-1&&previous!=p.segment)engine.breakSegment(t,p.time);engine.accept(RunMetricsEngine.Fix(p.time,t,p.lat,p.lon,null,p.altitude,null,null));previous=p.segment}
         require(engine.points().size>=2&&engine.status(java.time.Duration.between(start,route.last().time).toMillis()).metres()>0){"Insufficient reliable continuous GPX evidence"}
         val digest=MessageDigest.getInstance("SHA-256");for(p in route)digest.update("${p.time}|${p.lat}|${p.lon}|${p.segment}\n".toByteArray());val id="gpx-"+digest.digest().joinToString(""){"%02x".format(it)}
         val store=RecordingStore(context);store.existingActivity(id)?.let{return it}
+        // Export/re-import of exactly retained coordinates/timestamps is the same evidence.
+        for((existing,wall) in store.finished())if(kotlin.math.abs(java.time.Duration.between(Instant.parse(wall),start).seconds)<=600){val points=store.points(existing);if(points.size==route.size&&points.indices.all{i->val a=points[i].fix();val b=route[i];a.timestamp()==b.time&&a.latitude()==b.lat&&a.longitude()==b.lon})store.existingActivity(existing)?.let{return it}}
         require(store.unfinished()==null){"Finish or recover the active recording before importing GPX"}
         val last=java.time.Duration.between(start,route.last().time).toMillis()
         store.importRecording(id,start,last,engine.points(),engine.events())

@@ -16,7 +16,7 @@ class RecordingStore(context:Context) {
     fun flush(id:String,points:List<RunMetricsEngine.Point>,events:List<RunMetricsEngine.Event>,fromPoint:Int,fromEvent:Int,last:Long,state:String){
         val db=helper.writableDatabase;db.beginTransaction();try{
             for(i in fromPoint until points.size)db.insertOrThrow("recording_points",null,ContentValues().apply{put("session_id",id);put("sequence",i);put("payload",encode(points[i]).toString())})
-            for(i in fromEvent until events.size)db.insertOrThrow("recording_events",null,ContentValues().apply{put("session_id",id);put("sequence",i);put("payload",JSONObject().put("type",events[i].type()).put("mono",events[i].monotonicMillis()).put("wall",events[i].timestamp().toString()).toString())})
+            for(i in fromEvent until events.size)db.insertOrThrow("recording_events",null,ContentValues().apply{put("session_id",id);put("sequence",i);put("payload",JSONObject().put("type",events[i].type()).put("mono",events[i].monotonicMillis()).put("wall",events[i].timestamp().toString()).put("value",events[i].value()).toString())})
             db.update("recording_sessions",ContentValues().apply{put("last_mono",last);put("state",state)},"id=?",arrayOf(id));db.setTransactionSuccessful()
         }finally{db.endTransaction()}
     }
@@ -38,6 +38,6 @@ class RecordingStore(context:Context) {
     companion object {
         fun encode(p:RunMetricsEngine.Point):JSONObject=JSONObject().put("wall",p.fix().timestamp().toString()).put("mono",p.fix().monotonicMillis()).put("lat",p.fix().latitude()).put("lon",p.fix().longitude()).put("accuracy",p.fix().accuracy()).put("alt",p.fix().altitude()).put("vertical",p.fix().verticalAccuracy()).put("speed",p.fix().speed()).put("distance",p.cumulativeMetres()).put("active",p.activeMillis()).put("segment",p.segment()).put("gap",p.discontinuity()).put("hr",p.heartRate()).put("cadence",p.cadence())
         private fun JSONObject.optional(key:String):Double?=if(has(key)&&!isNull(key))getDouble(key)else null
-        fun decode(j:JSONObject)=RunMetricsEngine.Point(RunMetricsEngine.Fix(Instant.parse(j.getString("wall")),j.getLong("mono"),j.getDouble("lat"),j.getDouble("lon"),j.getDouble("accuracy"),j.optional("alt"),j.optional("vertical"),j.optional("speed")),j.getDouble("distance"),j.getLong("active"),j.getInt("segment"),j.getBoolean("gap"),j.optional("hr"),j.optional("cadence"))
+        fun decode(j:JSONObject)=RunMetricsEngine.Point(RunMetricsEngine.Fix(Instant.parse(j.getString("wall")),j.getLong("mono"),j.getDouble("lat"),j.getDouble("lon"),j.optional("accuracy"),j.optional("alt"),j.optional("vertical"),j.optional("speed")),j.getDouble("distance"),j.getLong("active"),j.getInt("segment"),j.getBoolean("gap"),j.optional("hr"),j.optional("cadence"))
     }
 }

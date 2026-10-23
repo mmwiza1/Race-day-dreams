@@ -22,6 +22,6 @@ import java.time.LocalDate
     Button(onClick={launcher.launch(HealthIntelligenceGateway.permissions)},enabled=!busy){Text("Choose optional health permissions")}
     OutlinedButton(onClick={refresh()},enabled=!busy){Text("Refresh health context")}
     message?.let{Text(it)}
-    trends.forEach{t->CoachCard{Text(t.metric().name.lowercase().replace('_',' '),style=MaterialTheme.typography.titleMedium);Text(t.interpretation());Text("Recent: ${t.recent()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"} · Reference: ${t.baseline()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"}");Text("${t.recentDays()}/7 recent days · ${t.referenceDays()}/28 reference days");WhyDetails("${t.source()}\n${t.limitation()}","Evidence and source")}}
+    trends.forEach{t->CoachCard{Text(if(t.metric()==HealthIntelligence.Metric.SLEEP_MINUTES)"Sleep-session minutes (may include awake time)"else t.metric().name.lowercase().replace('_',' '),style=MaterialTheme.typography.titleMedium);Text(t.interpretation());Text("Recent: ${t.recent()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"} · Reference: ${t.baseline()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"}");Text("${t.recentDays()}/7 recent days · ${t.referenceDays()}/28 reference days");WhyDetails("${t.source()}\n${t.limitation()}","Evidence and source")}}
     Text("Consumer health measurements provide context, not diagnoses. Sleep stages are not used. One unusual measurement is not a reason to restructure training.")
 }
