@@ -11,7 +11,11 @@ public final class DreamBasemap {
     private DreamBasemap() {}
     public enum Kind { ROAD, WATER, GREEN }
     public record Feature(Kind kind, List<List<DreamRoutes.Vertex>> paths) {
-        public Feature { paths = paths.stream().map(List::copyOf).toList(); }
+        public Feature {
+            var immutable = new ArrayList<List<DreamRoutes.Vertex>>();
+            for (var path : paths) immutable.add(List.copyOf(path));
+            paths = List.copyOf(immutable);
+        }
     }
     public record MapData(String routeId, List<Feature> features) {
         public MapData { features = List.copyOf(features); }
