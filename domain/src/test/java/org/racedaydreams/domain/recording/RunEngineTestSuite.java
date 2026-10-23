@@ -23,6 +23,7 @@ public final class RunEngineTestSuite {
   check(policy.observe(new RunMetricsEngine.Fix(Instant.EPOCH,31000,0,0,60.0,null,null,3.0))==AutoPausePolicy.Decision.NONE);
   policy.observe(new RunMetricsEngine.Fix(Instant.EPOCH,32000,0,0,3.0,null,null,3.0));check(policy.observe(new RunMetricsEngine.Fix(Instant.EPOCH,37000,0,0,3.0,null,null,3.0))==AutoPausePolicy.Decision.RESUME);
   var delayed=new RunMetricsEngine(0,Instant.EPOCH);delayed.accept(fix(1000,0));delayed.missingFix(2500,Instant.EPOCH);check(delayed.accept(fix(2000,3)));
+  delayed.heartRate(150.0,5000);delayed.accept(fix(3000,6));check(delayed.points().get(delayed.points().size()-1).heartRate()==null);delayed.accept(fix(6000,15));check(delayed.points().get(delayed.points().size()-1).heartRate()==150.0);
   System.out.println("RunEngineTestSuite: "+n+" checks passed (traces, split interpolation, gaps, pauses, clock change, HR, personal baselines).");
  }
 }

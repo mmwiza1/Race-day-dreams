@@ -4,7 +4,7 @@ Starting main `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba`; branch
 `codex/health-intelligence-run-engine`; PR #7. Version 0.6.0-test1 / 7;
 schema 7; app JSON backup envelope 5; companion raw recording archive version 1.
 
-Observed local results: full domain scripts pass **57,726 assertions** (1,053 new
+Observed local results: full domain scripts pass **57,728 assertions** (1,055 new
 trace/personal-baseline checks); schema scripts pass **36 tests**, including every
 supported 1–6 upgrade, retained old rows, one-active-run/FK constraints and failed
 migration rollback. Existing suites/assertions were retained. Android instrumentation

@@ -44,7 +44,7 @@ public final class RunMetricsEngine {
         if(gap){segment++;events.add(new Event("GPS_RETURNED",f.monotonicMillis(),f.timestamp()));}
         gps="GPS available";
         points.add(new Point(f,distance,active(f.monotonicMillis()),segment,gap,
-            hr!=null&&f.monotonicMillis()-hrTime<=10000?hr:null,cadence!=null&&f.monotonicMillis()-cadenceTime<=10000?cadence:null));
+            hr!=null&&f.monotonicMillis()>=hrTime&&f.monotonicMillis()-hrTime<=10000?hr:null,cadence!=null&&f.monotonicMillis()>=cadenceTime&&f.monotonicMillis()-cadenceTime<=10000?cadence:null));
         gap=false;anchor=f;return true;
     }
     public void breakSegment(long time,Instant wall){tick(time);anchor=null;gap=true;segment++;events.add(new Event("GPS_LOST",time,wall));}

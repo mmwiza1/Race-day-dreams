@@ -84,7 +84,7 @@ JSON backup5 reads1–4; raw archive1. See docs/RUN_ENGINE.md for architecture/l
 
 ## Verification checkpoint and next work
 
-Local domain57,726 assertions/schema36 pass. Android build/lint passed earlier
+Local domain57,728 assertions/schema36 pass. Android build/lint passed earlier
 intermediate heads; instrumentation/newest head still needs confirmed all-green CI.
 Do not claim a final APK until the intended head has passed build and device tests.
 CI API28/35/36 is preserved. Current automated screenshot branch is this feature branch;
