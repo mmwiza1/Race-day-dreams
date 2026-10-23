@@ -140,17 +140,23 @@ class CoachingScreenshotTest {
         val originalFont=shell("settings get system font_scale").trim()
         val originalNight=shell("cmd uimode night").let{if(it.contains("yes"))"yes"else if(it.contains("auto"))"auto"else "no"}
         try {
+            scenario?.close();scenario=null
             shell("cmd uimode night yes")
-            scenario?.close();scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
+            scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
             Assert.assertEquals(android.content.res.Configuration.UI_MODE_NIGHT_YES,context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK)
             capture("home-dark")
             click("Plan");await("This week");capture("plan-dark")
             compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility-dark");back();back();click("Home");await("How am I doing?")
-            shell("settings put system font_scale 2.0");scenario?.recreate();await("How am I doing?")
+            // Font changes already recreate Android activities. Close first so the
+            // capture does not race recreate() against an automatically destroyed instance.
+            scenario?.close();scenario=null
+            shell("settings put system font_scale 2.0")
+            scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
             Assert.assertTrue(context.resources.configuration.fontScale>=1.99f)
             capture("home-large-font")
             compose.onNodeWithContentDescription("Plan").performClick();await("This week");capture("plan-large-font")
         } finally {
+            scenario?.close();scenario=null
             if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
             shell("cmd uimode night $originalNight")
         }
@@ -181,9 +187,12 @@ class CoachingScreenshotTest {
                 openCity(city);capture("dream-route-${city.id().removeSuffix("-v2")}")
             }
             val london=org.racedaydreams.domain.support.DreamRoutes.routes().first()
+            scenario?.close();scenario=null
             shell("cmd uimode night yes");openCity(london);capture("dream-route-dark")
+            scenario?.close();scenario=null
             shell("settings put system font_scale 2.0");openCity(london);capture("dream-route-large-font")
         } finally {
+            scenario?.close();scenario=null
             if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
             shell("cmd uimode night $originalNight")
         }
