@@ -14,7 +14,6 @@ single-leg-press
 leg-extension
 sissy-squat
 sumo-deadlift
-trap-bar-deadlift
 stiff-leg-deadlift
 deficit-deadlift
 rack-pull
@@ -23,7 +22,6 @@ snatch-grip-deadlift
 single-leg-rdl
 good-morning
 cable-pull-through
-hip-thrust
 barbell-glute-bridge
 forward-lunge
 reverse-lunge
@@ -69,7 +67,6 @@ cable-fly
 pec-deck
 dumbbell-fly
 row
-barbell-row
 pendlay-row
 dumbbell-row
 chest-supported-row
@@ -77,7 +74,6 @@ t-bar-row
 machine-row
 meadows-row
 inverted-row
-pull-up
 weighted-pull-up
 chin-up
 weighted-chin-up
