@@ -209,7 +209,7 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("exercises") { ExerciseBrowser(state,model){nav.navigate("exercise/${Uri.encode(it)}")} }
                 composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")){nav.navigate("strength/source/${Uri.encode(it)}")} }
 
-                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { date -> val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date().toString()==date};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$date") }) { nav.navigate("activity/${Uri.encode(it)}") } }
+                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { date -> val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date().toString()==date};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$date") }, activity={ nav.navigate("activity/${Uri.encode(it)}") }, allStrength={nav.navigate("history?kind=STRENGTH")}) }
                 composable("activity/{id}") { destination ->
                     ActivityDetailScreen(state, model, destination.arguments?.getString("id"))
                 }

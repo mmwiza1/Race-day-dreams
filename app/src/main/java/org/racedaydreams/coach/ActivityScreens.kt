@@ -22,8 +22,27 @@ import org.racedaydreams.domain.activity.SplitCalculator
 import org.racedaydreams.domain.baseline.AssessmentAnalyzer
 
 @Composable
-fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit) {
-    val groups = remember(state.activities) { state.activities.sortedByDescending { it.start() }.groupBy(::displayActivityDate) }
+fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit, allStrength:()->Unit = {}) {
+    val context=androidx.compose.ui.platform.LocalContext.current
+    var page by remember{mutableIntStateOf(0)}
+    var visible by remember{mutableStateOf<List<ActivityRecord>>(emptyList())}
+    var hasMore by remember{mutableStateOf(false)}
+    var loading by remember{mutableStateOf(true)}
+    var error by remember{mutableStateOf(false)}
+    var loadedSource by remember{mutableStateOf<List<ActivityRecord>?>(null)}
+    LaunchedEffect(state.activities,page) {
+        val append=loadedSource==state.activities
+        if(!append){visible=emptyList();loadedSource=state.activities}
+        loading=true;error=false
+        try {
+            val last=if(append)visible.lastOrNull()else null
+            val found=withContext(Dispatchers.IO){org.racedaydreams.data.FeatureStore(context).activitySummaryPage(last?.start(),last?.id(),31)}
+            visible=if(append)visible+found.take(30)else found.take(30);hasMore=found.size>30
+        }catch(cancelled:kotlinx.coroutines.CancellationException){throw cancelled}
+        catch(_:Exception){error=true}
+        finally{loading=false}
+    }
+    val groups = remember(visible) { visible.groupBy(::displayActivityDate) }
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             CoachHeading("Activity calendar")
@@ -31,10 +50,12 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit) {
             Text("Your week can change. Recorded activities are retained independently of planned workouts.", Modifier.padding(top = 8.dp))
         }
         if(state.strengthSessions.isNotEmpty()) item { CoachHeading("Strength history") }
-        items(state.strengthSessions.sortedByDescending { it.startedAt() },key={"strength:"+it.id()}) { session ->
+        items(state.strengthSessions.sortedByDescending { it.startedAt() }.take(20),key={"strength:"+it.id()}) { session ->
             CoachCard { Text("${friendlyDate(session.startedAt().atOffset(session.offset()).toLocalDate())} · Strength ✓");Text("${session.duration().toMinutes()} min · ${session.exercises().size} exercises");session.exercises().forEach { Text(it.exercise().name()) } }
         }
-        if (groups.isEmpty()) item { Text("No completed runs have been added. Connect Health Connect or enter an optional completed assessment to begin your history.") }
+        if(state.strengthSessions.size>20)item{TextButton(onClick=allStrength,modifier=Modifier.heightIn(min=48.dp)){Text("View all strength history")}}
+        if(error)item{Text("History could not be loaded. Your records are retained.");TextButton(onClick={page++}){Text("Try again")}}
+        if (groups.isEmpty()&&!loading&&!error) item { Text("No completed runs have been added. Connect Health Connect or enter an optional completed assessment to begin your history.") }
         groups.forEach { (date, activities) ->
             item(key = "date:$date") { Text(date, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() }) }
             items(activities, key = { it.id() }) { activity ->
@@ -56,6 +77,9 @@ Text("Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activ
                 }
             }
         }
+        if(loading)item{LinearProgressIndicator(Modifier.fillMaxWidth())}
+        else if(hasMore)item{TextButton(onClick={page++},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Load more recorded runs")}}
+
     }
 }
 

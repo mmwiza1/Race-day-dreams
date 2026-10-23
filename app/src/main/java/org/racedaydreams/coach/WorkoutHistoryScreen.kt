@@ -31,7 +31,7 @@ import org.racedaydreams.domain.activity.WorkoutHistoryQuery
         if(!append){rows=emptyList();next=null;loadedKey=queryKey}
         loading=true;error=null
         try {
-            val result=withContext(Dispatchers.IO){WorkoutHistoryStore(context).page(WorkoutHistoryQuery.Kind.valueOf(kind),type.takeIf{it.isNotBlank()}?.let(WorkoutCategory::valueOf),query,from.takeIf{it.isNotBlank()}?.let(LocalDate::parse),through.takeIf{it.isNotBlank()}?.let(LocalDate::parse),prescriptions,if(append)next else null)}
+            val result=withContext(Dispatchers.IO){WorkoutHistoryStore(context).page(WorkoutHistoryQuery.Kind.valueOf(kind),type.takeIf{it.isNotBlank()}?.let(WorkoutCategory::valueOf),query,from.takeIf{it.isNotBlank()}?.let(LocalDate::parse),through.takeIf{it.isNotBlank()}?.let(LocalDate::parse),prescriptions,if(append)next else null,versions=state.planVersions)}
             rows=if(append)rows+result.rows else result.rows;next=result.next
         } catch(cancelled:CancellationException){throw cancelled}
           catch(_:Exception){error="History could not be loaded. Check the date range and try again; your records are retained."}

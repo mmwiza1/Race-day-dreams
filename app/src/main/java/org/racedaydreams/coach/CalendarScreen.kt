@@ -55,11 +55,11 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
     }
 }
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalLayoutApi::class)
-@Composable fun ActivityCalendarScreen(state:CoachUiState,model:CoachViewModel,workout:(String)->Unit,strength:(String)->Unit,activity:(String)->Unit){
+@Composable fun ActivityCalendarScreen(state:CoachUiState,model:CoachViewModel,workout:(String)->Unit,strength:(String)->Unit,activity:(String)->Unit,allStrength:()->Unit={}){
     var focus by rememberSaveable{mutableStateOf(LocalDate.now().toString())};var showDay by rememberSaveable{mutableStateOf(false)};val day=LocalDate.parse(focus)
     Column(Modifier.fillMaxSize()){
         Row(Modifier.fillMaxWidth().padding(horizontal=16.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("List","Week","Month").forEach{view->FilterChip(selected=state.calendarView==view,onClick={model.setting("calendar.view",view)},label={Text(view)})}}
-        if(state.calendarView=="List"){ActivityHistoryScreen(state,activity);return@Column}
+        if(state.calendarView=="List"){ActivityHistoryScreen(state,activity,allStrength);return@Column}
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal=16.dp,vertical=8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
             CoachHeading("Training calendar")
             CalendarLegend()

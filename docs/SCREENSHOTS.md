@@ -64,3 +64,18 @@ curates eight current-build images; QA captures retain Calendar, dark/200%, guid
 gym and settings. Public Live Coach uses neutral fixture wording; its production UI
 is unchanged. Actual native trace analysis uses deterministic androidTest-only input,
 not a mock route widget. No test data enters the installable app.
+
+## 0.8.1 design fidelity gate (in progress)
+
+Owner-supplied reference JPEGs are preserved in `docs/design-reference/`. They are
+never bundled as app UI or presented as actual screenshots. Required actual captures
+include Plan, Dream, RDL, Bench, Walking Lunge, Ankle Rocks, a static stretch,
+machine/cable guide, mobility, Live Coach, health, shoes, trends, Run Now, Calendar,
+dark mode and200% text. Keep all images from the exact verified production source.
+
+Compare actual renders side by side with references: week-first density, meaningful
+route geography/highlight/progress, human illustration proportions/equipment/phases,
+blue/navy hierarchy, mint tips/pink mistakes, touch targets, dark contrast and large
+text. Document specific mismatches and refine. Hash equality/regression consistency
+alone does not pass this gate. Current committed PNGs still describe0.8 until the
+0.8.1 capture/review/adoption work completes; do not market them as the final redesign.

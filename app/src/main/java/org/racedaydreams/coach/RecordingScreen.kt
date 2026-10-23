@@ -19,6 +19,9 @@ import org.racedaydreams.data.RecordingStore
     val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){r->if(r[Manifest.permission.ACCESS_FINE_LOCATION]==true)send(RunRecordingService.START)else recovery="Precise location is needed to record genuine distance. Other features remain available."}
     LaunchedEffect(status==null){if(status==null)model.refresh();unfinished=withContext(Dispatchers.IO){RecordingStore(context).unfinished()};checked=true}
     LaunchedEffect(checked){if(checked&&startWhenPermitted&&!attempted&&unfinished==null&&!RunRecordingService.running.value&&context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){attempted=true;send(RunRecordingService.START)}}
+    val retainedSummary by produceState<RecordingStore.RecoverySummary?>(null,unfinished) {
+        value=withContext(Dispatchers.IO){unfinished?.let{runCatching{RecordingStore(context).recoverySummary(it)}.getOrNull()}}
+    }
     val saved by RunRecordingService.savedActivity.collectAsState()
     val initialSaved=remember{RunRecordingService.savedActivity.value}
     LaunchedEffect(saved){saved?.takeIf{it!=initialSaved}?.let{model.refresh();onSaved(it)}}
@@ -33,7 +36,25 @@ import org.racedaydreams.data.RecordingStore
     CoachHeading(if(workoutId!=null)"Live Coach"else "Record a run")
     if(status==null)WhyDetails("Phone GPS stays active with the screen locked. No route leaves your device. Elapsed time includes pauses; moving time excludes manual pauses. Poor fixes and gaps are excluded from distance.","Recording and privacy")
     if(!running&&status==null&&unfinished==null)CoachButton("Start GPS recording"){if(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED)send(RunRecordingService.START)else permission.launch((listOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)+if(android.os.Build.VERSION.SDK_INT>=33)listOf(Manifest.permission.POST_NOTIFICATIONS)else emptyList()).toTypedArray())}
-    if(!running&&status==null&&unfinished!=null){Text("An unfinished run was retained. Recovery saves only observed time and samples; time while the process was absent is not invented.");CoachButton("Recover recorded portion"){scope.launch{try{recovery=withContext(Dispatchers.IO){RecordingStore(context).finish(unfinished!!);"Recorded portion recovered. Open Calendar to view it."};unfinished=null;model.refresh()}catch(_:Exception){recovery="Not enough usable evidence to finalise. Staging has been retained."}}}}
+    if(!running&&status==null&&unfinished!=null) {
+        GuidanceCard {
+            Text("Your recorded portion is safe",style=MaterialTheme.typography.titleLarge)
+            retainedSummary?.let { summary ->
+                Text("Retained elapsed ${org.racedaydreams.domain.PaceCalculator.formatTime(java.time.Duration.ofMillis(summary.elapsedMillis))}")
+                Text("Active ${org.racedaydreams.domain.PaceCalculator.formatTime(java.time.Duration.ofMillis(summary.activeMillis))} · ${summary.points} GPS observations")
+                if(summary.paused)Text("The run was paused at the last saved checkpoint.")
+                if(summary.structured)Text("Your preserved workout and saved step events are retained.")
+            }
+            Text("Recording was interrupted. Save the retained portion; time and movement after the last checkpoint are unknown. GPS will not restart automatically.")
+            CoachButton("Recover recorded portion") {
+                scope.launch {
+                    try { val id=withContext(Dispatchers.IO){RecordingStore(context).finish(unfinished!!)};unfinished=null;model.refresh();onSaved(id) }
+                    catch(_:Exception){recovery="Recovery could not finish. Staged evidence is retained. Reopen this screen to refresh the checkpoint or export the raw archive."}
+                }
+            }
+        }
+    }
+
     if(!running&&status==null&&unfinished!=null)TextButton(onClick={discard=true}){Text("Discard unfinished recording…")}
     if(discard)AlertDialog(onDismissRequest={discard=false},title={Text("Discard recorded evidence?")},text={Text("This permanently deletes the unfinished run. Export the raw recording archive first if you want to retain it.")},confirmButton={TextButton(onClick={discard=false;scope.launch{withContext(Dispatchers.IO){RecordingStore(context).discardUnfinished(unfinished!!.id)};unfinished=null}}){Text("Discard")}},dismissButton={TextButton(onClick={discard=false}){Text("Keep recording")}})
     saved?.let{id->TextButton(onClick={model.refresh();onSaved(id)}){Text("View last saved run")}}

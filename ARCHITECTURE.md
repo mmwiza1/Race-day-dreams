@@ -231,3 +231,22 @@ and checklist rows. Schema9 is additive. JSON7 reads1–6; complete package1 and
 archive2 remain. DiagnosticReport has a small allow-list and no database dependency.
 Route rendering loads selected activity samples on IO and projects off-main; visual
 sampling never changes raw observations. No new runtime dependency or Internet permission.
+
+## 0.8.1 history and durable checkpoint changes
+
+Schema10 adds compound run-history and computed strength-time indexes; no user
+records or backup-envelope fields change. WorkoutHistoryStore seeks by numeric
+time/ID/kind in bounded SQL batches, filters local dates and exercise aliases on IO,
+and returns light row projections. A preserved plan-version link controls workout
+type classification. Numeric cursor bounds are explicitly cast for API28 SQLite
+UNION affinity. Calendar List separately seeks30 recorded-run summaries at a time;
+full raw points are not queried for list cards. Aggregate coaching/strength models
+remain separate and are not incorrectly truncated to the visible history page.
+
+Recorder start commits staging/origin/preserved execution atomically. Incremental
+flushes copy only newly accepted points/events; identical committed retries are
+idempotent, conflicts/sequence gaps/reversed clocks fail and roll back. Finished
+stages cannot be revived. Recovery reports the durable cutoff/active time/pause and
+saved prescription; it still finalises only the retained portion, not unobserved
+movement or seamless cross-reboot tracking. The last unflushed batch remains a
+physical reliability limit; automatic secret GPS restart is deliberately absent.

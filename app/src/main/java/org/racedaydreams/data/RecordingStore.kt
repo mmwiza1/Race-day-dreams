@@ -12,6 +12,14 @@ class RecordingStore(context:Context) {
     private val contextRef=context.applicationContext
     private val helper=ProfileDatabase.get(context)
     data class Session(val id:String,val state:String,val start:Instant,val mono:Long,val last:Long)
+    data class RecoverySummary(val elapsedMillis:Long,val activeMillis:Long,val points:Int,val paused:Boolean,val structured:Boolean)
+    fun recoverySummary(session:Session):RecoverySummary {
+        val db=helper.readableDatabase
+        val events=mutableListOf<RunMetricsEngine.Event>()
+        db.rawQuery("SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",arrayOf(session.id)).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));events.add(RunMetricsEngine.Event(j.getString("type"),j.getLong("mono"),Instant.parse(j.getString("wall"))))}}
+        val count=db.rawQuery("SELECT COUNT(*) FROM recording_points WHERE session_id=?",arrayOf(session.id)).use{c->c.moveToFirst();c.getInt(0)}
+        return RecoverySummary((session.last-session.mono).coerceAtLeast(0),org.racedaydreams.domain.recording.RecordingTimeline.activeMillis(session.mono,session.last,events),count,org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(session.mono,session.last,events),SupportStore(contextRef).get("execution",session.id)!=null)
+    }
     fun unfinished():Session?=helper.readableDatabase.rawQuery("SELECT id,state,started_at,started_mono,last_mono FROM recording_sessions WHERE state IN ('ACTIVE','PAUSED','RECOVERABLE')",null).use{c->if(c.moveToFirst())Session(c.getString(0),c.getString(1),Instant.parse(c.getString(2)),c.getLong(3),c.getLong(4))else null}
     fun start(id:String,wall:Instant,mono:Long,execution:JSONObject?=null,origin:JSONObject?=null) {
         require(id.length in 1..256 && mono>=0)
