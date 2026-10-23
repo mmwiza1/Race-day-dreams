@@ -24,6 +24,10 @@ public final class GuidancePresentationTestSuite {
         check(org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(0,2000,java.util.Arrays.asList(resume,pause)));
         check(!org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(0,4000,java.util.Arrays.asList(resume,pause)));
         check(!org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(0,500,java.util.Arrays.asList(pause)));
+        var small=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-v2",10000,5020));
+        check(small.percentage()==12);check(small.distanceLabel().equals("5.02 km / 42.20 km"));check(small.extraMetres()==0);
+        var full=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-v2",0,42195));check(full.percentage()==100);check(full.fraction()==1);check(full.distanceLabel().equals("42.20 km / 42.20 km"));
+        var over=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-v2",0,50000));check(over.percentage()==100);check(over.extraMetres()==7805);check(over.highlightedMetres()==42195);
         System.out.println("GuidancePresentationTestSuite: "+checks+" checks passed.");
     }
 }

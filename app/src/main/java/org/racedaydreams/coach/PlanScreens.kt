@@ -18,6 +18,7 @@ import java.time.*
 import org.racedaydreams.domain.*
 import org.racedaydreams.domain.coaching.*
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String) -> Unit, editGoal: () -> Unit, strength: (LocalDate) -> Unit = {},routines:()->Unit={}, routine:(String,String?)->Unit={_,_->}) {
     var confirm by rememberSaveable { mutableStateOf(false) }
@@ -43,11 +44,11 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             val totalWeeks = ChronoUnit.WEEKS.between(startWeek, plan.endDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))+1
             val weekNumber = ChronoUnit.WEEKS.between(startWeek,selectedWeek)+1
             Text("${version.goalSnapshot().raceGoal().distance().label()} · Week $weekNumber of $totalWeeks", style=MaterialTheme.typography.titleMedium)
+            Text("This week", style=MaterialTheme.typography.headlineSmall)
             Row(Modifier.fillMaxWidth(), verticalAlignment=Alignment.CenterVertically) {
-                Text("This week", style=MaterialTheme.typography.headlineSmall, modifier=Modifier.weight(1f))
-                TextButton(onClick={week--},enabled=selectedWeek>startWeek) { Text("‹", modifier=Modifier.semantics { contentDescription="Previous week" }) }
-                Text("${shortDate(selectedWeek)} – ${shortDate(selectedWeek.plusDays(6))}", style=MaterialTheme.typography.labelMedium)
-                TextButton(onClick={week++},enabled=selectedWeek.plusWeeks(1)<=plan.endDate()) { Text("›", modifier=Modifier.semantics { contentDescription="Next week" }) }
+                TextButton(onClick={week--},enabled=selectedWeek>startWeek,modifier=Modifier.sizeIn(minWidth=48.dp,minHeight=48.dp)) { Text("‹", modifier=Modifier.semantics { contentDescription="Previous week" }) }
+                Text("${selectedWeek.format(java.time.format.DateTimeFormatter.ofPattern("d MMM",java.util.Locale.UK))} – ${selectedWeek.plusDays(6).format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu",java.util.Locale.UK))}",modifier=Modifier.weight(1f),textAlign=androidx.compose.ui.text.style.TextAlign.Center,style=MaterialTheme.typography.labelLarge)
+                TextButton(onClick={week++},enabled=selectedWeek.plusWeeks(1)<=plan.endDate(),modifier=Modifier.sizeIn(minWidth=48.dp,minHeight=48.dp)) { Text("›", modifier=Modifier.semantics { contentDescription="Next week" }) }
             }
             if(week!=0)TextButton(onClick={week=0}) { Text("Current week") }
             repeat(7) { offset ->
@@ -55,7 +56,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                 val entries=calendarEntries(state,day)
                 val runs=plan.workouts().filter{it.date()==day}
                 // Calendar remains the authority for explicit rest, moved and skipped states.
-                GuidanceCard(if(entries.any{it.category() in listOf(CalendarData.Category.EASY,CalendarData.Category.QUALITY,CalendarData.Category.LONG,CalendarData.Category.RACE)}) guidanceBlue() else MaterialTheme.colorScheme.surface) {
+                GuidanceCard(if(entries.any{it.category() in listOf(CalendarData.Category.EASY,CalendarData.Category.QUALITY,CalendarData.Category.LONG,CalendarData.Category.RACE)}) guidanceBlue() else MaterialTheme.colorScheme.surface,padding=12.dp,spacing=0.dp) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(14.dp)) {
                         Column(horizontalAlignment=Alignment.CenterHorizontally,modifier=Modifier.widthIn(min=36.dp)) {
                             Text(day.dayOfWeek.name.take(3),style=MaterialTheme.typography.labelSmall)
@@ -64,19 +65,26 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                         Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
                             if(entries.isEmpty()) { Text("No session planned",style=MaterialTheme.typography.titleMedium); Text("Your day, your choice",style=MaterialTheme.typography.bodySmall) }
                             entries.forEach { entry ->
-                                Text(if(entry.category()==CalendarData.Category.REST)"Rest Day"else entry.label(),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold)
                                 val workout=runs.firstOrNull{it.id()==entry.id()}
                                 if(workout!=null) {
-                                    Text(workout.distanceKm()?.let{formatDistance(it*1000,state)}?:workout.duration()?.let{"${it.toMinutes()} min"}?:"Run by effort",style=MaterialTheme.typography.bodyMedium)
-                                    TextButton(onClick={open(workout.id())},contentPadding=PaddingValues(0.dp)) { Text("View workout and purpose") }
+                                    TextButton(onClick={open(workout.id())},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp).semantics{contentDescription="View workout and purpose"},contentPadding=PaddingValues(0.dp)) {
+                                        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)) {
+                                            Text(entry.label(),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold,color=MaterialTheme.colorScheme.onSurface)
+                                            Text(workout.distanceKm()?.let{formatDistance(it*1000,state)}?:workout.duration()?.let{"${it.toMinutes()} min"}?:"Run by effort",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Text("›",style=MaterialTheme.typography.titleLarge)
+                                    }
                                     val warm=org.racedaydreams.domain.support.RunningRoutines.warmup(workout.category(),version.goalSnapshot().raceGoal().distance().kilometres())
-                                    WarmupSupportLink(warm,workout.id()){routine(warm,workout.id())}
-                                    if(workout.category()==WorkoutCategory.LONG_RUN||AdaptiveCoachingEngine.isQuality(workout.category())||workout.category()==WorkoutCategory.RACE)TextButton(onClick={routine("cool-demanding",workout.id())},contentPadding=PaddingValues(0.dp)){Text("Cool-down · 6 min")}
+                                    androidx.compose.foundation.layout.FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                                        WarmupSupportLink(warm,workout.id()){routine(warm,workout.id())}
+                                        if(workout.category()==WorkoutCategory.LONG_RUN||AdaptiveCoachingEngine.isQuality(workout.category())||workout.category()==WorkoutCategory.RACE)TextButton(onClick={routine("cool-demanding",workout.id())},contentPadding=PaddingValues(0.dp)){Text("Cool-down · 6 min",style=MaterialTheme.typography.labelMedium)}
+                                    }
                                 } else when {
-                                    entry.category()==CalendarData.Category.REST -> Text("Recover and prepare for your next session.",style=MaterialTheme.typography.bodySmall)
-                                    entry.category()==CalendarData.Category.STRENGTH -> TextButton(onClick={strength(day)}) { Text(if(entry.state()==CalendarData.State.COMPLETED)"View strength"else"View strength workout") }
-                                    entry.activityId()!=null -> Text(entry.state().name.lowercase().replace('_',' '),style=MaterialTheme.typography.bodySmall)
+                                    entry.category()==CalendarData.Category.REST -> {Text("Rest Day",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold);Text("Recover and prepare for your next session.",style=MaterialTheme.typography.bodySmall)}
+                                    entry.category()==CalendarData.Category.STRENGTH -> TextButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp),contentPadding=PaddingValues(0.dp)) {Column(Modifier.weight(1f)){Text(entry.label(),style=MaterialTheme.typography.titleMedium,color=MaterialTheme.colorScheme.onSurface);Text(if(entry.state()==CalendarData.State.COMPLETED)"View strength"else"View strength workout",style=MaterialTheme.typography.bodySmall)};Text("›")}
+                                    else -> {Text(entry.label(),style=MaterialTheme.typography.titleMedium);Text(entry.state().name.lowercase().replace('_',' '),style=MaterialTheme.typography.bodySmall)}
                                 }
+
                             }
                         }
                     }

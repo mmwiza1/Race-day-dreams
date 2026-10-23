@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import java.time.Duration
@@ -43,7 +44,7 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit, allStreng
         finally{loading=false}
     }
     val groups = remember(visible) { visible.groupBy(::displayActivityDate) }
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(Modifier.fillMaxSize().semantics{stateDescription=if(loading)"Loading recorded history"else if(error)"History unavailable"else"Recorded history ready"}, contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             CoachHeading("Activity calendar")
             Text("Recorded runs · list view", Modifier.padding(top = 8.dp))

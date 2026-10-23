@@ -83,15 +83,21 @@ import org.racedaydreams.data.SupportStore
     val context=LocalContext.current
     val assignment by produceState<DreamRoutes.Assignment?>(null,activity.id()){value=withContext(Dispatchers.IO){SupportStore(context).dream(activity.id(),metres)}}
     val a=assignment?:return;val route=DreamRoutes.forId(a.routeId())
-    val outline=MaterialTheme.colorScheme.outline;val highlight=MaterialTheme.colorScheme.primary
-    SemanticCard(Tile.Race) {
-        Text("Dream Route · ${route.name()}",style=MaterialTheme.typography.titleMedium)
-        Text(String.format(java.util.Locale.UK,"You covered %.2f km of a marathon equivalent.",metres/1000))
-        Text("Original stylised course-inspired visual · not official or for navigation.",style=MaterialTheme.typography.bodySmall)
-        DreamDrawing(route,a.startMetres(),a.startMetres()+kotlin.math.min(42195.0,a.coveredMetres()))
-        Text("● Start · ◉ Finish · highlighted segment")
-        if(metres>42195)Text("One full marathon equivalent plus ${decimal((metres-42195)/1000)} km. Your recorded run is unchanged.")
+    val progress=remember(a){org.racedaydreams.domain.presentation.DreamRouteProgress.of(a)}
+    GuidanceCard(MaterialTheme.colorScheme.surface) {
+        Text("Dream Route · ${route.name()}",style=MaterialTheme.typography.titleLarge)
+        Text(String.format(java.util.Locale.UK,"You covered the equivalent of %.2f km of a marathon course today.",a.coveredMetres()/1000))
+        DreamDrawing(route,a.startMetres(),a.startMetres()+progress.highlightedMetres())
+        Text("● Section start · ◉ Section finish",style=MaterialTheme.typography.labelMedium)
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=androidx.compose.ui.Alignment.CenterVertically) {
+            Text("${progress.percentage()}% of a marathon",style=MaterialTheme.typography.titleLarge)
+        }
+        LinearProgressIndicator(progress={progress.fraction().toFloat()},modifier=Modifier.fillMaxWidth().height(10.dp))
+        Text(progress.distanceLabel(),style=MaterialTheme.typography.labelLarge)
+        if(progress.extraMetres()>0)Text("One full marathon equivalent plus ${decimal(progress.extraMetres()/1000)} km. Your recorded run is unchanged.")
+        WhyDetails("Original stylised course-inspired visual, not official course artwork or navigation. Your stable equivalent assignment is saved for this activity; it does not claim you ran in ${route.name()}. Current v2 geometry remains schematic; see route provenance documentation.","About this route ⓘ")
     }
+
 }
 
 @Composable fun MobilitySupportCard(open:()->Unit){
