@@ -127,13 +127,13 @@ alarm adapter. Delivery rereads the current planned workout, revision and
 completion state. Moves, replacements, cancellations, permission changes and
 quiet hours invalidate stale messages. Preferences default to disabled.
 
-GPX, GPS recording, route maps, Wear OS, race prediction and advanced multi-week
-adaptation have explicit extension boundaries or existing domain models. Original
+Native recording and GPX are implemented in the Prompt 1 increment described below.
+Route maps, Wear OS and race prediction remain extension boundaries. Original
 production plan generation, single-workout proposals and bounded weekly/multi-week review rules are implemented. A
 boundary is not an operational feature. The training engine and whole-plan
 regression harness must grow together; no pretend generated plan is displayed.
 
-Backup envelope version 4 includes coaching and optional strength-programming data and prevents old app versions
+Backup envelope version 5 retains coaching and optional strength-programming data and prevents old app versions
 from silently discarding it. This reader also restores original version-1 and version-2
 backups. Core store format 1 and coaching section version 1 are independently
 validated. Export retains the existing 8 MiB/complexity limits: exceeding them

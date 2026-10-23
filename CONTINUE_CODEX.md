@@ -82,24 +82,25 @@ with checksums/limits/transactional merge. Discoverable Home run screen/Settings
 context and current recording-file/sensor actions. App version0.6.0-test1/code7,
 JSON backup5 reads1–4; raw archive1. See docs/RUN_ENGINE.md for architecture/limits.
 
-## Verification checkpoint and next work
+## Verification checkpoint and delivery
 
-Local domain57,728 assertions/schema36 pass. Android build/lint passed earlier
-intermediate heads; instrumentation/newest head still needs confirmed all-green CI.
-Do not claim a final APK until the intended head has passed build and device tests.
-CI API28/35/36 is preserved. Current automated screenshot branch is this feature branch;
-canonical bot captures must be adopted/reviewed after successful UI tests. Fixtures
-include two additional real screens: health-context and record-run (no fabricated live GPS).
+Production source `eb7d778344d31944aef5035a325ac781b973440a` passed workflow39879428544:
+57,728 domain assertions, 36 schema tests, Android build/lint and 154 instrumentation
+tests on each API28/35/36. The 36 real captures were reviewed and adopted, including
+health-context and record-run; no fabricated live GPS was shown. API35 artifact
+12469858749 contains the verified 0.6.0-test1 debug APK.
 
-1. Inspect newest PR7 run/jobs (do not needlessly duplicate an active run). Diagnose/fix
-   genuine build/lint/device errors. Retry only actual emulator-archive infrastructure failures.
-2. Recheck any introduced TODO/fake values, migrations/backups, foreground permission handling,
-   recovery, native/GPX provenance, no Internet permission and existing behaviour.
-3. Inspect genuine canonical screenshots/artifact after all jobs pass. Preserve bot captures
-   and their fingerprint. Update verification with real run IDs/counts/results.
-4. Keep PR7 draft while failing/incomplete. Follow existing verified PR workflow; no unsafe
-   merge merely to satisfy progress. Produce verified API35 APK if feasible.
-5. Keep handoff current if usage limit interrupts. Do not implement Prompt2 features.
+Final documentation/capture follow-up should preserve the verified source fingerprint
+245f7644605232fafe62d52f202c3641c83d7e4498805e8e53dea5f4b72f02df.
+Inspect PR7/current head and Actions before doing anything further. Do not recreate
+implemented phases. Only delivery verification remains: green final-head checks,
+PR state/merge as appropriate and any post-merge main verification. No known source
+failure remains after the successful source run. Previous null-field encoding,
+privacy-scope and midnight fixture failures were fixed without dropping assertions.
+
+Do not start Prompt2 until the user supplies that task. Update actual delivery IDs
+on PR7/report rather than claiming a pending run succeeded. Preserve the owner's
+reusable instructions at the top of this file.
 
 ## Known deliberate limits
 
@@ -109,7 +110,7 @@ multi-hour physical testing is mandatory. Sleep-session minutes may include awak
 naps/stages are not reconstructed. HRV sources remain separate. One metric never drives
 an automatic adaptation; deeper coaching use remains a boundary. BLE/device/HC/OEM
 behaviour not physically verified. GPX has no HR/cadence extension import/export yet.
-HC write-back only exercise/distance totals, no route/HR/cadence. Raw backup is a separate
+HC write-back only exercise/distance totals, no route/HR/cadence. Raw sample arrays stay outside bounded app JSON; raw backup is a separate
 companion archive, not a unified whole-app container; preserve both app JSON and ZIP.
 Explicit safeguards reject destructive restore over active/user-owned recordings.
 

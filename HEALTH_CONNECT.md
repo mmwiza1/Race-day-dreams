@@ -19,8 +19,9 @@ revoking access leaves manual baseline, goals, shoes and results usable.
 | Read heart rate (optional) | Available session average and maximum HR |
 | Read history (optional, feature guarded) | Up to 84 days of baseline evidence |
 
-No write, background-read, sleep, location, cadence or elevation permission is
-requested. Those metrics are not invented when absent. With standard access the
+The baseline flow requests only the read scopes above. Separate optional health
+context, recording and totals write-back flows are described below; no background
+health/location read is requested. Metrics are not invented when absent. With standard access the
 adapter uses an explicit conservative 29-day window; Health Connect may otherwise
 silently omit older data. Extended history is requested only when supported and
 chosen. The review screen reports its actual window and limitations.

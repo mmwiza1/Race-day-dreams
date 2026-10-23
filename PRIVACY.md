@@ -14,8 +14,9 @@ Running exercise sessions and distance support history and recorded baseline.
 Optional heart rate supplies available average/max HR. Optional extended history,
 where supported and chosen, allows up to 84 days; standard access uses an explicit
 29-day window. Source identities, timestamps and reported offsets are retained.
-No write, background-read, location, sleep or other unused health permission is
-requested. The app never writes or deletes records in Health Connect.
+Separate optional health-context and native-recording flows are described below.
+Explicit native run totals can be written after separate consent; the app never
+deletes Health Connect records. No background health/location access is requested.
 
 Declining, partially granting or revoking access leaves manual setup and local
 features usable. Revocation stops future reads; previously imported data remains

@@ -9,8 +9,25 @@ trace/personal-baseline checks); schema scripts pass **36 tests**, including eve
 supported 1–6 upgrade, retained old rows, one-active-run/FK constraints and failed
 migration rollback. Existing suites/assertions were retained. Android instrumentation
 adds recovery/finalization failure, GPX round-trip/dedup/malformed/DTD and raw-archive
-round-trip/conflict tests. Android build/lint/device results must be read from PR #7's
-actual intended-head Actions run; an in-progress run is not a pass.
+round-trip/conflict tests.
+
+Verified production source `eb7d778344d31944aef5035a325ac781b973440a`:
+[workflow 39879428544](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39879428544)
+passed domain/schema checks, Android debug assembly, lint and instrumentation compilation.
+**154 instrumentation tests passed on each of API 28, 35 and 36** (jobs
+120173258800 / 120173258655 / 120173259105). Canonical capture job120175133853
+published 36 authentic API-35 PNGs, reviewed including health context, recording setup,
+Home, Settings, dark mode and 200% font. Fingerprint matches production source.
+The API-35 artifact is `Race-Day-Dreams-0.6.0-test1-debug-api-35`, containing
+`Race-Day-Dreams-0.6.0-test1-debug.apk` (artifact12469858749).
+Documentation/capture-head and any merged-main checks remain linked from PR #7;
+final delivery must report their actual states.
+
+Observed earlier run 39878289161 (source5279ae4) passed Android build/lint but
+failed device tests: Kotlin JSON overloads unboxed missing sensor fields, the
+old privacy test forbade newly implemented permissions, and completion fixtures
+could extend into the future after midnight. These were fixed, not bypassed;
+the successful source run above confirms the corrections on all three APIs.
 
 Local Android build remains unavailable due missing SDK/restricted Gradle download;
 CI runs actual build/lint/instrumentation on API 28/35/36. An earlier API-35 job hit

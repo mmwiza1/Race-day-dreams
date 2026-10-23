@@ -7,7 +7,11 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.5.0-test1
+## 0.6.0-test1
+
+Optional Health Intelligence and native phone recording extend the preserved
+0.5 foundation. See the recording section below and docs/RUN_ENGINE.md for
+precise backup, recovery and hardware-verification limits.
 
 Strength and Progress use summary dashboards with dedicated detail screens. The
 local catalogue has 174 canonical exercises, live name/alias search, favourites,
@@ -34,7 +38,7 @@ Actual build/CI results are recorded in [VERIFICATION.md](VERIFICATION.md).
 
 Use a successful [GitHub Actions run](https://github.com/mmwiza1/Race-day-dreams/actions)
 for the intended main commit. Its API-35 artifact contains
-`Race-Day-Dreams-0.5.0-test1-debug.apk`. Extract the ZIP and install the APK.
+`Race-Day-Dreams-0.6.0-test1-debug.apk`. Extract the ZIP and install the APK.
 GitHub artifact downloads require GitHub sign-in; the app requires no account.
 Export a local backup before upgrading. [VERIFICATION.md](VERIFICATION.md) records
 actual CI and merge results; an open PR is not evidence of a successful APK.
@@ -70,6 +74,13 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 | Run comparison | Timed strength logging | Carry logging |
 | --- | --- | --- |
 | ![Comparable recorded runs](docs/screenshots/run-comparison.png) | ![Timed exercise entry](docs/screenshots/strength-log-timed.png) | ![Load and distance entry](docs/screenshots/strength-log-distance.png) |
+
+| Personal health context | Phone run setup |
+| --- | --- |
+| ![Optional personal health trends](docs/screenshots/health-context.png) | ![Native recording setup](docs/screenshots/record-run.png) |
+
+The run screenshot shows the ready screen. Physical GPS/BLE behaviour requires the
+Galaxy S24 checks; screenshots do not establish real sensor accuracy.
 
 ## Build and tests
 
