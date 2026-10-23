@@ -43,6 +43,9 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
     CoachPage {
         if(section=="trends"){
         CoachHeading("Progress from your recorded running")
+        val insights=remember(state.activities){org.racedaydreams.domain.polish.TrainingInsights.from(state.activities,java.time.Instant.now())}
+        if(insights.isEmpty())Text("Record at least four runs in each of two four-week windows for longer-term insights.")
+        insights.forEach{insight->SemanticCard(Tile.Insight){Text(insight.title(),style=MaterialTheme.typography.titleMedium);WhyDetails(insight.evidence(),"Why?")}}
         WhyDetails("These are summaries of retained records, not a claim that unrecorded training did not happen. No readiness score or race prediction is generated.","About these trends")
         WeeklyDistanceCard(weeks, state)
 
@@ -279,6 +282,7 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
                 summary.firstRecordedRun()?.let { Text("First recorded run: ${friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate())} (device time zone)") }
                 if (summary.firstRecordedRun() == null) Text("No first recorded run yet.")
                 Text(summary.wearGuidance())
+                org.racedaydreams.domain.polish.TrainingInsights.shoes(shoe,state.activities,java.time.Instant.now(),state.shoeDiscomfort).forEach{Text(it)}
                 shoe.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
                 OutlinedButton(onClick = { editingId = shoe.id(); showEditor = true }, enabled = !state.busy,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Edit shoes") }

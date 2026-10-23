@@ -29,7 +29,7 @@ public final class BackupManager {
     public static final String FORMAT = "race-day-dreams-backup";
     // v2 adds the coaching graph. Older apps reject it rather than silently dropping
     // plan/strength history; this reader still accepts original v1 backups.
-    public static final int VERSION = 6;
+    public static final int VERSION = 7;
     public static final int MAX_BYTES = 8 * 1024 * 1024;
     private static final int MAX_DEPTH = 32;
     private static final int MAX_STRUCTURAL_TOKENS = 200_000;

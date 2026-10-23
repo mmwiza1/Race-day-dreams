@@ -61,47 +61,34 @@ At the end, give a concise summary containing:
 
 ---
 
-# Current task: Prompt 2 — Live Coach / race support
+# Current task: 0.8.0-test1 — final delivery
 
-Start from the actual working tree. Branch codex/live-coach-race-day; PR #8.
-Starting main e381231f8a4c7483dea1c869df2f114a2bf2ba5f is the verified Prompt1 release.
-Local checkpoints3800f00, f7b4ff9, d9de057 are preserved. Connector-published commit IDs
-can differ from local IDs; compare trees/source blobs and preserve screenshot-bot commits.
+Starting main6ebd53c3e102f5ccbef957f68d5dad19f7112eec. Branch
+feature/0.8-today-routes-strength-polish; PR9. Preserve all local checkpoints through
+c398411 (adopted final captures). Connector commit IDs differ; compare trees, never reset.
 
-Implemented domain: WorkoutExecutionEngine, CoachCues/Sink, RecoveryCoaching,
-RacePredictionEngine/Strategy, RunningRoutines and DreamRoutes. One recorder service
-owns execution/audio/sensors, fixed-footer live UI and finish→activity navigation.
-SupportStore schema8 retains prescription/strategy snapshots, actual step evidence,
-routine completions and stable Dream assignments. Work-only Run Score excludes
-recoveries; raw evidence can corroborate existing bounded adaptation. New optional
-health alternatives preview one explicit easy version without changing race/availability.
-Race dashboard/official result linkage, original support figures/routines, history
-summaries/detail loading and CompleteBackup format1 are wired. JSON6 reads1–5; raw
-archive2 reads1. No Internet/new runtime dependency. VIBRATE is added for local haptics.
+Implementation is complete within documented data/licensing/device limits. Do not
+restart it or add future features. See docs/RELEASE_0_8.md and docs/DREAM_ROUTES.md.
+Schema9, JSON7 reads1–6, raw archive2 and complete package1. No Internet/dependencies.
 
-Final source42a7cf1ae66a82bf0937627341322d7a40b0f238 passed workflow39920357014:
-59,582 domain assertions,38 schema tests, debug/test APK assembly, lint and174
-instrumentation tests on EACH API28/35/36. Canonical job120306521330 published41
-real-build PNGs, reviewed and adopted in local3ac4bd9. Remote screenshot bot head
-was a4fac024b9313fb19ae2c608f4ca380321a77b11. Both complete trees matched
-921fb4fddf8b4cb093808f8c6783a0eb51309a75 before this documentation update.
-Fingerprint e09acea76c0152d868a19f0bcdb7fce547f5feaf1f7df34a92ce70178788aabb.
-API35 APK artifact12486989330, run39920357014, is the verified source build.
-No known source/test failure. Android unavailable locally (default cache unwritable;
-workspace Gradle download SocketException); use established GitHub CI.
+Verified final production source6a44bf72886fc93b65825625edb741a2cd495e1c passed
+workflow39959962732:59,755 domain assertions,40 schema tests, build/lint/test compilation,
+187 instrumentation tests on EACH API28/35/36 and43 real-build screenshots. Captures
+adopted unchanged; eight showcase screens and Home dark/200% reviewed. Fingerprint
+c14081311d15761f6e42175d0a2da48a942c87ec958c551e9765d915b0a7baa5.
+Capture bot06e96e786f6e0195e4510ce2a5a2b4e32decd7a9/localc398411 trees match
+7b09cde42c66f952021e277420b60af0a197a4e2. Source API35 APK artifact12504592213;
+screenshot artifact12504268052. No known source failures or uncommitted source work.
 
-Implementation is complete within the explicit limitations below. Do not redo it or
-start future features. Remaining delivery: publish this docs-only checkpoint atop
-the actual PR8 head, ensure final-head CI green, mark ready and merge under the
-established workflow, verify exact main SHA/post-merge CI and fresh API35 artifact.
-Inspect PR8/main/Actions first: these steps may have completed since this note.
-Keep all local checkpoints and screenshot-bot history; compare trees when connector
-commit IDs differ. No reset/discard. Final report must identify actual merge/CI/APK.
+At this documentation checkpoint, remaining delivery is final docs-head CI, PR ready/
+merge, exact main verification and fresh post-merge API35 APK. These steps may already
+be complete when resumed: inspect PR9, current main and latest Actions BEFORE doing
+anything. PR9's delivery record/final report should identify the actual main/run/artifact.
+Do not repeat implementation or disregard screenshot-bot commits. No force/reset.
 
-Key limits: recovery finalizes partial portion (no restart tracking), final5sec may
-be lost. Backup bounded8MiB JSON/512MiB raw,1000 recordings/100k points each. Dream
-Routes are original abstract city-inspired drawings, not actual official courses.
-Arbitrary interval authoring UI, repeat/restart rep, custom race checklist and verified
-course datasets are absent; planner flat segments are preserved rather than invented.
-Physical S24 GNSS/background/BLE/TTS/music/haptics/battery/permission/accessibility tests
-remain. No Wear OS/cloud/LLM/public-release/map tiles. Do not add them or discard work.
+Known limits: original course-inspired geometry, not verified official routes; no
+unlicensed organiser data bundled. Usual duration is a disclosed soft trade-off for
+distance-only sessions without trustworthy pace evidence; known-duration prescriptions
+are capped. Technique art remains stylised and requires qualified review. Physical S24
+GNSS/locked-screen/BLE/TTS/music/battery/Health Connect/TalkBack checks remain. Existing
+recovery/backup bounds apply. No Wear OS/maps/cloud/LLM/medical/public-release work.

@@ -21,7 +21,7 @@ import org.racedaydreams.data.SupportStore
 @Composable fun RoutineLibrary(open:(String)->Unit)=CoachPage {
     CoachHeading("Movement support")
     Text("Optional short routines. Two to four short mobility sessions can be useful when they fit your week. There is no compliance target, load or missed-mobility warning.")
-    RunningRoutines.all().forEach{r->CoachCard{Text(r.title(),style=MaterialTheme.typography.titleMedium);Text("${r.minutes()} min · ${r.purpose()}");CoachButton("Start ${r.title()}"){open(r.id())}}}
+    RunningRoutines.all().forEach{r->SemanticCard(Tile.Planned){Text(r.title(),style=MaterialTheme.typography.titleMedium);Text("${r.minutes()} min · ${r.purpose()}");CoachButton("Start ${r.title()}"){open(r.id())}}}
     Text("General movement guidance. Keep movements comfortable, stop if they cause pain and seek qualified advice when unsure. This is not injury treatment or a recovery guarantee.")
 }
 
@@ -76,18 +76,13 @@ import org.racedaydreams.data.SupportStore
     val metres=activity.distanceMetres()?:return;if(metres<=0)return
     val context=LocalContext.current
     val assignment by produceState<DreamRoutes.Assignment?>(null,activity.id()){value=withContext(Dispatchers.IO){SupportStore(context).dream(activity.id(),metres)}}
-    val a=assignment?:return;val route=DreamRoutes.routes().first{it.id()==a.routeId()}
+    val a=assignment?:return;val route=DreamRoutes.forId(a.routeId())
     val outline=MaterialTheme.colorScheme.outline;val highlight=MaterialTheme.colorScheme.primary
-    CoachCard {
-        Text("Your Dream Route · ${route.name()}",style=MaterialTheme.typography.titleMedium)
-        Text(String.format(java.util.Locale.UK,"You covered the equivalent of %.2f km of a marathon. This original %s-inspired schematic is not the actual or official course.",metres/1000,route.name()))
-        Canvas(Modifier.fillMaxWidth().height(180.dp).semantics{contentDescription="${route.name()} inspired marathon schematic. Highlighted equivalent from ${decimal(a.startMetres()/1000)} to ${decimal((a.startMetres()+kotlin.math.min(metres,42195.0))/1000)} kilometres. Not navigation or a physical location claim."}){
-            fun p(v:DreamRoutes.Vertex)=Offset((v.x()/10*size.width).toFloat(),(v.y()/10*size.height).toFloat())
-            route.vertices().zipWithNext().forEach{(x,y)->drawLine(outline,p(x),p(y),3.dp.toPx())}
-            val finish=a.startMetres()+kotlin.math.min(42195.0,a.coveredMetres());var prior=DreamRoutes.at(route,a.startMetres())
-            repeat(200){i->val next=DreamRoutes.at(route,a.startMetres()+(finish-a.startMetres())*(i+1)/200);drawLine(highlight,p(prior),p(next),6.dp.toPx());prior=next}
-            drawCircle(highlight,7.dp.toPx(),p(DreamRoutes.at(route,a.startMetres())));drawCircle(highlight,7.dp.toPx(),p(DreamRoutes.at(route,finish)));drawCircle(outline,3.dp.toPx(),p(DreamRoutes.at(route,finish)))
-        }
+    SemanticCard(Tile.Race) {
+        Text("Dream Route · ${route.name()}",style=MaterialTheme.typography.titleMedium)
+        Text(String.format(java.util.Locale.UK,"You covered %.2f km of a marathon equivalent.",metres/1000))
+        Text("Original stylised course-inspired visual · not official or for navigation.",style=MaterialTheme.typography.bodySmall)
+        DreamDrawing(route,a.startMetres(),a.startMetres()+kotlin.math.min(42195.0,a.coveredMetres()))
         Text("● Start · ◉ Finish · highlighted segment")
         if(metres>42195)Text("One full marathon equivalent plus ${decimal((metres-42195)/1000)} km. Your recorded run is unchanged.")
     }
@@ -96,7 +91,7 @@ import org.racedaydreams.data.SupportStore
 @Composable fun MobilitySupportCard(open:()->Unit){
     val context=LocalContext.current
     val count by produceState(0){value=withContext(Dispatchers.IO){SupportStore(context).routineCount(java.time.LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant(),mobilityOnly=true)}}
-    CoachCard{Text("Mobility this week",style=MaterialTheme.typography.titleMedium);Text("$count optional routines recorded");Text("Two to four short sessions can be useful when they fit. This is not an adherence target.");TextButton(onClick=open){Text("View routines")}}
+    SemanticCard(Tile.Insight){Text("Mobility this week",style=MaterialTheme.typography.titleMedium);Text("$count optional routines recorded");Text("Two to four short sessions can be useful when they fit. This is not an adherence target.");TextButton(onClick=open){Text("View routines")}}
 }
 @Composable fun WarmupSupportLink(id:String,related:String,open:()->Unit){
     val context=LocalContext.current

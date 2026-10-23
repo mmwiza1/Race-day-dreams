@@ -33,7 +33,7 @@ import org.racedaydreams.domain.strength.*
             Text("Session length");ChoiceChips(listOf("30","45","60","75"),minutes.toString()){minutes=it.toInt()}
             Text("Effort guidance");ChoiceChips(listOf("RPE","RIR"),effort){effort=it}
             error?.let{Text(it)}
-            CoachButton("Preview six-week block"){try{val settings=GymProgramme.Settings(GymProgramme.Goal.valueOf(goal),GymProgramme.Priority.valueOf(priority),GymProgramme.Experience.valueOf(experience),days.map{DayOfWeek.of(it)}.toSet(),frequency,equipment.toSet(),minutes,GymProgramme.Effort.valueOf(effort));preview=GymProgrammeGenerator().generate(current?.id()?:UUID.randomUUID().toString(),(current?.version()?:0)+1,Instant.now(),"Runner chose gym preferences and approved the new block",settings,LocalDate.now(),state.plannedWorkouts,state.strengthSessions);error=null}catch(e:Exception){error=e.message}}
+            CoachButton("Preview six-week block"){try{val settings=GymProgramme.Settings(GymProgramme.Goal.valueOf(goal),GymProgramme.Priority.valueOf(priority),GymProgramme.Experience.valueOf(experience),days.map{DayOfWeek.of(it)}.toSet(),frequency,equipment.toSet(),minutes,GymProgramme.Effort.valueOf(effort));preview=GymProgrammeGenerator().generate(current?.id()?:UUID.randomUUID().toString(),(current?.version()?:0)+1,Instant.now(),"Runner chose gym preferences and approved the new block",settings,LocalDate.now(),state.plannedWorkouts,state.strengthSessions,state.exerciseChoices.filter{it.favourite()&&!it.archived()}.map{it.exerciseId()}.toSet());error=null}catch(e:Exception){error=e.message}}
             TextButton(onClick={setup=false}){Text("Cancel")}
         }
         preview?.let{p->CoachCard{Text("Preview — not applied",style=MaterialTheme.typography.titleLarge);Text("${p.sessions().size} sessions · ${label(p.settings().goal().name)}");p.sessions().take(p.settings().frequency()).forEach{s->Text("${friendlyDate(s.date())} · ${s.title()}");s.exercises().forEach{e->Text("${ExerciseCatalog.definition(e.exerciseId())?.exercise()?.name()} · ${prescription(e,p.settings().effort())}")}};p.tradeoffs().forEach{Text(it)};CoachButton("Accept this programme"){model.saveGym(p);preview=null;setup=false};TextButton(onClick={preview=null}){Text("Keep current programme")}}}
@@ -51,6 +51,8 @@ private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort)
     fun preview(change:()->GymProgramme){try{proposed=change();error=null}catch(e:Exception){error=e.message}}
     CoachPage{
         CoachHeading(session.title());Text(friendlyDate(session.date()));Text("Plan version ${p.version()}")
+        val raceDate=state.profile?.raceGoal()?.raceDate()
+        if(raceDate!=null&&java.time.temporal.ChronoUnit.DAYS.between(session.date(),raceDate) in 0L..7L)SemanticCard(Tile.Insight){Text("Race-week strength",style=MaterialTheme.typography.titleMedium);Text("Consider keeping familiar movements and reducing demanding volume. Use Preview fewer sets below if it suits your taper. Nothing changes without your choice.")}
         session.exercises().forEach { exercise ->
             CoachCard {
                 Text(ExerciseCatalog.definition(exercise.exerciseId())?.exercise()?.name() ?: exercise.exerciseId(), style=MaterialTheme.typography.titleLarge)
@@ -62,6 +64,8 @@ private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort)
                 if(session.date()>=LocalDate.now() && session.date() !in completed) {
                     TextButton(onClick={swapFor=exercise.exerciseId();swapQuery=""}) { Text("Swap exercise") }
                 }
+                val initial=org.racedaydreams.domain.polish.StartingLoad.suggest(exercise,state.strengthSessions,Instant.now())
+                initial?.let{Text("Optional starting reference: ${decimal(state.massUnit.fromKilograms(it.lowKg()))}–${decimal(state.massUnit.fromKilograms(it.highKg()))} ${state.massUnit.name.lowercase()}");WhyDetails(it.reason(),"Why this load reference?")}
                 val advice=StrengthProgressionAdvisor.review(exercise,state.strengthSessions,Instant.now())
                 Text(advice.reason())
                 advice.suggestedKilograms()?.let { kg ->

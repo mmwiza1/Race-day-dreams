@@ -22,7 +22,9 @@ class RecordingStore(context:Context) {
         }finally{db.endTransaction()}
     }
     fun points(id:String):List<RunMetricsEngine.Point>{val out=mutableListOf<RunMetricsEngine.Point>();helper.readableDatabase.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext())out.add(decode(JSONObject(c.getString(0))))};return out}
-    fun discardUnfinished(id:String){helper.writableDatabase.delete("recording_sessions","id=? AND state IN ('ACTIVE','PAUSED','RECOVERABLE')",arrayOf(id))}
+    data class Pause(val start:Long,val duration:Long,val metres:Double)
+    fun pauses(id:String):List<Pause>{val points=points(id);val out=mutableListOf<Pause>();var start:Long?=null;helper.readableDatabase.rawQuery("SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));val type=j.getString("type");if(type in listOf("PAUSE","AUTO_PAUSE"))start=j.getLong("mono");if(type in listOf("RESUME","AUTO_RESUME","FINISH")){start?.let{t->out.add(Pause(t,(j.getLong("mono")-t).coerceAtLeast(0),points.lastOrNull{it.fix().monotonicMillis()<=t}?.cumulativeMetres()?:0.0))};start=null}}};return out}
+    fun discardUnfinished(id:String){val db=helper.writableDatabase;db.beginTransaction();try{if(db.delete("recording_sessions","id=? AND state IN ('ACTIVE','PAUSED','RECOVERABLE')",arrayOf(id))==1){db.delete("coach_support","kind='execution' AND id=?",arrayOf(id));db.delete("release08","kind='origin' AND id=?",arrayOf(id))};db.setTransactionSuccessful()}finally{db.endTransaction()}}
     fun recoverable(){helper.writableDatabase.execSQL("UPDATE recording_sessions SET state='RECOVERABLE' WHERE state IN ('ACTIVE','PAUSED')")}
     fun finish(session:Session,movingMillis:Long?=null,provider:String=if(session.id.startsWith("gpx-"))"gpx"else"rdd",recovered:Boolean=true):String {
         val db=helper.writableDatabase;db.beginTransaction();try{
@@ -33,6 +35,9 @@ class RecordingStore(context:Context) {
             val elapsed=(session.last-session.mono).coerceAtLeast(1);val samples=points.map{p->DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-session.mono),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity())}
             val hr=points.mapNotNull{it.heartRate()};val cad=points.mapNotNull{it.cadence()};val id="$provider:${session.id}"
             val a=ActivityRecord(id,SourceIdentity(provider,session.id,"org.racedaydreams"),session.start,session.start.plusMillis(elapsed),ZoneOffset.UTC,ZoneOffset.UTC,points.last().cumulativeMetres(),if(provider=="gpx")null else Duration.ofMillis(active.coerceIn(0,elapsed)),hr.takeIf{it.isNotEmpty()}?.average(),hr.maxOrNull(),null,cad.takeIf{it.isNotEmpty()}?.average(),null,"${if(provider=="rdd")"Recorded on this phone"else"Imported GPX (accuracy not supplied by file)"}. Distance excludes gaps; raw timestamps and events retained.",samples,emptyList(),null,null)
+            Release08Store(contextRef).get("origin",session.id)?.optString("dreamRoute")?.takeIf{it.isNotBlank()&&it!="null"}?.let{route->
+                val distance=points.last().cumulativeMetres();if(distance>0)SupportStore(contextRef).save("dream",id,JSONObject().put("version",1).put("route",route).put("start",0).put("distance",distance).put("assignedAt",Instant.now().toString()))
+            }
             FeatureStore.putActivity(db,a,true)
             db.update("recording_sessions",ContentValues().apply{put("state","FINISHED");put("activity_id",id)},"id=?",arrayOf(session.id));SupportStore(contextRef).linkFinished(session.id,id,recovered);db.setTransactionSuccessful();return id
         }finally{db.endTransaction()}

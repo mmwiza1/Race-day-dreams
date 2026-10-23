@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -73,6 +74,7 @@ private fun CoachApp(model: CoachViewModel) {
     val route = entry?.destination?.route
     val snackbars = remember { SnackbarHostState() }
     val context = LocalContext.current
+    var runSnapshot by rememberSaveable { mutableStateOf<String?>(null) }
     var resetDialog by rememberSaveable { mutableStateOf(false) }
     var restoreUri by rememberSaveable { mutableStateOf<String?>(null) }
     val permissions = rememberLauncherForActivityResult(model.health.permissionContract(), model::permissionResult)
@@ -109,7 +111,7 @@ private fun CoachApp(model: CoachViewModel) {
         }
     }
     LaunchedEffect(state.profile, state.loading) {
-        if (!state.loading && state.profile == null && route in listOf("home", "plan", "calendar", "progress", "settings", "shoes")) {
+        if (!state.loading && state.profile == null && route == "plan") {
             nav.navigate("baseline") { popUpTo(nav.graph.id) { inclusive = true } }
         }
     }
@@ -128,25 +130,26 @@ private fun CoachApp(model: CoachViewModel) {
         when {
             org.racedaydreams.recording.RunRecordingService.running.value -> "record-run"
             state.profile != null -> "home"
+            state.startingPath=="record" -> "home"
             state.baselineReviewed -> "goals"
-            else -> "baseline"
+            else -> "welcome"
         }
     }
 
     val tabs = listOf("home" to "Home", "plan" to "Plan", "calendar" to "Calendar", "progress" to "Progress", "strength" to "Strength")
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Race Day Dreams",maxLines=1,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis) }, navigationIcon = {
+        topBar = { TopAppBar(title = { Text(if(androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.5f)"RDD"else"Race Day Dreams",maxLines=1,modifier=Modifier.semantics{contentDescription="Race Day Dreams"}) }, navigationIcon = {
             if (route != null && route !in tabs.map { it.first } && route != "strength?date={date}" && route != "goals") {
                 TextButton(onClick = { if (!nav.popBackStack()) nav.navigate("home") }) { Text("Back") }
             }
         }, actions = { TextButton(onClick={nav.navigate("settings")}) { Text("⚙ Settings") } }) },
         bottomBar = {
-            if (state.profile != null && route in (tabs.map { it.first } + "strength?date={date}")) {
+            if (route in (tabs.map { it.first } + "strength?date={date}")) {
                 NavigationBar {
                     tabs.forEach { (destination, label) ->
                         NavigationBarItem(selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
-                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=null) },
-                            label = { Text(label) }, onClick = {
+                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=label) },
+                            label = { if(androidx.compose.ui.platform.LocalDensity.current.fontScale<1.5f)Text(label,maxLines=1,softWrap=false) }, onClick = {
                                 nav.navigate(destination) { popUpTo("home"); launchSingleTop = true }
                             })
                     }
@@ -165,6 +168,9 @@ private fun CoachApp(model: CoachViewModel) {
                 }
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
+                composable("welcome") { StartingPath(model){nav.navigate(it){popUpTo(nav.graph.id){inclusive=true}}} }
+                composable("run-now") { RunNowScreen { snapshot -> runSnapshot=snapshot;nav.navigate("spontaneous-run") } }
+                composable("spontaneous-run") { RecordingScreen(model,customSnapshot=runSnapshot,startWhenPermitted=true,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("record-run") { RecordingScreen(model,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("execute/{version}/{workout}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("race") { RaceScreen(state,model,{v,w,h->nav.navigate("race-run/${Uri.encode(v)}/${Uri.encode(w)}/$h")},{nav.navigate("progress/pbs")},{r->nav.navigate("routine/$r")}) }
@@ -174,7 +180,7 @@ private fun CoachApp(model: CoachViewModel) {
 
                 composable("health-intelligence") { HealthIntelligenceScreen(model) }
                 composable("weekly") { WeeklyReviewScreen(state,model,{nav.navigate("goals")}) }
-                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }, record = {nav.navigate("record-run")}, race={nav.navigate("race")}) }
+                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }, record = {nav.navigate("run-now")},quick={nav.navigate(it)}, race={nav.navigate("race")}) }
                 composable("baseline") {
                     BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
                         onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
@@ -246,43 +252,34 @@ private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () ->
 }
 
 @Composable
-private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit, record: () -> Unit = {}, race:()->Unit={}) = CoachPage {
-    CoachHeading("Your running, your way")
-    CoachButton("Record a run", record)
-    TextButton(onClick=weekly){Text("Not feeling 100%? Review today or report a break")}
-    if(state.profile?.raceGoal()?.raceDate()!=null)TextButton(onClick=race){Text("Race preparation & Race Day")}
+private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit, record: () -> Unit = {}, quick:(String)->Unit={}, race:()->Unit={}) = CoachPage {
+    CoachHeading("Today")
+    Text(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM",java.util.Locale.UK)))
+    val today=state.currentPlan?.plan()?.workouts()?.firstOrNull{it.date()==java.time.LocalDate.now()}
+    val completed=today!=null&&(state.runResponses.any{it.plannedWorkoutId()==today.id()}||state.activities.any{it.plannedWorkoutId()==today.id()})
+    SemanticCard(Tile.Planned){
+        Text(if(today==null)"Your day, your choice"else workoutName(today.category()),style=MaterialTheme.typography.headlineMedium)
+        if(today!=null){Text(today.distanceKm()?.let{"${decimal(it)} km"}?:today.duration()?.let{"${it.toMinutes()} min"}?:"Run by effort");Text(if(completed)"Completed training is retained. No catch-up mileage."else "Your planned session")
+            today.segments().firstOrNull{it.kind()==org.racedaydreams.domain.WorkoutSegment.Kind.RUN}?.let{segment->segment.rpe()?.let{Text("Target effort ~${decimal(it)}/10")};if(segment.minimumSecondsPerKm()!=null&&segment.maximumSecondsPerKm()!=null)Text("${formatPaceSeconds(segment.minimumSecondsPerKm())}–${formatPaceSeconds(segment.maximumSecondsPerKm())}/km")}
+            if(!completed)CoachButton("Start with Live Coach"){quick("execute/${Uri.encode(state.currentPlan!!.id())}/${Uri.encode(today.id())}")}
+            TextButton(onClick={workout(today.id())}){Text(if(completed)"View completed workout"else"View workout details")}
+        }else{Text("No running session is planned today. Rest or record independently.");state.gymProgramme?.sessions()?.firstOrNull{it.date()==java.time.LocalDate.now()}?.let{gym->Text(gym.title());CoachButton("View strength session"){quick("gym/session/${Uri.encode(gym.id())}")}}}
+    }
+    SemanticCard(Tile.Planned){Text("Run now",style=MaterialTheme.typography.titleLarge);Text("Not on the plan? Record a spontaneous run anytime.");CoachButton("Run now",record)}
     val summary=org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
-    CoachCard { Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("View details")} }
-    if(state.weeklyReview!=null) OutlinedButton(onClick=weekly,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Weekly coaching review")}
-    state.currentPlan?.let { version ->
-        val today = version.plan().workouts().firstOrNull { it.date() == java.time.LocalDate.now() }
-        CoachHeading("Today")
-        if (today == null) Text("No run is scheduled today. You can rest, run independently or review the programme.")
-        else WorkoutCard(state, today, state.activities.any { it.plannedWorkoutId() == today.id() }) { workout(today.id()) }
-        if (state.proposals.isNotEmpty()) Text("A coaching recommendation is ready to review. Your programme has not been changed.")
-    }
-    CoachButton(if (state.currentPlan == null) "Create training programme" else "View training programme", plan)
-    state.profile?.let { profile ->
-        CoachCard {
-            Text(profile.raceGoal().distance().label(), style = MaterialTheme.typography.headlineSmall)
-            if (profile.raceGoal().raceName().isNotBlank()) Text(profile.raceGoal().raceName())
-            profile.raceGoal().raceDate()?.let { Text("Race date: ${friendlyDate(it)}") }
-            Text("Goal: ${profile.raceGoal().mode().label()}")
-            if (profile.raceGoal().mode() == GoalMode.TARGET_TIME) {
-                Text("Target time: ${PaceCalculator.formatTime(profile.raceGoal().targetTime())}")
-                Text("Target pace: ${PaceCalculator.targetPace(profile.raceGoal().targetTime(), profile.raceGoal().distance(), profile.preferences().units())}")
-            }
-            Text("${profile.preferences().runsPerWeek()} preferred runs/week · ${profile.preferences().strategy().label()}")
-        }
-    }
-    Text("Your baseline confidence: ${state.baseline.confidence().name.lowercase().replaceFirstChar { it.uppercase() }}")
-    WhyDetails(state.baseline.explanations().joinToString("\n"), "About your baseline")
-    if (state.profile?.preferences()?.strategy() == org.racedaydreams.domain.TrainingStrategy.PERFORMANCE && !state.performanceEligible) {
-        Text("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
-    }
-    CoachButton("Review running baseline", baseline)
-    CoachButton("View activity history", history)
-    OutlinedButton(onClick = assessment, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Optional assessment result") }
+    SemanticCard(Tile.Progress){Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().take(3).forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("Weekly coaching review")}}
+    val hard=org.racedaydreams.domain.strength.StrengthAnalytics.hardLowerBodyDates(state.strengthSessions).contains(java.time.LocalDate.now().minusDays(1))
+    if(hard||state.proposals.isNotEmpty())SemanticCard(Tile.Insight){Text("Anything I should know?",style=MaterialTheme.typography.titleMedium);Text(if(hard)"Hard lower-body strength was recorded yesterday. Today's demanding running may feel harder; consider effort and your own response."else"A coaching recommendation is ready. Your programme has not been changed.");TextButton(onClick=weekly){Text("Review choices")}}
+    state.profile?.raceGoal()?.takeIf{it.raceDate()!=null}?.let{goal->SemanticCard(Tile.Race){Text(goal.raceName().ifBlank{goal.distance().label()},style=MaterialTheme.typography.titleLarge);Text("${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),goal.raceDate())} days · ${friendlyDate(goal.raceDate())}");TextButton(onClick=race){Text("Race preparation")}}}
+    if(state.profile?.preferences()?.strategy()==org.racedaydreams.domain.TrainingStrategy.PERFORMANCE&&!state.performanceEligible)SemanticCard(Tile.Warning){Text("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")}
+    state.profile?.raceGoal()?.takeIf{it.raceDate()==null}?.let{goal->SemanticCard(Tile.Race){Text("Current goal",style=MaterialTheme.typography.titleMedium);Text(goal.distance().label(),style=MaterialTheme.typography.titleLarge);Text(goal.mode().label())}}
+    CoachHeading("Quick actions")
+    CoachButton("Log strength"){quick("strength/log")}
+    OutlinedButton(onClick={quick("progress/weight")},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Add weight")}
+    OutlinedButton(onClick=plan,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("View plan")}
+    TextButton(onClick=history){Text("View activity history")}
+    TextButton(onClick=baseline){Text("Review running baseline")}
+    TextButton(onClick=weekly){Text("Not feeling 100%?")}
 }
 
 @Composable

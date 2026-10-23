@@ -3,7 +3,7 @@
 Race Day Dreams provides fitness guidance, not medical care. It does not diagnose
 conditions, guarantee race outcomes or promise to prevent injury.
 
-The 0.3.0-test1 app generates original heuristic training prescriptions and offers
+The current test build generates original heuristic training prescriptions and offers
 specific runner-controlled adjustments from raw evidence. It does not diagnose
 recovery conditions, estimate injury probability or guarantee race results. The current race engine shows evidence-qualified ranges,
 not exact outcomes. A calculated target pace

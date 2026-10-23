@@ -30,8 +30,8 @@ class RecordingAvailabilityTest {
  @Test fun writePermissionActionReflectsActualSdkAvailabilityWithoutBlockingRun(){
   val available=HealthConnectGateway(context).availability()==HealthAvailability.AVAILABLE
   scenario=ActivityScenario.launch(CoachActivity::class.java)
-  compose.waitUntil(20000){compose.onAllNodesWithText("Your running, your way").fetchSemanticsNodes().isNotEmpty()}
-  compose.onNodeWithText("Record a run").performScrollTo().performClick()
+  compose.waitUntil(20000){compose.onAllNodesWithText("Today").fetchSemanticsNodes().isNotEmpty()}
+  compose.onNode(hasText("Run now") and hasClickAction()).performScrollTo().performClick();compose.onNodeWithText("Free run").performScrollTo().performClick()
   compose.waitUntil(20000){compose.onAllNodesWithText("Start GPS recording").fetchSemanticsNodes().isNotEmpty()}
   compose.onNodeWithText("Start GPS recording").assertIsEnabled()
   compose.waitUntil(20000){compose.onAllNodes(hasText("to Health Connect",substring=true) and hasClickAction()).fetchSemanticsNodes().isNotEmpty()}

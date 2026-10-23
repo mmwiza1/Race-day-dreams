@@ -26,6 +26,9 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
                    connect: (Boolean, Boolean) -> Unit, providerUpdate: () -> Unit, providerSettings: () -> Unit,
                    editGoals: () -> Unit, reviewBaseline: () -> Unit, shoes: () -> Unit,
                    export: () -> Unit, restore: () -> Unit, reset: () -> Unit, weightPermissions: () -> Unit = {}, healthContext: () -> Unit = {}) = CoachPage {
+    SchedulePreferences()
+    DreamPreferences()
+    DiagnosticExport(state)
     val context = LocalContext.current
     var showLicence by rememberSaveable { mutableStateOf(false) }
     var noticeAsset by rememberSaveable { mutableStateOf<String?>(null) }

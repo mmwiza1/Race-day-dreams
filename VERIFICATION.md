@@ -1,3 +1,55 @@
+# Verification — 0.8.0-test1
+
+Starting live main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec` confirmed through GitHub.
+Branch `feature/0.8-today-routes-strength-polish`; PR #9. Version0.8.0-test1/code9,
+schema9, JSON envelope7 (reads1–6), raw archive2 and complete package1 unchanged.
+
+Baseline passed locally:59,582 domain assertions and38 actual-DDL schema tests.
+Current local suite: **59,755 domain assertions** (173 new0.8 checks), **40 schema tests**.
+New coverage includes custom/repeated/open prescriptions, invalid/oversized definitions,
+execution boundaries, geometry fitting/interpolation/bounds, exact-exercise recent load
+references, unknown effort,6RM and compatible favourite selection. Schema tests cover
+all1–8 upgrades and rollback; retained old fixtures/assertions remain.
+
+Final production/fixture source `6a44bf72886fc93b65825625edb741a2cd495e1c`
+passed [workflow39959962732](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39959962732):
+
+| Check | Observed result |
+| --- | --- |
+| Domain scripts and Gradle domain check | 59,755 assertions, including173 new0.8 checks |
+| Actual-DDL schema scripts | 40 tests, all supported1–8 upgrades and rollback |
+| Debug APK, lint, instrumentation compilation | Passed on all matrix jobs |
+| API28 instrumentation | 187 passed; job120435535285 |
+| API35 instrumentation | 187 passed; job120435535581 |
+| API36 instrumentation | 187 passed; job120435535461 |
+| Canonical real-build capture | 43 PNGs; job120438390349; success |
+
+The thirteen additional Android tests cover custom persistence/no invented plan links,
+preference stability, complete backup, corruption rollback, old data without the new
+section, schema8→9, diagnostic exclusions, explicit discard cleanup and recorder-only
+onboarding/custom editing. Existing suites remain. Earlier failures exposed ambiguous
+selectors, missing undated goal context, a duplicate free-run heading and an asynchronous
+weight UI assertion; their underlying UI/test-boundary corrections are now verified.
+Superseded cancelled runs are not counted as passes.
+
+Canonical PNGs were adopted byte-for-byte. All eight README showcase screens plus
+normal/dark/200% Home were visually reviewed. Fingerprint:
+`c14081311d15761f6e42175d0a2da48a942c87ec958c551e9765d915b0a7baa5`.
+The capture bot tree and local adopted tree matched exactly. Source-build artifact
+[12504592213](https://github.com/mmwiza1/Race-day-dreams/actions/runs/39959962732/artifacts/12504592213)
+is `Race-Day-Dreams-0.8.0-test1-debug-api-35`, containing the named debug APK.
+Screenshot artifact12504268052 is `actual-build-screenshots-api-35` from the same run.
+Final documentation-head and merged-main results are recorded on PR9/Actions and in
+the delivery report; they are not inferred from this production-source run.
+
+Android runs use GitHub Actions: local Gradle/SDK distribution access is unavailable.
+No physical GPS/BLE/TTS/music/battery/accessibility pass is claimed. TEST_BUILD.md lists
+Galaxy S24 checks. Dream v2 is original stylised artwork, not verified official course
+geometry. Time budgets disclose uncertainty for distance-only prescriptions rather
+than inventing pace. No Internet permission, runtime dependency or third-party asset added.
+
+The records below describe earlier releases.
+
 # Verification — Live Coach / race support (0.7.0-test1)
 
 Starting main e381231f8a4c7483dea1c869df2f114a2bf2ba5f. Branch

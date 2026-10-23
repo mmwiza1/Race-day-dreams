@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 8;
+    static final int VERSION = 9;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -43,6 +43,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateFiveToSix(db);
         migrateSixToSeven(db);
         migrateSevenToEight(db);
+        migrateEightToNine(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -175,10 +176,16 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V8_SCHEMA_END
     }
 
+    private static void migrateEightToNine(SQLiteDatabase db) {
+        // V9_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE release08 (kind TEXT NOT NULL CHECK(kind IN ('custom','config','origin','association','checklist')), id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(kind,id))");
+        // V9_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 7)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 8)) {
             throw new SQLiteException("An explicit migration is required from schema "
                     + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
@@ -188,6 +195,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 4) migrateFourToFive(db);
         if (oldVersion <= 5) migrateFiveToSix(db);
         if (oldVersion <= 6) migrateSixToSeven(db);
-        migrateSevenToEight(db);
+        if(oldVersion <= 7) migrateSevenToEight(db);
+        migrateEightToNine(db);
     }
 }

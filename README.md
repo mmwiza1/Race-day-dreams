@@ -7,12 +7,14 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.7.0-test1
+## 0.8.0-test1
 
-Live execution and race preparation extend the preserved native recorder and health
-context. Optional Health Intelligence and native phone recording extend the preserved
-0.5 foundation. See the recording section below and docs/RUN_ENGINE.md for
-precise backup, recovery and hardware-verification limits.
+Today puts your planned session and Run Now first. Free runs, quick distance/time
+choices, custom structured workouts and repeat favourites all use one native recorder.
+Spontaneous runs stay independent unless you explicitly associate them with a plan.
+Offline route traces, evidence-backed Route Story, original Dream visuals and optional
+routines extend the preserved Live Coach and race preparation foundations.
+See [0.8 release notes](docs/RELEASE_0_8.md) for rules and limitations.
 
 Strength and Progress use summary dashboards with dedicated detail screens. The
 local catalogue has 174 canonical exercises, live name/alias search, favourites,
@@ -39,7 +41,7 @@ Actual build/CI results are recorded in [VERIFICATION.md](VERIFICATION.md).
 
 Use a successful [GitHub Actions run](https://github.com/mmwiza1/Race-day-dreams/actions)
 for the intended main commit. Its API-35 artifact contains
-`Race-Day-Dreams-0.7.0-test1-debug.apk`. Extract the ZIP and install the APK.
+`Race-Day-Dreams-0.8.0-test1-debug.apk`. Extract the ZIP and install the APK.
 GitHub artifact downloads require GitHub sign-in; the app requires no account.
 Export a local backup before upgrading. [VERIFICATION.md](VERIFICATION.md) records
 actual CI and merge results; an open PR is not evidence of a successful APK.
@@ -52,36 +54,17 @@ Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
-| Home | Training plan | Workout detail |
-| --- | --- | --- |
-| ![Home](docs/screenshots/home.png) | ![Training plan](docs/screenshots/training-plan.png) | ![Planned workout](docs/screenshots/planned-workout.png) |
-
-| Feedback | Progress | Optional strength |
-| --- | --- | --- |
-| ![Run feedback](docs/screenshots/run-feedback.png) | ![Progress](docs/screenshots/progress.png) | ![Strength](docs/screenshots/strength.png) |
-
-| Setup | Weekly review | Calendar week | Calendar month |
+| Today | Run Now | Live Coach | Your recorded route |
 | --- | --- | --- | --- |
-| ![Setup](docs/screenshots/onboarding.png) | ![Weekly coaching](docs/screenshots/weekly-review.png) | ![Week](docs/screenshots/calendar-week.png) | ![Month](docs/screenshots/calendar-month.png) |
+| ![Today](docs/screenshots/home.png) | ![Run Now](docs/screenshots/run-now.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Offline recorded route](docs/screenshots/post-run-route.png) |
 
-| Body weight | Strength records | Health settings |
-| --- | --- | --- |
-| ![Actual weight measurements](docs/screenshots/body-weight.png) | ![Strength PB provenance](docs/screenshots/strength-pbs.png) | ![Health settings](docs/screenshots/data-sources.png) |
+| Race preparation | Progress | Original technique guide | Dream Route |
+| --- | --- | --- | --- |
+| ![Race preparation](docs/screenshots/race-day.png) | ![Progress](docs/screenshots/progress.png) | ![RDL technique](docs/screenshots/exercise-rdl-howto.png) | ![Stylised Dream Route](docs/screenshots/dream-route.png) |
 
-| Exercise search | Offline technique guide | Optional gym block |
-| --- | --- | --- |
-| ![Exercise aliases](docs/screenshots/exercise-search.png) | ![Original RDL guide](docs/screenshots/exercise-rdl-howto.png) | ![Running-support strength block](docs/screenshots/gym-running-support.png) |
-
-| Run comparison | Timed strength logging | Carry logging |
-| --- | --- | --- |
-| ![Comparable recorded runs](docs/screenshots/run-comparison.png) | ![Timed exercise entry](docs/screenshots/strength-log-timed.png) | ![Load and distance entry](docs/screenshots/strength-log-distance.png) |
-
-| Personal health context | Phone run setup |
-| --- | --- |
-| ![Optional personal health trends](docs/screenshots/health-context.png) | ![Native recording setup](docs/screenshots/record-run.png) |
-
-The run screenshot shows the ready screen. Physical GPS/BLE behaviour requires the
-Galaxy S24 checks; screenshots do not establish real sensor accuracy.
+The route is drawn from retained observations on an offline canvas, not street tiles.
+Dream Routes are original course-inspired visuals, not official maps or navigation.
+Physical sensor/audio behaviour still requires the Galaxy S24 checklist.
 
 ## Build and tests
 

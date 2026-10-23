@@ -135,3 +135,9 @@ The planned-workout screen explains corroboration and previews a runner-chosen e
 alternative. Acceptance creates one new plan version at the same distance/time ceiling;
 other workouts, goal and recurring days stay unchanged. Existing move/skip/review
 controls remain. There is no new Health Connect permission in this increment.
+
+## 0.8 compatibility
+
+Permissions, provider reconciliation and write-back remain unchanged. Recorder-only
+onboarding and Run Now do not require Health Connect. Spontaneous origins and explicit
+plan associations are app-owned annotations; they never replace provider evidence.

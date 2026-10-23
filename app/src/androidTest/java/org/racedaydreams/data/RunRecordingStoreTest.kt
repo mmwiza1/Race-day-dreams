@@ -42,9 +42,9 @@ class RunRecordingStoreTest:AndroidTestCase(){
         db.execSQL("INSERT OR REPLACE INTO settings VALUES('reminders','retained preferences')")
         db.execSQL("INSERT INTO planned_workouts VALUES('kept-workout','2026-10-23',1,'retained prescription')")
         for(t in tables){val rows=mutableListOf<String>();db.rawQuery("SELECT * FROM $t ORDER BY 1",null).use{c->while(c.moveToNext())rows.add((0 until c.columnCount).joinToString("|"){i->if(c.isNull(i))"<null>"else c.getString(i)})};before[t]=rows}
-        for(t in listOf("coach_support","recording_points","recording_events","recording_sessions","health_observations"))db.execSQL("DROP TABLE $t");db.version=6
+        for(t in listOf("release08","coach_support","recording_points","recording_events","recording_sessions","health_observations"))db.execSQL("DROP TABLE $t");db.version=6
     }
-    val upgraded=helper.writableDatabase;assertEquals(8,upgraded.version)
+    val upgraded=helper.writableDatabase;assertEquals(9,upgraded.version)
     for(t in tables){val rows=mutableListOf<String>();upgraded.rawQuery("SELECT * FROM $t ORDER BY 1",null).use{c->while(c.moveToNext())rows.add((0 until c.columnCount).joinToString("|"){i->if(c.isNull(i))"<null>"else c.getString(i)})};assertEquals(t,before[t],rows)}
  }
 

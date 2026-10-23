@@ -16,20 +16,25 @@ import org.racedaydreams.domain.activity.*
     val j=snapshot?:return
     val targets=remember(j){SupportStore.steps(j)}
     val events=j.optJSONArray("events")?:org.json.JSONArray()
-    CoachCard {
+    SemanticCard(Tile.Progress) {
         Text(if(j.getString("mode")=="race")"Race execution"else"Structured execution",style=MaterialTheme.typography.titleLarge)
-        Text("Compared with the exact preserved prescription; later plan edits do not change this record.")
+        WhyDetails("Compared with the exact preserved prescription; later plan edits do not change this record. Recovery averages are never compared with work targets.","About this analysis")
+        val response=state.runResponses.firstOrNull{it.activityId()==activity.id()}
+        val work=response?.steps()?.filter{it.kind()==org.racedaydreams.domain.WorkoutSegment.Kind.RUN&&it.reliablePace()&&it.metres()>0&&it.fastPace()!=null&&it.slowPace()!=null}
+        if(!work.isNullOrEmpty()){val within=work.count{it.activeMillis()/it.metres() in it.fastPace()..it.slowPace()};Text("$within of ${work.size} qualified work intervals inside the intended pace range.")}
         if(j.optBoolean("interrupted"))Text("Recovered partial recording. Unobserved running and completion are not assumed.")
         targets.forEachIndexed{index,step->
             var start:JSONObject?=null;var end:JSONObject?=null
             for(i in 0 until events.length()){val e=events.getJSONObject(i);if(e.getInt("step")==index){if(e.getString("type")=="STEP_STARTED")start=e;if(e.getString("type") in listOf("STEP_COMPLETED","STEP_SKIPPED","WORKOUT_FINISHED_EARLY"))end=e}}
             val a=start;val b=end
             Text("${index+1}. ${step.label()}",style=MaterialTheme.typography.titleMedium)
+            Text(step.metres()?.let{"Target ${decimal(it)} m"}?:step.millis()?.let{"Target ${it/1000} sec"}?:"Open step · manual advance")
+            step.rpe()?.let{Text("Target RPE ${decimal(it)}")};if(step.fastPace()!=null&&step.slowPace()!=null)Text("Target ${formatPaceSeconds(step.fastPace())}–${formatPaceSeconds(step.slowPace())}/km")
             Text(when(b?.optString("type")){"STEP_COMPLETED"->"Completed";"STEP_SKIPPED"->"Skipped by runner";else->"Not completed in retained evidence"})
             if(a!=null&&b!=null){val dt=b.getLong("active")-a.getLong("active");val dm=b.getDouble("metres")-a.getDouble("metres");Text("${PaceCalculator.formatTime(Duration.ofMillis(dt))} active · ${decimal(dm)} m")
                 if(dm>0&&activity.samples().isNotEmpty()&&activity.samples().drop(1).none{it.discontinuity()}){
                     val pace=dt/dm;Text("Step average ${formatPaceSeconds(pace)}/km")
-                    if(step.fastPace()!=null&&step.slowPace()!=null)Text(if(pace in step.fastPace()..step.slowPace())"Within intended pace range"else"Outside intended pace range; conditions and effort matter")
+                    if(step.fastPace()!=null&&step.slowPace()!=null)Text(if(pace in step.fastPace()..step.slowPace())"Within intended pace range"else if(pace<step.fastPace())"Approximately ${(step.fastPace()-pace).toInt()} sec/km faster than target. Faster is not always better."else "Approximately ${(pace-step.slowPace()).toInt()} sec/km slower than target; conditions and effort matter")
                 }else Text("Step pace needs uninterrupted detailed distance evidence.")
             }
         }

@@ -83,7 +83,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
 }
 
 @Composable
-fun WorkoutCard(state: CoachUiState, workout: PlannedWorkout, completed: Boolean, open: () -> Unit) = CoachCard {
+fun WorkoutCard(state: CoachUiState, workout: PlannedWorkout, completed: Boolean, open: () -> Unit) = SemanticCard(if(completed)Tile.Progress else Tile.Planned) {
     Text("${friendlyDate(workout.date())} · ${if (completed) "Completed" else if (workout.date() < LocalDate.now()) "Workout not completed" else "Planned"}")
     Text(workoutName(workout.category()), style = MaterialTheme.typography.titleMedium)
     Text(workout.distanceKm()?.let { formatDistance(it * 1000, state) } ?: workout.duration()?.let { "${it.toMinutes()} min" } ?: "Prescription in detail")
@@ -172,7 +172,7 @@ fun CoachInput(label: String, value: String, change: (String) -> Unit, decimal: 
 }
 
 @Composable
-fun AdjustmentCard(proposal: AdjustmentProposal, busy: Boolean, decide: (String) -> Unit) = CoachCard {
+fun AdjustmentCard(proposal: AdjustmentProposal, busy: Boolean, decide: (String) -> Unit) = SemanticCard(Tile.Insight) {
     Text("Plan adjustment suggested", style = MaterialTheme.typography.titleMedium)
     Text(proposal.reason())
     Text(proposal.impact())

@@ -31,7 +31,7 @@ class RefinementUiTest {
         CoachingStore(context).saveCurrent(PlanVersion("v","p",1,Instant.now(),"Original",profile,"Test fixture",TrainingPlan("p",today.minusDays(7),today.plusWeeks(8),emptyList(),ws)))
     }
     @After fun clear(){scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
-    private fun launch(){scenario=ActivityScenario.launch(CoachActivity::class.java);await("Your running, your way")}
+    private fun launch(){scenario=ActivityScenario.launch(CoachActivity::class.java);await("Today")}
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
     private fun enter(label:String,value:String){compose.onNodeWithText(label).performScrollTo().performTextReplacement(value)}
     @Test fun monthHasCategoryLabelsAndNoGenericCountDescription(){

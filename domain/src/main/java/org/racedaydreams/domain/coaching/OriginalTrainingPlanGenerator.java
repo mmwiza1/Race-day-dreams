@@ -34,6 +34,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
         boolean qualitySupported = established && baseline.consistentWeeks() != null && baseline.consistentWeeks() >= 6
                 && baseline.weeklyDistanceKm() >= 20 && prefs.runsPerWeek() >= 3;
         int frequency = established ? prefs.runsPerWeek() : Math.min(3, prefs.runsPerWeek());
+        if(request.distribution().equals("FEWER_LONGER")&&frequency>2)frequency--;
         double base = established ? baseline.weeklyDistanceKm() : 0;
         if (established && baseline.runsPerWeek() != null && baseline.runsPerWeek() > frequency)
             base *= frequency / baseline.runsPerWeek();
@@ -86,6 +87,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
                 : (foundationWeeks>0 ? Math.min(3,Math.max(0,foundationWeeks-foundationWeeks/4)*.5) : 0)+Math.max(0,buildIndex-buildIndex/4)*.5;
             double longKm = Math.min(longCap, Math.min(longBase + longProgress, weekly * .48));
             if (index % 4 == 3) longKm = Math.min(longKm, longBase * .8 + index * .15);
+            if(request.distribution().equals("MORE_SHORTER"))longKm*=.85;
             longKm *= taperFactor;
             int n = schedule.days().size();
             for (LocalDate day : schedule.days()) {
@@ -105,7 +107,7 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
                         category = WorkoutCategory.EASY_RUN;
                     }
                 }
-                Duration duration = established ? null : Duration.ofMinutes(Math.min(30, 15 + index / 2 * 2));
+                Duration duration = established ? null : Duration.ofMinutes(Math.min(request.maximumMinutes()==null?30:Math.min(30,request.maximumMinutes()), 15 + index / 2 * 2));
                 List<WorkoutSegment> segments = new ArrayList<>();
                 double rpe = isQuality ? prefs.strategy() == TrainingStrategy.PERFORMANCE && performance ? 7 : 6 : 3;
                 if (!established) {
@@ -132,6 +134,11 @@ public final class OriginalTrainingPlanGenerator implements TrainingPlanGenerato
                     + "Phase: " + phase + ". " + (taper ? "Volume is reduced before race day; arriving recovered is the priority. " : "")
                     + (prefs.strategy() == TrainingStrategy.PERFORMANCE && !performance ? "Current evidence does not support extra Performance intensity; your saved preference is unchanged. " : "")
                     + schedule.explanation() + caution;
+                if(request.maximumMinutes()!=null){
+                    reason += " Your usual time preference is " + request.maximumMinutes() + " minutes. ";
+                    if(km!=null)reason += "This distance prescription has no reliable pace-based duration estimate; shorten by effort to your time budget rather than adding catch-up distance. ";
+                }
+                reason += " Session distribution: "+request.distribution().toLowerCase(Locale.ROOT).replace('_',' ')+"; requested running frequency is a maximum, not an obligation.";
                 workouts.add(new PlannedWorkout(id + ":" + day, day, category, km, duration, segments, reason));
                 if (isLong || isQuality) previousDemanding = day;
             }

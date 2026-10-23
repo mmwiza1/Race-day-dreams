@@ -29,7 +29,10 @@ import java.time.Duration
     notice?.let{Text(it)}
     var details by remember{mutableStateOf(false)}
     TextButton(onClick={details=!details},modifier=Modifier.heightIn(min=48.dp)){Text(if(details)"Hide details"else"Workout details / controls")}
-    if(details){w?.current()?.let{Text(it.label())};w?.next()?.let{Text("Next: ${it.label()}")};cue?.let{Text(it)};race?.let{Text(it)};if(w!=null&&!w.complete()&&!w.early())OutlinedButton(onClick={send("SKIP_STEP")},modifier=Modifier.heightIn(min=56.dp)){Text("Skip current step")};Text("You can finish early. Unobserved distance and incomplete steps are never filled in.")}
+    if(details){
+        val dream by org.racedaydreams.recording.RunRecordingService.dreamRoute.collectAsState()
+        dream?.let{route->var show by remember{mutableStateOf(false)};TextButton(onClick={show=!show}){Text(if(show)"Hide Dream progress"else"Dream Route progress")};if(show){Text("Equivalent distance only · not your physical location");DreamDrawing(org.racedaydreams.domain.support.DreamRoutes.forId(route),0.0,kotlin.math.min(42195.0,s.metres()))}}
+        w?.current()?.let{Text(it.label())};w?.next()?.let{Text("Next: ${it.label()}")};cue?.let{Text(it)};race?.let{Text(it)};if(w!=null&&!w.complete()&&!w.early())OutlinedButton(onClick={send(if(w.current()?.metres()==null&&w.current()?.millis()==null)"COMPLETE_OPEN"else"SKIP_STEP")},modifier=Modifier.heightIn(min=56.dp)){Text(if(w.current()?.metres()==null&&w.current()?.millis()==null)"Complete open step"else"Skip current step")};Text("You can finish early. Unobserved distance and incomplete steps are never filled in.")}
     }
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
         Button(onClick={send(if(s.paused())"RESUME"else"PAUSE")},modifier=Modifier.weight(1f).heightIn(min=64.dp)){Text(if(s.paused())"Resume"else"Pause")}

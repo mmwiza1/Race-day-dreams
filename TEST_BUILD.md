@@ -1,10 +1,9 @@
-# Galaxy S24 evaluation — 0.7.0-test1
+# Galaxy S24 evaluation — 0.8.0-test1
 
-Health Intelligence/Run Engine increment from verified 0.5 main
-`e6763ef4aa56af012950dd2eb7490f4c4c3a7eba` (owner handoff update preserved).
-See VERIFICATION.md and the 0.5 PR/Actions for observed build and device-test results.
+0.8 starts from verified0.7 main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec`.
+See VERIFICATION.md and PR9/Actions for observed build and emulator-test results.
 
-Download `Race-Day-Dreams-0.7.0-test1-debug.apk` from a successful intended-commit
+Download `Race-Day-Dreams-0.8.0-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
 Debug signing keys may differ between workflows; preserve your backup before any
 uninstall Android requires. CI does not establish physical-device interoperability
@@ -12,9 +11,8 @@ or real-world coaching efficacy.
 
 ## Phone checklist
 
-1. Upgrade from 0.4.1 (or an older supported version) with existing data; check goals, plans, runs, shoes, notes,
-   strength history and reminder preferences. Export/restore the new version-five
-   backup and verify manual historical PBs, weights, breaks and decisions survive.
+1. Upgrade from 0.7 (or an older supported version) with existing data; check goals, plans, runs, shoes, notes,
+   strength history and reminder preferences. Export/restore the new version-seven JSON backup and complete package1 and verify manual historical PBs, weights, breaks and decisions survive.
 2. Continue without Health Connect. Review a concise baseline, optional missing
    fields, goal cards, weekday selections, date picker and final review. The
    explicit Create my programme action saves your goal and creates a programme.
@@ -155,3 +153,27 @@ provider interoperability, battery efficiency or coaching efficacy.
   behaviour or endurance. Last unflushed staging batch may still be lost.
 - Check TalkBack focus/labels, 200% fonts, dark/light contrast, landscape and sunlight.
   Pause/resume/finish remain in a fixed footer; secondary details may scroll.
+
+## 0.8 additional Galaxy S24 checks — not yet physically performed
+
+- Export a complete0.7 backup; upgrade; verify all histories/assignments; restore both
+  previous JSON and complete package. Export/restore0.8 workouts/preferences/checklists.
+- Choose Record my runs on a fresh installation. Start free/quick/custom without a
+  profile or Health Connect. Grant/deny location. Verify one recorder and foreground
+  notification; lock/background for10–20min, pause/resume, GPS loss, finish/save.
+- Author distance/time/open steps and repeats. Edit/reorder/duplicate/delete; save,
+  reopen, repeat; manually complete open steps. Check TTS over music/calls and HR loss.
+- Record an extra run beside planned training. Confirm no automatic completion; test
+  explicit link and easy-alternative preview/keep/accept with original versions retained.
+- Inspect actual route shape/aspect, km markers, pauses versus gaps, qualified elevation
+  and Route Story. GPX round-trip and Health Connect write/re-import must not duplicate.
+- Dream enabled/disabled/one/multiple/no cities; change settings and reopen old runs;
+  old assignments stay fixed. Live Dream panel must not obscure Pause/Finish. Test offline.
+- Favourite/unfavourite and search; inspect RDL/split-squat figures;6RM recalculation;
+  load references must not change actual logged loads. Test low/missing effort.
+- Race-week checklist persists; strategy still uses your target. Review scheduling
+  preferences/trade-offs and unavailable race date; no hidden goal/availability edits.
+- Export diagnostics; inspect exclusions. Check Today/navigation at normal and200% text,
+  light/dark, TalkBack, rotation, keyboard and touch targets.
+- Hardware/OEM: BLE disconnect/reconnect, cadence absence, battery saver,2–4hour run,
+  screen off, process termination and reboot recovery. Automation does not prove these.
