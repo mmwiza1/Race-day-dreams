@@ -28,7 +28,7 @@ final class AdditionalTechniqueGuides {
             case "dead-hang" -> guide("hang", "Grip a secure overhead bar with both hands and use a stable step to reach it if needed.", "Allow the feet to leave their support and hold a comfortable controlled hang; return safely to support to finish.", "Grip, forearms and shoulder support", List.of("Use a secure bar", "Keep breathing", "Stop before grip fails"), List.of("Jumping to an uncertain grip", "Swinging unnecessarily", "Hanging through shoulder discomfort"), "Lat Pulldown", "Pull-Up");
             case "pallof-press" -> guide("core", "Stand side-on to a chest-height cable with a stable stance; hold its handle in both hands at the centre of your chest.", "Press the hands straight ahead while resisting rotation, pause briefly and return; change sides as prescribed.", "Trunk stabilisers", List.of("Keep ribs and pelvis facing forwards", "Use a manageable cable load", "Press without twisting"), List.of("Turning toward the pulley", "Leaning sideways", "Holding your breath to finish"), "Side Plank", "Dead Bug");
             case "ab-wheel" -> guide("core", "Kneel on a mat with both hands holding the wheel axle beneath your shoulders and brace gently.", "Roll forward only as far as you can maintain a controlled trunk, then pull the wheel back toward the knees.", "Trunk stabilisers and shoulder support", List.of("Keep knees supported", "Use a short range first", "Keep breathing and ribs controlled"), List.of("Letting the lower back sag", "Rolling farther than you can return", "Rushing the return"), "Plank", "Dead Bug");
-            default -> null;
+            default -> CatalogueTechniqueGuides.forExercise(id);
         };
     }
 
