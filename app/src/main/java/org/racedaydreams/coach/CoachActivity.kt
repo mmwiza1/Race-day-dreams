@@ -264,7 +264,7 @@ private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> 
     }
     SemanticCard(Tile.Planned){Text("Run now",style=MaterialTheme.typography.titleLarge);Text("Not on the plan? Record a spontaneous run anytime.");CoachButton("Run now",record)}
     val summary=org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
-    SemanticCard(Tile.Progress){Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().take(3).forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("View details")}}
+    SemanticCard(Tile.Progress){Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().take(3).forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("Weekly coaching review")}}
     val hard=org.racedaydreams.domain.strength.StrengthAnalytics.hardLowerBodyDates(state.strengthSessions).contains(java.time.LocalDate.now().minusDays(1))
     if(hard||state.proposals.isNotEmpty())SemanticCard(Tile.Insight){Text("Anything I should know?",style=MaterialTheme.typography.titleMedium);Text(if(hard)"Hard lower-body strength was recorded yesterday. Today's demanding running may feel harder; consider effort and your own response."else"A coaching recommendation is ready. Your programme has not been changed.");TextButton(onClick=weekly){Text("Review choices")}}
     state.profile?.raceGoal()?.takeIf{it.raceDate()!=null}?.let{goal->SemanticCard(Tile.Race){Text(goal.raceName().ifBlank{goal.distance().label()},style=MaterialTheme.typography.titleLarge);Text("${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),goal.raceDate())} days · ${friendlyDate(goal.raceDate())}");TextButton(onClick=race){Text("Race preparation")}}}
@@ -272,6 +272,8 @@ private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> 
     CoachButton("Log strength"){quick("strength/log")}
     OutlinedButton(onClick={quick("progress/weight")},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Add weight")}
     OutlinedButton(onClick=plan,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("View plan")}
+    TextButton(onClick=history){Text("View activity history")}
+    TextButton(onClick=baseline){Text("Review running baseline")}
     TextButton(onClick=weekly){Text("Not feeling 100%?")}
 }
 

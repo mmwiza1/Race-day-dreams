@@ -264,6 +264,8 @@ class CoachOnboardingTest {
 
     private fun launch() {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
+        waitForText("Make today yours")
+        compose.onNodeWithText("Train for a race",useUnmergedTree=false).performClick()
         waitForText("Start with the running you already do")
     }
 
@@ -278,7 +280,7 @@ class CoachOnboardingTest {
         )
         SqliteUserPreferencesRepository(context).save(profile)
         scenario = ActivityScenario.launch(CoachActivity::class.java)
-        waitForText("Your running, your way")
+        waitForText("Today")
     }
 
     private fun continueToGoals() {

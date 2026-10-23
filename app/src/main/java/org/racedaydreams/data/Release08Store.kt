@@ -16,16 +16,17 @@ class Release08Store(context:Context) {
     fun save(w:CustomWorkout)=save("custom",w.id(),encode(w))
     fun removeWorkout(id:String){db.delete("release08","kind='custom' AND id=?",arrayOf(id))}
     fun dreamPreferences():Pair<Boolean,Set<String>> {val j=get("config","dream")?:return true to org.racedaydreams.domain.support.DreamRoutes.routes().map{it.id()}.toSet();val a=j.getJSONArray("cities");return j.getBoolean("enabled") to (0 until a.length()).map{a.getString(it)}.toSet()}
-    fun snapshot(w:CustomWorkout,mode:String)=JSONObject().put("version",1).put("mode",mode).put("title",w.title()).put("customId",w.id()).put("steps",JSONArray().also{a->w.flattened().forEach{a.put(SupportStore.step(it))}})
     companion object {
+    fun snapshot(w:CustomWorkout,mode:String)=JSONObject().put("version",1).put("mode",mode).put("title",w.title()).put("customId",w.id()).put("steps",JSONArray().also{a->w.flattened().forEach{a.put(SupportStore.step(it))}})
+
         fun encode(w:CustomWorkout):JSONObject=JSONObject().put("version",1).put("id",w.id()).put("title",w.title()).put("groups",JSONArray().also{a->w.groups().forEach{g->a.put(JSONObject().put("repeats",g.repeats()).put("steps",JSONArray().also{b->g.steps().forEach{b.put(SupportStore.step(it))}}))}})
         fun decode(j:JSONObject):CustomWorkout {val a=j.getJSONArray("groups");require(a.length() in 1..500);return CustomWorkout(j.getString("id"),j.getString("title"),(0 until a.length()).map{val g=a.getJSONObject(it);CustomWorkout.Group(g.getInt("repeats"),SupportStore.steps(g))})}
         @JvmStatic fun validateRow(kind:String,j:JSONObject){require(j.get("version") is Int&&j.getInt("version")==1);when(kind){
             "custom"->decode(j)
-            "origin"->{require(j.getString("mode") in listOf("free","quick","custom","repeat","workout","race"));Instant.parse(j.getString("at"))}
+            "origin"->{require(j.getString("mode") in listOf("free","quick","custom","repeat","workout","race"));Instant.parse(j.getString("at"));j.optString("dreamRoute").takeIf{it.isNotBlank()&&it!="null"}?.let{org.racedaydreams.domain.support.DreamRoutes.forId(it)}}
             "association"->{require(listOf("activity","planVersion","workout").all{j.getString(it).length in 1..256});Instant.parse(j.getString("at"))}
             "checklist"->{require(j.getString("label").length in 1..120);j.getBoolean("checked")}
-            "config"->{when(j.getString("type")){"dream"->{j.getBoolean("enabled");val a=j.getJSONArray("cities");require(a.length()<=5);val ids=(0 until a.length()).map{a.getString(it)};require(ids.distinct().size==ids.size&&ids.all{id->org.racedaydreams.domain.support.DreamRoutes.routes().any{it.id()==id}})};"start"->require(j.getString("path") in listOf("record","race","hybrid"));else->error("Unsupported preference")}}
+            "config"->{when(j.getString("type")){"dream"->{j.getBoolean("enabled");val a=j.getJSONArray("cities");require(a.length()<=5);val ids=(0 until a.length()).map{a.getString(it)};require(ids.distinct().size==ids.size&&ids.all{id->org.racedaydreams.domain.support.DreamRoutes.routes().any{it.id()==id}})};"schedule"->{require(j.getInt("maximumMinutes") in 15..360);require(j.getString("distribution") in listOf("FEWER_LONGER","BALANCED","MORE_SHORTER"));val a=j.getJSONArray("unavailable");require(a.length()<=366);for(i in 0 until a.length())java.time.LocalDate.parse(a.getString(i))};"start"->require(j.getString("path") in listOf("record","race","hybrid"));else->error("Unsupported preference")}}
             else->error("Unsupported 0.8 record")
         }}
         @JvmStatic fun put(db:SQLiteDatabase,kind:String,id:String,j:JSONObject){require(id.length in 1..256);validateRow(kind,j);val v=ContentValues().apply{put("kind",kind);put("id",id);put("payload",j.toString())};if(db.update("release08",v,"kind=? AND id=?",arrayOf(kind,id))==0)db.insertOrThrow("release08",null,v)}

@@ -26,7 +26,7 @@ import org.json.*
     val groups=remember(encoded){val a=JSONArray(encoded);(0 until a.length()).map{val j=a.getJSONObject(it);CustomWorkout.Group(j.getInt("repeats"),SupportStore.steps(j))}}
     fun setGroups(g:List<CustomWorkout.Group>){val a=JSONArray();g.forEach{group->a.put(JSONObject().put("repeats",group.repeats()).put("steps",JSONArray().also{b->group.steps().forEach{b.put(SupportStore.step(it))}}))};encoded=a.toString()}
     fun build()=CustomWorkout(java.util.UUID.randomUUID().toString(),title.trim(),groups)
-    fun begin(w:CustomWorkout,mode:String){start(Release08Store(context).snapshot(w,mode).toString())}
+    fun begin(w:CustomWorkout,mode:String){start(Release08Store.snapshot(w,mode).toString())}
     LaunchedEffect(Unit){saved=withContext(Dispatchers.IO){Release08Store(context).workouts()}}
     CoachPage{
         CoachHeading("Run now")

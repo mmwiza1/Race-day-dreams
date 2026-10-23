@@ -98,7 +98,7 @@ class CoachingInteractionTest {
         CoachingStore(context).saveCurrent(PlanVersion("test-version","test-plan",1,Instant.now(),"Runner-requested fixture",profile,"Test-only intentions",
             TrainingPlan("test-plan",today,today.plusWeeks(8),emptyList(),listOf(workout))))
     }
-    private fun launch(){scenario=ActivityScenario.launch(CoachActivity::class.java);await("Your running, your way")}
+    private fun launch(){scenario=ActivityScenario.launch(CoachActivity::class.java);await("Today")}
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
     private fun choosePastDate(label:String){
         compose.onNodeWithText("$label: ${friendlyDate(LocalDate.now())}").performScrollTo().performClick()

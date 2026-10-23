@@ -24,7 +24,7 @@ import org.racedaydreams.domain.activity.ActivityRecord
     val primary=MaterialTheme.colorScheme.primary;val fastColour=MaterialTheme.colorScheme.tertiary;val slowColour=MaterialTheme.colorScheme.error;val neutral=MaterialTheme.colorScheme.outline
     val fastest=km.minByOrNull{it.secondsPerKm()}?.kilometre();val slowest=km.maxByOrNull{it.secondsPerKm()}?.kilometre()
     val pauses by produceState<List<RecordingStore.Pause>>(emptyList(),activity.id()){value=withContext(Dispatchers.IO){RecordingStore(context).pauses(activity.source().recordId())}}
-    val story=remember(points){RoutePresentation.story(points)}
+    val story by produceState<List<String>>(emptyList(),points){value=withContext(Dispatchers.Default){RoutePresentation.story(points)}}
     SemanticCard(Tile.Planned){
         Text("Your recorded route",style=MaterialTheme.typography.titleLarge)
         Canvas(Modifier.fillMaxWidth().height(280.dp).semantics{contentDescription="Recorded route with start and finish, direction arrows, full kilometre markers and ${pauses.size} explicit pauses. Gaps are not joined. ${story.joinToString(" ")}"}){

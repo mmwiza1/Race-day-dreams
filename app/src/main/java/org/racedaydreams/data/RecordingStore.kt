@@ -35,6 +35,9 @@ class RecordingStore(context:Context) {
             val elapsed=(session.last-session.mono).coerceAtLeast(1);val samples=points.map{p->DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-session.mono),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity())}
             val hr=points.mapNotNull{it.heartRate()};val cad=points.mapNotNull{it.cadence()};val id="$provider:${session.id}"
             val a=ActivityRecord(id,SourceIdentity(provider,session.id,"org.racedaydreams"),session.start,session.start.plusMillis(elapsed),ZoneOffset.UTC,ZoneOffset.UTC,points.last().cumulativeMetres(),if(provider=="gpx")null else Duration.ofMillis(active.coerceIn(0,elapsed)),hr.takeIf{it.isNotEmpty()}?.average(),hr.maxOrNull(),null,cad.takeIf{it.isNotEmpty()}?.average(),null,"${if(provider=="rdd")"Recorded on this phone"else"Imported GPX (accuracy not supplied by file)"}. Distance excludes gaps; raw timestamps and events retained.",samples,emptyList(),null,null)
+            Release08Store(contextRef).get("origin",session.id)?.optString("dreamRoute")?.takeIf{it.isNotBlank()&&it!="null"}?.let{route->
+                val distance=points.last().cumulativeMetres();if(distance>0)SupportStore(contextRef).save("dream",id,JSONObject().put("version",1).put("route",route).put("start",0).put("distance",distance).put("assignedAt",Instant.now().toString()))
+            }
             FeatureStore.putActivity(db,a,true)
             db.update("recording_sessions",ContentValues().apply{put("state","FINISHED");put("activity_id",id)},"id=?",arrayOf(session.id));SupportStore(contextRef).linkFinished(session.id,id,recovered);db.setTransactionSuccessful();return id
         }finally{db.endTransaction()}

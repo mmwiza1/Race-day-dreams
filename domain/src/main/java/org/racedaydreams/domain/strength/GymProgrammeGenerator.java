@@ -8,6 +8,9 @@ import org.racedaydreams.domain.coaching.Immutable;
 public final class GymProgrammeGenerator {
     public GymProgramme generate(String id,int version,Instant createdAt,String reason,GymProgramme.Settings settings,LocalDate start,
             List<PlannedWorkout> runs,List<StrengthSession> actual) {
+        return generate(id,version,createdAt,reason,settings,start,runs,actual,Collections.emptySet());
+    }
+    public GymProgramme generate(String id,int version,Instant createdAt,String reason,GymProgramme.Settings settings,LocalDate start,List<PlannedWorkout> runs,List<StrengthSession> actual,Set<String> favourites) {
         var sessions=new ArrayList<GymProgramme.Session>();var tradeoffs=new LinkedHashSet<String>();LocalDate end=start.plusWeeks(6).minusDays(1);
         var hardActual=StrengthAnalytics.hardLowerBodyDates(actual);
         for(LocalDate week=start.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));!week.isAfter(end);week=week.plusWeeks(1)){
@@ -17,7 +20,7 @@ public final class GymProgrammeGenerator {
             var best=new Search(settings,runs,hardActual,templates);best.permute(candidates,new ArrayList<>(),new HashSet<>());
             for(int i=0;i<best.chosen.size();i++){
                 var date=best.chosen.get(i);var template=templates.get(i);boolean lower=!template.equals("Upper")&&!template.equals("Push")&&!template.equals("Pull");
-                var p=prescriptions(settings,template,i);
+                var p=prescriptions(settings,template,i,favourites);
                 var warnings=conflicts(date,lower,runs,hardActual);tradeoffs.addAll(warnings);
                 sessions.add(new GymProgramme.Session(id+"-v"+version+"-"+date,date,template+" "+(i+1),p,
                     "Stable six-week block. "+(settings.goal()==GymProgramme.Goal.SUPPORT_RUNNING?"Hinge, unilateral, calf and trunk work complement the running plan.":"Exercise and rep ranges reflect your selected strength goal.")+" Scheduling uses your available days and "+settings.priority().name().toLowerCase(Locale.ROOT).replace('_',' ')+" priority."));
@@ -59,13 +62,15 @@ public final class GymProgrammeGenerator {
         if(id.contains("bench-press"))return equipment.contains("bench")&&(required.equals("dumbbells")||equipment.contains("squat rack"));
         return true;
     }
-    private static String choose(Set<String> equipment,String...ids){for(String id:ids)if(available(id,equipment))return id;throw new IllegalArgumentException("No suitable exercise for selected equipment.");}
-    private static List<GymProgramme.Prescription> prescriptions(GymProgramme.Settings s,String template,int variation){var eq=s.equipment();var ids=new ArrayList<String>();boolean lower=template.equals("Lower")||template.equals("Full body");boolean upper=!template.equals("Lower");
-        if(lower){ids.add(choose(eq,variation%2==0?"back-squat":"romanian-deadlift","goblet-squat","deadlift","bodyweight-squat"));ids.add(choose(eq,s.goal()==GymProgramme.Goal.SUPPORT_RUNNING?"split-squat":"hip-thrust","reverse-lunge-bodyweight","glute-bridge"));}
-        if(upper){if(!template.equals("Pull"))ids.add(choose(eq,"bench-press","dumbbell-bench-press","push-up"));if(!template.equals("Push"))ids.add(choose(eq,"seated-cable-row","dumbbell-row","barbell-row","bird-dog"));}
-        if(s.goal()==GymProgramme.Goal.SUPPORT_RUNNING&&lower)ids.add(choose(eq,"calf-raise","single-leg-calf-raise-bodyweight"));
+    private static String choose(Set<String> equipment,Set<String> favourites,String...ids){
+        for(String id:ids)if(available(id,equipment)&&favourites.contains(id)&&TechniqueGuide.forExercise(id)!=null&&TechniqueGuide.forExercise(ids[0])!=null&&TechniqueGuide.forExercise(id).pattern().equals(TechniqueGuide.forExercise(ids[0]).pattern())&&ExerciseCatalog.definition(id).exercise().measurement()==ExerciseCatalog.definition(ids[0]).exercise().measurement())return id;
+        for(String id:ids)if(available(id,equipment))return id;throw new IllegalArgumentException("No suitable exercise for selected equipment.");}
+    private static List<GymProgramme.Prescription> prescriptions(GymProgramme.Settings s,String template,int variation,Set<String> favourites){var eq=s.equipment();var ids=new ArrayList<String>();boolean lower=template.equals("Lower")||template.equals("Full body");boolean upper=!template.equals("Lower");
+        if(lower){ids.add(choose(eq,favourites,variation%2==0?"back-squat":"romanian-deadlift","goblet-squat","deadlift","bodyweight-squat"));ids.add(choose(eq,favourites,s.goal()==GymProgramme.Goal.SUPPORT_RUNNING?"split-squat":"hip-thrust","reverse-lunge-bodyweight","glute-bridge"));}
+        if(upper){if(!template.equals("Pull"))ids.add(choose(eq,favourites,"bench-press","dumbbell-bench-press","push-up"));if(!template.equals("Push"))ids.add(choose(eq,favourites,"seated-cable-row","dumbbell-row","barbell-row","bird-dog"));}
+        if(s.goal()==GymProgramme.Goal.SUPPORT_RUNNING&&lower)ids.add(choose(eq,favourites,"calf-raise","single-leg-calf-raise-bodyweight"));
         if(s.minutes()>=45&&ids.size()<5)ids.add("plank");
-        if(s.minutes()>=60&&upper)ids.add(choose(eq,template.equals("Pull")?"barbell-curl":"overhead-press","dumbbell-shoulder-press","dead-bug"));
+        if(s.minutes()>=60&&upper)ids.add(choose(eq,favourites,template.equals("Pull")?"barbell-curl":"overhead-press","dumbbell-shoulder-press","dead-bug"));
         int sets=s.experience()==GymProgramme.Experience.BEGINNER||s.priority()==GymProgramme.Priority.RUNNING_FIRST?2:s.goal()==GymProgramme.Goal.MUSCLE?3:3;
         if(s.frequency()>=4&&s.priority()==GymProgramme.Priority.RUNNING_FIRST)sets=2;
         int minimum=s.goal()==GymProgramme.Goal.STRENGTH?4:s.goal()==GymProgramme.Goal.POWER?3:s.goal()==GymProgramme.Goal.MUSCLE?8:6;
@@ -73,7 +78,7 @@ public final class GymProgrammeGenerator {
         int minRpe=s.experience()==GymProgramme.Experience.BEGINNER?5:6,maxRpe=s.priority()==GymProgramme.Priority.RUNNING_FIRST?7:8;
         int rest=s.goal()==GymProgramme.Goal.STRENGTH||s.goal()==GymProgramme.Goal.POWER?150:90;
         var out=new ArrayList<GymProgramme.Prescription>();int budget=s.minutes()-6;
-        for(String id:new LinkedHashSet<>(ids)){int cost=sets*(rest/60+1)+1;if(budget<cost&&!out.isEmpty())break;budget-=cost;var profile=ExerciseCatalog.definition(id).exercise().measurement();out.add(new GymProgramme.Prescription(id,sets,profile.usesReps()?minimum:0,profile.usesReps()?maximum:0,profile.usesDuration()?30:null,profile.usesDistance()?30.0:null,minRpe,maxRpe,rest,s.goal()==GymProgramme.Goal.POWER?s.experience()==GymProgramme.Experience.BEGINNER?"Develop controlled fundamentals before adding power work. No maximal testing.":"Use a manageable moderate load, controlled lowering and an intentionally fast upward phase. Stop before speed or control deteriorates.":"Choose a manageable load or variation within the effort range; progression is optional."));}
+        for(String id:new LinkedHashSet<>(ids)){int cost=sets*(rest/60+1)+1;if(budget<cost&&!out.isEmpty())break;budget-=cost;var profile=ExerciseCatalog.definition(id).exercise().measurement();out.add(new GymProgramme.Prescription(id,sets,profile.usesReps()?minimum:0,profile.usesReps()?maximum:0,profile.usesDuration()?30:null,profile.usesDistance()?30.0:null,minRpe,maxRpe,rest,s.goal()==GymProgramme.Goal.POWER?s.experience()==GymProgramme.Experience.BEGINNER?"Develop controlled fundamentals before adding power work. No maximal testing.":"Use a manageable moderate load, controlled lowering and an intentionally fast upward phase. Stop before speed or control deteriorates.":"Choose a manageable load or variation within the effort range; progression is optional."+(favourites.contains(id)?" This suitable exercise is one of your favourites.":"")));}
         return Immutable.copyList(out);
     }
 }

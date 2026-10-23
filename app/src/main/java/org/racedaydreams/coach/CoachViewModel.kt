@@ -317,7 +317,9 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun generatePlan() = mutate {
         val profile = profiles.load().orElse(null) ?: throw IllegalArgumentException("Save your goal and availability first.")
         val baseline = mutableState.value.baseline
-        val candidate = OriginalTrainingPlanGenerator().generate(PlanRequest(profile, baseline, LocalDate.now(), emptySet(), coaching.strength()))
+        val schedule=org.racedaydreams.data.Release08Store(app).get("config","schedule")
+        val unavailable=schedule?.getJSONArray("unavailable")?.let{a->(0 until a.length()).map{LocalDate.parse(a.getString(it))}.toSet()}?:emptySet()
+        val candidate = OriginalTrainingPlanGenerator().generate(PlanRequest(profile, baseline, LocalDate.now(), unavailable, coaching.strength(),schedule?.getInt("maximumMinutes"),schedule?.getString("distribution")?:"BALANCED"))
         val versions = coaching.versions()
         val responses = coaching.responses().associateBy { it.activityId() }
         val oldCurrent = coaching.current()
