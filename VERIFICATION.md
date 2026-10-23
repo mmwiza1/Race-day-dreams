@@ -20,9 +20,11 @@ bot00b8ac6519c648bed1ce722ef151e2cf159fbbbf. APK size at that source35204614byte
 The strict guidance-completeness job fails because canonical visual coverage is
 unfinished; **the whole workflow is not green and publication was skipped**.
 Current coverage11/174 canonical visual guides,26 text guides;14/14 routine art.
-New seven images/geographic Berlin/backup test/53-screen fixture are later changes
-and need their own Android matrix verification. They are not certified by the
-197-test checkpoint. Full design acceptance remains open; Plan density, remaining
+New seven images/geographic Berlin/backup test ran in workflow39994147090:
+build/lint and197 of198tests/API passed, including the new backup test. The single
+failure on everyAPI was an ambiguous screenshot selector matching search input and
+result. It is fixed to target the clickable non-editable result; fresh verification
+is pending. The53-screen capture set is not yet adopted or certified. Full design acceptance remains open; Plan density, remaining
 canonical guides and four other geographic Dream Routes still require work.
 
 Visual inspection of actual Plan/200%-dark, Bench, Ankle Rocks and mobility-dark

@@ -28,8 +28,8 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
     val version = state.currentPlan
     val today = LocalDate.now()
     CoachPage {
-        CoachHeading("Plan")
         if (version == null) {
+            CoachHeading("Plan")
             GuidanceCard { Text("Your next chapter", style=MaterialTheme.typography.titleLarge)
                 Text("Create a programme from your goal and availability, or record runs without a plan.")
                 CoachButton("Generate my programme") { model.generatePlan() }
@@ -44,14 +44,20 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             val selectedWeek = baseWeek.plusWeeks(week.toLong()).coerceIn(startWeek, plan.endDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
             val totalWeeks = ChronoUnit.WEEKS.between(startWeek, plan.endDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))+1
             val weekNumber = ChronoUnit.WEEKS.between(startWeek,selectedWeek)+1
-            Text("${version.goalSnapshot().raceGoal().distance().label()} · Week $weekNumber of $totalWeeks", style=MaterialTheme.typography.titleMedium)
-            Text("This week", style=MaterialTheme.typography.headlineSmall)
+            Column(verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                CoachHeading("Plan")
+                Text("${version.goalSnapshot().raceGoal().distance().label()} · Week $weekNumber of $totalWeeks", style=MaterialTheme.typography.titleMedium)
+            }
+            val largeFont=androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.15f
+            if(largeFont)Text("This week", style=MaterialTheme.typography.headlineSmall)
             Row(Modifier.fillMaxWidth(), verticalAlignment=Alignment.CenterVertically) {
+                if(!largeFont)Text("This week",modifier=Modifier.weight(1f),style=MaterialTheme.typography.titleLarge)
                 TextButton(onClick={week--},enabled=selectedWeek>startWeek,modifier=Modifier.sizeIn(minWidth=48.dp,minHeight=48.dp)) { Text("‹", modifier=Modifier.semantics { contentDescription="Previous week" }) }
-                Text("${selectedWeek.format(java.time.format.DateTimeFormatter.ofPattern("d MMM",java.util.Locale.UK))} – ${selectedWeek.plusDays(6).format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu",java.util.Locale.UK))}",modifier=Modifier.weight(1f),textAlign=androidx.compose.ui.text.style.TextAlign.Center,style=MaterialTheme.typography.labelLarge)
+                Text("${selectedWeek.format(java.time.format.DateTimeFormatter.ofPattern("d MMM",java.util.Locale.UK))} – ${selectedWeek.plusDays(6).format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu",java.util.Locale.UK))}",modifier=if(largeFont)Modifier.weight(1f)else Modifier,textAlign=androidx.compose.ui.text.style.TextAlign.Center,style=MaterialTheme.typography.labelSmall)
                 TextButton(onClick={week++},enabled=selectedWeek.plusWeeks(1)<=plan.endDate(),modifier=Modifier.sizeIn(minWidth=48.dp,minHeight=48.dp)) { Text("›", modifier=Modifier.semantics { contentDescription="Next week" }) }
             }
             if(week!=0)TextButton(onClick={week=0}) { Text("Current week") }
+            Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
             repeat(7) { offset ->
                 val day=selectedWeek.plusDays(offset.toLong())
                 val entries=calendarEntries(state,day)
@@ -90,6 +96,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                         }
                     }
                 }
+            }
             }
             MobilitySupportCard(routines)
             state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }

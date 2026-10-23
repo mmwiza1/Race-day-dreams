@@ -17,7 +17,6 @@ import org.racedaydreams.domain.strength.TechniqueGuide
 @Composable fun TechniqueSection(id:String){
     val guide=TechniqueGuide.forExercise(id)
     if(guide==null){Text("A visual guide for this exercise is not available yet. Choose a familiar movement or seek qualified coaching.");return}
-    Text("How to do it",style=MaterialTheme.typography.titleLarge)
     val art=exerciseArtwork(id)
     if(art!=null) {
         IllustratedMovement(art)
