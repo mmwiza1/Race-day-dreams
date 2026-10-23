@@ -41,3 +41,12 @@ filled-athlete design family, not circles-and-lines schematics. This asset revie
 not actual-build screenshot acceptance. New five representative guide captures and
 all47resource resolutions still need the fresh Android matrix.127canonical guides,
 London/Paris/NewYork geography and richer city visual presentation remain unfinished.
+
+The five new guide captures from workflow40014032752 were then inspected in the
+actual build: Front Squat, Leg Press, Lat Pulldown, Seated Leg Curl, Farmer’s Carry.
+Figures and equipment fit; the corrected calf-side curl roller is visible; captions
+wrap separately and copy is readable. These match the filled blue/navy illustration
+family. Setup copy remains too long on some screens to show tips/mistakes together
+in the first viewport. Continue refining progressive disclosure/concise copy and
+responsive card arrangement without dropping safety instructions. No full fidelity
+pass is claimed; remaining127guides/three geographic cities are release blockers.

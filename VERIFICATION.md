@@ -465,3 +465,30 @@ remote API28/35/36 matrix is required for the current additions, including Tokyo
 complete-backup test and five further authentic technique captures (58requested).
 No S24 test, full174coverage, all-five geography or final design-fidelity pass is
 claimed. Existing source captures remain labelled with their actual source commit.
+
+## Observed 47-guide / Tokyo matrix — verified checkpoint
+
+Source `bfab6e176d1116ecef630f88098559d0fa1bc092`, workflow **40014032752**:
+build, lint and **199 instrumentation tests per API 28/35/36 passed** (jobs
+120621372308 / 120621372496 / 120621372384). The new Tokyo complete-backup test
+and all registered artwork resource checks passed. Canonical capture job
+120624547023 produced **58 authentic PNGs**. All PNGs and both metadata files were
+adopted exactly from bot `30b5291d8febe77e6a8ce0f43e0d63aa524720b7`; every blob
+hash matched. Local adoption `f9b06c4` has the identical bot tree.
+
+API-35 APK is **37,320,414 bytes**, artifact **12527522506**, internal filename
+`Race-Day-Dreams-0.8.1-test1-debug.apk`. Screenshot artifact **12527876551**.
+Increase from the previous 15-guide checkpoint: **1,558,351 bytes**. Original 0.8
+raw-APK comparison remains unmeasured. No local download or S24 install is claimed.
+
+Inspected the five new actual guide screens: front squat, leg press, lat pulldown,
+seated leg curl and Farmer’s Carry. Detailed bodies/equipment are fully displayed;
+phase captions wrap without touching and instructions remain readable. The new assets
+belong to the blue/navy illustrated design family. Some guidance is still too verbose
+for tips/mistakes to share the first viewport. This is not full visual acceptance.
+
+Strict completeness job **120621372054 fails 127 missing canonical exercises**;
+publication **120624548978 was skipped**. The overall workflow is not green and
+0.8.1 is not complete. PR #10 remains draft. Remaining geography: London, Paris,
+New York; richer city rendering/landmarks and full reference fidelity remain open.
+All physical S24 checks are still unperformed. Schema/backup versions unchanged.
