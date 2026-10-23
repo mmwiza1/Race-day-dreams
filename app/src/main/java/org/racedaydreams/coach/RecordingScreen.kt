@@ -26,7 +26,7 @@ import org.racedaydreams.data.RecordingStore
     val workout by RunRecordingService.workoutState.collectAsState()
     val cue by RunRecordingService.cue.collectAsState()
     val race by RunRecordingService.raceContext.collectAsState()
-    status?.let{ActiveRunPanel(it,workout,hr,cue,race,notice,::send);return}
+    status?.let{ActiveRunPanel(it,workout,hr,cue,race,notice,model.state.value.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL,::send);return}
     CoachPage {
     if(running&&status==null)Text("Preparing recording…")
     CoachHeading(if(workoutId!=null)"Live Coach"else "Record a run")
@@ -40,6 +40,11 @@ import org.racedaydreams.data.RecordingStore
     if(!running){
         val settings=remember{context.getSharedPreferences("live-coach",android.content.Context.MODE_PRIVATE)}
         var speech by remember{mutableStateOf(settings.getBoolean("speech",false))};var haptics by remember{mutableStateOf(settings.getBoolean("haptics",true))};var gentle by remember{mutableStateOf(settings.getLong("sustained",45000)==60000L)}
+        var splitAnnouncements by remember{mutableStateOf(settings.getBoolean("splits",true))}
+        var miles by remember{mutableStateOf(settings.getBoolean("miles",model.state.value.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL))}
+        LaunchedEffect(Unit){if(!settings.contains("miles"))settings.edit().putBoolean("miles",miles).apply()}
+        CheckRow("Announce recorded distance splits",splitAnnouncements){splitAnnouncements=it;settings.edit().putBoolean("splits",it).apply()}
+        CheckRow("Use mile announcements",miles){miles=it;settings.edit().putBoolean("miles",it).apply()}
         CheckRow("Spoken cues (uses an installed offline voice)",speech){speech=it;settings.edit().putBoolean("speech",it).apply()}
         CheckRow("Transition haptics",haptics){haptics=it;settings.edit().putBoolean("haptics",it).apply()}
         CheckRow("Less frequent pace guidance",gentle){gentle=it;settings.edit().putLong("sustained",if(it)60000 else 45000).apply()}

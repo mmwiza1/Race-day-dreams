@@ -89,7 +89,8 @@ class RunRecordingService:Service() {
             if(!raceFive&&distance>10000&&s.metres()>=distance-5000){raceFive=true;candidates.add(CoachCues.Cue("race-five","Five kilometres remaining by recorded distance.",2,s.movingMillis(),false))}
         }
 
-        val e=execution?:return
+        val e=execution
+        if(e==null){deliverMetrics(s,candidates);return}
         val input=WorkoutExecutionEngine.Input(s.metres(),s.movingMillis(),s.elapsedMillis(),s.secondsPerKm(),s.secondsPerKm()!=null&&!s.paused(),s.paused())
         val state=e.update(input);workoutState.value=state
         val events=e.events()
@@ -99,6 +100,9 @@ class RunRecordingService:Service() {
             }else if(event.type()=="WORKOUT_COMPLETED")candidates.add(CoachCues.Cue("complete","Workout complete. Recording continues until you finish and save.",1,s.movingMillis(),true))
         };seenExecutionEvents=events.size
         if(executionContext?.optBoolean("hilly",false)!=true)paceCues.pace(state,input,getSharedPreferences("live-coach",MODE_PRIVATE).getLong("sustained",45000L))?.let{candidates.add(it);engine?.event(if(it.id().startsWith("pace-in"))"TARGET_RANGE_REENTERED"else"TARGET_RANGE_EXITED",SystemClock.elapsedRealtime(),Instant.now())}
+        deliverMetrics(s,candidates)
+    }
+    private fun deliverMetrics(s:RunMetricsEngine.Status,candidates:MutableList<CoachCues.Cue>){
         val unit=if(getSharedPreferences("live-coach",MODE_PRIVATE).getBoolean("miles",false))1609.344 else 1000.0
         val split=(s.metres()/unit).toInt();if(split>lastSplit){lastSplit=split;if(getSharedPreferences("live-coach",MODE_PRIVATE).getBoolean("splits",true))candidates.add(CoachCues.Cue("split-$split","$split ${if(unit>1000)"miles"else"kilometres"} recorded.",5,s.movingMillis(),false))}
         CoachCues.select(candidates,s.movingMillis())?.let{cue.value=it.text();audio?.deliver(it)}
