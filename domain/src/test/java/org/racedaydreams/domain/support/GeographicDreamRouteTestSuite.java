@@ -69,6 +69,23 @@ public final class GeographicDreamRouteTestSuite {
         }
         check(DreamRoutes.at(ny,0).equals(ny.vertices().get(0)),"NYC exact start");
         check(DreamRoutes.at(ny,42195).equals(ny.vertices().get(370)),"NYC exact equivalent finish");
+        var parisFresh=DreamRoutes.assign(10000,new Random(9),Set.of("paris-v2"));
+        check(parisFresh.routeId().equals("paris-2024-olympic-geo-v1"),"Paris future assignment uses licensed geographic revision");
+        var paris=DreamRoutes.forId(parisFresh.routeId());
+        check(paris.vertices().size()==328,"All Paris source positions retained");
+        check(paris.name().contains("2024 Olympic"),"Different Paris event is explicit in primary display name");
+        check(DreamRoutes.provenance(paris).contains("not the annual Paris Marathon"),"No false annual-course claim");
+        check(DreamRoutes.provenance(paris).contains("ODbL"),"Paris data licence inspectable");
+        check(DreamRoutes.forId("paris-v2").vertices().get(0).equals(new DreamRoutes.Vertex(3.1,3)),"Old Paris assignments unchanged");
+        check(DreamRoutes.landmarks(paris).isEmpty(),"No misplaced legacy Paris landmarks");
+        check(DreamRoutes.section(paris,0,42195).size()==328,"Full Paris highlight retains source corners");
+        for(double metres:new double[]{0,1000,5000,21097.5,42194.9,42195,50000}) {
+            var p=DreamRoutes.at(paris,metres);var section=DreamRoutes.section(paris,0,metres);
+            check(Double.isFinite(p.x())&&Double.isFinite(p.y()),"Paris interpolation finite");
+            check(section.get(section.size()-1).equals(p),"Paris highlight ends at progress");
+        }
+        for(var city:DreamRoutes.routes())
+            check(DreamRoutes.currentGeometry(city).id().contains("geo-v1"),"Every city has licensed geographic revision");
         System.out.println("GeographicDreamRouteTestSuite: " + checks + " checks passed.");
     }
 }

@@ -1,3 +1,24 @@
+# Current geography — all five city choices have sourced revisions
+
+## Paris2024 geographic fallback (ODbL-1.0)
+
+Paris now uses the2024 Olympic marathon course, explicitly named in the primary
+city label. It is NOT the annual Champs-Élysées Paris Marathon. This is the safe
+geographic fallback: no redistribution grant was established for an annual-course
+candidate. Do not conceal this distinction or label the geometry official.
+
+All328positions from Thomas Krakow / Running-tomy's Wikimedia Commons data revision
+931916019 are retained. The data file explicitly declares ODbL-1.0. The coordinate
+database and generated array retain that licence, separate from original MIT app
+code. Source hash/revision/transformation and all retained positions are in
+`docs/dream-route-data/paris-2024-olympic.json`; attribution/full licence are bundled
+and readable in Settings. No Olympic logos, marks, map artwork or software copied.
+The approximate42.10km source line is separate from42.195km equivalent progress.
+Old Paris assignments remain unchanged. This geographic milestone does not certify
+richer five-city visual fidelity, which remains open.
+
+## Earlier geographic checkpoints (historical)
+
 # Current geographic status — four cities
 
 London, Berlin, Tokyo and New York now have separately versioned geographic

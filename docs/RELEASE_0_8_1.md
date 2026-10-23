@@ -1,3 +1,10 @@
+# Geographic fallback clarification
+
+Paris uses the explicitly labelled2024 Olympic marathon course under ODbL, not the
+annual Paris Marathon. All five city choices now have sourced geographic revisions;
+richer city presentation and final actual-build design acceptance remain open.
+See DREAM_ROUTES.md for exact sources, licences and limitations.
+
 # 0.8.1-test1 — design fidelity, guidance and reliability
 
 Implementation checkpoint; not yet a completed/released build.
