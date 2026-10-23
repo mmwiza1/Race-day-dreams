@@ -1,3 +1,26 @@
+# 0.8.1 geographic upgrade checkpoint
+
+New Berlin assignments use `berlin-2014-geo-v1`:191 original retained vertices from
+an MIT-licensed participant GPS trace. Source/edition/licence/transformation and the
+reproducible offline projection are in [dream-route-data](dream-route-data/README.md).
+This is approximate2014 participant evidence, not current/certified course geometry.
+It carries no timestamps, HR or athlete identity. The marathon-equivalent axis is
+separate from its observed43.01km geographic trace length.
+
+The stable `berlin-v2` city preference selects the new revision only for future
+assignments. All stored v1/v2 assignments continue using their exact old geometries.
+Complete-backup tests cover old and new assignments plus the unchanged city setting.
+The full source MIT notice ships in the APK and can be opened from Settings.
+
+The highlighted polyline retains every intervening source vertex; it no longer
+samples straight chords across corners. Rendering caches that section independently
+of recomposition. Duplicate zero-length vertices do not produce NaN positions.
+The section finish uses a checkered marker rather than the old schematic runner.
+
+London, Paris, Tokyo and New York remain legacy schematics pending licence-safe,
+geographically meaningful replacements. **The full five-city design gate has not
+passed.** The historical documentation below describes those retained v2 assets.
+
 # Dream Routes v2 provenance
 
 Checked 23 October 2026. These are original, independently drawn **stylised course-inspired

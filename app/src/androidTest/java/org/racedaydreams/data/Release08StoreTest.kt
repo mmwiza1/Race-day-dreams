@@ -13,6 +13,19 @@ class Release08StoreTest:AndroidTestCase(){
  fun testSavedWorkoutExactRoundTrip(){val s=Release08Store(context);s.save(workout());assertEquals(workout(),s.workouts().single());assertEquals(6,SupportStore.steps(Release08Store.snapshot(workout(),"custom")).size)}
  fun testCustomSnapshotHasNoInventedPlanLink(){val j=Release08Store.snapshot(workout(),"custom");SupportStore.validatePayload("execution",j);assertFalse(j.has("planVersion"));assertFalse(j.has("workoutId"));assertTrue(CoachingStore(context).responses().isEmpty())}
  fun testPreferencesDoNotRerollOldAssignment(){val s=Release08Store(context);val old=SupportStore(context).dream("activity",5000.0);s.save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",false).put("cities",JSONArray()));assertEquals(old,SupportStore(context).dream("activity",5000.0));assertNull(SupportStore(context).dream("new",5000.0))}
+ fun testGeographicBerlinAndLegacyAssignmentsSurviveCompleteBackupWithoutReroll() {
+  val store=Release08Store(context)
+  store.save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",true).put("cities",JSONArray().put("berlin-v2")))
+  val support=SupportStore(context);val fresh=support.dream("fresh-berlin",5020.0)!!
+  assertEquals("berlin-2014-geo-v1",fresh.routeId())
+  val old=JSONObject().put("version",1).put("route","berlin-v2").put("start",1000.0).put("distance",5000.0).put("assignedAt",Instant.now().toString())
+  support.save("dream","old-berlin",old)
+  val bytes=ByteArrayOutputStream();CompleteBackup(context).exportTo(bytes)
+  SqliteUserPreferencesRepository(context).clear();CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()))
+  assertEquals(fresh,SupportStore(context).dream("fresh-berlin",5020.0))
+  assertEquals("berlin-v2",SupportStore(context).dream("old-berlin",5000.0)!!.routeId())
+  assertEquals(setOf("berlin-v2"),Release08Store(context).dreamPreferences().second)
+ }
  fun testNoSelectedCityUsesStandardPresentation(){Release08Store(context).save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",true).put("cities",JSONArray()));assertNull(SupportStore(context).dream("new",5000.0))}
  fun testBackupRestoresWorkoutsAndPreferences(){val s=Release08Store(context);s.save(workout());s.save("checklist","race:kit",JSONObject().put("version",1).put("label","Kit").put("checked",true));val bytes=ByteArrayOutputStream();CompleteBackup(context).exportTo(bytes);SqliteUserPreferencesRepository(context).clear();CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()));assertEquals(workout(),Release08Store(context).workouts().single());assertTrue(Release08Store(context).get("checklist","race:kit")!!.getBoolean("checked"))}
  fun testInvalidNewPayloadRollsBack(){Release08Store(context).save(workout());val store=FeatureStore(context);val before=store.exportUserData();val bad=JSONObject(before.toString());bad.getJSONObject("release08").getJSONArray("rows").getJSONObject(0).getJSONObject("payload").put("groups",JSONArray());try{store.restoreUserData(bad,false);fail("Invalid custom workout")}catch(_:Exception){};assertEquals(before.toString(),store.exportUserData().toString())}

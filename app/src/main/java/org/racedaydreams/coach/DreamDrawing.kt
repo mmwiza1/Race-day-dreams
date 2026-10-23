@@ -13,6 +13,7 @@ import org.racedaydreams.domain.support.DreamRoutes
 /** Original offline cartographic cues; no street tiles or copied race artwork. */
 @Composable fun DreamDrawing(route:DreamRoutes.Route,start:Double,finish:Double){
     val outline=MaterialTheme.colorScheme.outline.copy(alpha=.45f);val ink=MaterialTheme.colorScheme.onSurface;val accent=MaterialTheme.colorScheme.primary;val landmark=MaterialTheme.colorScheme.tertiary.copy(alpha=.5f)
+    val highlighted=remember(route,start,finish){DreamRoutes.section(route,start,finish)}
     Canvas(Modifier.fillMaxWidth().height(260.dp).semantics{contentDescription="Dream Route ${route.name()}. Stylised course-inspired visual, not navigation. Highlighted equivalent ${decimal(start/1000)}–${decimal(finish/1000)} km; runner at the end. Five kilometre markers. Landmarks: ${DreamRoutes.landmarks(route).joinToString{it.label()}}"}){
         val vertices=route.vertices()+DreamRoutes.landmarks(route).map{DreamRoutes.Vertex(it.x(),it.y())};val minX=vertices.minOf{it.x()}-.5;val maxX=vertices.maxOf{it.x()}+.5;val minY=vertices.minOf{it.y()}-.5;val maxY=vertices.maxOf{it.y()}+.5
         val scale=kotlin.math.min(size.width/(maxX-minX),size.height/(maxY-minY));val side=(scale*10).toFloat();val origin=Offset(((size.width-(maxX-minX)*scale)/2).toFloat(),((size.height-(maxY-minY)*scale)/2).toFloat())
@@ -28,11 +29,13 @@ import org.racedaydreams.domain.support.DreamRoutes
             }
         }
         route.vertices().zipWithNext().forEach{(a,b)->drawLine(outline,p(a),p(b),3.dp.toPx(),StrokeCap.Round)}
-        var previous=DreamRoutes.at(route,start);repeat(300){i->val next=DreamRoutes.at(route,start+(finish-start)*(i+1)/300);drawLine(accent,p(previous),p(next),5.dp.toPx(),StrokeCap.Round);previous=next}
+        highlighted.zipWithNext().forEach{(a,b)->drawLine(accent,p(a),p(b),5.dp.toPx(),StrokeCap.Round)}
         val textPaint=android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply{color=ink.toArgb();textSize=10.dp.toPx()}
         for(km in 5..40 step 5){val marker=p(DreamRoutes.at(route,km*1000.0));drawCircle(ink,2.5.dp.toPx(),marker);drawContext.canvas.nativeCanvas.drawText(km.toString(),marker.x+4.dp.toPx(),marker.y-(if(km%10==0)8 else -12).dp.toPx(),textPaint)}
         drawCircle(accent,5.dp.toPx(),p(DreamRoutes.at(route,start)))
-        val end=p(DreamRoutes.at(route,finish));val r=4.dp.toPx();drawCircle(ink,r,end-Offset(0f,r*3));drawLine(ink,end-Offset(0f,r*2),end+Offset(0f,r),r*.7f);drawLine(ink,end-Offset(r*2,r),end+Offset(r*2,-r),r*.6f);drawLine(ink,end+Offset(0f,r),end+Offset(-r*2,r*3),r*.6f);drawLine(ink,end+Offset(0f,r),end+Offset(r*2,r*2),r*.6f)
+        val end=p(DreamRoutes.at(route,finish));val r=5.dp.toPx()
+        drawCircle(ink,r*1.5f,end)
+        for(row in 0..1)for(col in 0..1)drawRect(if((row+col)%2==0)Color.White else Color.Black,end+Offset((col-1)*r,(row-1)*r),Size(r,r))
     }
     Text(DreamRoutes.landmarks(route).joinToString(" · "){it.label()},style=MaterialTheme.typography.labelMedium)
 }

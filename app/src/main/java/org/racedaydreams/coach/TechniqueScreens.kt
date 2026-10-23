@@ -22,7 +22,7 @@ import org.racedaydreams.domain.strength.TechniqueGuide
     if(art!=null) {
         IllustratedMovement(art)
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceAround) { art.phases.forEachIndexed { i,label -> Text("${i+1}. $label",style=MaterialTheme.typography.labelMedium,modifier=Modifier.weight(1f)) } }
-        GuidanceCard { Text("How to do it",style=MaterialTheme.typography.titleMedium);Text("1. ${guide.setup()}");Text("2. ${guide.movement()}");Text("3. Return under control and reset before the next repetition.") }
+        GuidanceCard { Text("How to do it",style=MaterialTheme.typography.titleMedium);Text("1. ${guide.setup()}");Text("2. ${guide.movement()}") }
     } else {
         listOf("Setup" to guide.setup(),"Movement" to guide.movement()).forEachIndexed { i,pair -> GuidanceCard { Text("${i+1}. ${pair.first}",style=MaterialTheme.typography.titleMedium);TechniqueDrawing(id,guide.pattern(),i,pair.second);Text(pair.second) } }
     }

@@ -16,9 +16,23 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_back_squat.webp",
+      "bytes": 53830,
+      "sha256": "28c5b3e136b6b38f40a2652471aaffdc5277bb633b4f0448df9e13472882934f",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_bench_press.webp",
       "bytes": 45130,
       "sha256": "19e032bbe6712e84f4247350f712b427e6876247389d03c00a983afcb0092265",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_bulgarian_split_squat.webp",
+      "bytes": 47998,
+      "sha256": "654cc88e313bb82ae7bee02832d059343ad1b6775f6091b11b127713b18a69fb",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
       "licence": "MIT project contribution"
     },
@@ -33,6 +47,20 @@
       "file": "app/src/main/res/drawable-nodpi/guide_calf_stretch.webp",
       "bytes": 23138,
       "sha256": "c9105a8c8ad15c474136b5d083922bb0b02f3e610942dcdfdb1c6c7f3b5665c2",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_deadlift.webp",
+      "bytes": 54278,
+      "sha256": "6cc67375b46bff87a2636dbbc6752f1e64a7c3e08fe68c40db3a9fabbd12fd57",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_dumbbell_bench_press.webp",
+      "bytes": 41490,
+      "sha256": "7875302b581ff1300530dee454940db643afd2f6779025d91929f42b71c8df1b",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
       "licence": "MIT project contribution"
     },
@@ -65,6 +93,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_overhead_press.webp",
+      "bytes": 40284,
+      "sha256": "cad9d6b1d382ca2961305febe517a377f852d1449c1ab3d119372d43d27ba882",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_plank.webp",
+      "bytes": 25956,
+      "sha256": "51db165c2d554d8230f29b281c344c6490f43001b17ea2420428f9299041f3ce",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_quad_stretch.webp",
       "bytes": 22368,
       "sha256": "355523c03fddd794844b489cd65dd64db0849da6d57f285fe7dd698f711a7b8c",
@@ -75,6 +117,13 @@
       "file": "app/src/main/res/drawable-nodpi/guide_romanian_deadlift.webp",
       "bytes": 45062,
       "sha256": "90b06e8654480b0e7559853973c5caccd733e5ab936c6e2a042207ff7fc27e11",
+      "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_seated_cable_row.webp",
+      "bytes": 65202,
+      "sha256": "8d9062306c18e7fb6157c5b69f3e22ea4793e0c6c125e6b2603b473f76e9b4e6",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
       "licence": "MIT project contribution"
     },

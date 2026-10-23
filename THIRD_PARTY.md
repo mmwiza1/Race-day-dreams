@@ -149,7 +149,10 @@ exercise photographs/assets or organiser graphics were copied. Owner references
 are development acceptance documents, separate from production assets. Coverage
 and review are tracked in docs/exercise-artwork/README.md; full174 is not yet met.
 
-The Berlin2014 geographic **research candidate** in docs/dream-route-data derives
+The Berlin2014 geographic dataset in docs/dream-route-data derives
 only coordinates from alexdjulin/running-events-map's participant GPX, under MIT
 (copyright2023 Alexandre Donciu-Julin). The original licence/source blob and
-transformations are retained there. It is not yet a bundled/live Dream Route.
+transformations are retained there. New Berlin assignments use its separately versioned
+`berlin-2014-geo-v1` projection; historical assignments keep their old geometry.
+The full source MIT notice is bundled in assets/licences/berlin-2014-MIT.txt
+and readable in Settings. No provider metadata or health samples are included.
