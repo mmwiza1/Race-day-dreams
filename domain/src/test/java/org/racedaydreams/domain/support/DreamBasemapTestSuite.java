@@ -35,8 +35,9 @@ public final class DreamBasemapTestSuite {
         rejects("RDD-MAP 1\ntest\nwater 0,0 0,1 1,0 1,1\n");
         rejects("RDD-MAP 1\ntest\nroad 1,2 3,4|\n");
         rejects("RDD-MAP 1\ntest\nunknown 1,2 3,4\n");
-        rejects("RDD-MAP 1\ntest\nroad "+"1,2 ".repeat(500001));
-        rejects("RDD-MAP 1\ntest\n"+"road 1,2 3,4\n".repeat(10001));
+        rejects("RDD-MAP 1\ntest\nroad "+"1,2 ".repeat(750001));
+        rejects("RDD-MAP 1\ntest\nroad "+"1,2 ".repeat(150001));
+        rejects("RDD-MAP 1\ntest\n"+"road 1,2 3,4\n".repeat(20001));
         // Both dependency-free shell and Gradle domain:check use the real bundled extracts.
         var assets = Path.of("app/src/main/assets/dream-basemaps");
         if (!Files.isDirectory(assets)) assets = Path.of("../app/src/main/assets/dream-basemaps");

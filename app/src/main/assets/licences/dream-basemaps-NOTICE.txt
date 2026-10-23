@@ -11,7 +11,7 @@ https://tiles.openfreemap.org/planet
 https://openfreemap.org/tos/
 The provider explicitly permits bounded offline use (up to3000tiles or50MB,
 at most4parallelrequests, identifyingUser-Agent). Development extraction used
-40tiles/7,639,166bytes/3parallelrequests. OSMF vector tile servers were NOT used
+67tiles/10,342,383bytes/3parallelrequests. OSMF vector tile servers were NOT used
 for this bundled dataset: their separate policy prohibits offline bulk downloads.
 
 Only selected street lines, green-space and water polygons are retained as DATA.

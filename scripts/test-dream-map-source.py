@@ -53,6 +53,19 @@ class SourceFormatTest(unittest.TestCase):
     def test_web_mercator_tile_reference(self):
         self.assertEqual(decoder['lonlat'](0,0,0,4096,(2048,2048)),[0,0])
 
+    def test_fitted_viewport_inverse_matches_each_frozen_course_frame(self):
+        import json
+        sources=('london-historical.json','berlin-2014-candidate.json','tokyo-2026.json',
+                 'paris-2024-olympic.json','new-york-2026.json')
+        for source in sources:
+            route=json.loads((root.parent/'docs/dream-route-data'/source).read_text())
+            project=projection['geographic_frame'](route)
+            for x,y in ((-.5,-.5),(5,5),(10.5,10.5)):
+                lat,lon=projection['inverse_course_frame'](route,x,y)
+                restored=project(lat,lon)
+                self.assertAlmostEqual(x,restored[0],places=5)
+                self.assertAlmostEqual(y,restored[1],places=5)
+
 
 if __name__ == '__main__':
     unittest.main()

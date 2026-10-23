@@ -239,7 +239,7 @@ code remains MIT. No third-party code, images, map styles, icons, fonts, SDK or
 runtime network client is incorporated. No runtime dependency/permission added.
 
 The provider explicitly permits bounded offline downloads at
-https://openfreemap.org/tos/ . Development used40tiles/7,639,166bytes/3parallel
+https://openfreemap.org/tos/ . Development used67tiles/10,342,383bytes/3parallel
 requests with an identifying User-Agent, below its3000tile/50MB/4request limits.
 The OSMF vector service's different no-offline policy was reviewed and respected;
 its research tile is excluded from all retained data. No proprietary tiles used.

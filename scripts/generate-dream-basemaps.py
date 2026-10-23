@@ -20,7 +20,7 @@ for path in sorted((root/'docs/dream-route-data').glob('basemap-*.json')):
     assert 0 < len(data['sourceTiles']) < 100
     assert all(t['url'].startswith('https://tiles.openfreemap.org/planet/20261018_080001_pt/')
                and len(t['sha256']) == 64 for t in data['sourceTiles'])
-    assert 0 < len(data['features']) <= 10000
+    assert 0 < len(data['features']) <= 20000
     lines = ['RDD-MAP 1', data['routeId']]
     for feature in data['features']:
         kind = feature['kind']
@@ -36,7 +36,7 @@ for path in sorted((root/'docs/dream-route-data').glob('basemap-*.json')):
             vertices += len(points)
         lines.append(kind+' '+'|'.join(paths))
     output = '\n'.join(lines)+'\n'
-    assert len(output.encode()) <= 2_000_000
+    assert len(output.encode()) <= 3_000_000
     target = root/'app/src/main/assets/dream-basemaps'/(data['routeId']+'.rddmap')
     if '--check' in sys.argv:
         assert target.read_text() == output, 'Basemap differs from retained ODbL data: '+str(target)

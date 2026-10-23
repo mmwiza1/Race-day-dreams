@@ -37,7 +37,7 @@ import org.racedaydreams.domain.support.DreamRoutes
         val vertices=route.vertices()+landmarks.map{DreamRoutes.Vertex(it.x(),it.y())}
         listOf(vertices.minOf{it.x()}-.75,vertices.maxOf{it.x()}+.75,vertices.minOf{it.y()}-.75,vertices.maxOf{it.y()}+.75)
     }
-    Canvas(Modifier.fillMaxWidth().height(280.dp).clip(RoundedCornerShape(20.dp)).background(if(map!=null)mapPaper else panel).semantics{
+    Canvas(Modifier.fillMaxWidth().aspectRatio(1.25f).clip(RoundedCornerShape(20.dp)).background(if(map!=null)mapPaper else panel).semantics{
         stateDescription=if(map!=null) "Offline city context ready" else "Course overview"
         contentDescription="Dream Route ${route.name()}. Full course in grey; highlighted equivalent ${decimal(start/1000)}–${decimal(finish/1000)} km. Ring marks section start; checkered marker marks section finish. Five kilometre markers. Numbered landmarks: ${landmarks.mapIndexed{i,l->"${i+1}, ${l.label()}"}.joinToString()}. Simplified offline geographic context; not navigation or your physical location."
     }){

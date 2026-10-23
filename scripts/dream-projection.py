@@ -42,6 +42,22 @@ def geographic_frame(route):
     return project
 
 
+def inverse_course_frame(route, x, y):
+    """Invert the course's affine drawing frame, then the NYC UTM projection."""
+    frame = course_frame(route)
+    ox, oy = frame(0, 0)
+    ax, ay = frame(1, 0)
+    bx, by = frame(0, 1)
+    ax, ay, bx, by = ax-ox, ay-oy, bx-ox, by-oy
+    determinant = ax*by-ay*bx
+    a = ((x-ox)*by-(y-oy)*bx)/determinant
+    b = (ax*(y-oy)-ay*(x-ox))/determinant
+    if 'frame' in route:
+        anchor = route['frame']['anchor']
+        return inverse18(a+anchor[0], b+anchor[1])
+    return a, b
+
+
 def utm18(lat, lon):
     lat, dl = math.radians(lat), math.radians(lon + 75)
     ep = E / (1 - E)

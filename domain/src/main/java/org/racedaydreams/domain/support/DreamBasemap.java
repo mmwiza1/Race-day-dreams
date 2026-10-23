@@ -26,7 +26,7 @@ public final class DreamBasemap {
         var chunk = new byte[8192];
         int read;
         while ((read = input.read(chunk)) != -1) {
-            if (buffer.size() + read > 2_000_000) throw new IOException("Basemap exceeds size limit");
+            if (buffer.size() + read > 3_000_000) throw new IOException("Basemap exceeds size limit");
             buffer.write(chunk, 0, read);
         }
         var bytes = buffer.toByteArray();
@@ -41,7 +41,7 @@ public final class DreamBasemap {
         while ((line = reader.readLine()) != null) {
             if (line.isEmpty()) throw new IOException("Empty basemap feature");
             int space = line.indexOf(' ');
-            if (space < 1 || features.size() >= 10000) throw new IOException("Invalid basemap feature");
+            if (space < 1 || features.size() >= 20000) throw new IOException("Invalid basemap feature");
             Kind kind;
             try { kind = Kind.valueOf(line.substring(0, space).toUpperCase(Locale.ROOT)); }
             catch (IllegalArgumentException e) { throw new IOException("Unknown basemap feature", e); }
@@ -49,7 +49,7 @@ public final class DreamBasemap {
             for (var encoded : line.substring(space + 1).split("\\|", -1)) {
                 var path = new ArrayList<DreamRoutes.Vertex>();
                 for (var pair : encoded.split(" ", -1)) {
-                    if (++points > 100000) throw new IOException("Too many basemap points");
+                    if (++points > 150000) throw new IOException("Too many basemap points");
                     var xy = pair.split(",", -1);
                     try {
                         if (xy.length != 2) throw new NumberFormatException();

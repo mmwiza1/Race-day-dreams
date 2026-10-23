@@ -24,8 +24,22 @@ for file in files:
  if route['id']=='berlin-2014-candidate':route['id']='berlin-2014-geo-v1'
  if 'frame' in route:
   anchor=route['frame']['anchor'];points=[p['inverse18'](a+anchor[0],b+anchor[1]) for a,b in points]
- south,north=min(a for a,b in points)-.012,max(a for a,b in points)+.012
- west,east=min(b for a,b in points)-.012,max(b for a,b in points)+.012
+ # Cover the entire fixed5:4 fitted viewport, not merely a narrow course bbox.
+ # This avoids visible extract edges/empty bands without inventing surrounding streets.
+ context=json.loads((root/'docs/dream-route-data/city-context.json').read_text())['cities'][route['id']]
+ frame=p['course_frame'](route)
+ framepoints=[frame(*xy) for xy in route['geometry']]
+ for landmark in context['landmarks']:
+  xy=(landmark['x'],landmark['y']) if 'x' in landmark else (landmark['latitude'],landmark['longitude'])
+  framepoints.append(frame(*xy))
+ minx,maxx=min(x for x,y in framepoints)-.75,max(x for x,y in framepoints)+.75
+ miny,maxy=min(y for x,y in framepoints)-.75,max(y for x,y in framepoints)+.75
+ cx,cy=(minx+maxx)/2,(miny+maxy)/2
+ width,height=maxx-minx,maxy-miny
+ width,height=max(width,height*1.25),max(height,width/1.25)
+ corners=[p['inverse_course_frame'](route,cx+sx*width*.52,cy+sy*height*.52) for sx in (-1,1) for sy in (-1,1)]
+ south,north=min(a for a,b in corners),max(a for a,b in corners)
+ west,east=min(b for a,b in corners),max(b for a,b in corners)
  def tile(lat,lon):return int((lon+180)/360*2**zoom),int((1-math.asinh(math.tan(math.radians(lat)))/math.pi)/2*2**zoom)
  xmin,ymin=tile(north,west);xmax,ymax=tile(south,east)
  tiles=[(x,y) for x in range(xmin,xmax+1) for y in range(ymin,ymax+1)]
@@ -84,7 +98,7 @@ for route,tiles,bounds in plans:
     key=json.dumps([category,retained],separators=(',',':'))
     if key in seen:continue
     seen.add(key);features.append({'kind':category,'paths':retained})
- out={'format':1,'routeId':route['id'],'checked':'2026-10-23','dataset':'OpenFreeMap planet20261018_080001_pt, OpenMapTiles schema, OpenStreetMap data','attribution':'OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL','licence':'ODbL-1.0','licenceUrl':'https://opendatacommons.org/licenses/odbl/1-0/','usagePolicy':'https://openfreemap.org/tos/','sourceBounds':bounds,'sourceTiles':tile_sources,'transformation':'Only selected water/green-space polygons and major/minor road lines retained. Original MVT data decoded using original format reader. RDP simplification retains source positions at0.00007degree tolerance; no invented streets, labels, styles, imagery or tile artwork. Polygons clipped by source tiles may include holes. Road fragments shorter than approximately120m omitted for overview legibility. Frame projection is performed separately. NYC WGS84-to-NAD83 approximation has metre-scale datum uncertainty; decorative overview only.','features':features}
+ out={'format':1,'routeId':route['id'],'checked':'2026-10-23','dataset':'OpenFreeMap planet20261018_080001_pt, OpenMapTiles schema, OpenStreetMap data','attribution':'OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL','licence':'ODbL-1.0','licenceUrl':'https://opendatacommons.org/licenses/odbl/1-0/','usagePolicy':'https://openfreemap.org/tos/','sourceBounds':bounds,'viewportAspect':1.25,'viewportMargin':1.04,'sourceTiles':tile_sources,'transformation':'Only selected water/green-space polygons and major/minor road lines retained. Original MVT data decoded using original format reader. RDP simplification retains source positions at0.00007degree tolerance; no invented streets, labels, styles, imagery or tile artwork. Polygons clipped by source tiles may include holes. Road fragments shorter than approximately120m omitted for overview legibility. Frame projection is performed separately. NYC WGS84-to-NAD83 approximation has metre-scale datum uncertainty; decorative overview only. Source bounds cover the fitted5:4 course-plus-landmark viewport with4%margin, not only a narrow course bounding box.','features':features}
  target=root/'docs/dream-route-data'/('basemap-'+route['id']+'.json')
  target.write_text(json.dumps(out,separators=(',',':'))+'\n')
  print(route['id'],len(features),'features',sum(len(q) for f in features for q in f['paths']),'positions',target.stat().st_size,'bytes',flush=True)

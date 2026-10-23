@@ -118,7 +118,7 @@ These data are separately ODbL, not relicensed MIT with the original app rendere
 No map images, styles, proprietary tiles, fonts, icons or source code are copied.
 
 OpenFreeMap explicitly allows bounded offline use under https://openfreemap.org/tos/.
-Development preparation used40tiles/7,639,166bytes/3parallelrequests and an app-specific
+Development preparation used67tiles/10,342,383bytes/3parallelrequests and an app-specific
 User-Agent. The OSMF vector endpoint has a different policy prohibiting offline bulk
 use; its research download is excluded. The Android app never requests either service.
 
@@ -142,3 +142,11 @@ also parse every packaged extract on API28/35/36. Three cached unit-space Canvas
 paths are prepared off-main, so redraw does not iterate/decode all source features.
 Landmark labels remain separate accessible text. Attribution is visible on every
 geographic card and full data/ODbL notices are available offline in Settings.
+
+The final context extent covers the fitted5:4 course-plus-landmark viewport with4%
+margin, rather than only a narrow course bounding box. This corrects abrupt extract
+edges seen during actual-build review.67source tiles/10,342,383bytes produce235,998
+retained positions across five compact extracts (4,012,113bytes before APK compression).
+The app parser remains bounded:3MB,20,000features and150,000positions per extract.
+The largest is NYC,108,706positions, within these limits; redraw still uses three
+cached paths. The Canvas aspect is stable across widths rather than a fixed height.
