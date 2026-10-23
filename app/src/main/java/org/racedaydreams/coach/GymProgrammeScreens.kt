@@ -51,6 +51,8 @@ private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort)
     fun preview(change:()->GymProgramme){try{proposed=change();error=null}catch(e:Exception){error=e.message}}
     CoachPage{
         CoachHeading(session.title());Text(friendlyDate(session.date()));Text("Plan version ${p.version()}")
+        val raceDate=state.profile?.raceGoal()?.raceDate()
+        if(raceDate!=null&&java.time.temporal.ChronoUnit.DAYS.between(session.date(),raceDate) in 0L..7L)SemanticCard(Tile.Insight){Text("Race-week strength",style=MaterialTheme.typography.titleMedium);Text("Consider keeping familiar movements and reducing demanding volume. Use Preview fewer sets below if it suits your taper. Nothing changes without your choice.")}
         session.exercises().forEach { exercise ->
             CoachCard {
                 Text(ExerciseCatalog.definition(exercise.exerciseId())?.exercise()?.name() ?: exercise.exerciseId(), style=MaterialTheme.typography.titleLarge)

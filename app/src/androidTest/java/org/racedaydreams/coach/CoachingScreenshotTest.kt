@@ -67,6 +67,10 @@ class CoachingScreenshotTest {
         evidence.saveHistorical(HistoricalStrengthRecord("demo-approx",exercise,72.5,5,today.minusDays(60),HistoricalStrengthRecord.DatePrecision.APPROXIMATE,"Approximate date; test-only"))
         coach.saveStrength(StrengthSession("demo-strength",plan.workouts().filter{it.date()<today}.maxBy{it.date()}.date().atTime(18,0).toInstant(ZoneOffset.UTC),ZoneOffset.UTC,Duration.ofMinutes(50),7.0,"Test-only fixture",
             listOf(StrengthSession.ExerciseSets(exercise,listOf(StrengthSession.SetEntry("demo-set1",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set2",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set3",5,80.0,7.0,false))))))
+        // A deterministic native trace uses the real store and analysis, never production demo data.
+        val trace=org.racedaydreams.domain.recording.RunMetricsEngine(0,now.minusSeconds(4000))
+        for(i in 0..1800){val angle=i*2*Math.PI/1800;trace.accept(org.racedaydreams.domain.recording.RunMetricsEngine.Fix(now.minusSeconds(4000).plusSeconds(i.toLong()),i*1000L,51.5+.01*kotlin.math.sin(angle),-.1+.017*kotlin.math.cos(angle),3.0,30+3*kotlin.math.sin(angle),3.0,3.0))}
+        val recordings=RecordingStore(context);recordings.start("demo-native-route",now.minusSeconds(4000),0);recordings.flush("demo-native-route",trace.points(),trace.events(),0,0,1800000,"ACTIVE");recordings.finish(recordings.unfinished()!!,1800000,recovered=false)
         // Fix only the test assignment; production still randomly assigns and persists once.
         store.activitySummaries().forEachIndexed{i,a->a.distanceMetres()?.takeIf{it>0}?.let{metres->val route=org.racedaydreams.domain.support.DreamRoutes.routes()[i%5];SupportStore(context).save("dream",a.id(),org.json.JSONObject().put("version",1).put("route",route.id()).put("start",kotlin.math.min(10000.0,kotlin.math.max(0.0,42195-metres))).put("distance",metres))}}
     }
@@ -86,10 +90,10 @@ class CoachingScreenshotTest {
         click("List");await("Activity calendar")
         // Open the first real retained activity through the Calendar screen.
         compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
-        await("Run detail");capture("activity-detail")
+        await("Run detail");capture("activity-detail");alignHeading("Your recorded route");capture("post-run-route")
         val dreamHeading=compose.onNode(hasText("Dream Route ·",substring=true)).fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].first().text;alignHeading(dreamHeading);capture("dream-route")
         compose.onNodeWithText("Compare this run").performScrollTo().performClick();alignHeading("Compare this run");capture("run-comparison")
-        alignHeading("Run Score and feedback");capture("run-feedback")
+        alignHeading("Run Analysis");capture("run-feedback")
         back();click("Progress");await("Running PBs");capture("progress")
         click("Body weight");await("Record a measurement");capture("body-weight");back()
         click("Running PBs");await("How PBs are calculated");capture("running-pbs");back()

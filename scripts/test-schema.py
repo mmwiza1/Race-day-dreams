@@ -627,5 +627,29 @@ class SupportMigrationSchemaTest(unittest.TestCase):
         self.assertEqual(7,db.execute("PRAGMA user_version").fetchone()[0])
         self.assertEqual('yes',db.execute("SELECT setting_value FROM settings WHERE setting_key='keep'").fetchone()[0]);db.close()
 
+class Release08MigrationTest(unittest.TestCase):
+    def test_every_supported_schema_retains_user_rows_and_adds_release08(self):
+        for old in range(1,9):
+            db=sqlite3.connect(":memory:")
+            create_schema(db,old)
+            db.execute("INSERT INTO onboarding_draft VALUES (1, '{}')")
+            db.commit()
+            migrate_to_latest(db)
+            self.assertEqual(9,db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual('{}',db.execute("SELECT payload FROM onboarding_draft").fetchone()[0])
+            db.execute("INSERT INTO release08 VALUES ('custom','saved','{}')")
+            with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO release08 VALUES ('unknown','bad','{}')")
+            db.close()
+    def test_v9_failure_preserves_v8_support_and_schema(self):
+        db=sqlite3.connect(":memory:")
+        create_schema(db,8)
+        db.execute("INSERT INTO coach_support VALUES ('routine','retained','{}')")
+        db.execute("CREATE TABLE release08 (collision TEXT)")
+        db.commit()
+        with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db)
+        self.assertEqual(8,db.execute("PRAGMA user_version").fetchone()[0])
+        self.assertEqual('retained',db.execute("SELECT id FROM coach_support").fetchone()[0])
+        db.close()
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

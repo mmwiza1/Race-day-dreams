@@ -50,6 +50,7 @@ public final class WorkoutExecutionEngine {
         previous=in;return state();
     }
     private void advance(String type,double m,long t){events.add(new Event(type,index,m,t));index++;startMetres=m;startMillis=t;events.add(new Event(index==steps.size()?"WORKOUT_COMPLETED":"STEP_STARTED",index,m,t));}
+    public void completeOpen(){if(previous!=null&&index<steps.size()&&!early&&steps.get(index).metres()==null&&steps.get(index).millis()==null)advance("STEP_COMPLETED",previous.metres(),previous.activeMillis());}
     public void skip(){if(previous!=null&&index<steps.size()&&!early)advance("STEP_SKIPPED",previous.metres(),previous.activeMillis());}
     public void finishEarly(){if(index<steps.size()&&!early){early=true;events.add(new Event("WORKOUT_FINISHED_EARLY",index,previous==null?0:previous.metres(),previous==null?0:previous.activeMillis()));}}
     public State state(){boolean complete=index==steps.size();Step s=complete?null:steps.get(index);double m=previous==null?0:previous.metres();long t=previous==null?0:previous.activeMillis();return new State(index,steps.size(),s,index+1<steps.size()?steps.get(index+1):null,s==null||s.metres()==null?null:Math.max(0,s.metres()-(m-startMetres)),s==null||s.metres()!=null||s.millis()==null?null:Math.max(0,s.millis()-(t-startMillis)),complete,early,previous!=null&&previous.paused());}

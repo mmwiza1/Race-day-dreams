@@ -19,7 +19,7 @@ import org.json.*
 
 @Composable fun RunNowScreen(start:(String?)->Unit){
     val context=LocalContext.current;val scope=rememberCoroutineScope()
-    var saved by remember{mutableStateOf<List<CustomWorkout>>(emptyList())};var title by rememberSaveable{mutableStateOf("My workout")}
+    var previous by remember{mutableStateOf<List<CustomWorkout>>(emptyList())};var saved by remember{mutableStateOf<List<CustomWorkout>>(emptyList())};var title by rememberSaveable{mutableStateOf("My workout")}
     var encoded by rememberSaveable{mutableStateOf("[]")};var message by remember{mutableStateOf<String?>(null)}
     var editGroup by rememberSaveable{mutableIntStateOf(-1)};var editStep by rememberSaveable{mutableIntStateOf(0)};var showEditor by rememberSaveable{mutableStateOf(false)}
     var kind by rememberSaveable{mutableStateOf("RUN")};var target by rememberSaveable{mutableStateOf("Distance")};var amount by rememberSaveable{mutableStateOf("800")};var intensity by rememberSaveable{mutableStateOf("None")};var fast by rememberSaveable{mutableStateOf("4:40")};var slow by rememberSaveable{mutableStateOf("4:50")};var rpe by rememberSaveable{mutableStateOf("7")};var repeat by rememberSaveable{mutableStateOf("6")};var quick by rememberSaveable{mutableStateOf("5")};var duration by rememberSaveable{mutableStateOf("30")}
@@ -27,7 +27,7 @@ import org.json.*
     fun setGroups(g:List<CustomWorkout.Group>){val a=JSONArray();g.forEach{group->a.put(JSONObject().put("repeats",group.repeats()).put("steps",JSONArray().also{b->group.steps().forEach{b.put(SupportStore.step(it))}}))};encoded=a.toString()}
     fun build()=CustomWorkout(java.util.UUID.randomUUID().toString(),title.trim(),groups)
     fun begin(w:CustomWorkout,mode:String){start(Release08Store.snapshot(w,mode).toString())}
-    LaunchedEffect(Unit){saved=withContext(Dispatchers.IO){Release08Store(context).workouts()}}
+    LaunchedEffect(Unit){saved=withContext(Dispatchers.IO){Release08Store(context).workouts()};previous=withContext(Dispatchers.IO){Release08Store(context).previous()}}
     CoachPage{
         CoachHeading("Run now")
         SemanticCard(Tile.Planned){Text("No programme required",style=MaterialTheme.typography.titleLarge);Text("Record a spontaneous run. It stays separate from planned training unless you choose to link it afterwards.");CoachButton("Free run"){start(null)}}
@@ -43,6 +43,7 @@ import org.json.*
         OutlinedButton(onClick={editGroup=-1;kind="RUN";target="Distance";amount="800";intensity="None";showEditor=true}){Text("Add step")}
         CoachInput("Repeat count",repeat,{repeat=it});TextButton(enabled=groups.size>=2,onClick={runCatching{val count=repeat.toInt();val last=groups.takeLast(2);require(last.all{it.repeats()==1});setGroups(groups.dropLast(2)+CustomWorkout.Group(count,last.flatMap{it.steps()}))}.onFailure{message="Choose 1–100 repeats; last two groups must be single steps."}}){Text("Group last two steps as repeats")}
         if(groups.isNotEmpty()){val totals=runCatching{build().totals()}.getOrNull();totals?.let{Text("Preview: ${groups.sumOf{it.repeats()*it.steps().size}} steps · ${decimal(it.knownMetres()/1000)} known km · ${it.knownMillis()/60000} known min. Mixed/open targets do not imply an exact total duration.")};CoachButton("Start custom workout"){runCatching{begin(build(),"custom")}.onFailure{message=it.message}};OutlinedButton(onClick={runCatching{build()}.onSuccess{w->scope.launch{withContext(Dispatchers.IO){Release08Store(context).save(w)};saved=saved+w;message="Saved to favourite workouts."}}.onFailure{message=it.message}}){Text("Save favourite workout")}}
+        if(previous.isNotEmpty()){CoachHeading("Repeat previous structured run");previous.take(10).forEach{w->TextButton(onClick={begin(w,"repeat")}){Text("Repeat ${w.title()} · ${w.flattened().size} steps")}}}
         CoachHeading("Favourite workouts & repeat")
         if(saved.isEmpty())Text("Save a custom workout to repeat its exact structure later.")
         saved.forEach{w->SemanticCard(Tile.Progress){Text(w.title(),style=MaterialTheme.typography.titleMedium);Text("${w.flattened().size} steps");TextButton(onClick={begin(w,"repeat")}){Text("Repeat workout")};TextButton(onClick={title=w.title();setGroups(w.groups())}){Text("Use in editor")};TextButton(onClick={scope.launch{withContext(Dispatchers.IO){Release08Store(context).removeWorkout(w.id())};saved=saved.filter{it.id()!=w.id()}}}){Text("Remove favourite")}}}

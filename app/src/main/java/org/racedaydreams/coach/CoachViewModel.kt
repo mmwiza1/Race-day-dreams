@@ -56,6 +56,7 @@ import org.racedaydreams.reminders.EveningReminders
 data class CoachUiState(
     val loading: Boolean = true,
     val startingPath: String? = null,
+    val shoeDiscomfort:Set<String> = emptySet(),
     val busy: Boolean = false,
     val profile: UserProfile? = null,
     val activities: List<ActivityRecord> = emptyList(),
@@ -162,7 +163,8 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
             if (review != null && !development.reviewKnown(review.id())) development.saveReview(review)
             reminders.reconcile()
             CoachUiState(
-                loading = false, startingPath = store.getSetting("starting.path"), profile = profile, activities = activities, results = results,
+                loading = false, startingPath = store.getSetting("starting.path"),
+                shoeDiscomfort = org.racedaydreams.data.Release08Store(app).get("config","shoe-feedback")?.getJSONArray("activities")?.let{a->(0 until a.length()).map{a.getString(it)}.toSet()}?:emptySet(), profile = profile, activities = activities, results = results,
                 shoes = store.shoes(), assessments = store.assessments(), baseline = baseline, manualBaseline = manual,
                 currentPlan = currentPlan, planVersions = history,
                 weights = development.weights(), historicalStrength = development.historical(),
@@ -313,6 +315,11 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
 
     // The populated Plan screen confirms the save. A snackbar here can cover its
     // bottom rebuild action immediately after generation, especially with large text.
+    fun shoeDiscomfort(activityId:String,noted:Boolean) = mutate("Shoe observation saved. No cause is inferred.") {
+        require(store.activitySummaries().any{it.id()==activityId&&it.shoeId()!=null}){"Assign a shoe before adding an observation."}
+        val ids=mutableState.value.shoeDiscomfort.toMutableSet();if(noted)ids.add(activityId)else ids.remove(activityId)
+        org.racedaydreams.data.Release08Store(app).save("config","shoe-feedback",org.json.JSONObject().put("version",1).put("type","shoe_feedback").put("activities",org.json.JSONArray(ids.sorted())))
+    }
     fun startingPath(path:String) = mutate { require(path in listOf("record","race","hybrid"));store.putSetting("starting.path",path) }
     fun generatePlan() = mutate {
         val profile = profiles.load().orElse(null) ?: throw IllegalArgumentException("Save your goal and availability first.")

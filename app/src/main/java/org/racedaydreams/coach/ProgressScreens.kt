@@ -282,7 +282,7 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
                 summary.firstRecordedRun()?.let { Text("First recorded run: ${friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate())} (device time zone)") }
                 if (summary.firstRecordedRun() == null) Text("No first recorded run yet.")
                 Text(summary.wearGuidance())
-                org.racedaydreams.domain.polish.TrainingInsights.shoes(shoe,state.activities,java.time.Instant.now(),emptySet()).forEach{Text(it)}
+                org.racedaydreams.domain.polish.TrainingInsights.shoes(shoe,state.activities,java.time.Instant.now(),state.shoeDiscomfort).forEach{Text(it)}
                 shoe.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
                 OutlinedButton(onClick = { editingId = shoe.id(); showEditor = true }, enabled = !state.busy,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Edit shoes") }

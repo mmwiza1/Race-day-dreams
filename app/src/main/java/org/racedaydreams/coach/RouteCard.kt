@@ -24,6 +24,7 @@ import org.racedaydreams.domain.activity.ActivityRecord
     val primary=MaterialTheme.colorScheme.primary;val fastColour=MaterialTheme.colorScheme.tertiary;val slowColour=MaterialTheme.colorScheme.error;val neutral=MaterialTheme.colorScheme.outline
     val fastest=km.minByOrNull{it.secondsPerKm()}?.kilometre();val slowest=km.maxByOrNull{it.secondsPerKm()}?.kilometre()
     val pauses by produceState<List<RecordingStore.Pause>>(emptyList(),activity.id()){value=withContext(Dispatchers.IO){RecordingStore(context).pauses(activity.source().recordId())}}
+    val pauseIndices=remember(points,pauses){pauses.map{pause->var lo=0;var hi=points.size;while(lo<hi){val mid=(lo+hi)/2;if(points[mid].fix().monotonicMillis()<=pause.start)lo=mid+1 else hi=mid};(lo-1).coerceAtLeast(0)}}
     val story by produceState<List<String>>(emptyList(),points){value=withContext(Dispatchers.Default){RoutePresentation.story(points)}}
     SemanticCard(Tile.Planned){
         Text("Your recorded route",style=MaterialTheme.typography.titleLarge)
@@ -38,7 +39,7 @@ import org.racedaydreams.domain.activity.ActivityRecord
             drawCircle(primary,7.dp.toPx(),pos(xy.first()));drawCircle(slowColour,7.dp.toPx(),pos(xy.last()));drawCircle(tileColourForCanvas(),3.dp.toPx(),pos(xy.last()))
             var boundary=1000.0
             for(i in 1 until points.size){val a=points[i-1];val b=points[i];if(b.cumulativeMetres()>=boundary){if(!b.discontinuity()&&b.segment()==a.segment()&&b.cumulativeMetres()>a.cumulativeMetres()){val f=(boundary-a.cumulativeMetres())/(b.cumulativeMetres()-a.cumulativeMetres());val x=xy[i-1];val y=xy[i];drawCircle(neutral,4.dp.toPx(),pos(RoutePresentation.XY(x.x()+(y.x()-x.x())*f,x.y()+(y.y()-x.y())*f)))};boundary+=1000}}
-            pauses.forEach{pause->val index=points.indexOfLast{it.fix().monotonicMillis()<=pause.start}.coerceAtLeast(0);val p=pos(xy[index]);drawLine(neutral,p-Offset(4.dp.toPx(),5.dp.toPx()),p-Offset(4.dp.toPx(),-5.dp.toPx()),3.dp.toPx());drawLine(neutral,p+Offset(4.dp.toPx(),-5.dp.toPx()),p+Offset(4.dp.toPx(),5.dp.toPx()),3.dp.toPx())}
+            pauseIndices.forEach{index->val p=pos(xy[index]);drawLine(neutral,p-Offset(4.dp.toPx(),5.dp.toPx()),p-Offset(4.dp.toPx(),-5.dp.toPx()),3.dp.toPx());drawLine(neutral,p+Offset(4.dp.toPx(),-5.dp.toPx()),p+Offset(4.dp.toPx(),5.dp.toPx()),3.dp.toPx())}
             if(xy.size>3){val a=pos(xy[xy.size/2-1]);val b=pos(xy[xy.size/2]);val angle=kotlin.math.atan2(b.y-a.y,b.x-a.x);val d=10.dp.toPx();val tip=b;drawLine(primary,tip,tip-Offset(kotlin.math.cos(angle-.6f)*d,kotlin.math.sin(angle-.6f)*d),2.dp.toPx());drawLine(primary,tip,tip-Offset(kotlin.math.cos(angle+.6f)*d,kotlin.math.sin(angle+.6f)*d),2.dp.toPx())}
         }
         Text("● Start · ◉ Finish · dots: kilometres · Ⅱ explicit pause · arrow: direction")

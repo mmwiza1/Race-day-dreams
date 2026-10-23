@@ -169,7 +169,7 @@ private fun CoachApp(model: CoachViewModel) {
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
                 composable("welcome") { StartingPath(model){nav.navigate(it){popUpTo(nav.graph.id){inclusive=true}}} }
                 composable("run-now") { RunNowScreen { snapshot -> runSnapshot=snapshot;nav.navigate("spontaneous-run") } }
-                composable("spontaneous-run") { RecordingScreen(model,customSnapshot=runSnapshot,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
+                composable("spontaneous-run") { RecordingScreen(model,customSnapshot=runSnapshot,startWhenPermitted=true,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("record-run") { RecordingScreen(model,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("execute/{version}/{workout}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("race") { RaceScreen(state,model,{v,w,h->nav.navigate("race-run/${Uri.encode(v)}/${Uri.encode(w)}/$h")},{nav.navigate("progress/pbs")},{r->nav.navigate("routine/$r")}) }
@@ -259,7 +259,9 @@ private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> 
     SemanticCard(Tile.Planned){
         Text(if(today==null)"Your day, your choice"else workoutName(today.category()),style=MaterialTheme.typography.headlineMedium)
         if(today!=null){Text(today.distanceKm()?.let{"${decimal(it)} km"}?:today.duration()?.let{"${it.toMinutes()} min"}?:"Run by effort");Text(if(completed)"Completed training is retained. No catch-up mileage."else "Your planned session")
-            CoachButton(if(completed)"View completed workout"else"View workout / Start with Live Coach"){workout(today.id())}
+            today.segments().firstOrNull{it.kind()==org.racedaydreams.domain.WorkoutSegment.Kind.RUN}?.let{segment->segment.rpe()?.let{Text("Target effort ~${decimal(it)}/10")};if(segment.minimumSecondsPerKm()!=null&&segment.maximumSecondsPerKm()!=null)Text("${formatPaceSeconds(segment.minimumSecondsPerKm())}–${formatPaceSeconds(segment.maximumSecondsPerKm())}/km")}
+            if(!completed)CoachButton("Start with Live Coach"){quick("execute/${Uri.encode(state.currentPlan!!.id())}/${Uri.encode(today.id())}")}
+            TextButton(onClick={workout(today.id())}){Text(if(completed)"View completed workout"else"View workout details")}
         }else{Text("No running session is planned today. Rest or record independently.");state.gymProgramme?.sessions()?.firstOrNull{it.date()==java.time.LocalDate.now()}?.let{gym->Text(gym.title());CoachButton("View strength session"){quick("gym/session/${Uri.encode(gym.id())}")}}}
     }
     SemanticCard(Tile.Planned){Text("Run now",style=MaterialTheme.typography.titleLarge);Text("Not on the plan? Record a spontaneous run anytime.");CoachButton("Run now",record)}
@@ -268,6 +270,7 @@ private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> 
     val hard=org.racedaydreams.domain.strength.StrengthAnalytics.hardLowerBodyDates(state.strengthSessions).contains(java.time.LocalDate.now().minusDays(1))
     if(hard||state.proposals.isNotEmpty())SemanticCard(Tile.Insight){Text("Anything I should know?",style=MaterialTheme.typography.titleMedium);Text(if(hard)"Hard lower-body strength was recorded yesterday. Today's demanding running may feel harder; consider effort and your own response."else"A coaching recommendation is ready. Your programme has not been changed.");TextButton(onClick=weekly){Text("Review choices")}}
     state.profile?.raceGoal()?.takeIf{it.raceDate()!=null}?.let{goal->SemanticCard(Tile.Race){Text(goal.raceName().ifBlank{goal.distance().label()},style=MaterialTheme.typography.titleLarge);Text("${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),goal.raceDate())} days · ${friendlyDate(goal.raceDate())}");TextButton(onClick=race){Text("Race preparation")}}}
+    if(state.profile?.preferences()?.strategy()==org.racedaydreams.domain.TrainingStrategy.PERFORMANCE&&!state.performanceEligible)SemanticCard(Tile.Warning){Text("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")}
     CoachHeading("Quick actions")
     CoachButton("Log strength"){quick("strength/log")}
     OutlinedButton(onClick={quick("progress/weight")},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Add weight")}

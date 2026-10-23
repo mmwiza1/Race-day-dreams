@@ -5,7 +5,9 @@ import java.util.*;
  * maps or navigation. Coordinates are drawing units, scaled to a marathon equivalent. */
 public final class DreamRoutes {
     public record Vertex(double x,double y) {}
-    public record Route(String id,String name,List<Vertex> vertices) {}
+    public record Route(String id,String name,List<Vertex> vertices) {
+        public Route {if(id==null||id.isBlank()||name==null||name.isBlank()||vertices==null||vertices.size()<2||vertices.size()>10000)throw new IllegalArgumentException("Invalid Dream geometry");vertices=Collections.unmodifiableList(new ArrayList<>(vertices));boolean length=false;for(int i=0;i<vertices.size();i++){var v=vertices.get(i);if(!Double.isFinite(v.x())||!Double.isFinite(v.y())||v.x()<0||v.x()>10||v.y()<0||v.y()>10)throw new IllegalArgumentException("Invalid drawing bounds");if(i>0&&distance(vertices.get(i-1),v)>0)length=true;}if(!length)throw new IllegalArgumentException("Empty route geometry");}
+    }
     public record Assignment(String routeId,double startMetres,double coveredMetres) {
         public Assignment {if(allRoutes().stream().noneMatch(r->r.id().equals(routeId))||!Double.isFinite(startMetres)||!Double.isFinite(coveredMetres)||coveredMetres<=0||startMetres<0||startMetres+Math.min(42195,coveredMetres)>42195.001)throw new IllegalArgumentException("Invalid Dream Route segment");}
     }
@@ -30,6 +32,6 @@ public final class DreamRoutes {
     public static Assignment assign(double metres,Random random){return assign(metres,random,new HashSet<>(Arrays.asList("london-v2","berlin-v2","paris-v2","tokyo-v2","new-york-v2")));}
     public static Assignment assign(double metres,Random random,Set<String> eligible){if(!Double.isFinite(metres)||metres<=0)throw new IllegalArgumentException("No recorded distance");var routes=new ArrayList<Route>();for(var r:routes())if(eligible.contains(r.id()))routes.add(r);if(routes.isEmpty())throw new IllegalArgumentException("No eligible city");var route=routes.get(random.nextInt(routes.size()));return new Assignment(route.id(),random.nextDouble()*Math.max(0,42195-metres),metres);}
     /** Interpolated drawing position at a marathon-equivalent offset. No GPS is implied. */
-    public static Vertex at(Route r,double metres){double length=0;for(int i=1;i<r.vertices().size();i++)length+=distance(r.vertices().get(i-1),r.vertices().get(i));double left=Math.max(0,Math.min(1,metres/42195))*length;for(int i=1;i<r.vertices().size();i++){var a=r.vertices().get(i-1);var b=r.vertices().get(i);double d=distance(a,b);if(left<=d)return new Vertex(a.x()+(b.x()-a.x())*left/d,a.y()+(b.y()-a.y())*left/d);left-=d;}return r.vertices().get(r.vertices().size()-1);}
+    public static Vertex at(Route r,double metres){if(!Double.isFinite(metres))throw new IllegalArgumentException("Invalid route progress");double length=0;for(int i=1;i<r.vertices().size();i++)length+=distance(r.vertices().get(i-1),r.vertices().get(i));double left=Math.max(0,Math.min(1,metres/42195))*length;for(int i=1;i<r.vertices().size();i++){var a=r.vertices().get(i-1);var b=r.vertices().get(i);double d=distance(a,b);if(left<=d)return new Vertex(a.x()+(b.x()-a.x())*left/d,a.y()+(b.y()-a.y())*left/d);left-=d;}return r.vertices().get(r.vertices().size()-1);}
     private static double distance(Vertex a,Vertex b){return Math.hypot(a.x()-b.x(),a.y()-b.y());}
 }
