@@ -62,6 +62,8 @@ private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort)
                 if(session.date()>=LocalDate.now() && session.date() !in completed) {
                     TextButton(onClick={swapFor=exercise.exerciseId();swapQuery=""}) { Text("Swap exercise") }
                 }
+                val initial=org.racedaydreams.domain.polish.StartingLoad.suggest(exercise,state.strengthSessions,Instant.now())
+                initial?.let{Text("Optional starting reference: ${decimal(state.massUnit.fromKilograms(it.lowKg()))}–${decimal(state.massUnit.fromKilograms(it.highKg()))} ${state.massUnit.name.lowercase()}");WhyDetails(it.reason(),"Why this load reference?")}
                 val advice=StrengthProgressionAdvisor.review(exercise,state.strengthSessions,Instant.now())
                 Text(advice.reason())
                 advice.suggestedKilograms()?.let { kg ->

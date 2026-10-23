@@ -16,10 +16,12 @@ class SupportStore(context:Context) {
     private val db=ProfileDatabase.get(context).writableDatabase
     fun get(kind:String,id:String):JSONObject?=db.rawQuery("SELECT payload FROM coach_support WHERE kind=? AND id=?",arrayOf(kind,id)).use{if(it.moveToFirst())JSONObject(it.getString(0))else null}
     fun save(kind:String,id:String,payload:JSONObject){put(db,kind,id,payload)}
-    fun dream(activity:String,metres:Double):DreamRoutes.Assignment {
+    fun dream(activity:String,metres:Double):DreamRoutes.Assignment? {
         db.beginTransaction();try {
             val retained=get("dream",activity)
-            val result=if(retained!=null)DreamRoutes.Assignment(retained.getString("route"),retained.getDouble("start"),retained.getDouble("distance"))else DreamRoutes.assign(metres,java.security.SecureRandom())
+            val prefs=Release08Store(contextRef).dreamPreferences()
+            if(retained==null&&(!prefs.first||prefs.second.isEmpty())){db.setTransactionSuccessful();return null}
+            val result=if(retained!=null)DreamRoutes.Assignment(retained.getString("route"),retained.getDouble("start"),retained.getDouble("distance"))else DreamRoutes.assign(metres,java.security.SecureRandom(),prefs.second)
             if(retained==null)save("dream",activity,JSONObject().put("version",1).put("route",result.routeId()).put("start",result.startMetres()).put("distance",result.coveredMetres()).put("assignedAt",Instant.now().toString()))
             db.setTransactionSuccessful();return result
         }finally{db.endTransaction()}
@@ -41,6 +43,7 @@ class SupportStore(context:Context) {
     }
     fun linkFinished(sessionId:String,activityId:String,recovered:Boolean){
         val j=get("execution",sessionId)?:return
+        if(j.getString("mode") !in listOf("workout","race")){j.put("activityId",activityId).put("interrupted",recovered);save("execution",sessionId,j);return}
         val events=j.optJSONArray("events")?:JSONArray();val targets=steps(j)
         val completed=mutableSetOf<Int>();val skipped=mutableSetOf<Int>()
         for(i in 0 until events.length()){val e=events.getJSONObject(i);if(e.getString("type")=="STEP_COMPLETED")completed.add(e.getInt("step"));if(e.getString("type")=="STEP_SKIPPED")skipped.add(e.getInt("step"))}
@@ -65,7 +68,7 @@ class SupportStore(context:Context) {
         @JvmStatic fun validatePayload(kind:String,j:JSONObject){require(j.get("version") is Int&&j.getInt("version")==1){"Unsupported support record version"};when(kind){
             "dream"->DreamRoutes.Assignment(j.getString("route"),j.getDouble("start"),j.getDouble("distance"))
             "routine"->{RunningRoutines.get(j.getString("routine"));Instant.parse(j.getString("at"))}
-            "execution"->{val stepCount=steps(j).size;require(j.getString("mode") in listOf("workout","race"));require(j.getString("planVersion").length in 1..256&&j.getString("workoutId").length in 1..256);if(j.has("workout"))FeatureJson.planned(j.getJSONObject("workout"));if(j.has("events")){val e=j.getJSONArray("events");require(e.length()<=2000);var lastActive=0L;var lastMetres=0.0;for(i in 0 until e.length()){val x=e.getJSONObject(i);require(x.getInt("step") in 0..stepCount&&x.getLong("active")>=lastActive&&x.getDouble("metres").isFinite()&&x.getDouble("metres")>=lastMetres&&x.getString("type") in listOf("WORKOUT_STARTED","STEP_STARTED","STEP_COMPLETED","STEP_SKIPPED","WORKOUT_FINISHED_EARLY","WORKOUT_COMPLETED"));lastActive=x.getLong("active");lastMetres=x.getDouble("metres")}}}
+            "execution"->{val stepCount=steps(j).size;require(j.getString("mode") in listOf("workout","race","quick","custom","repeat"));if(j.getString("mode") in listOf("workout","race"))require(j.getString("planVersion").length in 1..256&&j.getString("workoutId").length in 1..256);if(j.has("workout"))FeatureJson.planned(j.getJSONObject("workout"));if(j.has("events")){val e=j.getJSONArray("events");require(e.length()<=2000);var lastActive=0L;var lastMetres=0.0;for(i in 0 until e.length()){val x=e.getJSONObject(i);require(x.getInt("step") in 0..stepCount&&x.getLong("active")>=lastActive&&x.getDouble("metres").isFinite()&&x.getDouble("metres")>=lastMetres&&x.getString("type") in listOf("WORKOUT_STARTED","STEP_STARTED","STEP_COMPLETED","STEP_SKIPPED","WORKOUT_FINISHED_EARLY","WORKOUT_COMPLETED"));lastActive=x.getLong("active");lastMetres=x.getDouble("metres")}}}
             else->error("Unsupported support record kind")
         }}
         @JvmStatic fun put(db:SQLiteDatabase,kind:String,id:String,j:JSONObject){require(id.length in 1..256);validatePayload(kind,j);val v=ContentValues().apply{put("kind",kind);put("id",id);put("payload",j.toString())};if(db.update("coach_support",v,"kind=? AND id=?",arrayOf(kind,id))==0)db.insertOrThrow("coach_support",null,v)}

@@ -13,9 +13,9 @@ import kotlinx.coroutines.*
 import org.racedaydreams.recording.RunRecordingService
 import org.racedaydreams.data.RecordingStore
 
-@Composable fun RecordingScreen(model:CoachViewModel,versionId:String?=null,workoutId:String?=null,hilly:Boolean=false,onSaved:(String)->Unit={}) {
+@Composable fun RecordingScreen(model:CoachViewModel,versionId:String?=null,workoutId:String?=null,hilly:Boolean=false,customSnapshot:String?=null,onSaved:(String)->Unit={}) {
     val context=LocalContext.current;val scope=rememberCoroutineScope();val status by RunRecordingService.status.collectAsState();val notice by RunRecordingService.message.collectAsState();var unfinished by remember{mutableStateOf<RecordingStore.Session?>(null)};var discard by remember{mutableStateOf(false)};var recovery by remember{mutableStateOf<String?>(null)}
-    fun send(action:String){try{val i=Intent(context,RunRecordingService::class.java).setAction(action).putExtra("planVersion",versionId).putExtra("workoutId",workoutId).putExtra("hilly",hilly);if(action==RunRecordingService.START)context.startForegroundService(i)else context.startService(i)}catch(_:Exception){recovery="The recording command was not accepted. Review location permissions and keep the app visible when starting. Retained recordings are unchanged."}}
+    fun send(action:String){try{val i=Intent(context,RunRecordingService::class.java).setAction(action).putExtra("planVersion",versionId).putExtra("workoutId",workoutId).putExtra("hilly",hilly).putExtra("customSnapshot",customSnapshot);if(action==RunRecordingService.START)context.startForegroundService(i)else context.startService(i)}catch(_:Exception){recovery="The recording command was not accepted. Review location permissions and keep the app visible when starting. Retained recordings are unchanged."}}
     val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){r->if(r[Manifest.permission.ACCESS_FINE_LOCATION]==true)send(RunRecordingService.START)else recovery="Precise location is needed to record genuine distance. Other features remain available."}
     LaunchedEffect(status==null){if(status==null)model.refresh();unfinished=withContext(Dispatchers.IO){RecordingStore(context).unfinished()}}
     val saved by RunRecordingService.savedActivity.collectAsState()

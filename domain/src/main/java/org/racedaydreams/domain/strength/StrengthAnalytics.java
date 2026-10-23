@@ -49,7 +49,7 @@ public final class StrengthAnalytics {
             else {
                 String prefix = e.exercise().mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT ? "Added load" : "Load";
                 award(history, best, e.exercise(), prefix, set.kilograms(), set, session);
-                if (org.racedaydreams.domain.coaching.Immutable.list(1, 3, 5, 8, 10).contains(set.reps()))
+                if (org.racedaydreams.domain.coaching.Immutable.list(1, 3, 5, 6, 8, 10).contains(set.reps()))
                     award(history, best, e.exercise(), prefix + " × " + set.reps(), set.kilograms(), set, session);
                 Double estimate = estimatedOneRepMax(e.exercise(), set);
                 if (estimate != null) award(history, best, e.exercise(), "Estimated 1RM", estimate, set, session);

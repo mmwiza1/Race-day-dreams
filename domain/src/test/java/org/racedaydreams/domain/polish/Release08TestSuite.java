@@ -1,0 +1,26 @@
+package org.racedaydreams.domain.polish;
+import java.util.*;
+import java.time.*;
+import org.racedaydreams.domain.*;
+import org.racedaydreams.domain.execution.*;
+import org.racedaydreams.domain.support.*;
+import org.racedaydreams.domain.strength.*;
+import org.racedaydreams.domain.recording.*;
+public final class Release08TestSuite {
+    static int checks;static void check(boolean b){checks++;if(!b)throw new AssertionError("check "+checks);}static void rejects(Runnable r){try{r.run();throw new AssertionError("accepted invalid input");}catch(IllegalArgumentException expected){checks++;}}
+    public static void main(String[]args){
+        var warm=new WorkoutExecutionEngine.Step("Warm up",WorkoutSegment.Kind.WARM_UP,1000.0,null,null,null,3.0);
+        var work=new WorkoutExecutionEngine.Step("Work",WorkoutSegment.Kind.RUN,400.0,null,280.0,290.0,7.0);
+        var rest=new WorkoutExecutionEngine.Step("Recover",WorkoutSegment.Kind.RECOVERY,null,90000L,null,null,2.0);
+        var open=new WorkoutExecutionEngine.Step("Open",WorkoutSegment.Kind.COOL_DOWN,null,null,null,null,null);
+        var w=new CustomWorkout("id","Intervals",Arrays.asList(new CustomWorkout.Group(1,Arrays.asList(warm)),new CustomWorkout.Group(6,Arrays.asList(work,rest)),new CustomWorkout.Group(1,Arrays.asList(open))));
+        check(w.flattened().size()==14);check(w.totals().knownMetres()==3400);check(w.totals().knownMillis()==540000);check(!w.totals().distanceComplete());check(w.move(0,2).groups().get(2).steps().get(0)==warm);
+        rejects(()->new CustomWorkout("id","Empty",Collections.emptyList()));rejects(()->new CustomWorkout.Group(0,Arrays.asList(work)));rejects(()->new CustomWorkout("id","Huge",Arrays.asList(new CustomWorkout.Group(100,Arrays.asList(work,rest,warm,rest,work,rest)))));
+        var e=new WorkoutExecutionEngine(w.flattened());e.update(new WorkoutExecutionEngine.Input(1200,360000,360000,300.0,true,false));check(e.state().index()==1);check(e.state().metresRemaining()==200);e.skip();check(e.state().index()==2);e.finishEarly();check(e.state().early());
+        for(var route:DreamRoutes.routes()){for(double d:new double[]{0,21097.5,42194,42195}){var p=DreamRoutes.at(route,d);check(Double.isFinite(p.x())&&Double.isFinite(p.y()));}for(int n=0;n<20;n++)check(DreamRoutes.assign(5000,new Random(n),Collections.singleton(route.id())).routeId().equals(route.id()));}rejects(()->DreamRoutes.assign(5000,new Random(),Collections.emptySet()));
+        var now=Instant.parse("2026-10-23T00:00:00Z");var exercise=StrengthExercise.starters().stream().filter(x->x.id().equals("back-squat")).findFirst().get();var sets=Arrays.asList(new StrengthSession.SetEntry("1",8,80,7.0,false),new StrengthSession.SetEntry("2",8,80,7.0,false));var session=new StrengthSession("s",now.minusSeconds(86400),ZoneOffset.UTC,Duration.ofMinutes(30),7.0,"",Arrays.asList(new StrengthSession.ExerciseSets(exercise,sets)));var p=new GymProgramme.Prescription(exercise.id(),3,5,8,null,null,7,8,120,"Working sets");var reference=StartingLoad.suggest(p,Arrays.asList(session),now);check(reference!=null&&reference.highKg()<=80&&reference.lowKg()<80);check(StartingLoad.suggest(p,Arrays.asList(session),now.plusSeconds(86400*60))==null);check(StartingLoad.suggest(p,Collections.emptyList(),now)==null);
+        var six=new StrengthSession("six",now.minusSeconds(1000),ZoneOffset.UTC,Duration.ofMinutes(10),7.0,"",Arrays.asList(new StrengthSession.ExerciseSets(exercise,Arrays.asList(new StrengthSession.SetEntry("6",6,100,7.0,false)))));check(StrengthAnalytics.progression(Arrays.asList(six)).stream().anyMatch(x->x.category().equals("Load × 6")));check(StrengthAnalytics.progression(Collections.emptyList()).isEmpty());
+        var engine=new RunMetricsEngine(0,now);for(int i=0;i<=1800;i++)engine.accept(new RunMetricsEngine.Fix(now.plusSeconds(i),i*1000L,51.0+i*.000025,0,3.0,null,null,3.0));var points=engine.points();var xy=RoutePresentation.fit(points);check(xy.size()==points.size());check(xy.stream().allMatch(x->x.x()>=0&&x.x()<=1&&x.y()>=0&&x.y()<=1));check(RoutePresentation.kilometres(points).size()>=4);check(!RoutePresentation.story(points).isEmpty());check(!RoutePresentation.reliableAltitude(points));check(RoutePresentation.fit(Collections.emptyList()).isEmpty());check(RoutePresentation.story(Collections.emptyList()).isEmpty());
+        System.out.println("Release08TestSuite: "+checks+" checks passed.");
+    }
+}

@@ -10,10 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.UnitSystem
 
-@Composable private fun DestinationCard(title:String,summary:String,action:()->Unit){Card(onClick=action,modifier=Modifier.fillMaxWidth().heightIn(min=80.dp)){Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){Text(title,style=MaterialTheme.typography.titleLarge);Text(summary,style=MaterialTheme.typography.bodyMedium)}}}
+@Composable private fun DestinationCard(title:String,summary:String,action:()->Unit){Card(onClick=action,colors=CardDefaults.cardColors(containerColor=tileColour(if(title in listOf("Log workout","Gym programme","Exercises"))Tile.Strength else Tile.Progress)),modifier=Modifier.fillMaxWidth().heightIn(min=80.dp)){Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){Text(title,style=MaterialTheme.typography.titleLarge);Text(summary,style=MaterialTheme.typography.bodyMedium)}}}
 @Composable fun StrengthDashboard(state:CoachUiState,open:(String)->Unit)=CoachPage{
     CoachHeading("Strength")
     DestinationCard("Log workout","Record what you actually did"){open("strength/log")}
@@ -53,7 +55,7 @@ fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{
     val choice=state.exerciseChoices.firstOrNull{it.exerciseId()==id}
     val sessions=remember(state.strengthSessions,id){state.strengthSessions.filter{s->s.exercises().any{it.exercise().id()==id}}.sortedByDescending{it.startedAt()}}
     CoachPage{
-        CoachHeading(e.name())
+        Row(Modifier.fillMaxWidth()){Text(e.name(),style=MaterialTheme.typography.headlineSmall,modifier=Modifier.weight(1f));IconButton(onClick={model.exerciseChoice(e.id(),choice?.favourite()!=true,choice?.archived()==true)}){Text(if(choice?.favourite()==true)"★"else"☆",modifier=Modifier.semantics{contentDescription=(if(choice?.favourite()==true)"Remove ${e.name()} from favourites"else"Add ${e.name()} to favourites")})}}
         FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("Overview","How to do it","History","PBs").forEach{tab->FilterChip(selected=section==tab,onClick={section=tab},label={Text(tab)})}}
         when(section){
             "Overview"->{CoachCard{Text(ExerciseCatalog.definition(e.id())?.category()?:"Custom exercise");Text("Equipment: ${ExerciseCatalog.definition(e.id())?.equipment()?:"User defined"}");Text("Measurement: ${e.measurement().name.lowercase().replace('_',' ')}")};CoachButton(if(choice?.favourite()==true)"Unfavourite"else "Favourite"){model.exerciseChoice(e.id(),choice?.favourite()!=true,choice?.archived()==true)};TextButton(onClick={model.exerciseChoice(e.id(),choice?.favourite()==true,choice?.archived()!=true)}){Text(if(choice?.archived()==true)"Restore to My Exercises"else if(ExerciseCatalog.definition(e.id())==null)"Archive exercise"else "Hide from My Exercises")};Text("${sessions.size} recorded workouts");if(ExerciseCatalog.definition(e.id())==null){CoachInput("Custom exercise name",renamed,{renamed=it});CoachButton("Save exercise name"){model.saveExercise(StrengthExercise(e.id(),renamed.trim(),e.region(),e.mode(),e.estimateOneRepMax(),e.measurement()))}}}

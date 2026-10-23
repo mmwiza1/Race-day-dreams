@@ -22,6 +22,8 @@ class RecordingStore(context:Context) {
         }finally{db.endTransaction()}
     }
     fun points(id:String):List<RunMetricsEngine.Point>{val out=mutableListOf<RunMetricsEngine.Point>();helper.readableDatabase.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext())out.add(decode(JSONObject(c.getString(0))))};return out}
+    data class Pause(val start:Long,val duration:Long,val metres:Double)
+    fun pauses(id:String):List<Pause>{val points=points(id);val out=mutableListOf<Pause>();var start:Long?=null;helper.readableDatabase.rawQuery("SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));val type=j.getString("type");if(type in listOf("PAUSE","AUTO_PAUSE"))start=j.getLong("mono");if(type in listOf("RESUME","AUTO_RESUME","FINISH")){start?.let{t->out.add(Pause(t,(j.getLong("mono")-t).coerceAtLeast(0),points.lastOrNull{it.fix().monotonicMillis()<=t}?.cumulativeMetres()?:0.0))};start=null}}};return out}
     fun discardUnfinished(id:String){helper.writableDatabase.delete("recording_sessions","id=? AND state IN ('ACTIVE','PAUSED','RECOVERABLE')",arrayOf(id))}
     fun recoverable(){helper.writableDatabase.execSQL("UPDATE recording_sessions SET state='RECOVERABLE' WHERE state IN ('ACTIVE','PAUSED')")}
     fun finish(session:Session,movingMillis:Long?=null,provider:String=if(session.id.startsWith("gpx-"))"gpx"else"rdd",recovered:Boolean=true):String {

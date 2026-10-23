@@ -80,6 +80,8 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
     }
     CoachPage {
         CoachHeading(if (assessment != null) "Assessment run" else "Run detail")
+        RecordedRouteCard(activity)
+        SpontaneousAssociation(state,model,activity)
         Text(activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM uuuu · HH:mm XXX", java.util.Locale.UK)))
         if (activity.startOffset() == null) Text("The source did not provide a time-zone offset; this time is shown explicitly in UTC.")
         CoachCard {

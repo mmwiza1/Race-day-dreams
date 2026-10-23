@@ -258,6 +258,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             out.put("strengthState", StrengthUserStore.exportData(db));
             out.put("gymProgramming",GymProgrammeStore.exportData(db));
             out.put("support",SupportStore.exportData(db));
+            out.put("release08",Release08Store.exportData(db));
             db.setTransactionSuccessful();return out;
         } catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}
     }
@@ -275,6 +276,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
     private static RestoreData validated(JSONObject data){
         try {
             if(data.has("support"))SupportStore.validate(data.getJSONObject("support"));
+            if(data.has("release08"))Release08Store.validate(data.getJSONObject("release08"));
             if(FeatureJson.requiredInteger(data,"storeVersion")!=EXPORT_STORE_VERSION)throw new IllegalArgumentException("Unsupported backup store version.");
             UserProfile profile=data.isNull("profile")?null:FeatureJson.profile(data.getJSONObject("profile"));
             String draft=FeatureJson.text(data,"draft");if(draft!=null)FeatureJson.object(draft);
@@ -353,6 +355,7 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
             if(snapshot.strengthState()!=null)StrengthUserStore.restore(db,snapshot.strengthState());
             if(snapshot.gymProgramming()!=null)GymProgrammeStore.restore(db,snapshot.gymProgramming());
             SupportStore.restore(db,snapshot.support());
+            Release08Store.restore(db,data.optJSONObject("release08"));
             RecordingStore.restoreRetainedSamples(db);
             db.setTransactionSuccessful();
         }catch(JSONException e){throw FeatureJson.invalid(e);}finally{db.endTransaction();}

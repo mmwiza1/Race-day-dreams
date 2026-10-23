@@ -55,6 +55,7 @@ import org.racedaydreams.reminders.EveningReminders
 /** Presentation state contains actual local observations; unknown metrics stay nullable. */
 data class CoachUiState(
     val loading: Boolean = true,
+    val startingPath: String? = null,
     val busy: Boolean = false,
     val profile: UserProfile? = null,
     val activities: List<ActivityRecord> = emptyList(),
@@ -161,7 +162,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
             if (review != null && !development.reviewKnown(review.id())) development.saveReview(review)
             reminders.reconcile()
             CoachUiState(
-                loading = false, profile = profile, activities = activities, results = results,
+                loading = false, startingPath = store.getSetting("starting.path"), profile = profile, activities = activities, results = results,
                 shoes = store.shoes(), assessments = store.assessments(), baseline = baseline, manualBaseline = manual,
                 currentPlan = currentPlan, planVersions = history,
                 weights = development.weights(), historicalStrength = development.historical(),
@@ -312,6 +313,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
 
     // The populated Plan screen confirms the save. A snackbar here can cover its
     // bottom rebuild action immediately after generation, especially with large text.
+    fun startingPath(path:String) = mutate { require(path in listOf("record","race","hybrid"));store.putSetting("starting.path",path) }
     fun generatePlan() = mutate {
         val profile = profiles.load().orElse(null) ?: throw IllegalArgumentException("Save your goal and availability first.")
         val baseline = mutableState.value.baseline
@@ -429,6 +431,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun saveExercise(exercise: StrengthExercise) = mutate("Exercise saved. Recorded sessions retain their original exercise definition.") { coaching.saveExercise(exercise) }
 
     fun linkRun(activityId: String, versionId: String, workoutId: String, reps: Int? = null) = mutate("Run linked to its preserved prescription.") {
+        require(coaching.responses().none{it.activityId()==activityId}) { "This run is already linked; review its source before changing it." }
         val activity = store.activities().firstOrNull { it.id() == activityId } ?: throw IllegalArgumentException("Run no longer available.")
         val version = coaching.versions().firstOrNull { it.id() == versionId } ?: throw IllegalArgumentException("Plan version no longer available.")
         val workout = version.plan().workouts().firstOrNull { it.id() == workoutId } ?: throw IllegalArgumentException("Workout not found.")
@@ -437,6 +440,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
         val response = RunExecution(activity.id(), workout.id(), version.id(), reps, null, "Runner explicitly linked activity to prescription")
         coaching.transaction {
             coaching.saveResponse(response)
+            org.racedaydreams.data.Release08Store(app).save("association",activityId,org.json.JSONObject().put("version",1).put("activity",activityId).put("planVersion",versionId).put("workout",workoutId).put("at",Instant.now().toString()))
             coaching.saveFeedback(activity.id(), version.id(), RunScoreEngine.analyse(workout, activity, response))
         }
     }

@@ -27,6 +27,10 @@ import java.time.*
     val race=state.currentPlan?.plan()?.workouts()?.firstOrNull{it.category()==org.racedaydreams.domain.WorkoutCategory.RACE}
     if(race!=null&&state.currentPlan?.goalSnapshot()?.raceGoal()==goal)CoachButton("Prepare / start race"){start(state.currentPlan!!.id(),race.id(),hilly)}else Text("Create or explicitly rebuild the programme for this goal before linking Race Day. Free recording remains available from Home; no goal is changed automatically.")
     TextButton(onClick={routine(org.racedaydreams.domain.support.RunningRoutines.warmup(org.racedaydreams.domain.WorkoutCategory.RACE,goal.distance().kilometres()))}){Text("Race warm-up")}
+    if(days in 0L..7L){
+        RaceWeekChecklist(goal)
+        SemanticCard(Tile.Planned){Text("Remaining taper sessions",style=MaterialTheme.typography.titleMedium);state.currentPlan?.plan()?.workouts()?.filter{it.date()>=LocalDate.now()&&it.date()<goal.raceDate()}?.forEach{Text("${friendlyDate(it.date())} · ${workoutName(it.category())}")}}
+    }
     if(days in 0L..7L)CoachCard{Text("Race-week preparation",style=MaterialTheme.typography.titleMedium);Text(if(days>3)"The taper prioritises arriving recovered. Avoid adding missed mileage."else "Prepare familiar kit, eat normally, hydrate appropriately and check your travel plan. Avoid last-minute experiments.")}
     WhyDetails("Shoes · socks · number · timing chip if used · phone · headphones if allowed · familiar fuel/hydration plan · weather-appropriate kit · travel arrangements. Adapt this checklist to your event.","Race-morning checklist")
     TextButton(onClick=results){Text("Add or view official result")}
