@@ -232,3 +232,13 @@ Connector/localSHAsdiffer; comparetrees. Source/botmetadata infunctionsstoremayp
 butverifyactualrepo. Currentcapturebytes /workspace/scratch/081d-capture-*.json and
 081d-capture-meta.json; earlier50capture081c. Helperpublish05.py BASE_LOCAL emits
 50KBtextchunks; binaryuploadonlywhennewart. No needuploadexisting26again.
+
+## Emulator infrastructure diagnosis at latest check
+
+40002513476 API36 failed BEFORE tests: SDKmanager's latest emulator download had
+Error onZipFile unknownarchive. API28/35stillrunning at18:26UTC. Attempted targeted
+rerun was403because whole workflow stillrunning (not an approval restriction).
+Successful40001032343logs identify emulator37.2.12.0/build16428233. CI now pins that
+exact observed-good emulator build using the action's documentedemulator-buildinput;
+allAPI28/35/36 remain. This needs a fresh fullrun. It is an infrastructurepin, not
+weakening an app test. Recheck current remotehead before pushing this sourcechange.
