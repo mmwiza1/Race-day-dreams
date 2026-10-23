@@ -202,21 +202,22 @@ class CoachingScreenshotTest {
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
     private fun alignHeading(text:String){
-        compose.onNodeWithText(text).performScrollTo()
-        // Scroll the actual semantic container; a root swipe can hit an interactive
-        // chart above the target and leave the requested card off screen.
+        val heading=compose.onNodeWithText(text)
+        heading.performScrollTo()
         val container=compose.onNode(hasScrollAction() and hasAnyDescendant(hasText(text)))
-        repeat(6){
+        repeat(8){
             compose.waitForIdle()
-            val top=compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top
-            val height=compose.onRoot().fetchSemanticsNode().boundsInRoot.height
-            val shift=(top-160f).coerceAtMost(height*.6f)
-            if(shift<=8f)return
+            // boundsInRoot is CLIPPED: an offscreen node can report an empty Rect
+            // at zero, which must never be accepted as an aligned screenshot.
+            val top=heading.fetchSemanticsNode().positionInRoot.y
+            val height=compose.onRoot().fetchSemanticsNode().size.height.toFloat()
+            val shift=(top-160f).coerceIn(-height*.6f,height*.6f)
+            if(kotlin.math.abs(shift)<=24f){heading.assertIsDisplayed();return}
             container.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy){it(0f,shift)}
         }
-        compose.onNodeWithText(text).assertIsDisplayed()
-        Assert.assertTrue("Requested capture heading remains too far down the screen: $text",
-            compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top<300f)
+        heading.assertIsDisplayed()
+        val top=heading.fetchSemanticsNode().positionInRoot.y
+        Assert.assertTrue("Capture heading is not in the upper viewport: $text at $top",top in 100f..300f)
     }
 
     private fun capture(name:String){
