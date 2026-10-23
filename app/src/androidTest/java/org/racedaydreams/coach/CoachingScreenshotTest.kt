@@ -68,7 +68,7 @@ class CoachingScreenshotTest {
         coach.saveStrength(StrengthSession("demo-strength",plan.workouts().filter{it.date()<today}.maxBy{it.date()}.date().atTime(18,0).toInstant(ZoneOffset.UTC),ZoneOffset.UTC,Duration.ofMinutes(50),7.0,"Test-only fixture",
             listOf(StrengthSession.ExerciseSets(exercise,listOf(StrengthSession.SetEntry("demo-set1",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set2",5,80.0,7.0,false),StrengthSession.SetEntry("demo-set3",5,80.0,7.0,false))))))
     }
-    @After fun clear(){scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
+    @After fun clear(){org.racedaydreams.recording.RunRecordingService.status.value=null;org.racedaydreams.recording.RunRecordingService.workoutState.value=null;org.racedaydreams.recording.RunRecordingService.savedActivity.value=null;scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
     @Test fun capturesCurrentBuildScreensAndVerifiesCoachingNavigation() {
         scenario=ActivityScenario.launch(CoachActivity::class.java)
         await("Your running, your way");capture("home")

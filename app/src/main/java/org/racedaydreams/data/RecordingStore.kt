@@ -14,11 +14,11 @@ class RecordingStore(context:Context) {
     data class Session(val id:String,val state:String,val start:Instant,val mono:Long,val last:Long)
     fun unfinished():Session?=helper.readableDatabase.rawQuery("SELECT id,state,started_at,started_mono,last_mono FROM recording_sessions WHERE state IN ('ACTIVE','PAUSED','RECOVERABLE')",null).use{c->if(c.moveToFirst())Session(c.getString(0),c.getString(1),Instant.parse(c.getString(2)),c.getLong(3),c.getLong(4))else null}
     fun start(id:String,wall:Instant,mono:Long){helper.writableDatabase.insertOrThrow("recording_sessions",null,ContentValues().apply{put("id",id);put("state","ACTIVE");put("started_at",wall.toString());put("started_mono",mono);put("last_mono",mono)})}
-    fun flush(id:String,points:List<RunMetricsEngine.Point>,events:List<RunMetricsEngine.Event>,fromPoint:Int,fromEvent:Int,last:Long,state:String){
+    fun flush(id:String,points:List<RunMetricsEngine.Point>,events:List<RunMetricsEngine.Event>,fromPoint:Int,fromEvent:Int,last:Long,state:String,executionContext:JSONObject?=null){
         val db=helper.writableDatabase;db.beginTransaction();try{
             for(i in fromPoint until points.size)db.insertOrThrow("recording_points",null,ContentValues().apply{put("session_id",id);put("sequence",i);put("payload",encode(points[i]).toString())})
             for(i in fromEvent until events.size)db.insertOrThrow("recording_events",null,ContentValues().apply{put("session_id",id);put("sequence",i);put("payload",JSONObject().put("type",events[i].type()).put("mono",events[i].monotonicMillis()).put("wall",events[i].timestamp().toString()).put("value",events[i].value() as Any?).toString())})
-            db.update("recording_sessions",ContentValues().apply{put("last_mono",last);put("state",state)},"id=?",arrayOf(id));db.setTransactionSuccessful()
+            db.update("recording_sessions",ContentValues().apply{put("last_mono",last);put("state",state)},"id=?",arrayOf(id));executionContext?.let{SupportStore.put(db,"execution",id,it)};db.setTransactionSuccessful()
         }finally{db.endTransaction()}
     }
     fun points(id:String):List<RunMetricsEngine.Point>{val out=mutableListOf<RunMetricsEngine.Point>();helper.readableDatabase.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext())out.add(decode(JSONObject(c.getString(0))))};return out}

@@ -97,3 +97,17 @@ Route export, the companion raw-recording ZIP archive and explicit Health Connec
 write-back are user actions. Exported route/archive files are sensitive and unencrypted;
 choose a trusted destination. Standard app JSON alone does not preserve raw coordinates;
 export both app backup and raw recording archive before reinstall. See docs/RUN_ENGINE.md.
+
+## Offline live coaching and support (0.7)
+
+Local Android TTS uses an installed non-network voice; if unavailable, visual guidance
+and optional vibration remain. Audio focus is requested temporarily and released;
+RDD does not alter music volume. No voice/health/route payload is sent to a server.
+VIBRATE is the only newly declared permission. No Internet permission is added.
+
+Structured prescriptions/events, routine completions, official results and Dream Route
+assignments stay private. Dream drawings are bundled original schematics, not remote
+map requests. Complete backup format1 contains sensitive app JSON and recordings ZIP;
+choose a trusted destination. It is not encrypted by RDD. Both checksums and all inner
+validation precede core replacement, under one transaction. Earlier separate exports
+are still readable. Provider health caches remain excluded and re-importable.

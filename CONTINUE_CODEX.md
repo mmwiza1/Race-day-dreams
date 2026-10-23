@@ -61,66 +61,42 @@ At the end, give a concise summary containing:
 
 ---
 
-# Current task: Health Intelligence + native Run Engine (Prompt 1)
+# Current task: Prompt 2 — Live Coach / race support
 
-Continue from `codex/health-intelligence-run-engine`, PR #7. Do not reset or recreate
-files. Starting main e6763ef4aa56af012950dd2eb7490f4c4c3a7eba remains the verified v0.5.
-Local git history and connector-published commit IDs may differ but matching tree IDs
-are verified when publishing; preserve both checkpoint histories.
+Start from the actual working tree. Branch codex/live-coach-race-day; PR #8.
+Starting main e381231f8a4c7483dea1c869df2f114a2bf2ba5f is the verified Prompt1 release.
+Local checkpoints3800f00, f7b4ff9, d9de057 are preserved. Connector-published commit IDs
+can differ from local IDs; compare trees/source blobs and preserve screenshot-bot commits.
 
-## Completed implementation
+Implemented domain: WorkoutExecutionEngine, CoachCues/Sink, RecoveryCoaching,
+RacePredictionEngine/Strategy, RunningRoutines and DreamRoutes. One recorder service
+owns execution/audio/sensors, fixed-footer live UI and finish→activity navigation.
+SupportStore schema8 retains prescription/strategy snapshots, actual step evidence,
+routine completions and stable Dream assignments. Work-only Run Score excludes
+recoveries; raw evidence can corroborate existing bounded adaptation. New optional
+health alternatives preview one explicit easy version without changing race/availability.
+Race dashboard/official result linkage, original support figures/routines, history
+summaries/detail loading and CompleteBackup format1 are wired. JSON6 reads1–5; raw
+archive2 reads1. No Internet/new runtime dependency. VIBRATE is added for local haptics.
 
-Optional HC sleep-session duration/RHR/HRV RMSSD/aggregate steps, source-specific
-7-day vs preceding-28-day personal context and coverage. No readiness number or forced
-plan change. Schema7 additive staging/cache; Java deterministic monotonic RunMetricsEngine,
-GNSS foreground service, five-second batched persistence and transactional finish;
-manual/optional conservative auto-pause, GPS gap/jump rejection, real interpolated splits;
-standard BLE HR and real step-sensor cadence, timestamped sensor events; bounded original
-platform-parser GPX import/export, exact-route duplicate handling; explicit HC totals
-write-back with stable client IDs and own-origin exclusion; raw recording ZIP archive
-with checksums/limits/transactional merge. Discoverable Home run screen/Settings health
-context and current recording-file/sensor actions. App version0.6.0-test1/code7,
-JSON backup5 reads1–4; raw archive1. See docs/RUN_ENGINE.md for architecture/limits.
+Local full domain59,582 assertions and schema38 pass. Remote checkpoint53eafc3 passed
+workflow39915839214: build/lint and170 device tests on each28/35/36; canonical captures
+passed. Later local d9de057 source (plus docs) still needs publishing/full verification.
+Do not claim those changes passed because the earlier source did. Main is not updated.
+No known local domain/schema failure; Android unavailable locally (unwritable default
+cache, workspace-cache Gradle download SocketException). Use established GitHub CI.
 
-## Verification and delivery
+Next: preserve current uncommitted docs, publish source/docs atop actual PR8 head,
+inspect full Android CI, fix genuine failures, inspect new screenshots (warm-up,
+mobility, Dream Route, Live Coach, race dashboard), adopt exact canonical PNGs/meta,
+review complete diff/privacy/backup and final PR state. Keep draft until verified.
+If green, follow established repository workflow and verify main/post-merge APK.
+Update this section and VERIFICATION.md with actual final results, not inferred ones.
 
-Prompt1 implementation is complete to the documented scope. Verified production
-source `b19bb77542ba461dfb9ae6e6b27ad9ea50fbcd8e` passed workflow39903824374:
-57,732 domain assertions,36 schema tests, Android build/lint and160 instrumentation
-tests per API28/35/36. This includes the four-hour synthetic storage trace and optional
-HC-unavailable write UI. No physical-device success is claimed.
-
-Thirty-six authentic captures were reviewed and adopted. Their source fingerprint is
-03740acea4f555128e3f8be4cc5d83ae354694ca242a460570c8a5a57e2d659b.
-The verified source API35 artifact is12480321523. Final documentation-head and merged-main
-status/artifacts are recorded on PR7 and main Actions; inspect the actual latest state
-before any continuation. Do not recreate implemented phases or repeat work blindly.
-No known source/test failure remains after the passing source run. Initial null JSON,
-permission-scope and midnight fixture failures were fixed without weakening assertions.
-
-Preserve normalized native sample rows: canonical activity JSON contains metadata,
-with raw samples hydrated through RecordingStore.withRetainedSamples. App JSON export
-reads metadata only. Raw archives restore samples and qualified PB evidence atomically.
-Do not reintroduce multi-MiB SQLite payload cells or unbounded raw arrays into app backup.
-Personal sleep trends use the longest same-source session/day rather than a later nap.
-
-Do not begin Prompt2 until the user supplies it. Keep the owner's reusable continuation
-instructions at the top of this file. Consult VERIFICATION.md and docs/RUN_ENGINE.md for
-actual results, policies, limits and the required Galaxy S24 checklist.
-
-## Known deliberate limits
-
-Recovery finalizes retained portion; continuing an interrupted recording is not implemented.
-Last unflushed five-second batch may be lost on abrupt kill. Current trace is kept in memory;
-multi-hour physical testing is mandatory. Sleep-session minutes may include awake time;
-naps/stages are not reconstructed. HRV sources remain separate. One metric never drives
-an automatic adaptation; deeper coaching use remains a boundary. BLE/device/HC/OEM
-behaviour not physically verified. GPX has no HR/cadence extension import/export yet.
-HC write-back only exercise/distance totals, no route/HR/cadence. Raw sample arrays stay outside bounded app JSON; raw backup is a separate
-companion archive, not a unified whole-app container; preserve both app JSON and ZIP.
-Explicit safeguards reject destructive restore over active/user-owned recordings.
-
-Prompt2: Live Coach/TTS/haptics/alerts, structured workout execution, Race Day/Dream Routes,
-routines and final hardening remain deferred. No direct Samsung SDK work. Existing
-v0.5 features and all valid work must remain intact. The app recommends. The runner
- decides. The plan adapts.
+Key limits: recovery finalizes partial portion (no restart tracking), final5sec may
+be lost. Backup bounded8MiB JSON/512MiB raw,1000 recordings/100k points each. Dream
+Routes are original abstract city-inspired drawings, not actual official courses.
+Arbitrary interval authoring UI, repeat/restart rep, custom race checklist and verified
+course datasets are absent; planner flat segments are preserved rather than invented.
+Physical S24 GNSS/background/BLE/TTS/music/haptics/battery/permission/accessibility tests
+remain. No Wear OS/cloud/LLM/public-release/map tiles. Do not add them or discard work.

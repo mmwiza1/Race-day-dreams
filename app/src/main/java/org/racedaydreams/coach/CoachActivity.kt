@@ -126,6 +126,7 @@ private fun CoachApp(model: CoachViewModel) {
     // typing would recreate the retained goal form and can discard the current interaction.
     val startDestination = rememberSaveable {
         when {
+            org.racedaydreams.recording.RunRecordingService.running.value -> "record-run"
             state.profile != null -> "home"
             state.baselineReviewed -> "goals"
             else -> "baseline"
@@ -164,10 +165,10 @@ private fun CoachApp(model: CoachViewModel) {
                 }
             }
             NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
-                composable("record-run") { RecordingScreen(model) }
-                composable("execute/{version}/{workout}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout")) }
+                composable("record-run") { RecordingScreen(model,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
+                composable("execute/{version}/{workout}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("race") { RaceScreen(state,model,{v,w,h->nav.navigate("race-run/${Uri.encode(v)}/${Uri.encode(w)}/$h")},{nav.navigate("progress/pbs")},{r->nav.navigate("routine/$r")}) }
-                composable("race-run/{version}/{workout}/{hilly}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),d.arguments?.getString("hilly")=="true") }
+                composable("race-run/{version}/{workout}/{hilly}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),d.arguments?.getString("hilly")=="true",onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
                 composable("routines") { RoutineLibrary {nav.navigate("routine/$it")} }
                 composable("routine/{id}?related={related}") { d -> RoutineScreen(d.arguments?.getString("id"),d.arguments?.getString("related")){nav.popBackStack()} }
 

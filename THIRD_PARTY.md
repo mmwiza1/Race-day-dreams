@@ -121,3 +121,13 @@ LocationManager, Bluetooth SIG Heart Rate profile and Android XmlPullParser are 
 no parser/sensor runtime dependency added. Official AndroidX Health Connect API source
 (Metadata/Device, Apache-2.0) was consulted for record identifiers/write metadata.
 No GPL/AGPL source, Garmin FIT SDK, proprietary provider SDK or map library was added.
+
+## Prompt 2 original content
+
+No runtime dependency, external route dataset, official marathon graphic, GPL code or
+photograph is added. The 14 supportive movement descriptions/line figures, 13 routines,
+execution/cue/prediction rules and five city-inspired Dream Route schematics are original
+Race Day Dreams work under this repository's MIT licence. The drawings are not actual
+or official surveyed marathon courses. No source geometry was copied. Platform Android
+TextToSpeech/AudioFocusRequest/VibrationEffect are used directly; no OpenTracks audio
+source was adapted. Existing Apache-compatible engineering references remain references.

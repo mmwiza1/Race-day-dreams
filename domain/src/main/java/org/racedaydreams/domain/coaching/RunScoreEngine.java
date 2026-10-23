@@ -6,7 +6,7 @@ import org.racedaydreams.domain.activity.*;
 
 /** Product heuristics for execution, not fitness, health, effort or a scientifically validated score. */
 public final class RunScoreEngine {
-    public static final int RULE_VERSION = 2;
+    public static final int RULE_VERSION = 3;
     private RunScoreEngine() { }
     public static RunFeedback analyse(PlannedWorkout planned, ActivityRecord actual, RunExecution response) {
         if (planned == null) return new RunFeedback(null, "Run Analysis", org.racedaydreams.domain.coaching.Immutable.list(), org.racedaydreams.domain.coaching.Immutable.list(), org.racedaydreams.domain.coaching.Immutable.list(),
@@ -46,9 +46,17 @@ public final class RunScoreEngine {
                 paceMatch = Math.max(0, 1 - outside / Math.max(1, segment.maximumSecondsPerKm()) * 4);
             }
         }
+        boolean structuredPace=false;
+        if(response!=null&&!response.steps().isEmpty()){
+            double sumAdherence=0;int measuredSteps=0;
+            for(var e:response.steps())if(e.kind()==WorkoutSegment.Kind.RUN&&e.completed()&&e.reliablePace()&&e.metres()>0&&e.activeMillis()>0&&e.fastPace()!=null&&e.slowPace()!=null){
+                double actualPace=e.activeMillis()/e.metres();double outside=Math.max(0,Math.max(e.fastPace()-actualPace,actualPace-e.slowPace()));sumAdherence+=Math.max(0,1-outside/e.slowPace()*4);measuredSteps++;
+            }
+            if(measuredSteps>0){paceMatch=sumAdherence/measuredSteps;structuredPace=true;}
+        }
         components.add(new RunFeedback.Component("Target pace", paceMatch, paceMatch == null
             ? "No reliable whole-run pace comparison is available; warm-ups and recoveries are not treated as quality reps."
-            : "Compared with the prescribed range, without rewarding extra speed."));
+            : structuredPace ? "Compared individual completed run segments with their preserved ranges, excluding recoveries and discontinuous GPS evidence." : "Compared with the prescribed range, without rewarding extra speed."));
         Double stability = null;
         var splits = SplitCalculator.calculate(actual, 1000);
         if (splits.splits().size() >= 3 && planned.category() != WorkoutCategory.INTERVALS) {
@@ -79,7 +87,7 @@ public final class RunScoreEngine {
         }
         if (planned.category() == WorkoutCategory.INTERVALS) {
             components.add(new RunFeedback.Component("Reps completed", reps, reps == null ? "Rep completion was not recorded; total distance does not prove reps were completed."
-                : "Uses runner-reported completed reps against the prescribed main sets."));
+                : response.steps().isEmpty()?"Uses runner-reported completed reps against the prescribed main sets.":"Uses recorder execution events against the preserved main sets."));
             if (response != null && response.recoveriesCompleted() != null) components.add(new RunFeedback.Component("Recoveries", response.recoveriesCompleted() ? 1.0 : .4,
                 "Uses runner-reported recovery completion."));
         }

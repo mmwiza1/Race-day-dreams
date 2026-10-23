@@ -1,3 +1,36 @@
+# Verification — Live Coach / race support (0.7.0-test1)
+
+Starting main e381231f8a4c7483dea1c869df2f114a2bf2ba5f. Branch
+codex/live-coach-race-day; PR #8. Version0.7.0-test1/code8, schema8, JSON6,
+raw recording archive2 and complete package1. Existing schema/JSON readers remain.
+
+Observed local results: 59,582 domain assertions (including1,850 LiveCoach checks),
+38 actual-DDL schema tests. These are assertion counts, not59,582 named test cases.
+Tests include distance/time/repetitions, interpolated boundaries, pauses/skips/early
+finish, cue grace/hysteresis/priority and injectable sink, work-only pace scoring,
+corroborated health, evidence-gated race ranges, stable route bounds and 2/4/5.5-hour
+execution replay. Schema coverage tests every1–7 upgrade and rollback.
+
+Checkpoint e1209923e5bd3c6092f00c838a9d876f30e33864 passed Actions39914879539:
+Android build/lint/test assembly and160 instrumentation tests per API28/35/36.
+Checkpoint53eafc337e321f2d33e22adbd7eca1a4de1f289b passed Actions39915839214:
+Android build/lint/test assembly and170 tests per API28/35/36, including combined
+backup, sample/assignment restore, corruption retention, optional routines without
+calendar entries and schema7→8 retention. Authentic capture publication also passed.
+Final source after these checkpoints still needs its own full CI run; do not infer
+that later changes passed from an earlier checkpoint. PR8/Actions record exact heads.
+
+Local Android invocation was attempted: default cache is unwritable; with a workspace
+Gradle cache the distribution download fails with SocketException: Operation not
+permitted. Do not repeatedly retry it. Actual Android results come from GitHub-hosted
+builds/emulators. No physical S24, GPS/BLE/music/battery/coaching-efficacy pass is claimed.
+Follow TEST_BUILD.md. Complete-backup limits and intentionally absent UI/features are
+explicit in docs/LIVE_COACH.md and DEVELOPMENT_PLAN.md. Dream drawings are original
+city-inspired schematics, not verified course geometry. No Internet permission,
+new runtime dependency, official event asset, proprietary SDK or copied source added.
+
+The records below describe earlier releases.
+
 # Verification — Health Intelligence + native Run Engine (0.6.0-test1)
 
 Starting main `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba`; owner handoff update

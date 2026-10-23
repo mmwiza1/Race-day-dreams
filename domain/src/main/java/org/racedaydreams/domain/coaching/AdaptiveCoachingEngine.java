@@ -24,7 +24,8 @@ public final class AdaptiveCoachingEngine {
             PlannedWorkout planned = prescriptions.get(linked);
             if (planned == null || run.rpe() == null) continue;
             double expected = isQuality(planned.category()) ? planned.segments().stream().filter(s -> s.rpe() != null).mapToDouble(s -> s.rpe()).max().orElse(6) + 1 : 4;
-            if (run.rpe() > expected) { highEffort++; evidenceIds.add(run.id() + ":" + run.rpe()); }
+            boolean poorStepPace=response!=null&&response.steps().stream().anyMatch(s->s.kind()==WorkoutSegment.Kind.RUN&&s.completed()&&s.reliablePace()&&s.metres()>0&&s.slowPace()!=null&&s.activeMillis()/s.metres()>s.slowPace()*1.10);
+            if (run.rpe() > expected || poorStepPace&&run.rpe()>=8) { highEffort++; evidenceIds.add(run.id() + ":" + run.rpe()); }
             if (planned.distanceKm() != null && planned.distanceKm() > 0 && run.distanceMetres() != null
                     && run.distanceMetres() < planned.distanceKm() * 750 && run.rpe() >= 8) {
                 lowAndHard = true; evidenceIds.add(run.id() + ":" + run.distanceMetres());
@@ -38,7 +39,7 @@ public final class AdaptiveCoachingEngine {
         if (next == null) return Optional.empty();
         boolean gym = hardDates.contains(next.date().minusDays(1));
         if (!gym && !repeated && !lowAndHard) return Optional.empty();
-        if (repeated) evidence.add("At least two recent linked sessions had reported RPE above their intended range.");
+        if (repeated) evidence.add("At least two recent linked sessions had unusually high reported effort or corroborated difficult structured execution.");
         if (lowAndHard) evidence.add("A recent linked run combined less than 75% of planned distance with RPE 8 or higher.");
         if (gym) {
             evidence.add("Recorded hard lower-body work falls the day before this demanding session.");

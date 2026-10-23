@@ -282,3 +282,43 @@ uses retained run/gym evidence for briefings and move warnings; it never changes
 availability. ComparableRuns matches purpose/distance/duration/recency/available
 elevation, rejects weak matches and qualifies faster/harder interpretations. It
 never invents route matching, missing HR or guaranteed fitness improvement.
+
+## Live execution, race ranges and recovery (0.7)
+
+Execution follows exact preserved WorkoutSegments. Distance is authoritative when a
+legacy segment includes both distance and estimated duration. Time targets use active
+monotonic time; race time context uses elapsed time including pauses. Boundaries are
+interpolated in the latest accepted metric interval and overshoot carries into the next
+step. GPS gaps never create distance. Skip/early finish remain explicit events, and
+finishing the prescription does not automatically stop GPS recording. Flat repetition
+expansion inserts recoveries only between reps; no hidden planner runs in the executor.
+
+Pace cues require a numerical step range, reliable recorder smoothing, a 15-second
+transition grace and deviation exceeding max(8 sec/km, 3% of fast bound). Default
+sustained deviation is 45 seconds (optional gentler 60); a 90-second cooldown and
+range re-entry reset avoid nagging. Pauses/unreliable pace reset pending deviations.
+One most-important fresh cue survives each batch: state, transition, race, pace, split.
+Speech uses installed local voices only and may fall back to optional haptics/visuals.
+These thresholds are usability heuristics, not physiological validation.
+
+RacePredictionEngine requires at least two independent performances within 120 days;
+short evidence below min(5K, 40% target) is excluded, and rolling evidence must cover
+at least half the target. Up to eight recent results use a distance-time power-law
+starting estimate (exponent 1.07), with an age penalty up to 2%. For HM/marathon,
+endurance gates require recent longest run >=60% race distance and four-week average
+>=60%/70% race distance respectively. Without that coverage no long-race estimate is
+shown. Conflicting evidence widens ranges. Outputs round to minutes, with explicitly
+Limited/Moderate/Strong evidence. Constants/range widths are original conservative
+product choices, not an individually validated race model. Terrain/weather/fuelling
+are unknown. A selected goal never becomes a prediction or changes automatically.
+
+Target-based strategy has controlled opening (15%), settling (to85%) and optional
+late effort stages. Hilly/uncertain terrain uses effort rather than pace alerts.
+Preserved race execution retains its goal/strategy/pre-race estimate; official chip
+results remain independent records linked to the actual GPS activity.
+
+Qualified native StepEvidence supports work-only pace feedback. At least two difficult
+linked sessions, with genuine slow step execution and RPE>=8, can corroborate existing
+minimum-change proposals. A lone slow rep does not rebuild a programme. Health context
+uses separate comparable-source channels (HEALTH_CONNECT.md); no Run Score or weight
+is converted into readiness. Support routines are not load or adherence evidence.

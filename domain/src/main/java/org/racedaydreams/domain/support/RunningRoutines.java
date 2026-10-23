@@ -25,7 +25,7 @@ public final class RunningRoutines {
     private static Routine routine(String id,String title,String purpose,int minutes,String... ids){var list=new ArrayList<Movement>();for(String key:ids)list.add(MOVEMENTS.stream().filter(m->m.id().equals(key)).findFirst().orElseThrow());return new Routine(id,title,purpose,minutes,Collections.unmodifiableList(list));}
     public static List<Routine> all(){return Arrays.asList(
         routine("warm-easy","Easy-run preparation","Short, optional comfortable preparation.",3,"jog","ankle"),
-        routine("warm-quality","Quality-session warm-up","Dynamic preparation before demanding running; this supplements rather than replaces prescribed warm-up distance.",8,"jog","ankle","swing","march","stride"),
+        routine("warm-quality","Quality-session warm-up","Dynamic preparation before demanding running. Count the easy jog within any prescribed warm-up, rather than adding mileage.",8,"jog","ankle","swing","march","stride"),
         routine("warm-long","Long-run preparation","Short preparation without unnecessary expenditure.",5,"jog","ankle","calf"),
         routine("warm-race-short","5K / 10K race warm-up","Comfortable dynamic preparation; strides only if familiar and comfortable.",10,"jog","swing","march","stride"),
         routine("warm-race-half","Half-marathon warm-up","Moderate preparation, conserving energy.",6,"jog","ankle","march"),

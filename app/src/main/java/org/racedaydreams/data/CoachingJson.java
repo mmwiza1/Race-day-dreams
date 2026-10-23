@@ -52,8 +52,14 @@ final class CoachingJson {
         return new PlanVersion(required(j,"id"),planId,requiredInteger(j,"version"),Instant.parse(required(j,"createdAt")),prose(j,"reason"),profile(j.getJSONObject("goal")),prose(j,"evidence"),
             new TrainingPlan(planId,LocalDate.parse(required(j,"start")),LocalDate.parse(required(j,"end")),phases,workouts));
     }
-    static JSONObject response(RunExecution r) {return json("activityId",r.activityId(),"plannedWorkoutId",r.plannedWorkoutId(),"planVersionId",r.planVersionId(),"completedReps",r.completedReps(),"recoveriesCompleted",r.recoveriesCompleted(),"notes",r.responseNotes());}
-    static RunExecution response(JSONObject j)throws JSONException{return new RunExecution(required(j,"activityId"),text(j,"plannedWorkoutId"),text(j,"planVersionId"),integer(j,"completedReps"),j.isNull("recoveriesCompleted")?null:bool(j,"recoveriesCompleted"),prose(j,"notes"));}
+    static JSONObject response(RunExecution r) {
+        JSONArray steps=new JSONArray();for(var e:r.steps())steps.put(json("index",e.index(),"kind",e.kind().name(),"metres",e.metres(),"activeMillis",e.activeMillis(),"fast",e.fastPace(),"slow",e.slowPace(),"completed",e.completed(),"reliable",e.reliablePace()));
+        return json("activityId",r.activityId(),"plannedWorkoutId",r.plannedWorkoutId(),"planVersionId",r.planVersionId(),"completedReps",r.completedReps(),"recoveriesCompleted",r.recoveriesCompleted(),"notes",r.responseNotes(),"steps",steps);
+    }
+    static RunExecution response(JSONObject j)throws JSONException {
+        var steps=new ArrayList<RunExecution.StepEvidence>();JSONArray a=j.optJSONArray("steps");if(j.has("steps")&&a==null)throw new IllegalArgumentException("Invalid steps");if(a!=null){if(a.length()>500)throw new IllegalArgumentException("Too many steps");for(int i=0;i<a.length();i++){var e=a.getJSONObject(i);steps.add(new RunExecution.StepEvidence(requiredInteger(e,"index"),WorkoutSegment.Kind.valueOf(required(e,"kind")),requiredNumber(e,"metres"),requiredLong(e,"activeMillis"),number(e,"fast"),number(e,"slow"),bool(e,"completed"),bool(e,"reliable")));}}
+        return new RunExecution(required(j,"activityId"),text(j,"plannedWorkoutId"),text(j,"planVersionId"),integer(j,"completedReps"),j.isNull("recoveriesCompleted")?null:bool(j,"recoveriesCompleted"),prose(j,"notes"),steps);
+    }
     static JSONObject proposal(AdjustmentProposal p){JSONArray evidence=new JSONArray(p.evidence()),options=new JSONArray();for(var o:p.options())options.put(json("id",o.id(),"label",o.label(),"action",o.action().name(),"replacement",o.replacement()==null?null:planned(o.replacement())));
         return json("id",p.id(),"baseVersionId",p.baseVersionId(),"workoutId",p.workoutId(),"createdAt",p.createdAt().toString(),"reason",p.reason(),"evidence",evidence,"impact",p.impact(),"confidence",p.confidence(),"options",options);}
     static AdjustmentProposal proposal(JSONObject j)throws JSONException{List<String> evidence=new ArrayList<>();List<AdjustmentProposal.Option> options=new ArrayList<>();JSONArray a=j.getJSONArray("evidence"),b=j.getJSONArray("options");

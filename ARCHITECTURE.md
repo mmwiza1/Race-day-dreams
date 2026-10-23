@@ -128,7 +128,7 @@ completion state. Moves, replacements, cancellations, permission changes and
 quiet hours invalidate stale messages. Preferences default to disabled.
 
 Native recording and GPX are implemented in the Prompt 1 increment described below.
-Route maps, Wear OS and race prediction remain extension boundaries. Original
+Route maps and Wear OS remain future boundaries. Race predictions are described below. Original
 production plan generation, single-workout proposals and bounded weekly/multi-week review rules are implemented. A
 boundary is not an operational feature. The training engine and whole-plan
 regression harness must grow together; no pretend generated plan is displayed.
@@ -195,3 +195,28 @@ JSON backup envelope 5 still reads 1–4. The companion version-one ZIP archive 
 user-owned raw routes/sensors/events with SHA-256 verification and transactional merge.
 This is explicitly a two-file backup workflow; a unified whole-app container is not
 claimed. Restore refuses removing retained user-owned recordings or an active stage.
+
+## Prompt 2: one recorder, service-owned execution
+
+WorkoutExecutionEngine and CoachCues are Android-independent projections over accepted
+metres/active time from RunMetricsEngine. Plan segments are preserved/flattened; the
+executor never generates a training plan. The foreground service owns execution and
+publishes immutable UI state. CoachAudio implements an injectable cue-sink boundary
+using local platform TTS, temporary audio-focus ducking and optional vibration.
+No second race/free/interval location implementation exists.
+
+Schema 8 adds only coach_support (execution snapshots, routine completions, stable
+Dream Route assignments). Forward paths from 1–7 retain existing tables. Staged
+points/events and execution snapshots flush in the same transaction. Finalization
+links the exact plan version and retains typed step evidence in RunExecution; later
+plan changes do not reinterpret targets. Run Score compares qualified work segments
+against their targets, excluding recovery-inclusive overall averages.
+
+History uses metadata summaries, one activity-detail query and at most 12 recent runs /
+60,000 native points for coaching refresh. Excluded detail means insufficient evidence,
+not invented durability. Whole-history database paging remains future work.
+
+JSON envelope 6 carries support records and reads 1–5. Raw archive 2 includes execution
+snapshots and reads format 1. CompleteBackup format 1 nests app.json/recordings.zip
+with SHA-256/length manifest, bounded extraction to private temporary files and one
+outer SQLite transaction. A conflict or invalid inner document rolls back both stores.

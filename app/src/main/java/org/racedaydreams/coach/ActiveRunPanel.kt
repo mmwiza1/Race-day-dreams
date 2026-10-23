@@ -1,5 +1,7 @@
 package org.racedaydreams.coach
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -10,7 +12,9 @@ import org.racedaydreams.domain.PaceCalculator
 import java.time.Duration
 
 /** Glanceable primary controls. All state is supplied by the service, never timed here. */
-@Composable fun ActiveRunPanel(s:RunMetricsEngine.Status,w:WorkoutExecutionEngine.State?,hr:Double?,cue:String?,race:String?,send:(String)->Unit){
+@Composable fun ActiveRunPanel(s:RunMetricsEngine.Status,w:WorkoutExecutionEngine.State?,hr:Double?,cue:String?,race:String?,notice:String?,send:(String)->Unit){
+    Column(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+    Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)){
     Text(if(s.paused())"PAUSED"else w?.let{if(it.complete())"Workout steps finished"else "Step ${it.index()+1} of ${it.total()}"}?:"Recording",style=MaterialTheme.typography.headlineMedium)
     if(w!=null&&!w.complete()){
         Text(w.current()?.kind()?.name?.lowercase()?.replace('_',' ')?:"Run",style=MaterialTheme.typography.titleLarge)
@@ -22,11 +26,14 @@ import java.time.Duration
     Text("Elapsed ${PaceCalculator.formatTime(Duration.ofMillis(s.elapsedMillis()))} · Active ${PaceCalculator.formatTime(Duration.ofMillis(s.movingMillis()))}")
     hr?.let{Text("Heart rate ${it.toInt()} bpm")}
     Text(s.gps())
+    notice?.let{Text(it)}
+    var details by remember{mutableStateOf(false)}
+    TextButton(onClick={details=!details},modifier=Modifier.heightIn(min=48.dp)){Text(if(details)"Hide details"else"Workout details / controls")}
+    if(details){w?.current()?.let{Text(it.label())};w?.next()?.let{Text("Next: ${it.label()}")};cue?.let{Text(it)};race?.let{Text(it)};if(w!=null&&!w.complete()&&!w.early())OutlinedButton(onClick={send("SKIP_STEP")},modifier=Modifier.heightIn(min=56.dp)){Text("Skip current step")};Text("You can finish early. Unobserved distance and incomplete steps are never filled in.")}
+    }
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
         Button(onClick={send(if(s.paused())"RESUME"else"PAUSE")},modifier=Modifier.weight(1f).heightIn(min=64.dp)){Text(if(s.paused())"Resume"else"Pause")}
         OutlinedButton(onClick={send("FINISH")},modifier=Modifier.weight(1f).heightIn(min=64.dp)){Text("Finish & save")}
     }
-    var details by remember{mutableStateOf(false)}
-    TextButton(onClick={details=!details},modifier=Modifier.heightIn(min=48.dp)){Text(if(details)"Hide details"else"Workout details / controls")}
-    if(details){w?.current()?.let{Text(it.label())};w?.next()?.let{Text("Next: ${it.label()}")};cue?.let{Text(it)};race?.let{Text(it)};if(w!=null&&!w.complete()&&!w.early())OutlinedButton(onClick={send("SKIP_STEP")},modifier=Modifier.heightIn(min=56.dp)){Text("Skip current step")};Text("You can finish early. Unobserved distance and incomplete steps are never filled in.")}
+    }
 }

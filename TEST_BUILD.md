@@ -1,10 +1,10 @@
-# Galaxy S24 evaluation — 0.6.0-test1
+# Galaxy S24 evaluation — 0.7.0-test1
 
 Health Intelligence/Run Engine increment from verified 0.5 main
 `e6763ef4aa56af012950dd2eb7490f4c4c3a7eba` (owner handoff update preserved).
 See VERIFICATION.md and the 0.5 PR/Actions for observed build and device-test results.
 
-Download `Race-Day-Dreams-0.6.0-test1-debug.apk` from a successful intended-commit
+Download `Race-Day-Dreams-0.7.0-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
 Debug signing keys may differ between workflows; preserve your backup before any
 uninstall Android requires. CI does not establish physical-device interoperability
@@ -55,7 +55,7 @@ or real-world coaching efficacy.
 
 No demo records are installed by the production APK. Canonical screenshots are
 rendered by instrumentation-only fixtures. No account, analytics, backend,
-Internet permission, map/GPS/Wear feature or runtime LLM is introduced.
+Internet permission, map/Wear feature or runtime LLM is introduced. Native GPS is explicit.
 
 ## Refinement checks on the Galaxy S24
 
@@ -120,3 +120,38 @@ No production signing key or credential is bundled in this repository.
 
 CI/synthetic traces do not prove GNSS accuracy, OEM background survival, physical BLE,
 provider interoperability, battery efficiency or coaching efficacy.
+
+## Prompt 2 / 0.7 physical checklist
+
+- Start a planned workout with Live Coach. Check the preserved structure, timer and
+  genuine distance transitions; lock the screen/background UI, pause/resume, skip a
+  step, finish early and complete normally. Verify recorded reps/recoveries and RPE
+  remain distinct. GPS loss must suppress pace alerts, not invent distance.
+- Enable spoken cues with an installed offline voice. Test phone speaker, wired/BT
+  headphones, music ducking/restoration, denied focus/call mode, TTS disabled/missing
+  language and haptics off/on. No stale backlog or continuous pace nagging should occur.
+- Connect/disconnect/reconnect an HR strap during live execution. GPS/workout timing
+  must continue without HR. Revoke location/BLE/health/notification permissions and
+  review clear degradation. No signal may become fabricated fallback data.
+- Inspect race countdown, separate target/range/confidence, hilly effort strategy and
+  explicit race start. Check elapsed timing through pauses, half/remaining cues,
+  genuine splits, manual finish, post-race snapshot and separate official chip result.
+  Short-distance-only evidence must not create an unsupported marathon estimate.
+- Compare normal/missing/low health combinations. A lone low sleep/HRV signal must
+  not cancel training. Preview/reject/accept an easy alternative; only that future
+  session changes, goal/availability stay unchanged and the earlier version remains.
+- Open attached warm-ups/cool-downs and mobility. Check line figures, written cues,
+  completed routine persistence and unchanged Calendar/adherence/load. Try Marathon
+  vs 5K warm-up; no injury prevention or treatment is promised.
+- Save several runs, inspect varied offline city-inspired Dream schematics, reopen
+  and confirm stable assignments. They are not surveyed routes or a claim of location.
+- Export complete backup ZIP (finish/recover active stage first); restore on a spare
+  installation. Verify native samples, execution snapshots, official results, routines
+  and Dream assignments. Corruption/conflicts must leave all previous data intact.
+  Retain old JSON/raw archives until the new package restore has been checked.
+- Test 2–4-hour screen-off/battery-saver runs, process recreation, notification controls
+  and reboot recovery. Recovery saves only retained partial evidence and must not
+  auto-start tracking after reboot. Synthetic replay does not prove physical battery
+  behaviour or endurance. Last unflushed staging batch may still be lost.
+- Check TalkBack focus/labels, 200% fonts, dark/light contrast, landscape and sunlight.
+  Pause/resume/finish remain in a fixed footer; secondary details may scroll.
