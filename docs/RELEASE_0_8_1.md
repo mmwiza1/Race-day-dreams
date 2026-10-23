@@ -33,10 +33,10 @@ Implementation checkpoint; not yet a completed/released build.
 
 ## Known limitations
 
-- This checkpoint has 15 canonical illustrated exercise entries and complete14/14
+- This checkpoint has 47 canonical illustrated exercise entries and complete14/14
   built-in routine artwork; full174/174 canonical coverage is **not** complete.
-- Berlin now has a separately versioned historical geographic trace. The other
-  four Dream Route geography replacements and full screenshot/reference acceptance
+- Berlin and Tokyo now have separately versioned participant geographic traces.
+  The other three Dream Route geography replacements and full screenshot/reference acceptance
   remain in progress. Existing assignments and backups are preserved.
 - Recovery saves the durable interrupted portion; it does not fabricate continuous
   tracking across process death/reboot. The last unflushed batch may still be lost.

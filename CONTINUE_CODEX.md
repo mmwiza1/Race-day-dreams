@@ -72,7 +72,54 @@ Version0.8.1-test1/code10; schema10 (two additive metadata-history indexes only)
 JSON7 / raw2 / complete1 unchanged. No Internet permission/runtime dependencies,
 accounts, tracking or backend. Existing coaching/recorder architecture retained.
 
-## Post-push observation (read first)
+## Latest continuation checkpoint — read before historical sections below
+
+Local latest feature commit1299143 (Tokyo) follows1144847 (47guides) and178d53a
+(exact latest53bot captures). Current branch unchanged; PR10 explicitly remainsDRAFT.
+Version0.8.1-test1/code10, schema10/JSON7/raw2/complete1 unchanged. No new permission,
+runtime dependency, Internet, analytics, backend or account.
+
+- **47/174canonical illustrated guides**, all14/14routine movements; **127missing**
+  canonical IDs in docs/exercise-artwork/missing-canonical-ids.txt.57original local
+  WebPs,2,518,644bytes. Never declare complete until strict audit passes all174.
+-32additional entries reviewed/bundled across squats/unilateral/machines/carries/
+  dumbbell presses/rows/arm/core. Detailed copy in AdditionalTechniqueGuides.java,
+  existing TechniqueGuide.java and TechniqueIllustrations.java. Standing/CalfRaise
+  share the same exact appropriate machine movement; no unrelated pose substitution.
+  Cropped machines were regenerated, seatedcurl roller corrected behind calves,
+  DeadHang corrected to one static frame. Original PNGs under/workspace/generated_images.
+- New scripts/verify-guidance-assets.py verifies manifest membership/SHA256/bytes.
+- **Berlin AND Tokyo now geographic** for new assignments. Tokyo2026CC0 dataset
+  kekomat/marathon-gpx-dataset, commit5bff087d82353ec64df84873bbc1a246f8a25aae,
+  blobc5baee9ad663325e99042b03614ff6af514ebd57.10872sourcepositions reduced to91
+  retainedoriginal vertices25m tolerance; no health/time/identity retained.
+ 42.7468km approximate observed trace, separate42.195km equivalent axis.
+  Newtokyo-2026-geo-v1; oldtokyo-v2 geometry/assignments/preferences preserved.
+  Source/indices/CC0/reproduction in docs/dream-route-data and generate-tokyo-geometry.py.
+  Settingsbundled licence; new domain and complete-backup instrumentation tests.
+- **London/Paris/NewYork still unfinished**; do not accept their schematics as final.
+  Recent no-licence/GPL source exclusions documented; publicGPXalone is not permission.
+- Canonicalfixture requests58captures, five new guides added to existing53.
+  Current checked-in53PNGs +2metadata are exact bota8cbf6bd7346c80f21474a98bad69b79cc8cf778
+  from sourcec04143d/workflow40005151891. All55Gitblobs verified/adopted178d53a.
+  That sourcepassed build/lint +198tests perAPI28/35/36. Strictguidancefailed159;
+  release skipped. This does not certify the later47guides/Tokyo additions.
+- Currentlocaldomain60,115assertions/18suites andschema43pass; provenance andboth
+  projections pass. Strictauditfails127missing as intended. New199Androidtests
+  expected (Tokyo backup adds1), not yet observed. Gradlelocaldefaultcache unwritable;
+  workspacecacheattemptfailed wrapperdownload withsandbox socketdenied. Use establishedCI.
+- Full designreferencefidelity andallfivecitypresentation stillOPEN; see
+  docs/VISUAL_REVIEW_0_8_1.md. PhysicalS24checks remainunperformed.
+
+Next: finish currentsource verification push (preserve remote bot tree; compare exact
+local/remote tree), inspect freshAPI28/35/36/build/lint/captures; fix genuine failures,
+adopt exact58captures and inspect newguides. Continue remaining127canonical guidance
+with original distinct reviewed assets and movement-specificcopy. Continue threecity
+legalgeographic data/richer offline citypresentation. Do not remove strictreleasegate,
+markPRready, publish or merge before entire0.8.1definitionofdone.
+
+## Historical post-push observation
+
 
 Latest source pushed**c04143d587d63c05976cc54bfbdd63e59ed6019d** matches local
 **d2fb78f835a9e56df4eff6bdf66b98d1ecd78904**, tree7181276ef1b1d1dba79b0a89a2f0b2d275ebd1cf.

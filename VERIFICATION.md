@@ -440,3 +440,28 @@ Strictguidance-completeness still fails159missing canonical entries, so the whol
 workflow is not green and publication is skipped. No physicalS24check performed.
 Later bundled-inventory synchronization/CIequality check needs a fresh matrix; it
 changes documentation/workflow, not the recorder/coaching logic or runtime libraries.
+
+## Continued47-guide / Tokyo geography checkpoint (23October2026)
+
+Follow-up sourcec04143d587d63c05976cc54bfbdd63e59ed6019d workflow40005151891
+passed Android build/lint and198instrumentation tests on API28/35/36 (jobs
+120591070843/120591070774/120591070431). Canonical job120594335822 passed;
+53PNGs plus2metadata files were adopted exactly from bota8cbf6bd7346c80f21474a98bad69b79cc8cf778,
+with every Git blob hash checked. Strict guidance still failed159missing IDs and
+publication was skipped. This describes the preceding15-guide source only.
+
+Current local additions:47/174 illustrated canonical exercises,14/14 routine movements,
+57packaged original WebPs totalling2,518,644bytes. Provenance checksum verification
+passes. Domain tests:60,115assertions across18suites pass, including movement-specific
+copy/identity regressions and23Tokyo geographic checks. Schema tests43pass. Berlin
+and Tokyo projection reproduction checks pass. Strict guidance intentionally fails
+127missing IDs; do not weaken this release gate. Schema10/JSON7/raw2/complete1
+unchanged; no runtime dependency/Internet permission added.
+
+Local Gradle attempt could not use the default read-only/home cache. Retrying with
+GRADLE_USER_HOME=/workspace/.gradle reached wrapper download but the sandbox denied
+network sockets. No local Android build/lint/connected result is claimed. A fresh
+remote API28/35/36 matrix is required for the current additions, including Tokyo
+complete-backup test and five further authentic technique captures (58requested).
+No S24 test, full174coverage, all-five geography or final design-fidelity pass is
+claimed. Existing source captures remain labelled with their actual source commit.

@@ -29,3 +29,15 @@ what was inspected for this review. References are never shipped as app screensh
   barbell/dumbbell/machine/cable/bodyweight/static/dynamic guidance.
 - Curate final README images only after the release source passes all gates.
 - Complete GalaxyS24 checks inTEST_BUILD; no physical checks are claimed here.
+
+## Additional artwork review (before fresh build capture)
+
+Reviewed original detailed candidates for32additional canonical entries, including
+static holds, loaded carries and distinct machine movements. Framing corrections
+were regenerated for Leg Press, Dumbbell Shoulder Press, Lat Pulldown and Triceps
+Pressdown. The Seated Leg Curl roller was corrected to act behind the lower calves;
+Dead Hang was replaced with a single static frame. These assets continue the blue/navy
+filled-athlete design family, not circles-and-lines schematics. This asset review is
+not actual-build screenshot acceptance. New five representative guide captures and
+all47resource resolutions still need the fresh Android matrix.127canonical guides,
+London/Paris/NewYork geography and richer city visual presentation remain unfinished.

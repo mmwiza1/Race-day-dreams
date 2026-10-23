@@ -99,3 +99,13 @@ not final visual-reference approval. New four canonical assets also need fresh c
 
 A concrete reference-versus-build review is recorded in
 [0.8.1 visual review](VISUAL_REVIEW_0_8_1.md). Open gates remain explicit there.
+
+## Continued guidance capture request
+
+The previous follow-up workflow40005151891 produced53captures adopted byte-for-byte
+from bota8cbf6b; source c04143d. Current source adds five actual navigation captures:
+Front Squat, Leg Press, Lat Pulldown, Seated Leg Curl and Farmer’s Carry (58total).
+These will verify machine/squat/distance guide presentation in addition to the existing
+RDL/Bench/BSS/routine/light/dark/200% family. They must be regenerated and visually
+reviewed, not substituted with generated artwork or the design mockups. Full approved
+reference fidelity remains an open mandatory gate; catalogue coverage is still47/174.
