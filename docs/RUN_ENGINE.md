@@ -58,7 +58,7 @@ Sensor observations are retained as timestamped events even when GPS is absent.
 No cadence is calculated from GPS. Sensor absence does not stop a run.
 
 The original GPX adapter uses Android's platform XmlPullParser; no extra parser or
-network dependency. It bounds input/points/depth and rejects DTD/entities and missing
+network dependency. It accepts one timestamped track of up to 24 hours, and bounds input/points/depth and rejects DTD/custom entities and missing
 or non-increasing timestamps. Accuracy remains unknown for imported files. GPX segments
 and long gaps break continuity; altitude is optional. Exact retained route/time matches
 and repeated file imports do not create duplicate activities. GPX omits optional HR/

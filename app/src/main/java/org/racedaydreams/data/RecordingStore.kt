@@ -26,9 +26,12 @@ class RecordingStore(context:Context) {
     fun finish(session:Session,movingMillis:Long?=null,provider:String=if(session.id.startsWith("gpx-"))"gpx"else"rdd"):String {
         val db=helper.writableDatabase;db.beginTransaction();try{
             val points=points(session.id);require(points.size>=2){"At least two usable GPS points are needed. Staged evidence is retained."}
+            val timeline=mutableListOf<RunMetricsEngine.Event>()
+            db.rawQuery("SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",arrayOf(session.id)).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));timeline.add(RunMetricsEngine.Event(j.getString("type"),j.getLong("mono"),Instant.parse(j.getString("wall"))))}}
+            val active=movingMillis?:org.racedaydreams.domain.recording.RecordingTimeline.activeMillis(session.mono,session.last,timeline)
             val elapsed=(session.last-session.mono).coerceAtLeast(1);val samples=points.map{p->DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-session.mono),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity())}
             val hr=points.mapNotNull{it.heartRate()};val cad=points.mapNotNull{it.cadence()};val id="$provider:${session.id}"
-            val a=ActivityRecord(id,SourceIdentity(provider,session.id,"org.racedaydreams"),session.start,session.start.plusMillis(elapsed),ZoneOffset.UTC,ZoneOffset.UTC,points.last().cumulativeMetres(),if(provider=="gpx")null else Duration.ofMillis((movingMillis?:points.last().activeMillis()).coerceIn(0,elapsed)),hr.takeIf{it.isNotEmpty()}?.average(),hr.maxOrNull(),null,cad.takeIf{it.isNotEmpty()}?.average(),null,"${if(provider=="rdd")"Recorded on this phone"else"Imported GPX (accuracy not supplied by file)"}. Distance excludes gaps; raw timestamps and events retained.",samples,emptyList(),null,null)
+            val a=ActivityRecord(id,SourceIdentity(provider,session.id,"org.racedaydreams"),session.start,session.start.plusMillis(elapsed),ZoneOffset.UTC,ZoneOffset.UTC,points.last().cumulativeMetres(),if(provider=="gpx")null else Duration.ofMillis(active.coerceIn(0,elapsed)),hr.takeIf{it.isNotEmpty()}?.average(),hr.maxOrNull(),null,cad.takeIf{it.isNotEmpty()}?.average(),null,"${if(provider=="rdd")"Recorded on this phone"else"Imported GPX (accuracy not supplied by file)"}. Distance excludes gaps; raw timestamps and events retained.",samples,emptyList(),null,null)
             FeatureStore.putActivity(db,a,true)
             db.update("recording_sessions",ContentValues().apply{put("state","FINISHED");put("activity_id",id)},"id=?",arrayOf(session.id));db.setTransactionSuccessful();return id
         }finally{db.endTransaction()}

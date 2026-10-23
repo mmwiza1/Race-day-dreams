@@ -37,6 +37,8 @@ source or proprietary binary was introduced.
 
 See docs/RUN_ENGINE.md and TEST_BUILD.md for explicit recording/backup/hardware limits.
 Final source/CI/screenshot/APK results are recorded on PR #7 as they become available.
+The current domain suite additionally covers pause-event recovery (57,730 local assertions); recovery no longer truncates active time at the last GPS point. GPX standard escaped metadata and separate-track rejection have additional device tests pending the final source run.
+
 The following verification records apply to previous releases only.
 
 # Verification record — 0.5.0-test1

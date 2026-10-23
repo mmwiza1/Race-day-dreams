@@ -24,6 +24,8 @@ public final class RunEngineTestSuite {
   policy.observe(new RunMetricsEngine.Fix(Instant.EPOCH,32000,0,0,3.0,null,null,3.0));check(policy.observe(new RunMetricsEngine.Fix(Instant.EPOCH,37000,0,0,3.0,null,null,3.0))==AutoPausePolicy.Decision.RESUME);
   var delayed=new RunMetricsEngine(0,Instant.EPOCH);delayed.accept(fix(1000,0));delayed.missingFix(2500,Instant.EPOCH);check(delayed.accept(fix(2000,3)));
   delayed.heartRate(150.0,5000);delayed.accept(fix(3000,6));check(delayed.points().get(delayed.points().size()-1).heartRate()==null);delayed.accept(fix(6000,15));check(delayed.points().get(delayed.points().size()-1).heartRate()==150.0);
+  check(RecordingTimeline.activeMillis(0,65000,List.of(new RunMetricsEngine.Event("PAUSE",2000,Instant.EPOCH),new RunMetricsEngine.Event("RESUME",62000,Instant.EPOCH.minusSeconds(3600))))==5000);
+  check(RecordingTimeline.activeMillis(0,65000,List.of(new RunMetricsEngine.Event("AUTO_PAUSE",2000,Instant.EPOCH)))==2000);
   System.out.println("RunEngineTestSuite: "+n+" checks passed (traces, split interpolation, gaps, pauses, clock change, HR, personal baselines).");
  }
 }

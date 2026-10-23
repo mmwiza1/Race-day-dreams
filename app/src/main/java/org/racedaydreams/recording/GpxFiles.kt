@@ -22,13 +22,14 @@ class GpxFiles(private val context:Context):ActivityFileImporter {
         fun parse(input:InputStream):List<RoutePoint>{
             val bytes=ByteArrayOutputStream();val buffer=ByteArray(8192);while(true){val n=input.read(buffer);if(n<0)break;require(bytes.size()+n<=MAX_BYTES){"GPX exceeds 24 MiB limit"};bytes.write(buffer,0,n)}
             val parser=Xml.newPullParser();parser.setFeature(XmlPullParser.FEATURE_PROCESS_DOCDECL,false);parser.setInput(ByteArrayInputStream(bytes.toByteArray()),null)
-            val out=mutableListOf<RoutePoint>();var segment=0;var root=false;var lat:Double?=null;var lon:Double?=null;var altitude:Double?=null;var time:Instant?=null;var inPoint=false
+            val out=mutableListOf<RoutePoint>();var segment=0;var tracks=0;var root=false;var lat:Double?=null;var lon:Double?=null;var altitude:Double?=null;var time:Instant?=null;var inPoint=false
             var event=parser.eventType
             while(event!=XmlPullParser.END_DOCUMENT){
                 require(parser.depth<=16){"GPX nesting too deep"}
-                require(event!=XmlPullParser.DOCDECL&&event!=XmlPullParser.ENTITY_REF){"GPX entities/DOCTYPE are not supported"}
+                require(event!=XmlPullParser.DOCDECL&&(event!=XmlPullParser.ENTITY_REF||parser.name in setOf("amp","lt","gt","apos","quot"))){"GPX entities/DOCTYPE are not supported"}
                 if(event==XmlPullParser.START_TAG){when(parser.name){
                     "gpx"->{require(parser.depth==1);root=true}
+                    "trk"->{require(++tracks<=1){"Import one recorded track per file"}}
                     "trkseg"->segment++
                     "trkpt"->{require(root&&!inPoint);inPoint=true;lat=parser.getAttributeValue(null,"lat")?.toDouble();lon=parser.getAttributeValue(null,"lon")?.toDouble();altitude=null;time=null}
                     "ele"->if(inPoint)altitude=parser.nextText().toDouble()
@@ -40,7 +41,7 @@ class GpxFiles(private val context:Context):ActivityFileImporter {
                 }
                 event=parser.nextToken()
             }
-            require(root&&out.size>=2){"No timestamped GPX track found"};return out
+            require(root&&out.size>=2){"No timestamped GPX track found"};require(java.time.Duration.between(out.first().time,out.last().time)<=java.time.Duration.ofHours(24)){"GPX tracks longer than 24 hours are not supported"};return out
         }
     }
     override fun importFrom(input:InputStream):String {
