@@ -23,6 +23,11 @@ import androidx.compose.ui.graphics.drawscope.*
             fun polygon(c:Color,vararg points:Float){val p=Path();points.asList().chunked(2).forEachIndexed{i,xy->if(i==0)p.moveTo(xy[0],xy[1])else p.lineTo(xy[0],xy[1])};p.close();drawPath(p,c)}
             fun windows(x:Float,y:Float,n:Int,rows:Int,spacing:Float=9f){for(row in 0 until rows)for(col in 0 until n)rect(x+col*spacing,y+row*10,4f,6f,blue.copy(alpha=.6f))}
             when(shape) {
+                "river" -> {
+                    val river=Path().apply{moveTo(9f,24f);cubicTo(91f,15f,12f,59f,65f,60f);cubicTo(99f,61f,63f,80f,92f,84f)}
+                    drawPath(river,stone,style=Stroke(18f,cap=StrokeCap.Round))
+                    drawPath(river,blue.copy(alpha=.65f),style=Stroke(8f,cap=StrokeCap.Round))
+                }
                 "bridge" -> {
                     for(x in listOf(25f,68f)){
                         rect(x-7,35f,14f,49f);rect(x-10,32f,20f,5f,navy);rect(x-5,27f,10f,7f)
