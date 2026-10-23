@@ -19,11 +19,19 @@ import java.time.LocalDate
     val available=model.health.availability()==org.racedaydreams.health.HealthAvailability.AVAILABLE
     CoachHeading("Personal health context")
     Text("Health Connect: ${model.health.availability().name.lowercase().replace('_',' ')}")
-    Text("Optional sleep duration, resting heart rate, HRV RMSSD and daily steps help describe your own recent patterns. They never produce a readiness score or change a plan automatically.")
-    Text("Allow only the signals you want in the next permission screen. HRV stays within its source; steps use Health Connect's provider-priority aggregation. No information leaves your device.")
+    Text("Your own patterns, explained. Optional Health Connect signals stay separate; there is no readiness score.")
+    trends.forEach { t ->
+        val summary=org.racedaydreams.domain.presentation.HealthContextSummary.of(t)
+        GuidanceCard {
+            Text(summary.title(),style=MaterialTheme.typography.titleMedium)
+            Text(summary.value(),style=MaterialTheme.typography.headlineMedium)
+            Text(summary.context())
+            WhyDetails("Recent: ${t.recent()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"} · Reference: ${t.baseline()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"}\n${t.recentDays()}/7 recent days · ${t.referenceDays()}/28 reference days\nSource: ${t.source()}\n${t.limitation()}" + if(t.metric()==HealthIntelligence.Metric.SLEEP_MINUTES)"\nSleep-session duration may include awake time; sleep stages are not used." else "", "View evidence & sources")
+        }
+    }
+    WhyDetails("Choose only the optional signals you want. HRV remains source-comparable; steps use provider-priority aggregation. Permissions can be denied or revoked without blocking training. No information leaves your device.","About optional permissions")
     Button(onClick={launcher.launch(HealthIntelligenceGateway.permissions)},enabled=!busy&&available){Text("Choose optional health permissions")}
     OutlinedButton(onClick={refresh()},enabled=!busy&&available){Text("Refresh health context")}
     message?.let{Text(it)}
-    trends.forEach{t->CoachCard{Text(if(t.metric()==HealthIntelligence.Metric.SLEEP_MINUTES)"Sleep-session minutes (may include awake time)"else t.metric().name.lowercase().replace('_',' '),style=MaterialTheme.typography.titleMedium);Text(t.interpretation());Text("Recent: ${t.recent()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"} · Reference: ${t.baseline()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"}");Text("${t.recentDays()}/7 recent days · ${t.referenceDays()}/28 reference days");WhyDetails("${t.source()}\n${t.limitation()}","Evidence and source")}}
     Text("Consumer health measurements provide context, not diagnoses. Sleep stages are not used. One unusual measurement is not a reason to restructure training.")
 }

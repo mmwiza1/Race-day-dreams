@@ -36,6 +36,7 @@ class RefinementUiTest {
     private fun enter(label:String,value:String){compose.onNodeWithText(label).performScrollTo().performTextReplacement(value)}
     @Test fun monthHasCategoryLabelsAndNoGenericCountDescription(){
         launch();compose.onNodeWithText("Calendar").performClick();await("Activity calendar");compose.onNodeWithText("Month").performClick();await("Training calendar")
+        compose.onNodeWithText("Calendar key ⓘ").performClick()
         listOf("Easy","Quality","Long","Strength","Race","Rest").forEach{compose.onAllNodesWithText(it).filter(hasAnyAncestor(hasContentDescription("Workout category legend"))).assertCountEquals(1)}
         Assert.assertTrue(compose.onAllNodesWithContentDescription("Long run: planned",substring=true).fetchSemanticsNodes().isNotEmpty())
         compose.onNodeWithText("Legend: outline planned",substring=true).assertExists()

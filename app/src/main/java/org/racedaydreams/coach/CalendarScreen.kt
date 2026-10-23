@@ -43,13 +43,15 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
 @Composable fun CalendarLegend(){
     var expanded by rememberSaveable{mutableStateOf(false)}
     Column(verticalArrangement=Arrangement.spacedBy(4.dp)){
+        TextButton(onClick={expanded=!expanded},modifier=Modifier.heightIn(min=48.dp),contentPadding=PaddingValues(0.dp)){Text(if(expanded)"Hide calendar key"else "Calendar key ⓘ")}
+        if(expanded) {
         FlowRow(Modifier.semantics{contentDescription="Workout category legend"},horizontalArrangement=Arrangement.spacedBy(10.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
             CalendarData.Category.entries.forEach{c->Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(4.dp)){CalendarMarker(CalendarData.Entry(c,CalendarData.State.PLANNED,markerName(c),null,null));Text(markerName(c),style=MaterialTheme.typography.labelMedium)}}
         }
         Text("Legend: outline planned · filled completed",style=MaterialTheme.typography.labelMedium)
         Text("↗ Moved · − Skipped · ? Not completed",style=MaterialTheme.typography.labelSmall)
         if(expanded)Text("Rest means an available day left free within your programme. Dates outside it and unavailable dates are not rest. U is an unclassified run; no intensity is inferred.",style=MaterialTheme.typography.bodySmall)
-        TextButton(onClick={expanded=!expanded},modifier=Modifier.heightIn(min=48.dp),contentPadding=PaddingValues(0.dp)){Text(if(expanded)"Hide calendar key"else "Calendar key")}
+        }
     }
 }
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalLayoutApi::class)

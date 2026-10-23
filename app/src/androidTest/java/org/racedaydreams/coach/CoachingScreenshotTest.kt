@@ -79,7 +79,7 @@ class CoachingScreenshotTest {
         scenario=ActivityScenario.launch(CoachActivity::class.java)
         await("Today");capture("home")
         compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick();await("Recommendation");capture("weekly-review");back()
-        click("Plan");await("Your training programme");capture("training-plan")
+        click("Plan");await("This week");capture("training-plan")
         compose.onAllNodesWithText("View workout and purpose")[0].performScrollTo().performClick()
         await("Workout structure");capture("planned-workout")
         compose.onNode(hasText("Warm-up ·",substring=true)).performScrollTo().performClick();compose.waitUntil(20000){compose.onAllNodes(hasText("1 of ",substring=true)).fetchSemanticsNodes().isNotEmpty()};capture("warm-up");back()

@@ -40,6 +40,8 @@ class CoachingInteractionTest {
         Assert.assertEquals(1,CoachingStore(context).versions().size)
         Assert.assertTrue(current.plan().workouts().all{it.distanceKm()==null&&it.duration()!=null})
         Assert.assertEquals(profile.raceGoal(),SqliteUserPreferencesRepository(context).load().get().raceGoal())
+        await("Programme details")
+        compose.onNodeWithText("Programme details").performScrollTo().performClick()
         await("Rebuild remaining programme…")
         compose.onNodeWithText("Rebuild remaining programme…").performScrollTo().performClick()
         await("Keep current plan");compose.onNodeWithText("Keep current plan").performClick()

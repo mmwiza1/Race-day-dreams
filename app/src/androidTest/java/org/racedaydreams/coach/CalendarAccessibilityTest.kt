@@ -18,6 +18,7 @@ class CalendarAccessibilityTest {
     @get:Rule val compose=createComposeRule()
     @Test fun darkLargeTextRetainsCategoryLegendAndCompletionMeaning(){
         compose.setContent{MaterialTheme(colorScheme=darkColorScheme()){CompositionLocalProvider(LocalDensity provides Density(1f,2f)){Column{CalendarLegend();CalendarMarker(CalendarData.Entry(CalendarData.Category.LONG,CalendarData.State.COMPLETED,"Long run",null,null))}}}}
+        compose.onNodeWithText("Calendar key ⓘ").performClick()
         listOf("Easy","Quality","Long","Strength","Race","Rest").forEach{compose.onNodeWithText(it).assertExists()}
         compose.onNodeWithContentDescription("Long run: completed").assertExists()
         compose.onNodeWithText("Legend: outline planned",substring=true).assertExists()

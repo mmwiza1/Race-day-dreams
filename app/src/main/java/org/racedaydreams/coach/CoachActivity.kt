@@ -48,8 +48,8 @@ class CoachActivity : ComponentActivity() {
         model = ViewModelProvider(this)[CoachViewModel::class.java]
         setContent {
             val dark = isSystemInDarkTheme()
-            MaterialTheme(colorScheme = if (dark) darkColorScheme(primary = Color(0xFF93D4BF))
-                else lightColorScheme(primary = Color(0xFF245D50))) {
+            MaterialTheme(colorScheme = if (dark) darkColorScheme(primary = Color(0xFF9ACAFF), background = Color(0xFF101923), surface = Color(0xFF15202C), onSurface = Color(0xFFE8F0FA), onBackground = Color(0xFFE8F0FA))
+                else lightColorScheme(primary = Color(0xFF086AD8), background = Color(0xFFF6F9FD), surface = Color(0xFFFCFDFF), onSurface = Color(0xFF14243B), onBackground = Color(0xFF14243B))) {
                 Surface(Modifier.fillMaxSize()) { CoachApp(model) }
             }
         }
@@ -196,7 +196,7 @@ private fun CoachApp(model: CoachViewModel) {
                     model.cancelGoalEditing()
                     if (state.profile == null) nav.navigate("baseline") else nav.navigate("home") { launchSingleTop = true }
                 } }
-                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") },{nav.navigate("routines")}) }
+                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") },{nav.navigate("routines")},{id,related->nav.navigate("routine/${Uri.encode(id)}?related=${Uri.encode(related?:"")}")}) }
                 composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id"), { nav.navigate("activity/${Uri.encode(it)}") }, {v,w->nav.navigate("execute/${Uri.encode(v)}/${Uri.encode(w)}")},{r,w->nav.navigate("routine/$r?related=${Uri.encode(w?:"")}")}) }
                 composable("strength?date={date}") { destination -> val date=destination.arguments?.getString("date");if(date!=null)StrengthScreen(state,model,date) else StrengthDashboard(state){nav.navigate(it)} }
                 composable("strength/log") { StrengthScreen(state,model) }
