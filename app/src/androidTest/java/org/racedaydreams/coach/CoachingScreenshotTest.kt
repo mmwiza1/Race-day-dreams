@@ -180,7 +180,7 @@ class CoachingScreenshotTest {
             // Several fixture cards share "Recorded run". Select the native source
             // inside its clickable card, rather than whichever generic title happens
             // to be composed first while the lazy history is refreshing/scrolling.
-            val nativeCard=hasClickAction() and hasAnyDescendant(hasText(nativeSource))
+            val nativeCard=hasClickAction() and (hasText(nativeSource) or hasAnyDescendant(hasText(nativeSource)))
             compose.onNode(hasScrollToIndexAction()).performScrollToNode(nativeCard)
             compose.onNode(nativeCard).performClick();await("Run detail")
             compose.onNodeWithText(nativeSource).assertExists()
