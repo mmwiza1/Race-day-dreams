@@ -136,3 +136,14 @@ assets/dream-basemaps; source URLs/checksums and transformations are recorded pe
 city. The provider explicitly permits the bounded development offline extract;
 see THIRD_PARTY.md and bundled licences/dream-basemaps-NOTICE.txt. Original reader,
 projection and styling remain MIT. Nothing is fetched by the app at runtime.
+
+## 0.8.2 original Dream Routes artwork
+
+Five city heroes and fifteen landmark-poster WebPs are original generated illustrations
+created for Race Day Dreams from original architectural descriptions, contributed under
+the project MIT licence. No tourism photograph, organiser artwork, logo, sponsor identity
+or third-party illustration was copied. Decorative hero compositions do not represent
+geographic landmark positions. Exact source-plate hashes, processing/crops and asset
+hashes are recorded in docs/dream-artwork-0.8.2.json. Existing geographic datasets, ODbL
+notices and source licences are unchanged; maps remain coordinate/vector rendered.
+No runtime/build dependency or permission was added.

@@ -1,107 +1,64 @@
-# Current0.8.1 delivery — PR10 merged, verified test-only PR11 follow-up
+# Continue — Race Day Dreams 0.8.2-test1 Dream Routes presentation
 
-- PR10 merged at3fe6c6d93d261cd024fa71573553cfaf7c32d502, preserving accepted0.8.1
-  and the annualParis2026 correction. Production code/data/version remain unchanged
-  by PR11: https://github.com/mmwiza1/Race-day-dreams/pull/11 .
-- Main workflow40077045374 passed API28/35; API36 completed204tests with one city
-  screenshot timeout while selecting a generic Recordedrun title (203passed).
-  Development publication was correctly blocked. The follow-up uniquely selects
-  the native fixture by recording provenance and asserts opened-source identity,
-  retaining both analysis waits,20s limits, all city/dark/large-text checks/assertions.
-- Follow-up source04cd097535e0ec80040c82799db4b87a286c2ab3 passed complete workflow
-  40078273456:204tests EACH API28/35/36, build/lint/domain, strict174/174+14/14guidance,
-  and70actual-build captures. Exact Finished204log lines inspected for allthree APIs.
-- Canonicalbot0cd77bd adopted70freshcaptures; fingerprint
-  985d5b81c46f8aef4a8bd696ac8912bec3f4916c681a80b493c449adec8ad894 matches code.
-  NewParis capture inspected: annualcourse, highlight/markers/progress/context intact.
-  No production code, APKversion/schema/backup, dependency or permission changed.
-- Currentbranch:feature/0.8.1-design-guidance-reliability. If PR11notalready merged,
-  check final documentation-head CI, markready and squash-merge when green. Then
-  fetch/switch/fast-forwardmain, verify its fullCI and automatic rolling development
-  release and download/check the freshAPI35APK. Do NOT create a permanent/stable tag.
-  If already merged, inspect actualmain/latestCI; do not mergeagain or redo acceptedwork.
-- PhysicalGalaxyS24 checks remain unperformed. No future features are authorised.
+## Current scope and preserved baseline
 
-## Prior source and Paris verification (historical checkpoint)
+- Work branch: `feature/0.8.2-dream-routes-visual-redesign`, based on live merged main
+  `ec6c3ef1e5e162f513ce7ace017a604863cec679`. PR10 merged at
+  `3fe6c6d93d261cd024fa71573553cfaf7c32d502`; PR11 is also merged. Do not redo them.
+- Main workflow40079947980 passed 204 instrumentation tests EACH API28/35/36,
+  domain/build/lint/strict guidance and rolling Latest Development Build publication.
+- User authorises a focused0.8.2 visual release and merge only after full automated
+  and visual gates. Do not modify unrelated0.8.1 systems or create a stable release tag.
+- Current work is UNCOMMITTED; preserve all modified/new files. No0.8.2PR yet.
 
-# Continue — accepted0.8.1 implementation and annual Paris correction
+## Implemented work in the tree
 
-Preserve completed commits. Inspect live main/PR#10/CI before acting; this handoff
-records verified production source and may precede a later documentation/merge SHA.
-Do not reset/recreate the feature work or implement post0.8.1 enhancements.
+- Version0.8.2-test1/code11. Schema10, JSON7, raw2, complete1 unchanged.
+- New DreamRouteExperience shared presentation: atmospheric city hero, preserved
+  geographic course, prominent blue equivalent section, progress, original landmark
+  posters, completed/remaining/total summary, exact current/historical course identity.
+- DreamRouteArtwork loads only the displayed city's assets off-main, bounded8MiB cache.
+- Five original city plates generated and reviewed;20WebPs total1,472,726bytes,
+  five1200x400heroes and fifteen400x400posters. Manifest/crops/hashes/provenance in
+  docs/dream-artwork-0.8.2.json. Originals remain outsidegit under generated_images.
+- Canvas renderer preserves frozen5:4bounds/course paths/IDs. Softens context, strengthens
+  blue section, distinct full-course Start/Finish and section rings, collision-aware
+  5K/factual landmark labels. Prepared map/course paths cached off-main for3cities.
+- Additive DreamRouteProgress presentation methods use exact42195metres; numeric tests
+  preserve round-off, over-marathon and historic labels. No assignment/persistence change.
+- Added5Android resource/identity tests. Screenshot suite retains native provenance
+  matcher and both analysis waits; adds artwork readiness and seven lowerlandmark
+  captures beside seven city/dark/200%top captures. No test weakening.
+- CI and release artifact names target0.8.2; existing full API matrix/strictguidance/
+  publication guards preserved. New artwork verifier+14fault tests wired.
 
-## Delivery and authorization
+## Observed verification so far
 
-- PR: https://github.com/mmwiza1/Race-day-dreams/pull/10 .
-- Feature: `feature/0.8.1-design-guidance-reliability`.
-- Last inspected main:515fe538de1302dd83ee05fc9ca131c7afb7d520 (0.8 release).
-- The owner explicitly authorises markingPR10ready and merging after the complete
-  automated Paris-correction gate. PhysicalS24 acceptance is NOT a merge blocker,
-  and must remain honestly unperformed. No permanent/stable version tag is authorised.
-- If PR10is already merged on resumption, use actual main and verify its full CI and
-  automatic rolling LatestDevelopmentBuild; do not merge again or repeat accepted UI work.
+- 61,295 domain checks/19suites pass locally (+30presentation checks).
+- 43schema tests;11Dreamsource/projection tests;6release-note tests pass.
+- All20newart assets fully decoded during preparation;stdllib integrity and14fault
+  tests pass. Source/context/basemap reproductions still pass.
+- Local Gradle first attempt failed on unwritable default /home/agent/.gradle.
+  Retry must use GRADLE_USER_HOME=/workspace/.gradle with network permission; local
+  AndroidSDK is absent. Android compile/lint/instrumentation remain CI gates, NOT passed.
+- BaselineAPI35APK46,402,613bytes, artifact12555130846/run40079947980. After-APK size pending.
+- No current0.8.2screenshots/CI/merge claimed. PhysicalS24checks remain UNPERFORMED.
 
-## Completed — no further feature work
+## Exact remaining work
 
-- Accepted0.8.1 UX/design,174/174canonical illustrated guides and14/14routine movements;
-  177original packaged assets/9,198,660bytes. No missing canonical IDs or primitive fallback.
-- Week-firstPlan, compactCalendar, LiveCoach, health/shoes/trends/review/RunNow, history
-  keyset paging and durable honest recorder recovery preserved. No unrelated redesign.
-- Version0.8.1-test1/code10; schema10, JSON7, raw2, complete1. Paris adds no format change,
-  dependency or manifest permission. Binary APK inspection confirms no INTERNET permission.
-- New Paris `paris-2026-geo-v1` is the annual SchneiderElectricMarathondeParis,
-  12April2026. ODbL OSM geography via Geofabrik22October2026, original RDD reconstruction
-  from police order2026-00388 street itinerary; ASO2026guide corroborates start/finish.
-  1960actual OSM positions/550source ways, node/way/version/adjacency evidence and SHA256s
-  retained in docs/dream-route-data/paris-2026*.json. Approximate43.22km street line is
-  separate from42195m equivalent progress; not certified racing line/navigation.
-- Allfivecurrent cities render offline geographic context. LegacyOlympic/v2/unversioned
-  IDs, coordinates/frames, offsets, notices and assignments stay immutable/readable.
-  New Paris assignments never select the Olympic event. New/bothlegacy complete-backup
-  restore, interpolation/over-marathon and stable assignments are tested.
+1. Review all new Kotlin/integration; complete focused artwork/screenshot verification.
+2. Commit useful checkpoint, push branch/open draftPR; run full build/lint/API28/35/36.
+3. Diagnose/fix any compile/test failures. Download authentic API35screenshots and APK.
+4. Inspect allfivecitytop+landmarkcaptures,dark,200% against NEW owner inline fourcity
+   premium travel reference. Refine presentation if needed. Original inline reference
+   binary is not exposed in local attachments; olddocs/design-reference are0.8.1refs,
+   not this newer mandatory target. Never substitute captures/generatedart for reference.
+5. Measure finalAPK size/increase and binarymanifest(noINTERNET), preserve geometry/data/
+   backup behaviour and174/174+14/14guidance. Update README current authenticpreview.
+6. Finalise docs/DREAM_ROUTES, VISUAL_REVIEW_0_8_2, RELEASE_0_8_2, ARCHITECTURE,
+   VERIFICATION, attribution(andbundledcopy), TEST_BUILD and thishandoff with actualresults.
+7. Reviewdiff; finalheadCIgreen; markready/squashmerge normalconvention; verify freshmain
+   API28/35/36 and rolling Latest Development Build. No permanentstabletag.
 
-## Actual verified checkpoint
-
-- Production correction:e5a089b27f7eb2b6281d3fa8e53259422f75bd00.
-- Complete green workflow40046791736:204instrumentation tests EACH API28/35/36,
-  strictguidance/canonicalpublication. Exact Finished204log lines inspected.
-  API28attempt1was an offline-emulator/install-write failure before0tests; diagnosed,
-  targeted failed-job retry passed. No test/assertion weakened.
-- Local61,265domain checks/19suites;43schema;11source/projection/provenance;5release-note
-  tests; allcourse/context reproducers;174/174+14/14guidance and177artwork checks pass.
-- Canonicalbot4916db3ed0b5488257ea2cfa0b7258ea94f59172,70exact API35captures, source
-  fingerprint6be17eb492113a693980488aff8fadf463e8a69093571d21489a878d51d9fc5f.
-  Allfivecity/Paris/dark/200%captures visually inspected; annualParis labels are separate,
-  fullcourse/highlight/start/finish/progress/context visible. Owner references untouched.
-- SourceAPI35artifact12541633836, workflow40046791736:
-  `Race-Day-Dreams-0.8.1-test1-debug-api-35`.
-  Local `build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk`;
-  46,402,613bytes; SHA256c22a9017f6806db892ab59e7acb058b6f95066a05c0333e633b94dfd14bffbc4.
-  ZIPCRC/binarymanifest/version/permissions checked. Debug/test signing only.
-
-## Remaining delivery actions if not already completed
-
-1. Check final documentation head CI; production fingerprint must match above.
-2. Update PR10body with annualParis and actual results; markready and squash-merge using
-   the repository's established convention once all required checks are green.
-3. Fetch/switch/update local main without discarding work. Confirm PRmerge SHA/main.
-4. Verify postmerge fullAPI28/35/36 workflow and normal rolling development release.
-   Canonical download after successful publication:
-   https://github.com/mmwiza1/Race-day-dreams/releases/tag/development .
-   Download/verify that freshly built main APK; independently signed CI binaries may
-   have different SHA256s. Do not create a permanent version/stable tag.
-5. Report actual merge/mainCI/artifact locations, physical checks unperformed.
-
-## Physical status and future scope
-
-TEST_BUILD.md has the full S24 checklist: meaningful outdoor run/1km split, locked/
-background/long recording/battery/GPS gaps, pause/resume/recovery, realHCpermissions/
-providers, BLEifavailable, TTS/music/calls/audiofocus, GPX, completebackup/restore,
-TalkBack/200%/sunlight. NONE is claimed passed. Preserve a complete user backup before
-any uninstall needed for different debug signing keys. This remains a test/development
-build until human acceptance. Do not start cross-platform/future feature work.
-
-Useful validation: scripts/test-domain.sh, test-schema.py, test-release-notes.py,
-test-dream-map-source.py; allgenerate-*-geometry.py/generate-dream-context.py/
-generate-dream-basemaps.py --check; verify-guidance-assets.py; strictExerciseGuidanceAudit.
-No local AndroidSDK is installed; Androidverification is observed GitHubCI.
+Do not restart artwork/design from scratch. No geometry registry/source/archive/schema,
+actualGPS, recorder/LiveCoach or other accepted0.8.1 feature rewrite is needed.

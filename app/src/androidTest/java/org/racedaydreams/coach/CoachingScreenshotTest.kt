@@ -195,13 +195,18 @@ class CoachingScreenshotTest {
         try {
             shell("cmd uimode night no");shell("settings put system font_scale 1.0")
             for(city in org.racedaydreams.domain.support.DreamRoutes.routes()) {
-                openCity(city);capture("dream-route-${city.id().removeSuffix("-v2")}")
+                val captureName="dream-route-${city.id().removeSuffix("-v2")}"
+                openCity(city);capture(captureName)
+                alignHeading("Key landmarks on this route")
+                capture("$captureName-landmarks", "Key landmarks on this route")
             }
             val london=org.racedaydreams.domain.support.DreamRoutes.routes().first()
             scenario?.close();scenario=null
             shell("cmd uimode night yes");openCity(london);capture("dream-route-dark")
+            alignHeading("Key landmarks on this route");capture("dream-route-dark-landmarks", "Key landmarks on this route")
             scenario?.close();scenario=null
             shell("settings put system font_scale 2.0");openCity(london);capture("dream-route-large-font")
+            alignHeading("Key landmarks on this route");capture("dream-route-large-font-landmarks", "Key landmarks on this route")
         } finally {
             scenario?.close();scenario=null
             if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
@@ -231,16 +236,17 @@ class CoachingScreenshotTest {
         Assert.assertTrue("Capture heading is not in the upper viewport: $text at $top",top in 100f..300f)
     }
 
-    private fun capture(name:String){
+    private fun capture(name:String, anchor:String?=null){
         if(name.startsWith("dream-route")) {
             compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Offline city context ready")).fetchSemanticsNodes().isNotEmpty()}
+            compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Offline Dream artwork ready")).fetchSemanticsNodes().isNotEmpty()}
         }
         compose.waitForIdle()
         // Compose idleness can precede SurfaceFlinger presenting the last frame.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         android.os.SystemClock.sleep(200)
         if(name.startsWith("dream-route")) {
-            val heading=compose.onNode(hasText("Dream Route ·",substring=true))
+            val heading=compose.onNode(if(anchor==null)hasText("Dream Route ·",substring=true)else hasText(anchor))
             heading.assertIsDisplayed()
             val top=heading.fetchSemanticsNode().positionInRoot.y
             Assert.assertTrue("Dream Route capture must show its own heading: $name at $top",top in 100f..300f)

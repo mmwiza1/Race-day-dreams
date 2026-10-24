@@ -265,8 +265,8 @@ Berlin, Tokyo, New York and Paris have separately sourced geographic revisions;
 Paris now uses the annual Marathon de Paris2026 OSM street reconstruction; the old Olympic ID is retained only for saved assignments. Generated projection scripts retain
 source coordinates and licensing; all run offline. DreamCartography projects sourced
 landmark/river context in the same frozen course frame. River geometry is clipped
-in the renderer, never used to shrink the full course or fabricate streets. Original
-Canvas city vignettes are supplemental to numbered/labelled accessible anchors.
+in the renderer, never used to shrink the full course or fabricate streets. Original bundled city/poster illustrations are supplemental to sourced geographic
+context and accessible course/progress labels.
 ODbL coordinate databases remain separately licensed from MIT application code.
 Neither geography nor presentation modifies actual GPS, stored equivalent offsets,
 runner decisions, training load or the authoritative recording/execution engines.
@@ -275,10 +275,20 @@ runner decisions, training load or the authoritative recording/execution engines
 
 DreamBasemap is a bounded Android-independent parser for bundled ODbL geographic
 extracts, separate from run samples and the immutable DreamRoutes course registry.
-DreamBasemapArtwork loads only the selected frozen frame off-main, caches immutable
-data for five cities and prepares three unit-space paths off-main. DreamDrawing
+DreamBasemapArtwork loads only the selected frozen frame off-main, retains prepared paths
+for at most three requested cities; raw decoded coordinate objects are released. DreamDrawing
 renders original water/green/road styling plus preserved course/progress markers.
 No runtime tile client, network SDK or user GPS query is involved. Failed/mismatched
 context cannot alter a course assignment, recording or actual distance. Data-notice
 links and attribution remain readable offline; source preparation is a development
 tool, never part of the Android runtime.
+
+## 0.8.2 Dream Routes presentation
+
+DreamRouteExperience consumes the existing saved Assignment and immutable Route without
+changing either. DreamRouteProgress formats exact42195m completed/remaining/total values.
+DreamRouteArtwork resolves identity from the retained geometryID (including historical
+editions), decodes only displayed local WebPs on IO and uses a bounded8MiB image cache.
+DreamDrawing prepares preserved geographic paths off-main and draws a soft overview
+with distinct full-course pins and blue equivalent-section rings. No schema, backup,
+assignment, recorder, sample, provider or network architecture change is involved.

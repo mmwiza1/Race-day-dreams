@@ -1,4 +1,4 @@
-# Development status — 0.8.1-test1
+# Development status — 0.8.2-test1
 
 The app recommends. The runner decides. The plan adapts.
 
@@ -109,5 +109,20 @@ Five sourced geographic Dream Routes retain old IDs/assignments. Original offlin
 context styling adds ODbL road/water/green-space extracts; no runtime tiles, map SDK,
 Internet permission, accounts, analytics or new runtime dependency. Schema10 only
 adds history indexes; JSON7/raw2/complete1 remain compatible. Current CI and visual
-acceptance state belong in VERIFICATION.md and docs/VISUAL_REVIEW_0_8_1.md. KeepPR10
-draft until the whole release gate is met; no S24 physical results are inferred.
+acceptance state belong in VERIFICATION.md and docs/VISUAL_REVIEW_0_8_1.md. PRs #10
+and #11 are merged; no S24 physical results are inferred.
+
+## 0.8.2 premium Dream Routes presentation
+
+A focused visual update is in progress on the 0.8.1 geographic baseline. The target is
+original illustrated city heroes, a designed course map, prominent equivalent progress,
+compact landmark artwork and exact completed/remaining/total summaries for London,
+Berlin, Paris, Tokyo and New York. The owner-supplied four-city premium reference in
+the 0.8.2 task is mandatory; New York must share its design family. The original image
+is currently inline in that task, not a verified new binary under design-reference.
+
+Do not change geometry IDs, assignment selection/persistence, offsets, interpolation,
+recorded GPS, backup formats or unrelated product screens. No schema or backup bump
+is planned for bundled presentation assets. New screens, asset sizes and 0.8.2 CI are
+pending actual implementation/verification; see docs/RELEASE_0_8_2.md and the current
+VERIFICATION.md. API28/35/36, strict174/174+14/14guidance and actual capture gates remain.

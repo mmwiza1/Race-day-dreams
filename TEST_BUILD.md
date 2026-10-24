@@ -1,13 +1,37 @@
-# Galaxy S24 evaluation — 0.8.1-test1
+# Galaxy S24 evaluation — 0.8.2-test1
 
-0.8.1 continues the preserved0.8 implementation. See VERIFICATION.md and draft
-PR#10/Actions for exact verified source commits and emulator-test results.
+0.8.2 changes Dream Routes presentation while preserving the merged 0.8.1 engine.
+PRs #10 and #11 are complete. Consult VERIFICATION.md for the actual current source,
+CI and APK evidence; the new visual update is not physically verified by these notes.
 
-Download `Race-Day-Dreams-0.8.1-test1-debug.apk` from a successful intended-commit
-Actions artifact (API 35 is suitable for the S24). Export a local backup first.
-Debug signing keys may differ between workflows; preserve your backup before any
-uninstall Android requires. CI does not establish physical-device interoperability
-or real-world coaching efficacy.
+Download `Race-Day-Dreams-0.8.2-test1-debug.apk` from a successful intended-commit API35
+artifact, or `Race-Day-Dreams-0.8.2-test1.apk` from the rolling development release after
+publication. Export a complete backup first. Debug signing keys may differ; preserve
+backup before any reinstall. No physical test below has been performed by Codex.
+
+## 0.8.2 focused visual and compatibility checks
+
+Record device/Android/One UI version, APK commit, date and observations. In airplane mode:
+
+- [ ] Open London, Berlin, Paris, Tokyo and New York: illustrated hero and landmark cards
+  load locally; full course remains visible; blue equivalent section is immediately clear.
+- [ ] Verify Paris names the annual Marathon de Paris 2026. Check older activities retain
+  their original route ID, start offset, distance and equivalent section after upgrade.
+- [ ] Check completed/remaining/total distances and percentage, including a marathon-length
+  or longer test activity. Display rounding must not alter recorded GPS or stored values.
+- [ ] Inspect light/dark mode and 200% font: important text wraps, landmark cards can stack,
+  map remains useful, controls retain touch targets, and progress is clear without colour.
+- [ ] Use TalkBack: city artwork is clearly decorative/atmospheric rather than a geographic
+  landmark-position claim; map, progress, summary and landmark cards have useful alternatives.
+- [ ] Reopen several activities and scroll repeatedly; observe responsiveness and memory use.
+  Only the selected city's artwork should be needed. Check the size of the installed update.
+- [ ] Complete-backup/restore an expendable profile containing old and new assignments;
+  verify geometry and actual GPS samples survive unchanged. Do not discard the original backup.
+- [ ] Compare the installed screens to the owner-supplied four-city premium 0.8.2 reference.
+  Recognisable, atmospheric artwork and hierarchy matter; merely displaying all fields does not pass.
+
+These checks remain **UNPERFORMED** until a human records the result. The existing
+recording/Health Connect/BLE/audio/long-run checklist below also remains unverified.
 
 ## Phone checklist
 

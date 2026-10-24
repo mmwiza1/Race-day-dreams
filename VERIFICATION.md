@@ -1,3 +1,19 @@
+# 0.8.2-test1 verification — in progress
+
+Baseline main ec6c3ef1e5e162f513ce7ace017a604863cec679 passed complete workflow40079947980
+with204instrumentation tests EACH API28/35/36 and rolling development publication. PR10
+and PR11are merged. BaselineAPI35APK46,402,613bytes.
+
+Current feature version0.8.2-test1/code11;schema10,JSON7,raw2,complete1 unchanged.
+Observed local:61,295domain checks/19suites,43schema,11Dreamsource/projection,
+6release-note tests,20artassets/1,472,726bytes and14artwork-integrity fault tests pass.
+Android build/lint/instrumentation, new canonical captures, strict visual comparison,
+after-APK size and finalCI/publication remain pending. No physicalS24check is claimed.
+
+The following records are HISTORICAL0.8.1 results, not0.8.2 verification.
+
+---
+
 # Final0.8.1 native-capture follow-up —24October2026
 
 PR10 merged at3fe6c6d93d261cd024fa71573553cfaf7c32d502. Postmerge workflow40077045374
@@ -17,8 +33,7 @@ percentage/distance and geographic context remain clear, without label overlap.
 
 The runtime source/data are unchanged from PR10. Version0.8.1-test1/code10,
 schema10/JSON7/raw2/complete1; no dependency or permission added. No physicalGalaxyS24
-checks are claimed. Finalmainworkflow/publication must succeed before reporting the
-rolling development APK as available. This remains a test/development build.
+checks are claimed. Finalmainworkflow40079947980and rolling development publication succeeded. This remains a test/development build.
 
 ## Detailed Paris/source verification history
 

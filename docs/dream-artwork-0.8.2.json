@@ -1,0 +1,613 @@
+{
+  "version": 1,
+  "release": "0.8.2-test1",
+  "created": "2026-10-24",
+  "ownership": "Original app-owned Race Day Dreams generated artwork; distributed as MIT project contributions. No third-party photographs, organiser artwork, race logos or sponsor branding are incorporated.",
+  "purpose": "Offline decorative city heroes and illustrated route-relevant landmark thumbnails. The geographic course stays vector-rendered from its separately licensed existing coordinate database. Hero compositions are atmospheric and non-geographic.",
+  "sourceOfLandmarkLabels": "Accepted route-specific metadata in domain/src/main/java/org/racedaydreams/domain/support/DreamRoutes.java, generated DreamCartography.java and docs/dream-route-data/city-context.json. Historical assignments retain their own course/landmark identities; shared city art does not relabel them.",
+  "processing": "Source plates remain untouched outside the repository. Heroes use source rectangle [0, 0, 1536, 512] and 1200 × 400 output. Clean poster starts are London 512, Berlin 522, Paris 531, Tokyo 549, New York 528: generated divider positions vary. Each poster uses a centred square crop within its nominal 512 px column, then 400 × 400 output; no stretching and no retained hero strips or divider bands. Exact crops, source hashes and encoding are recorded per asset.",
+  "assetCount": 20,
+  "packagedBytes": 1472726,
+  "assets": [
+    {
+      "file": "app/src/main/assets/dream-art/london-hero.webp",
+      "city": "london",
+      "kind": "hero",
+      "label": "London city panorama",
+      "width": 1200,
+      "height": 400,
+      "bytes": 131312,
+      "sha256": "9cee970111b196d937b18d47416fec8e9fdd3f0e8412bd85cee21c7af3d1e025",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-4f52adb8-1260-4a59-8710-6b64b3077a02.png",
+      "sourcePlateSha256": "c2fb51af633f8c562d34f7a96664df58ca947665ea2b4f05712a8411f4a1b3b1",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        0,
+        0,
+        1536,
+        512
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Decorative, non-geographic editorial panorama of London. The city composition does not establish the position of any landmark on the course.",
+      "labelSource": "Decorative city identity, not geographic evidence"
+    },
+    {
+      "file": "app/src/main/assets/dream-art/london-tower-bridge.webp",
+      "city": "london",
+      "kind": "landmark",
+      "label": "Tower Bridge",
+      "width": 400,
+      "height": 400,
+      "bytes": 53864,
+      "sha256": "68f746eb5a7e37ad896cd20376952e825998d78c78d6f0a58924d96f1f64ea8c",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-4f52adb8-1260-4a59-8710-6b64b3077a02.png",
+      "sourcePlateSha256": "c2fb51af633f8c562d34f7a96664df58ca947665ea2b4f05712a8411f4a1b3b1",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Tower Bridge. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/london-buckingham-palace.webp",
+      "city": "london",
+      "kind": "landmark",
+      "label": "Buckingham Palace",
+      "width": 400,
+      "height": 400,
+      "bytes": 60426,
+      "sha256": "823b4f904015505ee962ebaf7409f51ceda8aaed9604203d0dbd9a2b68988803",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-4f52adb8-1260-4a59-8710-6b64b3077a02.png",
+      "sourcePlateSha256": "c2fb51af633f8c562d34f7a96664df58ca947665ea2b4f05712a8411f4a1b3b1",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Buckingham Palace. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/london-london-eye.webp",
+      "city": "london",
+      "kind": "landmark",
+      "label": "London Eye",
+      "width": 400,
+      "height": 400,
+      "bytes": 50156,
+      "sha256": "3d975bdc267ba4fb587fc1190c324b3f4803a10f718701717aed0438c9631975",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-4f52adb8-1260-4a59-8710-6b64b3077a02.png",
+      "sourcePlateSha256": "c2fb51af633f8c562d34f7a96664df58ca947665ea2b4f05712a8411f4a1b3b1",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of London Eye. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/berlin-hero.webp",
+      "city": "berlin",
+      "kind": "hero",
+      "label": "Berlin city panorama",
+      "width": 1200,
+      "height": 400,
+      "bytes": 133414,
+      "sha256": "521c6d31dc54a8071c832031708b442f133f1916fb197ea2dd471bb79ca11d6c",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-bca99967-f5eb-45ea-9018-948a8dc1f869.png",
+      "sourcePlateSha256": "de32b6f53a38757e809312546f65335d0c3dd0b11dc466d7acee8dabcab10980",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        0,
+        0,
+        1536,
+        512
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Decorative, non-geographic editorial panorama of Berlin. The city composition does not establish the position of any landmark on the course.",
+      "labelSource": "Decorative city identity, not geographic evidence"
+    },
+    {
+      "file": "app/src/main/assets/dream-art/berlin-brandenburg-gate.webp",
+      "city": "berlin",
+      "kind": "landmark",
+      "label": "Brandenburg Gate",
+      "width": 400,
+      "height": 400,
+      "bytes": 43198,
+      "sha256": "e1ac8c224bd94c19b8c3a081569e30e4d982d90bdca847bbf5fdc790357f1e53",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-bca99967-f5eb-45ea-9018-948a8dc1f869.png",
+      "sourcePlateSha256": "de32b6f53a38757e809312546f65335d0c3dd0b11dc466d7acee8dabcab10980",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        5,
+        522,
+        507,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Brandenburg Gate. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/berlin-reichstag.webp",
+      "city": "berlin",
+      "kind": "landmark",
+      "label": "Reichstag",
+      "width": 400,
+      "height": 400,
+      "bytes": 58806,
+      "sha256": "dbbdea8edf2f601d364c1c1bd9be41332ef480ce3e0de53c5b8a19b09c7bdfee",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-bca99967-f5eb-45ea-9018-948a8dc1f869.png",
+      "sourcePlateSha256": "de32b6f53a38757e809312546f65335d0c3dd0b11dc466d7acee8dabcab10980",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        517,
+        522,
+        1019,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Reichstag. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/berlin-victory-column.webp",
+      "city": "berlin",
+      "kind": "landmark",
+      "label": "Victory Column",
+      "width": 400,
+      "height": 400,
+      "bytes": 48466,
+      "sha256": "b41e05ee342d10beced7d3ead877f93d7349a0e1ab8c662c48111d67605736bc",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-bca99967-f5eb-45ea-9018-948a8dc1f869.png",
+      "sourcePlateSha256": "de32b6f53a38757e809312546f65335d0c3dd0b11dc466d7acee8dabcab10980",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        1029,
+        522,
+        1531,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Victory Column. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/paris-hero.webp",
+      "city": "paris",
+      "kind": "hero",
+      "label": "Paris city panorama",
+      "width": 1200,
+      "height": 400,
+      "bytes": 141730,
+      "sha256": "319e8f1dcffaa0f465e02bd16c7f66ea1f76c6e25d1d805e051d96d80e50a849",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-7eb6893a-5d4d-4592-afd6-cf388a23c6ca.png",
+      "sourcePlateSha256": "44515446456eda33f604bd2ced238ae016a84e912f85e6630f0188ca57f456fa",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        0,
+        0,
+        1536,
+        512
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Decorative, non-geographic editorial panorama of Paris. The city composition does not establish the position of any landmark on the course.",
+      "labelSource": "Decorative city identity, not geographic evidence"
+    },
+    {
+      "file": "app/src/main/assets/dream-art/paris-eiffel-tower.webp",
+      "city": "paris",
+      "kind": "landmark",
+      "label": "Eiffel Tower",
+      "width": 400,
+      "height": 400,
+      "bytes": 57092,
+      "sha256": "e14cfd6a0e09a8aad8a445a4d0e5e6194d454626405ffe6e74921a5a1a3a9c5a",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-7eb6893a-5d4d-4592-afd6-cf388a23c6ca.png",
+      "sourcePlateSha256": "44515446456eda33f604bd2ced238ae016a84e912f85e6630f0188ca57f456fa",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        9,
+        531,
+        502,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Eiffel Tower. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/paris-vincennes.webp",
+      "city": "paris",
+      "kind": "landmark",
+      "label": "Château de Vincennes",
+      "width": 400,
+      "height": 400,
+      "bytes": 54452,
+      "sha256": "6e98aa79b92947ec050261772e3602dac158dd4f1809e083483d18c670720bab",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-7eb6893a-5d4d-4592-afd6-cf388a23c6ca.png",
+      "sourcePlateSha256": "44515446456eda33f604bd2ced238ae016a84e912f85e6630f0188ca57f456fa",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        521,
+        531,
+        1014,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Château de Vincennes. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/paris-louvre.webp",
+      "city": "paris",
+      "kind": "landmark",
+      "label": "Louvre",
+      "width": 400,
+      "height": 400,
+      "bytes": 54114,
+      "sha256": "475572c07f97987d6afe37be39fdd123d0e9647cb0c16c895a419345a7e5aecb",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-7eb6893a-5d4d-4592-afd6-cf388a23c6ca.png",
+      "sourcePlateSha256": "44515446456eda33f604bd2ced238ae016a84e912f85e6630f0188ca57f456fa",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        1033,
+        531,
+        1526,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Louvre. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/tokyo-hero.webp",
+      "city": "tokyo",
+      "kind": "hero",
+      "label": "Tokyo city panorama",
+      "width": 1200,
+      "height": 400,
+      "bytes": 117676,
+      "sha256": "077be5ef5a9fc1c2c233c9ed62c84d45c974cbd181f00e6b80193911224ca99b",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-a948bc96-6c90-45fe-bba4-8802d1230f17.png",
+      "sourcePlateSha256": "1fed41e780f85055931580448d1b0b1df81bccf1e4b4e96bdf8dc36a1c586202",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        0,
+        0,
+        1536,
+        512
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Decorative, non-geographic editorial panorama of Tokyo. The city composition does not establish the position of any landmark on the course.",
+      "labelSource": "Decorative city identity, not geographic evidence"
+    },
+    {
+      "file": "app/src/main/assets/dream-art/tokyo-tokyo-tower.webp",
+      "city": "tokyo",
+      "kind": "landmark",
+      "label": "Tokyo Tower",
+      "width": 400,
+      "height": 400,
+      "bytes": 62146,
+      "sha256": "3e206c09d6766d5d0f731e13253176b6e6c5aa421bf9c6fdeeac0b1432aae047",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-a948bc96-6c90-45fe-bba4-8802d1230f17.png",
+      "sourcePlateSha256": "1fed41e780f85055931580448d1b0b1df81bccf1e4b4e96bdf8dc36a1c586202",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        18,
+        549,
+        493,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Tokyo Tower. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/tokyo-tokyo-station.webp",
+      "city": "tokyo",
+      "kind": "landmark",
+      "label": "Tokyo Station",
+      "width": 400,
+      "height": 400,
+      "bytes": 53202,
+      "sha256": "c884e634551ddeb7a11b6b91be71a45a01f5d483c64ddd7df1df172cc023efa6",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-a948bc96-6c90-45fe-bba4-8802d1230f17.png",
+      "sourcePlateSha256": "1fed41e780f85055931580448d1b0b1df81bccf1e4b4e96bdf8dc36a1c586202",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        530,
+        549,
+        1005,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Tokyo Station. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/tokyo-senso-ji.webp",
+      "city": "tokyo",
+      "kind": "landmark",
+      "label": "Sensō-ji",
+      "width": 400,
+      "height": 400,
+      "bytes": 54300,
+      "sha256": "9bc3fa88409b5d9cf9e88413918b6de99aa2476cfcfbca1dc652a178cdc2c588",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-a948bc96-6c90-45fe-bba4-8802d1230f17.png",
+      "sourcePlateSha256": "1fed41e780f85055931580448d1b0b1df81bccf1e4b4e96bdf8dc36a1c586202",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        1042,
+        549,
+        1517,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Sensō-ji. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/new-york-hero.webp",
+      "city": "new-york",
+      "kind": "hero",
+      "label": "New York city panorama",
+      "width": 1200,
+      "height": 400,
+      "bytes": 133416,
+      "sha256": "25475f5af6c803619eb4c81b5730edcae9024e15cb47e5679dde6245be5ca66f",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-801f8fc0-f2c8-422c-89a5-012c477752d4.png",
+      "sourcePlateSha256": "4410157f22aaf79adf3b37e50b79bdf8736f0f25adbba79a7d36e0cb1326475d",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        0,
+        0,
+        1536,
+        512
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Decorative, non-geographic editorial panorama of New York. The city composition does not establish the position of any landmark on the course.",
+      "labelSource": "Decorative city identity, not geographic evidence"
+    },
+    {
+      "file": "app/src/main/assets/dream-art/new-york-verrazzano.webp",
+      "city": "new-york",
+      "kind": "landmark",
+      "label": "Verrazzano Bridge",
+      "width": 400,
+      "height": 400,
+      "bytes": 43464,
+      "sha256": "d59cb89684ce5a2fc4502196f6a0ad653c9aaa33d9e90d69e53f387899cddb9d",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-801f8fc0-f2c8-422c-89a5-012c477752d4.png",
+      "sourcePlateSha256": "4410157f22aaf79adf3b37e50b79bdf8736f0f25adbba79a7d36e0cb1326475d",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        8,
+        528,
+        504,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Verrazzano Bridge. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/new-york-queensboro.webp",
+      "city": "new-york",
+      "kind": "landmark",
+      "label": "Queensboro Bridge",
+      "width": 400,
+      "height": 400,
+      "bytes": 55488,
+      "sha256": "0c1b282eb186a4bb1413c596496ed5f9fff6359fb8b679c1fa9593325b036964",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-801f8fc0-f2c8-422c-89a5-012c477752d4.png",
+      "sourcePlateSha256": "4410157f22aaf79adf3b37e50b79bdf8736f0f25adbba79a7d36e0cb1326475d",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        520,
+        528,
+        1016,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Queensboro Bridge. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    },
+    {
+      "file": "app/src/main/assets/dream-art/new-york-central-park.webp",
+      "city": "new-york",
+      "kind": "landmark",
+      "label": "Central Park finish",
+      "width": 400,
+      "height": 400,
+      "bytes": 66004,
+      "sha256": "2b777e0af7f0c749640c3686ddd2977e05828cce4eabc42f273235b149ecc884",
+      "licence": "MIT project contribution",
+      "creation": "Original Race Day Dreams artwork generated for this project with the image-generation tool; no stock, organiser or tourism imagery imported. Development-only Pillow performs crop, Lanczos resize and quality 85 WebP encoding.",
+      "sourcePlate": "exec-801f8fc0-f2c8-422c-89a5-012c477752d4.png",
+      "sourcePlateSha256": "4410157f22aaf79adf3b37e50b79bdf8736f0f25adbba79a7d36e0cb1326475d",
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "sourceCrop": [
+        1032,
+        528,
+        1528,
+        1024
+      ],
+      "encoding": {
+        "format": "WebP",
+        "quality": 85,
+        "method": 6,
+        "resample": "Lanczos"
+      },
+      "accessibility": "Original illustrated view of Central Park finish. The illustration is supplemental to its written landmark label, not a navigation map.",
+      "labelSource": "Existing sourced DreamRoutes.landmarks(route) label; docs/dream-route-data/city-context.json. No geographic anchor or course geometry changed."
+    }
+  ]
+}

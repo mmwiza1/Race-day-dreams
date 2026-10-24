@@ -28,6 +28,35 @@ public final class GuidancePresentationTestSuite {
         check(small.percentage()==12);check(small.distanceLabel().equals("5.02 km / 42.20 km"));check(small.extraMetres()==0);
         var full=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-v2",0,42195));check(full.percentage()==100);check(full.fraction()==1);check(full.distanceLabel().equals("42.20 km / 42.20 km"));
         var over=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-v2",0,50000));check(over.percentage()==100);check(over.extraMetres()==7805);check(over.highlightedMetres()==42195);
+        var londonAssignment=new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-historical-geo-v1",1000,7190);
+        var londonProgress=org.racedaydreams.domain.presentation.DreamRouteProgress.of(londonAssignment);
+        check(londonProgress.percentage()==17);check(londonProgress.completionLabel().equals("17% complete"));
+        check(londonProgress.remainingMetres()==35005);check(londonProgress.totalMetres()==42195);
+        check(londonProgress.completedDistanceLabel().equals("7.19 km"));
+        check(londonProgress.remainingDistanceLabel().equals("35.01 km"));
+        check(londonProgress.totalDistanceLabel().equals("42.20 km"));
+        check(londonProgress.equivalenceStatement("London Marathon course").equals("You covered the equivalent of 7.19 km of the London Marathon course today."));
+        check(londonProgress.accessibilitySummary("London Marathon course").contains("7.19 km completed; 35.01 km remaining; 42.20 km total"));
+        check(londonProgress.accessibilitySummary("London Marathon course").contains("not your physical location"));
+        var otherOffset=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("london-historical-geo-v1",20000,7190));
+        check(otherOffset.equals(londonProgress));check(londonAssignment.startMetres()==1000);
+        check(full.remainingMetres()==0);check(full.remainingDistanceLabel().equals("0.00 km"));
+        check(over.remainingMetres()==0);check(over.completedDistanceLabel().equals("42.20 km"));
+        check(over.equivalenceStatement("London Marathon course").contains("7.81 km beyond one marathon equivalent"));
+        check(over.accessibilitySummary("London Marathon course").contains("100% complete"));
+        check(over.accessibilitySummary("London Marathon course").contains("7.81 km beyond one marathon equivalent"));
+        var nearFinish=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("tokyo-2026-geo-v1",0,42194.9));
+        check(nearFinish.percentage()==100);check(nearFinish.fraction()<1);check(Math.abs(nearFinish.remainingMetres()-.1)<.000001);
+        var annualParis=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("paris-2026-geo-v1",5000,6280));
+        check(annualParis.percentage()==15);check(annualParis.remainingMetres()==35915);
+        var legacyParis=org.racedaydreams.domain.presentation.DreamRouteProgress.of(new org.racedaydreams.domain.support.DreamRoutes.Assignment("paris-2024-olympic-geo-v1",5000,6280));
+        check(legacyParis.equals(annualParis));
+        check(legacyParis.equivalenceStatement("Paris 2024 Olympic course").contains("Paris 2024 Olympic course"));
+        var originalLocale=java.util.Locale.getDefault();
+        try{java.util.Locale.setDefault(java.util.Locale.FRANCE);check(londonProgress.completedDistanceLabel().equals("7.19 km"));check(londonProgress.remainingDistanceLabel().equals("35.01 km"));}
+        finally{java.util.Locale.setDefault(originalLocale);}
+        try{londonProgress.equivalenceStatement(" ");throw new AssertionError("Blank course identity");}catch(IllegalArgumentException expected){checks++;}
+        try{londonProgress.accessibilitySummary(null);throw new AssertionError("Missing course identity");}catch(IllegalArgumentException expected){checks++;}
         check(new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS available",false).hasReliablePace());
         check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS jump rejected",false).hasReliablePace());
         check(!new org.racedaydreams.domain.recording.RunMetricsEngine.Status(100,10000,10000,300.0,"GPS interrupted · distance incomplete",false).hasReliablePace());

@@ -1,7 +1,8 @@
 # Race Day Dreams 0.8.1-test1
 
 Design fidelity, complete exercise guidance and recording reliability.
-This is a test release in preparation, not a Play Store production release.
+PRs #10 and #11 are merged. This remains a test/development build, not a Play Store
+production release; physical Galaxy S24 acceptance is unperformed.
 
 ## What's new
 
