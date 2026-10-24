@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import java.time.Duration
 import java.time.ZoneOffset
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
@@ -23,7 +25,12 @@ import org.racedaydreams.domain.activity.SplitCalculator
 import org.racedaydreams.domain.baseline.AssessmentAnalyzer
 
 @Composable
-fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit, allStrength:()->Unit = {}) {
+fun ActivityHistoryScreen(
+    state: CoachUiState,
+    open: (String) -> Unit,
+    allStrength:()->Unit = {},
+    loadSummaryPage: (suspend (java.time.Instant?, String?, Int) -> List<ActivityRecord>)? = null
+) {
     val context=androidx.compose.ui.platform.LocalContext.current
     var page by remember{mutableIntStateOf(0)}
     var visible by remember{mutableStateOf<List<ActivityRecord>>(emptyList())}
@@ -32,21 +39,30 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit, allStreng
     var error by remember{mutableStateOf(false)}
     var loadedSource by remember{mutableStateOf<List<ActivityRecord>?>(null)}
     LaunchedEffect(state.activities,page) {
-        val append=loadedSource==state.activities
-        if(!append){visible=emptyList();loadedSource=state.activities}
+        val requestedSource=state.activities
+        val append=loadedSource==requestedSource
+        if(!append)visible=emptyList()
         loading=true;error=false
         try {
             val last=if(append)visible.lastOrNull()else null
-            val found=withContext(Dispatchers.IO){org.racedaydreams.data.FeatureStore(context).activitySummaryPage(last?.start(),last?.id(),31)}
+            // The optional suspend boundary permits deterministic interrupted-query tests;
+            // production continues to read the same bounded, summary-only page on IO.
+            val found=if(loadSummaryPage!=null)loadSummaryPage(last?.start(),last?.id(),31)
+                else withContext(Dispatchers.IO){org.racedaydreams.data.FeatureStore(context).activitySummaryPage(last?.start(),last?.id(),31)}
             visible=if(append)visible+found.take(30)else found.take(30);hasMore=found.size>30
+            loadedSource=requestedSource
         }catch(cancelled:kotlinx.coroutines.CancellationException){throw cancelled}
         catch(_:Exception){error=true}
-        finally{loading=false}
+        finally{
+            // A cancelled predecessor can finish after its replacement has started.
+            // It must not advertise that replacement's still-pending page as ready.
+            if(currentCoroutineContext().isActive)loading=false
+        }
     }
     val groups = remember(visible) { visible.groupBy(::displayActivityDate) }
     // A parent refresh can replace the source before LaunchedEffect starts its new
     // query. Do not advertise the old page as ready during that transition.
-    val historyPending=loading||state.busy||loadedSource!=state.activities
+    val historyPending=loading||state.busy||(!error&&loadedSource!=state.activities)
     LazyColumn(Modifier.fillMaxSize().semantics{stateDescription=if(historyPending)"Loading recorded history"else if(error)"History unavailable"else"Recorded history ready"}, contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             CoachHeading("Activity calendar")
@@ -59,7 +75,7 @@ fun ActivityHistoryScreen(state: CoachUiState, open: (String) -> Unit, allStreng
         }
         if(state.strengthSessions.size>20)item{TextButton(onClick=allStrength,modifier=Modifier.heightIn(min=48.dp)){Text("View all strength history")}}
         if(error)item{Text("History could not be loaded. Your records are retained.");TextButton(onClick={page++}){Text("Try again")}}
-        if (groups.isEmpty()&&!loading&&!error) item { Text("No completed runs have been added. Connect Health Connect or enter an optional completed assessment to begin your history.") }
+        if (groups.isEmpty()&&!historyPending&&!error) item { Text("No completed runs have been added. Connect Health Connect or enter an optional completed assessment to begin your history.") }
         groups.forEach { (date, activities) ->
             item(key = "date:$date") { Text(date, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() }) }
             items(activities, key = { it.id() }) { activity ->
@@ -81,7 +97,7 @@ Text("Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activ
                 }
             }
         }
-        if(loading)item{LinearProgressIndicator(Modifier.fillMaxWidth())}
+        if(historyPending)item{LinearProgressIndicator(Modifier.fillMaxWidth())}
         else if(hasMore)item{TextButton(onClick={page++},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Load more recorded runs")}}
 
     }

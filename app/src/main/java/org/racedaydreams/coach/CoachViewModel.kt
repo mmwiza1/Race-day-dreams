@@ -455,26 +455,27 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     }
 
     fun completeRun(versionId: String, workoutId: String, distanceKm: Double, duration: Duration,
-                    date: LocalDate, time: LocalTime, rpe: Double?, notes: String, onSuccess: (String) -> Unit) = mutate(onSuccess = {}) {
-        require(distanceKm.isFinite() && distanceKm > 0 && distanceKm <= 300) { "Enter an actual distance between 0 and 300 km." }
-        require(!duration.isZero && !duration.isNegative && duration <= Duration.ofHours(48)) { "Enter a positive actual duration of up to 48 hours." }
-        val start = date.atTime(time).atZone(ZoneId.systemDefault())
-        require(!start.toInstant().plus(duration).isAfter(Instant.now())) { "A completed run must end before the current time." }
-        val version = coaching.versions().firstOrNull { it.id() == versionId } ?: throw IllegalArgumentException("Plan version not found.")
-        val workout = version.plan().workouts().firstOrNull { it.id() == workoutId } ?: throw IllegalArgumentException("Workout not found.")
-        require(workout.date() <= LocalDate.now()) { "A future prescription cannot be marked completed." }
-        require(store.activities().none { it.plannedWorkoutId() == workoutId }) { "This workout already has a recorded run." }
+                    date: LocalDate, time: LocalTime, rpe: Double?, notes: String, onSuccess: (String) -> Unit) {
         val id = UUID.randomUUID().toString()
-        val activity = ActivityRecord(id, SourceIdentity("manual", id, null), start.toInstant(), start.toInstant().plus(duration), start.offset,
-            start.plus(duration).offset, distanceKm * 1000, null, null, null, null, null, rpe, notes, emptyList(), emptyList(), workoutId,
-            store.shoes().firstOrNull { it.defaultShoe() }?.id())
-        val response = RunExecution(id, workoutId, versionId, null, null, "Manually recorded actual run; no splits or reps invented")
-        coaching.transaction {
-            store.upsertManualActivity(activity)
-            coaching.saveResponse(response)
-            coaching.saveFeedback(id, versionId, RunScoreEngine.analyse(workout, activity, response))
+        mutate(onSuccess = { onSuccess(id) }) {
+            require(distanceKm.isFinite() && distanceKm > 0 && distanceKm <= 300) { "Enter an actual distance between 0 and 300 km." }
+            require(!duration.isZero && !duration.isNegative && duration <= Duration.ofHours(48)) { "Enter a positive actual duration of up to 48 hours." }
+            val start = date.atTime(time).atZone(ZoneId.systemDefault())
+            require(!start.toInstant().plus(duration).isAfter(Instant.now())) { "A completed run must end before the current time." }
+            val version = coaching.versions().firstOrNull { it.id() == versionId } ?: throw IllegalArgumentException("Plan version not found.")
+            val workout = version.plan().workouts().firstOrNull { it.id() == workoutId } ?: throw IllegalArgumentException("Workout not found.")
+            require(workout.date() <= LocalDate.now()) { "A future prescription cannot be marked completed." }
+            require(store.activities().none { it.plannedWorkoutId() == workoutId }) { "This workout already has a recorded run." }
+            val activity = ActivityRecord(id, SourceIdentity("manual", id, null), start.toInstant(), start.toInstant().plus(duration), start.offset,
+                start.plus(duration).offset, distanceKm * 1000, null, null, null, null, null, rpe, notes, emptyList(), emptyList(), workoutId,
+                store.shoes().firstOrNull { it.defaultShoe() }?.id())
+            val response = RunExecution(id, workoutId, versionId, null, null, "Manually recorded actual run; no splits or reps invented")
+            coaching.transaction {
+                store.upsertManualActivity(activity)
+                coaching.saveResponse(response)
+                coaching.saveFeedback(id, versionId, RunScoreEngine.analyse(workout, activity, response))
+            }
         }
-        withContext(Dispatchers.Main) { onSuccess(id) }
     }
 
     fun exportBackup(uri: Uri) = mutate("Backup saved to the file you selected. Keep it somewhere you trust.") {

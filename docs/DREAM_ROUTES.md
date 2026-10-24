@@ -1,4 +1,4 @@
-# Dream Routes — 0.8.1
+# Dream Routes — 0.8.2-test1
 
 Dream Routes show how a completed run compares with a section of a marathon-distance
 course. They never claim that the runner physically visited the city. All geometry,
@@ -13,11 +13,11 @@ permission. They are not official race maps or suitable for navigation.
 | Berlin | `berlin-2014-geo-v1` | 191 retained positions from an MIT-licensed 2014 participant trace by Alexandre Donciu-Julin. Historical approximate GPS evidence. |
 | Tokyo | `tokyo-2026-geo-v1` | 91 retained original positions from kekomat's explicitly CC0 2026 participant trace, simplified at 25 m. |
 | New York | `new-york-2026-geo-v1` | All 371 delivered projected positions from MARATHON TRIP's explicitly ODbL-offered road-centreline data. Approximate 2026 context, not certified geometry. |
-| Paris | `paris-2026-geo-v1` | Annual Marathon de Paris2026:1960retained OSM positions, reconstructed from the statutory street itinerary; ODbL via Geofabrik. Approximate road/junction line, not certified geometry. |
+| Paris | `paris-2026-geo-v1` | Annual Marathon de Paris 2026: 1960 retained OSM positions, reconstructed from the statutory street itinerary; ODbL via Geofabrik. Approximate road/junction line, not certified geometry. |
 
-Paris represents the **annual Schneider Electric Marathon de Paris,12April2026**.
-Police order2026-00388 provides the street itinerary; OpenStreetMap/Geofabrik provides
-geography. The unpublished2027 course is not claimed. See the detailed source audit
+Paris represents the **annual Schneider Electric Marathon de Paris, 12 April 2026**.
+Police order 2026-00388 provides the street itinerary; OpenStreetMap/Geofabrik provides
+geography. The unpublished 2027 course is not claimed. See the detailed source audit
 in [dream-route-data](dream-route-data/README.md). Existing Olympic geometry remains
 immutable solely for old stored assignments; it is never selected for a new run.
 No organiser map artwork, logos, sponsor branding, photographs or third-party
@@ -26,27 +26,42 @@ coordinates are in [dream-route-data](dream-route-data/README.md).
 
 ## Progress and presentation
 
-The full course remains visible, with a contrasting equivalent section, a ring for
-its start and a checkered finish marker. Five-kilometre ticks, numbered landmark
-anchors, labels, percentage and equivalent distance provide non-colour information.
-A small About this route control exposes the source and limitations.
+The saved course appears beneath an original atmospheric illustrated city hero.
+The blue equivalent section dominates a quieter full-course line. Full-course Start
+and Finish pins are distinct from the blue section-end rings: a saved offset is not
+silently moved to the race start. Collision-aware five-kilometre and factual landmark
+labels are subordinate to the highlighted section.
 
-The 42,195 m progress axis is an **equivalent-distance axis**, separate from measured
-source trace length. Participant traces and simplified road centrelines can measure
-longer or shorter. The app neither edits actual GPS nor calls those lengths certified.
-Sections retain intervening original vertices; they do not cut chords across corners.
-Exact start/finish boundaries and over-marathon handling are tested.
+Progress shows completed distance, percentage, an accessible bar, and completed /
+remaining / total summary. All arithmetic uses exactly 42,195 metres before display
+rounding; over-marathon distance is explained separately. The equivalence sentence
+never claims the runner physically visited the city. Preserved historical IDs keep
+their own course/edition labels, including archived Olympic Paris assignments.
 
-Eighteen retained landmark anchors (fifteen for current routes, three for legacy Paris) use sourced positions in each course's exact projection:
-fifteen Wikidata P625 statements (CC0) and three New York ODbL anchors. The miniature
-Canvas illustrations are original RDD work. Thames and Seine context retains original
-Natural Earth public-domain centreline vertices. Their symbolic width does not claim
-surveyed river banks. No streets or scenery are invented to fill blank space.
+Five original bundled hero illustrations and fifteen landmark posters are decorative
+app-owned art, separate from factual geographic data. Each current course uses its
+three retained sourced landmark labels. Annual Paris 2026 uses Eiffel Tower, Château de
+Vincennes and Louvre; it does not borrow unrelated landmarks from the Olympic course.
+Illustrated skyline positions are atmospheric, not geographic placement evidence.
+Asset provenance, exact crops, sizes and SHA256s are in
+[dream-artwork-0.8.2.json](dream-artwork-0.8.2.json). No organiser graphics/photos copied.
 
-The renderer caches bounds and highlighted sections. The immutable geometry registry
-is built once and reused for assignment, history and redraw lookups. Landmark labels
-stack at large font sizes. Canvas accessibility describes the course, equivalent
-section and numbered landmarks; written labels remain available independently.
+The 42,195 m equivalent-distance axis remains separate from measured source trace length.
+Sections retain all intervening original vertices and interpolate their endpoints;
+this presentation neither changes actual GPS nor calls approximate lines certified.
+
+Retained landmark positions use fifteen Wikidata P625 statements (CC0) and three New York
+ODbL anchors; Thames/Seine retain Natural Earth public-domain centreline vertices.
+The existing sourced ODbL road/water/green-space frame is unchanged. Tiny road fragments
+may be omitted only from drawing to reduce visual noise; stored data remain intact.
+No streets, park labels or geographic scenery are invented.
+
+Only the displayed city's four bounded WebPs are decoded on an IO dispatcher, with an
+8 MiB cache. Course/context paths are prepared off-main and retained for at most 3 cities;
+raw map coordinate objects are released after path preparation. No runtime image,
+map-tile or geographic request occurs. At 200% font posters and summary columns stack,
+text wraps and content scrolls. Text/semantics provide colour-independent progress.
+Source attribution and a compact About control remain readable offline.
 
 ## Stable assignments and compatibility
 
@@ -69,7 +84,7 @@ repository root. These checks need no network. Domain tests also cover bounds,
 interpolation, full-polyline clipping, old IDs and immutable registry reuse.
 
 Actual-build screenshot/reference acceptance is documented separately in
-[VISUAL_REVIEW_0_8_1.md](VISUAL_REVIEW_0_8_1.md). A passing data test does not prove
+[VISUAL_REVIEW_0_8_2.md](VISUAL_REVIEW_0_8_2.md). A passing data test does not prove
 visual fidelity, physical GNSS accuracy or a human accessibility check.
 
 ### Five-city offline context follow-up
@@ -85,4 +100,5 @@ The parser bounds input and verifies course-frame identity. Immutable data are l
 on an IO dispatcher and paths prepared on a background dispatcher; the canvas draws
 three cached context paths, retaining the route/highlight/markers on top. Existing
 legacy frames use their original presentation. Actual-build five-city/dark/large-font
-captures must still be reviewed after this change before closing the fidelity gate.
+captures are a separate visual acceptance gate; see the current verification and
+visual-review documents for observed results.

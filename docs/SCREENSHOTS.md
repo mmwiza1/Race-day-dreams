@@ -1,4 +1,70 @@
-# Current native-capture fixture follow-up
+# 0.8.2 premium Dream Routes — verified canonical captures
+
+The mandatory target is the owner-supplied **four-city premium Dream Routes reference
+in the 0.8.2 task**. Its original binary is not currently among the stored reference
+files; do not relabel an older image, generated artwork or actual screenshot as that
+original. Existing owner JPEGs in docs/design-reference remain unchanged. Actual-build
+captures remain in docs/screenshots and must never replace the approved reference.
+
+The shared city experience and 20 original bundled images are implemented. No schema,
+backup format, runtime dependency or permission changed. Final-source captures were
+adopted from successful workflow40092248558; all14Dream panels passed direct visual
+review against the inline premium reference. Physical acceptance remains separate.
+
+Required final-source canonical captures:
+
+| File | Required review |
+| --- | --- |
+| `dream-route-london.png` | Original London hero, geographic full course, blue section, summary and landmark cards |
+| `dream-route-berlin.png` | Same hierarchy with recognisable Berlin identity |
+| `dream-route-paris.png` | Annual Marathon de Paris 2026 retained; relevant landmark context, no organiser branding |
+| `dream-route-tokyo.png` | Cohesive Tokyo hero/art, complete course and clear section |
+| `dream-route-new-york.png` | Same visual family as the four approved city examples |
+| `dream-route-dark.png` | Genuine dark adaptation, legible map/context/progress/cards |
+| `dream-route-large-font.png` | Actual 200% font, natural wrapping/stacking and useful map size |
+
+Each city also requires a genuine lower-content `dream-route-{city}-landmarks.png`
+capture anchored at “Key landmarks on this route”. The representative variants are
+`dream-route-dark-landmarks.png` and `dream-route-large-font-landmarks.png`. These
+show the landmark posters without shrinking accessible text or compositing a fake
+screen. Each capture must assert its own visible section anchor 100–300 px from the top;
+top-screen captures retain their existing Dream Route heading assertion and show the
+city hero and full course map. Both map-context and selected-city artwork readiness
+were observed before capture in the verified source run.
+The stdlib scripts/verify-dream-screenshots.py requires the complete 77-file canonical
+set, including all 14 Dream top/landmark panels and every established whole-app capture,
+bounded phone-screen dimensions, complete PNG chunks/checksums and a valid bounded
+pixel stream after each emulator capture, before canonical adoption and before release
+publication. It does not compare hashes between APIs or establish visual fidelity.
+
+The existing whole-app canonical set remains required. Generate these PNGs from real
+production composables/navigation with instrumentation-only fixtures after full API 28,
+35 and 36 checks pass. Canonical publication is confined to the same-repository
+`feature/0.8.2-dream-routes-visual-redesign` branch; main/tag publication verifies the
+exact source fingerprint and strict 174/174 canonical + 14/14 routine guidance first.
+The matrix domain/check step also runs scripts/verify-dream-artwork.py and its
+focused scripts/test-dream-artwork.py checks; all 20 new WebP assets (five city heroes and 15 landmark posters) require matching provenance.
+
+Compare the fresh captures directly with the supplied reference: atmospheric illustrated
+hero, premium travel/fitness feel, immediately obvious equivalent section, restrained
+geographic context, clear progress and attractive original landmark thumbnails. Check
+normal/dark/200% text and collision-aware markers. The hero is atmospheric; geography
+belongs to the actual course map. **Consistent pixels, correct geometry and all fields
+being present do not establish design fidelity.** Record specific findings and observed
+source/run/capture IDs in docs/VISUAL_REVIEW_0_8_2.md and VERIFICATION.md.
+
+Initial source 30a619b produced 77 authentic API 35 PNGs in workflow 40085783355,
+artifact 12556114941. The first visual inspection prompted Paris-title and progress-bar
+refinements. Final sourcefc47aae passed workflow40092248558:213tests EACH API28/35/36,
+77real API35captures/artifact12560190031 adopted bybotc408306. Stored fingerprint
+ece5e40a19e9512fc3f8eeb2f8535b520837228a8ecff8d336eff739860ceab6 matches currentcode.
+All14Dream panels were opened and reviewed; see VISUAL_REVIEW_0_8_2.md for specific
+findings and responsive adaptations. PhysicalS24acceptance is unperformed. The records
+below are historical0.8.1evidence, not verification of the new presentation.
+
+---
+
+# Historical 0.8.1 native-capture fixture follow-up
 
 PR11source04cd097535e0ec80040c82799db4b87a286c2ab3 passed workflow40078273456,
 204tests on EACH API28/35/36. All70actualAPI35PNGs adopted in bot0cd77bd. Current
@@ -8,7 +74,7 @@ The newParis capture was visually inspected: correct annualcourse and clear prog
 markers/geographic context; no overlap observed. Original referenceJPEGs remain separate.
 Earlier production-source/visual reviews below are historical verification checkpoints.
 
-# Current0.8.1 canonical capture status —24October2026
+# Historical 0.8.1 canonical capture status —24October2026
 
 The current set is **70actual API35build captures** from production correction
 `e5a089b27f7eb2b6281d3fa8e53259422f75bd00`, greenworkflow40046791736, adopted exactly
@@ -29,7 +95,7 @@ for observed tests, source/geometry limitations and debugAPK provenance.
 
 ---
 
-# Current 0.8.1 actual-build captures
+# Historical 0.8.1 actual-build captures
 
 All70committed PNGs were captured from source109394a in successful
 workflow40042190130 and adopted exactly via bot7ed12d8. API28/35/36 passed build,
@@ -45,8 +111,8 @@ VISUAL_REVIEW_0_8_1.md. Resource completeness/consistent pixels alone are not fi
 
 README uses eight actual-build captures, never the design mockups. Fixture data and
 capture controls remain instrumentation-only; production screens are identical.
-Physical S24 acceptance is UNPERFORMED, so PR#10 remains draft. A documentation-only
-checkpoint after these captures must preserve the same production fingerprint.
+PRs #10 and #11 are merged. Physical S24 acceptance remains UNPERFORMED; these
+records document historical source fingerprints and do not claim physical acceptance.
 
 ## Earlier records (historical)
 

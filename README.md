@@ -7,15 +7,21 @@ A free, open-source, account-free Android running companion.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.8.1-test1 — test release in preparation
+## 0.8.2-test1 — Premium Dream Routes
 
-Today puts your planned session and Run Now first. Free runs, quick distance/time
-choices, custom structured workouts and repeat favourites all use one native recorder.
-Spontaneous runs stay independent unless you explicitly associate them with a plan.
-Offline route traces, evidence-backed Route Story, five geographic Dream Routes with
-original street/water/green-space styling and optional routines extend the preserved
-Live Coach and race preparation foundations. No map tiles are downloaded by the app.
-See [0.8.1 release notes](docs/RELEASE_0_8_1.md) for current refinements and limitations.
+Dream Routes now pair original illustrated city panoramas with the full geographic
+course, a prominent blue equivalent section, clear progress and illustrated landmark
+cards. London, Berlin, Paris, Tokyo and New York share the same travel-inspired design.
+The accepted engine is preserved: annual Marathon de Paris 2026, stable saved assignments
+and offsets, exact equivalent-distance interpolation and local backups. All artwork works
+offline; no format, runtime dependency or permission changes are required. The 20 bundled
+WebPs total 1,472,726 bytes. Fresh canonical captures and source verification cover all
+five cities, dark mode and 200% text; see the recorded visual review and verification.
+See [0.8.2 release notes](docs/RELEASE_0_8_2.md) and [Dream Routes](docs/DREAM_ROUTES.md).
+
+Today, Run Now, one native recorder, custom/repeated workouts, Live Coach and race
+preparation retain their existing behaviour. Spontaneous runs stay independent unless
+you explicitly associate them with a plan.
 
 Strength and Progress use summary dashboards with dedicated detail screens. The
 local catalogue has 174 canonical exercises, live name/alias search, favourites,
@@ -41,30 +47,33 @@ Actual build/CI results are recorded in [VERIFICATION.md](VERIFICATION.md).
 
 ## Install the test APK
 
-[GitHub Releases](https://github.com/mmwiza1/Race-day-dreams/releases) is the download
-location for verified tagged test releases and the rolling development build once
-published by the green main/tag workflow. The0.8.1 refinement PR remains draft pending
-final visual acceptance; no0.8.1 permanent release is claimed yet. These APKs are
-debug signed test builds, not Play Store production packages.
+[Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+is the rolling prerelease download produced only after the main workflow passes.
+The download follows verified main; its release notes identify the exact commit and
+API-35 package. Publication waits for the full API 28/35/36 matrix and canonical checks.
+No permanent stable release is created by merging this test update.
 
-Use a successful [GitHub Actions run](https://github.com/mmwiza1/Race-day-dreams/actions)
-for the intended main commit. Its API-35 artifact contains
-`Race-Day-Dreams-0.8.1-test1-debug.apk`. Extract the ZIP and install the APK.
+These are **debug-signed test APKs**, not Play Store production packages. Actions
+artifacts for the verified 0.8.2 commit are named
+`Race-Day-Dreams-0.8.2-test1-debug-api-35` and contain
+`Race-Day-Dreams-0.8.2-test1-debug.apk`. The rolling release uses
+`Race-Day-Dreams-0.8.2-test1.apk` after publication. Verify the intended commit in
+[VERIFICATION.md](VERIFICATION.md), and export a complete local backup before upgrading.
+Debug keys can differ between clean CI runners; reinstall may require backup/restore.
 GitHub artifact downloads require GitHub sign-in; the app requires no account.
-Export a local backup before upgrading. [VERIFICATION.md](VERIFICATION.md) records
-actual CI and merge results; an open PR is not evidence of a successful APK.
 
 ## App Preview
 
-Screenshots are generated from the current Race Day Dreams build using
-instrumentation-only demo data. They are real emulator renders, not UI mockups.
+Screenshots are real emulator renders of production UI with instrumentation-only demo
+data, not UI mockups. These 0.8.2 captures were adopted from the verified API-35 build
+after all three supported APIs passed 213 instrumentation tests each.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
 | Today | Weekly Plan | Live Coach | Dream Route |
 | --- | --- | --- | --- |
-| ![Today](docs/screenshots/home.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Dream Route](docs/screenshots/dream-route.png) |
+| ![Today](docs/screenshots/home.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
 
 | Race preparation | Training trends | Romanian Deadlift | Bench Press |
 | --- | --- | --- | --- |
@@ -138,10 +147,11 @@ require multiple recent independent performances and distance-appropriate endura
 Official chip time can be entered separately from GPS totals. No goal is changed.
 
 Short original warm-ups/cool-downs and five mobility routines have text instructions
-and lightweight original line figures. Completion is optional support, never a calendar
-workout or training-load/adherence target. Dream Routes store a stable random
-marathon-equivalent segment of one of five **original city-inspired schematics**. They
-are not verified/official course geometry or navigation; no location claim is made.
+and original bundled exercise illustrations. Completion is optional support, never a
+calendar workout or training-load/adherence target. Dream Routes preserve a stable
+marathon-equivalent segment of a versioned geographic course, with original decorative
+city artwork. They are independent visualisations, not official maps or navigation;
+no physical-location claim is made.
 
 Home → Record a run → Route files now offers a **complete backup** ZIP containing
 validated app JSON and checksummed raw recordings, restored in one SQLite transaction.
@@ -155,7 +165,8 @@ See TEST_BUILD.md and docs/LIVE_COACH.md for physical-device checks and explicit
 
 | Attached warm-up | Offline marathon equivalent |
 | --- | --- |
-| ![Warm-up guide](docs/screenshots/warm-up.png) | ![City-inspired Dream Route schematic](docs/screenshots/dream-route.png) |
+| ![Warm-up guide](docs/screenshots/warm-up.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
 
 The live-workout capture uses deterministic instrumentation-only engine input, not a
-claim of physical GPS testing. Dream drawings are original schematics, not real maps.
+claim of physical GPS testing. Dream city artwork is atmospheric; equivalent sections
+use the preserved geographic course rather than claiming the runner visited that city.

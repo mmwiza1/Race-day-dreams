@@ -55,21 +55,7 @@ import org.racedaydreams.data.SupportStore
     val context=LocalContext.current
     val assignment by produceState<DreamRoutes.Assignment?>(null,activity.id()){value=withContext(Dispatchers.IO){SupportStore(context).dream(activity.id(),metres)}}
     val a=assignment?:return;val route=DreamRoutes.forId(a.routeId())
-    val progress=remember(a){org.racedaydreams.domain.presentation.DreamRouteProgress.of(a)}
-    GuidanceCard(MaterialTheme.colorScheme.surface) {
-        Text("Dream Route · ${route.name()}",style=MaterialTheme.typography.titleLarge)
-        Text(String.format(java.util.Locale.UK,"You covered the equivalent of %.2f km of a marathon course today.",a.coveredMetres()/1000))
-        DreamDrawing(route,a.startMetres(),a.startMetres()+progress.highlightedMetres())
-        Text("● Section start · ◉ Section finish",style=MaterialTheme.typography.labelMedium)
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=androidx.compose.ui.Alignment.CenterVertically) {
-            Text("${progress.percentage()}% of a marathon",style=MaterialTheme.typography.titleLarge)
-        }
-        LinearProgressIndicator(progress={progress.fraction().toFloat()},modifier=Modifier.fillMaxWidth().height(10.dp))
-        Text(progress.distanceLabel(),style=MaterialTheme.typography.labelLarge)
-        if(progress.extraMetres()>0)Text("One full marathon equivalent plus ${decimal(progress.extraMetres()/1000)} km. Your recorded run is unchanged.")
-        DreamRoutes.attribution(route).takeIf{it.isNotEmpty()}?.let{Text(it,style=MaterialTheme.typography.labelSmall)}
-        WhyDetails("${DreamRoutes.provenance(route)} Your stable equivalent assignment is saved for this activity; it does not claim you ran in ${route.name()}.","About this route ⓘ")
-    }
+    DreamRouteExperience(route,a)
 
 }
 

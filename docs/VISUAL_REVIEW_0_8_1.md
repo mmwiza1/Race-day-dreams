@@ -44,6 +44,7 @@ instructional figures, real geographic context and clear equivalent progress. Th
 are responsive adaptations, not pixel copies of the reference artwork.
 
 Final marker-label captures/source fingerprints now pass review and verification.
-PR#10 remains draft because the entire physical acceptance gate is not yet met.
+PRs #10 and #11 subsequently merged. This report is historical0.8.1 visual evidence;
+the owner authorised the test-build merge without claiming physical acceptance.
 The GalaxyS24 checklist in TEST_BUILD.md is entirely UNPERFORMED; no emulator image
 passes outdoorGPS,BLE,HC,TTS/music,battery,sunlight or humanTalkBack acceptance.

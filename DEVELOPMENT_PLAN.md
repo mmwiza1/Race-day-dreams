@@ -1,4 +1,4 @@
-# Development status — 0.8.1-test1
+# Development status — 0.8.2-test1
 
 The app recommends. The runner decides. The plan adapts.
 
@@ -109,5 +109,21 @@ Five sourced geographic Dream Routes retain old IDs/assignments. Original offlin
 context styling adds ODbL road/water/green-space extracts; no runtime tiles, map SDK,
 Internet permission, accounts, analytics or new runtime dependency. Schema10 only
 adds history indexes; JSON7/raw2/complete1 remain compatible. Current CI and visual
-acceptance state belong in VERIFICATION.md and docs/VISUAL_REVIEW_0_8_1.md. KeepPR10
-draft until the whole release gate is met; no S24 physical results are inferred.
+acceptance state belong in VERIFICATION.md and docs/VISUAL_REVIEW_0_8_1.md. PRs #10
+and #11 are merged; no S24 physical results are inferred.
+
+## 0.8.2 premium Dream Routes presentation
+
+The focused visual update is implemented on the accepted 0.8.1 geographic baseline:
+five original illustrated city heroes, 15 landmark posters, the preserved full geographic
+course with a dominant blue equivalent section, clear progress and exact distance
+summaries. Dark/200% layouts and offline, selected-city bounded caching are complete.
+Assignments, geometry IDs/offsets, Paris 2026, backups and actual GPS remain unchanged.
+No schema/format/dependency/permission change was required.
+
+Source fc47aae passed workflow 40092248558: 213 instrumentation tests on each API 28/35/36,
+build/lint, strict 174/174 + 14/14 guidance and 77 actual captures adopted by bot c408306.
+All 14 Dream panels were visually reviewed against the owner's inline premium board;
+no design blocker was found. See RELEASE_0_8_2.md, VISUAL_REVIEW_0_8_2.md and VERIFICATION.md
+for source identity, size and exact evidence. The final-head/main workflows control
+publication. Physical S24 acceptance remains unperformed; this is a test release.

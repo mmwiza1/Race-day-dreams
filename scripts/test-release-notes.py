@@ -27,6 +27,16 @@ class ReleaseNotesTest(unittest.TestCase):
     def test_missing_human_sections_is_rejected(self):
         (self.root/'docs/RELEASE_0_8_1.md').write_text('raw commit messages')
         with self.assertRaises(ValueError):notes.render(self.root,self.sha,self.url,tag='v0.8.1-test1')
+    def test_next_patch_uses_its_own_maintained_notes_and_download_name(self):
+        (self.root/'app/build.gradle').write_text("versionName '0.8.2-test1'\nversionCode 11\n")
+        current=(self.root/'docs/RELEASE_0_8_1.md').read_text().replace('Readable features','Premium Dream Routes patch')
+        (self.root/'docs/RELEASE_0_8_2.md').write_text(current)
+        result=notes.render(self.root,self.sha,self.url,tag='v0.8.2-test1')
+        for text in ('Premium Dream Routes patch','Race-Day-Dreams-0.8.2-test1.apk','versionCode 11'):
+            self.assertIn(text,result)
+        self.assertNotIn('Readable features',result)
+        self.assertNotIn('Race-Day-Dreams-0.8.1-test1.apk',result)
+
     def test_incomplete_identity_or_untrusted_url_is_rejected(self):
         for sha,url in (('short',self.url),(self.sha,'https://example.org'),('a'*40+'\n',self.url)):
             with self.subTest(sha=sha,url=url),self.assertRaises(ValueError):notes.render(self.root,sha,url,tag='v0.8.1-test1')

@@ -254,3 +254,14 @@ under ODbL. Full licence and attribution notice are bundled/readable in Settings
 The app ships compact data only, not source tile archives. Original lightweight
 MVT wire/geometry decoder is a development tool, not copied software or a new app
 dependency. Context is decorative/approximate, never used as run distance evidence.
+
+## 0.8.2 original Dream Routes artwork
+
+Five city heroes and fifteen landmark-poster WebPs are original generated illustrations
+created for Race Day Dreams from original architectural descriptions, contributed under
+the project MIT licence. No tourism photograph, organiser artwork, logo, sponsor identity
+or third-party illustration was copied. Decorative hero compositions do not represent
+geographic landmark positions. Exact source-plate hashes, processing/crops and asset
+hashes are recorded in docs/dream-artwork-0.8.2.json. Existing geographic datasets, ODbL
+notices and source licences are unchanged; maps remain coordinate/vector rendered.
+No runtime/build dependency or permission was added.
