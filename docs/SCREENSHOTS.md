@@ -1,3 +1,13 @@
+# Current native-capture fixture follow-up
+
+PR11source04cd097535e0ec80040c82799db4b87a286c2ab3 passed workflow40078273456,
+204tests on EACH API28/35/36. All70actualAPI35PNGs adopted in bot0cd77bd. Current
+fingerprint`985d5b81c46f8aef4a8bd696ac8912bec3f4916c681a80b493c449adec8ad894`
+includes the strengthened native-source selection test; production UI is unchanged.
+The newParis capture was visually inspected: correct annualcourse and clear progress,
+markers/geographic context; no overlap observed. Original referenceJPEGs remain separate.
+Earlier production-source/visual reviews below are historical verification checkpoints.
+
 # Current0.8.1 canonical capture status —24October2026
 
 The current set is **70actual API35build captures** from production correction

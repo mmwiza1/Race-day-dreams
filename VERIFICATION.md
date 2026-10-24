@@ -1,3 +1,27 @@
+# Final0.8.1 native-capture follow-up —24October2026
+
+PR10 merged at3fe6c6d93d261cd024fa71573553cfaf7c32d502. Postmerge workflow40077045374
+passed API28/35, while API36 completed204tests with one native city-capture wait timeout.
+The test selected a generic Recordedrun card shared by multiple fixtures. Publication
+was correctly blocked. PR11selects the unique native recording-source card and asserts
+its provenance before both existing analysis waits. No production code or timeout/
+assertion was removed or altered; all existing gates remain required.
+
+Source04cd097535e0ec80040c82799db4b87a286c2ab3 passed complete workflow40078273456:
+**204instrumentation tests EACH API28/35/36**, build/lint/domain and strict174/174canonical
+plus14/14routine guidance. Exact Finished204lines inspected in jobs120826251504,
+120826251535,120826251368. All70actualAPI35captures adopted via bot0cd77bd; fingerprint
+`985d5b81c46f8aef4a8bd696ac8912bec3f4916c681a80b493c449adec8ad894` matches source.
+The refreshed Paris screenshot was inspected: annualcourse, equivalent section, markers,
+percentage/distance and geographic context remain clear, without label overlap.
+
+The runtime source/data are unchanged from PR10. Version0.8.1-test1/code10,
+schema10/JSON7/raw2/complete1; no dependency or permission added. No physicalGalaxyS24
+checks are claimed. Finalmainworkflow/publication must succeed before reporting the
+rolling development APK as available. This remains a test/development build.
+
+## Detailed Paris/source verification history
+
 # Verification — 0.8.1-test1, 24 October 2026
 
 Version **0.8.1-test1 / versionCode 10**. Schema **10**, JSON envelope **7**, raw
