@@ -1,3 +1,19 @@
+# Post-merge0.8.1 verification follow-up
+
+PR10 was squash-merged at3fe6c6d93d261cd024fa71573553cfaf7c32d502.
+Post-merge workflow40077045374 passed API28/35 but API36 timed out waiting for
+native route-story evidence in the city capture test (203/204 passed); publication
+was correctly blocked. Test selected the first generic Recordedrun title among
+multiple history fixtures. Follow-up selects the unique native source card and
+asserts detail provenance, retaining both analysis waits/all assertions/20s timeout.
+No production code changed. Preserve this focused follow-up and run fullCI/captures;
+merge its PR after green, then verify newmainCI and rolling development release.
+Do not mark S24 physical checks passed or create a permanent version tag.
+
+The source/factual/licensing verification below remains valid; inspect current
+HEAD/PR/liveCI before acting. Production fingerprint changes only because the
+canonical capture test itself is part of the fingerprint.
+
 # Continue — accepted0.8.1 implementation and annual Paris correction
 
 Preserve completed commits. Inspect live main/PR#10/CI before acting; this handoff

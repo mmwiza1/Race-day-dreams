@@ -166,7 +166,9 @@ class CoachingScreenshotTest {
         fun openCity(city:org.racedaydreams.domain.support.DreamRoutes.Route) {
             scenario?.close()
             val route=org.racedaydreams.domain.support.DreamRoutes.currentGeometry(city)
-            val metres=FeatureStore(context).activitySummaries().first{it.id()=="rdd:demo-native-route"}.distanceMetres()!!
+            val recorded=FeatureStore(context).activitySummaries().single{it.id()=="rdd:demo-native-route"}
+            val metres=recorded.distanceMetres()!!
+            val nativeSource="Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(recorded.source())}"
             SupportStore(context).save("dream","rdd:demo-native-route",org.json.JSONObject()
                 .put("version",1).put("route",route.id()).put("start",minOf(1000.0,maxOf(0.0,42195.0-metres)))
                 .put("distance",metres).put("assignedAt",Instant.now().toString()))
@@ -175,8 +177,13 @@ class CoachingScreenshotTest {
             compose.onNode((hasText("Calendar") or hasContentDescription("Calendar")) and hasClickAction()).performClick()
             await("Activity calendar")
             compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()}
-            compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
-            compose.onAllNodesWithText("Recorded run")[0].performClick();await("Run detail")
+            // Several fixture cards share "Recorded run". Select the native source
+            // inside its clickable card, rather than whichever generic title happens
+            // to be composed first while the lazy history is refreshing/scrolling.
+            val nativeCard=hasClickAction() and hasAnyDescendant(hasText(nativeSource))
+            compose.onNode(hasScrollToIndexAction()).performScrollToNode(nativeCard)
+            compose.onNode(nativeCard).performClick();await("Run detail")
+            compose.onNodeWithText(nativeSource).assertExists()
             // This fixture has genuine retained samples. Wait for both asynchronous
             // analyses ABOVE Dream Routes before positioning the target card.
             compose.waitUntil(20000){compose.onAllNodes(hasText("Fastest complete kilometre:",substring=true)).fetchSemanticsNodes().isNotEmpty()}

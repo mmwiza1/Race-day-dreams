@@ -1,3 +1,14 @@
+# Post-merge screenshot-fixture follow-up
+
+PR10 merge:3fe6c6d93d261cd024fa71573553cfaf7c32d502. Workflow40077045374 passed
+API28/35; API36 ran204tests with one city-capture timeout at the native RouteStory
+wait. All remaining203passed. Rolling publication was blocked as designed.
+The screenshot test now selects the unique native source card instead of a generic
+Recordedrun title; detail provenance is asserted before both existing analysis waits.
+No timeout/assertion removed, and no production behaviour changed. Full follow-up CI
+and canonical captures must pass before publishing this update. Physical checks remain
+unperformed. The earlier observed source results below remain historical evidence.
+
 # Verification — 0.8.1-test1, 24 October 2026
 
 Version **0.8.1-test1 / versionCode 10**. Schema **10**, JSON envelope **7**, raw
