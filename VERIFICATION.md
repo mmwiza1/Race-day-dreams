@@ -1,62 +1,80 @@
-# Verification —0.8.1-test1
+# Verification — 0.8.1-test1, 24 October 2026
 
-Version0.8.1-test1/code10; schema10; JSON7/raw2/complete1. No new runtime dependency,
-manifest permission, Internet, account, analytics or backend.
+Version **0.8.1-test1 / code10**; schema **10**; JSON envelope **7**, recording archive
+**2**, complete package **1**. No new runtime dependency or manifest permission.
 
-## Latest completed full source verification
+## Final production-source checks
 
-Source745b1482e9909a2fe46c9e68563cc27e031df614 passed
-[workflow40041166325](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40041166325):
-Android build/lint/domain and **204instrumentation tests on each API28/35/36**,
-strict174/174canonical plus14/14routine guidance and70actual captures. Matrix jobs
-28/35/36:120712332348 /120712332093 /120712332168. Exact canonical bot
-**2d2b16b1ccc5362734b1bc5e2800704355d37516** was fast-forwarded locally.
-Fingerprinta4adfe699b08cbbe85afabe59053b48332a8a1331a91e79950abbc4a4afd2629.
+Source **109394a1046db2bf6d4c9fd203b8b761f02edd01** passed
+[workflow40042190130](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40042190130):
 
-Actual London/Berlin/Paris/Tokyo/NY, London dark/200%, Plan,RDL,Bench,Lunge,Ankle,
-LiveCoach,Health,Shoes,WeeklyReview,RunNow and Trends captures were visually inspected.
-Sourced context now fills the fitted viewport without abrupt extract edges. Tokyo's
-out-and-back35km/40km labels overlapped; the next small presentation follow-up tries
-non-overlapping label positions/halos, retaining all true markers/course coordinates.
-Fresh source/capture verification for that follow-up remains pending, not assumed.
+- Domain/check, Android debug build, lint and instrumentation compilation passed.
+- **204 instrumentation tests passed on each API28,35,36**. Jobs respectively
+  120715596416,120715596443,120715596294; actual Finished204 log lines inspected.
+- Strict guidance: **174/174 canonical exercises and14/14 routine movements**.
+- All **70 actual-build captures** adopted exactly via canonical bot
+  **7ed12d8edc429671ea4ec1cf5e6a2329c424c48f**; source fingerprint
+  `e7452da5a423bb8d660eaa0625543a4cb64030bce549d070366e543d99c5bb8b`
+  equals the current production-source fingerprint.
 
-## APK downloaded and inspected
+The CI commands include :domain:check, :app:assembleDebug, :app:lintDebug,
+:app:assembleDebugAndroidTest and connectedDebugAndroidTest. No local AndroidSDK
+build or physical-device result is claimed; these are observed GitHub CI results.
 
-API35artifact12539423377, `Race-Day-Dreams-0.8.1-test1-debug-api-35`.
-Local path: `build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk`.
-ZIPCRC checked; binary AndroidManifest verified org.racedaydreams/0.8.1-test1/code10;
-merged permission list inspected and **no INTERNET permission** exists.
-Source745b148;46,006,970bytes;SHA256
-0d3770b2fc5490ecf0c792ad48f7deb122d21e4aedab5f3e36d3ca60b0918214.
-Original verified0.8.0/code9 baseline34,566,254bytes: increase11,440,716bytes(33.10%).
-This is a CI debug/test APK, not a production-signed PlayStore binary. Refresh after
-any later production-source change, including the pending label-placement follow-up.
+Observed local: **61,263 domain checks across19 suites**,43schema tests,
+5release-note tests,10source-format/projection tests, all5course reproductions,
+15landmark/river projections and5offline basemap reproductions.177original artwork
+hashes/provenance pass. YAML, notices comparison and full-branch whitespace pass.
 
-## Latest local tests and data audit
+## Actual visual review
 
-**61,263checks/19domain suites**;43schema tests;5release-note tests;10development
-format/projection tests. Strict174/174canonical+14/14routine audit;177original artwork
-hashes/provenance; all5coursegenerators,15landmark/river context and5basemap reproductions.
-YAML,noticescmp,sourceprivacy/manifest and whitespace checks pass. No localAndroidSDK
-build is claimed; Gradle/Android results above are actual GitHubCI.
+The five supplied JPEG references remain untouched and separate from actual PNGs.
+Plan, RDL, Bench, WalkingLunge, AnkleRocks, static/cable/mobility guidance, LiveCoach,
+Health, Shoes, WeeklyReview, RunNow, Trends and all five city cards were inspected.
+Dark/200% captures were inspected too. Full geographic context fixes abrupt blank
+bands, and the final Tokyo capture confirms35km/40km labels are now separated while
+all true marker/course positions remain unchanged. See VISUAL_REVIEW_0_8_1.md.
 
-Development prepared67permitted OpenFreeMap source extracts/10,342,383bytes/3parallel
-requests. Only selected ODbL geographic DATA ship, separately from original MIT code.
-235,998retained context positions;5compact app extracts total4,012,113bytes before
-APKcompression. Bounded parsing, off-main loading/path preparation, cached original
-light/dark drawing and source notices add no runtime map SDK/tile/networkclient.
+The inspected presentation follows the requested fitness-design family. This is
+image review, not physical sunlight/TalkBack/sensor verification. Coverage/consistent
+screenshots alone were not used to declare fidelity.
 
-## Design/device acceptance limits
+## Downloaded API35 test APK
 
-Actual filled-athlete guidance and the full-viewport geographic presentation now
-follow the supplied design family. Tests/coverage alone do not establish this review;
-see docs/VISUAL_REVIEW_0_8_1.md. Final marker-label capture review remains pending.
-PR#10 remains draft; no version tag/release published.
+Artifact **12540415451**, `Race-Day-Dreams-0.8.1-test1-debug-api-35`.
+Exact local file: `build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk`.
+**46,006,970bytes**, SHA256
+`3f1a2d958f9421e8abf34fdb9b01e0ffe19c74abc2e47390391d5729177a2ff6`.
+ZIPCRC and binary manifest inspected: `org.racedaydreams /0.8.1-test1 /code10`.
+The merged APK permission list has **no INTERNET permission**. This is a debug/test
+binary, not production signing. Signing keys can differ between CI builds; preserve
+a complete local backup before any uninstall Android requires.
 
-All physicalGalaxyS24 outdoor/GNSS/HC/BLE/TTS/music/battery/TalkBack checks remain
-UNPERFORMED. TEST_BUILD.md contains the explicit acceptance checklist. Recorder
-recovery preserves durable partial evidence; it does not invent continuity after
-termination/reboot. Paris is explicitly2024Olympic course, not annual ParisMarathon.
+Verified0.8.0/code9 baseline:34,566,254bytes. Increase **11,440,716bytes /33.10%**,
+including all original guidance and offline geographic data. No runtime map SDK.
+
+## Geographic data/performance/licences
+
+67 permitted frozen OpenFreeMap source extracts total10,342,383bytes in development.
+Only selected ODbL road/water/green-space DATA ship:235,998retained positions,
+five compact app extracts totaling4,012,113bytes before APK compression. Exact source
+URLs/hashes, bounds, transformations and notices are retained. Original styling,
+reader and projection code are MIT, separately from ODbL geographic databases.
+Data load/path preparation happens off-main; redraw uses three cached context paths.
+Existing course IDs/assignments and backup formats remain unchanged.
+
+## Remaining physical acceptance — PR remains draft
+
+All GalaxyS24 outdoorGPS, locked/background/long recording, real HC providers,
+BLE/reconnection, TTS/music/audio focus, battery saver, process/reboot recovery,
+complete-backup/restore, sunlight and humanTalkBack checks remain **UNPERFORMED**.
+TEST_BUILD.md has the explicit checklist; a meaningful real outdoor run is required
+before locking the Android baseline. CI cannot satisfy that acceptance gate.
+
+PR#10 stays draft; no merge, version tag or permanent release was published. Recorder
+recovery retains durable partial evidence rather than inventing uninterrupted
+tracking. Paris explicitly uses the2024Olympic course, not the annual ParisMarathon;
+London edition/survey accuracy remain unspecified. These are disclosed limitations.
 
 ## Earlier checkpoints (historical)
 

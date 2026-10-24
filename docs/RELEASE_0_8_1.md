@@ -52,9 +52,9 @@ This is a test release in preparation, not a Play Store production release.
   still be lost.
 - Physical Galaxy S24 GNSS, Health Connect, BLE, TTS/music, battery, TalkBack and
   meaningful outdoor-run acceptance remain unverified. Follow TEST_BUILD.md.
-- Final actual-build visual acceptance remains a separate gate; completeness and
-  screenshot consistency alone do not certify design fidelity. PR #10 stays draft
-  until the full requested definition is satisfied.
+- Actual-build reference comparison is recorded separately from completeness tests
+  in VISUAL_REVIEW_0_8_1.md. Physical acceptance is still outstanding, so PR#10 stays
+  draft until the full requested definition is satisfied.
 
 ## Data compatibility
 
@@ -72,13 +72,13 @@ geographic datasets retain their documented MIT, CC0 or ODbL licences.
 All five geographic Dream Routes now include sourced street, green-space and water
 context with original light/dark styling. The data are bundled, so this works offline
 without map downloads, a map SDK or Internet permission. Sources/ODbL rights are
-recorded and credited. Actual full-viewport captures have been compared against the references. A final
-Tokyo distance-label-placement follow-up still needs its fresh capture review.
+recorded and credited. Actual full-viewport captures have been compared against the references. The final
+Tokyo capture confirms non-overlapping distance labels.
 Physical GalaxyS24 acceptance remains unverified; PR#10 stays draft.
 
 ## APK size at the verified geographic checkpoint
 
-Source745b148/API35debugAPK:46,006,970bytes. Verified0.8.0baseline:34,566,254bytes;
+Source109394a/API35debugAPK:46,006,970bytes. Verified0.8.0baseline:34,566,254bytes;
 increase11,440,716bytes(33.10%), including complete original exercise art and offline
-geographic context. No runtime dependency or Internet permission added. Refresh final
-size after any source follow-up. This is a debug/test build, not production signing.
+geographic context. No runtime dependency or Internet permission added. Final source APK ZIPCRC/manifest/permissions and checksum were inspected;
+see VERIFICATION.md for the exact artifact/path. This is a debug/test build, not production signing.

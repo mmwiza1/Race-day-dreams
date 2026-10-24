@@ -1,20 +1,21 @@
-# Current0.8.1 capture checkpoint
+# Current 0.8.1 actual-build captures
 
-All70committed actual-build PNGs now come from source745b148, successful
-workflow40041166325 and exact bot2d2b16b. API28/35/36 passed build/lint/domain,
-204instrumentation tests/API and strict174/174canonical+14/14routine guidance.
-Fingerprinta4adfe699b08cbbe85afabe59053b48332a8a1331a91e79950abbc4a4afd2629.
+All70committed PNGs were captured from source109394a in successful
+workflow40042190130 and adopted exactly via bot7ed12d8. API28/35/36 passed build,
+lint, domain and204instrumentation tests each; strict174/174canonical+14/14routine
+guidance also passes. Source fingerprint:
+`e7452da5a423bb8d660eaa0625543a4cb64030bce549d070366e543d99c5bb8b`.
 
 Actual review compared all five geographic city cards, dark/200%London, Plan and
-representative guides/summary screens against the separate untouched ownerJPEGs.
-The final fitted5:4 context extent corrects blank bands seen in earlier captures.
-Tokyo's overlapping35km/40km text prompted a final nearby-label-placement follow-up;
-its new actual captures still need review. Keep source metadata andPNGbytes exact.
+representative guides/summary screens against the unchanged ownerJPEGs. Fitted5:4
+source context removes earlier blank bands. The final Tokyo capture shows separate
+35km/40km labels while preserving real marker positions. Review findings are in
+VISUAL_REVIEW_0_8_1.md. Resource completeness/consistent pixels alone are not fidelity.
 
-Completeness and screenshot consistency do not certify design fidelity. The review
-is recorded in VISUAL_REVIEW_0_8_1.md, and physicalS24 acceptance remains entirely
-unperformed. Capture waits for real background context preparation, while Android
-also parses every packaged extract. PR#10 remains draft until the full acceptance.
+README uses eight actual-build captures, never the design mockups. Fixture data and
+capture controls remain instrumentation-only; production screens are identical.
+Physical S24 acceptance is UNPERFORMED, so PR#10 remains draft. A documentation-only
+checkpoint after these captures must preserve the same production fingerprint.
 
 ## Earlier records (historical)
 

@@ -1,9 +1,9 @@
 # 0.8.1 design-reference review
 
 The five owner JPEGs in design-reference remain unchanged and distinct from actual
-PNGcaptures. The70current captures come from source745b148 in successful full-matrix
-workflow40041166325, adopted exactly via bot2d2b16b. Source fingerprint:
-a4adfe699b08cbbe85afabe59053b48332a8a1331a91e79950abbc4a4afd2629.
+PNGcaptures. The70current captures come from source109394a in successful full-matrix
+workflow40042190130, adopted exactly via bot7ed12d8. Source fingerprint:
+e7452da5a423bb8d660eaa0625543a4cb64030bce549d070366e543d99c5bb8b.
 Build/lint,204instrumentation tests perAPI28/35/36 and strict174/174canonical+14/14
 routine guidance pass. This review is actual visual inspection, not an inference
 from those tests and not physical-device acceptance.
@@ -34,7 +34,7 @@ from those tests and not physical-device acceptance.
   five-city captures now show continuous sourced context to the card edges.
 - Tokyo's out-and-back35km/40km text overlapped. A final label-placement follow-up
   tries nearby non-overlapping positions/halos while keeping all real markers and
-  course coordinates fixed. Its fresh actual capture still needs review.
+  course coordinates fixed. Its final actual capture has been reviewed:35km and40km are separated.
 
 ## Acceptance boundary
 
@@ -43,7 +43,7 @@ the requested design family: soft cards, blue/navy hierarchy, original recognisa
 instructional figures, real geographic context and clear equivalent progress. They
 are responsive adaptations, not pixel copies of the reference artwork.
 
-Final marker-label capture/source verification remains pending for the latest small
-presentation follow-up. PR#10 remains draft until the entire release gate is met.
+Final marker-label captures/source fingerprints now pass review and verification.
+PR#10 remains draft because the entire physical acceptance gate is not yet met.
 The GalaxyS24 checklist in TEST_BUILD.md is entirely UNPERFORMED; no emulator image
 passes outdoorGPS,BLE,HC,TTS/music,battery,sunlight or humanTalkBack acceptance.

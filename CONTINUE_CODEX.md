@@ -1,151 +1,138 @@
-# Continue Race Day Dreams0.8.1 — preserve the current tree
+# Continue Race Day Dreams 0.8.1 — verified code, physical acceptance pending
 
-Read actual git status/log/diff, PR#10 and liveCI before trusting this snapshot.
-Branch: `feature/0.8.1-design-guidance-reliability`.
-PR: https://github.com/mmwiza1/Race-day-dreams/pull/10 . **KEEP DRAFT until the entire
-requested definition/design gate is satisfied. No premature merge/tag/release.**
-Main last fetched515fe538de1302dd83ee05fc9ca131c7afb7d520.
-Version0.8.1-test1/code10; schema10; JSON7/raw2/complete1.
-No Internet permission, account/backend/tracking, direct Samsung or runtime dependency.
+Preserve this branch and every completed commit. Inspect actual git status/log/diff,
+PR #10 and live CI before trusting these notes. Do not reset/recreate the work.
 
-## Current source — authoritative
+## Repository and delivery state
 
-Latest pushed source **745b1482e9909a2fe46c9e68563cc27e031df614**, following
-**ef530e45780ea55bbf07106fc83d8a8f95ead116**. These add original offline geographic
-context for ALL FIVE current Dream Routes. Actual source data, original preparation,
-projection, parser/renderer and tests are committed/protected. Do not redo them.
-The full-viewport run **40041166325 is GREEN,204tests/EACHAPI28/35/36**. Exactbot
-2d2b16b1ccc5362734b1bc5e2800704355d37516 was fast-forwarded; all70actualPNGs now
-show745b148/fullsourcefingerprinta4adfe699b08cbbe85afabe59053b48332a8a1331a91e79950abbc4a4afd2629.
-All5cities/dark/200% were actually inspected. Fullviewportdata fixes emptybands.
-New small label-placement follow-up fixes Tokyo35km/40km overlap without moving
-markers/course. That NEW source still needs CI and capture review; inspect latest run.
-Previousc606559/run40039911283 is now FULL GREEN204/API28/35/36. Exact botdb6e697
-was fast-forwarded. Actual images exposed context edges;745b148 fills the entire5:4
-viewport with sourced data plus4%margin, rather than a narrow course bbox.
-Do not infer the remaining result. `/tmp/rdd-viewport-ci-watch.log` monitors the run.
-Parentef530run40039780564 was superseded/cancelled by the Android-compatibility
-follow-up, not a claimed green run. No test was deleted/weakened.
+- Branch: `feature/0.8.1-design-guidance-reliability`.
+- PR: https://github.com/mmwiza1/Race-day-dreams/pull/10 . **KEEP DRAFT** until the
+  full definition of done, including required physical acceptance, is satisfied.
+  No merge, permanent tag or release has been published.
+- Main last fetched: `515fe538de1302dd83ee05fc9ca131c7afb7d520`.
+- Version `0.8.1-test1`, versionCode10, schema10; JSON7/raw2/complete1.
+- Final verified production source: **109394a1046db2bf6d4c9fd203b8b761f02edd01**.
+- Exact canonical screenshot bot: **7ed12d8edc429671ea4ec1cf5e6a2329c424c48f**,
+  fast-forwarded locally without replacing any previous work. A subsequent
+  documentation-only checkpoint may be HEAD; inspect git log. Production unchanged.
 
-Uncommitted documentation updates currently include README,DEVELOPMENT_PLAN,
-TEST_BUILD,VERIFICATION,SCREENSHOTS and this handoff. Preserve them, refresh observed
-results when the new CI actually finishes, then commit/push a clean checkpoint.
-PRbody already records new source/tests/pending gates using REST(gh pr edit fails
-because of deprecated classic projectCards, not permissions).
+## Completed — do not redo
 
-## Fully completed exercise guidance — do not redo
+- **174/174 canonical exercises and14/14 routine movements** have explicit,
+  appropriate original illustrated guidance, movement-specific instructions,
+  cues/mistakes/equipment/accessible descriptions. No missing canonical ID.
+  **177 local WebPs /9,198,660bytes**; strict content/resource/provenance audit passes.
+  Primitive canonical fallback removed. Actual RDL/Bench/Lunge/Ankle/static/cable
+  and mobility captures reviewed against untouched owner references.
+- Week-first Plan; programme metadata disclosed; compact Calendar key;
+  summary-first Health/Shoes/WeeklyReview/RunNow; real weekly-distance chart;
+  Live Coach range using existing smoothed evidence and authoritative engine.
+- SQL keyset metadata history paging, schema10 additive indexes. Tests include
+  2000activities/100000unreadable raw points to prove lists avoid GPS hydration;
+  mixed IDs/date/type/alias filtering and preserved-plan categories are protected.
+- Atomic staged recording start/origin/exact prescription; idempotent batch retry;
+  bounded incremental flush; honest durable partial/paused recovery. No secret
+  post-reboot tracking or fabricated continuity. Existing backup formats preserved.
+- Version-tag and rolling-development GitHub prerelease workflows gate full matrix,
+  guidance and current captures; debug signing is explicit, permanent releases not
+  overwritten. Release notes/configuration tests pass. No premature publication.
 
-**174/174 canonical +14/14routine movements**, strict catalogue audit passes.
-No missing canonical IDs.177original offline WebPs,9,198,660bytes; hashes/provenance
-pass. Primitive canonical TechniqueDrawing fallback removed. All canonical IDs have
-movement-specific instructions/cues/mistakes, explicit artwork/accessibility and
-real asset resources; Android tests read all packaged1200x800assets. Actual RDL,
-Bench,Lunge,Ankle screens reviewed: filled/proportioned athlete, distinct phases,
-blue/navy panels,minttips,pinkmistakes,large controls. All instructions remain textual.
-Some content scrolls on narrow devices/large fonts; this is not a medical form check.
+## Dream Routes — five sourced geographic revisions and full offline presentation
 
-## Preserved engineering/UI
+Only future assignments select the current revisions. Old course IDs, coordinates,
+preferences, offsets and saved assignments remain immutable/readable in backups.
+- London historical MIT line,164positions; edition/survey accuracy unspecified.
+  Publication2023 is not a claimed race edition.
+- Berlin2014 MIT participant trace,191retained positions.
+- Tokyo2026 CC0 participant trace,91retained original positions from10872.
+- NYC2026 ODbL MARATHON TRIP road-centreline data,371XYpositions, documented UTM18
+  frame/anchor; explicit data offer, retained source hash and full notices.
+- Paris2024 Olympic course,328ODbL ThomasKrakow/Running-tomy Commons positions.
+  **Primary name explicitly says2024Olympic course, NOT annual ParisMarathon.**
+  Annual-course redistribution rights were not established; this is the documented
+  safe geographic fallback, not hidden or mislabelled official geometry.
 
-Week-first Plan and disclosed programme metadata; compact Calendar key; summary-first
-Health/Shoes/WeeklyReview/RunNow; weekly distance chart; smoothed LiveCoach range;
-SQL keyset history metadata paging/schema10indexes; atomic staged start/origin/exact
-prescription; idempotent batch retries; bounded incremental flush; honest paused/
-interrupted partial recovery.2000history/100000raw-point instrumentation protects
-list queries against raw hydration. Existing old/new assignment complete-backup
-tests remain. Version-tag and rolling-development release workflows gate fullmatrix,
-strict guidance and current captures, clearly debug signed/prerelease. No permanent
-release has been published. PhysicalS24 gate remains unperformed.
+Original full-course/section/start/finish/5km/percentage/distance presentation now
+includes original-styled sourced streets, water and green space.67frozen OpenFreeMap
+source extracts /10,342,383bytes in development; only selected ODbL DATA ship.
+OpenFreeMap expressly permits bounded offline downloads under its /tos/ policy;
+3parallel requests and identifying User-Agent used. No downloaded styles/images,
+fonts/icons, third-party software, runtime tile client/map SDK or Internet permission.
+Original reader/projection/styling MIT, retained/projected databases separately ODbL.
+Visible credit and full notices are available offline in Settings.
 
-## Geographic courses — all five complete with explicit limitations
+Source provenance/URLs/SHA256s/coordinates: docs/dream-route-data/basemap-*.json.
+Bundled compact extracts: app/src/main/assets/dream-basemaps/*.rddmap,
+**235,998positions /4,012,113bytes** before APK compression. Bounds cover the whole
+fitted5:4 course-plus-landmark viewport +4%margin; earlier abrupt map edges are fixed.
+15sourced landmark anchors (12WikidataCC0,3NYODbL), original city vignettes, correct
+NYsuspension/cantilever silhouettes and NaturalEarth public-domain rivers retained.
 
-Only FUTURE assignments choose new revisions. Old IDs/positions/offsets/preferences
-remain immutable and readable in backups. Reproduce each generator with --check.
-- London `london-historical-geo-v1`:164original MIT sourcepositions, historical line;
-  publication2023 is NOT a claimed edition. Edition/surveyaccuracy unspecified.
-- Berlin `berlin-2014-geo-v1`:191retained MIT participant tracepositions.
-- Tokyo `tokyo-2026-geo-v1`:91retained CC0 participant positions from10872.
-- NYC `new-york-2026-geo-v1`:371ODbL MARATHON TRIP road-centreline XYpositions,
-  EPSG26918anchor579000/4495000. Explicit data offer, original sourcehash/notices.
-- Paris `paris-2024-olympic-geo-v1`:328ODbL ThomasKrakow/Running-tomy Commons
-  revision931916019. PRIMARY NAME SAYS2024OLYMPIC COURSE. Not annual ParisMarathon;
-  no annual-course redistribution grant established. This safe fallback is explicit.
+DreamBasemap bounds bytes/features/points and rejects invalid format/frame/NaN/
+unclosed polygons. DreamBasemapArtwork loads/parses onIO, prepares paths onDefault,
+caches immutable data for five cities; redraw uses three cached context paths.
+Latest label-placement fix separates Tokyo35km/40km text without moving markers.
+Actual final Tokyo/London/dark/200% captures confirm the fix and clear map context.
+The reviewed presentation follows the supplied design family; see VISUAL_REVIEW.
 
-15verified landmark anchors:12WikidataP625CC0 and3NYODbL. NaturalEarth public-domain
-Thames/Seine original river vertices. Original CityLandmarkArtwork mini architectural
-vignettes include correctNYsteel suspension/cantilever bridges and Berlin quadriga.
-Full source coords/hashes/licences in docs/dream-route-data, bundled notices inSettings.
+## Actual verification
 
-## NEW offline context — inspect fresh actual captures next
+**Workflow40042190130 is FULL GREEN**, source109394a:
+https://github.com/mmwiza1/Race-day-dreams/actions/runs/40042190130
+- Android build/lint/domain and **204instrumentation tests on EACH API28/35/36**.
+- Jobs28/35/36:120715596416 /120715596443 /120715596294; actual Finished204 logs read.
+- Strict174/174canonical +14/14routines and177asset checksums/provenance.
+- **70 actual PNGs**, exact bot7ed12d8. Source fingerprint:
+  `e7452da5a423bb8d660eaa0625543a4cb64030bce549d070366e543d99c5bb8b`
+  matches production source. Original JPEG references unchanged/separate.
+- Local **61,263domain checks /19suites**,43schema,5release-note and10source-format/
+  projection tests; all5course +15landmark/river +5basemap reproductions;
+  YAML/notices comparison/full branch whitespace checks pass.
+- No local AndroidSDK build or physical-device result claimed: Android evidence
+  comes from the actual GitHub matrix. Source manifest/dependency diff reviewed;
+  binary APK permission list inspected: **NO INTERNET permission**.
 
-OpenFreeMap explicitly permits bounded offline downloads under /tos/. Development
-used67frozen20261018tiles/10,342,383bytes/3parallelrequests with identifyingUser-Agent.
-Only selected road,green-space,water geographic DATA retained. No downloaded imagery,
-styles,fonts,icons,source software or tile archives ship. Original MVTdevelopment
-reader/projection/preparer/rendering codeMIT; retained/projected databasesODbL.
-Visible creditOpenFreeMap©OpenMapTiles·©OpenStreetMapcontributors; fullODbL/notice
-available offline inSettings. OSMFvector research tile excluded: that service's
-separate policy forbids offline bulkuse. Unlicensed/GPLgeometry candidates excluded.
+## Verified install APK
 
-Files: docs/dream-route-data/basemap-*.json (sourceURLs/hashes,retainedlatlon,etc),
-app/src/main/assets/dream-basemaps/*.rddmap (4,012,113bytes beforeAPKcompression).
-Original scripts: dream-map-source.py,dream-projection.py,prepare-dream-basemaps.py,
-generate-dream-basemaps.py,test-dream-map-source.py. `prepare` only uses a local
-cache unless explicit --fetch; actualcache/workresearch /workspace/scratch/openfreemap-context.
-CI reproduction uses ONLY committed data, no network. Source positions235,998.
+Exact file: `build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk`.
+API35artifact **12540415451**, run40042190130,
+name `Race-Day-Dreams-0.8.1-test1-debug-api-35`.
+**46,006,970bytes**, SHA256
+`3f1a2d958f9421e8abf34fdb9b01e0ffe19c74abc2e47390391d5729177a2ff6`.
+ZIPCRC and binary manifest verified: org.racedaydreams /0.8.1-test1 /code10.
+Build sidecar `build/distributions/APK_VERIFICATION.json` records source/artifact.
+Verified0.8.0/code9 baseline34,566,254bytes: increase11,440,716bytes /33.10%.
+Debug/test signing only; preserve complete backup before any required uninstall.
 
-Domain DreamBasemap rejects unsupportedformat/frame, oversize,unknownkind,NaN,
-unclosedpolygons/excesspoints. Android DreamBasemapArtwork loads immutabledata onIO,
-prepares three unit-space paths onDefault, caches up to5maps. DreamDrawing draws
-original light/dark road/water/green behind preserved course/highlight/5k/startfinish.
-No user GPS query or runtime map client. Capture waits for real completed background
-context; newAndroidtest parses all5packagedfiles. c606559 avoids newerJavaStream.toList
-so API28 remains supported. Dataset/renderer never becomes user-distance evidence.
+## Remaining work / next action
 
-## Observed tests
+1. Inspect latest documentation-only head's CI. It must preserve the fingerprint
+   above and not rerender/replace exact verified PNGs unnecessarily. Diagnose any
+   actual failure; no blind reruns, test removal or safeguard weakening.
+2. **Physical GalaxyS24 acceptance is UNPERFORMED.** TEST_BUILD.md has the complete
+   recording/locked/background/1km split/long-run/GPS loss/HC permissions/providers/
+   BLE/TTS-over-music/audio-focus/battery/recovery/complete-backup/TalkBack/200% list.
+   A meaningful real outdoor run is required before locking the Android baseline.
+   The container/CI cannot perform these checks. Do not tick them from emulator tests.
+3. Keep PR#10 draft while that acceptance remains open. After actual results arrive,
+   address genuine defects and update verification/release notes, then follow the
+   authorised review/CI/release workflow. Do not invent a physical pass or publish
+   an incomplete permanent release. No further feature expansion is needed here.
 
-Local: **61,263 checks/19domain suites** (`/tmp/rdd-full-viewport-domain.log`),
-43schema,5release-note,10development sourceformat/projection tests; all5coursegenerators,
-15landmark/river projection,5basemap reproductions; strict174/174+14/14 and177art hashes;
-YAMLparse,noticescmp and gitdiffwhitespace pass. No localAndroidSDK build claimed;
-actual GitHub CI runs documented Gradle build/lint/instrumentation commands.
+## Useful tools / reproducibility
 
-Last FULL GREEN source **6b9637c0d1a5bea8f2bbd63615e42459b31e0808**,
-workflow **40037893016**,203tests/EACHAPI28/35/36,strictguidance,70actualPNGcaptures.
-Exact canonical bot **a7dedbc44896b8280abcdf75c82419498acf225c** merged by fast-forward.
-Current committed PNGs now depict745b148/fullviewportcontext via exactbot2d2b16b.
-Tokyo label-placement follow-up remains pending. Do not call old captures that fix.
-Previous84397e3/run40036694153 also green203/API; source6b adds correctNYbridgeforms.
-Old wrong-frame captures are QA research, not accepted proof. OriginalJPEGrefs untouched.
+`sh scripts/test-domain.sh`; `python3 scripts/test-schema.py`;
+`python3 scripts/test-release-notes.py`; `python3 scripts/test-dream-map-source.py`;
+all generate-*-geometry.py, generate-dream-context.py, generate-dream-basemaps.py
+with --check; verify-guidance-assets.py; strict ExerciseGuidanceAudit.java.
+Development source refresh: prepare-dream-basemaps.py --cache PATH (offline unless
+explicit --fetch). Existing cache /workspace/scratch/openfreemap-context. No network
+source refresh belongs in the app or CI. Unlicensed/GPL geometry candidates excluded.
 
-Current local installAPK is the VERIFIED745b148 build, before label-placement follow-up:
-`build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk`,46,006,970bytes,
-SHA2560d3770b2fc5490ecf0c792ad48f7deb122d21e4aedab5f3e36d3ca60b0918214,
-API35artifact12539423377/run40041166325. ZIPCRC/binarymanifest verified
-org.racedaydreams/0.8.1-test1/code10. Baseline0.8.0/code9=34,566,254bytes;
-APKdelta11,440,716bytes(33.10%). Remeasure after NEW green run.
-Originalbaseline /workspace/scratch/baseline080.apk;
-manifestreader /workspace/scratch/inspect-apk-manifest.py is verification-only.
-
-## Exact next actions
-
-1. Inspect fresh run40041166325. Diagnose/fix actual failures; do not blindly rerun.
-   All28/35/36 fullchecks and204tests/API expected. Source/guidance already pass.
-2. Fetch/fast-forward next canonical bot normally, preserving all70PNGs/metadata.
-   Verify sourcefingerprint. Inspect ALL5citycards,dark,200%against ownerreference.
-   Main open DESIGN gate: does sourced street/water/green context now adequately
-   match the illustrated basemap family? Fix actual clipping/sparse/poor presentation
-   if needed; never fake geometry. Oldneutralcanvas beforethisfollowup was too sparse.
-3. Inspect newAPK/download from successful API35artifact. gh run download redirects403;
-   connector github_download_workflow_artifact returns signeddownloadURL. Use curl
-   with scoped network and proper singlequote; don't printURL/token, don't use
-   download_file(FileService≠Sediment). ValidateZIPCRC,size,SHA,binarymanifest.
-4. Refresh VERIFICATION,SCREENSHOTS,VISUAL_REVIEW,RELEASE,README as warranted and
-   thishandoff with actualrun/source/artifacts. Commit/push docs after sourceCIcomplete.
-   Confirm subsequent head verification; update PRbody,KEEPDRAFT untilDoD satisfied.
-5. Inspect finaldiff/permissions/licences/backup/schema,measurefinalAPKdelta.
-6. All physicalS24 checks UNPERFORMED. TEST_BUILD has explicit recording/HC/BLE/TTS/
-   music/battery/processdeath/backup/TalkBack/200% and meaningfuloutdoorrun checklist.
-   Do not claim humanchecks from emulators or lockAndroidbaseline without realrun.
-
-If anotherlimit approaches: preserve testedwork,write exactremainingwork/currenthead/
-runstatus/uncommittedfiles and leaveclean checkpoint. Do not restart completedguides.
+Git fetch/push work normally with scoped network permission. gh pr edit fails on
+GitHub's deprecated classic projectCards; use REST PATCH with structured JSON.
+Artifact download via gh can redirect403; github_download_workflow_artifact returns
+signed downloadURL, then curl with proper singlequote/scoped network. Do not print
+URLs/tokens or use download_file (FileService is not Sediment). Validate archive
+bounds/CRC, manifest, bytes and hash. Verification-only manifest readers and downloaded
+ZIPs are in /workspace/scratch, not production code. Never discard completed work.
