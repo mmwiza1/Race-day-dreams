@@ -1,3 +1,15 @@
+# Paris correction verification — pending full Android matrix
+
+24October2026: annual Marathon de Paris2026 OSM reconstruction replaces the Olympic
+route for new assignments. Old assignments remain versioned/immutable. Local domain,
+source/projection, schema, release and strict guidance checks pass. Fresh Android
+matrix/canonical captures must pass and be reviewed before merge. Physical S24 checks
+remain unperformed. The owner explicitly authorises merge after the automated gate;
+no production/stable tag is to be created.
+
+The following is the previous accepted baseline, not a claim that the correction
+has already passed CI:
+
 # Verification — 0.8.1-test1, 24 October 2026
 
 Version **0.8.1-test1 / code10**; schema **10**; JSON envelope **7**, recording archive

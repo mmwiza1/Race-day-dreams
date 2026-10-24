@@ -1,0 +1,25 @@
+Annual Marathon de Paris2026 geographic data
+
+© OpenStreetMap contributors, via Geofabrik. ODbL-1.0:
+https://www.openstreetmap.org/copyright
+https://opendatacommons.org/licenses/odbl/1-0/
+https://download.geofabrik.de/europe/france/ile-de-france-261022.osm.pbf
+
+Original Race Day Dreams selection/reconstruction of the actual annual Schneider
+Electric Marathon de Paris street itinerary, 12 April2026. Factual sources:
+police order2026-00388 (3April2026), articles16,18–20,22, and ASO2026 runner guide
+(start near Rue de Marignan; finish near Rue Spontini on Avenue Foch).
+All1960 selected OSM positions retained in order, with550 source way IDs/versions,
+node IDs, raw extract/source hashes, itinerary and transformations offered under
+ODbL in docs/dream-route-data/paris-2026.json and paris-2026-osm-evidence.json:
+https://github.com/mmwiza1/Race-day-dreams/tree/main/docs/dream-route-data
+
+Approximate road/pedestrian centreline and junction-lane choices, not the certified
+racing line or navigation. Source line43.22km, separate from42195m equivalent progress.
+No invented points, elevation, organiser map artwork/stroke, logos, proprietary tiles
+or third-party application code. Original MIT wrapper/artwork do not relicense ODbL data.
+2027 course not yet published as of24October2026; this data explicitly represents2026.
+
+The former2024Olympic geometry is retained ONLY for already-saved assignments,
+with its own attribution in licences/paris-2024-NOTICE.txt. New Paris assignments
+use the annual2026 revision; old records are never silently rerolled/relabelled.

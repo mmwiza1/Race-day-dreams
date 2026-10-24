@@ -56,7 +56,7 @@ class SourceFormatTest(unittest.TestCase):
     def test_fitted_viewport_inverse_matches_each_frozen_course_frame(self):
         import json
         sources=('london-historical.json','berlin-2014-candidate.json','tokyo-2026.json',
-                 'paris-2024-olympic.json','new-york-2026.json')
+                 'paris-2024-olympic.json','paris-2026.json','new-york-2026.json')
         for source in sources:
             route=json.loads((root.parent/'docs/dream-route-data'/source).read_text())
             project=projection['geographic_frame'](route)
@@ -65,6 +65,39 @@ class SourceFormatTest(unittest.TestCase):
                 restored=project(lat,lon)
                 self.assertAlmostEqual(x,restored[0],places=5)
                 self.assertAlmostEqual(y,restored[1],places=5)
+
+
+    def test_annual_paris_geometry_is_only_adjacent_retained_osm_nodes(self):
+        import json, hashlib
+        data_root=root.parent/'docs/dream-route-data'
+        route=json.loads((data_root/'paris-2026.json').read_text())
+        raw=(data_root/route['evidenceFile']).read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),route['evidenceSha256'])
+        proof=json.loads(raw)
+        self.assertEqual(route['edition'],2026)
+        self.assertIn('annual race',route['event'])
+        self.assertEqual(route['licence'],proof['licence'])
+        self.assertEqual(route['sourceSha256'],proof['extractSha256'])
+        self.assertIn('geofabrik.de',proof['extractUrl'])
+        nodes={}; edges=set()
+        for way in proof['ways']:
+            self.assertGreater(way['version'],0)
+            for ident,lat,lon in way['nodes']: nodes[ident]=[lat,lon]
+            for a,b in zip(way['nodes'],way['nodes'][1:]): edges.add(tuple(sorted((a[0],b[0]))))
+        ids=proof['orderedNodeIds']
+        self.assertEqual(route['geometry'],[nodes[n] for n in ids])
+        self.assertEqual(len(ids),route['sourcePointCount'])
+        for a,b in zip(ids,ids[1:]): self.assertIn(tuple(sorted((a,b))),edges)
+        # Exact statutory street names distinguish this from the Olympic Versailles course.
+        names={w['tags'].get('name','') for w in proof['ways']}
+        for expected in ('Route de la Pyramide','Route du Pesage','Avenue de Gravelle',
+                         'Rue du Faubourg Saint-Antoine','Tunnel des Tuileries','Avenue Hubert Germain'):
+            self.assertIn(expected,names)
+        self.assertTrue(all(lon>2.23 for lat,lon in route['geometry']))
+        self.assertTrue(42000<route['measuredMetres']<44000)
+        for url in route['factualSources']: self.assertTrue(url['url'].startswith('https://'))
+        self.assertEqual(len(route['factualSources'][0]['sha256']),64)
+        self.assertIn('not the certified racing line',route['simplification'])
 
 
 if __name__ == '__main__':

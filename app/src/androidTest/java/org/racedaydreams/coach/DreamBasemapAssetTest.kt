@@ -8,7 +8,8 @@ import org.racedaydreams.domain.support.DreamRoutes
 class DreamBasemapAssetTest: AndroidTestCase() {
     fun testEveryGeographicCityHasBoundedReadableBundledContext() {
         val assets=context.assets.list("dream-basemaps")!!.toSet()
-        assertEquals(5,assets.size)
+        assertEquals(6,assets.size) // Five current city frames plus immutable legacy Paris frame.
+        assertTrue(assets.contains("paris-2024-olympic-geo-v1.rddmap"))
         for(city in DreamRoutes.routes()) {
             val route=DreamRoutes.currentGeometry(city)
             assertTrue(assets.contains("${route.id()}.rddmap"))

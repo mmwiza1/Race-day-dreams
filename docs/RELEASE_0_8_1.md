@@ -44,17 +44,17 @@ This is a test release in preparation, not a Play Store production release.
 
 - Geographic data are approximate historical/community lines, not certified current
   courses or navigation. London edition and survey accuracy are unspecified.
-- **Paris is explicitly the 2024 Olympic course, not the annual Paris Marathon.**
-  No redistribution grant was established for an annual-course candidate. This
-  geographic fallback is labelled in the primary UI and its source information.
+- Paris uses the annual **Marathon de Paris2026** itinerary reconstructed from OSM
+  geographic nodes (ODbL), not the Olympic event. Approximate street/junction line,
+  not certified race-lane geometry; source line and equivalent distance are separate.
 - Recorder recovery preserves the durable interrupted portion. It does not fabricate
   uninterrupted tracking after process death/reboot; the last unflushed batch can
   still be lost.
 - Physical Galaxy S24 GNSS, Health Connect, BLE, TTS/music, battery, TalkBack and
   meaningful outdoor-run acceptance remain unverified. Follow TEST_BUILD.md.
 - Actual-build reference comparison is recorded separately from completeness tests
-  in VISUAL_REVIEW_0_8_1.md. Physical acceptance is still outstanding, so PR#10 stays
-  draft until the full requested definition is satisfied.
+  in VISUAL_REVIEW_0_8_1.md. Physical acceptance remains outstanding. This stays a test/development build;
+  the owner authorises merge after the complete automated Paris-correction gate.
 
 ## Data compatibility
 

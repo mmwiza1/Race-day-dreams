@@ -44,5 +44,5 @@ for path in sorted((root/'docs/dream-route-data').glob('basemap-*.json')):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(output)
     count += 1
-assert count == 5, 'All five geographic course frames require an extract'
+assert count == 6, 'Five current course frames and the retained legacy Paris frame require an extract'
 print(f'{count} original-style geographic basemaps reproduce exactly; {vertices} retained positions')

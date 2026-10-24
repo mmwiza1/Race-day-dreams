@@ -90,22 +90,25 @@ code, tiles, buildings, films, photographs, elevation or marketing art are copie
 Old geometry IDs/preferences/assignments remain unchanged. The source's2026 context
 is documented without claiming survey accuracy or verification of every start variant.
 
-## Paris2024 geographic fallback (ODbL-1.0)
+## Annual Marathon de Paris2026 geographic data (ODbL-1.0)
 
-Paris now uses the2024 Olympic marathon course, explicitly named in the primary
-city label. It is NOT the annual Champs-Élysées Paris Marathon. This is the safe
-geographic fallback: no redistribution grant was established for an annual-course
-candidate. Do not conceal this distinction or label the geometry official.
+New Paris assignments use the annual **Schneider Electric Marathon de Paris2026**,
+not the Olympic event. RDD reconstructs the statutory street itinerary from actual
+OpenStreetMap nodes, via Geofabrik's22October2026 Île-de-France extract. Police
+order2026-00388 articles16,18–20,22 establish the annual route; the ASO2026 guide
+corroborates start/finish junctions. No organiser artwork/stroke is copied.
 
-All328positions from Thomas Krakow / Running-tomy's Wikimedia Commons data revision
-931916019 are retained. The data file explicitly declares ODbL-1.0. The coordinate
-database and generated array retain that licence, separate from original MIT app
-code. Source hash/revision/transformation and all retained positions are in
-`docs/dream-route-data/paris-2024-olympic.json`; attribution/full licence are bundled
-and readable in Settings. No Olympic logos, marks, map artwork or software copied.
-The approximate42.10km source line is separate from42.195km equivalent progress.
-Old Paris assignments remain unchanged. This geographic milestone does not certify
-richer five-city visual fidelity, which remains open.
+All1960selected positions and550source way IDs/versions, node order, factual sources,
+SHA256s and transformations are offered in `docs/dream-route-data/paris-2026.json`
+and `paris-2026-osm-evidence.json`. This coordinate database and its derived drawing
+remain ODbL-1.0, separately from MIT app code. Full licence/notice is bundled.
+Approximate road/pedestrian and junction-lane choices are not a certified racing
+line:43.22km source geometry is separate from42.195km equivalent progress.
+No source software, proprietary tiles, organiser logos/branding or elevation copied.
+
+The prior `paris-2024-olympic-geo-v1` remains immutable ONLY for existing saved
+assignments, with its Thomas Krakow/Running-tomy Commons ODbL notice retained.
+It is no longer eligible for new Paris assignments and is never relabelled annual.
 
 ## Original city context (0.8.1)
 

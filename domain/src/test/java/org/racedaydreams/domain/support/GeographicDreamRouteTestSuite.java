@@ -69,16 +69,19 @@ public final class GeographicDreamRouteTestSuite {
         }
         check(DreamRoutes.at(ny,0).equals(ny.vertices().get(0)),"NYC exact start");
         check(DreamRoutes.at(ny,42195).equals(ny.vertices().get(370)),"NYC exact equivalent finish");
+        var legacyOlympic=DreamRoutes.forId("paris-2024-olympic-geo-v1");
+        check(legacyOlympic.vertices().size()==328&&legacyOlympic.name().contains("2024 Olympic"),"Old Olympic assignment stays readable without reroll or relabelling");
+        check(new DreamRoutes.Assignment(legacyOlympic.id(),1000,5000).routeId().equals(legacyOlympic.id()),"Old saved Olympic assignment accepted without reinterpretation");
         var parisFresh=DreamRoutes.assign(10000,new Random(9),Set.of("paris-v2"));
-        check(parisFresh.routeId().equals("paris-2024-olympic-geo-v1"),"Paris future assignment uses licensed geographic revision");
+        check(parisFresh.routeId().equals("paris-2026-geo-v1"),"Paris future assignment uses licensed geographic revision");
         var paris=DreamRoutes.forId(parisFresh.routeId());
-        check(paris.vertices().size()==328,"All Paris source positions retained");
-        check(paris.name().contains("2024 Olympic"),"Different Paris event is explicit in primary display name");
-        check(DreamRoutes.provenance(paris).contains("not the annual Paris Marathon"),"No false annual-course claim");
+        check(paris.vertices().size()==1960,"All Paris source positions retained");
+        check(paris.name().contains("Marathon de Paris 2026"),"Annual Paris edition is explicit in primary display name");
+        check(DreamRoutes.provenance(paris).contains("Annual Marathon de Paris2026"),"Annual statutory itinerary provenance");
         check(DreamRoutes.provenance(paris).contains("ODbL"),"Paris data licence inspectable");
         check(DreamRoutes.forId("paris-v2").vertices().get(0).equals(new DreamRoutes.Vertex(3.1,3)),"Old Paris assignments unchanged");
-        check(DreamRoutes.landmarks(paris).size()==3&&DreamRoutes.landmarks(paris).get(1).label().equals("Versailles"),"Paris2024 landmarks match this course, not the annual event");
-        check(DreamRoutes.section(paris,0,42195).size()==328,"Full Paris highlight retains source corners");
+        check(DreamRoutes.landmarks(paris).size()==3&&DreamRoutes.landmarks(paris).get(1).label().equals("Château de Vincennes"),"Annual Paris landmark matches Vincennes course");
+        check(DreamRoutes.section(paris,0,42195).size()==1960,"Full Paris highlight retains source corners");
         for(double metres:new double[]{0,1000,5000,21097.5,42194.9,42195,50000}) {
             var p=DreamRoutes.at(paris,metres);var section=DreamRoutes.section(paris,0,metres);
             check(Double.isFinite(p.x())&&Double.isFinite(p.y()),"Paris interpolation finite");
@@ -107,7 +110,7 @@ public final class GeographicDreamRouteTestSuite {
         check(DreamRoutes.landmarks(ny).get(0).shape().equals("suspension-bridge"),"Verrazzano is not drawn as London's masonry Tower Bridge");
         check(DreamRoutes.landmarks(ny).get(1).shape().equals("cantilever-bridge"),"Queensboro has its own truss/cantilever silhouette");
         check(DreamRoutes.attribution(ny).contains("OpenStreetMap")&&DreamRoutes.attribution(ny).contains("ODbL"),"NYC produced-work credit is visible");
-        check(DreamRoutes.attribution(paris).contains("Thomas Krakow"),"Paris dataset author credit visible");
+        check(DreamRoutes.attribution(paris).contains("OpenStreetMap"),"Paris dataset author credit visible");
         System.out.println("GeographicDreamRouteTestSuite: " + checks + " checks passed.");
     }
 }

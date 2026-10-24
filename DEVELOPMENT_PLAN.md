@@ -79,7 +79,7 @@ Schema8, JSON6 (reads1–5), recording archive2 (reads1), complete ZIP1.
 Verification is incremental; consult VERIFICATION.md for actual observed source/run
 results. Physical audio/GPS/BLE/OEM battery/accessibility behaviour remains unverified.
 Current city choices use sourced geographic revisions; old assignments retain their
-original drawings. Paris is explicitly the2024 Olympic course. These approximate
+original drawings. Paris uses the annual Marathon de Paris2026 street reconstruction. These approximate
 lines are not certified current event geometry or navigation.
 The planner's existing prescriptions remain intact. Custom interval authoring and
 race-week checklist were added in0.8. Repeating/restarting an active rep and targeted
@@ -91,7 +91,7 @@ Wear OS, maps/tiles, public release, cloud/accounts/LLM/social remain out of sco
 
 See docs/RELEASE_0_8.md for implemented functionality and explicit limits. New work uses
 the existing recorder, execution and versioning rules. 0.8.1 now uses separately versioned licensed geographic revisions;
-docs/DREAM_ROUTES.md records factual sources and the explicit ParisOlympic fallback. Known-duration plans respect a saved time budget;
+docs/DREAM_ROUTES.md records factual sources and the annual Paris2026 source audit. Known-duration plans respect a saved time budget;
 distance-only prescriptions disclose uncertainty rather than inventing pace. Source,
 CI, capture and delivery results belong in VERIFICATION.md.
 

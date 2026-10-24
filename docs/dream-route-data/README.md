@@ -12,7 +12,7 @@ No raw trace length, course landmark or city geometry becomes an actual run metr
 | Berlin participant trace, 2014 | 191 | MIT | [berlin-2014-candidate.json](berlin-2014-candidate.json) |
 | Tokyo participant trace, 2026 | 91 | CC0-1.0 | [tokyo-2026.json](tokyo-2026.json) |
 | New York road centreline, 2026 context | 371 | ODbL-1.0 | [new-york-2026.json](new-york-2026.json) |
-| Paris Olympic course, 2024 | 328 | ODbL-1.0 | [paris-2024-olympic.json](paris-2024-olympic.json) |
+| Annual Marathon de Paris,2026 |1960|ODbL-1.0|[paris-2026.json](paris-2026.json)|
 
 Every JSON includes its source URL/revision or commit, checked date, licence
 assessment, source checksum/blob identity, retained coordinate sequence and limitations.
@@ -61,16 +61,45 @@ progress and certified race distance. See [source attribution](NEW_YORK_SOURCE_N
 and [the full ODbL text](ODbL-1.0.txt). The retained database and its transformation
 are offered in this repository under ODbL, with contributor attribution in the app.
 
-### Paris — explicitly different event
+### Paris — annual Marathon de Paris,2026
 
-The primary label says **Paris · 2024 Olympic course**. It is not the annual
-Champs-Élysées Paris Marathon. No redistribution grant was established for an
-annual-course candidate, so a geographically meaningful licensed fallback is used.
+Factual itinerary: [police order2026-00388,3April2026](https://cdn.paris.fr/paris/2026/04/07/arrete-marathon-2026-joRm.pdf),
+articles16,18–20,22. Start/finish junctions corroborated from the [ASO2026runner guide](https://storage-aso.lequipe.fr/ASO/publicEvents_mar/semp26-guidedumarathonien-fr.pdf).
+These are factual street/junction references, not a traced map stroke or copied artwork.
+The latest published annual course at the24October2026check is2026;2027is unpublished.
 
-Thomas Krakow / Running-tomy's Wikimedia Commons data revision `931916019`
-explicitly declares ODbL-1.0. All 328 positions of its one line are retained;
-approximate length is 42.10 km. No official Olympic artwork, marks, photographs,
-branding or affiliation is implied. See [source notice](PARIS_SOURCE_NOTICE.txt).
+Geometry: [Geofabrik Île-de-France22October2026 OSMextract](https://download.geofabrik.de/europe/france/ile-de-france-261022.osm.pbf),
+© OpenStreetMap contributors, ODbL-1.0. Original RDD ordered selection of actual OSM
+road/pedestrian nodes follows Champs-Élysées/Marignan, Concorde, Vendôme/Opéra loop,
+Louvre, Bastille/Nation, Picpus/Daumesnil, ChâteauVincennes/Pyramide/Ferme/Tourelle/
+Pesage/Gravelle, Charenton/Daumesnil/Bastille, Seine/Tuileries/Concorde/Alma tunnels,
+Kennedy/Versailles/Exelmans/Molitor, Auteuil/Hippodrome/Passy, Doumer/Trocadéro,
+VictorHugo/HubertGermain and AvenueFoch near RueSpontini.
+
+[Retained evidence](paris-2026-osm-evidence.json) contains550source ways with OSM IDs,
+versions/tags/nodes,1960ordered node IDs and itinerary legs. Every consecutive position
+is an existing OSM way edge. No synthetic geographic points or resampling. The data
+and projected array remain ODbL. SHA256s for the raw extract, factual PDFs and retained
+evidence are in [paris-2026.json](paris-2026.json). Reproduction is offline and tests
+verify node/edge identity, annual-course corridors, edition, hashes and projection.
+Development-only pyosmium read the PBF; no library code/dependency ships in the app.
+
+Accuracy: approximate street/junction-lane reconstruction using October geography,
+not surveyed April lane placement/certified racing line. Measured source line43.22km
+is explicitly separate from42.195km equivalent progress. No elevation is inferred.
+The visual is not official or suitable for navigation. No organiser map pixels/stroke,
+logos, proprietary tiles, unlicensed GPX or GPL implementation are redistributed.
+
+Investigated alternatives: ontempo explicitly offers OSM-redrawn ODbL venue data,
+but its unversioned local Paris frame/edition could not be established, so none is
+incorporated. Third-party downloadable annual GPXs without redistribution grants,
+Mavr's mixed data terms and organiser map artwork were not ingested. Global Overpass
+endpoints were unavailable/406/timed out; Swiss regional results do not establish
+Paris coverage. The full Geofabrik extract allowed independent geographic construction.
+
+Legacy [Paris2024Olympic data](paris-2024-olympic.json), its328positions, ID, projection,
+context and [notice](PARIS_SOURCE_NOTICE.txt) remain unchanged solely to read previously
+stored assignments. Never use it as an annual-course fallback or reroll old runs.
 
 ## City context and original artwork
 

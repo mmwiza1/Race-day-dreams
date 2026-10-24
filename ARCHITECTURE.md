@@ -262,7 +262,7 @@ schema/backup bump.
 DreamRoutes retains immutable geometry IDs for every old assignment. Stable city
 preferences choose currentGeometry only when assigning a new activity. London,
 Berlin, Tokyo, New York and Paris have separately sourced geographic revisions;
-Paris is explicitly the2024 Olympic course. Generated projection scripts retain
+Paris now uses the annual Marathon de Paris2026 OSM street reconstruction; the old Olympic ID is retained only for saved assignments. Generated projection scripts retain
 source coordinates and licensing; all run offline. DreamCartography projects sourced
 landmark/river context in the same frozen course frame. River geometry is clipped
 in the renderer, never used to shrink the full course or fabricate streets. Original

@@ -13,10 +13,13 @@ permission. They are not official race maps or suitable for navigation.
 | Berlin | `berlin-2014-geo-v1` | 191 retained positions from an MIT-licensed 2014 participant trace by Alexandre Donciu-Julin. Historical approximate GPS evidence. |
 | Tokyo | `tokyo-2026-geo-v1` | 91 retained original positions from kekomat's explicitly CC0 2026 participant trace, simplified at 25 m. |
 | New York | `new-york-2026-geo-v1` | All 371 delivered projected positions from MARATHON TRIP's explicitly ODbL-offered road-centreline data. Approximate 2026 context, not certified geometry. |
-| Paris | `paris-2024-olympic-geo-v1` | All 328 positions from Thomas Krakow / Running-tomy's ODbL Commons data. **The primary label says 2024 Olympic course. This is not the annual Paris Marathon.** |
+| Paris | `paris-2026-geo-v1` | Annual Marathon de Paris2026:1960retained OSM positions, reconstructed from the statutory street itinerary; ODbL via Geofabrik. Approximate road/junction line, not certified geometry. |
 
-Paris uses a clearly labelled geographic fallback because redistribution rights for
-an annual-course candidate could not be established. It is not silently relabelled.
+Paris represents the **annual Schneider Electric Marathon de Paris,12April2026**.
+Police order2026-00388 provides the street itinerary; OpenStreetMap/Geofabrik provides
+geography. The unpublished2027 course is not claimed. See the detailed source audit
+in [dream-route-data](dream-route-data/README.md). Existing Olympic geometry remains
+immutable solely for old stored assignments; it is never selected for a new run.
 No organiser map artwork, logos, sponsor branding, photographs or third-party
 application source were copied. Source hashes, revision IDs, notices and retained
 coordinates are in [dream-route-data](dream-route-data/README.md).
@@ -34,8 +37,8 @@ longer or shorter. The app neither edits actual GPS nor calls those lengths cert
 Sections retain intervening original vertices; they do not cut chords across corners.
 Exact start/finish boundaries and over-marathon handling are tested.
 
-Fifteen landmark anchors use sourced positions in each course's exact projection:
-twelve Wikidata P625 statements (CC0) and three New York ODbL anchors. The miniature
+Eighteen retained landmark anchors (fifteen for current routes, three for legacy Paris) use sourced positions in each course's exact projection:
+fifteen Wikidata P625 statements (CC0) and three New York ODbL anchors. The miniature
 Canvas illustrations are original RDD work. Thames and Seine context retains original
 Natural Earth public-domain centreline vertices. Their symbolic width does not claim
 surveyed river banks. No streets or scenery are invented to fill blank space.
@@ -49,7 +52,7 @@ section and numbered landmarks; written labels remain available independently.
 
 City preferences remain `london-v2`, `berlin-v2`, `paris-v2`, `tokyo-v2` and
 `new-york-v2`. Only new assignments choose the current geometry revision. Changing
-preferences never rerolls an existing activity. Every old unversioned/v2 geometry
+preferences never rerolls an existing activity. Every old unversioned/v2/Olympic geometry
 remains readable, with its original stored offset and distance.
 
 Complete-backup instrumentation covers old and new assignments for all five cities.

@@ -72,8 +72,7 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
 The route is drawn from retained observations on an offline canvas, not street tiles.
 Dream Routes use versioned sourced geographic lines and original city illustrations,
-not official maps or navigation. Paris is explicitly the2024 Olympic course, rather
-than the annual Paris Marathon. Old assignments retain their original drawings.
+not official maps or navigation. Paris uses the annual Marathon de Paris2026 street itinerary with ODbL OSM geometry. Old assignments retain their original drawings.
 Physical sensor/audio behaviour still requires the Galaxy S24 checklist.
 
 ## Build and tests

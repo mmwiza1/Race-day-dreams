@@ -26,7 +26,7 @@ public final class DreamRoutes {
         private static Map<String,Route> build() {
             var routes=new ArrayList<>(legacyRoutes());routes.addAll(CITIES);
             routes.add(Berlin2014Geometry.route());routes.add(Tokyo2026Geometry.route());
-            routes.add(LondonHistoricalGeometry.route());routes.add(NewYork2026Geometry.route());routes.add(Paris2024Geometry.route());
+            routes.add(LondonHistoricalGeometry.route());routes.add(NewYork2026Geometry.route());routes.add(Paris2024Geometry.route());routes.add(Paris2026Geometry.route());
             var index=new LinkedHashMap<String,Route>();
             for(var route:routes)if(index.put(route.id(),route)!=null)throw new IllegalStateException("Duplicate geometry revision");
             return Collections.unmodifiableMap(index);
@@ -35,8 +35,9 @@ public final class DreamRoutes {
     public static List<Route> routes(){return GeometryRegistry.CITIES;}
     public static Route forId(String id){var route=GeometryRegistry.BY_ID.get(id);if(route==null)throw new IllegalArgumentException("Unknown route geometry");return route;}
     /** City preference IDs stay stable; only new assignments use a new geometry revision. */
-    public static Route currentGeometry(Route city) {return city.id().equals("paris-v2")?forId("paris-2024-olympic-geo-v1"):city.id().equals("new-york-v2")?forId("new-york-2026-geo-v1"):city.id().equals("london-v2")?forId("london-historical-geo-v1"):city.id().equals("berlin-v2")?forId("berlin-2014-geo-v1"):city.id().equals("tokyo-v2")?forId("tokyo-2026-geo-v1"):city;}
-    public static String provenance(Route route) {return route.id().equals("paris-2024-olympic-geo-v1")?
+    public static Route currentGeometry(Route city) {return city.id().equals("paris-v2")?forId("paris-2026-geo-v1"):city.id().equals("new-york-v2")?forId("new-york-2026-geo-v1"):city.id().equals("london-v2")?forId("london-historical-geo-v1"):city.id().equals("berlin-v2")?forId("berlin-2014-geo-v1"):city.id().equals("tokyo-v2")?forId("tokyo-2026-geo-v1"):city;}
+    public static String provenance(Route route) {return route.id().equals("paris-2026-geo-v1")?
+        "Annual Marathon de Paris2026: approximate OSM street-itinerary reconstruction, © OpenStreetMap contributors, via Geofabrik; ODbL-1.0 data. Factual course: police order2026-00388 and ASO2026 guide. Not certified geometry or navigation. The42195m equivalent axis is separate from the approximate43.22km street line.":route.id().equals("paris-2024-olympic-geo-v1")?
         "Paris2024 Olympic marathon community geometry by Thomas Krakow (Running-tomy), via Wikimedia Commons, ODbL-1.0. This is not the annual Paris Marathon, official/certified geometry or navigation. The marathon-equivalent axis is separate from the source line.":route.id().equals("new-york-2026-geo-v1")?
         "Approximate New York2026 road centreline, © OpenStreetMap contributors, prepared by MARATHON TRIP; ODbL-1.0 data. Not official/certified geometry or navigation. The marathon-equivalent axis is separate from the approximate42.67 km retained line.":route.id().equals("london-historical-geo-v1")?
         "Approximate historical London course line published2023 by Georgios Karamanis under MIT. Course edition and survey accuracy unspecified. Not an official current course or navigation. The marathon-equivalent axis is separate from the approximate42.78 km source line.":route.id().equals("tokyo-2026-geo-v1")?
@@ -45,7 +46,7 @@ public final class DreamRoutes {
         "Original v2 course-inspired schematic; geographic replacement is still in progress. Not official course artwork or navigation.";}
     /** Visible produced-work attribution; full data notices remain available offline. */
     public static String attribution(Route route) {return switch(route.id()) {
-        case "new-york-2026-geo-v1", "london-historical-geo-v1", "berlin-2014-geo-v1", "tokyo-2026-geo-v1" -> "OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL";
+        case "paris-2026-geo-v1", "new-york-2026-geo-v1", "london-historical-geo-v1", "berlin-2014-geo-v1", "tokyo-2026-geo-v1" -> "OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL";
         case "paris-2024-olympic-geo-v1" -> "OpenFreeMap © OpenMapTiles · © OpenStreetMap contributors · ODbL. Course: Thomas Krakow · ODbL";
         default -> "";
     };}

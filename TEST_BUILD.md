@@ -224,8 +224,7 @@ a screenshot, an interface existing, or a green GitHub Actions result.
   assets resolve automatically, but that is not an individual form assessment.
 - [ ] Dream Routes: generate a new activity for each eligible city and reopen it.
   Check visible progress/distance, full route, section markers and numbered landmarks.
-  Existing assignments must retain their old geometry. Paris must say2024 Olympic
-  course; it must not masquerade as the annual Paris Marathon.
+  Existing assignments must retain their old geometry. New Paris assignments must say Marathon de Paris2026; it must not masquerade as the annual Paris Marathon.
 - [ ] Open each geographic licence/source notice in Settings; check dark/200%text
   and TalkBack's route summary. No remote maps or image downloads should occur.
 
@@ -236,7 +235,7 @@ calling the physical baseline accepted.
 
 - In airplane mode reopen each city card: full course, highlighted equivalent
   section, source street/water/green-space context,5km ticks, start/finish and
-  attribution should remain visible. Paris must say2024Olympic course.
+  attribution should remain visible. New Paris assignments must use the annual Marathon de Paris2026; legacy assignments must retain their old identity.
 - At200%text and in dark mode check complete landmark words, route contrast,
   progress/distance and readable source credit. This context is an overview,
   not navigation, not your actual GPS and not a claim of current certified routes.

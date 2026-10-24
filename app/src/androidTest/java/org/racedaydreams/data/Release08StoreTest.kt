@@ -60,16 +60,18 @@ class Release08StoreTest:AndroidTestCase(){
   assertEquals(fresh,SupportStore(context).dream("fresh-nyc",5020.0))
   assertEquals("new-york-v2",SupportStore(context).dream("old-nyc",5000.0)!!.routeId())
   assertEquals(setOf("new-york-v2"),Release08Store(context).dreamPreferences().second)
- } fun testGeographicParis2024AndLegacyAssignmentsSurviveCompleteBackup() {
+ } fun testAnnualParis2026AndBothLegacyAssignmentsSurviveCompleteBackup() {
   val store=Release08Store(context)
   store.save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",true).put("cities",JSONArray().put("paris-v2")))
   val support=SupportStore(context);val fresh=support.dream("fresh-paris",5020.0)!!
-  assertEquals("paris-2024-olympic-geo-v1",fresh.routeId())
+  assertEquals("paris-2026-geo-v1",fresh.routeId())
+  support.save("dream","olympic-paris",JSONObject().put("version",1).put("route","paris-2024-olympic-geo-v1").put("start",1000.0).put("distance",5000.0).put("assignedAt",Instant.now().toString()))
   support.save("dream","old-paris",JSONObject().put("version",1).put("route","paris-v2").put("start",1000.0).put("distance",5000.0).put("assignedAt",Instant.now().toString()))
   val bytes=ByteArrayOutputStream();CompleteBackup(context).exportTo(bytes)
   SqliteUserPreferencesRepository(context).clear();CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()))
   assertEquals(fresh,SupportStore(context).dream("fresh-paris",5020.0))
   assertEquals("paris-v2",SupportStore(context).dream("old-paris",5000.0)!!.routeId())
+  assertEquals("paris-2024-olympic-geo-v1",SupportStore(context).dream("olympic-paris",5000.0)!!.routeId())
   assertEquals(setOf("paris-v2"),Release08Store(context).dreamPreferences().second)
  }
  fun testNoSelectedCityUsesStandardPresentation(){Release08Store(context).save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",true).put("cities",JSONArray()));assertNull(SupportStore(context).dream("new",5000.0))}

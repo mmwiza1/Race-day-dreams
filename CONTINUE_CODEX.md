@@ -1,3 +1,33 @@
+# Continue — Paris annual-course correction, PR#10
+
+Latest owner instruction authorises merge after the annual Paris correction and
+complete automated gate; physical Galaxy S24 checks remain unperformed and are
+NOT a merge blocker. No permanent tag/stable release is authorised by this merge.
+Preserve all accepted0.8.1 features. Current branch:
+`feature/0.8.1-design-guidance-reliability`. Inspect actual HEAD/status/PR/CI.
+
+## Correction implemented, Android verification pending
+
+- New `paris-2026-geo-v1`: annual Schneider Electric Marathon de Paris,12April2026.
+- ODbL geographic reconstruction from Geofabrik22October2026 OSM extract and the
+  factual street itinerary in police order2026-00388 (3April2026). ASO2026guide
+  corroborates the start at Marignan and finish near Spontini. No map artwork/stroke.
+-1960retained OSM positions;550source ways with IDs/versions/node/edge evidence.
+  All source hashes, itinerary and transformation retained in paris-2026*.json.
+  Approximate43.22km street/junction line is distinct from42195m equivalent progress.
+- New annual-course offline basemap/context; existing five-city visual system intact.
+  Old Olympic geometry/context and all legacy IDs stay immutable for stored runs only.
+- No schema/backup/archive changes; no new runtime dependency or manifest permission.
+- Local domain19suites pass;11source/projection tests pass;43schema and5release tests
+  pass;177original assets and strict174/174canonical +14/14routine coverage pass.
+- Next: commit/push; inspect/fix complete API28/35/36 build/lint/instrumentation CI;
+  adopt canonical bot captures, visually review Paris and allfive, dark/200%labels.
+  Update final verification docs with actual CI/artifact/counts. MarkPR10ready, merge
+  normal convention after green; verify main CI and rolling development APK release.
+  Do not mark S24 physical checks as passed.
+
+## Previous accepted baseline (historical, not the corrected build)
+
 # Continue Race Day Dreams 0.8.1 — verified code, physical acceptance pending
 
 Preserve this branch and every completed commit. Inspect actual git status/log/diff,

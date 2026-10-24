@@ -10,18 +10,20 @@ import concurrent.futures, hashlib, json, math, pathlib, runpy, urllib.request
 args=argparse.ArgumentParser(description=__doc__)
 args.add_argument('--cache',type=pathlib.Path,required=True,help='Local source tile cache, outside the app')
 args.add_argument('--fetch',action='store_true',help='Explicitly allow bounded network source preparation')
+args.add_argument('--city',help='Prepare only this versioned route ID; other cities remain untouched')
 options=args.parse_args()
 root=pathlib.Path(__file__).resolve().parent.parent
 m=runpy.run_path(str(root/'scripts/dream-map-source.py'))
 p=runpy.run_path(str(root/'scripts/dream-projection.py'))
 cache=options.cache;cache.mkdir(parents=True,exist_ok=True)
-files=['london-historical.json','berlin-2014-candidate.json','tokyo-2026.json','paris-2024-olympic.json','new-york-2026.json']
+files=['london-historical.json','berlin-2014-candidate.json','tokyo-2026.json','paris-2026.json','new-york-2026.json']
 zoom=12
 urlbase='https://tiles.openfreemap.org/planet/20261018_080001_pt'
 plans=[];alltiles=set()
 for file in files:
  route=json.loads((root/'docs/dream-route-data'/file).read_text());points=route['geometry']
  if route['id']=='berlin-2014-candidate':route['id']='berlin-2014-geo-v1'
+ if options.city and route['id']!=options.city:continue
  if 'frame' in route:
   anchor=route['frame']['anchor'];points=[p['inverse18'](a+anchor[0],b+anchor[1]) for a,b in points]
  # Cover the entire fixed5:4 fitted viewport, not merely a narrow course bbox.

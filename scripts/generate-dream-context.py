@@ -11,6 +11,7 @@ files = {'london-historical-geo-v1':'london-historical.json',
          'berlin-2014-geo-v1':'berlin-2014-candidate.json',
          'tokyo-2026-geo-v1':'tokyo-2026.json',
          'paris-2024-olympic-geo-v1':'paris-2024-olympic.json',
+         'paris-2026-geo-v1':'paris-2026.json',
          'new-york-2026-geo-v1':'new-york-2026.json'}
 
 def projectors(route_id):
@@ -85,6 +86,6 @@ target=Path('domain/src/main/java/org/racedaydreams/domain/support/DreamCartogra
 if '--check' in sys.argv:
     if target.read_text()!=source:
         raise SystemExit('City context differs from retained source coordinates')
-    print('15 sourced landmark anchors and river projections reproduce exactly')
+    print(str(sum(len(c['landmarks']) for c in data['cities'].values()))+' sourced landmark anchors and river projections reproduce exactly')
 else:
     target.write_text(source)
