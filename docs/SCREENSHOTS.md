@@ -1,4 +1,4 @@
-# 0.8.2 premium Dream Routes visual acceptance gate — pending
+# 0.8.2 premium Dream Routes — verified canonical captures
 
 The mandatory target is the owner-supplied **four-city premium Dream Routes reference
 in the 0.8.2 task**. Its original binary is not currently among the stored reference
@@ -6,7 +6,12 @@ files; do not relabel an older image, generated artwork or actual screenshot as 
 original. Existing owner JPEGs in docs/design-reference remain unchanged. Actual-build
 captures remain in docs/screenshots and must never replace the approved reference.
 
-Required fresh canonical captures:
+The shared city experience and 20 original bundled images are implemented. No schema,
+backup format, runtime dependency or permission changed. Final-source captures were
+adopted from successful workflow40092248558; all14Dream panels passed direct visual
+review against the inline premium reference. Physical acceptance remains separate.
+
+Required final-source canonical captures:
 
 | File | Required review |
 | --- | --- |
@@ -25,7 +30,7 @@ show the landmark posters without shrinking accessible text or compositing a fak
 screen. Each capture must assert its own visible section anchor 100–300 px from the top;
 top-screen captures retain their existing Dream Route heading assertion and show the
 city hero and full course map. Both map-context and selected-city artwork readiness
-must be observed before capture; no capture-pass claim is made until tests run.
+were observed before capture in the verified source run.
 The stdlib scripts/verify-dream-screenshots.py requires the complete 77-file canonical
 set, including all 14 Dream top/landmark panels and every established whole-app capture,
 bounded phone-screen dimensions, complete PNG chunks/checksums and a valid bounded
@@ -46,9 +51,16 @@ geographic context, clear progress and attractive original landmark thumbnails. 
 normal/dark/200% text and collision-aware markers. The hero is atmospheric; geography
 belongs to the actual course map. **Consistent pixels, correct geometry and all fields
 being present do not establish design fidelity.** Record specific findings and observed
-source/run/capture IDs in docs/VISUAL_REVIEW_0_8_2.md and VERIFICATION.md. No 0.8.2 actual
-capture/visual-pass result is claimed at this checkpoint. The baseline records below
-are historical evidence for 0.8.1, not proof of the new presentation.
+source/run/capture IDs in docs/VISUAL_REVIEW_0_8_2.md and VERIFICATION.md.
+
+Initial source 30a619b produced 77 authentic API 35 PNGs in workflow 40085783355,
+artifact 12556114941. The first visual inspection prompted Paris-title and progress-bar
+refinements. Final sourcefc47aae passed workflow40092248558:213tests EACH API28/35/36,
+77real API35captures/artifact12560190031 adopted bybotc408306. Stored fingerprint
+ece5e40a19e9512fc3f8eeb2f8535b520837228a8ecff8d336eff739860ceab6 matches currentcode.
+All14Dream panels were opened and reviewed; see VISUAL_REVIEW_0_8_2.md for specific
+findings and responsive adaptations. PhysicalS24acceptance is unperformed. The records
+below are historical0.8.1evidence, not verification of the new presentation.
 
 ---
 

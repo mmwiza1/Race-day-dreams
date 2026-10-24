@@ -1,67 +1,58 @@
-# 0.8.2 Dream Routes visual acceptance
+# 0.8.2 Dream Routes — visual acceptance review
 
-## Reference and scope
+## Source and authentic evidence
 
-The mandatory target is the owner's **four-city premium Dream Route board** supplied
-inline with the0.8.2 brief (London, Berlin, Paris and Tokyo). It shows an atmospheric
-illustrated hero, factual course below, blue equivalent section, progress, landmark
-poster thumbnails and a three-part distance summary. NewYork must share that family.
-The old0.8.1JPEGs in design-reference remain untouched; they are not substituted for
-this newer target. The workspace exposes no binary copy of the newer inline image.
-See design-reference/REFERENCE_0_8_2.md. Actual-build captures stay in screenshots/.
+Reviewed production source `fc47aae976a734a9b636d97bd3db7bf9b5c23e88`, verified in
+[workflow 40092248558](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40092248558):
+213 instrumentation tests passed on each API 28/35/36. API-35 artifact 12560190031 contains
+77 real PNGs; bot c408306 adopted them exactly. Source fingerprint:
+`ece5e40a19e9512fc3f8eeb2f8535b520837228a8ecff8d336eff739860ceab6`.
 
-## Audit of the accepted0.8.1 baseline
+The mandatory comparison target is the owner's inline **four-city premium Dream Route
+board** in the 0.8.2 task: London/Berlin/Paris/Tokyo, illustrated city hero, factual route,
+blue equivalent section, progress, three landmark posters and distance strip. New York
+must share that family. The workspace exposes no binary copy of that newer attachment;
+the untouched older 0.8.1 JPEGs do not replace it. See design-reference/REFERENCE_0_8_2.md.
+Actual captures remain separately in screenshots/. No mockup was passed off as an app.
 
-The old card had no atmospheric city hero, dense white roads, small numbered landmark
-anchors and primitive landmark symbols. Progress was mostly plain text. Those choices
-were geographically useful but did not deliver the requested fitness/travel character.
-The course geometry/registry, offsets, stable assignments and backup behaviour were
-accepted; presentation should not change them.
+## Direct visual comparison
 
-## Implementation being verified
+All 14 city/theme top and landmark captures were opened and visually compared with the board,
+not accepted merely from source hashes, PNG integrity, fields or stable pixels.
 
-- Original city panoramas and three original travel-poster landmarks per current city.
-- Existing full geographic course, softer sourced context, stronger blue section,
-  quieter remaining line and distinct full-course pins versus section endpoints.
-- Exact42195m completed/remaining/total values, percentage and equivalent-only wording.
-- Dark tonal map/card adaptation; luminous decorative artwork is not simply inverted.
--200%font uses natural wrapping, stacked posters/summary and scrolling.
-- Only displayed city artwork is decoded off-main; fixed-size assets and bounded caches.
-
-## Actual-build review gate — pending
-
-No0.8.2capture or visual-pass claim is made until a fresh successful Android run is
-inspected. Required77canonical PNGs include fivecitytop+landmarkpanels, darktop+landmark
-and200%top+landmark. File-integrity/source checks cannot establish visual fidelity.
-
-| Review question | Observed result |
+| City / mode | Observed result |
 | --- | --- |
-| Illustrated and aspirational city header? | Pending actual-build review |
-| Same premium fitness/travel visual family? | Pending |
-| Full course understandable within about one second? | Pending |
-| Blue equivalent section dominates labels/remaining line? | Pending |
-| Attractive route-relevant landmark posters? | Pending |
-| Hero → map → progress → landmarks → distance hierarchy? | Pending |
-| NewYork belongs to the same family? | Pending |
-| Dark and200%text readable without clipping/overlap? | Pending |
+| London | Detailed Westminster/Thames/London Eye panorama; true full course, strong blue section, clear distance/percentage. Tower Bridge/Palace/Eye posters are recognisable. Clustered 5 km labels do not overlap the highlight. |
+| Berlin | Brandenburg Gate/Reichstag skyline and detailed posters convey the same travel style. Nearby course Start/Finish pins stay distinct; labels yield to blue. |
+| Paris | Concise Paris headline, explicit Marathon de Paris/2026 subtitle, Eiffel/Seine atmosphere. Annual Vincennes course is retained; Eiffel/Vincennes/Louvre posters match its sourced context. No Olympic relabelling. |
+| Tokyo | Tokyo Tower/cherry blossom skyline and Station/Sensō-ji posters carry a distinct identity within the same system. Full course and blue section remain legible. |
+| New York | Manhattan/bridge/park composition and Verrazzano/Queensboro/Central Park posters share the same richness/proportions, not a generic fallback. Full north-south course stays visible. |
+| Dark | Luminous art remains attractive; map context is subdued but present. Pale blue section, navy cards and light labels have clear hierarchy; poster captions remain readable. |
+| 200% text | Titles wrap naturally; map remains useful. Progress/landmark/summary content stacks and scrolls. No important label is ellipsised, clipped or overlapped. |
 
-Source commit, workflow, artifact IDs and capture hashes will be recorded after observed
-verification. PhysicalS24sunlight/TalkBack/GNSS/BLE/audio/battery checks remain separate
-and UNPERFORMED. This remains a debug-signed test/development release.
+The header is illustrated and aspirational, the equivalent section is immediately
+obvious, and detailed original posters deliver the missing travel/achievement payoff.
+The hierarchy matches hero → map → progress → landmarks → distance. All five screens
+visibly belong to the approved premium fitness/travel family, materially beyond the
+old GIS-like card. No missing art, divider strips, distorted crops, marker/label overlap
+or obscured highlighted segment was found in the inspected frames.
 
-## First actual-build inspection (not final acceptance)
+This is a responsive adaptation: the established app bar remains, and accessible type
+is not compressed to fit the whole board into one viewport. Separate authentic lower
+panels show posters and distance summaries. Sponsor wording/logos from the reference
+are deliberately omitted. Accurate retained geographic courses take precedence over
+schematic positions in the reference; skyline illustrations are atmospheric, not maps.
 
-Source30a619b, workflow40085783355, API35artifact12556114941 produced77real PNGs.
-London/Paris/dark/200%andBerlin/Tokyo/NewYorktop+landmarkpanels were visually inspected
-against the inline approved board. Rich skyline heroes, distinct landmarkposterart,
-strongblue section/fullcourse, geographic context and hierarchy belong to its premium
-fitness/travel family. No marker/highlight overlap was observed. NewYork shares the
-same components andillustrationstyle;darkcontext remains visible and200%content wraps/
-stackswithoutclipping. Screens scrollratherthancompressingtype tofitonephoneframe.
+## Refinements prompted by actual captures
 
-The review found Paris's retained descriptive routename was incorrectly reused as its
-largecitytitle. The displaycity is now Paris, while MarathondeParis/2026remainexplicit.
-The progressbar's default terminaldot was removed so onlycompletedprogress readsblue.
-Those corrections needfresh final-source captures before the gate closes. API28auxiliary
-screenshots inthisfirstrun were letterboxed bytheemulatorcapturepipeline;canonical
-API35screens are full540x1200. API28functional tests passed209;no physicaldeviceclaim.
+The initial source 30a619b captures exposed a duplicated descriptive Paris headline and
+an unnecessary terminal progress dot. Final captures above confirm the concise city
+headline, preserved annual edition identity and single continuous progress treatment.
+Geometry and saved assignment IDs/offsets did not change during refinement.
+
+## Scope of acceptance
+
+The visual gate passes for these actual emulator renders. This is an agent-assisted
+image review, not a claim of physical human/device acceptance. Galaxy S24 sunlight,
+TalkBack, outdoor GNSS, long recording, BLE, audio/music/calls and battery checks remain
+UNPERFORMED. See TEST_BUILD.md. No efficacy, certified-course or navigation claim is made.

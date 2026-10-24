@@ -1,13 +1,20 @@
 # Galaxy S24 evaluation — 0.8.2-test1
 
-0.8.2 changes Dream Routes presentation while preserving the merged 0.8.1 engine.
-PRs #10 and #11 are complete. Consult VERIFICATION.md for the actual current source,
-CI and APK evidence; the new visual update is not physically verified by these notes.
+0.8.2 adds illustrated city heroes, landmark posters and clearer equivalent-distance
+progress for all five Dream Routes while preserving the merged 0.8.1 engine. Its 20
+bundled WebPs total 1,472,726 bytes. Schema/backup formats, runtime dependencies and
+permissions are unchanged; the app still has no Internet permission. PRs #10 and #11
+are complete. Consult VERIFICATION.md for current source, CI and APK evidence. Source
+automation and visual review passed; final-head/main publication is checked separately.
+Physical checks remain unperformed.
 
-Download `Race-Day-Dreams-0.8.2-test1-debug.apk` from a successful intended-commit API35
+Download `Race-Day-Dreams-0.8.2-test1-debug.apk` from a successful intended-commit API-35
 artifact, or `Race-Day-Dreams-0.8.2-test1.apk` from the rolling development release after
 publication. Export a complete backup first. Debug signing keys may differ; preserve
-backup before any reinstall. No physical test below has been performed by Codex.
+backup before any reinstall. The initial 0.8.2 APK measured 47,960,610 bytes (+3.358%);
+the verified source APK size is 47,976,994 bytes (+3.393%). The rolling main release
+supplies its final download checksum after publication. No physical test below has been
+performed by Codex.
 
 ## 0.8.2 focused visual and compatibility checks
 

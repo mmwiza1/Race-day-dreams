@@ -1,29 +1,85 @@
-# 0.8.2-test1 verification — in progress
+# Verification — Race Day Dreams 0.8.2-test1
 
-Baseline main ec6c3ef1e5e162f513ce7ace017a604863cec679 passed complete workflow40079947980
-with204instrumentation tests EACH API28/35/36 and rolling development publication. PR10
-and PR11are merged. BaselineAPI35APK46,402,613bytes.
+Version **0.8.2-test1 / versionCode 11**. Schema **10**, JSON envelope **7**, raw
+recording archive **2**, complete-backup package **1**: unchanged. No dependency or
+manifest permission was added. This remains a debug-signed test/development build.
 
-Current feature version0.8.2-test1/code11;schema10,JSON7,raw2,complete1 unchanged.
-Observed local:61,295domain checks/19suites,43schema,11Dreamsource/projection,
-6release-note tests,20artassets/1,472,726bytes and14artwork-integrity fault tests pass.
-Initial source30a619b workflow40085783355: Androidbuild/lint/instrumentation compilation
-passed on allthree APIs;209instrumentation tests passed on API28 and35. API36 completed
-209with one native-history selector failure. Logs exposed a cancelled-query readiness
-race; a targeted fix and3controlled UI tests are pending the next fullrun, not a blindretry.
-API35artifact12556114941 contains77realcaptures, fileintegrity verified and allfivecity/
-dark/200%top+landmarkpanels visually reviewed. Review caught an oversized duplicate
-Paris citytitle; presentation now keeps city short while retained course/edition stay
-explicit. Fresh final-source captures are still required before acceptance/merge.
-InitialAPI35APKartifact12556488666:47,960,610bytes(+1,557,997 /3.358%vsbaseline),
-version0.8.2-test1/code11, ZIPCRC/binarymanifest checked; noINTERNETpermission.
-Follow-up7672cec workflow40086946911 passed build/lint on all3 and the original city
-capture test on all3, but two new harness tests failed (frame pumping/lazy scroll),
-plus one API28completion-feedback timeout. Harness fixes retain assertions/20s bounds.
-Manual completion now navigates only after its refreshed snapshot; a realViewModel
-regression test verifies activity/response/preserved-plan coherence before callback.
-Final213-test matrix, APK/captures and postmerge publication remain pending.
-No physicalGalaxyS24check is claimed.
+## Verified source and CI
+
+Production source: `fc47aae976a734a9b636d97bd3db7bf9b5c23e88`.
+[Complete workflow 40092248558](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40092248558)
+passed Android build, lint, instrumentation compilation, all supported emulator APIs,
+strict instructional coverage and canonical screenshot publication.
+
+| API | Instrumentation result | Job |
+| --- | --- | --- |
+| 28 | 213 passed, zero failed/skipped | 120867139695 |
+| 35 | 213 passed, zero failed/skipped | 120867139661 |
+| 36 | 213 passed, zero failed/skipped | 120867139786 |
+
+Exact `Finished 213 tests` and successful-build log lines were inspected for all three.
+These include migrations, complete-backup round trips/rollback, retained current and
+legacy Dream assignments, history paging/recovery, new resources/edition identity,
+controlled cancelled-query/retry/cursor tests and post-snapshot completion callbacks.
+No original test or assertion was removed; no timeout was increased.
+
+Observed local checks: **61,295 domain checks across 19 suites**, **43 schema tests**,
+**11 Dream source/provenance/projection tests**, all course/context/basemap reproducers,
+**6 release-note tests**, **14 artwork-integrity tests**, **6 PNG/capture-integrity tests**.
+Strict guidance remains **174/174 canonical + 14/14 routine movements**, with all 177
+existing assets intact. The 20 new city assets total **1,472,726 bytes**.
+
+## Authentic screenshots and design gate
+
+API-35 artifact **12560190031** contains **77 real PNGs**, adopted exactly by bot
+`c408306cd5ebac2a9bd7061e53c84478c292097a`. Stored source commit is fc47aae; fingerprint:
+`ece5e40a19e9512fc3f8eeb2f8535b520837228a8ecff8d336eff739860ceab6`.
+The current source hash matches. All 77 required PNG structures/checksums/pixel streams
+validate. Five city top/landmark pairs plus dark and 200% pairs are separate actual
+captures, not composites. Reference comparison is recorded in
+[VISUAL_REVIEW_0_8_2.md](docs/VISUAL_REVIEW_0_8_2.md); the approved reference is not replaced
+with production captures. Physical human/device acceptance is a separate gate.
+
+## APK and privacy
+
+Verified source API-35 artifact **12559656978**:
+`Race-Day-Dreams-0.8.2-test1-debug-api-35`, containing
+`Race-Day-Dreams-0.8.2-test1-debug.apk`. Build log size: **47,976,994 bytes**.
+Merged 0.8.1 baseline: **46,402,613 bytes**; increase **1,574,381 bytes / 3.393%**.
+Twenty bounded WebPs account for 1,472,726 bytes. Maps remain vector coordinates.
+
+The manifest and resolved dependencies are unchanged apart from app version; the
+independently inspected initial APK binary had no INTERNET permission. Source checks
+confirm no network permission, map SDK, analytics/backend/account or remote artwork
+path was introduced. Final-main publication supplies its own APK/checksum and CI URL.
+No permanent stable/production tag is created by this update.
+
+## Reliability findings resolved during verification
+
+Initial run 40085783355 found cancelled history IO could mark a replacement page ready.
+The targeted readiness fix retains summary-only keyset queries. Follow-up 40086946911
+passed the original city capture on all APIs, but exposed two new test-harness errors
+(frame clock pumping and offscreen lazy scrolling) and an API-28 completion-feedback
+wait. Harness operations were corrected without weakening assertions. Manual completion
+now delivers navigation after its coherent snapshot; a real ViewModel regression test
+verifies Main-thread callback, idle state, actual, response and preserved prescription.
+The complete 213-test matrix above passed after these corrections, without blind retries.
+
+## Delivery and physical status
+
+PR #12 contains the focused release. Final documentation-head CI, merge and post-merge
+main workflow must be inspected before claiming publication. The existing rolling
+[Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+updates only after main verification. Its notes identify the actual merged commit.
+
+Galaxy S24 outdoor GNSS/splits, long locked/background runs, real Health Connect data,
+BLE disconnect/reconnect, TTS/music/calls, battery, sunlight, TalkBack and full physical
+backup/restore acceptance remain **UNPERFORMED**. TEST_BUILD.md is the human checklist.
+Local Android execution was unavailable: default Gradle cache was unwritable; a
+workspace-cache attempt reached wrapper download but Java network access was refused,
+and no Android SDK is installed. Android results above are observed GitHub CI results.
+
+---
 
 The following records are HISTORICAL0.8.1 results, not0.8.2 verification.
 

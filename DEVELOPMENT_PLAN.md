@@ -114,15 +114,16 @@ and #11 are merged; no S24 physical results are inferred.
 
 ## 0.8.2 premium Dream Routes presentation
 
-A focused visual update is in progress on the 0.8.1 geographic baseline. The target is
-original illustrated city heroes, a designed course map, prominent equivalent progress,
-compact landmark artwork and exact completed/remaining/total summaries for London,
-Berlin, Paris, Tokyo and New York. The owner-supplied four-city premium reference in
-the 0.8.2 task is mandatory; New York must share its design family. The original image
-is currently inline in that task, not a verified new binary under design-reference.
+The focused visual update is implemented on the accepted 0.8.1 geographic baseline:
+five original illustrated city heroes, 15 landmark posters, the preserved full geographic
+course with a dominant blue equivalent section, clear progress and exact distance
+summaries. Dark/200% layouts and offline, selected-city bounded caching are complete.
+Assignments, geometry IDs/offsets, Paris 2026, backups and actual GPS remain unchanged.
+No schema/format/dependency/permission change was required.
 
-Do not change geometry IDs, assignment selection/persistence, offsets, interpolation,
-recorded GPS, backup formats or unrelated product screens. No schema or backup bump
-is planned for bundled presentation assets. New screens, asset sizes and 0.8.2 CI are
-pending actual implementation/verification; see docs/RELEASE_0_8_2.md and the current
-VERIFICATION.md. API28/35/36, strict174/174+14/14guidance and actual capture gates remain.
+Source fc47aae passed workflow 40092248558: 213 instrumentation tests on each API 28/35/36,
+build/lint, strict 174/174 + 14/14 guidance and 77 actual captures adopted by bot c408306.
+All 14 Dream panels were visually reviewed against the owner's inline premium board;
+no design blocker was found. See RELEASE_0_8_2.md, VISUAL_REVIEW_0_8_2.md and VERIFICATION.md
+for source identity, size and exact evidence. The final-head/main workflows control
+publication. Physical S24 acceptance remains unperformed; this is a test release.
