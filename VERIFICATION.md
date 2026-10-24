@@ -17,7 +17,12 @@ Paris citytitle; presentation now keeps city short while retained course/edition
 explicit. Fresh final-source captures are still required before acceptance/merge.
 InitialAPI35APKartifact12556488666:47,960,610bytes(+1,557,997 /3.358%vsbaseline),
 version0.8.2-test1/code11, ZIPCRC/binarymanifest checked; noINTERNETpermission.
-Final-source APK size/CI/captures and postmerge publication remain pending.
+Follow-up7672cec workflow40086946911 passed build/lint on all3 and the original city
+capture test on all3, but two new harness tests failed (frame pumping/lazy scroll),
+plus one API28completion-feedback timeout. Harness fixes retain assertions/20s bounds.
+Manual completion now navigates only after its refreshed snapshot; a realViewModel
+regression test verifies activity/response/preserved-plan coherence before callback.
+Final213-test matrix, APK/captures and postmerge publication remain pending.
 No physicalGalaxyS24check is claimed.
 
 The following records are HISTORICAL0.8.1 results, not0.8.2 verification.

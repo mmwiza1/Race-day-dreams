@@ -105,7 +105,8 @@ class ActivityHistoryReadinessTest {
             })
         } }
         waitForReady()
-        compose.onNodeWithText("Load more recorded runs").performScrollTo().performClick()
+        compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Load more recorded runs"))
+        compose.onNodeWithText("Load more recorded runs").performClick()
         compose.waitUntil(20000) { queries.get() == 2 && compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty() }
         compose.runOnIdle { assertEquals(records[29].start() to records[29].id(), secondCursor) }
         // The first page remains in the same list after appending the final row.
@@ -121,7 +122,12 @@ class ActivityHistoryReadinessTest {
         compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()
     }
 
-    private fun <T> await(value: Deferred<T>): T = runBlocking { withTimeout(20000) { value.await() } }
+    private fun <T> await(value: Deferred<T>): T {
+        // Keep pumping Compose frames so a state change can restart LaunchedEffect.
+        // Blocking the test thread first would leave the replacement uncomposed.
+        compose.waitUntil(20000) { value.isCompleted }
+        return runBlocking { value.await() } // Already complete; no clock-dependent wait.
+    }
 
     private fun activity(id: String, provider: String, minute: Int): ActivityRecord {
         val start = Instant.parse("2026-01-01T12:00:00Z").plusSeconds(minute * 60L)
