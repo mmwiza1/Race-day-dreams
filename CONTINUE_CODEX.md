@@ -1,18 +1,28 @@
-# Post-merge0.8.1 verification follow-up
+# Current0.8.1 delivery — PR10 merged, verified test-only PR11 follow-up
 
-PR10 was squash-merged at3fe6c6d93d261cd024fa71573553cfaf7c32d502.
-Post-merge workflow40077045374 passed API28/35 but API36 timed out waiting for
-native route-story evidence in the city capture test (203/204 passed); publication
-was correctly blocked. Test selected the first generic Recordedrun title among
-multiple history fixtures. Follow-up selects the unique native source card and
-asserts detail provenance, retaining both analysis waits/all assertions/20s timeout.
-No production code changed. Preserve this focused follow-up and run fullCI/captures;
-merge its PR after green, then verify newmainCI and rolling development release.
-Do not mark S24 physical checks passed or create a permanent version tag.
+- PR10 merged at3fe6c6d93d261cd024fa71573553cfaf7c32d502, preserving accepted0.8.1
+  and the annualParis2026 correction. Production code/data/version remain unchanged
+  by PR11: https://github.com/mmwiza1/Race-day-dreams/pull/11 .
+- Main workflow40077045374 passed API28/35; API36 completed204tests with one city
+  screenshot timeout while selecting a generic Recordedrun title (203passed).
+  Development publication was correctly blocked. The follow-up uniquely selects
+  the native fixture by recording provenance and asserts opened-source identity,
+  retaining both analysis waits,20s limits, all city/dark/large-text checks/assertions.
+- Follow-up source04cd097535e0ec80040c82799db4b87a286c2ab3 passed complete workflow
+  40078273456:204tests EACH API28/35/36, build/lint/domain, strict174/174+14/14guidance,
+  and70actual-build captures. Exact Finished204log lines inspected for allthree APIs.
+- Canonicalbot0cd77bd adopted70freshcaptures; fingerprint
+  985d5b81c46f8aef4a8bd696ac8912bec3f4916c681a80b493c449adec8ad894 matches code.
+  NewParis capture inspected: annualcourse, highlight/markers/progress/context intact.
+  No production code, APKversion/schema/backup, dependency or permission changed.
+- Currentbranch:feature/0.8.1-design-guidance-reliability. If PR11notalready merged,
+  check final documentation-head CI, markready and squash-merge when green. Then
+  fetch/switch/fast-forwardmain, verify its fullCI and automatic rolling development
+  release and download/check the freshAPI35APK. Do NOT create a permanent/stable tag.
+  If already merged, inspect actualmain/latestCI; do not mergeagain or redo acceptedwork.
+- PhysicalGalaxyS24 checks remain unperformed. No future features are authorised.
 
-The source/factual/licensing verification below remains valid; inspect current
-HEAD/PR/liveCI before acting. Production fingerprint changes only because the
-canonical capture test itself is part of the fingerprint.
+## Prior source and Paris verification (historical checkpoint)
 
 # Continue — accepted0.8.1 implementation and annual Paris correction
 
