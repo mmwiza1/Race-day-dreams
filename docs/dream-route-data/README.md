@@ -69,7 +69,7 @@ These are factual street/junction references, not a traced map stroke or copied 
 The latest published annual course at the24October2026check is2026;2027is unpublished.
 
 Geometry: [Geofabrik Île-de-France22October2026 OSMextract](https://download.geofabrik.de/europe/france/ile-de-france-261022.osm.pbf),
-© OpenStreetMap contributors, ODbL-1.0. Original RDD ordered selection of actual OSM
+© OpenStreetMap contributors, ODbL-1.0. The [Geofabrik licence offer](https://www.geofabrik.de/data/download.html#license) expressly permits any purpose with OSM acknowledgement and ODbL for derivative databases (checked24October2026). Original RDD ordered selection of actual OSM
 road/pedestrian nodes follows Champs-Élysées/Marignan, Concorde, Vendôme/Opéra loop,
 Louvre, Bastille/Nation, Picpus/Daumesnil, ChâteauVincennes/Pyramide/Ferme/Tourelle/
 Pesage/Gravelle, Charenton/Daumesnil/Bastille, Seine/Tuileries/Concorde/Alma tunnels,

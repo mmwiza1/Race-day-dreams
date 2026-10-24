@@ -1,3 +1,24 @@
+# Current0.8.1 canonical capture status —24October2026
+
+The current set is **70actual API35build captures** from production correction
+`e5a089b27f7eb2b6281d3fa8e53259422f75bd00`, greenworkflow40046791736, adopted exactly
+by bot`4916db3ed0b5488257ea2cfa0b7258ea94f59172`. EveryPNG hash matches artifact12542101120.
+Source fingerprint`6be17eb492113a693980488aff8fadf463e8a69093571d21489a878d51d9fc5f`
+matches current production. Earlier checkpoints below are historical, not open work.
+
+AnnualParis2026 was visually reviewed alongside London/Berlin/Tokyo/NewYork and
+representative dark/200%captures: complete geographic course, obvious highlighted
+section, start/finish,5km labels, sourced context, percentage anddistance are visible;
+no clipping/label overlap observed. The new line shows the annual Vincennes course,
+not Versailles. Design-family acceptance uses the owner's untouched reference JPEGs
+and image inspection; catalogue tests/hash equality alone do not prove design fidelity.
+
+All174canonical/14routine illustrated guides and previously accepted UX remain intact.
+PhysicalS24/sunlight/TalkBack/sensor acceptance remains unperformed. See VERIFICATION.md
+for observed tests, source/geometry limitations and debugAPK provenance.
+
+---
+
 # Current 0.8.1 actual-build captures
 
 All70committed PNGs were captured from source109394a in successful
@@ -86,7 +107,7 @@ gym and settings. Public Live Coach uses neutral fixture wording; its production
 is unchanged. Actual native trace analysis uses deterministic androidTest-only input,
 not a mock route widget. No test data enters the installable app.
 
-## 0.8.1 design fidelity gate (in progress)
+## Historical 0.8.1 design-fidelity checkpoints
 
 Owner-supplied reference JPEGs are preserved in `docs/design-reference/`. They are
 never bundled as app UI or presented as actual screenshots. Required actual captures

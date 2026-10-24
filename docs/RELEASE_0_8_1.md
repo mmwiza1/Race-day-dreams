@@ -74,11 +74,17 @@ context with original light/dark styling. The data are bundled, so this works of
 without map downloads, a map SDK or Internet permission. Sources/ODbL rights are
 recorded and credited. Actual full-viewport captures have been compared against the references. The final
 Tokyo capture confirms non-overlapping distance labels.
-Physical GalaxyS24 acceptance remains unverified; PR#10 stays draft.
+Physical GalaxyS24 acceptance remains unverified; this remains a test/development build. The owner authorises merge after the automated Paris-correction gate.
 
-## APK size at the verified geographic checkpoint
+## Verified Paris correction checkpoint
 
-Source109394a/API35debugAPK:46,006,970bytes. Verified0.8.0baseline:34,566,254bytes;
-increase11,440,716bytes(33.10%), including complete original exercise art and offline
-geographic context. No runtime dependency or Internet permission added. Final source APK ZIPCRC/manifest/permissions and checksum were inspected;
-see VERIFICATION.md for the exact artifact/path. This is a debug/test build, not production signing.
+AnnualParis2026 correction sourcee5a089b passed workflow40046791736 acrossAPI28/35/36,
+204instrumentation tests eachAPI, strict174/174canonical +14/14routine guidance and70authentic captures. Source/provenance
+checks verify every retained Paris point/edge against OSM evidence. Old Olympic andv2
+assignments survive complete backup without rerolling. PhysicalS24 remains unperformed.
+
+Verified sourceAPI35APK:46,402,613bytes,395,643bytes(0.86%)above the accepted pre-correction
+0.8.1APK. No runtime dependency/Internet permission added. ZIPCRC/binarymanifest/permissions
+andchecksum inspected; VERIFICATION.md records exact artifact/path. Debug/test signing,
+not production. The automatic rolling development release publishes the main build after
+its full verification succeeds; no permanent stable tag is created by the merge.
