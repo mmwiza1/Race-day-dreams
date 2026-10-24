@@ -139,25 +139,8 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
 private fun WeeklyDistanceCard(weeks: List<RecordedWeek>, state: CoachUiState) = CoachCard {
     Text("Weekly recorded distance", style = MaterialTheme.typography.titleLarge)
     Text("Twelve weeks · grouped in the device time zone. This week is still in progress.")
-    val largest = weeks.mapNotNull { it.distanceMetres() }.maxOrNull()?.takeIf { it > 0 }
-    weeks.forEach { week ->
-        val label = when {
-            week.activityCount() == 0 -> "No recorded runs"
-            week.distanceMetres() == null -> "Distance unavailable for ${week.activityCount()} recorded runs"
-            else -> formatDistance(week.distanceMetres(), state) +
-                if (week.missingDistanceCount() > 0) " known distance; ${week.missingDistanceCount()} other runs have no distance" else " recorded"
-        }
-        Text("${shortDate(week.weekStart())} · $label", style = MaterialTheme.typography.bodyMedium)
-        val fraction = if (largest != null && week.distanceMetres() != null)
-            (week.distanceMetres() / largest).toFloat().coerceIn(0f, 1f) else 0f
-        // The complete equivalent is the text above. Bars do not add colour-only information.
-        Box(Modifier.fillMaxWidth().height(8.dp).clearAndSetSemantics { }
-            .background(MaterialTheme.colorScheme.surfaceVariant)) {
-            if (fraction > 0f) Box(Modifier.fillMaxWidth(fraction).fillMaxHeight().background(MaterialTheme.colorScheme.primary))
-        }
-        if (week.activityCount() > 0) Text("${week.activityCount()} runs across ${week.runningDays()} recorded running days" +
-            (week.longestRunMetres()?.let { " · longest ${formatDistance(it, state)}" } ?: ""), style = MaterialTheme.typography.bodySmall)
-    }
+    WeeklyDistanceChart(weeks,state)
+
     val latest = weeks.lastOrNull()
     val previous = weeks.takeLast(5).dropLast(1)
     if (latest != null && latest.activityCount() > 0 && latest.missingDistanceCount() == 0 &&
@@ -270,7 +253,13 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
             val summary = metrics.getValue(shoe.id())
             CoachCard {
                 Text("${shoe.brand()} ${shoe.model()}".trim(), style = MaterialTheme.typography.titleLarge)
-                Text(when { shoe.retired() -> "Retired"; shoe.defaultShoe() -> "Default for newly added runs"; else -> "Active" })
+                Text(when { shoe.retired() -> "Retired"; shoe.defaultShoe() -> "Default for newly added runs"; else -> "Active" },style=MaterialTheme.typography.labelMedium)
+                Text(summary.totalDistanceMetres()?.let{formatDistance(it,state)}?:formatDistance(summary.recordedDistanceMetres(),state)+" recorded",style=MaterialTheme.typography.headlineMedium)
+                Text("${summary.runCount()} runs"+(summary.ageDays()?.let{" · ${if(it<60)"$it days"else"${it/30} months"}"}?:""))
+                Text(summary.wearGuidance())
+                var expanded by rememberSaveable(shoe.id()){mutableStateOf(false)}
+                TextButton(onClick={expanded=!expanded}){Text(if(expanded)"Hide shoe details"else"View shoe details")}
+                if(expanded) {
                 Text("Recorded distance: ${formatDistance(summary.recordedDistanceMetres(), state)}")
                 summary.totalDistanceMetres()?.let { Text("Known mileage including entered starting mileage: ${formatDistance(it, state)}") }
                     ?: Text("Earlier mileage was not supplied; recorded distance is a known lower bound, not lifetime shoe mileage.")
@@ -284,6 +273,7 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
                 Text(summary.wearGuidance())
                 org.racedaydreams.domain.polish.TrainingInsights.shoes(shoe,state.activities,java.time.Instant.now(),state.shoeDiscomfort).forEach{Text(it)}
                 shoe.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
+                }
                 OutlinedButton(onClick = { editingId = shoe.id(); showEditor = true }, enabled = !state.busy,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Edit shoes") }
                 Text("Assign or change these shoes from an individual run’s detail page.", style = MaterialTheme.typography.bodySmall)

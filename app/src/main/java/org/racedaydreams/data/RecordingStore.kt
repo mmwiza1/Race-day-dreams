@@ -12,13 +12,50 @@ class RecordingStore(context:Context) {
     private val contextRef=context.applicationContext
     private val helper=ProfileDatabase.get(context)
     data class Session(val id:String,val state:String,val start:Instant,val mono:Long,val last:Long)
+    data class RecoverySummary(val elapsedMillis:Long,val activeMillis:Long,val points:Int,val paused:Boolean,val structured:Boolean)
+    fun recoverySummary(session:Session):RecoverySummary {
+        val db=helper.readableDatabase
+        val events=mutableListOf<RunMetricsEngine.Event>()
+        db.rawQuery("SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",arrayOf(session.id)).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));events.add(RunMetricsEngine.Event(j.getString("type"),j.getLong("mono"),Instant.parse(j.getString("wall"))))}}
+        val count=db.rawQuery("SELECT COUNT(*) FROM recording_points WHERE session_id=?",arrayOf(session.id)).use{c->c.moveToFirst();c.getInt(0)}
+        return RecoverySummary((session.last-session.mono).coerceAtLeast(0),org.racedaydreams.domain.recording.RecordingTimeline.activeMillis(session.mono,session.last,events),count,org.racedaydreams.domain.recording.RecordingTimeline.pausedAt(session.mono,session.last,events),SupportStore(contextRef).get("execution",session.id)!=null)
+    }
     fun unfinished():Session?=helper.readableDatabase.rawQuery("SELECT id,state,started_at,started_mono,last_mono FROM recording_sessions WHERE state IN ('ACTIVE','PAUSED','RECOVERABLE')",null).use{c->if(c.moveToFirst())Session(c.getString(0),c.getString(1),Instant.parse(c.getString(2)),c.getLong(3),c.getLong(4))else null}
-    fun start(id:String,wall:Instant,mono:Long){helper.writableDatabase.insertOrThrow("recording_sessions",null,ContentValues().apply{put("id",id);put("state","ACTIVE");put("started_at",wall.toString());put("started_mono",mono);put("last_mono",mono)})}
-    fun flush(id:String,points:List<RunMetricsEngine.Point>,events:List<RunMetricsEngine.Event>,fromPoint:Int,fromEvent:Int,last:Long,state:String,executionContext:JSONObject?=null){
-        val db=helper.writableDatabase;db.beginTransaction();try{
-            for(i in fromPoint until points.size)db.insertOrThrow("recording_points",null,ContentValues().apply{put("session_id",id);put("sequence",i);put("payload",encode(points[i]).toString())})
-            for(i in fromEvent until events.size)db.insertOrThrow("recording_events",null,ContentValues().apply{put("session_id",id);put("sequence",i);put("payload",JSONObject().put("type",events[i].type()).put("mono",events[i].monotonicMillis()).put("wall",events[i].timestamp().toString()).put("value",events[i].value() as Any?).toString())})
-            db.update("recording_sessions",ContentValues().apply{put("last_mono",last);put("state",state)},"id=?",arrayOf(id));executionContext?.let{SupportStore.put(db,"execution",id,it)};db.setTransactionSuccessful()
+    fun start(id:String,wall:Instant,mono:Long,execution:JSONObject?=null,origin:JSONObject?=null) {
+        require(id.length in 1..256 && mono>=0)
+        val db=helper.writableDatabase;db.beginTransaction()
+        try {
+            db.insertOrThrow("recording_sessions",null,ContentValues().apply{put("id",id);put("state","ACTIVE");put("started_at",wall.toString());put("started_mono",mono);put("last_mono",mono)})
+            execution?.let{SupportStore.put(db,"execution",id,it)}
+            origin?.let{Release08Store.put(db,"origin",id,it)}
+            db.setTransactionSuccessful()
+        } finally { db.endTransaction() }
+    }
+    fun flush(id:String,points:List<RunMetricsEngine.Point>,events:List<RunMetricsEngine.Event>,fromPoint:Int,fromEvent:Int,last:Long,state:String,executionContext:JSONObject?=null) {
+        require(fromPoint in 0..points.size && fromEvent in 0..events.size)
+        appendBatch(id,points.subList(fromPoint,points.size),events.subList(fromEvent,events.size),fromPoint,fromEvent,last,state,executionContext)
+    }
+    /** Bounded incremental disk batch; an identical committed retry is safe, a conflicting retry fails. */
+    fun appendBatch(id:String,points:List<RunMetricsEngine.Point>,events:List<RunMetricsEngine.Event>,fromPoint:Int,fromEvent:Int,last:Long,state:String,executionContext:JSONObject?=null) {
+        require(fromPoint>=0&&fromEvent>=0&&state in listOf("ACTIVE","PAUSED","RECOVERABLE"))
+        val db=helper.writableDatabase;db.beginTransaction()
+        try {
+            val bounds=db.rawQuery("SELECT started_mono,last_mono,state FROM recording_sessions WHERE id=?",arrayOf(id)).use{c->check(c.moveToFirst()){ "No staged recording" };check(c.getString(2)!="FINISHED"){ "Recording already finished" };c.getLong(0) to c.getLong(1)}
+            fun nextSequence(table:String)=db.rawQuery("SELECT MAX(sequence) FROM $table WHERE session_id=?",arrayOf(id)).use{c->if(c.moveToFirst()&&!c.isNull(0))c.getInt(0)+1 else 0}
+            require(fromPoint<=nextSequence("recording_points")&&fromEvent<=nextSequence("recording_events")){"Staging sequences cannot have gaps"}
+            require(last>=bounds.second){"Staged time cannot move backwards"}
+            fun append(table:String,sequence:Int,payload:String) {
+                val values=ContentValues().apply{put("session_id",id);put("sequence",sequence);put("payload",payload)}
+                if(db.insertWithOnConflict(table,null,values,android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE)==-1L) {
+                    val same=db.rawQuery("SELECT payload FROM $table WHERE session_id=? AND sequence=?",arrayOf(id,sequence.toString())).use{c->c.moveToFirst()&&JSONObject(c.getString(0)).toString()==JSONObject(payload).toString()}
+                    check(same){"Conflicting staged evidence; original samples retained"}
+                }
+            }
+            points.forEachIndexed { i,p -> require(p.fix().monotonicMillis() in bounds.first..last);append("recording_points",fromPoint+i,encode(p).toString()) }
+            events.forEachIndexed { i,e -> require(e.monotonicMillis() in bounds.first..last);append("recording_events",fromEvent+i,JSONObject().put("type",e.type()).put("mono",e.monotonicMillis()).put("wall",e.timestamp().toString()).put("value",e.value() as Any?).toString()) }
+            check(db.update("recording_sessions",ContentValues().apply{put("last_mono",last);put("state",state)},"id=? AND state!='FINISHED'",arrayOf(id))==1)
+            executionContext?.let{SupportStore.put(db,"execution",id,it)}
+            db.setTransactionSuccessful()
         }finally{db.endTransaction()}
     }
     fun points(id:String):List<RunMetricsEngine.Point>{val out=mutableListOf<RunMetricsEngine.Point>();helper.readableDatabase.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext())out.add(decode(JSONObject(c.getString(0))))};return out}
@@ -28,6 +65,8 @@ class RecordingStore(context:Context) {
     fun recoverable(){helper.writableDatabase.execSQL("UPDATE recording_sessions SET state='RECOVERABLE' WHERE state IN ('ACTIVE','PAUSED')")}
     fun finish(session:Session,movingMillis:Long?=null,provider:String=if(session.id.startsWith("gpx-"))"gpx"else"rdd",recovered:Boolean=true):String {
         val db=helper.writableDatabase;db.beginTransaction();try{
+            val retained=db.rawQuery("SELECT state,activity_id,started_mono,last_mono FROM recording_sessions WHERE id=?",arrayOf(session.id)).use{c->check(c.moveToFirst()){ "Staging not found; existing data retained" };require(c.getLong(2)==session.mono&&c.getLong(3)==session.last){"Staging changed; reload recovery before finishing"};if(c.getString(0)=="FINISHED")c.getString(1)else null}
+            if(retained!=null){db.setTransactionSuccessful();return retained}
             val points=points(session.id);require(points.size>=2){"At least two usable GPS points are needed. Staged evidence is retained."}
             val timeline=mutableListOf<RunMetricsEngine.Event>()
             db.rawQuery("SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",arrayOf(session.id)).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));timeline.add(RunMetricsEngine.Event(j.getString("type"),j.getLong("mono"),Instant.parse(j.getString("wall"))))}}

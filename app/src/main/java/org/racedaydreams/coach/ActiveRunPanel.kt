@@ -20,8 +20,9 @@ import java.time.Duration
         Text(w.current()?.kind()?.name?.lowercase()?.replace('_',' ')?:"Run",style=MaterialTheme.typography.titleLarge)
         Text(w.metresRemaining()?.let{if(imperial)"${decimal(it/1609.344)} mi remaining"else"${it.toInt()} m remaining"}?:w.millisRemaining()?.let{"${it/1000} sec remaining"}?:"Continue by effort",style=MaterialTheme.typography.headlineLarge)
     }
-    Text(s.secondsPerKm()?.let{"${formatPaceSeconds(it*if(imperial)1.609344 else 1.0)} /${if(imperial)"mi"else"km"}"}?:"Pace unavailable",style=MaterialTheme.typography.displaySmall)
+    Text(s.secondsPerKm()?.takeIf{s.hasReliablePace()}?.let{"${formatPaceSeconds(it*if(imperial)1.609344 else 1.0)} /${if(imperial)"mi"else"km"}"}?:"Pace unavailable",style=MaterialTheme.typography.displaySmall)
     w?.current()?.let{step->if(step.fastPace()!=null&&step.slowPace()!=null)Text("Target ${formatPaceSeconds(step.fastPace()*if(imperial)1.609344 else 1.0)}–${formatPaceSeconds(step.slowPace()*if(imperial)1.609344 else 1.0)}/${if(imperial)"mi"else"km"}")else step.rpe()?.let{Text("Effort approximately ${it.toInt()}/10")}}
+    w?.current()?.let { step -> if(step.fastPace()!=null&&step.slowPace()!=null) PaceRange(step.fastPace(),step.slowPace(),if(s.hasReliablePace())s.secondsPerKm()else null,imperial) }
     Text(if(imperial)"${decimal(s.metres()/1609.344)} mi"else"${decimal(s.metres()/1000)} km",style=MaterialTheme.typography.headlineMedium)
     Text("Elapsed ${PaceCalculator.formatTime(Duration.ofMillis(s.elapsedMillis()))} · Active ${PaceCalculator.formatTime(Duration.ofMillis(s.movingMillis()))}")
     hr?.let{Text("Heart rate ${it.toInt()} bpm")}

@@ -1,0 +1,686 @@
+{
+  "version": 1,
+  "checked": "2026-10-23",
+  "landmarkSource": "Wikidata P625 statements, CC0-1.0. Icons are original RDD artwork, not copied building images.",
+  "landmarkLicenceUrl": "https://www.wikidata.org/wiki/Wikidata:Licensing",
+  "riverSource": "Natural Earth10m rivers/lake centrelines, public domain",
+  "riverSourceUrl": "https://github.com/nvkelso/natural-earth-vector/blob/ca96624a56bd078437bca8184e78163e5039ad19/geojson/ne_10m_rivers_lake_centerlines.geojson",
+  "riverLicenceUrl": "https://www.naturalearthdata.com/about/terms-of-use/",
+  "riverSourceSha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+  "limitations": "Small-scale river centrelines, not surveyed banks or street maps. Only original source positions retained inside documented city bounds; no fabricated streets. Landmark anchors are approximate, not navigation waypoints.",
+  "cities": {
+    "london-historical-geo-v1": {
+      "landmarks": [
+        {
+          "label": "Tower Bridge",
+          "shape": "bridge",
+          "latitude": 51.50555555555555,
+          "longitude": -0.07527777777777778,
+          "source": "https://www.wikidata.org/wiki/Q83125",
+          "claimId": "q83125$EAEFF9FD-3C9A-4BB1-8A00-026CCD3ECAD3",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Buckingham Palace",
+          "shape": "palace",
+          "latitude": 51.501,
+          "longitude": -0.142,
+          "source": "https://www.wikidata.org/wiki/Q42182",
+          "claimId": "q42182$FD6C1361-5A28-4543-9961-797AFE872380",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "London Eye",
+          "shape": "wheel",
+          "latitude": 51.50333333333333,
+          "longitude": -0.11972222222222223,
+          "source": "https://www.wikidata.org/wiki/Q160659",
+          "claimId": "q160659$28F37781-362A-4453-8DC6-57A06AF69D30",
+          "licence": "CC0-1.0"
+        }
+      ],
+      "rivers": [
+        {
+          "label": "Thames",
+          "geometry": [
+            [
+              51.467393,
+              -0.198313
+            ],
+            [
+              51.470079,
+              -0.17927
+            ],
+            [
+              51.477362,
+              -0.156728
+            ],
+            [
+              51.487169,
+              -0.135487
+            ],
+            [
+              51.50906,
+              -0.102203
+            ],
+            [
+              51.511664,
+              -0.084788
+            ],
+            [
+              51.508083,
+              -0.067209
+            ],
+            [
+              51.500922,
+              -0.048777
+            ],
+            [
+              51.497504,
+              -0.037668
+            ],
+            [
+              51.494086,
+              -0.006581
+            ],
+            [
+              51.500596,
+              0.009939
+            ],
+            [
+              51.502387,
+              0.020681
+            ],
+            [
+              51.491156,
+              0.048269
+            ],
+            [
+              51.492499,
+              0.071951
+            ]
+          ]
+        }
+      ]
+    },
+    "berlin-2014-geo-v1": {
+      "landmarks": [
+        {
+          "label": "Brandenburg Gate",
+          "shape": "gate",
+          "latitude": 52.516272222222,
+          "longitude": 13.377722222222,
+          "source": "https://www.wikidata.org/wiki/Q82425",
+          "claimId": "q82425$3AD9EF80-2D78-4EE6-839E-A8D869E8711F",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Reichstag",
+          "shape": "dome",
+          "latitude": 52.51861111111111,
+          "longitude": 13.376111111111111,
+          "source": "https://www.wikidata.org/wiki/Q151897",
+          "claimId": "q151897$790BF318-66F2-40DB-8F5F-2B872EA49769",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Victory Column",
+          "shape": "column",
+          "latitude": 52.51451,
+          "longitude": 13.350111,
+          "source": "https://www.wikidata.org/wiki/Q154987",
+          "claimId": "q154987$0F443BEB-28F7-4162-813C-C0206D191964",
+          "licence": "CC0-1.0"
+        }
+      ],
+      "rivers": []
+    },
+    "paris-2024-olympic-geo-v1": {
+      "landmarks": [
+        {
+          "label": "Eiffel Tower",
+          "shape": "tower",
+          "latitude": 48.858296,
+          "longitude": 2.294479,
+          "source": "https://www.wikidata.org/wiki/Q243",
+          "claimId": "Q243$9FC2F889-8A5B-47C7-B4DA-90C6A6562137",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Versailles",
+          "shape": "palace",
+          "latitude": 48.804722222222225,
+          "longitude": 2.120277777777778,
+          "source": "https://www.wikidata.org/wiki/Q2946",
+          "claimId": "q2946$F26BA3E1-41E4-48CE-B20C-646ACBE11EC5",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Louvre",
+          "shape": "pyramid",
+          "latitude": 48.861111111111114,
+          "longitude": 2.3358333333333334,
+          "source": "https://www.wikidata.org/wiki/Q19675",
+          "claimId": "Q19675$68dfd528-4071-1634-a696-cedb1de89db3",
+          "licence": "CC0-1.0"
+        }
+      ],
+      "rivers": [
+        {
+          "label": "Seine",
+          "geometry": [
+            [
+              48.714911,
+              2.426036
+            ],
+            [
+              48.731513,
+              2.440929
+            ],
+            [
+              48.742947,
+              2.443126
+            ],
+            [
+              48.756781,
+              2.427745
+            ],
+            [
+              48.763699,
+              2.422048
+            ],
+            [
+              48.770819,
+              2.419688
+            ],
+            [
+              48.791775,
+              2.420339
+            ],
+            [
+              48.796739,
+              2.418224
+            ],
+            [
+              48.807807,
+              2.412283
+            ],
+            [
+              48.833848,
+              2.39088
+            ],
+            [
+              48.855414,
+              2.358816
+            ],
+            [
+              48.866807,
+              2.32252
+            ],
+            [
+              48.862372,
+              2.288829
+            ],
+            [
+              48.838487,
+              2.254812
+            ],
+            [
+              48.833808,
+              2.235362
+            ],
+            [
+              48.85281,
+              2.226817
+            ],
+            [
+              48.869086,
+              2.233165
+            ],
+            [
+              48.886257,
+              2.248464
+            ],
+            [
+              48.90115,
+              2.266612
+            ],
+            [
+              48.910834,
+              2.281993
+            ],
+            [
+              48.923448,
+              2.319102
+            ],
+            [
+              48.930732,
+              2.327322
+            ],
+            [
+              48.94831,
+              2.329845
+            ],
+            [
+              48.958116,
+              2.318858
+            ],
+            [
+              48.956732,
+              2.294688
+            ],
+            [
+              48.944892,
+              2.254649
+            ],
+            [
+              48.92829,
+              2.229259
+            ],
+            [
+              48.920762,
+              2.213878
+            ],
+            [
+              48.91767,
+              2.1963
+            ],
+            [
+              48.912909,
+              2.183767
+            ],
+            [
+              48.890489,
+              2.162852
+            ],
+            [
+              48.88288,
+              2.151622
+            ],
+            [
+              48.886176,
+              2.124929
+            ],
+            [
+              48.910712,
+              2.121755
+            ],
+            [
+              48.938544,
+              2.136241
+            ],
+            [
+              48.954128,
+              2.166515
+            ],
+            [
+              48.960028,
+              2.172293
+            ],
+            [
+              48.967841,
+              2.177013
+            ],
+            [
+              48.975653,
+              2.178966
+            ],
+            [
+              48.984971,
+              2.177419
+            ],
+            [
+              48.988593,
+              2.173106
+            ],
+            [
+              48.990058,
+              2.166677
+            ],
+            [
+              48.997178,
+              2.145274
+            ]
+          ]
+        },
+        {
+          "label": "Seine",
+          "geometry": [
+            [
+              48.995185,
+              2.072765
+            ],
+            [
+              48.982978,
+              2.060964
+            ],
+            [
+              48.951768,
+              2.041759
+            ],
+            [
+              48.942816,
+              2.024425
+            ],
+            [
+              48.946641,
+              2.008311
+            ],
+            [
+              48.959825,
+              2.000255
+            ],
+            [
+              48.979071,
+              2.007742
+            ]
+          ]
+        }
+      ]
+    },
+    "tokyo-2026-geo-v1": {
+      "landmarks": [
+        {
+          "label": "Tokyo Tower",
+          "shape": "tower",
+          "latitude": 35.658611111111114,
+          "longitude": 139.74555555555557,
+          "source": "https://www.wikidata.org/wiki/Q183536",
+          "claimId": "q183536$988DEFF7-9FB3-4065-AD2D-BD4F8FBDD4ED",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Tokyo Station",
+          "shape": "station",
+          "latitude": 35.680833333333,
+          "longitude": 139.76694444444,
+          "source": "https://www.wikidata.org/wiki/Q283196",
+          "claimId": "q283196$500CC2E1-14D2-4EA2-9054-31861C1C42F8",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Sensō-ji",
+          "shape": "temple",
+          "latitude": 35.714555555556,
+          "longitude": 139.79663888889,
+          "source": "https://www.wikidata.org/wiki/Q615183",
+          "claimId": "q615183$AE9EA2DE-3998-480B-B63B-44A8BFFD7D11",
+          "licence": "CC0-1.0"
+        }
+      ],
+      "rivers": []
+    },
+    "new-york-2026-geo-v1": {
+      "landmarks": [
+        {
+          "label": "Verrazzano Bridge",
+          "shape": "suspension-bridge",
+          "x": 1818.6,
+          "y": 526,
+          "source": "https://www.marathontrip.com/map3d/new-york-city-marathon/course.json",
+          "licence": "ODbL-1.0"
+        },
+        {
+          "label": "Queensboro Bridge",
+          "shape": "cantilever-bridge",
+          "x": 9293.2,
+          "y": 17308.5,
+          "source": "https://www.marathontrip.com/map3d/new-york-city-marathon/course.json",
+          "licence": "ODbL-1.0"
+        },
+        {
+          "label": "Central Park finish",
+          "shape": "park",
+          "x": 7221.3,
+          "y": 19060.5,
+          "source": "https://www.marathontrip.com/map3d/new-york-city-marathon/course.json",
+          "licence": "ODbL-1.0"
+        }
+      ],
+      "rivers": []
+    },
+    "paris-2026-geo-v1": {
+      "landmarks": [
+        {
+          "label": "Eiffel Tower",
+          "shape": "tower",
+          "latitude": 48.858296,
+          "longitude": 2.294479,
+          "source": "https://www.wikidata.org/wiki/Q243",
+          "claimId": "Q243$9FC2F889-8A5B-47C7-B4DA-90C6A6562137",
+          "licence": "CC0-1.0"
+        },
+        {
+          "label": "Château de Vincennes",
+          "shape": "palace",
+          "latitude": 48.84277777777778,
+          "longitude": 2.4358333333333335,
+          "source": "https://www.wikidata.org/wiki/Q663673",
+          "licence": "CC0-1.0",
+          "checked": "2026-10-24"
+        },
+        {
+          "label": "Louvre",
+          "shape": "pyramid",
+          "latitude": 48.861111111111114,
+          "longitude": 2.3358333333333334,
+          "source": "https://www.wikidata.org/wiki/Q19675",
+          "claimId": "Q19675$68dfd528-4071-1634-a696-cedb1de89db3",
+          "licence": "CC0-1.0"
+        }
+      ],
+      "rivers": [
+        {
+          "label": "Seine",
+          "geometry": [
+            [
+              48.714911,
+              2.426036
+            ],
+            [
+              48.731513,
+              2.440929
+            ],
+            [
+              48.742947,
+              2.443126
+            ],
+            [
+              48.756781,
+              2.427745
+            ],
+            [
+              48.763699,
+              2.422048
+            ],
+            [
+              48.770819,
+              2.419688
+            ],
+            [
+              48.791775,
+              2.420339
+            ],
+            [
+              48.796739,
+              2.418224
+            ],
+            [
+              48.807807,
+              2.412283
+            ],
+            [
+              48.833848,
+              2.39088
+            ],
+            [
+              48.855414,
+              2.358816
+            ],
+            [
+              48.866807,
+              2.32252
+            ],
+            [
+              48.862372,
+              2.288829
+            ],
+            [
+              48.838487,
+              2.254812
+            ],
+            [
+              48.833808,
+              2.235362
+            ],
+            [
+              48.85281,
+              2.226817
+            ],
+            [
+              48.869086,
+              2.233165
+            ],
+            [
+              48.886257,
+              2.248464
+            ],
+            [
+              48.90115,
+              2.266612
+            ],
+            [
+              48.910834,
+              2.281993
+            ],
+            [
+              48.923448,
+              2.319102
+            ],
+            [
+              48.930732,
+              2.327322
+            ],
+            [
+              48.94831,
+              2.329845
+            ],
+            [
+              48.958116,
+              2.318858
+            ],
+            [
+              48.956732,
+              2.294688
+            ],
+            [
+              48.944892,
+              2.254649
+            ],
+            [
+              48.92829,
+              2.229259
+            ],
+            [
+              48.920762,
+              2.213878
+            ],
+            [
+              48.91767,
+              2.1963
+            ],
+            [
+              48.912909,
+              2.183767
+            ],
+            [
+              48.890489,
+              2.162852
+            ],
+            [
+              48.88288,
+              2.151622
+            ],
+            [
+              48.886176,
+              2.124929
+            ],
+            [
+              48.910712,
+              2.121755
+            ],
+            [
+              48.938544,
+              2.136241
+            ],
+            [
+              48.954128,
+              2.166515
+            ],
+            [
+              48.960028,
+              2.172293
+            ],
+            [
+              48.967841,
+              2.177013
+            ],
+            [
+              48.975653,
+              2.178966
+            ],
+            [
+              48.984971,
+              2.177419
+            ],
+            [
+              48.988593,
+              2.173106
+            ],
+            [
+              48.990058,
+              2.166677
+            ],
+            [
+              48.997178,
+              2.145274
+            ]
+          ]
+        },
+        {
+          "label": "Seine",
+          "geometry": [
+            [
+              48.995185,
+              2.072765
+            ],
+            [
+              48.982978,
+              2.060964
+            ],
+            [
+              48.951768,
+              2.041759
+            ],
+            [
+              48.942816,
+              2.024425
+            ],
+            [
+              48.946641,
+              2.008311
+            ],
+            [
+              48.959825,
+              2.000255
+            ],
+            [
+              48.979071,
+              2.007742
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

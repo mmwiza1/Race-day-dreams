@@ -1,94 +1,81 @@
-# Codex Continuation Instructions
+# Continue — accepted0.8.1 implementation and annual Paris correction
 
-Use this file whenever a Codex session stops because of a usage limit, context reset, timeout, interrupted session, or a new Codex session needs to resume existing work.
+Preserve completed commits. Inspect live main/PR#10/CI before acting; this handoff
+records verified production source and may precede a later documentation/merge SHA.
+Do not reset/recreate the feature work or implement post0.8.1 enhancements.
 
-## Primary instruction
+## Delivery and authorization
 
-Continue the work from where the previous Codex session stopped.
+- PR: https://github.com/mmwiza1/Race-day-dreams/pull/10 .
+- Feature: `feature/0.8.1-design-guidance-reliability`.
+- Last inspected main:515fe538de1302dd83ee05fc9ca131c7afb7d520 (0.8 release).
+- The owner explicitly authorises markingPR10ready and merging after the complete
+  automated Paris-correction gate. PhysicalS24 acceptance is NOT a merge blocker,
+  and must remain honestly unperformed. No permanent/stable version tag is authorised.
+- If PR10is already merged on resumption, use actual main and verify its full CI and
+  automatic rolling LatestDevelopmentBuild; do not merge again or repeat accepted UI work.
 
-Do not restart the task from scratch and do not redo completed work unnecessarily.
+## Completed — no further feature work
 
-First, inspect the repository and establish the current state of the work. Review at minimum:
+- Accepted0.8.1 UX/design,174/174canonical illustrated guides and14/14routine movements;
+  177original packaged assets/9,198,660bytes. No missing canonical IDs or primitive fallback.
+- Week-firstPlan, compactCalendar, LiveCoach, health/shoes/trends/review/RunNow, history
+  keyset paging and durable honest recorder recovery preserved. No unrelated redesign.
+- Version0.8.1-test1/code10; schema10, JSON7, raw2, complete1. Paris adds no format change,
+  dependency or manifest permission. Binary APK inspection confirms no INTERNET permission.
+- New Paris `paris-2026-geo-v1` is the annual SchneiderElectricMarathondeParis,
+  12April2026. ODbL OSM geography via Geofabrik22October2026, original RDD reconstruction
+  from police order2026-00388 street itinerary; ASO2026guide corroborates start/finish.
+  1960actual OSM positions/550source ways, node/way/version/adjacency evidence and SHA256s
+  retained in docs/dream-route-data/paris-2026*.json. Approximate43.22km street line is
+  separate from42195m equivalent progress; not certified racing line/navigation.
+- Allfivecurrent cities render offline geographic context. LegacyOlympic/v2/unversioned
+  IDs, coordinates/frames, offsets, notices and assignments stay immutable/readable.
+  New Paris assignments never select the Olympic event. New/bothlegacy complete-backup
+  restore, interpolation/over-marathon and stable assignments are tested.
 
-- `git status`
-- `git diff`
-- recent commits / `git log`
-- any modified, added, or untracked files
-- existing TODOs, comments, implementation notes, plans, handoff files, or documentation
-- relevant tests and build configuration
-- open/current feature branches and pull requests where useful
+## Actual verified checkpoint
 
-Infer what the previous session was implementing from the current repository state and continue from the exact point it stopped.
+- Production correction:e5a089b27f7eb2b6281d3fa8e53259422f75bd00.
+- Complete green workflow40046791736:204instrumentation tests EACH API28/35/36,
+  strictguidance/canonicalpublication. Exact Finished204log lines inspected.
+  API28attempt1was an offline-emulator/install-write failure before0tests; diagnosed,
+  targeted failed-job retry passed. No test/assertion weakened.
+- Local61,265domain checks/19suites;43schema;11source/projection/provenance;5release-note
+  tests; allcourse/context reproducers;174/174+14/14guidance and177artwork checks pass.
+- Canonicalbot4916db3ed0b5488257ea2cfa0b7258ea94f59172,70exact API35captures, source
+  fingerprint6be17eb492113a693980488aff8fadf463e8a69093571d21489a878d51d9fc5f.
+  Allfivecity/Paris/dark/200%captures visually inspected; annualParis labels are separate,
+  fullcourse/highlight/start/finish/progress/context visible. Owner references untouched.
+- SourceAPI35artifact12541633836, workflow40046791736:
+  `Race-Day-Dreams-0.8.1-test1-debug-api-35`.
+  Local `build/distributions/Race-Day-Dreams-0.8.1-test1-debug.apk`;
+  46,402,613bytes; SHA256c22a9017f6806db892ab59e7acb058b6f95066a05c0333e633b94dfd14bffbc4.
+  ZIPCRC/binarymanifest/version/permissions checked. Debug/test signing only.
 
-## Rules
+## Remaining delivery actions if not already completed
 
-1. Preserve all valid work already completed.
-2. Do not revert or overwrite existing changes unless they are clearly broken and need correction.
-3. Do not remove existing functionality merely to make the new work easier.
-4. Complete any partially implemented features you find.
-5. Resolve compile errors, failing tests, incomplete wiring, placeholder implementations, TODOs, and obvious regressions related to the current work.
-6. Check that UI, domain logic, persistence, navigation, permissions, integrations, and other affected layers are fully connected rather than merely stubbed.
-7. Follow the project's existing architecture, coding conventions, naming conventions, and design patterns.
-8. Avoid unnecessary refactoring outside the scope of the unfinished work.
-9. Where the previous implementation intent is obvious, continue it without asking the user to repeat requirements.
-10. If something is ambiguous, inspect repository history, documentation, tests, commits, pull requests, and the existing implementation to determine the most likely intended behaviour.
-11. Treat an explicit plan, checklist, TODO file, implementation note, handoff section, or partially completed task list as the primary source of truth for remaining work.
-12. Do not stop merely because one individual feature or file is finished. Continue until the inherited unfinished work is completed as far as reasonably possible.
+1. Check final documentation head CI; production fingerprint must match above.
+2. Update PR10body with annualParis and actual results; markready and squash-merge using
+   the repository's established convention once all required checks are green.
+3. Fetch/switch/update local main without discarding work. Confirm PRmerge SHA/main.
+4. Verify postmerge fullAPI28/35/36 workflow and normal rolling development release.
+   Canonical download after successful publication:
+   https://github.com/mmwiza1/Race-day-dreams/releases/tag/development .
+   Download/verify that freshly built main APK; independently signed CI binaries may
+   have different SHA256s. Do not create a permanent version/stable tag.
+5. Report actual merge/mainCI/artifact locations, physical checks unperformed.
 
-## Before finishing
+## Physical status and future scope
 
-Once the implementation is complete:
+TEST_BUILD.md has the full S24 checklist: meaningful outdoor run/1km split, locked/
+background/long recording/battery/GPS gaps, pause/resume/recovery, realHCpermissions/
+providers, BLEifavailable, TTS/music/calls/audiofocus, GPX, completebackup/restore,
+TalkBack/200%/sunlight. NONE is claimed passed. Preserve a complete user backup before
+any uninstall needed for different debug signing keys. This remains a test/development
+build until human acceptance. Do not start cross-platform/future feature work.
 
-- run the appropriate tests
-- run static analysis/linting where available
-- build the project
-- fix failures caused by the changes
-- check for obvious regressions
-- review the final diff for incomplete or accidental changes
-
-For this Android project, produce a successful APK build where the repository and environment support it. If Android build execution is unavailable locally, use the project's established CI workflow and clearly report what was and was not verified.
-
-## Final response
-
-At the end, give a concise summary containing:
-
-- what was already completed when you resumed
-- what you completed
-- important fixes or decisions you made
-- tests/builds you ran and their results
-- anything genuinely remaining
-- the latest commit hash, if you created a commit
-
----
-
-# Current task: 0.8.0-test1 — final delivery
-
-Starting main6ebd53c3e102f5ccbef957f68d5dad19f7112eec. Branch
-feature/0.8-today-routes-strength-polish; PR9. Preserve all local checkpoints through
-c398411 (adopted final captures). Connector commit IDs differ; compare trees, never reset.
-
-Implementation is complete within documented data/licensing/device limits. Do not
-restart it or add future features. See docs/RELEASE_0_8.md and docs/DREAM_ROUTES.md.
-Schema9, JSON7 reads1–6, raw archive2 and complete package1. No Internet/dependencies.
-
-Verified final production source6a44bf72886fc93b65825625edb741a2cd495e1c passed
-workflow39959962732:59,755 domain assertions,40 schema tests, build/lint/test compilation,
-187 instrumentation tests on EACH API28/35/36 and43 real-build screenshots. Captures
-adopted unchanged; eight showcase screens and Home dark/200% reviewed. Fingerprint
-c14081311d15761f6e42175d0a2da48a942c87ec958c551e9765d915b0a7baa5.
-Capture bot06e96e786f6e0195e4510ce2a5a2b4e32decd7a9/localc398411 trees match
-7b09cde42c66f952021e277420b60af0a197a4e2. Source API35 APK artifact12504592213;
-screenshot artifact12504268052. No known source failures or uncommitted source work.
-
-At this documentation checkpoint, remaining delivery is final docs-head CI, PR ready/
-merge, exact main verification and fresh post-merge API35 APK. These steps may already
-be complete when resumed: inspect PR9, current main and latest Actions BEFORE doing
-anything. PR9's delivery record/final report should identify the actual main/run/artifact.
-Do not repeat implementation or disregard screenshot-bot commits. No force/reset.
-
-Known limits: original course-inspired geometry, not verified official routes; no
-unlicensed organiser data bundled. Usual duration is a disclosed soft trade-off for
-distance-only sessions without trustworthy pace evidence; known-duration prescriptions
-are capped. Technique art remains stylised and requires qualified review. Physical S24
-GNSS/locked-screen/BLE/TTS/music/battery/Health Connect/TalkBack checks remain. Existing
-recovery/backup bounds apply. No Wear OS/maps/cloud/LLM/medical/public-release work.
+Useful validation: scripts/test-domain.sh, test-schema.py, test-release-notes.py,
+test-dream-map-source.py; allgenerate-*-geometry.py/generate-dream-context.py/
+generate-dream-basemaps.py --check; verify-guidance-assets.py; strictExerciseGuidanceAudit.
+No local AndroidSDK is installed; Androidverification is observed GitHubCI.

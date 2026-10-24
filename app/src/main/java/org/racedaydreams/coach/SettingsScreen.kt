@@ -77,6 +77,13 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
         TextButton(onClick = { noticeAsset = "kotlin-LICENSE.txt" }) { Text("Kotlin licence") }
         TextButton(onClick = { noticeAsset = "coroutines-LICENSE.txt" }) { Text("Coroutines licence") }
         TextButton(onClick = { noticeAsset = "protobuf-LICENSE.txt" }) { Text("Protocol Buffers licence") }
+        TextButton(onClick = { noticeAsset = "licences/berlin-2014-MIT.txt" }) { Text("Berlin route source licence") }
+        TextButton(onClick = { noticeAsset = "licences/tokyo-2026-CC0.txt" }) { Text("Tokyo route source licence") }
+        TextButton(onClick = { noticeAsset = "licences/london-historical-MIT.txt" }) { Text("London route source licence") }
+        TextButton(onClick = { noticeAsset = "licences/new-york-2026-NOTICE.txt" }) { Text("New York route source attribution") }
+        TextButton(onClick = { noticeAsset = "licences/paris-2026-NOTICE.txt" }) { Text("Paris2026 annual route source attribution") }
+        TextButton(onClick = { noticeAsset = "licences/ODbL-1.0.txt" }) { Text("Open Database Licence") }
+        TextButton(onClick = { noticeAsset = "licences/dream-basemaps-NOTICE.txt" }) { Text("Offline city context attribution") }
         TextButton(onClick = { noticeAsset = "transitive-NOTICES.txt" }) { Text("Dependency notices") }
     }
     OutlinedButton(reset, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Delete local app data") }

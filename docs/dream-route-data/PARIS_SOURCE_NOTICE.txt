@@ -1,0 +1,11 @@
+Paris2024 Olympic marathon coordinate data
+
+Thomas Krakow (Running-tomy), via Wikimedia Commons; ODbL-1.0
+Source revision: https://commons.wikimedia.org/w/index.php?title=Data:Olympic_Marathon_Paris_2024.map&oldid=931916019
+Checked23October2026
+
+The source data file explicitly declares ODbL-1.0. All328positions retained; uniformly projected north-up. Original styling/colours and source descriptions are not copied. This derived geometry database remains ODbL-1.0 and is offered in docs/dream-route-data/paris-2024-olympic.json and Paris2024Geometry.java. MIT applies to original application code, not the coordinate database.
+
+This is the2024 Olympic marathon course, NOT the annual Paris Marathon. Community drawing, not official/certified course or navigation. No Olympic logos/artwork or affiliation.
+
+Licence: https://opendatacommons.org/licenses/odbl/1-0/

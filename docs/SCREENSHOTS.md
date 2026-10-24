@@ -1,3 +1,45 @@
+# Current0.8.1 canonical capture status —24October2026
+
+The current set is **70actual API35build captures** from production correction
+`e5a089b27f7eb2b6281d3fa8e53259422f75bd00`, greenworkflow40046791736, adopted exactly
+by bot`4916db3ed0b5488257ea2cfa0b7258ea94f59172`. EveryPNG hash matches artifact12542101120.
+Source fingerprint`6be17eb492113a693980488aff8fadf463e8a69093571d21489a878d51d9fc5f`
+matches current production. Earlier checkpoints below are historical, not open work.
+
+AnnualParis2026 was visually reviewed alongside London/Berlin/Tokyo/NewYork and
+representative dark/200%captures: complete geographic course, obvious highlighted
+section, start/finish,5km labels, sourced context, percentage anddistance are visible;
+no clipping/label overlap observed. The new line shows the annual Vincennes course,
+not Versailles. Design-family acceptance uses the owner's untouched reference JPEGs
+and image inspection; catalogue tests/hash equality alone do not prove design fidelity.
+
+All174canonical/14routine illustrated guides and previously accepted UX remain intact.
+PhysicalS24/sunlight/TalkBack/sensor acceptance remains unperformed. See VERIFICATION.md
+for observed tests, source/geometry limitations and debugAPK provenance.
+
+---
+
+# Current 0.8.1 actual-build captures
+
+All70committed PNGs were captured from source109394a in successful
+workflow40042190130 and adopted exactly via bot7ed12d8. API28/35/36 passed build,
+lint, domain and204instrumentation tests each; strict174/174canonical+14/14routine
+guidance also passes. Source fingerprint:
+`e7452da5a423bb8d660eaa0625543a4cb64030bce549d070366e543d99c5bb8b`.
+
+Actual review compared all five geographic city cards, dark/200%London, Plan and
+representative guides/summary screens against the unchanged ownerJPEGs. Fitted5:4
+source context removes earlier blank bands. The final Tokyo capture shows separate
+35km/40km labels while preserving real marker positions. Review findings are in
+VISUAL_REVIEW_0_8_1.md. Resource completeness/consistent pixels alone are not fidelity.
+
+README uses eight actual-build captures, never the design mockups. Fixture data and
+capture controls remain instrumentation-only; production screens are identical.
+Physical S24 acceptance is UNPERFORMED, so PR#10 remains draft. A documentation-only
+checkpoint after these captures must preserve the same production fingerprint.
+
+## Earlier records (historical)
+
 # Authentic app screenshots
 
 Canonical images are captured by `CoachingScreenshotTest` from the real
@@ -28,7 +70,7 @@ is not available to or used by production code.
 CI tests API 28/35/36, uploads each API's captures and the named APK **after tests
 pass**, then publishes canonical API-35 PNGs only when all matrix jobs succeed.
 The publisher is restricted to the same-repository
-`feature/0.8-today-routes-strength-polish` PR branch and cannot write main. A changed
+`feature/0.8.1-design-guidance-reliability` PR branch and cannot write main. A changed
 screenshot-source fingerprint (including rendering workflow settings) causes recapture; an unchanged digest avoids
 commit loops. `source-commit.txt` identifies the tested source commit.
 
@@ -64,3 +106,56 @@ curates eight current-build images; QA captures retain Calendar, dark/200%, guid
 gym and settings. Public Live Coach uses neutral fixture wording; its production UI
 is unchanged. Actual native trace analysis uses deterministic androidTest-only input,
 not a mock route widget. No test data enters the installable app.
+
+## Historical 0.8.1 design-fidelity checkpoints
+
+Owner-supplied reference JPEGs are preserved in `docs/design-reference/`. They are
+never bundled as app UI or presented as actual screenshots. Required actual captures
+include Plan, Dream, RDL, Bench, Walking Lunge, Ankle Rocks, a static stretch,
+machine/cable guide, mobility, Live Coach, health, shoes, trends, Run Now, Calendar,
+dark mode and200% text. Keep all images from the exact verified production source.
+
+Compare actual renders side by side with references: week-first density, meaningful
+route geography/highlight/progress, human illustration proportions/equipment/phases,
+blue/navy hierarchy, mint tips/pink mistakes, touch targets, dark contrast and large
+text. Document specific mismatches and refine. Hash equality/regression consistency
+alone does not pass this gate. Current committed PNGs still describe0.8 until the
+0.8.1 capture/review/adoption work completes; do not market them as the final redesign.
+
+## 0.8.1 observed checkpoint
+
+Source8aadbf9e3c677f478cf9196244fe7d78323998d2 /workflow39986988491 produced50
+actual build PNGs. They are retained byte-for-byte with the source fingerprint.
+Plan, Bench, Ankle Rocks, mobility-dark and Plan200%-dark were visually inspected.
+Routine layout and recognisable human artwork now match the reference family;
+Plan density and complete catalogue/Dream geography acceptance still remain open.
+These captures predate the later seven canonical assets/geographic Berlin changes.
+The next fixture requests53captures including BSSHowTo, cable row and plank.
+No design JPEG is presented as an actual app capture or substituted for one.
+
+Sourcef55f346404d02ed5a30aa44f108b894b62816c33 subsequently passed all198tests/API
+and produced53captures (workflow40001032343). Those exact PNGs are now adopted.
+Reviewed compact Plan, geographicBerlin and cable-row guide; long phase captions
+needed explicit spacing, now fixed for next capture. The Berlin source is geographic,
+not final visual-reference approval. New four canonical assets also need fresh capture.
+
+A concrete reference-versus-build review is recorded in
+[0.8.1 visual review](VISUAL_REVIEW_0_8_1.md). Open gates remain explicit there.
+
+## Continued guidance capture request
+
+The previous follow-up workflow40005151891 produced53captures adopted byte-for-byte
+from bota8cbf6b; source c04143d. Current source adds five actual navigation captures:
+Front Squat, Leg Press, Lat Pulldown, Seated Leg Curl and Farmer’s Carry (58total).
+These will verify machine/squat/distance guide presentation in addition to the existing
+RDL/Bench/BSS/routine/light/dark/200% family. They must be regenerated and visually
+reviewed, not substituted with generated artwork or the design mockups. Full approved
+reference fidelity remains an open mandatory gate; catalogue coverage at that captured checkpoint was 47/174. The later 174/174 source
+checkpoint requires fresh actual-build captures; do not treat these older images as
+visual evidence for the expanded catalogue.
+
+The 58-capture request passed in workflow40014032752. Exact bot30b5291d captures
+are adopted in f9b06c4; all60 PNG/metadata blob hashes matched. Five added actual
+machine/squat/carry guides were visually inspected. Full mandatory reference fidelity
+still remains open; these captures do not certify the missing127canonical guides or
+three unfinished geographic routes. Source fingerprint d385f63ff4b97230cea4ecc923ff4bb8f43cbab32f642a2cfbd7c972ba4f2692.

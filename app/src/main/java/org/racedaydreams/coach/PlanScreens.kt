@@ -8,78 +8,119 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.font.FontWeight
+import org.racedaydreams.domain.presentation.CalendarData
+import java.time.temporal.ChronoUnit
 import java.time.*
 import org.racedaydreams.domain.*
 import org.racedaydreams.domain.coaching.*
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String) -> Unit, editGoal: () -> Unit, strength: (LocalDate) -> Unit = {},routines:()->Unit={}) {
+fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String) -> Unit, editGoal: () -> Unit, strength: (LocalDate) -> Unit = {},routines:()->Unit={}, routine:(String,String?)->Unit={_,_->}) {
     var confirm by rememberSaveable { mutableStateOf(false) }
-    var overview by rememberSaveable { mutableStateOf(false) }
+    var details by rememberSaveable { mutableStateOf(false) }
     var week by rememberSaveable { mutableIntStateOf(0) }
     val version = state.currentPlan
     val today = LocalDate.now()
     CoachPage {
-        CoachHeading("Your training programme")
-        Text("The app recommends. The runner decides. The plan adapts.")
         if (version == null) {
-            Text("Create an original programme from your saved goal, running evidence and availability. No training has been prescribed yet.")
-            Text("Starting conservatively when evidence is limited.")
+            CoachHeading("Plan")
+            GuidanceCard { Text("Your next chapter", style=MaterialTheme.typography.titleLarge)
+                Text("Create a programme from your goal and availability, or record runs without a plan.")
+                CoachButton("Generate my programme") { model.generatePlan() }
+            }
             WhyDetails("Missing or stale workload evidence starts with short conversational run/walk sessions. A short race horizon never triggers a catch-up build.")
-            CoachButton("Generate my programme") { model.generatePlan() }
+            CoachButton("Edit goal and routine", editGoal)
         } else {
             val plan = version.plan()
             val startWeek = plan.startDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
             val currentWeek = today.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-            val selectedWeek = currentWeek.plusWeeks(week.toLong()).coerceAtLeast(startWeek)
-            Text("${version.goalSnapshot().raceGoal().distance().label()} · version ${version.version()}")
-            Text("${friendlyDate(plan.startDate())} – ${friendlyDate(plan.endDate())}")
-            WhyDetails(version.reason(),"Why this plan version?")
-            if (state.profile != version.goalSnapshot()) Text("Your saved goal or availability has changed. This programme still uses its original snapshot. Review and explicitly rebuild when ready.")
-            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(selected = !overview, onClick = { overview = false }, label = { Text("Week") })
-                FilterChip(selected = overview, onClick = { overview = true }, label = { Text("Programme") })
+            val baseWeek = currentWeek.coerceIn(startWeek, plan.endDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
+            val selectedWeek = baseWeek.plusWeeks(week.toLong()).coerceIn(startWeek, plan.endDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
+            val totalWeeks = ChronoUnit.WEEKS.between(startWeek, plan.endDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))+1
+            val weekNumber = ChronoUnit.WEEKS.between(startWeek,selectedWeek)+1
+            Column(verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                CoachHeading("Plan")
+                Text("${version.goalSnapshot().raceGoal().distance().label()} · Week $weekNumber of $totalWeeks", style=MaterialTheme.typography.titleMedium)
             }
-            if (overview) {
-                WhyDetails("Distant weeks are projections. The next few weeks are planned but adaptable; current-week sessions are concrete prescriptions.","How certain is the programme?")
+            val largeFont=androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.15f
+            if(largeFont)Text("This week", style=MaterialTheme.typography.headlineSmall)
+            Row(Modifier.fillMaxWidth(), verticalAlignment=Alignment.CenterVertically) {
+                if(!largeFont)Text("This week",modifier=Modifier.weight(1f),style=MaterialTheme.typography.titleLarge)
+                TextButton(onClick={week--},enabled=selectedWeek>startWeek,modifier=Modifier.sizeIn(minWidth=48.dp,minHeight=48.dp)) { Text("‹", modifier=Modifier.semantics { contentDescription="Previous week" }) }
+                Text("${selectedWeek.format(java.time.format.DateTimeFormatter.ofPattern("d MMM",java.util.Locale.UK))} – ${selectedWeek.plusDays(6).format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu",java.util.Locale.UK))}",modifier=if(largeFont)Modifier.weight(1f)else Modifier,textAlign=androidx.compose.ui.text.style.TextAlign.Center,style=MaterialTheme.typography.labelSmall)
+                TextButton(onClick={week++},enabled=selectedWeek.plusWeeks(1)<=plan.endDate(),modifier=Modifier.sizeIn(minWidth=48.dp,minHeight=48.dp)) { Text("›", modifier=Modifier.semantics { contentDescription="Next week" }) }
+            }
+            if(week!=0)TextButton(onClick={week=0}) { Text("Current week") }
+            Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            repeat(7) { offset ->
+                val day=selectedWeek.plusDays(offset.toLong())
+                val entries=calendarEntries(state,day)
+                val runs=plan.workouts().filter{it.date()==day}
+                // Calendar remains the authority for explicit rest, moved and skipped states.
+                GuidanceCard(if(entries.any{it.category() in listOf(CalendarData.Category.EASY,CalendarData.Category.QUALITY,CalendarData.Category.LONG,CalendarData.Category.RACE)}) guidanceBlue() else MaterialTheme.colorScheme.surface,padding=12.dp,spacing=0.dp) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(14.dp)) {
+                        Column(horizontalAlignment=Alignment.CenterHorizontally,modifier=Modifier.widthIn(min=36.dp)) {
+                            Text(day.dayOfWeek.name.take(3),style=MaterialTheme.typography.labelSmall)
+                            Text("${day.dayOfMonth}",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Bold)
+                        }
+                        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                            if(entries.isEmpty()) { Text("No session planned",style=MaterialTheme.typography.titleMedium); Text("Your day, your choice",style=MaterialTheme.typography.bodySmall) }
+                            entries.forEach { entry ->
+                                val workout=runs.firstOrNull{it.id()==entry.id()}
+                                if(workout!=null) {
+                                    TextButton(onClick={open(workout.id())},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp).semantics{contentDescription="View workout and purpose";stateDescription=entry.state().name.lowercase().replace('_',' ')},shape=MaterialTheme.shapes.small,contentPadding=PaddingValues(horizontal=8.dp,vertical=4.dp)) {
+                                        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)) {
+                                            Text(entry.label()+(if(entry.state()==CalendarData.State.COMPLETED)" ✓"else""),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold,color=MaterialTheme.colorScheme.onSurface)
+                                            Text(workout.distanceKm()?.let{formatDistance(it*1000,state)}?:workout.duration()?.let{"${it.toMinutes()} min"}?:"Run by effort",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        Text("›",style=MaterialTheme.typography.titleLarge)
+                                    }
+                                    val warm=org.racedaydreams.domain.support.RunningRoutines.warmup(workout.category(),version.goalSnapshot().raceGoal().distance().kilometres())
+                                    androidx.compose.foundation.layout.FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                                        WarmupSupportLink(warm,workout.id()){routine(warm,workout.id())}
+                                        if(workout.category()==WorkoutCategory.LONG_RUN||AdaptiveCoachingEngine.isQuality(workout.category())||workout.category()==WorkoutCategory.RACE)TextButton(onClick={routine("cool-demanding",workout.id())},contentPadding=PaddingValues(0.dp)){Text("Cool-down · 6 min",style=MaterialTheme.typography.labelMedium)}
+                                    }
+                                } else when {
+                                    entry.category()==CalendarData.Category.REST -> {Text("Rest Day",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.SemiBold);Text("Recover and prepare for your next session.",style=MaterialTheme.typography.bodySmall)}
+                                    entry.category()==CalendarData.Category.STRENGTH -> TextButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp),shape=MaterialTheme.shapes.small,contentPadding=PaddingValues(horizontal=8.dp,vertical=4.dp)) {Column(Modifier.weight(1f)){Text(entry.label()+(if(entry.state()==CalendarData.State.COMPLETED)" ✓"else""),style=MaterialTheme.typography.titleMedium,color=MaterialTheme.colorScheme.onSurface);Text(if(entry.state()==CalendarData.State.COMPLETED)"Recorded · View strength"else"View strength workout",style=MaterialTheme.typography.bodySmall)};Text("›")}
+                                    else -> {Text(entry.label(),style=MaterialTheme.typography.titleMedium);Text(entry.state().name.lowercase().replace('_',' '),style=MaterialTheme.typography.bodySmall)}
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            }
+            MobilitySupportCard(routines)
+            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
+            TextButton(onClick={details=!details}) { Text(if(details)"Hide programme details"else"Programme details") }
+            if(details) {
+                Text("${friendlyDate(plan.startDate())} – ${friendlyDate(plan.endDate())}")
+                Text("Immutable plan version ${version.version()} · ${state.planVersions.size} preserved versions")
+                WhyDetails(version.reason(),"Why this plan version?")
+                WhyDetails(version.evidenceSnapshot(),"Evidence used for this plan")
+                if(state.profile!=version.goalSnapshot())Text("Your saved goal or availability has changed. This programme retains its original snapshot until you explicitly rebuild.")
                 plan.phases().forEach { phase -> CoachCard {
-                    Text(phase.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}, style = MaterialTheme.typography.titleMedium)
+                    Text(phase.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()},style=MaterialTheme.typography.titleMedium)
                     Text("${friendlyDate(phase.startDate())} – ${friendlyDate(phase.endDate())}")
                     WhyDetails(phase.explanation())
                 } }
-            } else {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    TextButton(onClick = { week-- }, enabled = selectedWeek > startWeek) { Text("Previous") }
-                    TextButton(onClick = { week = 0 }) { Text("Current week") }
-                    TextButton(onClick = { week++ }, enabled = selectedWeek.plusWeeks(1) <= plan.endDate()) { Text("Next") }
-                }
-                Text("Week of ${friendlyDate(selectedWeek)}")
-                val workouts = plan.workouts().filter { it.date() >= selectedWeek && it.date() < selectedWeek.plusWeeks(1) }
-                if (workouts.isEmpty()) Text("No workouts scheduled in this week.")
-                workouts.forEach { workout -> WorkoutCard(state, workout, state.activities.any { it.plannedWorkoutId() == workout.id() }) { open(workout.id()) } }
-                state.strengthSessions.filter { it.startedAt().atOffset(it.offset()).toLocalDate() in selectedWeek..selectedWeek.plusDays(6) }.forEach {
-                    Text("Strength · ${friendlyDate(it.startedAt().atOffset(it.offset()).toLocalDate())} · ${it.duration().toMinutes()} min · recorded")
-                }
-                repeat(7) { offset -> val day=selectedWeek.plusDays(offset.toLong())
-                    val programmed=state.gymProgramme?.sessions()?.firstOrNull{it.date()==day}
-                    if(programmed!=null)OutlinedButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("${programmed.title()} · ${shortDate(day)} · View strength workout")}
-                    else if(state.gymProgramme==null&&state.profile?.preferences()?.gymDays()?.contains(day.dayOfWeek)==true) OutlinedButton(onClick={strength(day)},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Strength routine · ${shortDate(day)} · Log workout")}
-                }
+                OutlinedButton(onClick={confirm=true},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)) { Text("Rebuild remaining programme…") }
+                CoachButton("Edit goal and routine", editGoal)
             }
-            Text("Evidence used", style = MaterialTheme.typography.titleMedium)
-            WhyDetails(version.evidenceSnapshot(),"Evidence used for this plan")
-            Text("${state.planVersions.size} preserved plan versions. Earlier prescriptions remain available when linked to a completed run.")
-            OutlinedButton(onClick = { confirm = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Rebuild remaining programme…") }
         }
-        MobilitySupportCard(routines)
-        CoachButton("Edit goal and routine", editGoal)
-        Text("Fitness guidance, not medical care. Stop exercise and seek appropriate medical advice for chest pain, fainting or severe difficulty breathing.")
     }
-    if (confirm) AlertDialog(onDismissRequest = { confirm = false }, title = { Text("Rebuild your remaining programme?") },
-        text = { Text("Use your current goal, availability and evidence from today onward. This can change future sessions substantially. Previous versions and completed prescriptions remain in history. Missed mileage will not be added to catch up.") },
-        confirmButton = { TextButton(onClick = { confirm = false; model.generatePlan() }) { Text("Rebuild") } },
-        dismissButton = { TextButton(onClick = { confirm = false }) { Text("Keep current plan") } })
+    if(confirm) AlertDialog(onDismissRequest={confirm=false},title={Text("Rebuild your remaining programme?")},
+        text={Text("Use your current goal, availability and evidence from today onward. Future sessions may change. Previous prescriptions remain in history. No catch-up mileage is added.")},
+        confirmButton={TextButton(onClick={confirm=false;model.generatePlan()}){Text("Rebuild")}},
+        dismissButton={TextButton(onClick={confirm=false}){Text("Keep current plan")}})
 }
 
 @Composable

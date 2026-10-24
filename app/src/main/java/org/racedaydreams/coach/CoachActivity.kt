@@ -48,8 +48,8 @@ class CoachActivity : ComponentActivity() {
         model = ViewModelProvider(this)[CoachViewModel::class.java]
         setContent {
             val dark = isSystemInDarkTheme()
-            MaterialTheme(colorScheme = if (dark) darkColorScheme(primary = Color(0xFF93D4BF))
-                else lightColorScheme(primary = Color(0xFF245D50))) {
+            MaterialTheme(colorScheme = if (dark) darkColorScheme(primary = Color(0xFF9ACAFF), background = Color(0xFF101923), surface = Color(0xFF15202C), onSurface = Color(0xFFE8F0FA), onBackground = Color(0xFFE8F0FA))
+                else lightColorScheme(primary = Color(0xFF086AD8), background = Color(0xFFF6F9FD), surface = Color(0xFFFCFDFF), onSurface = Color(0xFF14243B), onBackground = Color(0xFF14243B))) {
                 Surface(Modifier.fillMaxSize()) { CoachApp(model) }
             }
         }
@@ -147,9 +147,11 @@ private fun CoachApp(model: CoachViewModel) {
             if (route in (tabs.map { it.first } + "strength?date={date}")) {
                 NavigationBar {
                     tabs.forEach { (destination, label) ->
-                        NavigationBarItem(selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
-                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=label) },
-                            label = { if(androidx.compose.ui.platform.LocalDensity.current.fontScale<1.5f)Text(label,maxLines=1,softWrap=false) }, onClick = {
+                        val largeFont=androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.5f
+                        val navLabel: (@Composable () -> Unit)? = if(largeFont)null else ({Text(label,maxLines=1,softWrap=false)})
+                        NavigationBarItem(modifier=if(largeFont)Modifier.semantics{contentDescription=label}else Modifier,selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
+                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=null) },
+                            label = navLabel, onClick = {
                                 nav.navigate(destination) { popUpTo("home"); launchSingleTop = true }
                             })
                     }
@@ -196,7 +198,7 @@ private fun CoachApp(model: CoachViewModel) {
                     model.cancelGoalEditing()
                     if (state.profile == null) nav.navigate("baseline") else nav.navigate("home") { launchSingleTop = true }
                 } }
-                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") },{nav.navigate("routines")}) }
+                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") },{nav.navigate("routines")},{id,related->nav.navigate("routine/${Uri.encode(id)}?related=${Uri.encode(related?:"")}")}) }
                 composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id"), { nav.navigate("activity/${Uri.encode(it)}") }, {v,w->nav.navigate("execute/${Uri.encode(v)}/${Uri.encode(w)}")},{r,w->nav.navigate("routine/$r?related=${Uri.encode(w?:"")}")}) }
                 composable("strength?date={date}") { destination -> val date=destination.arguments?.getString("date");if(date!=null)StrengthScreen(state,model,date) else StrengthDashboard(state){nav.navigate(it)} }
                 composable("strength/log") { StrengthScreen(state,model) }
@@ -209,7 +211,7 @@ private fun CoachApp(model: CoachViewModel) {
                 composable("exercises") { ExerciseBrowser(state,model){nav.navigate("exercise/${Uri.encode(it)}")} }
                 composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")){nav.navigate("strength/source/${Uri.encode(it)}")} }
 
-                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { date -> val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date().toString()==date};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$date") }) { nav.navigate("activity/${Uri.encode(it)}") } }
+                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { date -> val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date().toString()==date};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$date") }, activity={ nav.navigate("activity/${Uri.encode(it)}") }, allStrength={nav.navigate("history?kind=STRENGTH")}) }
                 composable("activity/{id}") { destination ->
                     ActivityDetailScreen(state, model, destination.arguments?.getString("id"))
                 }

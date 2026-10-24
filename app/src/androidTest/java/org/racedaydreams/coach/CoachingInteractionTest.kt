@@ -40,6 +40,8 @@ class CoachingInteractionTest {
         Assert.assertEquals(1,CoachingStore(context).versions().size)
         Assert.assertTrue(current.plan().workouts().all{it.distanceKm()==null&&it.duration()!=null})
         Assert.assertEquals(profile.raceGoal(),SqliteUserPreferencesRepository(context).load().get().raceGoal())
+        await("Programme details")
+        compose.onNodeWithText("Programme details").performScrollTo().performClick()
         await("Rebuild remaining programme…")
         compose.onNodeWithText("Rebuild remaining programme…").performScrollTo().performClick()
         await("Keep current plan");compose.onNodeWithText("Keep current plan").performClick()
@@ -79,8 +81,8 @@ class CoachingInteractionTest {
         Assert.assertEquals(5.0,CoachingStore(context).current()!!.plan().workouts()[0].distanceKm()!!,0.00001)
     }
     private fun recordActualRun(distanceLabel:String,distance:String){
-        launch();compose.onNodeWithText("Plan").performClick();await("View workout and purpose")
-        compose.onNodeWithText("View workout and purpose").performScrollTo().performClick();await("Record actual run")
+        launch();compose.onNodeWithText("Plan").performClick();compose.waitUntil(20000){compose.onAllNodesWithContentDescription("View workout and purpose").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithContentDescription("View workout and purpose").performScrollTo().performClick();await("Record actual run")
         compose.onNodeWithText("Record actual run").performScrollTo().performClick()
         enter(distanceLabel,distance);enter("Actual duration (mm:ss or h:mm:ss)","32:30")
         choosePastDate("Start date")

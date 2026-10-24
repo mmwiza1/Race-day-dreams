@@ -9,3 +9,5 @@ local.properties
 *.apk
 *.aab
 .env
+
+__pycache__/

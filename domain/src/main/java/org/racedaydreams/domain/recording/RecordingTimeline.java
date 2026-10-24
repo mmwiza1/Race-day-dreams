@@ -3,6 +3,16 @@ import java.util.*;
 /** Active recorded time includes GPS outages but excludes explicit manual/automatic pause intervals. */
 public final class RecordingTimeline {
  private RecordingTimeline(){}
+ public static boolean pausedAt(long start,long end,List<RunMetricsEngine.Event> input){
+  if(start<0||end<start)throw new IllegalArgumentException("Invalid recording bounds");
+  var events=new ArrayList<>(input);events.sort(Comparator.comparingLong(RunMetricsEngine.Event::monotonicMillis));
+  boolean paused=false;
+  for(var e:events){if(e.monotonicMillis()<start||e.monotonicMillis()>end)continue;
+   if(e.type().equals("PAUSE")||e.type().equals("AUTO_PAUSE"))paused=true;
+   else if(e.type().equals("RESUME")||e.type().equals("AUTO_RESUME"))paused=false;
+  }
+  return paused;
+ }
  public static long activeMillis(long start,long end,List<RunMetricsEngine.Event> input){
   if(start<0||end<start)throw new IllegalArgumentException("Invalid recording bounds");
   var events=new ArrayList<>(input);events.sort(Comparator.comparingLong(RunMetricsEngine.Event::monotonicMillis));

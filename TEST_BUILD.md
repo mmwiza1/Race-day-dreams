@@ -1,9 +1,9 @@
-# Galaxy S24 evaluation — 0.8.0-test1
+# Galaxy S24 evaluation — 0.8.1-test1
 
-0.8 starts from verified0.7 main `6ebd53c3e102f5ccbef957f68d5dad19f7112eec`.
-See VERIFICATION.md and PR9/Actions for observed build and emulator-test results.
+0.8.1 continues the preserved0.8 implementation. See VERIFICATION.md and draft
+PR#10/Actions for exact verified source commits and emulator-test results.
 
-Download `Race-Day-Dreams-0.8.0-test1-debug.apk` from a successful intended-commit
+Download `Race-Day-Dreams-0.8.1-test1-debug.apk` from a successful intended-commit
 Actions artifact (API 35 is suitable for the S24). Export a local backup first.
 Debug signing keys may differ between workflows; preserve your backup before any
 uninstall Android requires. CI does not establish physical-device interoperability
@@ -32,7 +32,7 @@ or real-world coaching efficacy.
    Unplanned runs must show analysis rather than invented plan adherence.
 7. Use Calendar List/Week/Month; check remembered view, multiple sessions,
    run+strength, race, completed/moved/skipped sessions, labelled day details and
-   visible legend. Move/skip a future session, check version history/reminders,
+   expandable Calendar key. Move/skip a future session, check version history/reminders,
    and verify missed mileage is not added elsewhere.
 8. Use the Strength primary tab. Log separate load/reps/RPE fields, add/duplicate/
    remove/edit sets, multiple/custom exercises and an unplanned session. Open a
@@ -177,3 +177,69 @@ provider interoperability, battery efficiency or coaching efficacy.
   light/dark, TalkBack, rotation, keyboard and touch targets.
 - Hardware/OEM: BLE disconnect/reconnect, cadence absence, battery saver,2–4hour run,
   screen off, process termination and reboot recovery. Automation does not prove these.
+
+## 0.8.1 Galaxy S24 acceptance gate — not yet performed
+
+Record date, Android/One UI version, APK commit, result and observations for each
+check below. CI/emulators do not pass these checks. At least one meaningful real
+outdoor run is required before calling the Android baseline locked.
+
+- [ ] Back up the existing install with **complete backup**; upgrade/reinstall as
+  required by the debug signing key. Restore and compare plans, PBs, shoes, strength,
+  old Dream assignments and retained GPS samples.
+- [ ] Outdoors: acquire GPS, explicitly start, record10–20min, lock screen, open
+  another app, inspect foreground notification, pause/resume, cross a genuine1km
+  boundary, finish/save, reopen route/splits. Check for duplicate distance/samples.
+- [ ] GPS degradation/return: no invented connecting line or inflated distance;
+  pace cues stop when evidence is unreliable. Do not deliberately enter danger.
+- [ ] Unexpected closure/reboot where practical: retained run is offered with
+  durable elapsed/active time and pause context; GPS does not restart secretly.
+  Recover only the retained portion, verify original structured prescription and
+  events. Discard only an expendable test run.
+- [ ] A longer outdoor run: inspect battery, screen-off continuity and sample
+  retention; separately evaluate a2–4hour run before relying on marathon recording.
+- [ ] Health Connect actual available exercise/steps/sleep/HR/RHR/HRV/weight paths;
+  deny and revoke permissions. Missing provider metrics stay unavailable. Confirm
+  optional native write-back/re-import does not duplicate the run.
+- [ ] Live Coach through phone speaker and Bluetooth headphones, with music playing:
+  transitions, sustained pace cue, audio ducking, pause/resume, early finish and
+  incoming-call behaviour. Missing TTS still leaves useful visual controls.
+- [ ] Compatible HR strap if available: explicit connection, disconnect/reconnect,
+  missing HR while the run continues. Mark genuinely unverified if no hardware.
+- [ ] GPX export/re-import retains samples/splits/provenance and complete backup
+  restores them. Diagnostic export excludes routes, health values, weight and notes.
+- [ ] TalkBack focus/labels, light/dark mode and200% text on Plan, Calendar key,
+  Live Coach controls, health summaries, shoes, chart and exercise/routine guidance.
+  Check sunlight legibility, scrolling and all48dp+ actions.
+- [ ] Compare **actual APK** Plan/Dream/RDL/Bench/Lunge/Ankle screens against the
+  owner references. No schematic fallback counts as accepted exercise artwork.
+
+Physical acceptance status: **UNVERIFIED**. Do not tick boxes from synthetic replay,
+a screenshot, an interface existing, or a green GitHub Actions result.
+
+### 0.8.1 guidance and geographic context additions
+
+- [ ] Offline: browse several guides from each equipment class, timed holds and
+  carries. Check whole figures/equipment, written cues and common mistakes. All174
+  assets resolve automatically, but that is not an individual form assessment.
+- [ ] Dream Routes: generate a new activity for each eligible city and reopen it.
+  Check visible progress/distance, full route, section markers and numbered landmarks.
+  Existing assignments must retain their old geometry. New Paris assignments must say Marathon de Paris2026 and follow the annual course via Vincennes, not the Olympic Versailles course.
+- [ ] Open each geographic licence/source notice in Settings; check dark/200%text
+  and TalkBack's route summary. No remote maps or image downloads should occur.
+
+No box above has been ticked by Codex. Record actual device observations before
+calling the physical baseline accepted.
+
+### Offline geographic context checks
+
+- In airplane mode reopen each city card: full course, highlighted equivalent
+  section, source street/water/green-space context,5km ticks, start/finish and
+  attribution should remain visible. New Paris assignments must use the annual Marathon de Paris2026; legacy assignments must retain their old identity.
+- At200%text and in dark mode check complete landmark words, route contrast,
+  progress/distance and readable source credit. This context is an overview,
+  not navigation, not your actual GPS and not a claim of current certified routes.
+- Changing city preferences affects future assignments only; reopen an existing
+  run and complete-backup/restore it to verify its original assignment is retained.
+
+These physical checks remain UNPERFORMED until a human records results.

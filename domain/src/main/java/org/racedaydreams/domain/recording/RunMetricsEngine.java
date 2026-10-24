@@ -18,7 +18,10 @@ public final class RunMetricsEngine {
         public Point {Objects.requireNonNull(fix);if(!Double.isFinite(cumulativeMetres)||cumulativeMetres<0||activeMillis<0||segment<0||heartRate!=null&&(!Double.isFinite(heartRate)||heartRate<=0)||cadence!=null&&(!Double.isFinite(cadence)||cadence<0))throw new IllegalArgumentException("Invalid recorded point");}
     }
     public record Event(String type,long monotonicMillis,Instant timestamp,Double value) {public Event(String type,long monotonicMillis,Instant timestamp){this(type,monotonicMillis,timestamp,null);}}
-    public record Status(double metres,long elapsedMillis,long movingMillis,Double secondsPerKm,String gps,boolean paused) {}
+    public record Status(double metres,long elapsedMillis,long movingMillis,Double secondsPerKm,String gps,boolean paused) {
+        /** A recent pace alone must not trigger cues while the current fix is degraded/rejected. */
+        public boolean hasReliablePace(){return !paused&&"GPS available".equals(gps)&&secondsPerKm!=null&&Double.isFinite(secondsPerKm)&&secondsPerKm>0;}
+    }
     private final long started;private long minimumFixTime;private long lastTime,pausedSince=-1,pausedTotal;private int segment;
     private double distance;private Fix anchor;private boolean gap=true;private String gps="Waiting for GPS";
     private Double hr,cadence;private long hrTime=-1,cadenceTime=-1;
@@ -62,6 +65,11 @@ public final class RunMetricsEngine {
         }
         return new Status(distance,now-started,active(now),pace,gps,pausedSince>=0);
     }
+    /** Recording persistence copies only new observations, never the whole multi-hour trace each flush. */
+    public List<Point> pointsFrom(int index){return Collections.unmodifiableList(new ArrayList<>(points.subList(index,points.size())));}
+    public List<Event> eventsFrom(int index){return Collections.unmodifiableList(new ArrayList<>(events.subList(index,events.size())));}
+    public int pointCount(){return points.size();}
+    public int eventCount(){return events.size();}
     public List<Point> points(){return Collections.unmodifiableList(new ArrayList<>(points));}public List<Event> events(){return Collections.unmodifiableList(new ArrayList<>(events));}
     /** Elapsed samples retain pauses/gaps; existing qualified calculators cannot bridge them. */
     public List<DistanceSample> samples(){return points.stream().map(p->new DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-started),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity())).collect(java.util.stream.Collectors.toList());}

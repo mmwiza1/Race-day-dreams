@@ -52,18 +52,17 @@ class RunRecordingService:Service() {
                     val version=intent.getStringExtra("planVersion");val workout=intent.getStringExtra("workoutId")
                     if(version!=null&&workout!=null)executionContext=SupportStore(this@RunRecordingService).prepare(version,workout,intent.getBooleanExtra("hilly",false))
                     intent.getStringExtra("customSnapshot")?.let{require(it.length<300000);val j=JSONObject(it);SupportStore.validatePayload("execution",j);require(j.getString("mode") in listOf("quick","custom","repeat"));executionContext=j}
-                    store.start(s.id,wall,now)
                     val release=org.racedaydreams.data.Release08Store(this@RunRecordingService)
                     val preferences=release.dreamPreferences()
                     dreamRoute.value=if(preferences.first&&preferences.second.isNotEmpty())org.racedaydreams.domain.support.DreamRoutes.assign(42195.0,java.security.SecureRandom(),preferences.second).routeId()else null
-                    release.save("origin",s.id,JSONObject().put("version",1).put("mode",executionContext?.optString("mode")?:"free").put("at",wall.toString()).put("dreamRoute",dreamRoute.value))
-                    executionContext?.let{SupportStore(this@RunRecordingService).save("execution",s.id,it)}
+                    val origin=JSONObject().put("version",1).put("mode",executionContext?.optString("mode")?:"free").put("at",wall.toString()).put("dreamRoute",dreamRoute.value)
+                    store.start(s.id,wall,now,executionContext,origin)
                 };executionContext?.let{execution=WorkoutExecutionEngine(SupportStore.steps(it))};session=s;engine=RunMetricsEngine(now,wall);publish();location.start{fix->try{if(!manualPause&&getSharedPreferences("run-sensors",MODE_PRIVATE).getBoolean("auto-pause",false)){when(autoPause.observe(fix)){org.racedaydreams.domain.recording.AutoPausePolicy.Decision.PAUSE->engine?.pause(fix.monotonicMillis(),fix.timestamp(),true);org.racedaydreams.domain.recording.AutoPausePolicy.Decision.RESUME->engine?.resume(fix.monotonicMillis(),fix.timestamp(),true);else->Unit}};engine?.accept(fix);publish()}catch(_:Exception){message.value="GPS observation rejected."}};wake=(getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"RaceDayDreams:recording")).apply{acquire(30*60*1000L)};startSensors();ticker=scope.launch{var ticks=0;while(isActive){delay(1000);if(wake?.isHeld==false)wake?.acquire(30*60*1000L);engine?.missingFix(SystemClock.elapsedRealtime(),Instant.now());publish();if(++ticks%5==0)try{flush()}catch(_:Exception){message.value="Disk staging delayed; recording remains in memory. Free storage and finish the run."}}};flush()}
                 "COMPLETE_OPEN"->{execution?.completeOpen();publish();flush()}
                 SKIP->{execution?.skip();publish();flush()}
                 PAUSE->{audio?.silence();announce("Run paused.",0);manualPause=true;autoPause.reset();engine?.pause(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
                 RESUME->{announce("Run resumed.",0);manualPause=false;autoPause.reset();engine?.resume(SystemClock.elapsedRealtime(),Instant.now());flush();publish()}
-                FINISH->{check((engine?.points()?.size?:0)>=2){"Waiting for usable GPS"};hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();execution?.finishEarly();publish();engine?.event("FINISH",SystemClock.elapsedRealtime(),Instant.now());flush();val s=withContext(io){store.unfinished()}?:error("No staged recording");val saved=withContext(io){store.finish(s,engine?.status(SystemClock.elapsedRealtime())?.movingMillis(),recovered=false)};savedActivity.value=saved;message.value="Run saved. Open Calendar to view it.";engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}
+                FINISH->{check((engine?.pointCount()?:0)>=2){"Waiting for usable GPS"};hrSource?.stop();motion?.stop();location.stop();ticker?.cancel();execution?.finishEarly();publish();engine?.event("FINISH",SystemClock.elapsedRealtime(),Instant.now());flush();val s=withContext(io){store.unfinished()}?:error("No staged recording");val saved=withContext(io){store.finish(s,engine?.status(SystemClock.elapsedRealtime())?.movingMillis(),recovered=false)};savedActivity.value=saved;message.value="Run saved. Open Calendar to view it.";engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}
             }
         }catch(_:Exception){message.value="Recording operation could not complete. Saved staging is retained for recovery.";if(engine==null||intent.action==FINISH||intent.action==START){engine=null;status.value=null;stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()}}}}
         return START_STICKY
@@ -97,7 +96,7 @@ class RunRecordingService:Service() {
 
         val e=execution
         if(e==null){deliverMetrics(s,candidates);return}
-        val input=WorkoutExecutionEngine.Input(s.metres(),s.movingMillis(),s.elapsedMillis(),s.secondsPerKm(),s.secondsPerKm()!=null&&!s.paused(),s.paused())
+        val input=WorkoutExecutionEngine.Input(s.metres(),s.movingMillis(),s.elapsedMillis(),s.secondsPerKm(),s.hasReliablePace(),s.paused())
         val state=e.update(input);workoutState.value=state
         val events=e.events()
         for(i in seenExecutionEvents until events.size){val event=events[i];engine?.sensorEvent(event.type(),event.step().toDouble(),SystemClock.elapsedRealtime(),Instant.now())
@@ -114,10 +113,10 @@ class RunRecordingService:Service() {
         CoachCues.select(candidates,s.movingMillis())?.let{cue.value=it.text();audio?.deliver(it)}
     }
     private fun publish(){status.value=engine?.status(SystemClock.elapsedRealtime());status.value?.let{updateExecution(it)};if(Build.VERSION.SDK_INT<33||checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)==android.content.pm.PackageManager.PERMISSION_GRANTED)getSystemService(NotificationManager::class.java).notify(104,notification(if(status.value?.paused()==true)"Run paused" else "Recording your run"))}
-    private suspend fun flush()=flushLock.withLock {val e=engine?:return;val s=session?:return;val points=e.points();val events=e.events();val pi=pointIndex;val ei=eventIndex;val now=SystemClock.elapsedRealtime();val state=if(e.status(now).paused())"PAUSED"else "ACTIVE";val context=executionContext?.let{j->
+    private suspend fun flush()=flushLock.withLock {val e=engine?:return;val s=session?:return;val pi=pointIndex;val ei=eventIndex;val points=e.pointsFrom(pi);val events=e.eventsFrom(ei);val now=SystemClock.elapsedRealtime();val state=if(e.status(now).paused())"PAUSED"else "ACTIVE";val context=executionContext?.let{j->
             val rows=JSONArray();execution?.events()?.forEach{rows.put(JSONObject().put("type",it.type()).put("step",it.step()).put("metres",it.metres()).put("active",it.activeMillis()))};JSONObject(j.toString()).put("events",rows)
         }
-        withContext(io){store.flush(s.id,points,events,pi,ei,now,state,context)};pointIndex=points.size;eventIndex=events.size}
+        withContext(io){store.appendBatch(s.id,points,events,pi,ei,now,state,context)};pointIndex=pi+points.size;eventIndex=ei+events.size}
     private fun notification(text:String):Notification {
         val open=PendingIntent.getActivity(this,0,Intent(this,CoachActivity::class.java),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         fun action(type:String)=PendingIntent.getService(this,type.hashCode(),Intent(this,RunRecordingService::class.java).setAction(type),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)

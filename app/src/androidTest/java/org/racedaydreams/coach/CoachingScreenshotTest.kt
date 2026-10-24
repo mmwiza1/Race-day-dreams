@@ -72,24 +72,24 @@ class CoachingScreenshotTest {
         for(i in 0..1800){val angle=i*2*Math.PI/1800;trace.accept(org.racedaydreams.domain.recording.RunMetricsEngine.Fix(now.minusSeconds(4000).plusSeconds(i.toLong()),i*1000L,51.5+.01*kotlin.math.sin(angle),-.1+.017*kotlin.math.cos(angle),3.0,30+3*kotlin.math.sin(angle),3.0,3.0))}
         val recordings=RecordingStore(context);recordings.start("demo-native-route",now.minusSeconds(4000),0);recordings.flush("demo-native-route",trace.points(),trace.events(),0,0,1800000,"ACTIVE");recordings.finish(recordings.unfinished()!!,1800000,recovered=false)
         // Fix only the test assignment; production still randomly assigns and persists once.
-        store.activitySummaries().forEachIndexed{i,a->a.distanceMetres()?.takeIf{it>0}?.let{metres->val route=org.racedaydreams.domain.support.DreamRoutes.routes()[i%5];SupportStore(context).save("dream",a.id(),org.json.JSONObject().put("version",1).put("route",route.id()).put("start",kotlin.math.min(10000.0,kotlin.math.max(0.0,42195-metres))).put("distance",metres))}}
+        store.activitySummaries().forEachIndexed{i,a->a.distanceMetres()?.takeIf{it>0}?.let{metres->val route=org.racedaydreams.domain.support.DreamRoutes.currentGeometry(org.racedaydreams.domain.support.DreamRoutes.routes()[if(a.id()=="rdd:demo-native-route")0 else i%5]);SupportStore(context).save("dream",a.id(),org.json.JSONObject().put("version",1).put("route",route.id()).put("start",kotlin.math.min(10000.0,kotlin.math.max(0.0,42195-metres))).put("distance",metres))}}
     }
     @After fun clear(){org.racedaydreams.recording.RunRecordingService.status.value=null;org.racedaydreams.recording.RunRecordingService.workoutState.value=null;org.racedaydreams.recording.RunRecordingService.savedActivity.value=null;scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
     @Test fun capturesCurrentBuildScreensAndVerifiesCoachingNavigation() {
         scenario=ActivityScenario.launch(CoachActivity::class.java)
         await("Today");capture("home")
         compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick();await("Recommendation");capture("weekly-review");back()
-        click("Plan");await("Your training programme");capture("training-plan")
-        compose.onAllNodesWithText("View workout and purpose")[0].performScrollTo().performClick()
+        click("Plan");await("This week");capture("training-plan")
+        compose.onAllNodesWithContentDescription("View workout and purpose")[0].performScrollTo().performClick()
         await("Workout structure");capture("planned-workout")
-        compose.onNode(hasText("Warm-up ·",substring=true)).performScrollTo().performClick();compose.waitUntil(20000){compose.onAllNodes(hasText("1 of ",substring=true)).fetchSemanticsNodes().isNotEmpty()};capture("warm-up");back()
+        compose.onNode(hasText("Warm-up ·",substring=true)).performScrollTo().performClick();compose.waitUntil(20000){compose.onAllNodes(hasText("1 of ",substring=true)).fetchSemanticsNodes().isNotEmpty()};capture("warm-up");click("Next");await("Ankle rocks");capture("exercise-ankle-rocks");back()
 
-        back();click("Calendar");await("Activity calendar");capture("history")
+        back();click("Calendar");await("Activity calendar");compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()};capture("history")
         click("Week");await("Training calendar");capture("calendar-week")
         click("Month");await(LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("MMMM uuuu",java.util.Locale.UK)));capture("calendar-month")
         click("List");await("Activity calendar")
         // Open the first real retained activity through the Calendar screen.
-        compose.onAllNodesWithText("Recorded run")[0].performScrollTo().performClick()
+        compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()};compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"));compose.onAllNodesWithText("Recorded run")[0].performClick()
         await("Run detail");capture("activity-detail");alignHeading("Your recorded route");capture("post-run-route")
         val dreamHeading=compose.onNode(hasText("Dream Route ·",substring=true)).fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].first().text;alignHeading(dreamHeading);capture("dream-route")
         compose.onNodeWithText("Compare this run").performScrollTo().performClick();alignHeading("Compare this run");capture("run-comparison")
@@ -104,7 +104,15 @@ class CoachingScreenshotTest {
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("de");compose.waitForIdle();capture("exercise-search")
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("RDL");compose.onNodeWithText("Romanian Deadlift").performClick();await("Overview");capture("exercise-rdl")
         click("How to do it");compose.waitForIdle();capture("exercise-rdl-howto");back()
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("BSS");compose.onNodeWithText("Bulgarian Split Squat").performClick();await("Overview");capture("exercise-bulgarian-split-squat");back();back()
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Bench");compose.onNodeWithText("Bench Press").performClick();await("Overview");click("How to do it");capture("exercise-bench-howto");back()
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("BSS");compose.onNodeWithText("Bulgarian Split Squat").performClick();await("Overview");capture("exercise-bulgarian-split-squat");click("How to do it");capture("exercise-bulgarian-howto");back()
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Seated Cable Row");compose.onNode(hasText("Seated Cable Row") and hasClickAction() and !hasSetTextAction()).performClick();await("Overview");click("How to do it");capture("exercise-cable-row-howto");back()
+        for((exercise,filename) in listOf("Front Squat" to "exercise-front-squat-howto", "Leg Press" to "exercise-leg-press-howto", "Lat Pulldown" to "exercise-lat-pulldown-howto", "Seated Leg Curl" to "exercise-seated-leg-curl-howto", "Farmer’s Carry" to "exercise-farmers-carry-howto", "Hack Squat" to "exercise-hack-squat-howto", "Weighted Wall Sit" to "exercise-weighted-wall-sit-howto", "Arnold Press" to "exercise-arnold-press-howto", "Cable Crunch" to "exercise-cable-crunch-howto", "Clean & Jerk" to "exercise-clean-jerk-howto")) {
+            compose.onNodeWithText("Search exercises or aliases").performTextReplacement(exercise)
+            compose.onNode(hasText(exercise) and hasClickAction() and !hasSetTextAction()).performClick()
+            await("Overview");click("How to do it");capture(filename);back()
+        }
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank");compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick();await("Overview");click("How to do it");capture("exercise-plank-howto");back();back()
         click("Log workout");await("Log strength workout");click("Log strength workout");alignHeading("Last time");capture("strength-log-previous")
         compose.onNodeWithText("Back Squat").performScrollTo().performClick();compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank");compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick();compose.onNodeWithText("Duration (seconds or m:ss)").performScrollTo().performTextReplacement("1:30");compose.waitForIdle();capture("strength-log-timed")
         compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performScrollTo().performClick();compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Farmer");compose.onNodeWithText("Farmer’s Carry").performClick();compose.onNodeWithText("Distance (metres)").performScrollTo().performTextReplacement("60");compose.waitForIdle();capture("strength-log-distance");back()
@@ -122,7 +130,7 @@ class CoachingScreenshotTest {
         await("600 m remaining");capture("live-coach")
         InstrumentationRegistry.getInstrumentation().runOnMainSync{org.racedaydreams.recording.RunRecordingService.status.value=null;org.racedaydreams.recording.RunRecordingService.workoutState.value=null}
         back();back();click("Home");compose.onNodeWithText("Race preparation").performScrollTo().performClick();await("Your pacing strategy");capture("race-day");back()
-        click("Plan");compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility");back();back();click("⚙ Settings");await("Settings")
+        click("Plan");compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility");click("Next");await("Walking lunges");capture("exercise-walking-lunge");click("Next");click("Next");await("Hip-flexor stretch");capture("exercise-static-stretch");back();back();click("⚙ Settings");await("Settings")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle();capture("onboarding")
         back();click("⚙ Settings");await("Settings")
@@ -132,41 +140,104 @@ class CoachingScreenshotTest {
         val originalFont=shell("settings get system font_scale").trim()
         val originalNight=shell("cmd uimode night").let{if(it.contains("yes"))"yes"else if(it.contains("auto"))"auto"else "no"}
         try {
+            scenario?.close();scenario=null
             shell("cmd uimode night yes")
-            scenario?.close();scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
+            scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
             Assert.assertEquals(android.content.res.Configuration.UI_MODE_NIGHT_YES,context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK)
             capture("home-dark")
-            shell("settings put system font_scale 2.0");scenario?.recreate();await("How am I doing?")
+            click("Plan");await("This week");capture("plan-dark")
+            compose.onNodeWithText("View routines").performScrollTo().performClick();await("Movement support");compose.onNodeWithText("Start Hips & glutes").performScrollTo().performClick();await("Hips & glutes");capture("mobility-dark");back();back();click("Home");await("How am I doing?")
+            // Font changes already recreate Android activities. Close first so the
+            // capture does not race recreate() against an automatically destroyed instance.
+            scenario?.close();scenario=null
+            shell("settings put system font_scale 2.0")
+            scenario=ActivityScenario.launch(CoachActivity::class.java);await("How am I doing?")
             Assert.assertTrue(context.resources.configuration.fontScale>=1.99f)
             capture("home-large-font")
+            compose.onNodeWithContentDescription("Plan").performClick();await("This week");capture("plan-large-font")
         } finally {
+            scenario?.close();scenario=null
             if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
             shell("cmd uimode night $originalNight")
         }
 
+    }
+    @Test fun capturesSourcedCityRoutesWithDarkAndLargeText() {
+        fun openCity(city:org.racedaydreams.domain.support.DreamRoutes.Route) {
+            scenario?.close()
+            val route=org.racedaydreams.domain.support.DreamRoutes.currentGeometry(city)
+            val metres=FeatureStore(context).activitySummaries().first{it.id()=="rdd:demo-native-route"}.distanceMetres()!!
+            SupportStore(context).save("dream","rdd:demo-native-route",org.json.JSONObject()
+                .put("version",1).put("route",route.id()).put("start",minOf(1000.0,maxOf(0.0,42195.0-metres)))
+                .put("distance",metres).put("assignedAt",Instant.now().toString()))
+            scenario=ActivityScenario.launch(CoachActivity::class.java)
+            await("Today")
+            compose.onNode((hasText("Calendar") or hasContentDescription("Calendar")) and hasClickAction()).performClick()
+            await("Activity calendar")
+            compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Recorded history ready")).fetchSemanticsNodes().isNotEmpty()}
+            compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
+            compose.onAllNodesWithText("Recorded run")[0].performClick();await("Run detail")
+            // This fixture has genuine retained samples. Wait for both asynchronous
+            // analyses ABOVE Dream Routes before positioning the target card.
+            compose.waitUntil(20000){compose.onAllNodes(hasText("Fastest complete kilometre:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
+            compose.waitUntil(20000){compose.onAllNodes(hasText("Late-run pace change:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
+            alignHeading("Dream Route · ${route.name()}")
+        }
+        val originalFont=shell("settings get system font_scale").trim()
+        val originalNight=shell("cmd uimode night").let{if(it.contains("yes"))"yes"else if(it.contains("auto"))"auto"else "no"}
+        try {
+            shell("cmd uimode night no");shell("settings put system font_scale 1.0")
+            for(city in org.racedaydreams.domain.support.DreamRoutes.routes()) {
+                openCity(city);capture("dream-route-${city.id().removeSuffix("-v2")}")
+            }
+            val london=org.racedaydreams.domain.support.DreamRoutes.routes().first()
+            scenario?.close();scenario=null
+            shell("cmd uimode night yes");openCity(london);capture("dream-route-dark")
+            scenario?.close();scenario=null
+            shell("settings put system font_scale 2.0");openCity(london);capture("dream-route-large-font")
+        } finally {
+            scenario?.close();scenario=null
+            if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
     }
     private fun shell(command:String):String=InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command).use{descriptor->java.io.FileInputStream(descriptor.fileDescriptor).use{it.readBytes().toString(Charsets.UTF_8)}}
     private fun back(){androidx.test.espresso.Espresso.closeSoftKeyboard();androidx.test.espresso.Espresso.pressBack();compose.waitForIdle()}
     private fun await(text:String){compose.waitUntil(20000){compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()};compose.waitForIdle()}
     private fun click(text:String){compose.onNodeWithText(text).performClick();compose.waitForIdle()}
     private fun alignHeading(text:String){
-        compose.onNodeWithText(text).performScrollTo()
-        // Anchor the actual heading near the top, independent of content above it.
-        repeat(4){
-            val top=compose.onNodeWithText(text).fetchSemanticsNode().boundsInRoot.top
-            val height=compose.onRoot().fetchSemanticsNode().boundsInRoot.height
-            val shift=(top-160f).coerceAtMost(height*.6f)
-            if(shift<=8f)return
-            compose.onRoot().performTouchInput{swipe(Offset(centerX,height*.85f),Offset(centerX,height*.85f-shift),durationMillis=1000)}
+        val heading=compose.onNodeWithText(text)
+        heading.performScrollTo()
+        val container=compose.onNode(hasScrollAction() and hasAnyDescendant(hasText(text)))
+        repeat(8){
             compose.waitForIdle()
+            // boundsInRoot is CLIPPED: an offscreen node can report an empty Rect
+            // at zero, which must never be accepted as an aligned screenshot.
+            val top=heading.fetchSemanticsNode().positionInRoot.y
+            val height=compose.onRoot().fetchSemanticsNode().size.height.toFloat()
+            val shift=(top-160f).coerceIn(-height*.6f,height*.6f)
+            if(kotlin.math.abs(shift)<=24f){heading.assertIsDisplayed();return}
+            container.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy){it(0f,shift)}
         }
+        heading.assertIsDisplayed()
+        val top=heading.fetchSemanticsNode().positionInRoot.y
+        Assert.assertTrue("Capture heading is not in the upper viewport: $text at $top",top in 100f..300f)
     }
 
     private fun capture(name:String){
+        if(name.startsWith("dream-route")) {
+            compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Offline city context ready")).fetchSemanticsNodes().isNotEmpty()}
+        }
         compose.waitForIdle()
         // Compose idleness can precede SurfaceFlinger presenting the last frame.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         android.os.SystemClock.sleep(200)
+        if(name.startsWith("dream-route")) {
+            val heading=compose.onNode(hasText("Dream Route ·",substring=true))
+            heading.assertIsDisplayed()
+            val top=heading.fetchSemanticsNode().positionInRoot.y
+            Assert.assertTrue("Dream Route capture must show its own heading: $name at $top",top in 100f..300f)
+        }
         val semantics=compose.onRoot(useUnmergedTree=true).printToString()
         Assert.assertFalse("Raw ISO date in normal UI",Regex("Text = .*\\b[0-9]{4}-[0-9]{2}-[0-9]{2}").containsMatchIn(semantics))
         val bitmap=InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()

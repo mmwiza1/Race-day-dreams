@@ -44,6 +44,7 @@ class Release05UiTest {
         val e=ExerciseCatalog.definition("back-squat").exercise()
         CoachingStore(context).saveStrength(StrengthSession("precise",at,ZoneOffset.UTC,duration,7.0,"Keep this note",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("kept-set-id",5,80.0,7.0,false))))))
         launch();compose.onNodeWithText("View activity history").performScrollTo().performClick();await("Workout history")
+        compose.waitUntil(20000){compose.onAllNodes(hasText(friendlyDate(date)) and hasClickAction()).fetchSemanticsNodes().isNotEmpty()}
         compose.onNode(hasText(friendlyDate(date)) and hasClickAction()).performClick();await("Edit source workout")
         compose.onNodeWithText("Edit exercise").performScrollTo().performClick()
         compose.onNodeWithText("Edit").performScrollTo().performClick()

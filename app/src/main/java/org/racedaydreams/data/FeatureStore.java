@@ -60,10 +60,19 @@ public final class FeatureStore implements RunnerDataRepository, AutoCloseable {
         }return out;
     }
     private List<ActivityRecord> activitySnapshot(boolean includeSamples) {return activitySnapshot(includeSamples,null);}
+    public List<ActivityRecord> activitySummaryPage(Instant before,String afterId,int limit) {
+        if(limit<1||limit>100||(before==null)!=(afterId==null))throw new IllegalArgumentException("Invalid history cursor/page size");
+        return activitySnapshot(false,null,before,afterId,limit);
+    }
     private List<ActivityRecord> activitySnapshot(boolean includeSamples,String onlyId) {
+        return activitySnapshot(includeSamples,onlyId,null,null,0);
+    }
+    private List<ActivityRecord> activitySnapshot(boolean includeSamples,String onlyId,Instant before,String afterId,int limit) {
         SQLiteDatabase db=read();
         List<ActivityRecord> out=new ArrayList<>();
-        try(Cursor cursor=db.rawQuery("SELECT a.payload, n.provider, n.notes, n.rpe, n.shoe_id, r.planned_workout_id FROM activities a LEFT JOIN activity_annotations n ON a.provider=n.provider AND a.record_id=n.record_id LEFT JOIN run_responses r ON r.activity_id=a.id"+(onlyId==null?"":" WHERE a.id=?")+" ORDER BY a.start_millis DESC, a.id",onlyId==null?null:new String[]{onlyId})) {
+        String where=onlyId!=null?" WHERE a.id=?":before!=null?" WHERE (a.start_millis<CAST(? AS INTEGER) OR (a.start_millis=CAST(? AS INTEGER) AND a.id>?))":"";
+        String[] arguments=onlyId!=null?new String[]{onlyId}:before!=null?new String[]{Long.toString(before.toEpochMilli()),Long.toString(before.toEpochMilli()),afterId}:null;
+        try(Cursor cursor=db.rawQuery("SELECT a.payload, n.provider, n.notes, n.rpe, n.shoe_id, r.planned_workout_id FROM activities a LEFT JOIN activity_annotations n ON a.provider=n.provider AND a.record_id=n.record_id LEFT JOIN run_responses r ON r.activity_id=a.id"+where+" ORDER BY a.start_millis DESC, a.id"+(limit==0?"":" LIMIT "+limit),arguments)) {
             while(cursor.moveToNext()) {
                 ActivityRecord a=FeatureJson.activity(FeatureJson.object(cursor.getString(0)));
                 if(!cursor.isNull(1)) a=annotated(a,cursor.isNull(2)?a.notes():cursor.getString(2),cursor.isNull(3)?null:cursor.getDouble(3),cursor.getString(4));

@@ -1,0 +1,14 @@
+New York geographic course-line data
+
+© OpenStreetMap contributors; course-line preparation by MARATHON TRIP
+
+The course line is ODbL. These files are offered as data under the licences below.
+
+Source: https://www.marathontrip.com/map3d/new-york-city-marathon/course.json
+Credits: https://www.marathontrip.com/map3d/new-york-city-marathon/credits.json
+Checked:23October2026
+
+Changes: extract371 XY vertices and EPSG frame; discard other fields; uniformly scale with inverted screen Y. Derived geometry database offered under ODbL-1.0 in new-york-2026.json and NewYork2026Geometry.java. MIT applies only to the original application code.
+
+Licence: https://opendatacommons.org/licenses/odbl/1-0/
+Copyright: https://www.openstreetmap.org/copyright

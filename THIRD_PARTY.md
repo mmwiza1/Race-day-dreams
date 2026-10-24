@@ -139,3 +139,118 @@ rendering, landmarks and v2 Dream drawing anchors are original MIT project work.
 No organiser map, GPX, screenshot, logo, typography or map tiles were incorporated.
 Factual course research/reuse assessment is recorded in docs/DREAM_ROUTES.md. A public
 GPX download is not treated as a redistribution licence.
+
+## 0.8.1 artwork checkpoint
+
+The catalogue-wide exercise and routine WebPs are original generated
+illustrations created for this project from original movement descriptions. They
+are bundled offline and contributed under the project MIT licence. No third-party
+exercise photographs/assets or organiser graphics were copied. Owner references
+are development acceptance documents, separate from production assets. Coverage
+and review are tracked in docs/exercise-artwork/README.md; all174 canonical exercises
+and14 routine movements have illustrated guidance. Actual-build design acceptance
+is a separate release gate and is not implied by the completeness test.
+
+The Berlin2014 geographic dataset in docs/dream-route-data derives
+only coordinates from alexdjulin/running-events-map's participant GPX, under MIT
+(copyright2023 Alexandre Donciu-Julin). The original licence/source blob and
+transformations are retained there. New Berlin assignments use its separately versioned
+`berlin-2014-geo-v1` projection; historical assignments keep their old geometry.
+The full source MIT notice is bundled in assets/licences/berlin-2014-MIT.txt
+and readable in Settings. No provider metadata or health samples are included.
+
+## Tokyo2026 position dataset (0.8.1 checkpoint)
+
+Approximate participant coordinates adapted from kekomat/marathon-gpx-dataset,
+explicitly dedicated under CC0-1.0. Source https://github.com/kekomat/marathon-gpx-dataset
+at commit5bff087d82353ec64df84873bbc1a246f8a25aae. Only simplified original positions
+are bundled; no biometric data, timestamps or identity. Not certified/official course
+geometry. See docs/dream-route-data/tokyo-2026.json and TOKYO_SOURCE_LICENCE.txt.
+Full CC0 text is bundled in assets/licences/tokyo-2026-CC0.txt and readable in Settings.
+No source implementation, Garmin SDK, remote tiles or runtime download was added.
+
+## London historical coordinate line (0.8.1 checkpoint)
+
+The London historical route line adapts164positions from Georgios Karamanis'
+MIT-licensed `gkaramanis/tidytuesday` GeoJSON, frozen at
+f56d74b9e21891c67a9f616b2ccfc7bbcba74a74. No R source, map image or organiser artwork
+is copied. Source publication2023 is not a claimed event edition; survey accuracy
+is unspecified. Full original notice ships in
+assets/licences/london-historical-MIT.txt and is readable in Settings. Complete
+source/blob/transform/limitations are in docs/dream-route-data/london-historical.json.
+
+## New York2026 geographic course data (ODbL-1.0)
+
+New assignments use `new-york-2026-geo-v1`,371 retained XY positions from
+MARATHON TRIP's explicitly offered ODbL course-line data. © OpenStreetMap
+contributors; course-line preparation by MARATHON TRIP. The documented source
+EPSG:26918 frame/anchor is preserved; uniform north-up scaling adds no invented
+coordinates. The approximate42.67km retained centreline is separate from the
+42.195km equivalent-progress axis. Not official/certified geometry or navigation.
+
+The source, SHA256, transformation and complete retained coordinate database are
+in `docs/dream-route-data/new-york-2026.json`. That data and its generated coordinate
+array remain ODbL-1.0; original application code remains MIT. Source attribution and
+full ODbL text are bundled and readable in Settings. No third-party application
+code, tiles, buildings, films, photographs, elevation or marketing art are copied.
+Old geometry IDs/preferences/assignments remain unchanged. The source's2026 context
+is documented without claiming survey accuracy or verification of every start variant.
+
+## Annual Marathon de Paris2026 geographic data (ODbL-1.0)
+
+New Paris assignments use the annual **Schneider Electric Marathon de Paris2026**,
+not the Olympic event. RDD reconstructs the statutory street itinerary from actual
+OpenStreetMap nodes, via Geofabrik's22October2026 Île-de-France extract. Police
+order2026-00388 articles16,18–20,22 establish the annual route; the ASO2026 guide
+corroborates start/finish junctions. No organiser artwork/stroke is copied.
+
+All1960selected positions and550source way IDs/versions, node order, factual sources,
+SHA256s and transformations are offered in `docs/dream-route-data/paris-2026.json`
+and `paris-2026-osm-evidence.json`. This coordinate database and its derived drawing
+remain ODbL-1.0, separately from MIT app code. Full licence/notice is bundled.
+Approximate road/pedestrian and junction-lane choices are not a certified racing
+line:43.22km source geometry is separate from42.195km equivalent progress.
+No source software, proprietary tiles, organiser logos/branding or elevation copied.
+
+The prior `paris-2024-olympic-geo-v1` remains immutable ONLY for existing saved
+assignments, with its Thomas Krakow/Running-tomy Commons ODbL notice retained.
+It is no longer eligible for new Paris assignments and is never relabelled annual.
+
+## Original city context (0.8.1)
+
+Landmark anchors use twelve verified Wikidata P625 positions (CC0-1.0), plus three
+New York anchors from the explicitly ODbL-offered MARATHON TRIP course data. Thames
+and Seine centrelines retain original Natural Earth10m source positions (public
+domain). These are symbolic-width centrelines, not surveyed river banks/street maps.
+Exact sources, statement IDs, frozen Natural Earth commit/hash, licences, retained
+coordinates and limitations: docs/dream-route-data/city-context.json. Reproduce all
+projections offline with scripts/generate-dream-context.py --check. The NYC anchor
+database retains ODbL; app wrapper and original Canvas illustrations remain MIT.
+
+Miniature landmark illustrations are original RDD Canvas work. No building images,
+organiser maps, remote tiles or source application code copied. Source links:
+https://www.wikidata.org/wiki/Wikidata:Licensing
+https://www.naturalearthdata.com/about/terms-of-use/
+
+## Offline geographic context data (0.8.1)
+
+All five geographic Dream Routes now use original RDD styling of a bounded ODbL
+extract from OpenFreeMap's frozen `planet/20261018_080001_pt` OpenMapTiles-schema
+OpenStreetMap data. Visible credit: **OpenFreeMap © OpenMapTiles · © OpenStreetMap
+contributors · ODbL**. The database remains ODbL; original reader/projection/renderer
+code remains MIT. No third-party code, images, map styles, icons, fonts, SDK or
+runtime network client is incorporated. No runtime dependency/permission added.
+
+The provider explicitly permits bounded offline downloads at
+https://openfreemap.org/tos/ . Development used67tiles/10,342,383bytes/3parallel
+requests with an identifying User-Agent, below its3000tile/50MB/4request limits.
+The OSMF vector service's different no-offline policy was reviewed and respected;
+its research tile is excluded from all retained data. No proprietary tiles used.
+
+Machine-readable retained coordinates, exact frozen URLs/SHA256s, bounds and
+simplification notes: `docs/dream-route-data/basemap-*.json`. These derived
+geographic databases and the projected `assets/dream-basemaps/*.rddmap` are offered
+under ODbL. Full licence and attribution notice are bundled/readable in Settings.
+The app ships compact data only, not source tile archives. Original lightweight
+MVT wire/geometry decoder is a development tool, not copied software or a new app
+dependency. Context is decorative/approximate, never used as run distance evidence.
