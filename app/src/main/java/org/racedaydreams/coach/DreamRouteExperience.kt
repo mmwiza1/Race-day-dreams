@@ -3,6 +3,7 @@ package org.racedaydreams.coach
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -66,8 +67,13 @@ import org.racedaydreams.domain.support.DreamRoutes
                         Text("complete", style = MaterialTheme.typography.bodySmall, color = ink)
                     }
                 }
-                LinearProgressIndicator(progress = { progress.fraction().toFloat() }, color = blue, trackColor = if (dark) Color(0xff36516B) else Color(0xffD3E6F9),
-                    modifier = Modifier.fillMaxWidth().height(12.dp).clip(RoundedCornerShape(8.dp)).semantics { contentDescription = progress.accessibilitySummary(city.course) })
+                Box(Modifier.fillMaxWidth().height(12.dp).clip(RoundedCornerShape(8.dp))
+                    .background(if (dark) Color(0xff36516B) else Color(0xffD3E6F9))
+                    .progressSemantics(progress.fraction().toFloat())
+                    .semantics { contentDescription = progress.accessibilitySummary(city.course) }) {
+                    Box(Modifier.fillMaxHeight().fillMaxWidth(progress.fraction().toFloat())
+                        .clip(RoundedCornerShape(8.dp)).background(blue))
+                }
                 Surface(color = soft, shape = RoundedCornerShape(14.dp)) {
                     Text(progress.equivalenceStatement(city.course), Modifier.fillMaxWidth().padding(12.dp), style = MaterialTheme.typography.bodyMedium, color = ink)
                 }

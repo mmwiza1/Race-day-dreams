@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate required Dream Route capture files, not visual fidelity or cross-API hashes."""
+"""Validate all canonical captures, including Dream panels; not visual fidelity or API hashes."""
 import argparse
 from pathlib import Path
 import struct
@@ -7,7 +7,74 @@ import sys
 import zlib
 
 CITIES = ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font")
-REQUIRED = tuple(f"dream-route-{city}{suffix}.png" for city in CITIES for suffix in ("", "-landmarks"))
+DREAM_REQUIRED = tuple(f"dream-route-{city}{suffix}.png" for city in CITIES for suffix in ("", "-landmarks"))
+# Preserve every established whole-app capture when adding the seven lower Dream panels.
+OTHER_REQUIRED = (
+    'activity-detail.png',
+    'body-weight.png',
+    'calendar-month.png',
+    'calendar-week.png',
+    'data-sources.png',
+    'dream-route.png',
+    'exercise-ankle-rocks.png',
+    'exercise-arnold-press-howto.png',
+    'exercise-bench-howto.png',
+    'exercise-bulgarian-howto.png',
+    'exercise-bulgarian-split-squat.png',
+    'exercise-cable-crunch-howto.png',
+    'exercise-cable-row-howto.png',
+    'exercise-clean-jerk-howto.png',
+    'exercise-farmers-carry-howto.png',
+    'exercise-front-squat-howto.png',
+    'exercise-hack-squat-howto.png',
+    'exercise-lat-pulldown-howto.png',
+    'exercise-leg-press-howto.png',
+    'exercise-plank-howto.png',
+    'exercise-rdl-howto.png',
+    'exercise-rdl.png',
+    'exercise-search.png',
+    'exercise-seated-leg-curl-howto.png',
+    'exercise-static-stretch.png',
+    'exercise-walking-lunge.png',
+    'exercise-weighted-wall-sit-howto.png',
+    'gym-programme-setup.png',
+    'gym-running-support.png',
+    'gym-strength-first.png',
+    'gym-workout-detail.png',
+    'health-context.png',
+    'history-filters.png',
+    'history.png',
+    'home-dark.png',
+    'home-large-font.png',
+    'home.png',
+    'live-coach.png',
+    'mobility-dark.png',
+    'mobility.png',
+    'onboarding.png',
+    'plan-dark.png',
+    'plan-large-font.png',
+    'planned-workout.png',
+    'post-run-route.png',
+    'progress.png',
+    'race-day.png',
+    'record-run.png',
+    'run-comparison.png',
+    'run-feedback.png',
+    'run-now.png',
+    'running-pbs.png',
+    'settings.png',
+    'shoes.png',
+    'strength-log-distance.png',
+    'strength-log-previous.png',
+    'strength-log-timed.png',
+    'strength-pbs.png',
+    'strength.png',
+    'training-plan.png',
+    'training-trends.png',
+    'warm-up.png',
+    'weekly-review.png',
+)
+REQUIRED = tuple(sorted(OTHER_REQUIRED + DREAM_REQUIRED))
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_FILE_BYTES = 16 * 1024 * 1024
 MAX_DECODED_BYTES = 42 * 1024 * 1024
@@ -113,7 +180,7 @@ def main():
         print(f"Dream screenshot verification failed: {error}", file=sys.stderr)
         return 1
     sizes = ", ".join(f"{width}x{height}" for width, height in sorted(set(dimensions.values())))
-    print(f"Dream screenshots verified: {len(dimensions)} required top/landmark captures; dimensions {sizes}")
+    print(f"Canonical screenshots verified: {len(dimensions)} required, including {len(DREAM_REQUIRED)} Dream top/landmark panels; dimensions {sizes}")
     print("File integrity is not design-reference acceptance; inspect real captures separately.")
     return 0
 

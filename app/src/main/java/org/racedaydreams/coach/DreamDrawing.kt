@@ -39,16 +39,19 @@ import java.util.Locale
     val finishLabel = String.format(Locale.UK, "%.2f", shownFinish.coerceIn(0.0, 42195.0) / 1000)
     val exactSectionReady = prepared?.let { it.startMetres == start && it.finishMetres == finish } == true
     val landmarkSummary = prepared?.base?.landmarks?.takeIf { it.isNotEmpty() }
-        ?.joinToString { it.label() }?.let { "Geographic landmarks: " + it + ". " }.orEmpty()
+        ?.joinToString { it.label() }?.let {
+            (if (route.id().contains("-geo-")) "Geographic landmarks: " else "Stylised city context: ") + it + ". "
+        }.orEmpty()
 
     // The frozen source extracts cover this exact 5:4 course-plus-landmark viewport.
     // Outer poster/card owns its clipping and padding; this canvas joins the city hero.
     Canvas(Modifier.fillMaxWidth().aspectRatio(1.25f).background(paper).semantics {
         stateDescription = if (map != null && exactSectionReady) "Offline city context ready" else "Course overview"
         contentDescription = "Dream Route " + route.name() +
-            ". Full marathon course in muted grey; strong blue marks the saved equivalent section from " +
+            ". Full marathon course in muted grey; strong blue marks the equivalent section from " +
             startLabel + " to " + finishLabel + " km. Start and Finish pins mark the full course, not your physical location. " +
-            "A hollow blue ring marks your section start; a checked blue ring marks its finish. " +
+            (if (finish > start) "A hollow blue ring marks your section start; a checked blue ring marks its finish. "
+                else "A hollow blue ring marks the start of your equivalent section. ") +
             "Five kilometre course markers. " + landmarkSummary + "Offline geographic context; not navigation."
     }) {
         if (size.minDimension <= 0f) return@Canvas
@@ -195,13 +198,15 @@ import java.util.Locale
             drawCircle(halo, 7.dp.toPx(), sectionStart)
             drawCircle(accent, 5.2.dp.toPx(), sectionStart)
             drawCircle(halo, 2.4.dp.toPx(), sectionStart)
-            drawCircle(halo, 7.dp.toPx(), sectionFinish)
-            drawCircle(accent, 5.5.dp.toPx(), sectionFinish)
-            val check = 1.7.dp.toPx()
-            drawLine(halo, sectionFinish + Offset(-check * 1.5f, 0f),
-                sectionFinish + Offset(-check * .2f, check * 1.2f), 1.7.dp.toPx(), StrokeCap.Round)
-            drawLine(halo, sectionFinish + Offset(-check * .2f, check * 1.2f),
-                sectionFinish + Offset(check * 1.7f, -check * 1.2f), 1.7.dp.toPx(), StrokeCap.Round)
+            if (finish > start) {
+                drawCircle(halo, 7.dp.toPx(), sectionFinish)
+                drawCircle(accent, 5.5.dp.toPx(), sectionFinish)
+                val check = 1.7.dp.toPx()
+                drawLine(halo, sectionFinish + Offset(-check * 1.5f, 0f),
+                    sectionFinish + Offset(-check * .2f, check * 1.2f), 1.7.dp.toPx(), StrokeCap.Round)
+                drawLine(halo, sectionFinish + Offset(-check * .2f, check * 1.2f),
+                    sectionFinish + Offset(check * 1.7f, -check * 1.2f), 1.7.dp.toPx(), StrokeCap.Round)
+            }
         }
     }
 }

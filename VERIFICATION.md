@@ -7,8 +7,18 @@ and PR11are merged. BaselineAPI35APK46,402,613bytes.
 Current feature version0.8.2-test1/code11;schema10,JSON7,raw2,complete1 unchanged.
 Observed local:61,295domain checks/19suites,43schema,11Dreamsource/projection,
 6release-note tests,20artassets/1,472,726bytes and14artwork-integrity fault tests pass.
-Android build/lint/instrumentation, new canonical captures, strict visual comparison,
-after-APK size and finalCI/publication remain pending. No physicalS24check is claimed.
+Initial source30a619b workflow40085783355: Androidbuild/lint/instrumentation compilation
+passed on allthree APIs;209instrumentation tests passed on API28 and35. API36 completed
+209with one native-history selector failure. Logs exposed a cancelled-query readiness
+race; a targeted fix and3controlled UI tests are pending the next fullrun, not a blindretry.
+API35artifact12556114941 contains77realcaptures, fileintegrity verified and allfivecity/
+dark/200%top+landmarkpanels visually reviewed. Review caught an oversized duplicate
+Paris citytitle; presentation now keeps city short while retained course/edition stay
+explicit. Fresh final-source captures are still required before acceptance/merge.
+InitialAPI35APKartifact12556488666:47,960,610bytes(+1,557,997 /3.358%vsbaseline),
+version0.8.2-test1/code11, ZIPCRC/binarymanifest checked; noINTERNETpermission.
+Final-source APK size/CI/captures and postmerge publication remain pending.
+No physicalGalaxyS24check is claimed.
 
 The following records are HISTORICAL0.8.1 results, not0.8.2 verification.
 

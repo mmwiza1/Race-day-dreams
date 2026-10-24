@@ -26,7 +26,8 @@ screen. Each capture must assert its own visible section anchor 100–300 px fro
 top-screen captures retain their existing Dream Route heading assertion and show the
 city hero and full course map. Both map-context and selected-city artwork readiness
 must be observed before capture; no capture-pass claim is made until tests run.
-The stdlib scripts/verify-dream-screenshots.py requires all 14 top/landmark files,
+The stdlib scripts/verify-dream-screenshots.py requires the complete 77-file canonical
+set, including all 14 Dream top/landmark panels and every established whole-app capture,
 bounded phone-screen dimensions, complete PNG chunks/checksums and a valid bounded
 pixel stream after each emulator capture, before canonical adoption and before release
 publication. It does not compare hashes between APIs or establish visual fidelity.

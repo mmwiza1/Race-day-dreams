@@ -22,7 +22,9 @@ them. It is not a production/store release and does not create a stable version 
 ## Fixes
 
 - Documentation no longer describes the already-merged PRs #10/#11 as pending.
-- No new production reliability defect is claimed fixed at this early checkpoint.
+- Fixed a history-loading race found by the full matrix: a cancelled query can no
+  longer mark its replacement ready before the summary rows arrive. Paging remains
+  bounded and summary-only; three controlled cancellation/retry/cursor tests cover it.
 
 ## Known limitations
 
@@ -67,7 +69,7 @@ five cities, with bounded RIFF/header dimensions, hashes, byte sizes, source cro
 provenance checked. All 14 focused manifest/WebP validation tests pass. These automated
 checks establish integrity and completeness, not design-reference fidelity.
 
-The capture integrity gate now requires 14 city/theme top and landmark-panel PNGs after
-emulator capture and before adoption/publication. Six focused PNG corruption, bounds
+The capture integrity gate now requires all 77 canonical PNGs, including 14 city/theme
+top and landmark panels, after emulator capture and before adoption/publication. Six focused PNG corruption, bounds
 and required-file tests pass locally. Actual 0.8.2 captures remain pending; synthetic
 validator fixtures are not app screenshot evidence.

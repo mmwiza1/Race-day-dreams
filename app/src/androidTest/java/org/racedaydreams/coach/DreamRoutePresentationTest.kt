@@ -32,6 +32,7 @@ class DreamRoutePresentationTest {
 
     @Test fun annualParisHasAnnualIdentityAndVerifiedLandmarks() {
         val spec = dreamCityPresentation(DreamRoutes.forId("paris-2026-geo-v1"))
+        assertEquals("Paris", spec.city)
         assertEquals("Marathon de Paris", spec.course)
         assertEquals("2026 course", spec.edition)
         assertEquals(listOf("Eiffel Tower", "Château de Vincennes", "Louvre"), spec.landmarks.map { it.label })
@@ -41,6 +42,7 @@ class DreamRoutePresentationTest {
     @Test fun oldParisIdentityAndLandmarksAreNotReinterpreted() {
         val old = DreamRoutes.Assignment("paris-2024-olympic-geo-v1", 7000.0, 7190.0)
         val spec = dreamCityPresentation(DreamRoutes.forId(old.routeId()))
+        assertEquals("Paris", spec.city)
         assertEquals("Paris 2024 Olympic marathon course", spec.course)
         assertEquals("Archived Olympic course · 2024", spec.edition)
         assertEquals(listOf("Eiffel Tower", "Louvre"), spec.landmarks.map { it.label })

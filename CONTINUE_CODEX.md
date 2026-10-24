@@ -9,7 +9,9 @@
   domain/build/lint/strict guidance and rolling Latest Development Build publication.
 - User authorises a focused0.8.2 visual release and merge only after full automated
   and visual gates. Do not modify unrelated0.8.1 systems or create a stable release tag.
-- Current work is UNCOMMITTED; preserve all modified/new files. No0.8.2PR yet.
+- Checkpoint `30a619b29e48e9d7806fcb50b66ceedeaa55c0ea` is committed/pushed. DraftPR12:
+  https://github.com/mmwiza1/Race-day-dreams/pull/12 . Workflow40085783355 finished:API28/35green209each,API36onehistoryreadinessfailure.
+  Preserve remaining documentation/verifier edits; inspect actualstatus on resumption.
 
 ## Implemented work in the tree
 
@@ -39,15 +41,18 @@
 - All20newart assets fully decoded during preparation;stdllib integrity and14fault
   tests pass. Source/context/basemap reproductions still pass.
 - Local Gradle first attempt failed on unwritable default /home/agent/.gradle.
-  Retry must use GRADLE_USER_HOME=/workspace/.gradle with network permission; local
-  AndroidSDK is absent. Android compile/lint/instrumentation remain CI gates, NOT passed.
-- BaselineAPI35APK46,402,613bytes, artifact12555130846/run40079947980. After-APK size pending.
-- No current0.8.2screenshots/CI/merge claimed. PhysicalS24checks remain UNPERFORMED.
+  Workspace-cache retry reached wrapper download but direct Java connection was refused;
+  AndroidSDK is absent. CI has proper SDK/dependencies; Android gates remain pending.
+- BaselineAPI35APK46,402,613bytes; initial0.8.2API35APK47,960,610bytes(+3.358%),
+  artifact12556488666/run40085783355. Binarymanifest hasnoINTERNET. FinalsourceAPKpending.
+- Initial77API35capturesartifact12556114941 reviewed, withParislabelcorrectionpending
+  freshcapture. No finalgreenCI/merge claimed. PhysicalS24checks remain UNPERFORMED.
 
 ## Exact remaining work
 
-1. Review all new Kotlin/integration; complete focused artwork/screenshot verification.
-2. Commit useful checkpoint, push branch/open draftPR; run full build/lint/API28/35/36.
+1. Review new Kotlin/integration; checkpoint30a619b is pushed and draftPR12open.
+2. Pushfollow-up queryreadiness/Paris/progress corrections; run fullAPI28/35/36 again
+   with3newcontrolledhistorytests (expected212). No timeout/assertion weakened.
 3. Diagnose/fix any compile/test failures. Download authentic API35screenshots and APK.
 4. Inspect allfivecitytop+landmarkcaptures,dark,200% against NEW owner inline fourcity
    premium travel reference. Refine presentation if needed. Original inline reference

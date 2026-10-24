@@ -74,5 +74,12 @@ internal fun dreamCityPresentation(route: org.racedaydreams.domain.support.Dream
         val retained = org.racedaydreams.domain.support.DreamRoutes.landmarks(route).map { it.label() }.toSet()
         all.filter { it.label in retained }
     } else all
-    return DreamCityPresentation(if (city == "new-york") "New York" else route.name(), course, edition, "$city-hero", landmarks, geographic)
+    val displayCity = when (city) {
+        "london" -> "London"
+        "berlin" -> "Berlin"
+        "paris" -> "Paris"
+        "tokyo" -> "Tokyo"
+        else -> "New York"
+    }
+    return DreamCityPresentation(displayCity, course, edition, "$city-hero", landmarks, geographic)
 }
