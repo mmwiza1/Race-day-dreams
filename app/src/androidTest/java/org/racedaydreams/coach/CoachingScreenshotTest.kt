@@ -169,6 +169,10 @@ class CoachingScreenshotTest {
             val recorded=FeatureStore(context).activitySummaries().single{it.id()=="rdd:demo-native-route"}
             val metres=recorded.distanceMetres()!!
             val nativeSource="Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(recorded.source())}"
+            val retainedPoints=RecordingStore(context).points(recorded.source().recordId())
+            val retainedStory=org.racedaydreams.domain.polish.RoutePresentation.story(retainedPoints)
+            Assert.assertTrue("Native capture fixture must retain genuine kilometre evidence",retainedPoints.size>2&&retainedStory.any{it.startsWith("Fastest complete kilometre:")})
+            Assert.assertTrue("Native capture fixture must retain durability evidence",org.racedaydreams.domain.presentation.DurabilityData.of(FeatureStore(context).activityDetail(recorded.id())).evidence().sufficient())
             SupportStore(context).save("dream","rdd:demo-native-route",org.json.JSONObject()
                 .put("version",1).put("route",route.id()).put("start",minOf(1000.0,maxOf(0.0,42195.0-metres)))
                 .put("distance",metres).put("assignedAt",Instant.now().toString()))
@@ -186,8 +190,16 @@ class CoachingScreenshotTest {
             compose.onNodeWithText(nativeSource).assertExists()
             // This fixture has genuine retained samples. Wait for both asynchronous
             // analyses ABOVE Dream Routes before positioning the target card.
-            compose.waitUntil(20000){compose.onAllNodes(hasText("Fastest complete kilometre:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
-            compose.waitUntil(20000){compose.onAllNodes(hasText("Late-run pace change:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
+            try {
+                await("Route story")
+                compose.onNodeWithText("Route story").performScrollTo().assertIsDisplayed()
+                compose.waitUntil(20000){compose.onAllNodes(hasText("Fastest complete kilometre:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
+                compose.onNodeWithText("Long-run durability").performScrollTo().assertIsDisplayed()
+                compose.waitUntil(20000){compose.onAllNodes(hasText("Late-run pace change:",substring=true)).fetchSemanticsNodes().isNotEmpty()}
+            } catch(failure:Throwable) {
+                if(failure !is AssertionError && failure !is androidx.compose.ui.test.ComposeTimeoutException)throw failure
+                throw AssertionError("City ${route.id()}, activity ${recorded.id()}, source ${recorded.source()}, retained points ${retainedPoints.size}, expected story $retainedStory. UI: ${compose.onRoot(useUnmergedTree=true).printToString().take(14000)}",failure)
+            }
             alignHeading("Dream Route · ${route.name()}")
         }
         val originalFont=shell("settings get system font_scale").trim()

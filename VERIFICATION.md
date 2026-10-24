@@ -1,3 +1,15 @@
+# Postmerge capture follow-up — publication blocked
+
+PR12 merged at5ffa63029897365c84aeacd92b75f3339a935462 after complete final-head
+workflow40138918269 passed213tests on EACH API28/35/36. Main40139578803 passed API28/35,
+butAPI36completed213with one offscreen RouteStory wait timeout inCoachingScreenshotTest.
+Publication was correctly skipped. Test-only follow-up makes section positioning explicit,
+retains both20s evidence waits/source assertions, and adds real rawpoint/story/durability
+preconditions plus diagnostics. No production or format change. Full follow-upCI and
+newmainpublication are required; no physicalS24result is inferred.
+
+---
+
 # Verification — Race Day Dreams 0.8.2-test1
 
 Version **0.8.2-test1 / versionCode 11**. Schema **10**, JSON envelope **7**, raw

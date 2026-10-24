@@ -1,3 +1,30 @@
+# Follow-up — merged 0.8.2 source, main capture gate blocked
+
+PR #12 merged at `5ffa63029897365c84aeacd92b75f3339a935462` after final-head workflow
+40138918269 passed213tests EACH API28/35/36 and allvisual/source gates. Local main was
+updated cleanly. Do not redo accepted implementation or mergePR12again.
+
+Postmerge workflow40139578803: API28/35passed213each;API36completed213 with one
+CoachingScreenshotTest.openCity timeout atFastest-complete-kilometre wait(line189).
+Release publication was correctly blocked. No new development APK is published yet.
+
+Current feature branch: feature/0.8.2-dream-routes-visual-redesign, preserving allprior
+commits. Test-only follow-up explicitly scrolls/asserts RouteStory andDurability before
+both ORIGINAL20s evidence waits; adds genuine rawpoint/story/durability preconditions
+and labelled timeout diagnostics. No assertions/timeouts removed or increased; no
+production code/data/geometry/manifest/version/backup change. Publication requires a
+new full API28/35/36 gate, canonical capture/source adoption, reviewed finalhead and
+normalfollow-upPRmerge. Do not blindly retry thefailedmainjob.
+
+Pending: publish this test-only follow-up (merge main ancestry without discarding old
+feature commits), open follow-up PR, run/fix complete CI, adopt77authentic captures,
+review their unchanged design and fingerprint, merge when green, verify mainCI and
+rollingLatestDevelopmentBuild. No stabletag. PhysicalS24checks remain UNPERFORMED.
+
+---
+
+## Previously verified release implementation (preserved)
+
 # Continue — 0.8.2-test1 Dream Routes delivery
 
 ## Preserve the completed release
