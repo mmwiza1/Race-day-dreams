@@ -2,11 +2,17 @@
 
 ## Source and authentic evidence
 
-Reviewed production source `fc47aae976a734a9b636d97bd3db7bf9b5c23e88`, verified in
-[workflow 40092248558](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40092248558):
-213 instrumentation tests passed on each API 28/35/36. API-35 artifact 12560190031 contains
-77 real PNGs; bot c408306 adopted them exactly. Source fingerprint:
-`ece5e40a19e9512fc3f8eeb2f8535b520837228a8ecff8d336eff739860ceab6`.
+Reviewed follow-up source `57c1044ea5eb372090f4c300ee6f660732ec7deb`, verified in
+[workflow 40176513799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40176513799):
+213 instrumentation tests passed on each API 28/35/36. API-35 artifact 12593011391 contains
+77 fresh actual PNGs; bot 22de99c91b4483ffb681d71151b9a85c0a65a6b9 adopted them exactly. Source fingerprint:
+`db25ccc7a930e1f40a3885ef24091b905973641850d4784ced9888b1657835b0`.
+
+All 14 fresh Dream top/landmark panels were opened again on 25 October 2026 after the
+test-only asynchronous-analysis synchronisation correction. The production UI and
+artwork are unchanged. The direct observations below still hold: all five identities,
+strong section emphasis, annual Paris 2026, distinct pins, dark legibility and 200%
+wrapping/stacking remain present without missing artwork or label collisions.
 
 The mandatory comparison target is the owner's inline **four-city premium Dream Route
 board** in the 0.8.2 task: London/Berlin/Paris/Tokyo, illustrated city hero, factual route,
