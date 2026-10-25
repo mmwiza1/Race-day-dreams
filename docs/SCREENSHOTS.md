@@ -8,7 +8,7 @@ captures remain in docs/screenshots and must never replace the approved referenc
 
 The shared city experience and 20 original bundled images are implemented. No schema,
 backup format, runtime dependency or permission changed. Final-source captures were
-adopted from successful workflow40092248558; all14Dream panels passed direct visual
+adopted from successful workflow40176513799; all14Dream panels passed direct visual
 review against the inline premium reference. Physical acceptance remains separate.
 
 Required final-source canonical captures:
@@ -55,12 +55,17 @@ source/run/capture IDs in docs/VISUAL_REVIEW_0_8_2.md and VERIFICATION.md.
 
 Initial source 30a619b produced 77 authentic API 35 PNGs in workflow 40085783355,
 artifact 12556114941. The first visual inspection prompted Paris-title and progress-bar
-refinements. Final sourcefc47aae passed workflow40092248558:213tests EACH API28/35/36,
-77real API35captures/artifact12560190031 adopted bybotc408306. Stored fingerprint
-ece5e40a19e9512fc3f8eeb2f8535b520837228a8ecff8d336eff739860ceab6 matches currentcode.
+refinements. Final source57c1044 passed workflow40176513799:213tests EACH API28/35/36,
+77real API35captures/artifact12593011391 adopted by bot22de99c. Stored fingerprint
+db25ccc7a930e1f40a3885ef24091b905973641850d4784ced9888b1657835b0 matches currentcode.
 All14Dream panels were opened and reviewed; see VISUAL_REVIEW_0_8_2.md for specific
 findings and responsive adaptations. PhysicalS24acceptance is unperformed. The records
 below are historical0.8.1evidence, not verification of the new presentation.
+
+The PR #13 test-only synchronisation follow-up preserved both original analysis waits
+and all capture assertions. Its fresh API-35 set was adopted by bot `22de99c91b4483ffb681d71151b9a85c0a65a6b9`.
+All 14 Dream panels were reopened for reference comparison on 25 October 2026. No
+production UI, approved reference, artwork, course data or assignment changed.
 
 ---
 

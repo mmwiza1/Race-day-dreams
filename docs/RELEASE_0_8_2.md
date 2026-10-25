@@ -26,6 +26,8 @@ production/store release.
   Summary-only keyset paging and existing results are preserved.
 - Manual run completion navigates after its coherent activity/response/prescription
   snapshot is refreshed, avoiding a transient unavailable or unplanned result view.
+- Screenshot capture explicitly awaits and scrolls to genuine asynchronous route-story
+  and durability evidence, retaining the original assertions and timeouts.
 - Documentation reflects the completed PR #10/#11 baseline rather than pending merges.
 
 ## Known limitations
@@ -62,10 +64,10 @@ and checksum; independently signed CI binaries can have different hashes.
 
 ## Verification
 
-Source fc47aae passed [workflow 40092248558](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40092248558):
+Follow-up source 57c1044 passed [workflow 40176513799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40176513799):
 **213 instrumentation tests on EACH API 28, 35 and 36**, Android build/lint,
 domain/schema/source checks, strict **174/174 canonical + 14/14 routine** guidance and
-**77 authentic canonical captures**. Bot c408306 adopted the API-35 images. Source
+**77 authentic canonical captures**. Bot 22de99c adopted the API-35 images. Source
 fingerprint and capture integrity match; visual findings are recorded separately in
 VISUAL_REVIEW_0_8_2.md. All14Dream city/theme panels were visually reviewed against the approved premium
 reference; no blocker was found. File checks alone do not establish visual fidelity.

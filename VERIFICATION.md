@@ -6,16 +6,16 @@ manifest permission was added. This remains a debug-signed test/development buil
 
 ## Verified source and CI
 
-Production source: `fc47aae976a734a9b636d97bd3db7bf9b5c23e88`.
-[Complete workflow 40092248558](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40092248558)
+Verified follow-up source: `57c1044ea5eb372090f4c300ee6f660732ec7deb`.
+[Complete workflow 40176513799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40176513799)
 passed Android build, lint, instrumentation compilation, all supported emulator APIs,
 strict instructional coverage and canonical screenshot publication.
 
 | API | Instrumentation result | Job |
 | --- | --- | --- |
-| 28 | 213 passed, zero failed/skipped | 120867139695 |
-| 35 | 213 passed, zero failed/skipped | 120867139661 |
-| 36 | 213 passed, zero failed/skipped | 120867139786 |
+| 28 | 213 passed, zero failed/skipped | 121118246169 |
+| 35 | 213 passed, zero failed/skipped | 121118246131 |
+| 36 | 213 passed, zero failed/skipped | 121118246110 |
 
 Exact `Finished 213 tests` and successful-build log lines were inspected for all three.
 These include migrations, complete-backup round trips/rollback, retained current and
@@ -31,9 +31,9 @@ existing assets intact. The 20 new city assets total **1,472,726 bytes**.
 
 ## Authentic screenshots and design gate
 
-API-35 artifact **12560190031** contains **77 real PNGs**, adopted exactly by bot
-`c408306cd5ebac2a9bd7061e53c84478c292097a`. Stored source commit is fc47aae; fingerprint:
-`ece5e40a19e9512fc3f8eeb2f8535b520837228a8ecff8d336eff739860ceab6`.
+API-35 artifact **12593011391** contains **77 real PNGs**, adopted exactly by bot
+`22de99c91b4483ffb681d71151b9a85c0a65a6b9`. Stored source commit is 57c1044; fingerprint:
+`db25ccc7a930e1f40a3885ef24091b905973641850d4784ced9888b1657835b0`.
 The current source hash matches. All 77 required PNG structures/checksums/pixel streams
 validate. Five city top/landmark pairs plus dark and 200% pairs are separate actual
 captures, not composites. Reference comparison is recorded in
@@ -42,7 +42,7 @@ with production captures. Physical human/device acceptance is a separate gate.
 
 ## APK and privacy
 
-Verified source API-35 artifact **12559656978**:
+Verified source API-35 artifact **12592851563**:
 `Race-Day-Dreams-0.8.2-test1-debug-api-35`, containing
 `Race-Day-Dreams-0.8.2-test1-debug.apk`. Build log size: **47,976,994 bytes**.
 Merged 0.8.1 baseline: **46,402,613 bytes**; increase **1,574,381 bytes / 3.393%**.
@@ -65,10 +65,23 @@ now delivers navigation after its coherent snapshot; a real ViewModel regression
 verifies Main-thread callback, idle state, actual, response and preserved prescription.
 The complete 213-test matrix above passed after these corrections, without blind retries.
 
+## Post-merge capture follow-up
+
+PR #12 merged at `5ffa63029897365c84aeacd92b75f3339a935462` after final-head
+workflow 40138918269 passed 213 tests on each API. Main workflow 40139578803 passed
+API 28/35, but API 36 timed out waiting for asynchronous Route story evidence;
+publication correctly remained blocked. PR #13 explicitly waits for and scrolls to
+Route story and Long-run durability before the same two 20-second evidence assertions.
+It verifies retained sample/story/durability preconditions and adds failure diagnostics.
+No assertion, timeout, production code, geometry or data format was weakened or changed.
+The full follow-up matrix above passed without rerunning a failed job. All 77 captures
+were freshly adopted and all 14 Dream panels reviewed again, including dark/200% modes.
+
 ## Delivery and physical status
 
-PR #12 contains the focused release. Final documentation-head CI, merge and post-merge
-main workflow must be inspected before claiming publication. The existing rolling
+PR #12 contains the release; PR #13 contains only this capture synchronisation follow-up
+and refreshed evidence. Require complete final PR-head CI and successful post-merge
+main publication before claiming a downloadable 0.8.2 development release. The existing rolling
 [Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
 updates only after main verification. Its notes identify the actual merged commit.
 
