@@ -41,8 +41,14 @@ public record ExerciseMetadata(
         ISOLATION("Isolation");
 
         private final String label;
-        Role(String label) { this.label = label; }
-        public String label() { return label; }
+
+        Role(String label) {
+            this.label = label;
+        }
+
+        public String label() {
+            return label;
+        }
     }
 
     public enum BodyArea {
@@ -63,8 +69,14 @@ public record ExerciseMetadata(
         HIP_FLEXORS("Hip flexors");
 
         private final String label;
-        BodyArea(String label) { this.label = label; }
-        public String label() { return label; }
+
+        BodyArea(String label) {
+            this.label = label;
+        }
+
+        public String label() {
+            return label;
+        }
     }
 
     /** Complexity of the canonical variation; technical does not mean unsafe. */
@@ -82,8 +94,15 @@ public record ExerciseMetadata(
     }
 
     public enum EquipmentGroup {
-        BARBELL, DUMBBELLS, KETTLEBELLS, CABLES, MACHINES, SMITH_MACHINE,
-        PULL_UP_BAR, SLED, OTHER
+        BARBELL,
+        DUMBBELLS,
+        KETTLEBELLS,
+        CABLES,
+        MACHINES,
+        SMITH_MACHINE,
+        PULL_UP_BAR,
+        SLED,
+        OTHER
     }
 
     /** Specific capabilities: owning one machine does not imply owning every machine. */
@@ -144,30 +163,41 @@ public record ExerciseMetadata(
         WALL(EquipmentGroup.OTHER);
 
         private final EquipmentGroup group;
-        Equipment(EquipmentGroup group) { this.group = group; }
-        public EquipmentGroup group() { return group; }
+
+        Equipment(EquipmentGroup group) {
+            this.group = group;
+        }
+
+        public EquipmentGroup group() {
+            return group;
+        }
     }
 
     /** Each alternative is a complete setup. An empty setup means no external equipment. */
     public record EquipmentRequirement(List<Set<Equipment>> alternatives) {
         public EquipmentRequirement {
             if (alternatives == null || alternatives.isEmpty()) {
-                throw new IllegalArgumentException("At least one complete equipment setup is required.");
+                throw new IllegalArgumentException(
+                        "At least one complete equipment setup is required.");
             }
             var copy = new ArrayList<Set<Equipment>>();
             var seen = new HashSet<Set<Equipment>>();
             for (var setup : alternatives) {
                 var immutable = immutableEnums(setup, Equipment.class);
-                if (!seen.add(immutable)) throw new IllegalArgumentException("Duplicate equipment setup.");
+                if (!seen.add(immutable))
+                    throw new IllegalArgumentException("Duplicate equipment setup.");
                 copy.add(immutable);
             }
             if (copy.size() > 1 && copy.stream().anyMatch(Set::isEmpty)) {
-                throw new IllegalArgumentException("An equipment-free setup needs no alternatives.");
+                throw new IllegalArgumentException(
+                        "An equipment-free setup needs no alternatives.");
             }
             alternatives = Collections.unmodifiableList(copy);
         }
 
-        public boolean equipmentFree() { return alternatives.size() == 1 && alternatives.get(0).isEmpty(); }
+        public boolean equipmentFree() {
+            return alternatives.size() == 1 && alternatives.get(0).isEmpty();
+        }
 
         public boolean availableWith(Set<Equipment> available) {
             Objects.requireNonNull(available, "available equipment");
@@ -179,7 +209,9 @@ public record ExerciseMetadata(
     }
 
     public ExerciseMetadata {
-        if (exerciseId == null || exerciseId.isEmpty() || !exerciseId.matches("[a-z0-9]+(?:-[a-z0-9]+)*")) {
+        if (exerciseId == null
+                || exerciseId.isEmpty()
+                || !exerciseId.matches("[a-z0-9]+(?:-[a-z0-9]+)*")) {
             throw new IllegalArgumentException("A stable exercise identity is required.");
         }
         Objects.requireNonNull(primaryRole, "primary role");

@@ -5,6 +5,10 @@ import static org.racedaydreams.domain.strength.ExerciseMetadata.Equipment.*;
 import static org.racedaydreams.domain.strength.ExerciseMetadata.Role.*;
 import static org.racedaydreams.domain.strength.ExerciseMetadata.Suitability.*;
 
+import org.racedaydreams.domain.strength.ExerciseMetadata.BodyArea;
+import org.racedaydreams.domain.strength.ExerciseMetadata.Equipment;
+import org.racedaydreams.domain.strength.ExerciseMetadata.EquipmentRequirement;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,9 +16,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.racedaydreams.domain.strength.ExerciseMetadata.BodyArea;
-import org.racedaydreams.domain.strength.ExerciseMetadata.Equipment;
-import org.racedaydreams.domain.strength.ExerciseMetadata.EquipmentRequirement;
 
 /** Catalogue completeness plus concrete training-intent and complete-equipment regressions. */
 public final class ExerciseMetadataTestSuite {
@@ -31,8 +32,12 @@ public final class ExerciseMetadataTestSuite {
         experienceClassificationsMatter();
         metadataIsDefensivelyImmutable();
         unknownAndMalformedRemainUnknownOrRejected();
-        System.out.println("ExerciseMetadataTestSuite: " + checks + " checks passed; "
-                + ExerciseMetadataCatalog.entries().size() + " canonical metadata entries.");
+        System.out.println(
+                "ExerciseMetadataTestSuite: "
+                        + checks
+                        + " checks passed; "
+                        + ExerciseMetadataCatalog.entries().size()
+                        + " canonical metadata entries.");
     }
 
     private static void completeCanonicalCoverage() {
@@ -42,30 +47,55 @@ public final class ExerciseMetadataTestSuite {
             expected.add(id);
             var value = ExerciseMetadataCatalog.require(id);
             ok(id.equals(value.exerciseId()), "Metadata retains exact canonical identity: " + id);
-            ok(value == ExerciseMetadataCatalog.find(id), "Canonical lookup shares an immutable cached entry");
-            ok(value.roles().contains(value.primaryRole()), "Primary movement role is explicit: " + id);
+            ok(
+                    value == ExerciseMetadataCatalog.find(id),
+                    "Canonical lookup shares an immutable cached entry");
+            ok(
+                    value.roles().contains(value.primaryRole()),
+                    "Primary movement role is explicit: " + id);
             ok(!value.primaryAreas().isEmpty(), "Primary body areas are explicit: " + id);
-            ok(Collections.disjoint(value.primaryAreas(), value.secondaryAreas()), "Areas are not double classified: " + id);
-            ok(value.suitability() != null && value.equipment() != null, "Experience and equipment are present: " + id);
-            ok(!value.equipment().alternatives().isEmpty(), "At least one reviewed complete setup: " + id);
-            ok(TechniqueGuide.forExercise(id) != null, "Metadata does not replace required movement guidance: " + id);
+            ok(
+                    Collections.disjoint(value.primaryAreas(), value.secondaryAreas()),
+                    "Areas are not double classified: " + id);
+            ok(
+                    value.suitability() != null && value.equipment() != null,
+                    "Experience and equipment are present: " + id);
+            ok(
+                    !value.equipment().alternatives().isEmpty(),
+                    "At least one reviewed complete setup: " + id);
+            ok(
+                    TechniqueGuide.forExercise(id) != null,
+                    "Metadata does not replace required movement guidance: " + id);
             for (var setup : value.equipment().alternatives()) {
-                ok(value.equipment().availableWith(setup), "Each complete setup is sufficient: " + id);
+                ok(
+                        value.equipment().availableWith(setup),
+                        "Each complete setup is sufficient: " + id);
                 var expanded = EnumSet.allOf(Equipment.class);
-                ok(value.equipment().availableWith(expanded), "Additional equipment never prevents eligibility: " + id);
+                ok(
+                        value.equipment().availableWith(expanded),
+                        "Additional equipment never prevents eligibility: " + id);
                 for (var item : setup) {
                     var incomplete = EnumSet.noneOf(Equipment.class);
                     incomplete.addAll(setup);
                     incomplete.remove(item);
-                    boolean expectedAvailable = value.equipment().alternatives().stream().anyMatch(incomplete::containsAll);
-                    ok(value.equipment().availableWith(incomplete) == expectedAvailable,
-                            "Removing required equipment respects complete alternatives: " + id + "/" + item);
+                    boolean expectedAvailable =
+                            value.equipment().alternatives().stream()
+                                    .anyMatch(incomplete::containsAll);
+                    ok(
+                            value.equipment().availableWith(incomplete) == expectedAvailable,
+                            "Removing required equipment respects complete alternatives: "
+                                    + id
+                                    + "/"
+                                    + item);
                 }
             }
         }
-        ok(expected.equals(ExerciseMetadataCatalog.entries().keySet()),
+        ok(
+                expected.equals(ExerciseMetadataCatalog.entries().keySet()),
                 "Registry covers every canonical ID, with no extra or stale entries");
-        ok(expected.size() == ExerciseMetadataCatalog.entries().size(), "Count derives from current catalogue");
+        ok(
+                expected.size() == ExerciseMetadataCatalog.entries().size(),
+                "Count derives from current catalogue");
         ok(ExerciseMetadataCatalog.VERSION == 1, "Static taxonomy has an explicit version");
     }
 
@@ -74,16 +104,28 @@ public final class ExerciseMetadataTestSuite {
         for (var exercise : canonical) {
             var before = ExerciseCatalog.definition(exercise.id());
             ExerciseMetadataCatalog.require(exercise.id());
-            ok(before.exercise().equals(exercise), "Metadata does not replace historical measurement definition");
-            ok(before == ExerciseCatalog.definition(exercise.id()), "Lookup does not rewrite canonical definitions");
+            ok(
+                    before.exercise().equals(exercise),
+                    "Metadata does not replace historical measurement definition");
+            ok(
+                    before == ExerciseCatalog.definition(exercise.id()),
+                    "Lookup does not rewrite canonical definitions");
         }
-        ok(ExerciseCatalog.definition("weighted-pull-up").exercise().mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT,
+        ok(
+                ExerciseCatalog.definition("weighted-pull-up").exercise().mode()
+                        == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT,
                 "Weighted bodyweight evidence remains weighted bodyweight");
-        ok(ExerciseCatalog.definition("farmers-carry").exercise().measurement() == StrengthExercise.MeasurementProfile.LOAD_DISTANCE,
+        ok(
+                ExerciseCatalog.definition("farmers-carry").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.LOAD_DISTANCE,
                 "Carry logging retains load and distance");
-        ok(ExerciseCatalog.definition("weighted-plank").exercise().measurement() == StrengthExercise.MeasurementProfile.LOAD_DURATION,
+        ok(
+                ExerciseCatalog.definition("weighted-plank").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.LOAD_DURATION,
                 "Timed loaded work is not converted to repetitions");
-        ok(ExerciseCatalog.definition("plank").exercise().measurement() == StrengthExercise.MeasurementProfile.DURATION,
+        ok(
+                ExerciseCatalog.definition("plank").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.DURATION,
                 "Static hold retains duration measurement");
     }
 
@@ -118,25 +160,44 @@ public final class ExerciseMetadataTestSuite {
         role("upright-row", ISOLATION);
         notRole("upright-row", VERTICAL_PULL);
         for (String id : List.of("barbell-curl", "hammer-curl", "triceps-pressdown", "cable-fly")) {
-            ok(!ExerciseMetadataCatalog.require(id).roles().contains(PRIMARY_STRENGTH),
-                    "An isolation exercise is not a main compound merely because it has load and reps");
+            ok(
+                    !ExerciseMetadataCatalog.require(id).roles().contains(PRIMARY_STRENGTH),
+                    "An isolation exercise is not a main compound merely because it has load and"
+                        + " reps");
         }
     }
 
     private static void bodyAreasAreBroadAndDistinct() {
-        ok(ExerciseMetadataCatalog.require("romanian-deadlift").primaryAreas().equals(Set.of(HAMSTRINGS, GLUTES)),
+        ok(
+                ExerciseMetadataCatalog.require("romanian-deadlift")
+                        .primaryAreas()
+                        .equals(Set.of(HAMSTRINGS, GLUTES)),
                 "RDL has explicit posterior-chain primary involvement");
-        ok(ExerciseMetadataCatalog.require("bench-press").primaryAreas().equals(Set.of(CHEST)),
+        ok(
+                ExerciseMetadataCatalog.require("bench-press").primaryAreas().equals(Set.of(CHEST)),
                 "Bench has chest primary involvement");
-        ok(ExerciseMetadataCatalog.require("bench-press").secondaryAreas().equals(Set.of(TRICEPS, SHOULDERS)),
+        ok(
+                ExerciseMetadataCatalog.require("bench-press")
+                        .secondaryAreas()
+                        .equals(Set.of(TRICEPS, SHOULDERS)),
                 "Bench supporting muscles are separate from primary involvement");
-        ok(ExerciseMetadataCatalog.require("face-pull").primaryAreas().equals(Set.of(UPPER_BACK, SHOULDERS)),
-                "Face pull is not classified as a lat-focused pull simply because legacy category is Back");
-        ok(ExerciseMetadataCatalog.require("tibialis-raise").primaryAreas().equals(Set.of(LOWER_LEG)),
+        ok(
+                ExerciseMetadataCatalog.require("face-pull")
+                        .primaryAreas()
+                        .equals(Set.of(UPPER_BACK, SHOULDERS)),
+                "Face pull is not classified as a lat-focused pull simply because legacy category"
+                    + " is Back");
+        ok(
+                ExerciseMetadataCatalog.require("tibialis-raise")
+                        .primaryAreas()
+                        .equals(Set.of(LOWER_LEG)),
                 "Tibialis work is not incorrectly called calf muscle work");
-        ok(ExerciseMetadataCatalog.require("wall-sit").primaryAreas().contains(QUADS),
-                "Wall sit classification corrects legacy Core grouping without modifying historical definition");
-        ok(ExerciseMetadataCatalog.require("plank").primaryAreas().equals(Set.of(TRUNK)),
+        ok(
+                ExerciseMetadataCatalog.require("wall-sit").primaryAreas().contains(QUADS),
+                "Wall sit classification corrects legacy Core grouping without modifying historical"
+                    + " definition");
+        ok(
+                ExerciseMetadataCatalog.require("plank").primaryAreas().equals(Set.of(TRUNK)),
                 "Core uses a useful broad trunk category");
     }
 
@@ -182,7 +243,8 @@ public final class ExerciseMetadataTestSuite {
     }
 
     private static void bodyweightDoesNotMeanEquipmentFree() {
-        for (String id : List.of("pull-up", "chin-up", "hanging-knee-raise", "toes-to-bar", "dead-hang")) {
+        for (String id :
+                List.of("pull-up", "chin-up", "hanging-knee-raise", "toes-to-bar", "dead-hang")) {
             available(id, false);
             available(id, true, PULL_UP_BAR);
         }
@@ -198,9 +260,20 @@ public final class ExerciseMetadataTestSuite {
         available("nordic-hamstring-curl", true, SECURE_FOOT_ANCHOR);
         available("wall-sit", false);
         available("wall-sit", true, WALL);
-        for (String id : List.of("push-up", "bodyweight-squat", "plank", "side-plank", "dead-bug",
-                "bird-dog", "glute-bridge", "reverse-lunge-bodyweight", "single-leg-calf-raise-bodyweight")) {
-            ok(ExerciseMetadataCatalog.require(id).equipment().equipmentFree(), "No external equipment is required: " + id);
+        for (String id :
+                List.of(
+                        "push-up",
+                        "bodyweight-squat",
+                        "plank",
+                        "side-plank",
+                        "dead-bug",
+                        "bird-dog",
+                        "glute-bridge",
+                        "reverse-lunge-bodyweight",
+                        "single-leg-calf-raise-bodyweight")) {
+            ok(
+                    ExerciseMetadataCatalog.require(id).equipment().equipmentFree(),
+                    "No external equipment is required: " + id);
             available(id, true);
         }
     }
@@ -220,28 +293,58 @@ public final class ExerciseMetadataTestSuite {
         available("reverse-pec-deck", true, REVERSE_PEC_DECK_MACHINE);
         available("glute-ham-raise", false, LEG_PRESS_MACHINE);
         available("glute-ham-raise", true, GLUTE_HAM_DEVELOPER);
-        ok(SMITH_MACHINE.group() == ExerciseMetadata.EquipmentGroup.SMITH_MACHINE,
+        ok(
+                SMITH_MACHINE.group() == ExerciseMetadata.EquipmentGroup.SMITH_MACHINE,
                 "Smith browsing is distinct from generic machines");
-        ok(CABLE_STATION.group() == ExerciseMetadata.EquipmentGroup.CABLES,
+        ok(
+                CABLE_STATION.group() == ExerciseMetadata.EquipmentGroup.CABLES,
                 "Cable equipment has a useful browser category");
     }
 
     private static void experienceClassificationsMatter() {
-        for (String id : List.of("power-clean", "snatch", "clean-jerk", "split-jerk", "pistol-squat",
-                "nordic-hamstring-curl", "toes-to-bar", "good-morning", "jm-press")) {
+        for (String id :
+                List.of(
+                        "power-clean",
+                        "snatch",
+                        "clean-jerk",
+                        "split-jerk",
+                        "pistol-squat",
+                        "nordic-hamstring-curl",
+                        "toes-to-bar",
+                        "good-morning",
+                        "jm-press")) {
             var suitability = ExerciseMetadataCatalog.require(id).suitability();
             ok(suitability == TECHNICAL, "Technical variation is explicitly classified: " + id);
-            ok(!suitability.appropriateFor(GymProgramme.Experience.BEGINNER), "Not an automatic beginner default: " + id);
-            ok(!suitability.appropriateFor(GymProgramme.Experience.INTERMEDIATE), "Technical choice needs experienced selection: " + id);
-            ok(suitability.appropriateFor(GymProgramme.Experience.EXPERIENCED), "Technical does not mean prohibited: " + id);
+            ok(
+                    !suitability.appropriateFor(GymProgramme.Experience.BEGINNER),
+                    "Not an automatic beginner default: " + id);
+            ok(
+                    !suitability.appropriateFor(GymProgramme.Experience.INTERMEDIATE),
+                    "Technical choice needs experienced selection: " + id);
+            ok(
+                    suitability.appropriateFor(GymProgramme.Experience.EXPERIENCED),
+                    "Technical does not mean prohibited: " + id);
         }
-        for (String id : List.of("goblet-squat", "machine-chest-press", "dumbbell-row", "plank", "glute-bridge")) {
-            ok(ExerciseMetadataCatalog.require(id).suitability() == BEGINNER_FRIENDLY,
+        for (String id :
+                List.of(
+                        "goblet-squat",
+                        "machine-chest-press",
+                        "dumbbell-row",
+                        "plank",
+                        "glute-bridge")) {
+            ok(
+                    ExerciseMetadataCatalog.require(id).suitability() == BEGINNER_FRIENDLY,
                     "Simple stable variation is available as a beginner choice: " + id);
         }
-        ok(!INTERMEDIATE.appropriateFor(GymProgramme.Experience.BEGINNER), "Intermediate does not collapse to beginner");
-        ok(INTERMEDIATE.appropriateFor(GymProgramme.Experience.INTERMEDIATE), "Intermediate variation is supported");
-        ok(INTERMEDIATE.appropriateFor(GymProgramme.Experience.EXPERIENCED), "Experienced users retain simpler choices");
+        ok(
+                !INTERMEDIATE.appropriateFor(GymProgramme.Experience.BEGINNER),
+                "Intermediate does not collapse to beginner");
+        ok(
+                INTERMEDIATE.appropriateFor(GymProgramme.Experience.INTERMEDIATE),
+                "Intermediate variation is supported");
+        ok(
+                INTERMEDIATE.appropriateFor(GymProgramme.Experience.EXPERIENCED),
+                "Experienced users retain simpler choices");
     }
 
     private static void metadataIsDefensivelyImmutable() {
@@ -252,7 +355,9 @@ public final class ExerciseMetadataTestSuite {
         var alternatives = new ArrayList<Set<Equipment>>();
         alternatives.add(setup);
         var requirement = new EquipmentRequirement(alternatives);
-        var metadata = new ExerciseMetadata("custom-test", CORE, roles, primary, secondary, INTERMEDIATE, requirement);
+        var metadata =
+                new ExerciseMetadata(
+                        "custom-test", CORE, roles, primary, secondary, INTERMEDIATE, requirement);
         roles.add(POWER);
         primary.add(QUADS);
         secondary.add(SHOULDERS);
@@ -262,7 +367,9 @@ public final class ExerciseMetadataTestSuite {
         ok(metadata.primaryAreas().equals(Set.of(TRUNK)), "Primary areas are copied");
         ok(metadata.secondaryAreas().isEmpty(), "Secondary areas are copied");
         ok(metadata.equipment().availableWith(Set.of(WEIGHT_PLATE)), "Equipment setup is copied");
-        ok(!metadata.equipment().equipmentFree(), "Mutating setup input cannot remove the requirement");
+        ok(
+                !metadata.equipment().equipmentFree(),
+                "Mutating setup input cannot remove the requirement");
         immutable(() -> metadata.roles().clear());
         immutable(() -> metadata.primaryAreas().clear());
         immutable(() -> metadata.equipment().alternatives().clear());
@@ -272,38 +379,98 @@ public final class ExerciseMetadataTestSuite {
 
     private static void unknownAndMalformedRemainUnknownOrRejected() {
         ok(ExerciseMetadataCatalog.find(null) == null, "Null lookup does not invent metadata");
-        ok(ExerciseMetadataCatalog.find("custom-retained-id") == null, "Custom history is not guessed from an ID");
+        ok(
+                ExerciseMetadataCatalog.find("custom-retained-id") == null,
+                "Custom history is not guessed from an ID");
         rejects(() -> ExerciseMetadataCatalog.require("custom-retained-id"));
         rejects(() -> ExerciseMetadataCatalog.require(null));
         rejects(() -> new EquipmentRequirement(Collections.emptyList()));
         rejects(() -> new EquipmentRequirement(null));
         rejects(() -> new EquipmentRequirement(Arrays.asList(Set.of(BARBELL), Set.of(BARBELL))));
-        rejects(() -> new EquipmentRequirement(Arrays.asList(Collections.emptySet(), Set.of(BARBELL))));
+        rejects(
+                () ->
+                        new EquipmentRequirement(
+                                Arrays.asList(Collections.emptySet(), Set.of(BARBELL))));
         rejects(() -> new EquipmentRequirement(Collections.singletonList(null)));
-        rejects(() -> new EquipmentRequirement(Collections.singletonList(new HashSet<>(Arrays.asList(BARBELL, null)))));
+        rejects(
+                () ->
+                        new EquipmentRequirement(
+                                Collections.singletonList(
+                                        new HashSet<>(Arrays.asList(BARBELL, null)))));
         var valid = ExerciseMetadataCatalog.require("plank");
-        rejects(() -> new ExerciseMetadata("Bad ID", CORE, Set.of(CORE), Set.of(TRUNK), Set.of(), BEGINNER_FRIENDLY, valid.equipment()));
-        rejects(() -> new ExerciseMetadata("valid-id", CORE, Set.of(POWER), Set.of(TRUNK), Set.of(), BEGINNER_FRIENDLY, valid.equipment()));
-        rejects(() -> new ExerciseMetadata("valid-id", CORE, Set.of(CORE), Set.of(), Set.of(), BEGINNER_FRIENDLY, valid.equipment()));
-        rejects(() -> new ExerciseMetadata("valid-id", CORE, Set.of(CORE), Set.of(TRUNK), Set.of(TRUNK), BEGINNER_FRIENDLY, valid.equipment()));
-        rejects(() -> new ExerciseMetadata("valid-id", CORE, null, Set.of(TRUNK), Set.of(), BEGINNER_FRIENDLY, valid.equipment()));
+        rejects(
+                () ->
+                        new ExerciseMetadata(
+                                "Bad ID",
+                                CORE,
+                                Set.of(CORE),
+                                Set.of(TRUNK),
+                                Set.of(),
+                                BEGINNER_FRIENDLY,
+                                valid.equipment()));
+        rejects(
+                () ->
+                        new ExerciseMetadata(
+                                "valid-id",
+                                CORE,
+                                Set.of(POWER),
+                                Set.of(TRUNK),
+                                Set.of(),
+                                BEGINNER_FRIENDLY,
+                                valid.equipment()));
+        rejects(
+                () ->
+                        new ExerciseMetadata(
+                                "valid-id",
+                                CORE,
+                                Set.of(CORE),
+                                Set.of(),
+                                Set.of(),
+                                BEGINNER_FRIENDLY,
+                                valid.equipment()));
+        rejects(
+                () ->
+                        new ExerciseMetadata(
+                                "valid-id",
+                                CORE,
+                                Set.of(CORE),
+                                Set.of(TRUNK),
+                                Set.of(TRUNK),
+                                BEGINNER_FRIENDLY,
+                                valid.equipment()));
+        rejects(
+                () ->
+                        new ExerciseMetadata(
+                                "valid-id",
+                                CORE,
+                                null,
+                                Set.of(TRUNK),
+                                Set.of(),
+                                BEGINNER_FRIENDLY,
+                                valid.equipment()));
         rejects(() -> valid.equipment().availableWith(new HashSet<>(Arrays.asList(BARBELL, null))));
     }
 
-    private static void role(String id, ExerciseMetadata.Role primary, ExerciseMetadata.Role... others) {
+    private static void role(
+            String id, ExerciseMetadata.Role primary, ExerciseMetadata.Role... others) {
         var value = ExerciseMetadataCatalog.require(id);
         ok(value.primaryRole() == primary, "Actual primary movement role: " + id);
-        for (var other : others) ok(value.roles().contains(other), "Additional intended role: " + id + "/" + other);
+        for (var other : others)
+            ok(value.roles().contains(other), "Additional intended role: " + id + "/" + other);
     }
 
     private static void notRole(String id, ExerciseMetadata.Role role) {
-        ok(!ExerciseMetadataCatalog.require(id).roles().contains(role), "No unsupported role: " + id + "/" + role);
+        ok(
+                !ExerciseMetadataCatalog.require(id).roles().contains(role),
+                "No unsupported role: " + id + "/" + role);
     }
 
     private static void available(String id, boolean expected, Equipment... items) {
         var equipment = EnumSet.noneOf(Equipment.class);
         equipment.addAll(Arrays.asList(items));
-        ok(ExerciseMetadataCatalog.require(id).equipment().availableWith(equipment) == expected,
+        ok(
+                ExerciseMetadataCatalog.require(id).equipment().availableWith(equipment)
+                        == expected,
                 "Complete equipment availability for " + id + " with " + equipment);
     }
 

@@ -105,7 +105,9 @@ class PrimaryFocusOnboardingTest {
         await("Preview — not applied")
         assertNull(GymProgrammeStore(context).current())
         compose.onNodeWithText("Accept this programme").performScrollTo().performClick()
-        awaitCondition("accepted gym programme to be persisted") { GymProgrammeStore(context).current() != null }
+        awaitCondition("accepted gym programme to be persisted") {
+            GymProgrammeStore(context).current() != null
+        }
         await("Change programme settings")
         val programme = GymProgrammeStore(context).current()!!
         assertEquals(GymProgramme.Goal.GENERAL, programme.settings().goal())
@@ -168,12 +170,16 @@ class PrimaryFocusOnboardingTest {
                 .performClick()
             compose.onNodeWithText("Save primary focus").performScrollTo().performClick()
             awaitFocus(focus)
-            val label = when (focus) {
-                PrimaryFocus.RUNNING -> "Running"
-                PrimaryFocus.STRENGTH -> "Strength"
-                PrimaryFocus.HYBRID -> "Hybrid"
-            }
-            compose.onNodeWithText("Current primary focus: $label").performScrollTo().assertIsDisplayed()
+            val label =
+                when (focus) {
+                    PrimaryFocus.RUNNING -> "Running"
+                    PrimaryFocus.STRENGTH -> "Strength"
+                    PrimaryFocus.HYBRID -> "Hybrid"
+                }
+            compose
+                .onNodeWithText("Current primary focus: $label")
+                .performScrollTo()
+                .assertIsDisplayed()
             compose
                 .onNodeWithTag("primary-focus-choice-${focus.storageValue()}")
                 .performScrollTo()
@@ -238,7 +244,10 @@ class PrimaryFocusOnboardingTest {
             }
             published && SqlitePrimaryFocusRepository(context).load().orElse(null) == focus
         }
-        assertNull("Focus saves use persistent status without a message covering the next action.", message)
+        assertNull(
+            "Focus saves use persistent status without a message covering the next action.",
+            message,
+        )
     }
 
     private fun awaitDraftTarget() {
@@ -263,24 +272,32 @@ class PrimaryFocusOnboardingTest {
     private fun failureDiagnostics(): String {
         val observations = StringBuilder()
         runCatching {
-            scenario?.onActivity { activity ->
-                val state = ViewModelProvider(activity)[CoachViewModel::class.java].state.value
-                observations.append("Published state: loading=${state.loading}, busy=${state.busy}, ")
-                    .append("focus=${state.primaryFocus}, startingPath=${state.startingPath}, ")
-                    .append("profilePresent=${state.profile != null}, gym=${state.gymProgramme?.id()}, ")
-                    .append("draftPresent=${state.draft != null}, message=${state.message}, error=${state.error}\n")
+                scenario?.onActivity { activity ->
+                    val state = ViewModelProvider(activity)[CoachViewModel::class.java].state.value
+                    observations
+                        .append("Published state: loading=${state.loading}, busy=${state.busy}, ")
+                        .append("focus=${state.primaryFocus}, startingPath=${state.startingPath}, ")
+                        .append(
+                            "profilePresent=${state.profile != null}, gym=${state.gymProgramme?.id()}, "
+                        )
+                        .append(
+                            "draftPresent=${state.draft != null}, message=${state.message}, error=${state.error}\n"
+                        )
+                }
             }
-        }.onFailure { observations.append("Published state unavailable: ${it.message}\n") }
+            .onFailure { observations.append("Published state unavailable: ${it.message}\n") }
         runCatching {
-            val store = FeatureStore(context)
-            observations.append("Database: primary.focus=${store.getSetting("primary.focus")}, ")
-                .append("starting.path=${store.getSetting("starting.path")}, ")
-                .append("resolvedFocus=${SqlitePrimaryFocusRepository(context).load()}, ")
-                .append("gym=${GymProgrammeStore(context).current()?.id()}\n")
-        }.onFailure { observations.append("Database observations unavailable: ${it.message}\n") }
-        val semantics = runCatching {
-            compose.onRoot(useUnmergedTree = true).printToString(maxDepth = 12)
-        }.getOrElse { "Compose hierarchy unavailable: ${it.message}" }
+                val store = FeatureStore(context)
+                observations
+                    .append("Database: primary.focus=${store.getSetting("primary.focus")}, ")
+                    .append("starting.path=${store.getSetting("starting.path")}, ")
+                    .append("resolvedFocus=${SqlitePrimaryFocusRepository(context).load()}, ")
+                    .append("gym=${GymProgrammeStore(context).current()?.id()}\n")
+            }
+            .onFailure { observations.append("Database observations unavailable: ${it.message}\n") }
+        val semantics =
+            runCatching { compose.onRoot(useUnmergedTree = true).printToString(maxDepth = 12) }
+                .getOrElse { "Compose hierarchy unavailable: ${it.message}" }
         return "$observations\nCompose hierarchy:\n$semantics"
     }
 

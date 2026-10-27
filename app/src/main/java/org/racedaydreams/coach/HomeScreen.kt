@@ -24,7 +24,18 @@ internal fun HomeScreen(
         StrengthTodayScreen(state, quick)
         return
     }
-    RunningTodayScreen(state, weekly, baseline, assessment, history, plan, workout, record, quick, race)
+    RunningTodayScreen(
+        state,
+        weekly,
+        baseline,
+        assessment,
+        history,
+        plan,
+        workout,
+        record,
+        quick,
+        race,
+    )
 }
 
 @Composable

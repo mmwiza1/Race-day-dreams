@@ -123,17 +123,20 @@ class CoachSnapshotReader(
                 reminders.reconcile()
                 val gymProgramme = gym.current()
                 val gymLinks = development.gymLinks()
-                val strengthToday = org.racedaydreams.domain.presentation.StrengthTodaySummary.from(
-                    gymProgramme,
-                    strength,
-                    gymLinks.values.map {
-                        org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
-                            it.actualSessionId(), it.versionKey(), it.prescribedSessionId(),
-                        )
-                    },
-                    LocalDate.now(),
-                    Instant.now(),
-                )
+                val strengthToday =
+                    org.racedaydreams.domain.presentation.StrengthTodaySummary.from(
+                        gymProgramme,
+                        strength,
+                        gymLinks.values.map {
+                            org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
+                                it.actualSessionId(),
+                                it.versionKey(),
+                                it.prescribedSessionId(),
+                            )
+                        },
+                        LocalDate.now(),
+                        Instant.now(),
+                    )
                 CoachUiState(
                     loading = false,
                     startingPath = settings.getSetting("starting.path"),

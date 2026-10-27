@@ -27,7 +27,9 @@ class StrengthTodayScreenTest {
     fun standaloneEmptyStateHasWorkingProgrammeAndIndependentLoggingActions() {
         var destination: String? = null
         compose.setContent {
-            MaterialTheme { StrengthTodayScreen(CoachUiState(loading = false), { destination = it }) }
+            MaterialTheme {
+                StrengthTodayScreen(CoachUiState(loading = false), { destination = it })
+            }
         }
         compose.onNodeWithText("Your strength training").assertIsDisplayed()
         compose.onNodeWithText("Create a gym programme").performScrollTo().performClick()
@@ -46,7 +48,11 @@ class StrengthTodayScreenTest {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
                 MaterialTheme(colorScheme = darkColorScheme()) {
-                    StrengthTodayScreen(CoachUiState(loading = false), { destination = it }, { now++ })
+                    StrengthTodayScreen(
+                        CoachUiState(loading = false),
+                        { destination = it },
+                        { now++ },
+                    )
                 }
             }
         }
