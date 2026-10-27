@@ -57,6 +57,8 @@
     "app/src/androidTest/java/org/racedaydreams/coach/PrimaryFocusOnboardingTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/PrimaryFocusRepositoryTest.java",
     "domain/src/main/java/org/racedaydreams/domain/strength/GymProgrammeGenerator.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/ExerciseMetadata*.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/ExerciseMetadataTestSuite.java",
     "domain/src/test/java/org/racedaydreams/domain/strength/GymProgrammeAllocationTestSuite.java",
     "app/src/androidTest/java/org/racedaydreams/coach/FeatureNavigationTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/GymProgrammeOperationsTest.kt",

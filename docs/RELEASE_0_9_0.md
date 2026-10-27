@@ -24,6 +24,10 @@ Coach will each work independently, with additional context when an athlete uses
 - Feature navigation retains the existing destinations and back-stack behaviour.
 - Recording execution, cues and sensor wiring have separate testable coordinators
   underneath the existing authoritative foreground service.
+- All 174 canonical exercises now have explicit movement/body-area, equipment-setup
+  and experience metadata for later Strength selection work. Existing guidance, actual
+  sets, measurements and PB history are unchanged; programme selection is not altered
+  by this metadata checkpoint.
 
 ## Fixes
 
