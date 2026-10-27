@@ -17,7 +17,8 @@ import org.racedaydreams.domain.recording.RunMetricsEngine
 
 class RecordingSessionCoordinatorTest : AndroidTestCase() {
     private val wall = Instant.parse("2026-10-01T00:00:00Z")
-    private val session get() = RecordingStore.Session("session", "ACTIVE", wall, 1000, 1000)
+    private val session
+        get() = RecordingStore.Session("session", "ACTIVE", wall, 1000, 1000)
 
     private class Repository : RecordingRepository {
         val attempts = mutableListOf<RecordingBatch>()
@@ -33,7 +34,11 @@ class RecordingSessionCoordinatorTest : AndroidTestCase() {
 
         override fun unfinished() = retained
 
-        override fun finish(session: RecordingStore.Session, movingMillis: Long?, recovered: Boolean): String {
+        override fun finish(
+            session: RecordingStore.Session,
+            movingMillis: Long?,
+            recovered: Boolean,
+        ): String {
             finishOnMain = Looper.myLooper() == Looper.getMainLooper()
             finished = Triple(session, movingMillis, recovered)
             return "rdd:${session.id}"
@@ -83,10 +88,17 @@ class RecordingSessionCoordinatorTest : AndroidTestCase() {
         val clock = AtomicLong(2000)
         val source = JSONObject().put("label", "preserved")
         val snapshotThreads = mutableListOf<Boolean>()
-        val recording = RecordingSessionCoordinator(
-            session, repository, Dispatchers.IO, clock::get,
-            { snapshotThreads.add(Looper.myLooper() == Looper.getMainLooper()); source },
-        )
+        val recording =
+            RecordingSessionCoordinator(
+                session,
+                repository,
+                Dispatchers.IO,
+                clock::get,
+                {
+                    snapshotThreads.add(Looper.myLooper() == Looper.getMainLooper())
+                    source
+                },
+            )
         withContext(Dispatchers.Main) {
             addPoint(recording, 1000)
             addPoint(recording, 2000)
@@ -94,10 +106,16 @@ class RecordingSessionCoordinatorTest : AndroidTestCase() {
         val entered = CountDownLatch(1)
         val release = CountDownLatch(1)
         repository.appendAction = {
-            assertFalse("Disk append must not run on Main", Looper.myLooper() == Looper.getMainLooper())
+            assertFalse(
+                "Disk append must not run on Main",
+                Looper.myLooper() == Looper.getMainLooper(),
+            )
             if (it.fromPoint == 0) {
                 entered.countDown()
-                assertTrue("Test did not release the staged append", release.await(10, TimeUnit.SECONDS))
+                assertTrue(
+                    "Test did not release the staged append",
+                    release.await(10, TimeUnit.SECONDS),
+                )
             }
         }
         val first = launch(Dispatchers.Main) { recording.flush() }
@@ -110,14 +128,18 @@ class RecordingSessionCoordinatorTest : AndroidTestCase() {
                 source.put("label", "next batch")
             }
             val secondStarted = CompletableDeferred<Unit>()
-            second = launch(Dispatchers.Main) {
-                secondStarted.complete(Unit)
-                recording.flush()
-            }
+            second =
+                launch(Dispatchers.Main) {
+                    secondStarted.complete(Unit)
+                    recording.flush()
+                }
             secondStarted.await()
             assertEquals(1, repository.attempts.size)
             assertEquals(2, repository.attempts.first().points.size)
-            assertEquals("preserved", repository.attempts.first().executionContext!!.getString("label"))
+            assertEquals(
+                "preserved",
+                repository.attempts.first().executionContext!!.getString("label"),
+            )
         } finally {
             release.countDown()
             first.join()
@@ -135,10 +157,16 @@ class RecordingSessionCoordinatorTest : AndroidTestCase() {
         val repository = Repository()
         val clock = AtomicLong(62000)
         val clockOnMain = mutableListOf<Boolean>()
-        val recording = RecordingSessionCoordinator(session, repository, Dispatchers.IO, {
-            clockOnMain.add(Looper.myLooper() == Looper.getMainLooper())
-            clock.get()
-        })
+        val recording =
+            RecordingSessionCoordinator(
+                session,
+                repository,
+                Dispatchers.IO,
+                {
+                    clockOnMain.add(Looper.myLooper() == Looper.getMainLooper())
+                    clock.get()
+                },
+            )
         withContext(Dispatchers.Main) {
             addPoint(recording, 1000)
             addPoint(recording, 2000)
@@ -175,8 +203,16 @@ class RecordingSessionCoordinatorTest : AndroidTestCase() {
 
     private fun addPoint(recording: RecordingSessionCoordinator, now: Long) {
         recording.engine.accept(
-            RunMetricsEngine.Fix(wall.plusMillis(now - 1000), now, 0.0,
-                (now - 1000) * .00000003, 3.0, null, null, 3.0)
+            RunMetricsEngine.Fix(
+                wall.plusMillis(now - 1000),
+                now,
+                0.0,
+                (now - 1000) * .00000003,
+                3.0,
+                null,
+                null,
+                3.0,
+            )
         )
     }
 }

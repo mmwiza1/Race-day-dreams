@@ -18,8 +18,8 @@ import org.racedaydreams.coach.CoachUiState
  * Serialises application commands across features and publishes one coherent read model.
  *
  * Feature coordinators own their operations. They do not each create a competing copy of
- * application state or a separate transaction/database. Success callbacks run in the
- * caller's lifecycle scope, after the refreshed snapshot has been published.
+ * application state or a separate transaction/database. Success callbacks run in the caller's
+ * lifecycle scope, after the refreshed snapshot has been published.
  */
 class CoachOperationRunner(
     private val scope: CoroutineScope,
@@ -29,7 +29,8 @@ class CoachOperationRunner(
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow(CoachUiState())
     val state: StateFlow<CoachUiState> = mutableState.asStateFlow()
-    val current: CoachUiState get() = state.value
+    val current: CoachUiState
+        get() = state.value
 
     fun update(transform: (CoachUiState) -> CoachUiState) {
         mutableState.update(transform)
@@ -62,9 +63,11 @@ class CoachOperationRunner(
                 mutex.withLock {
                     withContext(ioDispatcher) { operation() }
                     publishSnapshot()
+                    // Publish and deliver this command as one serial boundary. A queued
+                    // feature must not replace its read model before its callback observes it.
+                    onSuccess()
+                    if (message != null) update { it.copy(message = message) }
                 }
-                onSuccess()
-                if (message != null) update { it.copy(message = message) }
             } catch (failure: Exception) {
                 if (failure is CancellationException) throw failure
                 onFailure()
@@ -80,16 +83,19 @@ class CoachOperationRunner(
 
     private suspend fun publishSnapshot() {
         val snapshot = readSnapshot()
-        update { snapshot.copy(message = it.message, savedProfileRevision = it.savedProfileRevision) }
+        update {
+            snapshot.copy(message = it.message, savedProfileRevision = it.savedProfileRevision)
+        }
     }
 
     private fun showFailure(failure: Exception) {
         // Preserve retained observations and input; corruption is never replaced by defaults.
-        val message = if (failure is IllegalArgumentException) {
-            failure.message ?: "Check the entered values."
-        } else {
-            "Your local data could not be read or saved. It has been left in place. Try again, or use the confirmed local-data reset."
-        }
+        val message =
+            if (failure is IllegalArgumentException) {
+                failure.message ?: "Check the entered values."
+            } else {
+                "Your local data could not be read or saved. It has been left in place. Try again, or use the confirmed local-data reset."
+            }
         update { it.copy(loading = false, busy = false, error = message) }
     }
 }

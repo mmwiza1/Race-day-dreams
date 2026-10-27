@@ -21,7 +21,12 @@ recording import hooks and whole-backup operations retain the shared transaction
 No schema or backup-format change is required for these extractions.
 
 Navigation ownership is split by Home, running, Strength, Progress and Settings while
-retaining the original flat routes and Up/pop behaviour. Native recording keeps one
+retaining the original flat routes and Up/pop behaviour. Graph registrations accept
+state providers and read them inside destination composition; caching a plain snapshot
+would freeze later updates. RunNow snapshot selection is deferred for the same reason.
+Each command publishes and delivers its success callback before releasing the shared
+operation lock, preventing a queued feature from replacing that callback's snapshot.
+Native recording keeps one
 foreground service; execution events, cue arbitration and optional sensor wiring have
 injected/testable internal coordinators. The extraction preserves Main-thread engine
 mutation and serial-IO incremental atomic staging, with cursors advancing after commit.

@@ -1,3 +1,18 @@
+# Current Phase1 verification findings
+
+DraftPR14/source7473b85913bf8e2f01782ae1f4ec2d7ffb9e5b40 passed Android build/lint/test
+compilation. Workflow40575940377 API35 then ran239tests and found10failures, primarily
+frozen destination snapshots plus a controlled callback-order failure. Both root causes
+are corrected in the next source; original failing tests remain. A new Homegraph reactive
+state test was added. No post-fix pass is claimed until the fullmatrix actually succeeds.
+
+Real ktfmt0.54/google-java-format1.24.0 produced a scope-checked57-file patch in CI.
+ActualJAR SHA256s are now pinned; the unavailable Maven.sha256 sidecars are no longer
+used, and the temporary checksum diagnostic is removed. Ten formatterharness tests
+pass. All domain/schema checks still pass after applying the real formatting patch.
+
+---
+
 # 0.9 architecture checkpoint — in progress
 
 Live baseline main `8b75755a0b74074047408b6444a11db3d6fef6f3` was fetched before edits;

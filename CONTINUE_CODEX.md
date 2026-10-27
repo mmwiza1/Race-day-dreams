@@ -130,3 +130,27 @@ removed after those SHA256 values are locked into config/formatting.json and the
 validates the pinned hashes directly. Do not leave the diagnostic in a completed gate.
 Then apply only the real FORMATTING_PATCH output, commit it, and run full CI again.
 No test is weakened; the formatting job stays red until source matches real tools.
+
+## Formatter correction completed in working tree
+
+PR14 workflow40575940377/source7473b85913bf8e2f01782ae1f4ec2d7ffb9e5b40 ran
+real ktfmt0.54 andgoogle-java-format1.24.0. Actual publisher-verified artifactSHA256s
+are now pinned in config/formatting.json; runner verifies downloads AND caches against
+those fixed locks. Temporary bootstrap was removed. Applied its real394,200-byte patch
+to57scopedfiles after checking everypath againstformattertargetlist. No sourcewas
+hand-recreated. Finalformatcheck andAndroidcompile/APIresultsremainrequired.
+
+## Instrumentation findings and corrections (do not skip verification)
+
+Workflow40575940377 compiled allAndroid main/testcode, then API35 executed239tests
+with10failures. ExistingUI tests revealed a navigation extraction regression: passing
+a plainCoachUiState to NavGraphBuilder cached one snapshot for the graph lifetime.
+Featuregraphs now accept readState providers and invoke them INSIDE destinations;
+RunNow's nullable snapshot likewise stays a deferred provider. Added a production
+Homegraph recomposition test (5K->10K) while retaining all36route contracts.
+
+The controlled runner test observed callbacks[2,2] instead of[1,2]: unlock allowed
+the next command to publish before the prior callback. Success callback/message now
+remain inside the same Mutex publication boundary. The original failing assertions
+are unchanged. No testtimeout was increased or testremoved. Fullpost-fixCIrequired.
+27newAndroidcases nowexist (240totalexpected), not yetclaimedpassing.

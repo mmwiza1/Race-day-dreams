@@ -123,31 +123,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Inspect publisher formatter checksums for initial lock
-        run: |
-          python3 - <<'PYLOCK'
-          import hashlib, json, urllib.request
-          from pathlib import Path
-          config = json.loads(Path('config/formatting.json').read_text())
-          cache = Path('.gradle/rdd-formatters')
-          cache.mkdir(parents=True, exist_ok=True)
-          for language, tool in config['tools'].items():
-              with urllib.request.urlopen(tool['url'] + '.sha1', timeout=20) as response:
-                  expected = response.read(1024).decode().split()[0]
-              with urllib.request.urlopen(tool['url'], timeout=30) as response:
-                  data = response.read(128 * 1024 * 1024 + 1)
-              assert len(data) <= 128 * 1024 * 1024
-              assert hashlib.sha1(data).hexdigest() == expected.lower(), 'Publisher checksum mismatch'
-              digest = hashlib.sha256(data).hexdigest()
-              jar = cache / (language + '-' + tool['version'] + '.jar')
-              jar.write_bytes(data)
-              jar.with_suffix('.sha256').write_text(digest + '\n')
-              print('FORMATTER_LOCK ' + json.dumps({'language': language, 'version': tool['version'], 'sha256': digest, 'bytes': len(data)}))
-          PYLOCK
       - name: Check pinned Kotlin and Java formatting
         run: |
           python3 scripts/test-format-code.py
           python3 scripts/format-code.py --check --patch-output build/formatting.patch
+          python3 scripts/format-code.py --check
       - name: Upload actionable formatting patch
         if: failure()
         uses: actions/upload-artifact@v4

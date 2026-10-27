@@ -35,8 +35,14 @@ internal interface RecordingRepository {
 internal class SqliteRecordingRepository(private val store: RecordingStore) : RecordingRepository {
     override fun append(batch: RecordingBatch) {
         store.appendBatch(
-            batch.sessionId, batch.points, batch.events, batch.fromPoint, batch.fromEvent,
-            batch.lastMonotonic, batch.state, batch.executionContext,
+            batch.sessionId,
+            batch.points,
+            batch.events,
+            batch.fromPoint,
+            batch.fromEvent,
+            batch.lastMonotonic,
+            batch.state,
+            batch.executionContext,
         )
     }
 
@@ -47,14 +53,14 @@ internal class SqliteRecordingRepository(private val store: RecordingStore) : Re
 }
 
 /**
- * Owns one active metrics engine and its durable staging cursor. The service calls
- * engine mutations and flush on Main. Only a captured batch crosses to serial IO;
- * neither UI state nor a live execution object is read by the repository worker.
+ * Owns one active metrics engine and its durable staging cursor. The service calls engine mutations
+ * and flush on Main. Only a captured batch crosses to serial IO; neither UI state nor a live
+ * execution object is read by the repository worker.
  *
- * A failed append leaves both cursors untouched, allowing the existing idempotent
- * repository retry. New observations arriving during IO belong to the next batch.
- * Interrupted sessions are still recovered explicitly by RecordingStore; constructing
- * this coordinator never resumes a retained recording or starts a sensor.
+ * A failed append leaves both cursors untouched, allowing the existing idempotent repository retry.
+ * New observations arriving during IO belong to the next batch. Interrupted sessions are still
+ * recovered explicitly by RecordingStore; constructing this coordinator never resumes a retained
+ * recording or starts a sensor.
  */
 internal class RecordingSessionCoordinator(
     val session: RecordingStore.Session,
@@ -69,37 +75,48 @@ internal class RecordingSessionCoordinator(
     private var pointIndex = 0
     private var eventIndex = 0
 
-    suspend fun flush() = flushLock.withLock {
-        val fromPoint = pointIndex
-        val fromEvent = eventIndex
-        val points = engine.pointsFrom(fromPoint)
-        val events = engine.eventsFrom(fromEvent)
-        val now = monotonicMillis()
-        val state = if (engine.status(now).paused()) "PAUSED" else "ACTIVE"
-        val context = executionContext()?.let { retained ->
-            val rows = JSONArray()
-            executionEvents().forEach {
-                rows.put(
-                    JSONObject().put("type", it.type()).put("step", it.step())
-                        .put("metres", it.metres()).put("active", it.activeMillis())
+    suspend fun flush() =
+        flushLock.withLock {
+            val fromPoint = pointIndex
+            val fromEvent = eventIndex
+            val points = engine.pointsFrom(fromPoint)
+            val events = engine.eventsFrom(fromEvent)
+            val now = monotonicMillis()
+            val state = if (engine.status(now).paused()) "PAUSED" else "ACTIVE"
+            val context =
+                executionContext()?.let { retained ->
+                    val rows = JSONArray()
+                    executionEvents().forEach {
+                        rows.put(
+                            JSONObject()
+                                .put("type", it.type())
+                                .put("step", it.step())
+                                .put("metres", it.metres())
+                                .put("active", it.activeMillis())
+                        )
+                    }
+                    JSONObject(retained.toString()).put("events", rows)
+                }
+            val batch =
+                RecordingBatch(
+                    session.id,
+                    points,
+                    events,
+                    fromPoint,
+                    fromEvent,
+                    now,
+                    state,
+                    context,
                 )
-            }
-            JSONObject(retained.toString()).put("events", rows)
+            withContext(io) { repository.append(batch) }
+            pointIndex = fromPoint + points.size
+            eventIndex = fromEvent + events.size
         }
-        val batch = RecordingBatch(
-            session.id, points, events, fromPoint, fromEvent, now, state, context,
-        )
-        withContext(io) { repository.append(batch) }
-        pointIndex = fromPoint + points.size
-        eventIndex = fromEvent + events.size
-    }
 
     /** Called after sensors/ticker stop and the final observed batch is durable. */
     suspend fun finish(): String {
         val retained = withContext(io) { repository.unfinished() } ?: error("No staged recording")
         val movingMillis = engine.status(monotonicMillis()).movingMillis()
-        return withContext(io) {
-            repository.finish(retained, movingMillis, false)
-        }
+        return withContext(io) { repository.finish(retained, movingMillis, false) }
     }
 }

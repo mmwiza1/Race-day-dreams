@@ -153,6 +153,6 @@ No runtime/build dependency or permission was added.
 The 0.9 architecture surfaces are checked by ktfmt 0.54
 (https://github.com/facebook/ktfmt) and google-java-format 1.24.0
 (https://github.com/google/google-java-format), both Apache-2.0. These are pinned
-developer/CI executables, downloaded from Maven Central with publisher SHA-256
+developer/CI executables, downloaded from Maven Central with pinned SHA-256
 validation; no formatter source or JAR ships in the Android APK. No third-party
 implementation is adapted into app/domain code. See docs/FORMATTING.md.

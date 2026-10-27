@@ -24,7 +24,7 @@ class FormattingTest(unittest.TestCase):
         self.assertEqual("1.24.0", config["tools"]["java"]["version"])
         for tool in config["tools"].values():
             self.assertTrue(tool["url"].startswith("https://repo.maven.apache.org/maven2/"))
-            self.assertEqual(tool["url"] + ".sha256", tool["sha256_url"])
+            self.assertRegex(tool["sha256"], r"^[a-f0-9]{64}$")
 
     def test_scope_is_bounded_deduplicated_and_source_only(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -59,6 +59,25 @@ class FormattingTest(unittest.TestCase):
             jar.write_bytes(b"partial download")
             with self.assertRaises((ValueError, zipfile.BadZipFile)):
                 formatter.validate_jar(jar, digest)
+
+    def test_cache_metadata_cannot_override_the_repository_content_lock(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cache = Path(directory)
+            jar = cache / "java-test.jar"
+            with zipfile.ZipFile(jar, "w") as archive:
+                archive.writestr("META-INF/MANIFEST.MF", "Manifest-Version: 1.0\nMain-Class: Test\n")
+            digest = hashlib.sha256(jar.read_bytes()).hexdigest()
+            tool = {"version": "test", "sha256": digest}
+            with patch.object(formatter.urllib.request, "urlopen") as network:
+                self.assertEqual(jar, formatter.tool_jar("java", tool, cache))
+                network.assert_not_called()
+            with zipfile.ZipFile(jar, "a") as archive:
+                archive.writestr("changed.txt", "Different executable content")
+            jar.with_suffix(".sha256").write_text(hashlib.sha256(jar.read_bytes()).hexdigest())
+            with patch.object(formatter.urllib.request, "urlopen") as network:
+                with self.assertRaises(ValueError):
+                    formatter.tool_jar("java", tool, cache)
+                network.assert_not_called()
 
     def test_unexpected_download_host_is_rejected_without_network(self):
         with patch.object(formatter.urllib.request, "urlopen") as network:

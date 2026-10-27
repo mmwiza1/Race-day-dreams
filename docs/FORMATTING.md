@@ -25,9 +25,10 @@ It never applies that patch or mutates source during verification. This gives CI
 reviewable diagnostics where local build-tool download access is unavailable.
 
 `config/formatting.json` pins exact artifact versions/HTTPS Maven Central URLs.
-The runner requires each publisher's SHA-256 before downloading, validates the
-complete JAR and caches the tool and checksum in `.gradle/rdd-formatters/`.
-Cached JARs are rechecked on every invocation; corrupt/partial files fail clearly.
+The runner verifies each download against the exact SHA-256 recorded in the repository,
+validates the complete JAR and caches the tool and checksum in `.gradle/rdd-formatters/`.
+Cached JARs are rechecked against that repository lock on every invocation; cache
+metadata cannot override it. Corrupt/partial files fail clearly.
 `RDD_FORMATTER_CACHE` can select another build-tool cache. First use requires
 developer/CI network access; subsequent use is offline. This is not runtime app
 network access. The runner preserves the environment proxy and CA validation.
@@ -51,3 +52,20 @@ The initial local network attempt was interrupted before a formatter could be
 downloaded. Offline runner tests and target discovery can run immediately;
 actual formatter execution must be verified in the environment/CI before the
 architecture checkpoint is accepted. No successful formatter run is claimed here.
+
+## Observed tool provenance and initial formatting
+
+Workflow40575940377/job122442271097 downloaded both exact Maven artifacts, verified
+the available publisher SHA1 sidecars and recorded their actual SHA256s. Maven's SHA256
+sidecars returned404, so the final runner uses explicit repository locks instead:
+
+- ktfmt0.54:67,917,377bytes, SHA256
+  `5e7eb28a0b2006d1cefbc9213bfc73a8191ec2f85d639ec4fc4ec0cd04212e82`.
+- google-java-format1.24.0:3,614,987bytes, SHA256
+  `812f805f58112460edf01bf202a8e61d0fd1f35c0d4fabd54220640776ec57a1`.
+
+The temporary CI checksum-inspection step was removed after locking these values.
+The real formatter output produced a394,200-byte patch for57configured files; its
+SHA256 is`f343920e6a998e207de85ef541c9f1012a5dbffa6a889e2f1b50c3553ed429dd`.
+The patch was checked against the configured scope and applied locally without source
+reconstruction or invented formatting. Final CI must verify the committed result.

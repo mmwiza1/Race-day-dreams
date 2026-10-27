@@ -43,12 +43,14 @@ class RecordingSensorCoordinatorTest : AndroidTestCase() {
     }
 
     fun testDisabledOptionalSensorsNeverCreateOrStartSources() {
-        val sensors = RecordingSensorCoordinator(
-            { error("Disabled motion source created") },
-            { error("Unselected heart-rate source created") },
-        )
+        val sensors =
+            RecordingSensorCoordinator(
+                { error("Disabled motion source created") },
+                { error("Unselected heart-rate source created") },
+            )
         sensors.start(
-            false, null,
+            false,
+            null,
             { _, _ -> fail("Invented cadence") },
             { fail("Invented heart rate") },
             { fail("Invented connection") },
@@ -65,12 +67,20 @@ class RecordingSensorCoordinatorTest : AndroidTestCase() {
         val cadence = mutableListOf<Pair<Double?, Long>>()
         val values = mutableListOf<Double?>()
         val connections = mutableListOf<Boolean>()
-        val sensors = RecordingSensorCoordinator(
-            { calls.add("motion"); motion },
-            { calls.add("heart-rate"); heartRate },
-        )
+        val sensors =
+            RecordingSensorCoordinator(
+                {
+                    calls.add("motion")
+                    motion
+                },
+                {
+                    calls.add("heart-rate")
+                    heartRate
+                },
+            )
         sensors.start(
-            true, "selected-device",
+            true,
+            "selected-device",
             { value, time -> cadence.add(value to time) },
             { values.add(it) },
             { connections.add(it) },
@@ -112,8 +122,13 @@ class RecordingSensorCoordinatorTest : AndroidTestCase() {
         val failures = mutableListOf<String>()
         val sensors = RecordingSensorCoordinator({ motion }, { error("Must not create source") })
         sensors.start(
-            true, "selected-device", { value, _ -> cadence.add(value) }, {}, {},
-            { error("Foreground permission revoked") }, { failures.add(it) },
+            true,
+            "selected-device",
+            { value, _ -> cadence.add(value) },
+            {},
+            {},
+            { error("Foreground permission revoked") },
+            { failures.add(it) },
         )
         assertEquals(listOf("Heart-rate monitor unavailable; GPS recording continues."), failures)
         motion.callback!!(171.0, 2000L)
@@ -130,7 +145,12 @@ class RecordingSensorCoordinatorTest : AndroidTestCase() {
         val cadence = mutableListOf<Double?>()
         val sensors = RecordingSensorCoordinator({ motion }, { heartRate })
         sensors.start(
-            true, "selected-device", { value, _ -> cadence.add(value) }, {}, {}, {},
+            true,
+            "selected-device",
+            { value, _ -> cadence.add(value) },
+            {},
+            {},
+            {},
             { failures.add(it) },
         )
         motion.callback!!(168.0, 3000L)

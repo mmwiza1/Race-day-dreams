@@ -14,11 +14,7 @@ import org.racedaydreams.recording.RunRecordingService
 import org.racedaydreams.reminders.EveningReminders
 
 /** Composition root only: features share a helper/command boundary, not business ownership. */
-class CoachApplicationServices(
-    app: Application,
-    scope: CoroutineScope,
-    savedDraft: () -> String?,
-) {
+class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDraft: () -> String?) {
     private val store = FeatureStore(app)
     private val coaching = CoachingStore(app)
     private val development = DevelopmentStore(app)
@@ -28,21 +24,64 @@ class CoachApplicationServices(
     private val gym = GymProgrammeStore(app)
     private val choices = StrengthUserStore(app)
     val healthGateway = HealthConnectGateway(app)
-    private val snapshot = CoachSnapshotReader(
-        store.activityRepository(), store.resultRepository(), store.shoeRepository(),
-        store.baselineRepository(), store.settingsRepository(), store.plannedWorkoutRepository(),
-        release, gym, choices, coaching, development, profiles, reminders, healthGateway, savedDraft
-    )
+    private val snapshot =
+        CoachSnapshotReader(
+            store.activityRepository(),
+            store.resultRepository(),
+            store.shoeRepository(),
+            store.baselineRepository(),
+            store.settingsRepository(),
+            store.plannedWorkoutRepository(),
+            release,
+            gym,
+            choices,
+            coaching,
+            development,
+            profiles,
+            reminders,
+            healthGateway,
+            savedDraft,
+        )
     val operations = CoachOperationRunner(scope, snapshot::read)
     val profile = ProfileOperations(profiles, store.settingsRepository())
-    val baseline = BaselineCoordinator(operations, store.baselineRepository(), store.settingsRepository())
-    val runningPlan = RunningPlanCoordinator(release, operations, store.activityRepository(), profiles, coaching, development)
-    val runningEvidence = RunningEvidenceCoordinator(release, operations, store.activityRepository(), store.resultRepository(), store.shoeRepository(), coaching)
+    val baseline =
+        BaselineCoordinator(operations, store.baselineRepository(), store.settingsRepository())
+    val runningPlan =
+        RunningPlanCoordinator(
+            release,
+            operations,
+            store.activityRepository(),
+            profiles,
+            coaching,
+            development,
+        )
+    val runningEvidence =
+        RunningEvidenceCoordinator(
+            release,
+            operations,
+            store.activityRepository(),
+            store.resultRepository(),
+            store.shoeRepository(),
+            coaching,
+        )
     val strength = StrengthCoordinator(gym, choices, operations, coaching, development)
     val progress = ProgressCoordinator(operations, development)
-    val health = HealthCoordinator(operations, healthGateway, store.activityRepository(), store.settingsRepository(), development)
-    val settings = SettingsCoordinator(
-        app, operations, store.backupRepository(), store.settingsRepository(), profiles, reminders,
-        { RunRecordingService.running.value }
-    )
+    val health =
+        HealthCoordinator(
+            operations,
+            healthGateway,
+            store.activityRepository(),
+            store.settingsRepository(),
+            development,
+        )
+    val settings =
+        SettingsCoordinator(
+            app,
+            operations,
+            store.backupRepository(),
+            store.settingsRepository(),
+            profiles,
+            reminders,
+            { RunRecordingService.running.value },
+        )
 }

@@ -26,12 +26,18 @@ import org.racedaydreams.coach.application.CoachOperationRunner
 /** Feature commands must share one serialised publication boundary across UI lifecycles. */
 @RunWith(AndroidJUnit4::class)
 class CoachOperationRunnerTest {
-    private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
+    private val instrumentation
+        get() = InstrumentationRegistry.getInstrumentation()
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    @After fun stopScope() { instrumentation.runOnMainSync { scope.cancel() } }
+    @After
+    fun stopScope() {
+        instrumentation.runOnMainSync { scope.cancel() }
+    }
 
-    @Test fun concurrentFeatureCommandsSerialiseAndCallbacksSeeTheirPublishedSnapshotOnMain() {
+    @Test
+    fun concurrentFeatureCommandsSerialiseAndCallbacksSeeTheirPublishedSnapshotOnMain() {
         val retained = AtomicInteger(0)
         val firstStarted = CompletableDeferred<Unit>()
         val releaseFirst = CompletableDeferred<Unit>()
@@ -39,11 +45,15 @@ class CoachOperationRunnerTest {
         val callbacksOnMain = AtomicBoolean(true)
         val snapshots = Collections.synchronizedList(mutableListOf<String>())
         val completed = CountDownLatch(2)
-        val runner = CoachOperationRunner(scope, {
-            withContext(Dispatchers.IO) {
-                CoachUiState(loading = false, calendarView = retained.get().toString())
-            }
-        })
+        val runner =
+            CoachOperationRunner(
+                scope,
+                {
+                    withContext(Dispatchers.IO) {
+                        CoachUiState(loading = false, calendarView = retained.get().toString())
+                    }
+                },
+            )
         fun observe() {
             callbacksOnMain.compareAndSet(true, Looper.myLooper() == Looper.getMainLooper())
             snapshots.add(runner.current.calendarView)
@@ -62,7 +72,10 @@ class CoachOperationRunnerTest {
             }
         }
         runBlocking { withTimeout(20_000) { firstStarted.await() } }
-        assertFalse("A second feature must not enter a command while the first holds its boundary", secondStarted.get())
+        assertFalse(
+            "A second feature must not enter a command while the first holds its boundary",
+            secondStarted.get(),
+        )
         assertEquals(0, retained.get())
         releaseFirst.complete(Unit)
         assertTrue("Both feature callbacks must arrive", completed.await(20, TimeUnit.SECONDS))
@@ -73,24 +86,38 @@ class CoachOperationRunnerTest {
         assertNull(runner.current.error)
     }
 
-    @Test fun failedFeatureCommandPreservesObservationsAndInputThenAllowsAnotherCommand() {
+    @Test
+    fun failedFeatureCommandPreservesObservationsAndInputThenAllowsAnotherCommand() {
         val retained = AtomicInteger(0)
         val failed = CountDownLatch(1)
         val succeeded = CountDownLatch(1)
         val successWasCalled = AtomicBoolean(false)
         val failureOnMain = AtomicBoolean(false)
-        val runner = CoachOperationRunner(scope, {
-            CoachUiState(loading = false, calendarView = if (retained.get() == 0) "Week" else "Month", draft = "Unfinished input")
-        })
+        val runner =
+            CoachOperationRunner(
+                scope,
+                {
+                    CoachUiState(
+                        loading = false,
+                        calendarView = if (retained.get() == 0) "Week" else "Month",
+                        draft = "Unfinished input",
+                    )
+                },
+            )
         instrumentation.runOnMainSync { runner.refresh() }
         runBlocking { withTimeout(20_000) { runner.state.first { !it.loading && !it.busy } } }
 
         instrumentation.runOnMainSync {
-            runner.submit(onSuccess = { successWasCalled.set(true) }, onFailure = {
-                failureOnMain.set(Looper.myLooper() == Looper.getMainLooper())
-                failed.countDown()
-            }) {
-                throw IllegalArgumentException("The selected prescription changed. Review it again.")
+            runner.submit(
+                onSuccess = { successWasCalled.set(true) },
+                onFailure = {
+                    failureOnMain.set(Looper.myLooper() == Looper.getMainLooper())
+                    failed.countDown()
+                },
+            ) {
+                throw IllegalArgumentException(
+                    "The selected prescription changed. Review it again."
+                )
             }
         }
         assertTrue(failed.await(20, TimeUnit.SECONDS))
@@ -110,19 +137,31 @@ class CoachOperationRunnerTest {
         assertNull(runner.current.error)
     }
 
-    @Test fun failedSnapshotRefreshDoesNotReplaceRetainedEvidenceOrCallSuccess() {
+    @Test
+    fun failedSnapshotRefreshDoesNotReplaceRetainedEvidenceOrCallSuccess() {
         val failed = CountDownLatch(1)
         val readFails = AtomicBoolean(false)
         val successWasCalled = AtomicBoolean(false)
-        val runner = CoachOperationRunner(scope, {
-            if (readFails.get()) throw IllegalStateException("Synthetic unreadable store")
-            CoachUiState(loading = false, calendarView = "Week", draft = "Retain this input")
-        })
+        val runner =
+            CoachOperationRunner(
+                scope,
+                {
+                    if (readFails.get()) throw IllegalStateException("Synthetic unreadable store")
+                    CoachUiState(
+                        loading = false,
+                        calendarView = "Week",
+                        draft = "Retain this input",
+                    )
+                },
+            )
         instrumentation.runOnMainSync { runner.refresh() }
         runBlocking { withTimeout(20_000) { runner.state.first { !it.loading && !it.busy } } }
         readFails.set(true)
         instrumentation.runOnMainSync {
-            runner.submit(onSuccess = { successWasCalled.set(true) }, onFailure = { failed.countDown() }) {}
+            runner.submit(
+                onSuccess = { successWasCalled.set(true) },
+                onFailure = { failed.countDown() },
+            ) {}
         }
         assertTrue(failed.await(20, TimeUnit.SECONDS))
         runBlocking { withTimeout(20_000) { runner.state.first { it.error != null } } }

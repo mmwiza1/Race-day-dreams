@@ -1,17 +1,18 @@
 package org.racedaydreams.domain.execution;
 
+import org.racedaydreams.domain.recording.RunMetricsEngine;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.racedaydreams.domain.recording.RunMetricsEngine;
 
 /**
- * Session-local orchestration over the one workout executor. The recorder supplies
- * accepted metrics; this class never owns a clock, sensors, persistence or a plan.
+ * Session-local orchestration over the one workout executor. The recorder supplies accepted
+ * metrics; this class never owns a clock, sensors, persistence or a plan.
  */
 public final class WorkoutExecutionCoordinator {
-    public record Update(WorkoutExecutionEngine.State state,
-                         List<WorkoutExecutionEngine.Event> newEvents) {
+    public record Update(
+            WorkoutExecutionEngine.State state, List<WorkoutExecutionEngine.Event> newEvents) {
         public Update {
             newEvents = Collections.unmodifiableList(new ArrayList<>(newEvents));
         }
@@ -26,9 +27,14 @@ public final class WorkoutExecutionCoordinator {
 
     /** Returns each execution event once, while retaining the complete snapshot. */
     public Update update(RunMetricsEngine.Status metrics) {
-        var input = new WorkoutExecutionEngine.Input(
-                metrics.metres(), metrics.movingMillis(), metrics.elapsedMillis(),
-                metrics.secondsPerKm(), metrics.hasReliablePace(), metrics.paused());
+        var input =
+                new WorkoutExecutionEngine.Input(
+                        metrics.metres(),
+                        metrics.movingMillis(),
+                        metrics.elapsedMillis(),
+                        metrics.secondsPerKm(),
+                        metrics.hasReliablePace(),
+                        metrics.paused());
         var state = execution.update(input);
         var events = execution.events();
         var fresh = new ArrayList<>(events.subList(publishedEvents, events.size()));

@@ -4,18 +4,18 @@
     "kotlin": {
       "version": "0.54",
       "url": "https://repo.maven.apache.org/maven2/com/facebook/ktfmt/0.54/ktfmt-0.54-jar-with-dependencies.jar",
-      "sha256_url": "https://repo.maven.apache.org/maven2/com/facebook/ktfmt/0.54/ktfmt-0.54-jar-with-dependencies.jar.sha256",
       "arguments": [
         "--kotlinlang-style"
-      ]
+      ],
+      "sha256": "5e7eb28a0b2006d1cefbc9213bfc73a8191ec2f85d639ec4fc4ec0cd04212e82"
     },
     "java": {
       "version": "1.24.0",
       "url": "https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/1.24.0/google-java-format-1.24.0-all-deps.jar",
-      "sha256_url": "https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/1.24.0/google-java-format-1.24.0-all-deps.jar.sha256",
       "arguments": [
         "--aosp"
-      ]
+      ],
+      "sha256": "812f805f58112460edf01bf202a8e61d0fd1f35c0d4fabd54220640776ec57a1"
     }
   },
   "targets": [

@@ -2,11 +2,11 @@ package org.racedaydreams.recording
 
 /**
  * Owns optional sensor adapters for one service lifetime. Android permissions and
- * foreground-service types stay at the service boundary. Factories make this
- * wiring testable without Bluetooth or motion hardware.
+ * foreground-service types stay at the service boundary. Factories make this wiring testable
+ * without Bluetooth or motion hardware.
  *
- * The service starts this on Main; the existing adapters deliver on Main too.
- * Sensor failures never change recording state or invent observations.
+ * The service starts this on Main; the existing adapters deliver on Main too. Sensor failures never
+ * change recording state or invent observations.
  */
 internal class RecordingSensorCoordinator(
     private val motionFactory: () -> MotionSource,

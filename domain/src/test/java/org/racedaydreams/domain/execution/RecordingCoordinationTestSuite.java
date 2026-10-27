@@ -1,8 +1,9 @@
 package org.racedaydreams.domain.execution;
 
-import java.util.List;
 import org.racedaydreams.domain.WorkoutSegment;
 import org.racedaydreams.domain.recording.RunMetricsEngine;
+
+import java.util.List;
 
 /** Recorder/execution orchestration regressions; no Android clock, audio or sensors. */
 public final class RecordingCoordinationTestSuite {
@@ -17,13 +18,20 @@ public final class RecordingCoordinationTestSuite {
         hillPauseAndGpsEvidenceSuppressPace();
         splitPreferencesDoNotReplayMissedAnnouncements();
         heartRateLossOnlyFollowsARealConnection();
-        System.out.println("RecordingCoordinationTestSuite: " + checks
-                + " checks passed (execution deltas, cue arbitration, race timing, sensor loss).");
+        System.out.println(
+                "RecordingCoordinationTestSuite: "
+                        + checks
+                        + " checks passed (execution deltas, cue arbitration, race timing, sensor"
+                        + " loss).");
     }
 
     private static void executionEventsArePublishedOnceAndPreserved() {
-        var session = new WorkoutExecutionCoordinator(List.of(distance("Warm-up", 1000),
-                distance("Interval", 400), timed("Recovery", 90000)));
+        var session =
+                new WorkoutExecutionCoordinator(
+                        List.of(
+                                distance("Warm-up", 1000),
+                                distance("Interval", 400),
+                                timed("Recovery", 90000)));
         var start = session.update(status(0, 0, null));
         check(start.state().index() == 0);
         check(types(start).equals(List.of("WORKOUT_STARTED", "STEP_STARTED")));
@@ -52,10 +60,12 @@ public final class RecordingCoordinationTestSuite {
     }
 
     private static void manualActionsRetainActualBoundaries() {
-        var open = new WorkoutExecutionEngine.Step("Run by effort", WorkoutSegment.Kind.RUN,
-                null, null, null, null, 5.0);
-        var session = new WorkoutExecutionCoordinator(List.of(open, distance("Work", 500),
-                distance("Cool-down", 1000)));
+        var open =
+                new WorkoutExecutionEngine.Step(
+                        "Run by effort", WorkoutSegment.Kind.RUN, null, null, null, null, 5.0);
+        var session =
+                new WorkoutExecutionCoordinator(
+                        List.of(open, distance("Work", 500), distance("Cool-down", 1000)));
         session.update(status(0, 0, null));
         session.update(status(100, 30000, 300.0));
         session.completeOpen();
@@ -63,73 +73,157 @@ public final class RecordingCoordinationTestSuite {
         check(types(completed).equals(List.of("STEP_COMPLETED", "STEP_STARTED")));
         check(completed.newEvents().get(0).metres() == 100);
         check(completed.newEvents().get(0).activeMillis() == 30000);
-        var paused = session.update(new RunMetricsEngine.Status(100, 240000, 30000,
-                null, "GPS available · paused", true));
+        var paused =
+                session.update(
+                        new RunMetricsEngine.Status(
+                                100, 240000, 30000, null, "GPS available · paused", true));
         check(paused.state().paused());
         check(paused.state().index() == 1);
         check(paused.newEvents().isEmpty());
         session.skip();
-        var skipped = session.update(new RunMetricsEngine.Status(100, 240000, 30000,
-                null, "GPS available · paused", true));
+        var skipped =
+                session.update(
+                        new RunMetricsEngine.Status(
+                                100, 240000, 30000, null, "GPS available · paused", true));
         check(types(skipped).equals(List.of("STEP_SKIPPED", "STEP_STARTED")));
         check(skipped.newEvents().get(0).activeMillis() == 30000);
         session.finishEarly();
-        var early = session.update(new RunMetricsEngine.Status(100, 240000, 30000,
-                null, "GPS available · paused", true));
+        var early =
+                session.update(
+                        new RunMetricsEngine.Status(
+                                100, 240000, 30000, null, "GPS available · paused", true));
         check(early.state().early());
         check(!early.state().complete());
         check(types(early).equals(List.of("WORKOUT_FINISHED_EARLY")));
         session.finishEarly();
-        check(session.update(new RunMetricsEngine.Status(100, 240000, 30000,
-                null, "GPS available · paused", true)).newEvents().isEmpty());
+        check(
+                session.update(
+                                new RunMetricsEngine.Status(
+                                        100, 240000, 30000, null, "GPS available · paused", true))
+                        .newEvents()
+                        .isEmpty());
     }
 
     private static void criticalAndTransitionCuesWinWithoutBacklog() {
-        var session = new WorkoutExecutionCoordinator(List.of(distance("Warm-up", 1000),
-                distance("Work", 2000)));
+        var session =
+                new WorkoutExecutionCoordinator(
+                        List.of(distance("Warm-up", 1000), distance("Work", 2000)));
         var cues = new RecordingCueCoordinator();
         var start = status(0, 0, null);
-        check(cues.update(start, session.update(start), session.steps(), null,
-                false, 45000, false, true).selected().id().equals("step-0"));
+        check(
+                cues.update(
+                                start,
+                                session.update(start),
+                                session.steps(),
+                                null,
+                                false,
+                                45000,
+                                false,
+                                true)
+                        .selected()
+                        .id()
+                        .equals("step-0"));
         var boundary = status(1000, 300000, 300.0);
-        var transition = cues.update(boundary, session.update(boundary), session.steps(),
-                null, false, 45000, false, true);
+        var transition =
+                cues.update(
+                        boundary,
+                        session.update(boundary),
+                        session.steps(),
+                        null,
+                        false,
+                        45000,
+                        false,
+                        true);
         check(transition.selected().id().equals("step-1"));
         check(transition.selected().haptic());
-        check(cues.update(boundary, session.update(boundary), session.steps(), null,
-                false, 45000, false, true).selected() == null);
-        var lost = new RunMetricsEngine.Status(3000, 900000, 900000,
-                300.0, "GPS interrupted · distance incomplete", false);
+        check(
+                cues.update(
+                                        boundary,
+                                        session.update(boundary),
+                                        session.steps(),
+                                        null,
+                                        false,
+                                        45000,
+                                        false,
+                                        true)
+                                .selected()
+                        == null);
+        var lost =
+                new RunMetricsEngine.Status(
+                        3000,
+                        900000,
+                        900000,
+                        300.0,
+                        "GPS interrupted · distance incomplete",
+                        false);
         var finish = session.update(lost);
         check(finish.state().complete());
-        var critical = cues.update(lost, finish, session.steps(), null,
-                false, 45000, false, true);
+        var critical = cues.update(lost, finish, session.steps(), null, false, 45000, false, true);
         check(critical.selected().id().equals("gps-lost"));
         check(critical.selected().priority() == 0);
-        check(cues.update(lost, session.update(lost), session.steps(), null,
-                false, 45000, false, true).selected() == null);
-        check(session.events().stream().filter(e -> e.type().equals("WORKOUT_COMPLETED")).count() == 1);
+        check(
+                cues.update(
+                                        lost,
+                                        session.update(lost),
+                                        session.steps(),
+                                        null,
+                                        false,
+                                        45000,
+                                        false,
+                                        true)
+                                .selected()
+                        == null);
+        check(
+                session.events().stream().filter(e -> e.type().equals("WORKOUT_COMPLETED")).count()
+                        == 1);
     }
 
     private static void raceContextUsesElapsedAndMilestonesAreOnceOnly() {
         var cues = new RecordingCueCoordinator();
         var race = new RecordingCueCoordinator.RaceTarget(20000, 6000L);
-        var halfway = new RunMetricsEngine.Status(10000, 3100000, 3000000,
-                300.0, "GPS available", false);
+        var halfway =
+                new RunMetricsEngine.Status(10000, 3100000, 3000000, 300.0, "GPS available", false);
         var half = cues.update(halfway, null, List.of(), race, false, 45000, false, true);
         check(half.selected().id().equals("race-half"));
         check(half.raceContext().startsWith("100 sec behind"));
-        check(cues.update(halfway, null, List.of(), race, false, 45000, false, true)
-                .selected() == null);
-        var five = cues.update(status(15000, 4500000, 300.0), null, List.of(), race,
-                false, 45000, false, true);
+        check(
+                cues.update(halfway, null, List.of(), race, false, 45000, false, true).selected()
+                        == null);
+        var five =
+                cues.update(
+                        status(15000, 4500000, 300.0),
+                        null,
+                        List.of(),
+                        race,
+                        false,
+                        45000,
+                        false,
+                        true);
         check(five.selected().id().equals("race-five"));
         check(five.raceContext().startsWith("0 sec ahead of"));
-        check(cues.update(status(15000, 4500000, 300.0), null, List.of(), race,
-                false, 45000, false, true).selected() == null);
-        var noTime = new RecordingCueCoordinator().update(status(0, 0, null), null,
-                List.of(), new RecordingCueCoordinator.RaceTarget(5000, null),
-                false, 45000, false, true);
+        check(
+                cues.update(
+                                        status(15000, 4500000, 300.0),
+                                        null,
+                                        List.of(),
+                                        race,
+                                        false,
+                                        45000,
+                                        false,
+                                        true)
+                                .selected()
+                        == null);
+        var noTime =
+                new RecordingCueCoordinator()
+                        .update(
+                                status(0, 0, null),
+                                null,
+                                List.of(),
+                                new RecordingCueCoordinator.RaceTarget(5000, null),
+                                false,
+                                45000,
+                                false,
+                                true);
         check(noTime.raceContext().equals("Race elapsed time includes pauses."));
         check(noTime.selected() == null);
     }
@@ -170,26 +264,77 @@ public final class RecordingCoordinationTestSuite {
         var pausedCues = new RecordingCueCoordinator();
         update(pausedCues, paused, status(0, 0, 270.0), false);
         update(pausedCues, paused, status(100, 20000, 270.0), false);
-        var result = update(pausedCues, paused,
-                new RunMetricsEngine.Status(100, 200000, 20000, 270.0, "GPS available", true), false);
+        var result =
+                update(
+                        pausedCues,
+                        paused,
+                        new RunMetricsEngine.Status(
+                                100, 200000, 20000, 270.0, "GPS available", true),
+                        false);
         check(result.selected() == null);
         check(result.paceEvent() == null);
     }
 
     private static void splitPreferencesDoNotReplayMissedAnnouncements() {
         var cues = new RecordingCueCoordinator();
-        check(cues.update(status(1000, 300000, 300.0), null, List.of(), null,
-                false, 45000, false, false).selected() == null);
-        check(cues.update(status(1000, 300000, 300.0), null, List.of(), null,
-                false, 45000, false, true).selected() == null);
-        var second = cues.update(status(2000, 600000, 300.0), null, List.of(), null,
-                false, 45000, false, true);
+        check(
+                cues.update(
+                                        status(1000, 300000, 300.0),
+                                        null,
+                                        List.of(),
+                                        null,
+                                        false,
+                                        45000,
+                                        false,
+                                        false)
+                                .selected()
+                        == null);
+        check(
+                cues.update(
+                                        status(1000, 300000, 300.0),
+                                        null,
+                                        List.of(),
+                                        null,
+                                        false,
+                                        45000,
+                                        false,
+                                        true)
+                                .selected()
+                        == null);
+        var second =
+                cues.update(
+                        status(2000, 600000, 300.0),
+                        null,
+                        List.of(),
+                        null,
+                        false,
+                        45000,
+                        false,
+                        true);
         check(second.selected().text().equals("2 kilometres recorded."));
         var miles = new RecordingCueCoordinator();
-        check(miles.update(status(1609, 500000, 300.0), null, List.of(), null,
-                false, 45000, true, true).selected() == null);
-        var mile = miles.update(status(1609.344, 500100, 300.0), null, List.of(), null,
-                false, 45000, true, true);
+        check(
+                miles.update(
+                                        status(1609, 500000, 300.0),
+                                        null,
+                                        List.of(),
+                                        null,
+                                        false,
+                                        45000,
+                                        true,
+                                        true)
+                                .selected()
+                        == null);
+        var mile =
+                miles.update(
+                        status(1609.344, 500100, 300.0),
+                        null,
+                        List.of(),
+                        null,
+                        false,
+                        45000,
+                        true,
+                        true);
         check(mile.selected().text().equals("1 miles recorded."));
         check(mile.raceContext() == null);
     }
@@ -202,30 +347,49 @@ public final class RecordingCoordinationTestSuite {
         check(!cues.heartRateConnection(false));
         check(!cues.heartRateConnection(true));
         check(cues.heartRateConnection(false));
-        var result = cues.update(status(1000, 300000, 300.0), null, List.of(), null,
-                false, 45000, false, true);
+        var result =
+                cues.update(
+                        status(1000, 300000, 300.0),
+                        null,
+                        List.of(),
+                        null,
+                        false,
+                        45000,
+                        false,
+                        true);
         check(result.selected().id().equals("split-1"));
     }
 
-    private static RecordingCueCoordinator.Update update(RecordingCueCoordinator cues,
-            WorkoutExecutionCoordinator session, RunMetricsEngine.Status status, boolean hilly) {
-        return cues.update(status, session.update(status), session.steps(), null, hilly,
-                30000, false, true);
+    private static RecordingCueCoordinator.Update update(
+            RecordingCueCoordinator cues,
+            WorkoutExecutionCoordinator session,
+            RunMetricsEngine.Status status,
+            boolean hilly) {
+        return cues.update(
+                status, session.update(status), session.steps(), null, hilly, 30000, false, true);
     }
 
     private static WorkoutExecutionCoordinator targetSession() {
-        return new WorkoutExecutionCoordinator(List.of(new WorkoutExecutionEngine.Step(
-                "Controlled work", WorkoutSegment.Kind.RUN, 5000.0, null, 295.0, 305.0, 7.0)));
+        return new WorkoutExecutionCoordinator(
+                List.of(
+                        new WorkoutExecutionEngine.Step(
+                                "Controlled work",
+                                WorkoutSegment.Kind.RUN,
+                                5000.0,
+                                null,
+                                295.0,
+                                305.0,
+                                7.0)));
     }
 
     private static WorkoutExecutionEngine.Step distance(String label, double metres) {
-        return new WorkoutExecutionEngine.Step(label, WorkoutSegment.Kind.RUN,
-                metres, null, null, null, null);
+        return new WorkoutExecutionEngine.Step(
+                label, WorkoutSegment.Kind.RUN, metres, null, null, null, null);
     }
 
     private static WorkoutExecutionEngine.Step timed(String label, long millis) {
-        return new WorkoutExecutionEngine.Step(label, WorkoutSegment.Kind.RECOVERY,
-                null, millis, null, null, null);
+        return new WorkoutExecutionEngine.Step(
+                label, WorkoutSegment.Kind.RECOVERY, null, millis, null, null, null);
     }
 
     private static RunMetricsEngine.Status status(double metres, long active, Double pace) {

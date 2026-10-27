@@ -2,7 +2,7 @@
 """Run pinned build-time formatters; never part of the Android application.
 
 Only the architecture surfaces listed in config/formatting.json are targeted. Tool
-downloads require the publisher's SHA-256 and a valid JAR, then are cached locally.
+downloads require the repository-pinned SHA-256 and a valid JAR, then are cached locally.
 Neither --check nor --list rewrites source. Network is unnecessary with a warm cache.
 """
 
@@ -80,14 +80,13 @@ def validate_jar(path: Path, expected: str) -> None:
 def tool_jar(language: str, tool: dict, cache: Path) -> Path:
     jar = cache / f"{language}-{tool['version']}.jar"
     checksum = jar.with_suffix(".sha256")
-    if jar.exists() and checksum.exists():
-        validate_jar(jar, checksum.read_text(encoding="ascii").strip())
+    expected = tool["sha256"]
+    if not isinstance(expected, str) or not re.fullmatch(r"[a-fA-F0-9]{64}", expected):
+        raise ValueError("Formatter configuration must pin a SHA-256")
+    if jar.exists():
+        # Cache metadata cannot override the reviewed repository content lock.
+        validate_jar(jar, expected)
         return jar
-    # Read the checksum before downloading executable code; never trust an error
-    # page, HTML redirect or partial cache as a formatter.
-    expected = fetch(tool["sha256_url"], 1024).decode("ascii").strip().split()[0]
-    if not re.fullmatch(r"[a-fA-F0-9]{64}", expected):
-        raise ValueError("Publisher checksum is invalid")
     cache.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(dir=cache, suffix=".jar", delete=False) as temp:
         temporary = Path(temp.name)

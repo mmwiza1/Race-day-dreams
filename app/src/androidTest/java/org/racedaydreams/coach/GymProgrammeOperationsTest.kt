@@ -21,11 +21,14 @@ import org.racedaydreams.domain.strength.StrengthExercise
 class GymProgrammeOperationsTest {
     private val now = Instant.parse("2026-10-20T08:00:00Z")
     private val today = LocalDate.of(2026, 10, 20)
-    private val operations = GymProgrammeOperations(Clock.fixed(now, ZoneOffset.UTC)) { "new-programme" }
+    private val operations =
+        GymProgrammeOperations(Clock.fixed(now, ZoneOffset.UTC)) { "new-programme" }
 
-    @Test fun regenerationPreviewRetainsIdentityAndDoesNotRewriteTheOriginalVersion() {
+    @Test
+    fun regenerationPreviewRetainsIdentityAndDoesNotRewriteTheOriginalVersion() {
         val original = plan()
-        val proposed = operations.generate(original, original.settings(), emptyList(), emptyList(), emptySet())
+        val proposed =
+            operations.generate(original, original.settings(), emptyList(), emptyList(), emptySet())
         assertEquals(original.id(), proposed.id())
         assertEquals(original.version() + 1, proposed.version())
         assertEquals(now, proposed.createdAt())
@@ -35,7 +38,8 @@ class GymProgrammeOperationsTest {
         assertTrue(proposed.sessions().isNotEmpty())
     }
 
-    @Test fun oneSessionPreviewPreservesEveryOtherPrescriptionAndRecurringPreferences() {
+    @Test
+    fun oneSessionPreviewPreservesEveryOtherPrescriptionAndRecurringPreferences() {
         val original = plan()
         val proposed = operations.reduce(original, "first", emptySet())
         assertEquals(original.settings(), proposed.settings())
@@ -45,39 +49,55 @@ class GymProgrammeOperationsTest {
         assertEquals(2, proposed.version())
     }
 
-    @Test fun completedPrescriptionIsProtectedForEveryPreviewAction() {
+    @Test
+    fun completedPrescriptionIsProtectedForEveryPreviewAction() {
         val original = plan()
         val completed = setOf(original.sessions().first().date())
         rejects { operations.move(original, "first", today.plusDays(2), completed) }
         rejects { operations.reduce(original, "first", completed) }
         rejects { operations.skip(original, "first", completed) }
-        rejects { operations.swap(original, "first", "bench-press", "dumbbell-bench-press", completed) }
+        rejects {
+            operations.swap(original, "first", "bench-press", "dumbbell-bench-press", completed)
+        }
         assertEquals(1, original.version())
         assertEquals(2, original.sessions().size)
     }
 
-    @Test fun substitutionPreviewDropsIncompatibleLoadReferenceAndKeepsHistoryIntact() {
+    @Test
+    fun substitutionPreviewDropsIncompatibleLoadReferenceAndKeepsHistoryIntact() {
         val original = plan()
-        val proposed = operations.swap(original, "first", "bench-press", "dumbbell-bench-press", emptySet())
+        val proposed =
+            operations.swap(original, "first", "bench-press", "dumbbell-bench-press", emptySet())
         val replacement = proposed.sessions().first().exercises().first()
         assertEquals("dumbbell-bench-press", replacement.exerciseId())
-        assertNull("A barbell reference must not be copied to dumbbells", replacement.referenceLoadKg())
+        assertNull(
+            "A barbell reference must not be copied to dumbbells",
+            replacement.referenceLoadKg(),
+        )
         assertEquals(80.0, original.sessions().first().exercises().first().referenceLoadKg()!!, 0.0)
         assertEquals(original.sessions()[1], proposed.sessions()[1])
     }
 
-    @Test fun alternativePreviewRespectsExistingMeasurementAndEquipmentRules() {
+    @Test
+    fun alternativePreviewRespectsExistingMeasurementAndEquipmentRules() {
         val original = plan(setOf("dumbbells", "bench"))
         val exercises = StrengthExercise.starters()
         val alternatives = operations.alternatives(original, "bench-press", "", exercises)
         assertTrue(alternatives.any { it.id() == "dumbbell-bench-press" })
         assertTrue(alternatives.none { it.id() == "bench-press" })
-        assertTrue(alternatives.all { it.measurement() == StrengthExercise.MeasurementProfile.LOAD_REPS })
+        assertTrue(
+            alternatives.all { it.measurement() == StrengthExercise.MeasurementProfile.LOAD_REPS }
+        )
         assertTrue(alternatives.all { ExerciseCatalog.definition(it.id()).category() == "Chest" })
-        assertTrue(alternatives.all { GymProgrammeGenerator.available(it.id(), original.settings().equipment()) })
+        assertTrue(
+            alternatives.all {
+                GymProgrammeGenerator.available(it.id(), original.settings().equipment())
+            }
+        )
     }
 
-    @Test fun retainedOperationsObserveTimezoneChangesWhileInjectedClocksStayFixed() {
+    @Test
+    fun retainedOperationsObserveTimezoneChangesWhileInjectedClocksStayFixed() {
         val originalZone = TimeZone.getDefault()
         try {
             TimeZone.setDefault(TimeZone.getTimeZone("GMT+14:00"))
@@ -90,21 +110,51 @@ class GymProgrammeOperationsTest {
             val changedDate = LocalDate.now()
             val after = retained.generate(null, settings, emptyList(), emptyList(), emptySet())
             assertEquals(changedDate, after.start())
-            assertNotEquals("The two zones must expose the cached-zone regression", before.start(), after.start())
-            assertEquals("An injected clock must ignore device timezone changes", today,
-                operations.generate(null, settings, emptyList(), emptyList(), emptySet()).start())
+            assertNotEquals(
+                "The two zones must expose the cached-zone regression",
+                before.start(),
+                after.start(),
+            )
+            assertEquals(
+                "An injected clock must ignore device timezone changes",
+                today,
+                operations.generate(null, settings, emptyList(), emptyList(), emptySet()).start(),
+            )
 
             val original = plan()
-            val current = GymProgramme(original.id(), original.version(), Instant.now(), original.reason(),
-                settings, changedDate, changedDate.plusDays(41), listOf(
-                    GymProgramme.Session("first", changedDate, "Today", original.sessions().first().exercises(), "Today's preserved prescription")),
-                emptyList())
+            val current =
+                GymProgramme(
+                    original.id(),
+                    original.version(),
+                    Instant.now(),
+                    original.reason(),
+                    settings,
+                    changedDate,
+                    changedDate.plusDays(41),
+                    listOf(
+                        GymProgramme.Session(
+                            "first",
+                            changedDate,
+                            "Today",
+                            original.sessions().first().exercises(),
+                            "Today's preserved prescription",
+                        )
+                    ),
+                    emptyList(),
+                )
             assertEquals(2, retained.move(current, "first", changedDate, emptySet()).version())
             assertEquals(2, retained.reduce(current, "first", emptySet()).version())
             assertTrue(retained.skip(current, "first", emptySet()).sessions().isEmpty())
-            assertEquals("dumbbell-bench-press",
-                retained.swap(current, "first", "bench-press", "dumbbell-bench-press", emptySet())
-                    .sessions().first().exercises().first().exerciseId())
+            assertEquals(
+                "dumbbell-bench-press",
+                retained
+                    .swap(current, "first", "bench-press", "dumbbell-bench-press", emptySet())
+                    .sessions()
+                    .first()
+                    .exercises()
+                    .first()
+                    .exerciseId(),
+            )
             assertEquals("bench-press", current.sessions().first().exercises().first().exerciseId())
         } finally {
             TimeZone.setDefault(originalZone)
@@ -112,18 +162,71 @@ class GymProgrammeOperationsTest {
     }
 
     private fun plan(equipment: Set<String> = setOf("full gym")): GymProgramme {
-        val settings = GymProgramme.Settings(GymProgramme.Goal.GENERAL, GymProgramme.Priority.BALANCED,
-            GymProgramme.Experience.BEGINNER, setOf(DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY),
-            2, equipment, 45, GymProgramme.Effort.RPE)
-        val bench = GymProgramme.Prescription("bench-press", 3, 5, 8, null, null,
-            6, 8, 120, "Preserved horizontal push", 80.0)
-        val row = GymProgramme.Prescription("dumbbell-row", 3, 8, 12, null, null,
-            6, 8, 90, "Preserved pull", null)
-        return GymProgramme("preserved-programme", 1, now.minusSeconds(3600), "Original intention",
-            settings, today, today.plusDays(41), listOf(
-                GymProgramme.Session("first", today.plusDays(1), "First session", listOf(bench, row), "Original first prescription"),
-                GymProgramme.Session("second", today.plusDays(4), "Second session", listOf(row), "Original second prescription")),
-            emptyList())
+        val settings =
+            GymProgramme.Settings(
+                GymProgramme.Goal.GENERAL,
+                GymProgramme.Priority.BALANCED,
+                GymProgramme.Experience.BEGINNER,
+                setOf(DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY),
+                2,
+                equipment,
+                45,
+                GymProgramme.Effort.RPE,
+            )
+        val bench =
+            GymProgramme.Prescription(
+                "bench-press",
+                3,
+                5,
+                8,
+                null,
+                null,
+                6,
+                8,
+                120,
+                "Preserved horizontal push",
+                80.0,
+            )
+        val row =
+            GymProgramme.Prescription(
+                "dumbbell-row",
+                3,
+                8,
+                12,
+                null,
+                null,
+                6,
+                8,
+                90,
+                "Preserved pull",
+                null,
+            )
+        return GymProgramme(
+            "preserved-programme",
+            1,
+            now.minusSeconds(3600),
+            "Original intention",
+            settings,
+            today,
+            today.plusDays(41),
+            listOf(
+                GymProgramme.Session(
+                    "first",
+                    today.plusDays(1),
+                    "First session",
+                    listOf(bench, row),
+                    "Original first prescription",
+                ),
+                GymProgramme.Session(
+                    "second",
+                    today.plusDays(4),
+                    "Second session",
+                    listOf(row),
+                    "Original second prescription",
+                ),
+            ),
+            emptyList(),
+        )
     }
 
     private fun rejects(change: () -> Unit) {

@@ -11,13 +11,23 @@ class ProgressCoordinator(
     private val operations: CoachOperationRunner,
     private val development: DevelopmentStore,
 ) {
-    fun saveWeight(value: Double,date: LocalDate,id: String? = null) = operations.submit {
-        require(date <= LocalDate.now()) { "A measurement cannot be in the future." }
-        val at = date.atTime(12,0).atZone(ZoneId.systemDefault())
-        val identity=id ?: UUID.randomUUID().toString()
-        development.saveWeight(BodyWeight(identity,operations.current.massUnit.toKilograms(value),at.toInstant(),at.offset,"manual",identity,null))
-    }
+    fun saveWeight(value: Double, date: LocalDate, id: String? = null) =
+        operations.submit {
+            require(date <= LocalDate.now()) { "A measurement cannot be in the future." }
+            val at = date.atTime(12, 0).atZone(ZoneId.systemDefault())
+            val identity = id ?: UUID.randomUUID().toString()
+            development.saveWeight(
+                BodyWeight(
+                    identity,
+                    operations.current.massUnit.toKilograms(value),
+                    at.toInstant(),
+                    at.offset,
+                    "manual",
+                    identity,
+                    null,
+                )
+            )
+        }
 
-    fun deleteWeight(id:String) = operations.submit { development.deleteWeight(id) }
-
+    fun deleteWeight(id: String) = operations.submit { development.deleteWeight(id) }
 }

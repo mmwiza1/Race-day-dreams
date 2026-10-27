@@ -9,6 +9,8 @@ import org.json.JSONObject;
 public interface BackupRepository {
     /** Validate an untrusted complete snapshot without reading or modifying storage. */
     void validateSnapshot(JSONObject data);
+
     JSONObject exportUserData();
+
     void restoreUserData(JSONObject data, boolean merge);
 }

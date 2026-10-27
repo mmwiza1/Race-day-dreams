@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Looper;
-import java.util.Objects;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 /** Shared connection/SQL primitives only; repositories own their feature rules and queries. */
 abstract class SqliteStoreAccess {
@@ -51,5 +53,20 @@ abstract class SqliteStoreAccess {
             throw new SQLiteException("Local data could not be saved.");
         }
     }
-    protected static void putOpaque(SQLiteDatabase db,String table,JSONObject object){try{ContentValues v=values("id",FeatureJson.required(object,"id"));v.put("payload",object.toString());if(table.equals("assessment_results"))v.put("activity_id",FeatureJson.text(object,"activityId"));if(table.equals("plan_adjustments")){v.put("plan_id",FeatureJson.text(object,"planId"));v.put("user_decision",FeatureJson.text(object,"userDecision"));}replace(db,table,v);}catch(JSONException e){throw FeatureJson.invalid(e);}}
+
+    protected static void putOpaque(SQLiteDatabase db, String table, JSONObject object) {
+        try {
+            ContentValues v = values("id", FeatureJson.required(object, "id"));
+            v.put("payload", object.toString());
+            if (table.equals("assessment_results"))
+                v.put("activity_id", FeatureJson.text(object, "activityId"));
+            if (table.equals("plan_adjustments")) {
+                v.put("plan_id", FeatureJson.text(object, "planId"));
+                v.put("user_decision", FeatureJson.text(object, "userDecision"));
+            }
+            replace(db, table, v);
+        } catch (JSONException e) {
+            throw FeatureJson.invalid(e);
+        }
+    }
 }

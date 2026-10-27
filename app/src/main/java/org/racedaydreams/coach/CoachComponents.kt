@@ -13,15 +13,41 @@ import java.time.ZoneOffset
 
 @Composable
 fun CoachPage(content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp), content = content)
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        content = content,
+    )
 }
 
-@Composable fun CoachHeading(text: String) { Text(text, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() }) }
-@Composable fun CoachButton(text: String, onClick: () -> Unit) { Button(onClick, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(text) } }
-@Composable fun CoachCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content) }
+@Composable
+fun CoachHeading(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = Modifier.semantics { heading() },
+    )
+}
+
+@Composable
+fun CoachButton(text: String, onClick: () -> Unit) {
+    Button(onClick, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(text) }
+}
+
+@Composable
+fun CoachCard(content: @Composable ColumnScope.() -> Unit) {
+    Card(Modifier.fillMaxWidth()) {
+        Column(
+            Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            content = content,
+        )
+    }
 }
 
 fun displayActivityDate(activity: org.racedaydreams.domain.activity.ActivityRecord): String =
-    activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).toLocalDate().let(::friendlyDate)
+    activity
+        .start()
+        .atOffset(activity.startOffset() ?: ZoneOffset.UTC)
+        .toLocalDate()
+        .let(::friendlyDate)
