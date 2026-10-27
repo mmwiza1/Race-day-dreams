@@ -19,6 +19,26 @@ internal fun HomeScreen(
     record: () -> Unit = {},
     quick: (String) -> Unit = {},
     race: () -> Unit = {},
+) {
+    if (state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH) {
+        StrengthTodayScreen(state, quick)
+        return
+    }
+    RunningTodayScreen(state, weekly, baseline, assessment, history, plan, workout, record, quick, race)
+}
+
+@Composable
+private fun RunningTodayScreen(
+    state: CoachUiState,
+    weekly: () -> Unit,
+    baseline: () -> Unit,
+    assessment: () -> Unit,
+    history: () -> Unit,
+    plan: () -> Unit,
+    workout: (String) -> Unit,
+    record: () -> Unit,
+    quick: (String) -> Unit,
+    race: () -> Unit,
 ) = CoachPage {
     CoachHeading("Today")
     Text(

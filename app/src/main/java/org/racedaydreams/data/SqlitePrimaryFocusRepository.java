@@ -1,9 +1,11 @@
 package org.racedaydreams.data;
 
 import android.content.Context;
+
 import org.racedaydreams.domain.settings.PrimaryFocus;
 import org.racedaydreams.domain.settings.PrimaryFocusRepository;
 import org.racedaydreams.domain.settings.SettingsRepository;
+
 import java.util.Objects;
 import java.util.Optional;
 

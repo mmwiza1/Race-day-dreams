@@ -328,3 +328,12 @@ editions), decodes only displayed local WebPs on IO and uses a bounded8MiB image
 DreamDrawing prepares preserved geographic paths off-main and draws a soft overview
 with distinct full-course pins and blue equivalent-section rings. No schema, backup,
 assignment, recorder, sample, provider or network architecture change is involved.
+# Strength-first Today projection (0.9 checkpoint)
+
+PrimaryFocus is a typed view over existing backed-up settings. Legacy starting paths
+resolve without rewriting records; focus changes never edit programme priorities or goals.
+StrengthTodaySummary is Android-independent and uses explicit actual/session/version
+associations. CoachSnapshotReader computes its PB and coaching projection on IO with the
+same observations used in CoachUiState, so navigation sees one coherent snapshot and
+Compose does not repeatedly analyse retained history. The screen shares existing gym
+logging/programme routes. Full Gym Now execution is a later checkpoint.

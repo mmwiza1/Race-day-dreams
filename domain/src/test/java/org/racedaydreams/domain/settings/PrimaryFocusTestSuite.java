@@ -19,7 +19,8 @@ public final class PrimaryFocusTestSuite {
         for (PrimaryFocus focus : PrimaryFocus.values()) {
             equal(Optional.of(focus), PrimaryFocus.fromStorageValue(focus.storageValue()));
         }
-        for (String unknown : new String[] {null, "", "RUNNING", "record", "race", "future-focus"}) {
+        for (String unknown :
+                new String[] {null, "", "RUNNING", "record", "race", "future-focus"}) {
             equal(Optional.empty(), PrimaryFocus.fromStorageValue(unknown));
         }
         System.out.println("Primary focus: " + checks + " checks passed.");

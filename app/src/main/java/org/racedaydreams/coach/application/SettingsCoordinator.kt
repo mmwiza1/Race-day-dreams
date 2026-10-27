@@ -30,9 +30,7 @@ class SettingsCoordinator(
         }
 
     fun primaryFocus(selected: PrimaryFocus, onSuccess: () -> Unit = {}) =
-        operations.submit("Primary focus saved.", onSuccess = onSuccess) {
-            focus.save(selected)
-        }
+        operations.submit(onSuccess = onSuccess) { focus.save(selected) }
 
     fun setting(key: String, value: String) =
         operations.submit {

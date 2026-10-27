@@ -141,7 +141,12 @@ private fun CoachApp(model: CoachViewModel) {
         }
     }
     LaunchedEffect(state.profile, state.loading, state.primaryFocus, route) {
-        if (!state.loading && state.profile == null && state.primaryFocus != PrimaryFocus.STRENGTH && route == "plan") {
+        if (
+            !state.loading &&
+                state.profile == null &&
+                state.primaryFocus != PrimaryFocus.STRENGTH &&
+                route == "plan"
+        ) {
             nav.navigate("baseline") { popUpTo(nav.graph.id) { inclusive = true } }
         }
     }
@@ -159,7 +164,7 @@ private fun CoachApp(model: CoachViewModel) {
     val startDestination = rememberSaveable {
         when {
             org.racedaydreams.recording.RunRecordingService.running.value -> "record-run"
-            state.primaryFocus == PrimaryFocus.STRENGTH -> "strength"
+            state.primaryFocus == PrimaryFocus.STRENGTH -> "home"
             state.profile != null -> "home"
             state.startingPath == "record" -> "home"
             state.baselineReviewed -> "goals"

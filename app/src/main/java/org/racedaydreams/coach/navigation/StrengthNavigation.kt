@@ -14,11 +14,17 @@ fun NavGraphBuilder.strengthGraph(
     model: CoachViewModel,
     nav: NavHostController,
 ) {
-    composable("strength?date={date}", arguments = listOf(navArgument("date") {
-        type = NavType.StringType
-        nullable = true
-        defaultValue = null
-    })) { destination ->
+    composable(
+        "strength?date={date}",
+        arguments =
+            listOf(
+                navArgument("date") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            ),
+    ) { destination ->
         val date = destination.arguments?.getString("date")
         if (date != null) StrengthScreen(readState(), model, date)
         else StrengthDashboard(readState()) { nav.navigate(it) }

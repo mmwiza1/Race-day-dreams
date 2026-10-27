@@ -240,3 +240,11 @@ are adopted in f9b06c4; all60 PNG/metadata blob hashes matched. Five added actua
 machine/squat/carry guides were visually inspected. Full mandatory reference fidelity
 still remains open; these captures do not certify the missing127canonical guides or
 three unfinished geographic routes. Source fingerprint d385f63ff4b97230cea4ecc923ff4bb8f43cbab32f642a2cfbd7c972ba4f2692.
+# Strength Engine 2.0 capture additions
+
+The active 0.9 feature branch now requires 80 authentic captures: all 77 established
+images plus Strength-first Home in light mode, dark mode and 200% text. The new fixture
+launches the real CoachActivity with no running profile or race goal and uses actual
+test-only retained sets and a generated Strength programme. Do not describe those new
+captures as reviewed until the supported-API workflow produces them. Existing design
+references remain separate from app captures.

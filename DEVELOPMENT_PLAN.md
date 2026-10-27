@@ -11,7 +11,9 @@ CONTINUE_CODEX.md; this increment does not reduce them to architecture alone.
 Phase 3 implements a typed Running / Strength / Hybrid focus preference, race-free
 Strength setup and later Settings changes. Existing goals and programme versions stay
 intact. Local domain/schema checks pass; new Android entry and backup cases await CI.
-Strength-first Today and Gym Now are the next product checkpoints.
+Strength-first Today is implemented with actual/versioned associations and IO-prepared
+summary evidence. Its three new authentic capture modes and component cases await CI.
+The complete Gym Now flow is the next product checkpoint; independent logging works now.
 
 Running Coach and Strength Coach will each be independently usable. Hybrid use adds
 context without silently sacrificing either discipline. New Strength durability belongs

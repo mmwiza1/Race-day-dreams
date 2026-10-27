@@ -10,8 +10,10 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.printToString
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -61,7 +63,9 @@ import org.racedaydreams.reminders.EveningReminders
 @RunWith(AndroidJUnit4::class)
 class PrimaryFocusOnboardingTest {
     @get:Rule val compose = createEmptyComposeRule()
-    private val context: Context get() = ApplicationProvider.getApplicationContext()
+    private val context: Context
+        get() = ApplicationProvider.getApplicationContext()
+
     private var scenario: ActivityScenario<CoachActivity>? = null
 
     @Before
@@ -101,7 +105,7 @@ class PrimaryFocusOnboardingTest {
         await("Preview — not applied")
         assertNull(GymProgrammeStore(context).current())
         compose.onNodeWithText("Accept this programme").performScrollTo().performClick()
-        compose.waitUntil(20_000) { GymProgrammeStore(context).current() != null }
+        awaitCondition("accepted gym programme to be persisted") { GymProgrammeStore(context).current() != null }
         await("Change programme settings")
         val programme = GymProgrammeStore(context).current()!!
         assertEquals(GymProgramme.Goal.GENERAL, programme.settings().goal())
@@ -113,7 +117,7 @@ class PrimaryFocusOnboardingTest {
         scenario!!.close()
         scenario = null
         launch()
-        await("Log workout")
+        await("Your strength training")
         compose.onNodeWithText("Plan").performClick()
         await("Change programme settings")
         compose.onNodeWithText("Gym programme").performScrollTo().assertIsDisplayed()
@@ -158,12 +162,22 @@ class PrimaryFocusOnboardingTest {
         compose.onNodeWithText("⚙ Settings").performClick()
         await("Primary focus")
         for (focus in listOf(PrimaryFocus.STRENGTH, PrimaryFocus.HYBRID, PrimaryFocus.RUNNING)) {
-            compose.onNodeWithTag("primary-focus-choice-${focus.storageValue()}")
-                .performScrollTo().performClick()
+            compose
+                .onNodeWithTag("primary-focus-choice-${focus.storageValue()}")
+                .performScrollTo()
+                .performClick()
             compose.onNodeWithText("Save primary focus").performScrollTo().performClick()
             awaitFocus(focus)
-            compose.onNodeWithTag("primary-focus-choice-${focus.storageValue()}")
-                .performScrollTo().assertIsSelected()
+            val label = when (focus) {
+                PrimaryFocus.RUNNING -> "Running"
+                PrimaryFocus.STRENGTH -> "Strength"
+                PrimaryFocus.HYBRID -> "Hybrid"
+            }
+            compose.onNodeWithText("Current primary focus: $label").performScrollTo().assertIsDisplayed()
+            compose
+                .onNodeWithTag("primary-focus-choice-${focus.storageValue()}")
+                .performScrollTo()
+                .assertIsSelected()
             assertEquals(profile, profiles.load().get())
             assertEquals(draft, profiles.loadDraft().get())
             assertEquals(running, CoachingStore(context).current())
@@ -175,7 +189,10 @@ class PrimaryFocusOnboardingTest {
         scenario!!.recreate()
         await("Primary focus")
         compose.onNodeWithTag("primary-focus-choice-running").performScrollTo().assertIsSelected()
-        compose.onNodeWithText("Edit race goal and availability").performScrollTo().assertIsDisplayed()
+        compose
+            .onNodeWithText("Edit race goal and availability")
+            .performScrollTo()
+            .assertIsDisplayed()
         assertEquals(draft, profiles.loadDraft().get())
     }
 
@@ -205,38 +222,80 @@ class PrimaryFocusOnboardingTest {
     }
 
     private fun await(text: String) {
-        compose.waitUntil(20_000) {
+        awaitCondition("Compose text '$text'") {
             compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
         }
     }
 
     private fun awaitFocus(focus: PrimaryFocus) {
-        compose.waitUntil(20_000) {
+        var message: String? = null
+        awaitCondition("published and persisted focus $focus") {
             var published = false
             scenario!!.onActivity { activity ->
                 val state = ViewModelProvider(activity)[CoachViewModel::class.java].state.value
                 published = !state.busy && state.primaryFocus == focus
+                message = state.message
             }
             published && SqlitePrimaryFocusRepository(context).load().orElse(null) == focus
         }
+        assertNull("Focus saves use persistent status without a message covering the next action.", message)
     }
 
     private fun awaitDraftTarget() {
-        compose.waitUntil(20_000) {
+        awaitCondition("unfinished native race target") {
             var shown = false
             scenario!!.onActivity { activity -> shown = hasDraftTarget(activity.window.decorView) }
             shown
         }
     }
 
-    private fun hasDraftTarget(view: View): Boolean {
-        if (view is EditText && view.isShown &&
-            view.hint?.toString() == context.getString(R.string.onboarding_target_hint) &&
-            view.text.toString() == "1:"
-        ) return true
-        if (view is ViewGroup) for (index in 0 until view.childCount) {
-            if (hasDraftTarget(view.getChildAt(index))) return true
+    private fun awaitCondition(description: String, condition: () -> Boolean) {
+        try {
+            compose.waitUntil(20_000, condition)
+        } catch (failure: AssertionError) {
+            throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
+        } catch (failure: Exception) {
+            throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
         }
+    }
+
+    /** Only synthetic instrumentation fixtures are reported; production code does not log state. */
+    private fun failureDiagnostics(): String {
+        val observations = StringBuilder()
+        runCatching {
+            scenario?.onActivity { activity ->
+                val state = ViewModelProvider(activity)[CoachViewModel::class.java].state.value
+                observations.append("Published state: loading=${state.loading}, busy=${state.busy}, ")
+                    .append("focus=${state.primaryFocus}, startingPath=${state.startingPath}, ")
+                    .append("profilePresent=${state.profile != null}, gym=${state.gymProgramme?.id()}, ")
+                    .append("draftPresent=${state.draft != null}, message=${state.message}, error=${state.error}\n")
+            }
+        }.onFailure { observations.append("Published state unavailable: ${it.message}\n") }
+        runCatching {
+            val store = FeatureStore(context)
+            observations.append("Database: primary.focus=${store.getSetting("primary.focus")}, ")
+                .append("starting.path=${store.getSetting("starting.path")}, ")
+                .append("resolvedFocus=${SqlitePrimaryFocusRepository(context).load()}, ")
+                .append("gym=${GymProgrammeStore(context).current()?.id()}\n")
+        }.onFailure { observations.append("Database observations unavailable: ${it.message}\n") }
+        val semantics = runCatching {
+            compose.onRoot(useUnmergedTree = true).printToString(maxDepth = 12)
+        }.getOrElse { "Compose hierarchy unavailable: ${it.message}" }
+        return "$observations\nCompose hierarchy:\n$semantics"
+    }
+
+    private fun hasDraftTarget(view: View): Boolean {
+        if (
+            view is EditText &&
+                view.isShown &&
+                view.hint?.toString() == context.getString(R.string.onboarding_target_hint) &&
+                view.text.toString() == "1:"
+        )
+            return true
+        if (view is ViewGroup)
+            for (index in 0 until view.childCount) {
+                if (hasDraftTarget(view.getChildAt(index))) return true
+            }
         return false
     }
 

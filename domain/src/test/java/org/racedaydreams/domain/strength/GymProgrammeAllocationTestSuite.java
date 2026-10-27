@@ -340,7 +340,7 @@ public final class GymProgrammeAllocationTestSuite {
                                     plan.sessions().get(i).date())
                             > 1,
                     "Meaningful full-body lower sessions avoid adjacent dates when separation is"
-                        + " available");
+                            + " available");
         }
     }
 
@@ -474,7 +474,7 @@ public final class GymProgrammeAllocationTestSuite {
                 retainedCorePlan.tradeoffs().stream()
                         .anyMatch(tradeoff -> tradeoff.contains("Trunk work fills")),
                 "Retained trunk fallback remains explainable when no pulling equipment is"
-                    + " selected");
+                        + " selected");
     }
 
     private static void verifyExplanation(GymProgramme.Session session) {

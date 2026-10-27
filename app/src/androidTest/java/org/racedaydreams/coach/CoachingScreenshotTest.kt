@@ -162,6 +162,54 @@ class CoachingScreenshotTest {
         }
 
     }
+    @Test fun capturesStrengthFirstHomeWithoutAnyRaceOrRunningProfile() {
+        // Replace this class's running fixture with a real, race-free Strength installation.
+        EveningReminders(context,FeatureStore(context)).cancelAllScheduled()
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context).save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val today=LocalDate.now()
+        val settings=GymProgramme.Settings(
+            GymProgramme.Goal.GENERAL,GymProgramme.Priority.STRENGTH_FIRST,
+            GymProgramme.Experience.INTERMEDIATE,setOf(today.dayOfWeek,today.plusDays(3).dayOfWeek),
+            2,setOf("full gym"),45,GymProgramme.Effort.RPE)
+        val programme=GymProgrammeGenerator().generate("strength-home-block",1,Instant.now(),
+            "Athlete selected a general strength block",settings,today,emptyList(),emptyList())
+        GymProgrammeStore(context).save(programme)
+        val exercise=ExerciseCatalog.definition("bench-press").exercise()
+        val now=Instant.now()
+        for(daysAgo in listOf(3L,6L)) {
+            val id="strength-home-$daysAgo"
+            val sets=(1..3).map { StrengthSession.SetEntry("$id-$it",10,70.0,7.0,false) }
+            CoachingStore(context).saveStrength(StrengthSession(id,now.minus(Duration.ofDays(daysAgo)),
+                ZoneOffset.UTC,Duration.ofMinutes(45),7.0,"Recorded working sets",
+                listOf(StrengthSession.ExerciseSets(exercise,sets))))
+        }
+        Assert.assertNull("Strength fixture must not depend on a running profile",SqliteUserPreferencesRepository(context).load().orElse(null))
+        val originalFont=shell("settings get system font_scale").trim()
+        val originalNight=shell("cmd uimode night").let{if(it.contains("yes"))"yes"else if(it.contains("auto"))"auto"else "no"}
+        try {
+            shell("settings put system font_scale 1.0");shell("cmd uimode night no")
+            scenario=ActivityScenario.launch(CoachActivity::class.java)
+            await("Your strength training");capture("strength-home")
+            compose.onAllNodesWithText("How am I doing?").assertCountEquals(0)
+            scenario?.close();scenario=null
+            shell("cmd uimode night yes")
+            scenario=ActivityScenario.launch(CoachActivity::class.java)
+            await("Your strength training")
+            Assert.assertEquals(android.content.res.Configuration.UI_MODE_NIGHT_YES,context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+            capture("strength-home-dark")
+            scenario?.close();scenario=null
+            shell("settings put system font_scale 2.0")
+            scenario=ActivityScenario.launch(CoachActivity::class.java)
+            await("Your strength training")
+            Assert.assertTrue(context.resources.configuration.fontScale>=1.99f)
+            capture("strength-home-large-font")
+        } finally {
+            scenario?.close();scenario=null
+            if(originalFont.matches(Regex("[0-9.]+")))shell("settings put system font_scale $originalFont")else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+    }
     @Test fun capturesSourcedCityRoutesWithDarkAndLargeText() {
         fun openCity(city:org.racedaydreams.domain.support.DreamRoutes.Route) {
             scenario?.close()

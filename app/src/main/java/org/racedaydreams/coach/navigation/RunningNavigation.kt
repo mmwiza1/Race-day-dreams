@@ -98,22 +98,24 @@ fun NavGraphBuilder.runningGraph(
         val state = readState()
         if (state.profile == null && state.primaryFocus == PrimaryFocus.STRENGTH) {
             GymProgrammeScreen(state, model) { nav.navigate("gym/session/${Uri.encode(it)}") }
-        } else TrainingPlanScreen(
-            readState(),
-            model,
-            { nav.navigate("workout/${Uri.encode(it)}") },
-            { nav.navigate("goals") },
-            {
-                val gym = readState().gymProgramme?.sessions()?.firstOrNull { s -> s.date() == it }
-                nav.navigate(
-                    gym?.let { "gym/session/${Uri.encode(it.id())}" } ?: "strength?date=$it"
-                )
-            },
-            { nav.navigate("routines") },
-            { id, related ->
-                nav.navigate("routine/${Uri.encode(id)}?related=${Uri.encode(related?:"")}")
-            },
-        )
+        } else
+            TrainingPlanScreen(
+                readState(),
+                model,
+                { nav.navigate("workout/${Uri.encode(it)}") },
+                { nav.navigate("goals") },
+                {
+                    val gym =
+                        readState().gymProgramme?.sessions()?.firstOrNull { s -> s.date() == it }
+                    nav.navigate(
+                        gym?.let { "gym/session/${Uri.encode(it.id())}" } ?: "strength?date=$it"
+                    )
+                },
+                { nav.navigate("routines") },
+                { id, related ->
+                    nav.navigate("routine/${Uri.encode(id)}?related=${Uri.encode(related?:"")}")
+                },
+            )
     }
 
     composable("workout/{id}") { destination ->

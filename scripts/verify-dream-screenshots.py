@@ -74,7 +74,12 @@ OTHER_REQUIRED = (
     'warm-up.png',
     'weekly-review.png',
 )
-REQUIRED = tuple(sorted(OTHER_REQUIRED + DREAM_REQUIRED))
+STRENGTH_REQUIRED = (
+    'strength-home.png',
+    'strength-home-dark.png',
+    'strength-home-large-font.png',
+)
+REQUIRED = tuple(sorted(OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED))
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_FILE_BYTES = 16 * 1024 * 1024
 MAX_DECODED_BYTES = 42 * 1024 * 1024

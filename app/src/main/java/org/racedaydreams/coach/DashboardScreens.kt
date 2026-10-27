@@ -19,7 +19,7 @@ import org.racedaydreams.domain.UnitSystem
 @Composable fun StrengthDashboard(state:CoachUiState,open:(String)->Unit)=CoachPage{
     CoachHeading("Strength")
     DestinationCard("Log workout","Record what you actually did"){open("strength/log")}
-    DestinationCard("Gym programme","Optional programming alongside your running"){open("gym")}
+    DestinationCard("Gym programme","Programming for your strength goals, independently or with running"){open("gym")}
     DestinationCard("PBs & progression","Historical and workout records together"){open("strength/pbs")}
     DestinationCard("Workout history","${state.strengthSessions.size} recorded sessions"){open("history?kind=STRENGTH")}
     DestinationCard("Exercises","Search, favourite and manage your exercises"){open("exercises")}

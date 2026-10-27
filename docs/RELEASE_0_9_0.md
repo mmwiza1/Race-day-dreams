@@ -11,6 +11,9 @@ Coach will each work independently, with additional context when an athlete uses
 - Feature-owned application operations and persistence boundaries support this work.
   The full Strength Engine 2.0 experience is still in development; remaining phases
   are tracked in CONTINUE_CODEX.md.
+- Strength-focused Home leads with the day's gym session, independent logging, actual
+  weekly completion, recorded PB evidence and one optional coaching review. A spontaneous
+  session never completes a prescription merely because it occurred on the same date.
 
 ## Improvements
 
@@ -29,6 +32,8 @@ Coach will each work independently, with additional context when an athlete uses
 - Upper/Lower blocks use distinct squat and hinge emphases. Scheduling recognises
   meaningful lower-body work in Full Body sessions, including context immediately
   after a demanding run, and explanations describe the exercises actually retained.
+- Saving focus uses persistent Settings status rather than a transient confirmation
+  that could cover the next action or reappear after rotation.
 
 ## Known limitations
 

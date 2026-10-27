@@ -9,8 +9,9 @@
   remain on `checkpoint/strength-engine-2-local-c1bfac4`; no work was discarded.
 - Target **0.9.0-test1 / code12**. Current schema **10**, JSON **7**, raw archive **2**,
   complete package **1** unchanged. No unnecessary persistence bump for architecture.
-- Latest completed phase: **Phase1 architecture hardening, verified**. Phase2 generator
-  fixes are implemented/tested locally and awaiting their own commit/Android gate.
+- Latest fully verified phase: **Phase1 architecture hardening**. Phase2 generator fixes
+  and Phase3 focus are committed; Phase4 Strength-first Today is implemented. The next
+  Android run verifies their combined descendant after fixing two new UI test failures.
 - The full Strength standalone/programming/execution release is NOT complete. Do not
   confuse a green architecture checkpoint with completion of the requested product.
 
@@ -52,7 +53,7 @@ API35 architecture APK artifact12768139397,48,075,565bytes; captureartifact12768
 These are checkpoint artifacts, NOT the final complete0.9 release. Main's rolling release
 remains0.8.2 until allStrengthEngine2work is complete/merged. No stabletag.
 
-## Phase2 checkpoint and Phase3 in progress
+## Phases2–4 current checkpoint
 
 Three modified files (do not discard):
 - domain/src/main/java/org/racedaydreams/domain/strength/GymProgrammeGenerator.java
@@ -70,7 +71,8 @@ pending). Independent review reproduced all 91,439 checks / 21 suites and 43 sch
 Next: publish separate Phase2, run/fix actual format/Android CI, adopt fresh canonical
 captures and record observed results. Do not claim Android pass yet.
 
-Phase3 is implemented and ready for its own checkpoint and Android gate. It adds 19
+Phase2 source4b58fb4 and pinned-format3709991 are committed. Phase3 source438ee5f is
+committed. Phase3 adds19
 domain checks (91,458 across22suites) and eight Android cases. Do not claim those Android
 results until observed. The first Phase2 CI formatting job produced a real pinned-tool
 patch; it was applied without weakening checks. Phase2 and Phase3 verification will run
@@ -80,21 +82,45 @@ logically from legacy starting.path. Strength enters the existing Strength dashb
 without a RaceGoal; Phase4 will then add a Strength-first Home. New Strength-only gym
 setup defaults may be GENERAL/STRENGTH_FIRST; existing programme settings stay unchanged.
 Focus changes only presentation. Preserve legacy race draft/resume and all destinations.
+Phase4 now enters Strength-first Home on relaunch; Plan still opens the standalone gym
+programme when no running profile exists. Both old and new typed settings round-trip.
 
-Phase4 StrengthToday and Phase6 static exercise metadata are being prepared in separate
-new files by agents strength_today and exercise_metadata. They are NOT part of Phase3
-and must not accidentally be staged in its checkpoint. No new catalogue exercise is
-required merely to increase a count; all existing174guides/14routines remain intact.
+Actual workflow40582975480 compiled/built/linted successfully, then ran249Android cases
+on all APIs with TWO new UI failures. Their common cause was the focus-save snackbar
+covering the next lower-page action; recreation re-showed the retained message. Focus
+save now uses persistent Settings status, with a no-transient-message regression check.
+All original assertions/timeouts remain. Rich fixture-only failure diagnostics were added.
+The actual formatter patches from40582342809/40582975480 were applied. A new run is
+required; do not describe this failed workflow as green.
+
+Phase4: StrengthTodaySummary uses explicit retained actual/prescription/version links,
+not date coincidence. Its domain tests add38checks. SnapshotReader prepares PB/coaching
+history analysis on IO once per coherent refresh; Compose reads that projection. Home
+shows today's gym work, independent logging, actual weekly completion, real PB evidence
+and at most one evidence-backed recommendation. GymNow's full flow remains Phase5;
+the current independent logging action works and no nonfunctional GymNow control ships.
+New screenshot test requires actual StrengthHome light/dark/200% captures; all77old
+captures remain required, plus3new =80. New2component cases+1capture case => expected252
+Android tests, not yet claimed. Existing174guides/14routines/artwork remain unchanged.
+
+Phase6 static metadata is implemented in3new pure-domain files, separately checkpointed:
+ExerciseMetadata.java, ExerciseMetadataCatalog.java, ExerciseMetadataTestSuite.java.
+Explicit174/174canonicalIDs, movement roles, broad primary/secondary areas, experience
+suitability and OR-of-complete equipment setups; unknown/custom metadata stays unknown.
+2,576newchecks. Existing catalogue, generator selection and measurements remain unchanged.
+This is the metadata foundation, NOT completed browsing/custom exercises/substitutions.
+Current local total94,072checks/24suites,43schema,9release,10formatterharness,7screenshot,
+11Dreamsource,14artworkintegrity, strict174/174+14/14guidance pass.
 
 ## Next work
 
-1. Protect this documentedPhase1 checkpoint separately from Phase2 behaviour fixes.
-2. Complete Phase2 format/build/affectedinstrumentation gate and checkpoint.
-3. Phase3 typedtrainingfocus/onboarding/Settings: Running/Strength/Hybrid presentation,
-   StrengthneedsnoRaceGoal, allfeaturesremain. Existing settingsbackups preserveALLstring
-   keys, so a typed focusadapter can reuse that table without schema/envelopebump. Preserve
-   record/race/hybrid legacydraft flows; no automatic programme priority changes.
-4. Then Phase4 Strength-firstToday andPhase5 genuineGymNow, in coherent tested checkpoints.
+1. Run/fix actual pinned formatter + full API28/35/36 for current Phase4 descendant.
+2. Adopt canonical80captures, inspect StrengthHome light/dark/200%, record actual results.
+3. Implement Phase5 complete GymNow, using one typed reusable prescription/execution path;
+   favourites/repeats/custom builder must work, no silent programme association. Plan new
+   typed durability with the later Strength concepts before any schema/JSON bump.
+4. Use reviewed Phase6 metadata for Phases8–13 exclusions/browse/custom/substitution;
+   catalogue expansion is quality-gated, not a count target. Continue all remaining scope.
 
 ## Remaining full product scope (not implemented yet)
 

@@ -118,13 +118,10 @@ private fun PrimaryFocusSettings(state: CoachUiState, model: CoachViewModel) {
     }
     CoachCard {
         Text("Primary focus", style = MaterialTheme.typography.titleLarge)
+        state.primaryFocus?.let { focus -> Text("Current primary focus: ${primaryFocusLabel(focus)}") }
         Text("Choose the training you want to focus on. Every feature stays available. Changing focus preserves your goals, programmes and workout history.")
         PrimaryFocus.values().forEach { focus ->
-            val label = when (focus) {
-                PrimaryFocus.RUNNING -> "Running"
-                PrimaryFocus.STRENGTH -> "Strength"
-                PrimaryFocus.HYBRID -> "Hybrid"
-            }
+            val label = primaryFocusLabel(focus)
             Row(
                 Modifier.fillMaxWidth().heightIn(min = 48.dp)
                     .selectable(
@@ -150,6 +147,12 @@ private fun PrimaryFocusSettings(state: CoachUiState, model: CoachViewModel) {
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
         ) { Text("Save primary focus") }
     }
+}
+
+private fun primaryFocusLabel(focus: PrimaryFocus): String = when (focus) {
+    PrimaryFocus.RUNNING -> "Running"
+    PrimaryFocus.STRENGTH -> "Strength"
+    PrimaryFocus.HYBRID -> "Hybrid"
 }
 
 @Composable

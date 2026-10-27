@@ -3,6 +3,15 @@ package org.racedaydreams.data;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.test.AndroidTestCase;
+
+import org.json.JSONObject;
+import org.racedaydreams.domain.settings.PrimaryFocus;
+import org.racedaydreams.domain.settings.PrimaryFocusRepository;
+import org.racedaydreams.domain.settings.SettingsRepository;
+import org.racedaydreams.domain.strength.GymProgramme;
+import org.racedaydreams.domain.strength.GymProgrammeGenerator;
+import org.racedaydreams.portability.BackupManager;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -11,13 +20,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.EnumSet;
-import org.json.JSONObject;
-import org.racedaydreams.domain.settings.PrimaryFocus;
-import org.racedaydreams.domain.settings.PrimaryFocusRepository;
-import org.racedaydreams.domain.settings.SettingsRepository;
-import org.racedaydreams.domain.strength.GymProgramme;
-import org.racedaydreams.domain.strength.GymProgrammeGenerator;
-import org.racedaydreams.portability.BackupManager;
 
 /** Focus is a typed preference in the existing transactional database and backup format. */
 @SuppressWarnings("deprecation")
@@ -56,7 +58,8 @@ public final class PrimaryFocusRepositoryTest extends AndroidTestCase {
 
     public void testExplicitFocusSurvivesANewAdapterAndRetainsLegacyPathAndDraft() {
         settings.putSetting("starting.path", "race");
-        SqliteUserPreferencesRepository profiles = new SqliteUserPreferencesRepository(getContext());
+        SqliteUserPreferencesRepository profiles =
+                new SqliteUserPreferencesRepository(getContext());
         String draft = "{\"targetTime\":\"1:\",\"unfinished\":true}";
         profiles.saveDraft(draft);
         for (PrimaryFocus choice : PrimaryFocus.values()) {
@@ -76,7 +79,8 @@ public final class PrimaryFocusRepositoryTest extends AndroidTestCase {
         GymProgrammeStore gym = new GymProgrammeStore(getContext());
         gym.save(programme);
         String draft = "{\"targetTime\":\"1:\",\"unfinished\":true}";
-        SqliteUserPreferencesRepository profiles = new SqliteUserPreferencesRepository(getContext());
+        SqliteUserPreferencesRepository profiles =
+                new SqliteUserPreferencesRepository(getContext());
         profiles.saveDraft(draft);
         BackupManager manager = new BackupManager(getContext(), store);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -84,7 +88,11 @@ public final class PrimaryFocusRepositoryTest extends AndroidTestCase {
         byte[] snapshot = output.toByteArray();
         JSONObject envelope = new JSONObject(new String(snapshot, StandardCharsets.UTF_8));
         assertEquals(7, envelope.getInt("version"));
-        assertEquals("strength", envelope.getJSONObject("data").getJSONObject("settings").getString("primary.focus"));
+        assertEquals(
+                "strength",
+                envelope.getJSONObject("data")
+                        .getJSONObject("settings")
+                        .getString("primary.focus"));
 
         focus.save(PrimaryFocus.RUNNING);
         gym.disable();
@@ -129,9 +137,9 @@ public final class PrimaryFocusRepositoryTest extends AndroidTestCase {
         focus.save(PrimaryFocus.HYBRID);
         settings.putSetting("retained", "before failed restore");
         db.execSQL(
-                "CREATE TRIGGER primary_focus_restore_failure BEFORE INSERT ON settings "
-                        + "WHEN NEW.setting_key='primary.focus' "
-                        + "BEGIN SELECT RAISE(ABORT, 'injected primary focus restore failure'); END");
+                "CREATE TRIGGER primary_focus_restore_failure BEFORE INSERT ON settings WHEN"
+                    + " NEW.setting_key='primary.focus' BEGIN SELECT RAISE(ABORT, 'injected primary"
+                    + " focus restore failure'); END");
         try {
             backups.restoreUserData(snapshot, false);
             fail("A focus restore failure must abort the complete replacement.");

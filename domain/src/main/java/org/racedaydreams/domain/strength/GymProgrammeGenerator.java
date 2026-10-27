@@ -94,7 +94,7 @@ public final class GymProgrammeGenerator {
                 && settings.priority() == GymProgramme.Priority.RUNNING_FIRST) {
             tradeoffs.add(
                     "You selected frequent gym training with running first. Working sets are"
-                        + " deliberately limited; more days are not inherently better.");
+                            + " deliberately limited; more days are not inherently better.");
         }
         if (!settings.equipment().contains("full gym")
                 && Collections.disjoint(
@@ -111,15 +111,15 @@ public final class GymProgrammeGenerator {
             tradeoffs.add(
                     trunkPrescribed
                             ? "No pulling equipment was selected. Trunk work fills a practical"
-                                  + " slot; it is not equivalent to rows or pull-ups."
+                                    + " slot; it is not equivalent to rows or pull-ups."
                             : "No pulling equipment was selected. This block does not prescribe"
-                                  + " rows or pull-ups.");
+                                    + " rows or pull-ups.");
         }
         if (settings.goal() == GymProgramme.Goal.POWER
                 && settings.experience() == GymProgramme.Experience.BEGINNER) {
             tradeoffs.add(
                     "Beginner power preparation uses controlled fundamentals; technical Olympic"
-                        + " lifts are not automatically prescribed.");
+                            + " lifts are not automatically prescribed.");
         }
         return new GymProgramme(
                 id,
@@ -250,9 +250,9 @@ public final class GymProgrammeGenerator {
             String advice =
                     run.date().equals(day.minusDays(1))
                             ? "Review recovery and reduce gym effort if needed; nothing has been"
-                                  + " removed."
+                                    + " removed."
                             : "Consider separating sessions or reducing gym effort; nothing has"
-                                  + " been removed.";
+                                    + " been removed.";
             out.add(
                     "Lower-body strength on "
                             + date(day)
@@ -450,12 +450,12 @@ public final class GymProgrammeGenerator {
                     settings.goal() == GymProgramme.Goal.POWER
                             ? settings.experience() == GymProgramme.Experience.BEGINNER
                                     ? "Develop controlled fundamentals before adding power work. No"
-                                          + " maximal testing."
+                                            + " maximal testing."
                                     : "Use a manageable moderate load, controlled lowering and an"
                                           + " intentionally fast upward phase. Stop before speed or"
                                           + " control deteriorates."
                             : "Choose a manageable load or variation within the effort range;"
-                                  + " progression is optional."
+                                    + " progression is optional."
                                     + (favourites.contains(id)
                                             ? " This suitable exercise is one of your favourites."
                                             : "");

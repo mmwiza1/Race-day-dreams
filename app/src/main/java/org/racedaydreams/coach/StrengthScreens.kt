@@ -20,7 +20,7 @@ import org.racedaydreams.domain.strength.*
     fun mass(kg:Double)="${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}"
     CoachPage{
         CoachHeading("Strength")
-        Text("Your optional strength training, records and running context.")
+        Text("Your strength training, records and progression.")
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->FilterChip(selected=state.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
         if(plannedDate!=null)Text("Planned strength · ${friendlyDate(plannedDate)}. Log what you actually did.")
         if(section=="log" && !logging) {

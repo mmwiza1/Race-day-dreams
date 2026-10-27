@@ -121,6 +121,19 @@ class CoachSnapshotReader(
                 if (review != null && !development.reviewKnown(review.id()))
                     development.saveReview(review)
                 reminders.reconcile()
+                val gymProgramme = gym.current()
+                val gymLinks = development.gymLinks()
+                val strengthToday = org.racedaydreams.domain.presentation.StrengthTodaySummary.from(
+                    gymProgramme,
+                    strength,
+                    gymLinks.values.map {
+                        org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
+                            it.actualSessionId(), it.versionKey(), it.prescribedSessionId(),
+                        )
+                    },
+                    LocalDate.now(),
+                    Instant.now(),
+                )
                 CoachUiState(
                     loading = false,
                     startingPath = settings.getSetting("starting.path"),
@@ -144,9 +157,10 @@ class CoachSnapshotReader(
                     massUnit =
                         runCatching { MassUnit.valueOf(settings.getSetting("mass.unit") ?: "KG") }
                             .getOrDefault(MassUnit.KG),
-                    gymLinks = development.gymLinks(),
+                    gymLinks = gymLinks,
                     gymProgressionDecisions = gym.decisions(),
-                    gymProgramme = gym.current(),
+                    gymProgramme = gymProgramme,
+                    strengthToday = strengthToday,
                     gymVersions = gym.versions(),
                     exerciseChoices = choices.choices(),
                     acknowledgedPbs = choices.acknowledged(),
