@@ -31,13 +31,18 @@ import java.util.Objects;
  */
 public final class BackupManager {
     public static final String FORMAT = "race-day-dreams-backup";
-    // v2 adds the coaching graph. Older apps reject it rather than silently dropping
-    // plan/strength history; this reader still accepts original v1 backups.
-    public static final int VERSION = 7;
-    public static final int MAX_BYTES = 8 * 1024 * 1024;
+    // v8 adds independently versioned frozen gym prescriptions/execution staging. Older apps
+    // reject this envelope instead of silently dropping actual sets or unfinished workouts.
+    // Readers for all original envelopes1–7 remain supported.
+    public static final int VERSION = 8;
+    // Gym execution retains both staged and completed actual evidence. Keep allocation bounded
+    // while allowing multi-year strength history beyond the previous8MiB/200k-token ceiling.
+    public static final int MAX_BYTES = 32 * 1024 * 1024;
     private static final int MAX_DEPTH = 32;
-    private static final int MAX_STRUCTURAL_TOKENS = 200_000;
-    private static final int MAX_STRING_CHARACTERS = 256_000;
+    private static final int MAX_STRUCTURAL_TOKENS = 2_000_000;
+    // A <=256KiB typed SQL payload becomes an escaped string inside the coaching graph.
+    // Count its serialized characters here, allowing bounded quote/backslash expansion.
+    private static final int MAX_STRING_CHARACTERS = 1024 * 1024;
     private final BackupRepository store;
     private final Clock clock;
 
@@ -81,7 +86,7 @@ public final class BackupManager {
             checkComplexity(json);
             byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
             if (bytes.length > MAX_BYTES)
-                throw new IOException("This backup is larger than the supported 8 MiB limit.");
+                throw new IOException("This backup is larger than the supported 32 MiB limit.");
             output.write(bytes);
             output.flush();
         } catch (JSONException | IllegalArgumentException | DateTimeException error) {
@@ -173,6 +178,8 @@ public final class BackupManager {
                         "This version-two backup is missing its coaching data section.");
             if (((Integer) version) >= 6 && !envelope.getJSONObject("data").has("support"))
                 throw new IOException("Backup is missing support evidence.");
+            if (((Integer) version) >= 8 && !envelope.getJSONObject("data").has("strengthEngine"))
+                throw new IOException("Version-eight backup is missing its gym execution evidence.");
             Instant.parse(envelope.getString("createdAt"));
             store.validateSnapshot(envelope.getJSONObject("data"));
             return envelope;
@@ -189,7 +196,7 @@ public final class BackupManager {
         int count;
         while ((count = input.read(buffer)) != -1) {
             if (bytes.size() + count > MAX_BYTES)
-                throw new IOException("The backup exceeds the supported 8 MiB limit.");
+                throw new IOException("The backup exceeds the supported 32 MiB limit.");
             bytes.write(buffer, 0, count);
         }
         return bytes.toByteArray();

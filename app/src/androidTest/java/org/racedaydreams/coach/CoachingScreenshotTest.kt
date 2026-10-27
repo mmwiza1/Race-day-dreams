@@ -1044,10 +1044,6 @@ class CoachingScreenshotTest {
                     .isNotEmpty()
             }
         }
-        compose.waitForIdle()
-        // Compose idleness can precede SurfaceFlinger presenting the last frame.
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-        android.os.SystemClock.sleep(200)
         // Idleness alone does not prove an asynchronous application snapshot is ready.
         // A valid PNG of the loading screen must never become a canonical app preview.
         compose.onAllNodesWithText("Loading your local training information…").assertCountEquals(0)
@@ -1069,6 +1065,11 @@ class CoachingScreenshotTest {
             "Raw ISO date in normal UI",
             Regex("Text = .*\\b[0-9]{4}-[0-9]{2}-[0-9]{2}").containsMatchIn(semantics),
         )
+        // Semantic queries above can advance Compose to a newer frame. Let that final
+        // frame reach SurfaceFlinger before capturing the actual Android screen.
+        compose.waitForIdle()
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        android.os.SystemClock.sleep(200)
         val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
         Assert.assertNotNull(bitmap)
         val dir = File(context.getExternalFilesDir(null), "screenshots")

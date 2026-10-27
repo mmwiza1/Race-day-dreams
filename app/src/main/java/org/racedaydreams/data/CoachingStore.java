@@ -29,8 +29,21 @@ public final class CoachingStore implements CoachingRepository {
     public List<AdjustmentProposal> proposals(){return rows(db(),"SELECT payload FROM coach_proposals WHERE decision IS NULL ORDER BY rowid DESC",CoachingJson::proposal);}
     public boolean proposalKnown(String id){try(Cursor c=db().rawQuery("SELECT 1 FROM coach_proposals WHERE id=?",new String[]{id})){return c.moveToFirst();}}
     public void saveExercise(StrengthExercise e){ContentValues v=payload(e.id(),CoachingJson.exercise(e));upsert(db(),"strength_exercises","id",e.id(),v);}
-    public void saveStrength(StrengthSession s){if(s.startedAt().isAfter(Instant.now()))throw new IllegalArgumentException("A completed strength session cannot be in the future.");ContentValues v=payload(s.id(),CoachingJson.strength(s));v.put("started_at",s.startedAt().toString());upsert(db(),"strength_sessions","id",s.id(),v);}
-    public void deleteStrength(String id){db().delete("strength_sessions","id=?",new String[]{id});}
+    public void saveStrength(StrengthSession s){
+        if(s.startedAt().isAfter(Instant.now()))throw new IllegalArgumentException("A completed strength session cannot be in the future.");
+        SQLiteDatabase db=db();db.beginTransaction();try{
+            // A deliberate actual edit stays separate from the original live execution evidence.
+            SqliteGymExecutionRepository.recordActualEdit(db,s,Instant.now());
+            ContentValues v=payload(s.id(),CoachingJson.strength(s));v.put("started_at",s.startedAt().toString());
+            upsert(db,"strength_sessions","id",s.id(),v);db.setTransactionSuccessful();
+        }finally{db.endTransaction();}
+    }
+    public void deleteStrength(String id){
+        SQLiteDatabase db=db();db.beginTransaction();try{
+            SqliteGymExecutionRepository.deleteCompleted(db,id);
+            db.delete("strength_sessions","id=?",new String[]{id});db.setTransactionSuccessful();
+        }finally{db.endTransaction();}
+    }
     public void saveResponse(RunExecution r){SQLiteDatabase db=db();if(r.planVersionId()!=null){PlanVersion version=versions().stream().filter(v->v.id().equals(r.planVersionId())).findFirst().orElseThrow(()->new IllegalArgumentException("Plan version not found."));if(version.plan().workouts().stream().noneMatch(w->w.id().equals(r.plannedWorkoutId())))throw new IllegalArgumentException("Workout is not in this plan version.");}
         ContentValues v=new ContentValues();v.put("activity_id",r.activityId());v.put("planned_workout_id",r.plannedWorkoutId());v.put("plan_version_id",r.planVersionId());v.put("payload",CoachingJson.response(r).toString());upsert(db,"run_responses","activity_id",r.activityId(),v);}
     public void saveFeedback(String activityId,String versionId,RunFeedback feedback){ContentValues v=new ContentValues();v.put("activity_id",activityId);v.put("plan_version_id",versionId);v.put("payload",CoachingJson.feedback(feedback).toString());upsert(db(),"run_feedback","activity_id",activityId,v);}

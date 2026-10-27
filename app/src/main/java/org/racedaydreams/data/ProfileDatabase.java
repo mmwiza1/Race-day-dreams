@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 10;
+    static final int VERSION = 11;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -45,6 +45,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateSevenToEight(db);
         migrateEightToNine(db);
         migrateNineToTen(db);
+        migrateTenToEleven(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -190,10 +191,24 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V10_SCHEMA_END
     }
 
+    /** Typed gym durability; later Strength features must use explicit subsequent migrations. */
+    private static void migrateTenToEleven(SQLiteDatabase db) {
+        // V11_SCHEMA_BEGIN
+        db.execSQL("CREATE TABLE strength_workout_versions (workout_id TEXT NOT NULL, revision INTEGER NOT NULL CHECK(revision > 0), source_kind TEXT CHECK(source_kind IN ('PROGRAMME','ACTUAL_SESSION')), source_id TEXT, payload TEXT NOT NULL CHECK(length(CAST(payload AS BLOB)) <= 262144), CHECK((source_kind IS NULL) = (source_id IS NULL)), PRIMARY KEY(workout_id,revision))");
+        db.execSQL("CREATE INDEX strength_workout_sources ON strength_workout_versions(source_kind,source_id)");
+        db.execSQL("CREATE TABLE strength_workout_preferences (workout_id TEXT PRIMARY KEY NOT NULL, current_revision INTEGER NOT NULL CHECK(current_revision > 0), favourite INTEGER NOT NULL CHECK(favourite IN (0,1)), FOREIGN KEY(workout_id,current_revision) REFERENCES strength_workout_versions(workout_id,revision))");
+        db.execSQL("CREATE TABLE strength_executions (id TEXT PRIMARY KEY NOT NULL, revision INTEGER NOT NULL CHECK(revision > 0), origin TEXT NOT NULL CHECK(origin IN ('PLANNED','QUICK','CUSTOM','REPEATED','FAVOURITE','GENERATED','FREE')), state TEXT NOT NULL CHECK(state IN ('ACTIVE','PAUSED','RECOVERY_REQUIRED','FINISHED','DISCARDED')), started_at TEXT NOT NULL, title TEXT NOT NULL, recorded_elapsed INTEGER NOT NULL CHECK(recorded_elapsed BETWEEN 0 AND 604800000), active_millis INTEGER NOT NULL CHECK(active_millis BETWEEN 0 AND 43200000 AND active_millis <= recorded_elapsed), set_count INTEGER NOT NULL CHECK(set_count BETWEEN 0 AND 10000), event_count INTEGER NOT NULL CHECK(event_count BETWEEN 1 AND 50000), workout_id TEXT, workout_revision INTEGER, header TEXT NOT NULL CHECK(length(CAST(header AS BLOB)) <= 262144), accepted_actual TEXT CHECK(accepted_actual IS NULL OR length(CAST(accepted_actual AS BLOB)) <= 262144), actual_edited_at TEXT, CHECK((state = 'FINISHED') = (accepted_actual IS NOT NULL)), CHECK(actual_edited_at IS NULL OR state = 'FINISHED'), CHECK((workout_id IS NULL) = (workout_revision IS NULL)), FOREIGN KEY(workout_id,workout_revision) REFERENCES strength_workout_versions(workout_id,revision))");
+        db.execSQL("CREATE UNIQUE INDEX one_unfinished_gym_execution ON strength_executions((1)) WHERE state IN ('ACTIVE','PAUSED','RECOVERY_REQUIRED')");
+        db.execSQL("CREATE INDEX strength_executions_history ON strength_executions(started_at DESC,id)");
+        db.execSQL("CREATE TABLE strength_execution_sets (execution_id TEXT NOT NULL REFERENCES strength_executions(id) ON DELETE CASCADE, sequence INTEGER NOT NULL CHECK(sequence BETWEEN 0 AND 9999), actual_set_id TEXT NOT NULL, payload TEXT NOT NULL CHECK(length(CAST(payload AS BLOB)) <= 262144), PRIMARY KEY(execution_id,sequence), UNIQUE(execution_id,actual_set_id))");
+        db.execSQL("CREATE TABLE strength_execution_events (execution_id TEXT NOT NULL REFERENCES strength_executions(id) ON DELETE CASCADE, sequence INTEGER NOT NULL CHECK(sequence BETWEEN 0 AND 49999), payload TEXT NOT NULL CHECK(length(CAST(payload AS BLOB)) <= 262144), PRIMARY KEY(execution_id,sequence))");
+        // V11_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 9)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 10)) {
             throw new SQLiteException("An explicit migration is required from schema "
                     + oldVersion + " to " + newVersion + ". Existing data was retained.");
         }
@@ -205,6 +220,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 6) migrateSixToSeven(db);
         if(oldVersion <= 7) migrateSevenToEight(db);
         if(oldVersion <= 8) migrateEightToNine(db);
-        migrateNineToTen(db);
+        if (oldVersion <= 9) migrateNineToTen(db);
+        migrateTenToEleven(db);
     }
 }

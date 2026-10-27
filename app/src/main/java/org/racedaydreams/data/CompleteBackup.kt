@@ -38,6 +38,7 @@ class CompleteBackup(private val context:Context) {
             app.inputStream().use{manager.inspect(it)}
             val db=helper.writableDatabase;db.beginTransaction();try{
                 require(RecordingStore(context).unfinished()==null){"Finish or recover the current run before restore"}
+                require(!SqliteGymExecutionRepository.hasUnfinished(db)){"Finish or discard the unfinished gym workout before restore"}
                 // Raw importer validates every row before writing anything. The outer transaction
                 // then protects both its merge and the typed core replacement against any failure.
                 raw.inputStream().use{RecordingArchive(context).restoreFrom(it)}

@@ -188,6 +188,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             out.put("gymProgramming", GymProgrammeStore.exportData(db));
             out.put("support", SupportStore.exportData(db));
             out.put("release08", Release08Store.exportData(db));
+            out.put("strengthEngine", SqliteGymExecutionRepository.exportData(db));
             db.setTransactionSuccessful();
             return out;
         } catch (JSONException e) {
@@ -235,6 +236,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             JSONObject development,
             JSONObject strengthState,
             JSONObject gymProgramming,
+            JSONObject strengthEngine,
             JSONObject support) {}
 
     private record SourceKey(String provider, String recordId) {}
@@ -399,6 +401,11 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                 GymProgrammeStore.validate(data.getJSONObject("gymProgramming"));
             GymProgrammeStore.validateLinks(
                     development, coaching, data.optJSONObject("gymProgramming"));
+            JSONObject strengthEngine =
+                    data.has("strengthEngine") ? data.getJSONObject("strengthEngine") : null;
+            if (strengthEngine != null)
+                SqliteGymExecutionRepository.validate(
+                        strengthEngine, coaching, data.optJSONObject("gymProgramming"), development);
             return new RestoreData(
                     profile,
                     draft,
@@ -418,6 +425,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                     development,
                     data.optJSONObject("strengthState"),
                     data.optJSONObject("gymProgramming"),
+                    strengthEngine,
                     data.optJSONObject("support"));
         } catch (JSONException | java.time.DateTimeException e) {
             throw FeatureJson.invalid(e);
@@ -471,6 +479,10 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                     throw new IllegalArgumentException(
                             "Finish or recover the active recording before replacing app data.");
             }
+            if (SqliteGymExecutionRepository.hasUnfinished(db))
+                throw new IllegalArgumentException(
+                        "Finish or discard the unfinished gym workout before replacing app data.");
+            SqliteGymExecutionRepository.clear(db);
             GymProgrammeStore.clear(db);
             StrengthUserStore.clear(db);
             DevelopmentStore.clear(db);
@@ -555,6 +567,8 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                 StrengthUserStore.restore(db, snapshot.strengthState());
             if (snapshot.gymProgramming() != null)
                 GymProgrammeStore.restore(db, snapshot.gymProgramming());
+            if (snapshot.strengthEngine() != null)
+                SqliteGymExecutionRepository.restore(db, snapshot.strengthEngine());
             SupportStore.restore(db, snapshot.support());
             Release08Store.restore(db, data.optJSONObject("release08"));
             RecordingStore.restoreRetainedSamples(db);
