@@ -23,6 +23,7 @@ public final class GymProgrammeTestSuite {
         var first=session("a",NOW.minusSeconds(3600),8,7.0);var second=session("b",NOW.minusSeconds(86400),8,7.0);var advice=StrengthProgressionAdvisor.review(p,List.of(first,second));ok(advice.action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,"Repeated controlled top reps");ok(advice.options().contains("Keep current load"),"No forced increase");ok(first.exercises().get(0).sets().get(0).kilograms()==80,"Evidence immutable");
         ok(StrengthProgressionAdvisor.review(p,List.of(session("hard",NOW,5,9.0),second)).action()==StrengthProgressionAdvisor.Action.REDUCE_OR_SIMPLIFY,"High effort -> reduce option");ok(StrengthProgressionAdvisor.review(p,List.of(session("unknown",NOW,8,null),second)).action()==StrengthProgressionAdvisor.Action.HOLD,"Missing effort -> hold");
         ok(StrengthProgressionAdvisor.review(p,List.of(first,second),NOW.plus(Duration.ofDays(45))).action()==StrengthProgressionAdvisor.Action.HOLD,"Stale evidence cannot drive a load increase");
+        progressionRequiresRecentSessions(p);
         ok(!GymProgrammeGenerator.available("back-squat",Set.of("barbell")),"Squat needs rack");ok(!GymProgrammeGenerator.available("bench-press",Set.of("barbell","squat rack")),"Bench needs bench");
         ok(!GymProgrammeGenerator.available("goblet-squat",Set.of("barbell")),"A barbell is not a goblet weight");
         ok(!GymProgrammeGenerator.available("split-squat",Set.of("barbell")),"Rear-foot elevated split squat needs support");
@@ -39,6 +40,32 @@ public final class GymProgrammeTestSuite {
             }
         }
         System.out.println("GymProgrammeTestSuite: "+checks+" checks passed.");
+    }
+    static void progressionRequiresRecentSessions(GymProgramme.Prescription prescription){
+        var fresh=session("fresh",NOW.minusSeconds(3600),8,7.0);
+        var recent=session("recent",NOW.minus(Duration.ofDays(7)),8,7.0);
+        var stale=session("stale",NOW.minus(Duration.ofDays(29)),8,7.0);
+        var future=session("future",NOW.plusSeconds(1),8,7.0);
+        var repeated=StrengthProgressionAdvisor.review(prescription,List.of(fresh,recent),NOW);
+        ok(repeated.action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,"Two recent comparable successes support an optional increase");
+        ok(repeated.suggestedKilograms()==82.0,"Recent successes retain the same small increase");
+        ok(repeated.options().contains("Keep current load"),"Recency filtering never applies an increase");
+        for(var history:List.of(List.of(fresh,stale),List.of(stale),List.of(future,fresh),List.of(future))){
+            var advice=StrengthProgressionAdvisor.review(prescription,history,NOW);
+            ok(advice.action()==StrengthProgressionAdvisor.Action.HOLD,"One recent session cannot combine with stale or future-dated evidence");
+            ok(advice.suggestedKilograms()==null,"Ineligible evidence never produces a numeric increase");
+        }
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(future,fresh,recent),NOW).action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,"A future entry does not hide two genuine recent successes");
+        var boundary=session("boundary",NOW.minus(Duration.ofDays(28)),8,7.0);
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(fresh,boundary),NOW).action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,"Evidence exactly 28 days old remains eligible");
+        var outside=session("outside",NOW.minus(Duration.ofDays(28)).minusSeconds(1),8,7.0);
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(fresh,outside),NOW).action()==StrengthProgressionAdvisor.Action.HOLD,"The 28-day window does not round away extra stale hours");
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(session("current",NOW,8,7.0),fresh),NOW).action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,"Evidence at the as-of instant is eligible");
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(session("unknown-effort",NOW,8,null),recent),NOW).action()==StrengthProgressionAdvisor.Action.HOLD,"Fresh evidence still requires recorded effort");
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(session("hard",NOW,5,9.0),stale),NOW).action()==StrengthProgressionAdvisor.Action.REDUCE_OR_SIMPLIFY,"A current hard session still supports a conservative reduction option");
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(),NOW).action()==StrengthProgressionAdvisor.Action.GATHER_EVIDENCE,"An empty dated history does not invent a previous load");
+        ok(StrengthProgressionAdvisor.review(prescription,List.of(fresh,stale)).action()==StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,"The undated compatibility API retains its historical contract");
+        ok(fresh.exercises().get(0).sets().get(0).kilograms()==80,"Recency checks leave actual evidence untouched");
     }
     static StrengthSession session(String id,Instant at,int reps,Double rpe){var e=ExerciseCatalog.definition("back-squat").exercise();return new StrengthSession(id,at,ZoneOffset.UTC,Duration.ofMinutes(40),rpe,"",List.of(new StrengthSession.ExerciseSets(e,List.of(new StrengthSession.SetEntry(id+"1",reps,80,rpe,false),new StrengthSession.SetEntry(id+"2",reps,80,rpe,false)))));}
 }

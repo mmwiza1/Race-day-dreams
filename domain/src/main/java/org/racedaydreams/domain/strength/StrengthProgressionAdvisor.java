@@ -7,9 +7,19 @@ public final class StrengthProgressionAdvisor {
     public enum Action { GATHER_EVIDENCE, HOLD, CONSIDER_INCREASE, REDUCE_OR_SIMPLIFY }
     public record Advice(Action action,String reason,Double previousKilograms,Double suggestedKilograms,List<String> options){}
     public static Advice review(GymProgramme.Prescription prescription,List<StrengthSession> history,java.time.Instant asOf){
-        var latest=history.stream().filter(s->s.exercises().stream().anyMatch(e->e.exercise().id().equals(prescription.exerciseId()))).map(StrengthSession::startedAt).max(java.time.Instant::compareTo);
-        if(latest.isPresent()&&java.time.Duration.between(latest.get(),asOf).toDays()>28)return advice(Action.HOLD,"Recent comparable strength evidence is needed before increasing the load after this gap.",null,null);
-        return review(prescription,history);
+        Objects.requireNonNull(asOf);
+        var earliest=asOf.minus(java.time.Duration.ofDays(28));
+        // Each supporting session must be recent; a fresh latest session cannot refresh old evidence.
+        var recent=history.stream()
+                .filter(s->!s.startedAt().isBefore(earliest)&&!s.startedAt().isAfter(asOf))
+                .collect(java.util.stream.Collectors.toList());
+        boolean anyWorkingEvidence=history.stream().anyMatch(s->s.exercises().stream()
+                .anyMatch(e->e.exercise().id().equals(prescription.exerciseId())
+                        &&e.sets().stream().anyMatch(set->!set.warmUp())));
+        var result=review(prescription,recent);
+        if(result.action()==Action.GATHER_EVIDENCE&&anyWorkingEvidence)
+            return advice(Action.HOLD,"Recent comparable strength evidence is needed before increasing the load. Older or future-dated sessions do not count as recent evidence.",null,null);
+        return result;
     }
     public static Advice review(GymProgramme.Prescription prescription,List<StrengthSession> history){
         var sessions=new ArrayList<>(history);sessions.sort(Comparator.comparing(StrengthSession::startedAt).reversed().thenComparing(StrengthSession::id));
