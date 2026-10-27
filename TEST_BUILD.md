@@ -283,3 +283,50 @@ plans, gym versions, history and unfinished goal drafts remain intact. Export a 
 backup, change focus and restore it; check the original focus and programme return.
 Running-only users must be able to record or set a race goal without gym setup.
 These physical checks remain unperformed; CI emulator results are recorded separately.
+
+## Strength Engine 2.0 durability — Galaxy S24 acceptance pending
+
+All checks below are **UNPERFORMED**. Record the intended APK commit, Android/One UI
+version, date, result and observations. The current typed storage foundation alone does
+not expose the forthcoming full Gym Now/live gym interface: perform its UI checks when
+those flows are present in the tested build. A repository test is not a device result.
+
+- [ ] Back up the existing install before upgrading from schema 10/JSON envelope 7.
+  Compare retained gym programmes, actual sets, favourites and actual rep PBs after
+  migration. Restore an older supported backup on an expendable installation.
+- [ ] Start a planned workout, enter actual sets different from its targets, and close
+  and reopen the UI. Targets and original programme revision stay unchanged; the saved
+  loads/reps/effort are exactly those entered. A warm-up is not working-volume/PB evidence.
+- [ ] Start spontaneous/quick/custom/repeated/favourite/generated workouts when available.
+  None completes today's programme merely by sharing its date. Repeats begin with empty
+  actual sets and retain the accepted structure rather than copying prior performance.
+- [ ] Save a set, background/lock the phone and recreate the activity. Reopen the same
+  execution: no duplicate set, invented reps, lost committed actual or duplicate completion.
+  Confirm a second unfinished workout cannot silently replace the first.
+- [ ] Pause, close unexpectedly and reboot where practical. Recovery explains retained
+  timing and an interruption gap; it does not restart a clock secretly or claim the
+  missing period was continuous training. Confirm safe partial finish and discard on
+  separate expendable workouts.
+- [ ] Finish a planned workout, then change the current programme. The actual still
+  refers to the revision/session used at start. Spontaneous evidence remains independent
+  unless an explicit supported association is accepted.
+- [ ] Accept an edit to a completed actual, check PB recalculation, then complete a backup
+  round trip. The edited actual is current, while the original execution evidence and
+  prescription are preserved. Deleting an expendable completed actual must not erase a
+  previously retained repeat template or unrelated PB/history evidence.
+- [ ] Export current JSON envelope 8 and complete container 1; restore on an expendable
+  installation and compare saved revisions, favourite choices, sources, completed actuals,
+  edits and unfinished-stage recovery. Keep the original backup until comparison succeeds.
+- [ ] Try replacement restore with a local unfinished gym workout. It must explain the
+  required finish/discard action and retain that stage. Use a deliberately corrupted copy
+  of a backup: failed validation must leave all current records intact.
+- [ ] On a substantial history, scroll summaries and open individual workouts repeatedly;
+  note responsiveness and any memory/process problems. Do not infer a peak-memory or
+  multi-year performance pass from one fixture or emulator result.
+- [ ] Check light/dark mode, 200% text, TalkBack focus and useful save/recovery error
+  announcements. No load suggestion may replace an actual entered value, and no recovery
+  action may require network access.
+
+Schema 11 / envelope 8 repository and backup checks need their own observed automated
+API28/35/36 gate in VERIFICATION.md. Outdoor recording, Health Connect, Bluetooth HR,
+TTS/music/calls, battery and other earlier S24 checks remain separately unperformed.

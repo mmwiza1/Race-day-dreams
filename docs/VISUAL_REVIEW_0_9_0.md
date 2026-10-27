@@ -42,5 +42,27 @@ Source171a210/workflow40595241800 passed255Android cases per supported API and p
 Home, despite PNG integrity and instrumentation success. This capture set fails visual
 acceptance. StrengthHome light/200% remained readable when opened. The fixture now has
 positive current-activity snapshot/content readiness and rejects Loading for every capture;
-fresh CI execution and a new Home image review are still required. Reference artwork is
-unchanged and is never replaced by test captures.
+fresh CI execution and a new Home image review were required. The following checkpoint
+supplies that correction. Reference artwork is unchanged and is never replaced by captures.
+
+## Corrected canonical capture and current review
+
+Source35664996a188653d06a2eb573004a50c33430c92 passed full workflow40598574304 with270cases
+on EACH API28/35/36. Bot7997dca03351b46e5598922b2ee6d3df7176fbca published80authentic API35
+PNGs, fast-forwarded locally and validated for integrity. Source fingerprint:
+`72e991bb52b062ddcd93a717aaa46a1f1e19b06dccdce9bc79465027db32ab96`.
+API35 screenshots artifact12776884991; verified checkpoint APK12778150145 is48,272,173B.
+
+Opened actual Home, StrengthHome light/dark/200% and annualParis2026. Home now shows its
+fully loaded Today/workout content rather than global Loading. Strength-focused Home
+retains clear primary actions, readable wrapping and scrolling at200%; dark surfaces and
+text remain legible. The accepted Paris hero/annual course artwork is intact. No harmful
+clipping, missing art or hierarchy regression was observed. A partial multiplexed viewer
+display did not reflect a defective stored PNG; separate inspection confirmed the file.
+
+The previous171a210 capture set is not retroactively called accepted. The corrected
+readiness guards and newly captured images provide the new evidence. Approved design
+references remain separate. This is agent-assisted actual emulator-image review, not
+GalaxyS24 sunlight/TalkBack/sensor/battery acceptance. The next typed durability checkpoint
+requires its own CI and matching capture adoption; full GymNow/live gym screens remain
+future work and are not implied by this existing-screen review.

@@ -1,64 +1,80 @@
 # Verification — 0.9 development checkpoints
 
-## Current verified checkpoint: Phase5 execution foundation
+## Latest complete gate: execution codecs, source validation and focus coherence
 
-**Verified checkpoint:** source `171a2108197f8ce2dc3a68a8a6bb7e4df633c997` passed
-[workflow 40595241800](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40595241800).
-All **255 instrumentation tests passed on each API 28/35/36**, alongside build, lint,
-domain/schema/source/guidance and actual pinned formatting (36 Kotlin + 44 Java files).
-Exact Finished255 lines were inspected in jobs122509582203/122509582007/122509582052.
-Formatter job122509581631 passed the bounded convergence path and all14harness cases.
-Bot `5220799a9efd53a97e90b546a2d44a04e26aead5` published 80 authentic captures and was
-fast-forwarded. Source digest is6be033098cdaad7b0808cfd2711375958c6ae4ab771841838afaadd0af3a7e6e.
-Strength Home light/200% were opened and retained readable controls/wrapping. Visual review
-also found a real capture defect: home.png shows global Loading. This set does NOT pass
-the visual gate. The pending fixture fix requires the current activity's loaded snapshot
-and focus-specific content, and rejects global Loading before every PNG write. A new
-full CI capture and actual-image review must demonstrate the correction.
-API35 APK artifact12777070406 is **48,239,405 bytes**; screenshots artifact12775783471.
-This remains a draft feature checkpoint, not the complete Strength Engine 2.0 release.
+**Verified source:** `35664996a188653d06a2eb573004a50c33430c92` passed full
+[workflow40598574304](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40598574304).
 
-The GymNow domain foundation adds169 checks (**94,241 /25 suites**) and two Android
-runtime cases now verified on each supported API. Prescriptions, actual sets, monotonic
-pause/recovery and partial completion are validated. No storage or UI wiring is claimed.
-Cross-week lower-body allocation follow-up, strict JSON codecs and dated progression
-recency work are separate pending changes, not covered by this checkpoint's full CI.
-These follow-ups now pass94,641local checks/26suites (320allocation,20recency and60source
-validation additions). Strict codec tests add12Android cases, source validation adds1,
-and Hybrid Today/Strength Plan regressions add2: expected270cases awaits real CI.
+| API | Observed instrumentation result | Job |
+| --- | --- | --- |
+| 28 | 270 passed | 122521183424 |
+| 35 | 270 passed | 122521183354 |
+| 36 | 270 passed | 122521183323 |
 
-## Previous standalone Strength checkpoint
+Exact Finished270 log lines were inspected for each API. Build, lint, actual pinned
+formatting, domain/schema/source/guidance and canonical screenshot publication passed.
+These include the strict codec/source regressions, cross-week planned lower-body spacing,
+progression-recency correction and Hybrid Today/Strength Plan coherence. No legitimate
+test was removed, assertion weakened or timeout increased to obtain the result.
 
-Source `e9768ff3c13800dfdb8915f3b2ad273d5643f30b` passed workflow40592585867 with253cases
-on each supported API. Botc1fa18d adopted80captures; integrity passed locally. Digest:
+Bot `7997dca03351b46e5598922b2ee6d3df7176fbca` was fast-forwarded and all80actual PNGs
+passed integrity. Stored source fingerprint:
+`72e991bb52b062ddcd93a717aaa46a1f1e19b06dccdce9bc79465027db32ab96`.
+Actual Home, StrengthHome light/dark/200% and annualParis2026 were opened and reviewed.
+Home is fully loaded; the earlier Loading capture defect is corrected. Important controls,
+wrapping, original artwork and hierarchy remain readable; no harmful clipping was found.
+A partial multiplexed image display was a viewer-output issue rather than corruption in
+the stored capture. The approved design references remain separate from actual images.
+See docs/VISUAL_REVIEW_0_9_0.md.
+
+API35 APK artifact **12778150145** is **48,272,173bytes**; actual screenshot artifact
+**12776884991**. This is a draft feature checkpoint, not the complete Strength Engine2.0
+release. Main remains0.8.2; PR14stays draft and unmerged until the full scope is complete.
+
+## Typed execution durability: implemented code, Android gate pending
+
+Source `7f0738cd0a6b710318dc7f14120e2579eb5c2583` is the next local source checkpoint.
+It adds typed SQLite staging, bounded normalised set/event rows, saved frozen workout
+revisions/preferences, revision-checked retries, atomic actual-plus-planned-association
+finalisation, accepted actual-edit tracking and retained repeat-source proof. Schema11 is
+additive from supported older schemas; JSON envelope8 requires strengthEngine1 and retains
+reads1–7. Raw archive2 and complete-backup container1 are unchanged. This is a data
+foundation: the full GymNow/live gym coordinator and UI remain unimplemented.
+
+The new full supported-API result is **pending**. Expected293Android cases comprise the
+existing270 plus12repository and11backup cases; that expectation is not an observed pass.
+The backup/history fixture contains450workouts/2250sets above the old8MiB limit, but its
+Android run and measured output must be inspected before reporting a result. Before/after
+heap observations do not measure peak heap.
+
+Observed current local checks: **94,641domain checks/26suites**, **49schema tests**,
+**9release-note**, **14formatter-harness**, **7screenshot-validator**, **11Dreamsource** and
+**14artwork-integrity** cases. Strict174/174canonical and14/14routine guidance pass; all177
+exercise/20Dreamassets remain intact and manifest/attribution checks match. New repository/backup Android
+cases, old/current restore, migration and rollback assertions need their own complete CI
+gate; no physical memory, battery or GalaxyS24 result is inferred from these fixtures.
+
+## Previous checkpoints and diagnosed failures
+
+Source171a210 passed workflow40595241800 with255cases on EACH API28/35/36; exact logs were
+inspected in jobs122509582203/122509582007/122509582052. Actual formatting checked36Kotlin
+and44Java files;14formatter-harness cases passed. API35 artifact12777070406 was48,239,405B.
+Its bot5220799 produced80valid PNGs, but actual review found Home still showed global
+Loading. This was a real capture-readiness defect despite green instrumentation/integrity.
+Positive current-activity loaded/content checks and a negative Loading guard now precede
+capture. The latest270gate produced a new fully loaded Home image and passed review.
+
+Sourcee9768ff passed workflow40592585867 with253cases each; botc1fa18d adopted80captures.
+StrengthHome light/dark/200%, RunningHome, Plan and annualParis2026 were reviewed without
+harmful clipping/artwork regression. APK12774623099 was48,190,253B. Digest:
 `0c67ec5c9cef6acac61f86829ad1a1b6e0fa5c4cf7aa37707e1867fd3b667d5b`.
-Strength Home light/dark/200%, Running Home, Plan and annual Paris2026 were visually
-opened: the primary logging control remained visible at200%, lower details scrolled,
-and no harmful clipping, missing artwork or hierarchy regression was found.
-API35 APK artifact12774623099 was48,190,253bytes; screenshots artifact12774418148.
 
-PR #14 remains draft. Source `083e8b0` in workflow
-[40590307831](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40590307831)
-built and linted, but API 28 exposed `Stream.toList()` in the new Strength Today
-projection: `NoSuchMethodError` aborted instrumentation after 11 tests. This is a real
-runtime compatibility defect, not an emulator flake. It is replaced with API-compatible
-`Collectors`/`Collections` calls. An Android registry-initialisation case was added so
-all 174 canonical metadata entries execute on each supported runtime. Verification of
-the fix passed the subsequent253-case gate and the latest255-case gate above.
-
-Earlier source `438ee5f` built/linted and ran 249 cases per API but had two deterministic
-new onboarding failures. Focus-save confirmation covered the next lower-page action;
-rotation could replay the retained snackbar. Persistent Settings status now replaces
-that message. Original assertions and 20-second timeouts remain, with fixture-only
-failure diagnostics. Workflow 40582975480 is recorded as failed, not a pass.
-
-Local candidate checks: **94,072 domain checks / 24 suites**, **43 schema**, **9 release
-notes**, **10 formatter harness**, **11 Dream source**, **14 artwork integrity** and
-**7 screenshot-validator** tests passed. All geographic generation checks reproduce,
-strict guidance is **174/174 canonical + 14/14 routine**, all 177 exercise and 20 Dream
-assets are intact, and bundled attribution matches. The subsequent checkpoint above
-passed actual formatting and adopted/reviewed the 80 captures (the existing 77 plus
-Strength Home light/dark/200%). Schema 10 / JSON 7 / raw 2 / complete 1 remain unchanged.
+Source083e8b0/workflow40590307831 built/linted but API28 exposed `Stream.toList()` with
+NoSuchMethodError, aborting after11cases. API-compatible collections replaced it, and a
+real174-entry registry runtime case was added. Subsequent supported-API gates passed.
+Source438ee5f/workflow40582975480 ran249cases per API but two new onboarding cases failed:
+focus-confirmation snackbar covered the next action and could replay after rotation.
+Persistent Settings status fixed the cause; original assertions and20s timeouts remain.
 
 ## Fully verified Phase 1 checkpoint
 

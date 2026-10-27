@@ -28,6 +28,11 @@ Coach will each work independently, with additional context when an athlete uses
   and experience metadata for later Strength selection work. Existing guidance, actual
   sets, measurements and PB history are unchanged; programme selection is not altered
   by this metadata checkpoint.
+- The next data-foundation checkpoint adds typed, bounded gym execution staging and
+  frozen saved workout revisions. Actual-set saves and final programme associations
+  are transactional; accepted actual edits preserve the original execution evidence.
+  This storage work still requires its own supported-API verification and does not
+  yet expose the full Gym Now/live gym interface.
 
 ## Fixes
 
@@ -44,6 +49,8 @@ Coach will each work independently, with additional context when an athlete uses
   unavoidable spacing is explained without removing requested sessions.
 - Dated progression requires both supporting sessions to be recent and nonfuture.
   Missing effort and one successful session still do not justify a load increase.
+- Hybrid Today shows both same-day disciplines, and Strength-focused Plan stays
+  gym-first when a previous running profile is retained. Running remains accessible.
 
 ## Known limitations
 
@@ -54,31 +61,35 @@ Coach will each work independently, with additional context when an athlete uses
 
 ## Data, privacy and licensing
 
-Version 0.9.0-test1 / versionCode 12. The behaviour-preserving architecture phase retains
-schema 10, JSON envelope 7, raw recording archive 2 and complete-backup package 1.
+Version 0.9.0-test1 / versionCode 12. The new durability source introduces additive
+schema 11 and JSON envelope 8 with an independently versioned strength section. Readers
+for envelopes 1–7 remain supported. Raw recording archive 2 and complete-backup container
+1 remain unchanged. Validation precedes replacement in the shared transaction; a local
+unfinished gym workout blocks destructive replacement until it is finished or discarded.
 Existing records, plans, gym versions, PBs, favourites, recordings and Dream Route
 assignments remain supported. No runtime dependency or permission is added. No account,
 backend, advertising, subscription, analytics, Internet permission or runtime LLM is
-introduced. Future persistence changes require explicit migrations and backup tests.
+introduced. Later durable concepts require explicit subsequent migrations and backup tests;
+schema 11 will not be silently extended after distribution.
 
 ## Verification
 
 Live-main baseline8b75755 passed workflow40330082255 before this increment. Architecture
 source38fcc59 then passed240instrumentation cases on each API28/35/36.
 
-The latest execution-foundation checkpoint171a210 passed workflow40595241800 with255
-instrumentation cases on EACH API28/35/36, build/lint/domain/schema/source/guidance and
-actual pinned formatting (36Kotlin+44Javafiles). The80newauthentic captures are published;
-their exact-image visual review remains to be recorded. API35 checkpoint APK
-artifact12777070406 is48,239,405bytes; screenshots artifact12775783471. These are checkpoint
-results, not completion of the entire StrengthEngine2.0 product scope. Earlier standalone
-StrengthHome light/dark/200% and representative RunningHome/Plan/Paris renders from the
-253-case checkpoint were reviewed separately.
+The latest fully verified source3566499 passed workflow40598574304 with270instrumentation
+cases on EACH API28/35/36, build/lint/domain/schema/source/guidance and actual pinned
+formatting. All80authentic captures passed integrity and were adopted from bot7997dca.
+Actual Home, StrengthHome light/dark/200% and annualParis2026 were opened and reviewed;
+Home is fully loaded and the earlier capture-readiness defect is corrected. API35 APK
+artifact12778150145 is48,272,173bytes; screenshots artifact12776884991. These are checkpoint
+results, not completion of the entire StrengthEngine2.0 product scope.
 
-Local checks also passed strict174/174canonical+14/14routine guidance,43schema tests,
-9release-note tests,11Dreamsource tests,14artwork-integrity and7screenshot-validator cases.
-The GymNow domain foundation adds169checks (94,241across25suites) and two Android runtime
-cases, now passed on all supported APIs. Full GymNow storage, backup and UI wiring remain
-in development. Formatter convergence handling passes14harness cases and actual pinned-tool
-CI. Later scheduling, strict JSON codec and progression-recency changes require their own
-verification. Physical S24 acceptance remains unperformed.
+Current local checks pass94,641domain checks/26suites,49schema tests,9release-note,
+14formatter-harness,7screenshot-validator,11Dreamsource and14artwork-integrity cases.
+Strict174/174canonical+14/14routine guidance passes and manifest/attribution checks match.
+The next durability source
+7f0738c has12newrepository and11newbackup Android cases; its expected293-case matrix is
+pending and is not claimed as passed. Full GymNow coordinators/UI and the remaining
+StrengthEngine2.0 product scope are still in development. Physical S24 acceptance remains
+unperformed.

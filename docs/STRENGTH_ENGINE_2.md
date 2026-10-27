@@ -73,8 +73,9 @@ Corrupted event sequences, mismatched actual references and invented completion 
 Only an explicitly started planned execution can propose its preserved association.
 Storage codecs must additionally validate the frozen source against retained versions.
 
-This is a tested domain foundation, not a shipped Gym Now screen: typed storage, backup,
-coordinators and all six entry flows remain unimplemented. No unfinished actuals are put
+This is a tested domain foundation, not a shipped Gym Now screen. Typed storage and backup
+are the next implementation checkpoint; coordinators and all six entry flows remain
+unimplemented. No unfinished actuals are put
 into CoachingStore, and no actual sets are fabricated from targets. Two Android runtime
 smoke cases cover the domain adapters/engine and passed on API28/35/36 in source171a210,
 workflow40595241800 (255instrumentation tests on each API). The domain foundation has
@@ -84,6 +85,31 @@ codecs are a separate checkpoint in progress; they do not yet provide durable st
 See VERIFICATION.md for observed CI results, including failures and subsequent fixes.
 Domain metadata tests exercise every canonical ID, immutable collections, setup truth
 tables, role/experience boundaries, invalid definitions and unchanged measurements.
-Schema 10, JSON envelope 7, raw archive 2 and complete-backup package 1 remain unchanged.
-New durable execution, exclusions and programme concepts require typed repositories and
-explicit migration/transactional backup coverage before those features ship.
+The verified domain checkpoint retained schema 10, JSON envelope 7, raw archive 2 and
+complete-backup package 1. The next typed durability increment introduces schema 11 and
+JSON envelope 8; it must pass its own migration/transactional-backup/API gate before
+claiming verification. Raw archive 2 and complete container 1 remain unchanged.
+
+## Typed durability increment
+
+The repository foundation stores frozen workout revisions/preferences and normalised
+execution headers, append-only entered sets and events on the existing shared database.
+It uses revision-checked atomic saves, harmless identical retries, one unfinished stage,
+and an atomic completed actual plus exact planned-source association. Summary reads do
+not hydrate set/event histories. Original prescriptions and execution evidence remain
+frozen; explicitly accepted edits retain a separate current actual and edit observation,
+and PBs follow the current actual history. Repeat templates preserve validated source
+proof even if the original completed actual is later deleted.
+
+Schema 11 is limited to those five typed table families. Later exclusions, custom
+exercises and programme/block data require explicit subsequent migrations rather than
+silently extending a circulated schema. Envelope 8's independently versioned strength
+section retains preferences, source proof, stages and accepted edits, while older readers
+1–7 remain supported. Restore validates the whole graph before a shared transaction and
+refuses to replace a local unfinished gym workout. Each storage row is bounded; sets and
+events do not accumulate in an unbounded cursor cell.
+
+This remains a data foundation, not a claim that Gym Now or the live gym UI is available.
+See [STRENGTH_STORAGE_2.md](STRENGTH_STORAGE_2.md) for the precise format, recovery, bounds
+and compatibility contract. New repository/backup instrumentation is pending its own
+observed API28/35/36 result; no physical S24 check has been performed.

@@ -34,6 +34,29 @@ mutation and serial-IO incremental atomic staging, with cursors advancing after 
 These are implementation boundaries, not a claim that Strength Engine 2.0 product phases
 are delivered. See CONTINUE_CODEX.md for the current gate and exact remaining scope.
 
+## Typed gym durability — 0.9 data foundation
+
+`GymExecutionEngine` owns the Android-independent execution state; a narrow
+`GymExecutionRepository` and `SqliteGymExecutionRepository` persist it through the existing
+shared database. The additive schema 11 contract has five families: immutable workout
+revisions, saved preferences, execution summaries/headers, entered set rows and event
+rows. Revision-checked writes append actual evidence atomically, and finalisation commits
+the actual workout and its exact explicit programme association with the terminal stage.
+An unfinished stage never becomes completed training/PB evidence. Summary reads do not
+hydrate set/event histories; rows have an explicit 256 KiB bound.
+
+Original prescriptions and execution evidence stay frozen. An accepted later edit retains
+its current actual and timestamp separately; PBs use current actual history. Exact source
+validation never resolves historical definitions through today's exercise catalogue.
+Recovery retains observed time and records interruption gaps. Envelope 8 adds independently
+versioned strength data while reading envelopes 1–7; validation precedes the existing
+outer restore transaction. Raw archive 2 and complete container 1 remain unchanged.
+
+This increment is a data foundation with its own pending verification gate, not a shipped
+Gym Now/live gym interface. Later durable Strength concepts require explicit subsequent
+migrations; schema 11 must not be silently extended after distribution. See
+[Strength storage](docs/STRENGTH_STORAGE_2.md) for the complete contract and limits.
+
 ## Architecture history and retained contracts
 
 ## Incremental modernization decision

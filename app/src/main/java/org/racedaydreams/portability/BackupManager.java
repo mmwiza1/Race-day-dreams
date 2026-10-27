@@ -178,6 +178,8 @@ public final class BackupManager {
                         "This version-two backup is missing its coaching data section.");
             if (((Integer) version) >= 6 && !envelope.getJSONObject("data").has("support"))
                 throw new IOException("Backup is missing support evidence.");
+            if (((Integer) version) >= 7 && !envelope.getJSONObject("data").has("release08"))
+                throw new IOException("Backup is missing saved workouts and runner decisions.");
             if (((Integer) version) >= 8 && !envelope.getJSONObject("data").has("strengthEngine"))
                 throw new IOException("Version-eight backup is missing its gym execution evidence.");
             Instant.parse(envelope.getString("createdAt"));

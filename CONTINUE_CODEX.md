@@ -4,193 +4,218 @@
 
 - Repository: mmwiza1/Race-day-dreams, /workspace/Race-day-dreams.
 - Branch: feature/strength-engine-2-architecture-hardening; draft PR #14:
-  https://github.com/mmwiza1/Race-day-dreams/pull/14 . Do not merge before ALL scope passes.
-- Live-main baseline8b75755a0b74074047408b6444a11db3d6fef6f3 remains0.8.2/code11.
-  Current target0.9.0-test1/code12. Do not restart or reset to main on continuation.
-- Schema10 / JSON7 / raw2 / complete1 unchanged. No Internet/runtime dependencies added.
-- Last fully verified SOURCE: 171a2108197f8ce2dc3a68a8a6bb7e4df633c997.
-  Canonical capture bot: 5220799a9efd53a97e90b546a2d44a04e26aead5. Inspect actual HEAD
-  and fast-forward status before editing; preserve subsequent uncommitted phase work.
-- Phases1–3 verified; Phase4 Strength-first Today implemented/verified (full GymNow is
-  Phase5). Phase6 canonical metadata implemented/verified. Full release NOT complete.
+  https://github.com/mmwiza1/Race-day-dreams/pull/14 . Keep draft and do not merge until
+  the ENTIRE requested Strength Engine 2.0 scope and all delivery gates are complete.
+- Main baseline remains 8b75755a0b74074047408b6444a11db3d6fef6f3, version0.8.2/code11.
+  Feature target:0.9.0-test1/code12. Do not restart or reset to main on continuation.
+- Last fully verified SOURCE:35664996a188653d06a2eb573004a50c33430c92.
+  Canonical bot7997dca03351b46e5598922b2ee6d3df7176fbca was fast-forwarded locally.
+- Latest typed durability source checkpoint:7f0738cd0a6b710318dc7f14120e2579eb5c2583.
+  It is committed locally but awaiting publication/format/full CI at this handoff edit.
+  Inspect actual HEAD, status and remote before proceeding; preserve all completed work.
+- Current source schema11 / JSON envelope8 / strengthEngine section1 / raw archive2 /
+  complete container1. The last fully verified source above still used schema10/JSON7;
+  the new durability formats require their own observed supported-API gate.
+- Phases1–3, Strength-first Today/Hybrid coherence and canonical metadata are verified.
+  Phase5 domain/codecs/source validation are verified; typed repository/backup code is
+  implemented but its Android gate is pending. Full Gym Now UI is NOT implemented.
+- No Internet permission/runtime dependency/account/backend/analytics/ads/LLM added.
 
-## Last complete gate and visual review
+## Last full gate and actual visual review
 
-Workflow40595241800 SUCCESS:
-https://github.com/mmwiza1/Race-day-dreams/actions/runs/40595241800
-- 255 instrumentation tests EACH API28/35/36. Exact Finished255 logs inspected in
-  jobs122509582203 /122509582007 /122509582052.
-- Build, lint, domain/schema/source/guidance and actual pinned formatting all passed.
-  Formatting job122509581631 checked36Kotlin+44Java (80sources), both actual modes,
-  including bounded byte-stable formatter convergence; all14harness cases passed.
-- 80authentic captures (all77old + StrengthHome light/dark/200%) published by the bot
-  and fast-forwarded. StrengthHome light/200% were opened; controls/wrapping retained.
-  VISUAL FAILURE FOUND: home.png captured global Loading despite green tests. New
-  current-scenario loaded/content guards reject this; fresh capture/review is REQUIRED.
-  Do not claim the 171 screenshot set passed the visual gate. Source digest:
-  6be033098cdaad7b0808cfd2711375958c6ae4ab771841838afaadd0af3a7e6e.
-- Previous sourcee9768ff/workflow40592585867 passed253cases each and its80captures were
-  reviewed: StrengthHome light/dark/200%, RunningHome, Plan and annualParis2026 showed
-  no harmful clipping, missing art or hierarchy regression. See docs/VISUAL_REVIEW_0_9_0.md.
-- API35 checkpoint APK artifact12777070406:48,239,405bytes, screenshots12775783471.
-  These are draft0.9 checkpoint artifacts, NOT a complete StrengthEngine2release.
-- All S24 physical outdoor/BLE/TTS/music/calls/battery/recovery/backup/TalkBack checks
-  remain UNPERFORMED. Rolling main release stays0.8.2; no stable tag or merge.
+Workflow40598574304 SUCCESS:
+https://github.com/mmwiza1/Race-day-dreams/actions/runs/40598574304
+- 270 instrumentation tests passed on EACH API28/35/36. Exact Finished270 lines were
+  inspected in jobs122521183424 /122521183354 /122521183323 respectively.
+- Build, lint, domain/schema/source/guidance and actual pinned formatting passed.
+  Bounded formatter convergence retains the pinned tools/checksums;14harness cases pass.
+- All80authentic captures were adopted from bot7997dca and passed local integrity.
+  Source fingerprint72e991bb52b062ddcd93a717aaa46a1f1e19b06dccdce9bc79465027db32ab96.
+- Opened actual Home, StrengthHome light/dark/200% and annualParis2026 images. Home is
+  fully loaded, correcting the earlier171a210 Loading capture defect. Strength controls
+  and wrapping remain readable, lower details scroll, and no harmful clipping, missing
+  artwork or hierarchy regression was observed. A partial multiplexed image display
+  was a viewer-output issue, not corruption in the stored PNG. See visual review docs.
+- API35 APK artifact12778150145:48,272,173bytes; screenshots artifact12776884991.
+  These are draft feature checkpoint artifacts, NOT a complete StrengthEngine2release.
+- All GalaxyS24 outdoor/BLE/TTS/music/calls/battery/recovery/backup/TalkBack checks remain
+  UNPERFORMED. Main rolling release stays0.8.2; no stable tag or merge.
 
-Verified Phase5 foundation:94,241checks/25domain suites;43schema;9release notes;
-14formatter harness;11Dream source;14artwork integrity;7screenshot-validator tests.
-All geographic generation checks reproduce. Strict174/174guides +14/14routines and
-177exercise/20Dream assets remain intact. Existing tests/assertions were not removed.
+Local current checks:94,641domain checks/26suites;49schema;9release notes;
+14formatter harness;7screenshot-validator;11Dream source;14artwork integrity cases;
+strict174/174canonical+14/14routine guides. All177exercise/20Dreamassets remain intact;
+manifest/attribution checks match. No original test/assertion was removed.
 
-## Architecture and behaviour already completed — preserve
+## Completed architecture and behaviour — preserve
 
-- CoachViewModel is lifecycle/draft shell with feature coordinators/application services;
-  one coherent read model + one serial operation runner remain deliberately shared.
-- Callback and message publication stay inside the same Mutex after snapshot publication.
-  Cached NavHost destinations read state providers INSIDE destination composition;
-  RunNow snapshot is deferred too. Existing route contracts/back-stack retained.
-- Seven SQL-owning scoped repositories share ProfileDatabase and outer backup transaction;
-  FeatureStore compatibility forwarders remain. No ORM/database rewrite.
-- ONE authoritative recording service delegates session/metrics/staging, execution, cues
-  and sensor coordinators. Capture immutable batches on Main; serial IO only; advance
-  point/event cursors after atomic commit. Lost acknowledgements/inflight samples/recovery
-  tests retain real evidence. No automatic tracking restart after reboot.
-- Default gym clock resolves device timezone at each operation; injected clocks stay fixed.
-- Phase2: six start-anchored seven-day programme weeks; explicit lower-session occurrence
-  variation (squat/hinge); actual retained lower exercises drive fatigue context; same/before
-  demanding run conflict and softer after-run penalty; truthful retained-work explanations.
-- Phase3: typed PrimaryFocus RUNNING/STRENGTH/HYBRID over existing backed-up settings.
-  Missing preference resolves legacy starting.path without rewriting it. Focus changes
-  preserve goals, drafts, plans and history. Strength onboarding needs no RaceGoal/profile.
-  New standalone gym setup defaults GENERAL/STRENGTH_FIRST; stored settings never change.
-- Phase4: Strength Home and race-free Plan access; explicit actual/session/version links
-  for adherence; no date-coincidence completion; PB/coach projection prepared on IO.
-  Existing independent logging works. Full GymNow action not shipped before its flow works.
-- Phase6: ExerciseMetadata + explicit version1 registry for all174canonical IDs: primary/
-  other movement roles, broad primary/secondary areas, experience suitability and OR-of-
-  complete equipment setups. Unknown/custom metadata stays unknown. Generator selection,
-  catalogue IDs, historical measurements and all original artwork remain unchanged.
+- CoachViewModel is a lifecycle/draft shell with feature application coordinators;
+  one coherent read model and one serial operation runner remain deliberately shared.
+- Callback/message publication stays inside the same Mutex after snapshot publication.
+  Cached graph destinations read providers INSIDE composition; RunNow selection is
+  deferred too. Existing route/back-stack contracts remain.
+- Seven scoped SQL repositories share ProfileDatabase and the outer backup transaction;
+  FeatureStore compatibility forwarders remain. No ORM or database replacement.
+- ONE authoritative run service delegates session/metrics/staging, execution, cues and
+  sensor coordinators. Main captures immutable batches; serial IO commits them atomically;
+  point/event cursors advance only after commit. Lost acknowledgements/inflight samples
+  retain evidence. No automatic GPS restart after reboot.
+- Default gym Clock resolves device timezone per operation; injected clocks stay fixed.
+- Programme allocation uses six start-anchored7day windows and distinct lower-session
+  squat/hinge occurrences. Actual retained lower-body exercises define fatigue context;
+  same/before demanding runs conflict, after-run context is softer. Explanations describe
+  retained work. Planned lower-body spacing now crosses week boundaries; unavoidable
+  consecutive planned dates are explained separately from completed evidence.
+- Typed PrimaryFocus RUNNING/STRENGTH/HYBRID uses existing backed-up settings and legacy
+  starting.path interpretation. Focus preserves goals, programmes, history and drafts.
+  Strength setup needs no running profile/RaceGoal. New standalone setup defaults to
+  GENERAL/STRENGTH_FIRST only when no current programme exists; old settings stay intact.
+- Strength Today uses explicit actual/session/version links, not date coincidence, and
+  IO-prepared PB/adherence/coaching projections. Independent logging works. Hybrid Today
+  now surfaces both same-day disciplines; Strength Plan stays gym-first even with a
+  retained running profile. Running remains accessible.
+- ExerciseMetadataCatalog v1 explicitly covers all174canonical IDs: roles, broad areas,
+  suitability and OR-of-complete-AND equipment setups. Unknown custom metadata remains
+  unknown. Catalogue IDs, historical measurements, original artwork and current generator
+  selection remain intact.
+- Dated StrengthProgressionAdvisor now requires BOTH supporting comparable sessions
+  recent and nonfuture, with an inclusive28day boundary. Existing exact exercise/load,
+  top-rep, known-effort, two-session and optional-small-increase safeguards remain.
 
-## Diagnosed failures (fixed, never weaken tests)
+## Verified Phase5 foundation — not the complete Gym Now product
 
-- Earlier architecture callback/navigation snapshot races fixed; source38fcc59 passed
-  240tests EACH API in40578388101. Incorrect imports/checksum-sidecar issue fixed earlier.
-- Phase3 workflow40582975480 ran249tests but2newUI cases failed: focus confirmation
-  snackbar covered the next action; rotation replayed it. Persistent Settings focus status
-  replaces the snackbar. Original assertions/20s waits retained; fixture diagnostics added.
-- Phase4 workflow40590307831 passed252cases API35/36 but API28 aborted after11cases:
-  Stream.toList is unavailable there. Replaced with Collectors/Collections; new Android
-  registry-initialisation case covers all174entries. Subsequent253gate above passed allAPIs.
-- Production domain must use API28-safe Immutable/Collections/Collectors. No Java9
-  List.of/Set.of/Map.of/copyOf or Java16 Stream.toList. JVM tests alone do not prove this.
+GymWorkoutDefinition, GymExecution, GymExecutionSet, GymExecutionEngine and
+GymWorkoutAdapter preserve date-free immutable revisions, stable slots, frozen exercise
+and target definitions, actuals independent of prescriptions, idempotent stable IDs,
+manual changes, monotonic pause/recovery and partial-completion evidence. Repeats begin
+with empty actuals. All origins converge on one engine; only an explicitly started PLANNED
+execution can propose its preserved programme association.
 
-## Phase5 domain checkpoint — verified, NOT full GymNow
+Strict v1 GymWorkoutJson/GymExecutionJson/GymJsonSupport decode exact fields and types,
+explicit nulls, bounded arrays/structure, valid event replay and frozen historical exercise
+definitions without current-catalogue reconstruction.12Android codec cases and a source
+validator case passed in the270gate. GymWorkoutSourceValidator has60domain checks and
+validates retained programme/saved/repeated sources; an identity hash alone is insufficient.
+Legacy programme IDs/targets can be proven, but old exercise names were not stored and
+cannot be independently authenticated. The newly frozen definition remains preserved.
 
-Seven files now checkpointed as Phase5 domain foundation (preserve them):
-- domain/.../strength/GymWorkoutDefinition.java
-- GymExecution.java, GymExecutionSet.java, GymExecutionEngine.java, GymWorkoutAdapter.java
-- domain/.../strength/GymExecutionTestSuite.java
-- app/src/androidTest/.../data/GymExecutionAndroidTest.java (2cases, passed all supported APIs)
+## Typed durability checkpoint — implemented, supported-API gate pending
 
-169newchecks; aggregate94,241checks/25suites and43schema tests passed locally.
-Definitions are date-free immutable revisions/stable slots/frozen exercises+targets.
-Engine owns actual sets separately, idempotent saves/finish, manual changes, monotonic
-pause/resume, explicit interruption gaps and partial completion. Programme source binds
-exact identity/revision/session; repeats never copy old actuals. Corrupt event replay and
-completion state are validated. Source codecs must also cross-check retained prescriptions.
-NO storage/coordinator/UI wiring yet: do not describe models as a working GymNow flow.
+Source7f0738c adds domain GymExecutionRepository and SqliteGymExecutionRepository, strict
+GymAcceptedActualJson, schema/backup integration and real Android fixtures/tests. It has
+not passed its new full CI gate yet. Expected293Android cases =270existing +12repository
++11backup cases; never report this expectation as an observed pass.
 
-Formatter follow-up is in ONLY scripts/format-code.py, scripts/test-format-code.py,
-docs/FORMATTING.md. Actual pinned --apply and isolated patch generation require byte-stable
-output within4passes, otherwise fail. Plain --check and checksum locks unchanged. All10
-original harness cases plus4new ones =14pass locally; actual pinned-tool CI passed above.
-This prevents repeated real google-java-format long-string normalisation patch rounds.
+Schema11 has exactly five families: strength_workout_versions,
+strength_workout_preferences, strength_executions, strength_execution_sets and
+strength_execution_events. Future exclusions/custom metadata/programme-block concepts
+must use explicit schema12+ migrations; never silently extend a circulated11.
 
-NEXT EXACT TASKS:
-1. Preserve the uncommitted cross-week lower-body scheduling correction in
-   GymProgrammeGenerator.java and GymProgrammeAllocationTestSuite.java. The previous
-   search considered within-week spacing but could allocate Monday then Tuesday across
-   programme windows although Wednesday was available. The fix retains requested
-   sessions, penalises the previous planned day separately from completed evidence, and
-   explains unavoidable consecutive planned dates. Its320newchecks passed locally in the
-   preceding work (94,561total/25suites); the resumed run is rechecking them. It has not
-   passed a new full CI gate yet. Commit and verify this correction separately.
-2. Strict v1 GymWorkoutJson/GymExecutionJson codecs and Android malformed/round-trip tests
-   are in progress. Do not stage unfinished codec files with the scheduling correction.
-   These codecs do not yet provide a repository, migration, backup or UI feature.
-3. StrengthProgressionAdvisor now rejects stale second and future supporting sessions;
-   inclusive28day boundary, effort/optionalincrease/actualimmutability have20newchecks.
-4. Strict codec files are complete with12newAndroid cases; source validator has60domain
-   checks and1Android case. Hybrid Today/Strength Plan coherence adds2Android UI cases.
-   Local aggregate94,641checks/26suites; expected270Android cases awaits actual CI.
-   Obtain pinned formatting, full supported-API gate and fresh80captures. Inspect Home
-   specifically for the loading-screen race; retain all original screenshot requirements.
-5. Implement full Phase5 typed durability/coordinators/GymNow screens with all six paths,
-   then continue ALL remaining product phases below. No fake buttons or copied actuals.
+Repository semantics:
+- One unfinished gym stage, revision-checked atomic saves and identical lost-ack retries.
+- Normalised append-only sets/events;256KiB UTF-8 bound per workout/header/set/event/
+  accepted-actual row. Summary queries do not hydrate actual/event histories.
+- Atomic final actual StrengthSession + exact original PLANNED association + terminal
+  staging. Unfinished stages never count as completed coaching/PB evidence.
+- Original prescription and execution evidence remain immutable. An explicit later actual
+  edit keeps accepted current actual/editedAt separately; PBs use current actual history.
+  Explicit actual deletion removes its terminal stage, retaining prior repeat-template
+  proof. It cannot silently delete an unfinished execution.
+- Repeat-source proof remains independently retained after the original actual is deleted.
+  Historical sources are validated without reconstructing through today's catalogue.
+- Recovery preserves retained timing/actuals and records gaps; never claim uninterrupted
+  exercise or resume secretly after reboot.
 
-## Concrete GymNow durability design — not implemented
+Envelope8 requires independently versioned strengthEngine1, retaining reads1–7. Validate
+all source/actual/edit/association graphs before the shared outer replacement transaction;
+refuse replacement while a local unfinished gym stage exists. Complete container1 and raw2
+remain unchanged. Bounds are32MiB/depth32/2milliontokens/1MiBserialisedstring. Export must
+fail clearly before destination truncation. The450workout/2250set fixture above the old
+8MiB limit is an Android test awaiting execution; no peak-heap measurement is claimed.
+See docs/STRENGTH_STORAGE_2.md for the detailed data contract and TEST_BUILD.md for the
+unchecked physical acceptance list. There is still NO full GymNow/live gym coordinator/UI.
 
-StrengthSession requires positive final duration and actual sets; CoachingStore treats
-it as completed PB/coaching evidence. Do not put unfinished/empty drafts there. Use typed
-GymExecution staging. Origins PLANNED/QUICK/CUSTOM/REPEATED/FAVOURITE/GENERATED/FREE converge
-on one engine. Finish actual StrengthSession + retained exact association + finished
-staging/events atomically; stable set IDs support retries. Existing saveStrength(plannedDate)
-resolves gym.current() at finish, so it is insufficient for frozen live-source associations.
-Recovery must explain recorded timing/gaps, never pretend uninterrupted exercise.
+## Diagnosed failures — fixed without weakening tests
 
-Typed staging implementation is now in progress but NOT committed/published: schema11
-settles workout_versions/preferences and executions/sets/events only. Later durable
-families receive explicit schema12+ migrations; NEVER silently extend a circulated11.
-Do not invent future table layouts merely to reserve them. Dedicated typed repositories/
-codecs, not Release08Store. Normalised append-only bounded rows avoid CursorWindow limits;
-summary queries exclude actual/event payloads. Exact programme source and stable IDs are
-required for atomic finalisation. Retain repeat-source evidence independently of deleted
-original actuals. No unfinished draft is completed coaching/PB evidence.
-JSON8 would require validated strengthEngine data while retaining reads1–7 and outer
-transactional restore. Existing8MiB/depth/token bounds need conscious scale evaluation.
-Keep raw2/complete1 unless a justified independently versioned change is required.
-Legacy GymProgramme versions remain supported (current56day limit needs explicit handling
-for multi-block plans); templates can be bundled; rest preferences can use typed settings;
-derived achievements need no speculative table. No durable change has been made yet.
+- Architecture callback/navigation snapshot races and early import/checksum errors were
+  fixed; source38fcc59 passed240cases each in40578388101.
+- Focus-confirmation snackbar covered the next action/replayed on rotation in40582975480.
+  Persistent Settings status replaced it; original assertions/20s waits remain.
+- Stream.toList caused API28 NoSuchMethodError in40590307831. API-safe collections and a
+  real174-entry registry runtime case fixed it; later supported-API gates all passed.
+  Production code must avoid List.of/Set.of/Map.of/copyOf/Stream.toList on API28.
+- The171a210 screenshot set passed PNG checks but Home captured global Loading. Current
+  activity/content readiness and negative Loading guards fixed this;3566499's fresh actual
+  Home PNG was opened and is fully loaded. Integrity alone is not visual acceptance.
+- Actual pinned formatting can normalise long strings over multiple passes. Apply/patch
+  generation now requires byte-stability within4passes;14harness cases and real CI pass.
 
-## Remaining complete user scope (do not silently reduce)
+## NEXT EXACT TASKS
 
-Phase5: full GymNow planned/quick/build/repeat/favourite/generate flows; typed persistence,
-backup, real execution UI and explicit optional plan association. Phase4 hybrid Today
-also needs both same-day disciplines surfaced; Strength-first Plan behaviour with a
-retained running profile should be made coherent without losing Running access.
-Phases7–11: quality-gated selective catalogue growth (fewer if quality cannot be met),
-reversible exclusions/reasons, hierarchical browsing/search, typed custom exercise
-metadata/explicit opt-in generation. Do not redo the174covered metadata or artwork.
-Phases12–16: intent-ranked substitution/busy2–4options/nonmedical discomfort language;
-today-only vs immutable programme changes; custom programmes and editable original templates.
-Phases17–21: goal/experience-specific multi-block programming, muscle-volume balance,
-genuine power work, running support, previews/trade-offs, safe remaining-programme regeneration.
-Phases22–25: durable live gym actual-set entry, optional rest timer/+30/skip/audio/haptics,
-optional evidence-backed warm-up ramps, conservative supersets.
-Phases26–30: conservative measurement-specific progression, exact recent StartingLoad,
-optional deload/recovery, today-only fatigue vs structural changes, priority-aware hybrid.
-Known dated StrengthProgressionAdvisor overload checks only latest evidence age: reject
-stale second and future sessions with proper regressions. Summary currently prefilters both.
-Phases31–34: actual muscle-group working-set analytics, actual1/3/5/6/8/10RM vs estimated1RM,
-restrained real-evidence achievements, programme/recent/favourite-first logging.
-Phase35: typed/versioned additive migrations and older/current complete backup tests for
-all new user-owned data. Phase36: thousands of deterministic quality combinations across
-roles/equipment/goals/experience/time/frequency/startdays/preferences/hybrid, no pathologicalplans.
-Phases37–39: accessible full UX, authentic new Strength screens, research-vs-original
-heuristic docs, full build/lint/format/domain/schema/API28/35/36/backup gates, review then
-merge ONLY when entire scope is complete/green. Verify main rolling test build afterwards.
+1. Inspect HEAD/status/remote; preserve7f0738c and all documentation work. Publish using
+   the expected-head lease, obtain actual pinned formatting if needed, and run the new
+   repository/backup/schema/build/lint/API28/35/36 gate. Expected293 is pending, not passed.
+2. Inspect every failure and fix root causes. Validate old envelopes1–7/current8,
+   all schema1–10 upgrades, current full-backup rollback and real actual edit/delete
+   semantics. Review the measured large-fixture result without inventing peak heap.
+3. Adopt matching80canonical captures and review affected screens; update actual gate/
+   artifacts/counts in this handoff and VERIFICATION.md. Keep PR14draft/fullscope boundary.
+4. Wire typed repository through application composition/coordinators and implement the
+   full Phase5 GymNow planned/quick/build/repeat/favourite/generate entry flows and one
+   live actual-set execution UI. Existing saveStrength(plannedDate) resolves gym.current()
+   at finish; use the new preserved source for live finalisation instead. Success follows
+   committed writes; prescription values must never prefill themselves as completed sets.
+5. Continue ALL remaining user phases below; do not stop at storage/interfaces or treat a
+   green foundation checkpoint as the completed release.
 
-## Tooling and publication
+## Remaining full user scope — do not silently reduce
 
-No local Android SDK/adb; wrapper download fails before local compile. Android results are
-observed GitHub CI, not physical tests. Read-only git fetch with network additionalpermission
-works (last0.86s), followed by ordinary ff-only merge; preserve uncommitted new files.
-Network curl/gitpush requests previously stalled before execution; do not repeat indefinitely.
+Phase5: finish all six GymNow entry paths, custom/favourite/repeated definitions, explicit
+optional plan association, durable execution/recovery and fully working UI. No fakebuttons.
+Phases7–11: selective quality-gated exercise growth (ship fewer rather than incomplete
+art/guidance), reversible exclusions/reasons without PB/history loss; hierarchical body/
+movement/equipment browsing and favourites/recent/programme/excluded shortcuts; alias-
+relevance search/filters; custom exercises with measurement metadata and explicit generator
+opt-in. Preserve all174existing complete guides and14routine movements.
+Phases12–16: intent-ranked substitutions with reasons/explanations/equipment/experience/
+exclusions/favourites; busy-equipment2–4options; cautious discomfort wording; today-only
+versus immutable-programme substitutions with incompatible loads cleared; custom programmes
+and editable original FullBody/UpperLower/PPL/Strength/Muscle/RunningSupport templates.
+Phases17–21: stable goal/experience-specific multi-block programming, proper strength reps/
+rest, approximate muscle working-set balance, genuine eligible power work, running-support
+coverage, accessible general default, preview/trade-offs and safe remaining-programme
+regeneration. Completed prescriptions/actuals remain immutable; current legacy56day limit
+needs an explicit new-model/adapter decision for multi-block programmes.
+Phases22–25: live actual load/reps/time/distance/RPE/RIR entry with previous evidence and
+optional starting references; immediate local saves; optional rest timer/+30/skip/manual/
+audio/haptics; evidence-backed editable/skippable warm-up ramps excluded from PB/working
+volume; conservative accessory supersets with execution/rest grouping.
+Phases26–30: measurement-specific conservative progression while preserving exact recent
+StartingLoad safeguards; optional evidence-led recovery/deload without mandatoryweek6;
+today-only fatigue versus accepted structural versions; RunningFirst/Balanced/StrengthFirst
+hybrid recommendations without one discipline silently overriding the other.
+Phases31–34: weekly actual working-set muscle analysis/comparisons; actual1/3/5/6/8/10RM
+separate fromestimated1RM; history/progression charts; restrained real-evidence achievements;
+programme/recent/favourite-first logging selection.
+Phase35: extend typed persistence through explicit later migrations as features require,
+retain all supported backup readers and transactional full-backup graph validation.
+Phase36: thousands of deterministic programme-quality combinations across goal/experience/
+priority/frequency/time/equipment/days/running/exclusions/favourites, enforcing role/volume/
+power/complexity/measurement/timebudget/equipment/raceweek invariants and no pathologicalplans.
+Phases37–39: accessible complete Strength UX/authentic new screens; original-heuristic vs
+research documentation; all format/lint/domain/schema/API28/35/36/source/artwork/backup gates;
+verify Strength-only requires no race, Running-only no gym and Hybrid coherent context.
+Review and merge ONLY after fullscope complete/green; then verify main and rolling testAPK.
+No permanent production/stable tag and no unperformed S24 pass.
+
+## Tooling and safe publication
+
+No local Android SDK/adb; wrapper download fails before local compile. Android results
+are actual GitHub CI, not physical. Read-only git fetch with network additionalpermission
+works, followed by ordinary ff-only merge; preserve uncommitted files. Network curl/gitpush
+requests previously stalled before execution; do not retry indefinitely.
 Connected GitHub create_tree/create_commit/update_ref works. Stage intended files ONLY,
-assert remote treeSHA == local git write-tree, expected-head lease update, import exact
-public commit via /workspace/scratch/rdd-github-commit-import.py then fast-forward refs.
-Never reset/discard other phase work. Remote branch creation needs github_create_branch.
+assert remote treeSHA equals local git write-tree, expected-head lease update, import exact
+public commit with /workspace/scratch/rdd-github-commit-import.py, then fast-forward refs.
+Never reset/discard another phase. Branch creation needs github_create_branch.
 
-All physical S24 checks remain UNPERFORMED. No account/backend/ads/analytics/subscription/
-LLM/Internet permission. The app recommends. The athlete decides. The plan adapts.
+The app recommends. The athlete decides. The plan adapts.

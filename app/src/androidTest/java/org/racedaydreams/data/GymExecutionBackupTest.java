@@ -98,6 +98,12 @@ public final class GymExecutionBackupTest extends AndroidTestCase {
         var missing = object(bytes);
         missing.getJSONObject("data").remove("strengthEngine");
         reject(missing);
+        for (int version = 7; version <= 8; version++) {
+            var missingChoices = object(bytes);
+            missingChoices.put("version", version);
+            missingChoices.getJSONObject("data").remove("release08");
+            reject(missingChoices);
+        }
         var future = object(bytes);
         future.getJSONObject("data").getJSONObject("strengthEngine").put("version", 2);
         reject(future);
