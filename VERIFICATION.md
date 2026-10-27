@@ -1,4 +1,32 @@
-# Verification — 0.9 Phase1 architecture checkpoint
+# Verification — 0.9 development checkpoints
+
+## Current candidate: Phases 2–4 and canonical metadata
+
+PR #14 remains draft. Source `083e8b0` in workflow
+[40590307831](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40590307831)
+built and linted, but API 28 exposed `Stream.toList()` in the new Strength Today
+projection: `NoSuchMethodError` aborted instrumentation after 11 tests. This is a real
+runtime compatibility defect, not an emulator flake. It is replaced with API-compatible
+`Collectors`/`Collections` calls. An Android registry-initialisation case was added so
+all 174 canonical metadata entries execute on each supported runtime. Verification of
+the fix is pending; do not claim the new 253-case gate is green yet.
+
+Earlier source `438ee5f` built/linted and ran 249 cases per API but had two deterministic
+new onboarding failures. Focus-save confirmation covered the next lower-page action;
+rotation could replay the retained snackbar. Persistent Settings status now replaces
+that message. Original assertions and 20-second timeouts remain, with fixture-only
+failure diagnostics. Workflow 40582975480 is recorded as failed, not a pass.
+
+Local candidate checks: **94,072 domain checks / 24 suites**, **43 schema**, **9 release
+notes**, **10 formatter harness**, **11 Dream source**, **14 artwork integrity** and
+**7 screenshot-validator** tests passed. All geographic generation checks reproduce,
+strict guidance is **174/174 canonical + 14/14 routine**, all 177 exercise and 20 Dream
+assets are intact, and bundled attribution matches. Real pinned formatting output was
+applied; its final CI check is pending. Current source requires 80 authentic captures
+(the existing 77 plus Strength Home light/dark/200%); those new captures are not yet
+adopted or visually accepted. Schema 10 / JSON 7 / raw 2 / complete 1 remain unchanged.
+
+## Fully verified Phase 1 checkpoint
 
 This is the verified architecture checkpoint, not the completed StrengthEngine2release.
 DraftPR14 remains open for the full requested product scope. Baseline main8b75755 was
@@ -44,7 +72,7 @@ bootstrap was removed. Formatting job122451503503passed both actual modes on33Ko
 ## Authentic captures and APK
 
 Bot2ea80d89b3dd695d01026a63e87fbde1a28b0932adopted77actualAPI35PNGs from artifact
-12768114597. Currentfingerprintmatches
+12768114597. At that checkpoint its fingerprint matched
 `5b413ac959a755c6d514952d0f7feb67ea5343dca4d59c0f50ff650c3e069fde`.
 Captureintegrity and sourcehash passed locally after ordinary fast-forward. Representative
 Home/Plan/Strength/LiveCoach/Paris/dark/200%renders were opened; no missingart, clipping or
@@ -58,8 +86,9 @@ Existingcurrent/legacy backup tests passed. App-ownedGPS/history/PBs/favourites 
 
 ## Remaining work / physical status
 
-Phase2generatorfixes now pass91,439localdomain checks/21suites and43schema tests; their
-own Android/format gate is pending. FullPhases3–39remain in CONTINUE_CODEX.md. Do not merge
+Phase2 generator fixes, Phase3 focus, Phase4 Today and Phase6 metadata are implemented;
+their combined supported-API gate is pending the compatibility fix above. Phase5 GymNow
+and the remaining product phases are tracked in CONTINUE_CODEX.md. Do not merge
 PR14until fullscope is complete andgreen. LocalAndroidSDK/adb is absent; localwrapper
 failed beforecompilation. All Androidresults here are observedGitHubCIresults.
 GalaxyS24outdoor/sensors/audio/music/battery/recovery/backup/TalkBack/sunlight checks remain

@@ -56,6 +56,7 @@
     "app/src/main/java/org/racedaydreams/data/SqlitePrimaryFocusRepository.java",
     "app/src/androidTest/java/org/racedaydreams/coach/PrimaryFocusOnboardingTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/PrimaryFocusRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/data/ExerciseMetadataAndroidTest.java",
     "domain/src/main/java/org/racedaydreams/domain/strength/GymProgrammeGenerator.java",
     "domain/src/main/java/org/racedaydreams/domain/strength/ExerciseMetadata*.java",
     "domain/src/test/java/org/racedaydreams/domain/strength/ExerciseMetadataTestSuite.java",

@@ -11,11 +11,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Strength-first Home evidence. Prescriptions and actual workouts remain separate. */
 public record StrengthTodaySummary(
@@ -49,7 +51,9 @@ public record StrengthTodaySummary(
         Objects.requireNonNull(today);
         Objects.requireNonNull(asOf);
         List<StrengthSession> actual =
-                history.stream().filter(session -> !session.startedAt().isAfter(asOf)).toList();
+                history.stream()
+                        .filter(session -> !session.startedAt().isAfter(asOf))
+                        .collect(Collectors.toList());
         Set<String> actualIds = new HashSet<>();
         actual.forEach(session -> actualIds.add(session.id()));
         Set<String> completed = new HashSet<>();
@@ -64,10 +68,10 @@ public record StrengthTodaySummary(
         LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         List<GymProgramme.Session> week =
                 programme == null
-                        ? List.of()
+                        ? Collections.emptyList()
                         : programme.sessions().stream()
                                 .filter(session -> inWeek(session.date(), weekStart))
-                                .toList();
+                                .collect(Collectors.toList());
         GymProgramme.Session prescribedToday =
                 programme == null
                         ? null
@@ -137,7 +141,7 @@ public record StrengthTodaySummary(
                                         Duration.between(session.startedAt(), asOf)
                                                         .compareTo(Duration.ofDays(28))
                                                 <= 0)
-                        .toList();
+                        .collect(Collectors.toList());
         var considered = new HashSet<String>();
         var recommendations = new ArrayList<Recommendation>();
         programme.sessions().stream()

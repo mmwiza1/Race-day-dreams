@@ -38,6 +38,8 @@ Coach will each work independently, with additional context when an athlete uses
   after a demanding run, and explanations describe the exercises actually retained.
 - Saving focus uses persistent Settings status rather than a transient confirmation
   that could cover the next action or reappear after rotation.
+- Strength Today uses collection calls compatible with the supported Android runtimes;
+  the API 28 instrumentation gate guards the new summary and metadata initialisation.
 
 ## Known limitations
 

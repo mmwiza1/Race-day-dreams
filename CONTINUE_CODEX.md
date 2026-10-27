@@ -55,6 +55,14 @@ remains0.8.2 until allStrengthEngine2work is complete/merged. No stabletag.
 
 ## Phases2–4 current checkpoint
 
+Current local checkpoint2bf1aee59f322608ff42e5ea785f943fe1aae33c applies actual pinned
+formatting to Phase4/metadata. Remote source083e8b05f01817ae2a36cdd946345bec21c54aaf
+triggered40590307831. It built/linted but API28 aborted after11cases with
+NoSuchMethodError:Stream.toList in StrengthTodaySummary. Fixed using Collectors/Collections;
+an additional Android metadata-initialisation case checks all174 entries on eachAPI.
+Expected Android count is now253 (252previous +1compatibilitycase), NOT claimed passed.
+Publish the new compatibility correction and verify actual CI before accepting this gate.
+
 Three modified files (do not discard):
 - domain/src/main/java/org/racedaydreams/domain/strength/GymProgrammeGenerator.java
 - domain/src/test/java/org/racedaydreams/domain/strength/GymProgrammeAllocationTestSuite.java
@@ -68,8 +76,8 @@ Full local suite **91,439checks/21suites** (new30,070) and43schema tests passed.
 Formatter scope now includes generator/newSuite. An additional Android application test
 checks retained-exercise classification and post-run recovery context (Android result
 pending). Independent review reproduced all 91,439 checks / 21 suites and 43 schema tests.
-Next: publish separate Phase2, run/fix actual format/Android CI, adopt fresh canonical
-captures and record observed results. Do not claim Android pass yet.
+Next: finish the combined format/Android CI, adopt fresh canonical captures and record
+observed results. Do not claim Android pass yet.
 
 Phase2 source4b58fb4 and pinned-format3709991 are committed. Phase3 source438ee5f is
 committed. Phase3 adds19
@@ -124,10 +132,10 @@ Current local total94,072checks/24suites,43schema,9release,10formatterharness,7s
 
 ## Remaining full product scope (not implemented yet)
 
-Phases3–5: selectable Running / Strength / Hybrid priority, race-free Strength onboarding,
-Strength-first Today and all Gym Now paths without programme mutation.
-Phases6–11: exercise roles/body/equipment/experience metadata, quality-gated selective
-catalogue expansion, reversible exclusions/reasons, hierarchical browse/search and typed
+Phase5: all Gym Now paths without programme mutation. Phase3 focus/Phase4 Today are
+implemented above; finish their verification rather than rebuilding them.
+Phases7–11: quality-gated selective catalogue expansion, reversible exclusions/reasons,
+hierarchical browse/search and typed
 custom exercise metadata/opt-in generation.
 Phases12–16: ranked intent-preserving substitution and busy-equipment choices; today-only
 vs immutable programme versions; custom programmes and original editable templates.
@@ -170,3 +178,30 @@ qualify): fix inPhase26 with proper regressions, not silently during architectur
 All S24physical GNSS/BLE/TTS/music/calls/battery/recovery/backup/TalkBack/sunlight checks
 remain **UNPERFORMED**. NoInternetpermission/backend/account/analytics/ads/subscriptions/
 LLM dependency added. The app recommends. The athlete decides. The plan adapts.
+
+## Concrete next Gym Now design (read-only audit)
+
+Do not use StrengthSession for an unfinished draft: it requires positive final duration
+and actual sets, and CoachingStore immediately treats it as completed PB/coaching evidence.
+Use one date-free immutable GymWorkoutDefinition with stable slots/frozen exercise+targets,
+and typed GymExecution staging (PLANNED/QUICK/CUSTOM/REPEATED/FAVOURITE/GENERATED/FREE).
+Repeat structure/reference evidence, never prior actual sets as newly completed sets.
+Freeze exact programme version/session at start. Existing saveStrength(plannedDate) resolves
+gym.current() at finish and is insufficient for live execution after a programme edit.
+Finalise actual StrengthSession + retained explicit association + finished staging/events
+atomically. Stable set IDs make retries idempotent; recovery must not invent elapsed gaps.
+
+Proposed schema11 families (NOT implemented/published): strength_workout_versions/current,
+strength_executions/sets/events, strength_exercise_exclusions,
+strength_custom_exercise_metadata, strength_athlete_decisions. Dedicated typed codecs/repos,
+not a kind-based bucket. Settle all durable families BEFORE distributing a schema11APK;
+never silently extend a circulated schema version. JSON8 would require a validated
+strengthEngine section while keeping reads1–7 and outertransactional restore. Current
+8MiB envelope/depth/token bounds need conscious scale evaluation; raw2/complete1 stay.
+Existing GymProgramme append-only versions remain supported (current56daylimit requires
+explicit handling for later multi-block plans), templates can remain bundled, settings
+can hold rest preferences; no speculative achievement table is needed for derived evidence.
+
+Agent gym_execution_domain is preparing NEW pure-domain files as a separate Phase5 start.
+Do not accidentally stage them into the Phase4 compatibility checkpoint. Preserve and
+test them separately; models alone do not complete GymNow or justify visible controls.
