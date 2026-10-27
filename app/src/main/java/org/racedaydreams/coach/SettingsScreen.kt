@@ -8,16 +8,21 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import java.time.LocalTime
 import java.time.ZoneId
 import org.racedaydreams.R
 import org.racedaydreams.domain.reminders.ReminderPreferences
+import org.racedaydreams.domain.settings.PrimaryFocus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -33,6 +38,7 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
     var showLicence by rememberSaveable { mutableStateOf(false) }
     var noticeAsset by rememberSaveable { mutableStateOf<String?>(null) }
     CoachHeading("Settings")
+    PrimaryFocusSettings(state, model)
     CoachButton("Personal health context",healthContext)
     CoachButton("Edit race goal and availability", editGoals)
     OutlinedButton(reviewBaseline, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Review running baseline") }
@@ -102,6 +108,47 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
                 item { androidx.compose.foundation.text.selection.SelectionContainer { Text(contents ?: "Loading bundled notice…") } }
             } },
             confirmButton = { TextButton(onClick = { noticeAsset = null }) { Text("Close") } })
+    }
+}
+
+@Composable
+private fun PrimaryFocusSettings(state: CoachUiState, model: CoachViewModel) {
+    var selected by rememberSaveable(state.primaryFocus) {
+        mutableStateOf(state.primaryFocus?.storageValue())
+    }
+    CoachCard {
+        Text("Primary focus", style = MaterialTheme.typography.titleLarge)
+        Text("Choose the training you want to focus on. Every feature stays available. Changing focus preserves your goals, programmes and workout history.")
+        PrimaryFocus.values().forEach { focus ->
+            val label = when (focus) {
+                PrimaryFocus.RUNNING -> "Running"
+                PrimaryFocus.STRENGTH -> "Strength"
+                PrimaryFocus.HYBRID -> "Hybrid"
+            }
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                    .selectable(
+                        selected = selected == focus.storageValue(),
+                        enabled = !state.busy,
+                        role = Role.RadioButton,
+                        onClick = { selected = focus.storageValue() },
+                    )
+                    .testTag("primary-focus-choice-${focus.storageValue()}"),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                RadioButton(
+                    selected = selected == focus.storageValue(),
+                    onClick = null,
+                    enabled = !state.busy,
+                )
+                Text(label)
+            }
+        }
+        Button(
+            onClick = { selected?.let { model.settings.primaryFocus(PrimaryFocus.fromStorageValue(it).get()) } },
+            enabled = !state.busy && selected != null,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        ) { Text("Save primary focus") }
     }
 }
 

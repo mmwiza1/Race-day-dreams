@@ -5,9 +5,12 @@ Coach will each work independently, with additional context when an athlete uses
 
 ## What's new
 
-- This checkpoint establishes feature-owned application operations and persistence
-  boundaries for the Strength Engine 2.0 work. It does not yet deliver the full new
-  standalone Strength experience; the remaining phases are tracked in CONTINUE_CODEX.md.
+- Choose Running, Strength or Hybrid emphasis during welcome or later in Settings.
+  Strength setup can create a gym programme without a race goal or running profile.
+  Focus changes preserve existing goals, programmes, actual workouts and unfinished drafts.
+- Feature-owned application operations and persistence boundaries support this work.
+  The full Strength Engine 2.0 experience is still in development; remaining phases
+  are tracked in CONTINUE_CODEX.md.
 
 ## Improvements
 
@@ -54,3 +57,8 @@ API28/35/36, build/lint/format and77authentic captures. Phase1localchecks:61,369
 checks/20suites and43schema tests. Phase2localchecks now pass91,439/21suites; its
 Androidgate and all subsequent product phases remain pending. These checkpoint results
 do not claim the full StrengthEngine2.0 release is complete.
+
+The Phase3 focus implementation adds 19 domain checks (91,458 across 22 suites) and
+eight Android cases for onboarding, focus changes, legacy race drafts, SQLite and backup
+rollback. Those Android cases are awaiting actual supported-API CI execution. The focus
+adapter uses the existing settings table and preserves schema/backup versions.

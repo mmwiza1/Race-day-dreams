@@ -11,6 +11,7 @@ import kotlinx.coroutines.*
 import org.json.*
 import org.racedaydreams.data.*
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.support.DreamRoutes
 import java.time.*
 
@@ -45,10 +46,10 @@ import java.time.*
 
 @Composable fun StartingPath(model:CoachViewModel,choose:(String)->Unit)=CoachPage {
     CoachHeading("Make today yours")
-    Text("Choose where to start. Every feature remains available later.")
-    SemanticCard(Tile.Planned){Text("Run independently",style=MaterialTheme.typography.titleLarge);Text("No training programme or health access required.");CoachButton("Record my runs"){model.settings.startingPath("record");choose("home")}}
-    SemanticCard(Tile.Race){Text("A race goal",style=MaterialTheme.typography.titleLarge);CoachButton("Train for a race"){model.settings.startingPath("race");choose("baseline")}}
-    SemanticCard(Tile.Strength){Text("Integrated training",style=MaterialTheme.typography.titleLarge);Text("Begin with your running goal; strength stays optional.");CoachButton("Running + strength"){model.settings.startingPath("hybrid");choose("baseline")}}
+    Text("Choose your primary focus. You can change it in Settings, and every feature remains available.")
+    SemanticCard(Tile.Planned){Text("Running",style=MaterialTheme.typography.titleLarge);Text("Run independently or work towards a race. No gym programme or health access required.");CoachButton("Record my runs"){model.settings.startingPath("record"){choose("home")}};CoachButton("Train for a race"){model.settings.startingPath("race"){choose("baseline")}}}
+    SemanticCard(Tile.Strength){Text("Strength",style=MaterialTheme.typography.titleLarge);Text("Set up optional strength programming or log your own workouts. No race goal or running profile required.");CoachButton("Focus on strength"){model.settings.primaryFocus(PrimaryFocus.STRENGTH){choose("gym")}}}
+    SemanticCard(Tile.Race){Text("Hybrid",style=MaterialTheme.typography.titleLarge);Text("Begin with your running goal; add strength when you choose.");CoachButton("Running + strength"){model.settings.startingPath("hybrid"){choose("baseline")}}}
 }
 
 @Composable fun RaceWeekChecklist(goal:org.racedaydreams.domain.RaceGoal){

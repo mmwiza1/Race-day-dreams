@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.racedaydreams.coach.navigation.*
+import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.health.HealthConnectGateway
 
 /** Modern shell; the established goal form remains an AndroidView during incremental migration. */
@@ -139,8 +140,8 @@ private fun CoachApp(model: CoachViewModel) {
             model.acknowledgeProfileSaved(state.savedProfileRevision)
         }
     }
-    LaunchedEffect(state.profile, state.loading) {
-        if (!state.loading && state.profile == null && route == "plan") {
+    LaunchedEffect(state.profile, state.loading, state.primaryFocus, route) {
+        if (!state.loading && state.profile == null && state.primaryFocus != PrimaryFocus.STRENGTH && route == "plan") {
             nav.navigate("baseline") { popUpTo(nav.graph.id) { inclusive = true } }
         }
     }
@@ -148,7 +149,7 @@ private fun CoachApp(model: CoachViewModel) {
     if (state.loading) {
         Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
             CircularProgressIndicator()
-            Text("Loading your local running information…", Modifier.padding(top = 16.dp))
+            Text("Loading your local training information…", Modifier.padding(top = 16.dp))
         }
         return
     }
@@ -158,6 +159,7 @@ private fun CoachApp(model: CoachViewModel) {
     val startDestination = rememberSaveable {
         when {
             org.racedaydreams.recording.RunRecordingService.running.value -> "record-run"
+            state.primaryFocus == PrimaryFocus.STRENGTH -> "strength"
             state.profile != null -> "home"
             state.startingPath == "record" -> "home"
             state.baselineReviewed -> "goals"

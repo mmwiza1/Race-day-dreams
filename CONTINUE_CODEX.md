@@ -70,13 +70,21 @@ pending). Independent review reproduced all 91,439 checks / 21 suites and 43 sch
 Next: publish separate Phase2, run/fix actual format/Android CI, adopt fresh canonical
 captures and record observed results. Do not claim Android pass yet.
 
-Phase3 is being implemented separately by the standalone_focus agent. Its source files
-may be unstaged while the Phase2 checkpoint is committed: do not mix or discard them.
+Phase3 is implemented and ready for its own checkpoint and Android gate. It adds 19
+domain checks (91,458 across22suites) and eight Android cases. Do not claim those Android
+results until observed. The first Phase2 CI formatting job produced a real pinned-tool
+patch; it was applied without weakening checks. Phase2 and Phase3 verification will run
+on the combined descendant, with separate coherent source commits.
 Typed PrimaryFocus uses the existing backed-up settings table; absent values migrate
 logically from legacy starting.path. Strength enters the existing Strength dashboard
 without a RaceGoal; Phase4 will then add a Strength-first Home. New Strength-only gym
 setup defaults may be GENERAL/STRENGTH_FIRST; existing programme settings stay unchanged.
 Focus changes only presentation. Preserve legacy race draft/resume and all destinations.
+
+Phase4 StrengthToday and Phase6 static exercise metadata are being prepared in separate
+new files by agents strength_today and exercise_metadata. They are NOT part of Phase3
+and must not accidentally be staged in its checkpoint. No new catalogue exercise is
+required merely to increase a count; all existing174guides/14routines remain intact.
 
 ## Next work
 

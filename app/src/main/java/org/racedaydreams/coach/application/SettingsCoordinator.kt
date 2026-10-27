@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream
 import org.racedaydreams.data.BackupRepository
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.reminders.ReminderPreferences
+import org.racedaydreams.domain.settings.PrimaryFocus
+import org.racedaydreams.domain.settings.PrimaryFocusRepository
 import org.racedaydreams.portability.BackupManager
 import org.racedaydreams.reminders.EveningReminders
 
@@ -15,14 +17,21 @@ class SettingsCoordinator(
     private val operations: CoachOperationRunner,
     private val backups: BackupRepository,
     private val settings: org.racedaydreams.domain.settings.SettingsRepository,
+    private val focus: PrimaryFocusRepository,
     private val profiles: SqliteUserPreferencesRepository,
     private val reminders: EveningReminders,
     private val recordingActive: () -> Boolean,
 ) {
-    fun startingPath(path: String) =
-        operations.submit {
+    fun startingPath(path: String, onSuccess: () -> Unit = {}) =
+        operations.submit(onSuccess = onSuccess) {
             require(path in listOf("record", "race", "hybrid"))
             settings.putSetting("starting.path", path)
+            focus.save(PrimaryFocus.fromLegacyStartingPath(path).get())
+        }
+
+    fun primaryFocus(selected: PrimaryFocus, onSuccess: () -> Unit = {}) =
+        operations.submit("Primary focus saved.", onSuccess = onSuccess) {
+            focus.save(selected)
         }
 
     fun setting(key: String, value: String) =

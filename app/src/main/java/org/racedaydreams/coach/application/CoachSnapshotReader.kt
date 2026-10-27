@@ -22,6 +22,7 @@ import org.racedaydreams.domain.coaching.AdaptiveCoachingEngine
 import org.racedaydreams.domain.coaching.CoachingRepository
 import org.racedaydreams.domain.coaching.PlannedWorkoutRepository
 import org.racedaydreams.domain.coaching.WeeklyCoaching
+import org.racedaydreams.domain.settings.PrimaryFocusRepository
 import org.racedaydreams.health.HealthAvailability
 import org.racedaydreams.health.HealthConnectGateway
 import org.racedaydreams.reminders.EveningReminders
@@ -33,6 +34,7 @@ class CoachSnapshotReader(
     private val shoesRepository: ShoeRepository,
     private val baselineRepository: BaselineRepository,
     private val settings: org.racedaydreams.domain.settings.SettingsRepository,
+    private val focus: PrimaryFocusRepository,
     private val planned: PlannedWorkoutRepository,
     private val release: Release08Store,
     private val gym: GymProgrammeStore,
@@ -122,6 +124,7 @@ class CoachSnapshotReader(
                 CoachUiState(
                     loading = false,
                     startingPath = settings.getSetting("starting.path"),
+                    primaryFocus = focus.load().orElse(null),
                     shoeDiscomfort =
                         release.get("config", "shoe-feedback")?.getJSONArray("activities")?.let { a
                             ->

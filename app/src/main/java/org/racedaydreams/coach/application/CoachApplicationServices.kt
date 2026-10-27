@@ -7,6 +7,7 @@ import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.Release08Store
+import org.racedaydreams.data.SqlitePrimaryFocusRepository
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.data.StrengthUserStore
 import org.racedaydreams.health.HealthConnectGateway
@@ -23,6 +24,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
     private val release = Release08Store(app)
     private val gym = GymProgrammeStore(app)
     private val choices = StrengthUserStore(app)
+    private val focus = SqlitePrimaryFocusRepository(store.settingsRepository())
     val healthGateway = HealthConnectGateway(app)
     private val snapshot =
         CoachSnapshotReader(
@@ -31,6 +33,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             store.shoeRepository(),
             store.baselineRepository(),
             store.settingsRepository(),
+            focus,
             store.plannedWorkoutRepository(),
             release,
             gym,
@@ -80,6 +83,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             operations,
             store.backupRepository(),
             store.settingsRepository(),
+            focus,
             profiles,
             reminders,
             { RunRecordingService.running.value },

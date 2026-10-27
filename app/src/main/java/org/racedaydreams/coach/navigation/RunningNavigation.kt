@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import org.racedaydreams.coach.*
+import org.racedaydreams.domain.settings.PrimaryFocus
 
 /** Feature-owned destinations retain the existing flat routes and back stack. */
 fun NavGraphBuilder.runningGraph(
@@ -94,7 +95,10 @@ fun NavGraphBuilder.runningGraph(
     }
 
     composable("plan") {
-        TrainingPlanScreen(
+        val state = readState()
+        if (state.profile == null && state.primaryFocus == PrimaryFocus.STRENGTH) {
+            GymProgrammeScreen(state, model) { nav.navigate("gym/session/${Uri.encode(it)}") }
+        } else TrainingPlanScreen(
             readState(),
             model,
             { nav.navigate("workout/${Uri.encode(it)}") },

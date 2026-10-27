@@ -274,3 +274,12 @@ calling the physical baseline accepted.
   run and complete-backup/restore it to verify its original assignment is retained.
 
 These physical checks remain UNPERFORMED until a human records results.
+# Strength Engine 2.0 focus checkpoint — manual acceptance pending
+
+On Galaxy S24, test a fresh install with **Focus on strength**: create a programme,
+log actual sets, rotate, close and relaunch, and open Plan without creating a race goal.
+In Settings, switch Running / Strength / Hybrid and verify existing race goals, running
+plans, gym versions, history and unfinished goal drafts remain intact. Export a complete
+backup, change focus and restore it; check the original focus and programme return.
+Running-only users must be able to record or set a race goal without gym setup.
+These physical checks remain unperformed; CI emulator results are recorded separately.

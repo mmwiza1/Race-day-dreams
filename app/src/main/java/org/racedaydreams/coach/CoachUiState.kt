@@ -20,6 +20,7 @@ import org.racedaydreams.domain.coaching.RunExecution
 import org.racedaydreams.domain.coaching.WeeklyCoaching
 import org.racedaydreams.domain.coaching.WorkoutDecision
 import org.racedaydreams.domain.reminders.ReminderPreferences
+import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.HistoricalStrengthRecord
 import org.racedaydreams.domain.strength.StrengthExercise
 import org.racedaydreams.domain.strength.StrengthSession
@@ -29,6 +30,7 @@ import org.racedaydreams.health.HealthAvailability
 data class CoachUiState(
     val loading: Boolean = true,
     val startingPath: String? = null,
+    val primaryFocus: PrimaryFocus? = null,
     val shoeDiscomfort: Set<String> = emptySet(),
     val busy: Boolean = false,
     val profile: UserProfile? = null,
