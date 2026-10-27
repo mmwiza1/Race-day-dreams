@@ -163,7 +163,7 @@ public final class ExerciseMetadataTestSuite {
             ok(
                     !ExerciseMetadataCatalog.require(id).roles().contains(PRIMARY_STRENGTH),
                     "An isolation exercise is not a main compound merely because it has load and"
-                        + " reps");
+                            + " reps");
         }
     }
 
@@ -186,7 +186,7 @@ public final class ExerciseMetadataTestSuite {
                         .primaryAreas()
                         .equals(Set.of(UPPER_BACK, SHOULDERS)),
                 "Face pull is not classified as a lat-focused pull simply because legacy category"
-                    + " is Back");
+                        + " is Back");
         ok(
                 ExerciseMetadataCatalog.require("tibialis-raise")
                         .primaryAreas()
@@ -195,7 +195,7 @@ public final class ExerciseMetadataTestSuite {
         ok(
                 ExerciseMetadataCatalog.require("wall-sit").primaryAreas().contains(QUADS),
                 "Wall sit classification corrects legacy Core grouping without modifying historical"
-                    + " definition");
+                        + " definition");
         ok(
                 ExerciseMetadataCatalog.require("plank").primaryAreas().equals(Set.of(TRUNK)),
                 "Core uses a useful broad trunk category");

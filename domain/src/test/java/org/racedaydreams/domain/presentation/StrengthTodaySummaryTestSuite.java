@@ -83,14 +83,14 @@ public final class StrengthTodaySummaryTestSuite {
                 summary(current, List.of(actual), List.of(link("actual", "block:v1", "today")))
                         .todayCompleted(),
                 "An old preserved version's completed session remains completed after an immutable"
-                    + " edit");
+                        + " edit");
         for (String invalid :
                 List.of("other:v1", "block:v3", "block:v0", "block:vbad", "block:v999999999999")) {
             ok(
                     !summary(current, List.of(actual), List.of(link("actual", invalid, "today")))
                             .todayCompleted(),
                     "Foreign, future or malformed programme identity cannot complete today's"
-                        + " session: "
+                            + " session: "
                             + invalid);
         }
         ok(
