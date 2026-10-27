@@ -130,10 +130,7 @@ class GymProgrammeOperations(
     ): List<String> =
         GymProgrammeGenerator.conflicts(
             session.date(),
-            session.exercises().any {
-                ExerciseCatalog.definition(it.exerciseId())?.exercise()?.region() !=
-                    StrengthExercise.Region.UPPER
-            },
+            GymProgrammeGenerator.hasLowerBodyWork(session.exercises()),
             running,
             StrengthAnalytics.hardLowerBodyDates(actualStrength),
         )

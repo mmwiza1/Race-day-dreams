@@ -21,9 +21,11 @@ Coach will each work independently, with additional context when an athlete uses
 
 ## Fixes
 
-- No gym-programming behaviour fix is claimed in the architecture checkpoint. The
-  confirmed six-week boundary, lower-session variation and fatigue-context defects
-  are the next separate phase.
+- Six-week gym blocks contain six complete programme weeks anchored to the selected
+  start date. Starting mid-week no longer creates an extra calendar-week allocation.
+- Upper/Lower blocks use distinct squat and hinge emphases. Scheduling recognises
+  meaningful lower-body work in Full Body sessions, including context immediately
+  after a demanding run, and explanations describe the exercises actually retained.
 
 ## Known limitations
 

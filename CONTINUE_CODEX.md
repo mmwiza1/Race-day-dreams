@@ -52,7 +52,7 @@ API35 architecture APK artifact12768139397,48,075,565bytes; captureartifact12768
 These are checkpoint artifacts, NOT the final complete0.9 release. Main's rolling release
 remains0.8.2 until allStrengthEngine2work is complete/merged. No stabletag.
 
-## Phase2 now ready for checkpoint
+## Phase2 checkpoint and Phase3 in progress
 
 Three modified files (do not discard):
 - domain/src/main/java/org/racedaydreams/domain/strength/GymProgrammeGenerator.java
@@ -64,8 +64,19 @@ actual-exercise lower classification; same/before keyrun conflicts and softer af
 penalties/context; truthful retained-exercise explanations and trunk-substitute tradeoffs.
 No session removal, recurring availability change, schema/backup or progression change.
 Full local suite **91,439checks/21suites** (new30,070) and43schema tests passed.
-Next: add generator/newSuite to formatter scope, commit separatePhase2, run/fix CI,
-adopt fresh canonical captures and record observed results. Do not claim Android pass yet.
+Formatter scope now includes generator/newSuite. An additional Android application test
+checks retained-exercise classification and post-run recovery context (Android result
+pending). Independent review reproduced all 91,439 checks / 21 suites and 43 schema tests.
+Next: publish separate Phase2, run/fix actual format/Android CI, adopt fresh canonical
+captures and record observed results. Do not claim Android pass yet.
+
+Phase3 is being implemented separately by the standalone_focus agent. Its source files
+may be unstaged while the Phase2 checkpoint is committed: do not mix or discard them.
+Typed PrimaryFocus uses the existing backed-up settings table; absent values migrate
+logically from legacy starting.path. Strength enters the existing Strength dashboard
+without a RaceGoal; Phase4 will then add a Strength-first Home. New Strength-only gym
+setup defaults may be GENERAL/STRENGTH_FIRST; existing programme settings stay unchanged.
+Focus changes only presentation. Preserve legacy race draft/resume and all destinations.
 
 ## Next work
 

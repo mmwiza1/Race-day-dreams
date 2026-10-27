@@ -11,6 +11,8 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.racedaydreams.coach.application.GymProgrammeOperations
+import org.racedaydreams.domain.PlannedWorkout
+import org.racedaydreams.domain.WorkoutCategory
 import org.racedaydreams.domain.strength.ExerciseCatalog
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.domain.strength.GymProgrammeGenerator
@@ -95,6 +97,29 @@ class GymProgrammeOperationsTest {
             }
         )
     }
+
+    @Test
+    fun conflictPreviewUsesActualExerciseContentAndIncludesPostRunRecovery() {
+        val original = plan()
+        val keyRun = PlannedWorkout("key-run", today, WorkoutCategory.INTERVALS, 6.0, null, emptyList(), "Key run")
+        val session = original.sessions().first()
+        assertTrue(operations.conflicts(session, listOf(keyRun), emptyList()).isEmpty())
+        val lower = session.copyExercise("back-squat")
+        val warnings = operations.conflicts(lower, listOf(keyRun), emptyList())
+        assertEquals(1, warnings.size)
+        assertTrue(warnings.single().contains("day after"))
+        assertTrue(warnings.single().contains("Review recovery"))
+        val core = session.copyExercise("plank")
+        assertTrue(operations.conflicts(core, listOf(keyRun), emptyList()).isEmpty())
+        assertEquals("bench-press", session.exercises().first().exerciseId())
+    }
+
+    private fun GymProgramme.Session.copyExercise(id: String) =
+        GymProgramme.Session(
+            id(), date(), title(),
+            listOf(GymProgramme.Prescription(id, 2, 6, 8, null, null, 6, 8, 90, "Retained work")),
+            explanation(),
+        )
 
     @Test
     fun retainedOperationsObserveTimezoneChangesWhileInjectedClocksStayFixed() {

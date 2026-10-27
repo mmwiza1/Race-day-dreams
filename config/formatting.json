@@ -47,6 +47,8 @@
     "domain/src/main/java/org/racedaydreams/domain/health/HealthImportRepository.java",
     "domain/src/main/java/org/racedaydreams/domain/reminders/ReminderScheduleRepository.java",
     "domain/src/main/java/org/racedaydreams/domain/settings/SettingsRepository.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/GymProgrammeGenerator.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/GymProgrammeAllocationTestSuite.java",
     "app/src/androidTest/java/org/racedaydreams/coach/FeatureNavigationTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/GymProgrammeOperationsTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/CoachOperationRunnerTest.kt",

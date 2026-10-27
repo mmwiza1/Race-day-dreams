@@ -2,8 +2,10 @@
 
 Architecture Hardening + Strength Engine 2.0 is in development on
 `feature/strength-engine-2-architecture-hardening`, based on live main `8b75755`.
-Phase1 is a behaviour-preserving extraction and must pass existing backup/build/API gates
-before goal-specific Strength feature work. The full requested phases are retained in
+Phase 1's behaviour-preserving extraction passed the existing backup/build/API gates
+(240 instrumentation tests on each supported API). Phase 2 corrects start-anchored gym
+weeks, lower-session variation and exercise-backed fatigue context; its Android gate is
+being run separately. The full requested phases are retained in
 CONTINUE_CODEX.md; this increment does not reduce them to architecture alone.
 
 Running Coach and Strength Coach will each be independently usable. Hybrid use adds
