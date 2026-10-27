@@ -1,42 +1,69 @@
-# Current Phase1 verification findings
+# Verification — 0.9 Phase1 architecture checkpoint
 
-DraftPR14/source7473b85913bf8e2f01782ae1f4ec2d7ffb9e5b40 passed Android build/lint/test
-compilation. Workflow40575940377 API35 then ran239tests and found10failures, primarily
-frozen destination snapshots plus a controlled callback-order failure. Both root causes
-are corrected in the next source; original failing tests remain. A new Homegraph reactive
-state test was added. No post-fix pass is claimed until the fullmatrix actually succeeds.
+This is the verified architecture checkpoint, not the completed StrengthEngine2release.
+DraftPR14 remains open for the full requested product scope. Baseline main8b75755 was
+fetched before edits; its workflow40330082255 was green.
 
-Real ktfmt0.54/google-java-format1.24.0 produced a scope-checked57-file patch in CI.
-ActualJAR SHA256s are now pinned; the unavailable Maven.sha256 sidecars are no longer
-used, and the temporary checksum diagnostic is removed. Ten formatterharness tests
-pass. All domain/schema checks still pass after applying the real formatting patch.
+## Actual CI results
 
----
+Source38fcc591024d1de858be16cd4c7d9860abb5ed34 passed full
+[workflow40578388101](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40578388101):
 
-# 0.9 architecture checkpoint — in progress
+| API | Result | Job |
+| --- | --- | --- |
+| 28 | 240 instrumentation tests passed | 122451503560 |
+| 35 | 240 instrumentation tests passed | 122451503092 |
+| 36 | 240 instrumentation tests passed | 122451503859 |
 
-Live baseline main `8b75755a0b74074047408b6444a11db3d6fef6f3` was fetched before edits;
-feature branch is `feature/strength-engine-2-architecture-hardening`. Baseline workflow
-40330082255 is green on API28/35/36. Local baseline:61,295domain checks/19suites,
-43schema,9release-note,11Dream-source,14artwork-integrity and6screenshot-integrity tests
-passed; strict174/174canonical+14/14routine resources and committed capture hash matched.
+Build/lint/instrumentation compilation, format, domain/schema/source and fullcapture gates
+passed. Exact Finished240lines were inspected for each API. Existing213tests remain;
+27new cases cover scopedSQLite rollback/oldformatrestore, command/callback ordering,
+realcombinedsnapshots, retained graphreactivity/routes, gympreview/timezone preservation,
+sensors, failed/lostack batching and partial execution/completebackup roundtrip.
 
-Phase1 implementation adds feature coordinators/shared operation runner, scoped SQL
-repositories, flat feature navigation and internal recording coordination. Local checks
-now pass61,369domain checks/20suites (74new recording/cue checks),43schema and9release-note
-tests. Nine offline formatter-harness tests pass; actual formatter execution is pending
-CI. Independent review found/fixed one timezone-capture regression and found no remaining
-concrete semantic blocker; review does not replace Android build/instrumentation.
+Local Phase1results:61,369domain checks/20suites,43schema,9release-note,11Dreamsource,
+14artwork-integrity,6screenshot-integrity and10formatter-harness tests passed. Strict
+174/174canonical+14/14routine guidance and all177exercise/20Dreamassets remain intact.
+No legitimate assertion/test was removed or timeout increased.
 
-Local Gradle failed before compilation while downloading its distribution (Java connection
-refused). No Android SDK/adb exists. One network-enabled tool capability probe was
-interrupted before execution; no SDK download or TLS workaround occurred. Android
-compile/lint/API28/35/36 tests and fresh captures must run in GitHub CI. No unperformed
-Android or physical result is claimed. All GalaxyS24 acceptance remains UNPERFORMED.
+## Failures diagnosed and corrected
 
-Target0.9.0-test1/code12;schema10/JSON7/raw2/complete1 unchanged in this phase.
-The full Strength Engine2.0 product phases are pending, listed in CONTINUE_CODEX.md.
-Do not merge the draft release before complete scope and all verification gates pass.
+Firstdraft40575398058 found wrongHistoricalStrengthRecord imports and a narrowed nullable
+RunNow callback; both fixed. Its formatter checksum sidecar was unavailable. The next
+run40575940377 compiled but API35executed239with10failures: cached destination snapshots
+froze later UIupdates; callbackpublication could be overtaken by queuedcommands. Both
+root causes were fixed and original assertions retained. A retainedHomegraph5K->10K
+regression was added. All240cases subsequently passed on EACH APIabove, without blind
+reruns or softened evidence. Fixed default gymclock timezone capture separately.
+
+Realformatter output was applied locally fromCI, scope checked, not hand-reconstructed.
+Observed MavenartifactSHA256s are pinned and verified for downloads/caches. The temporary
+bootstrap was removed. Formatting job122451503503passed both actual modes on33Kotlin and
+24Javafiles. Build-only tools Apache2.0; no runtime dependency added.
+
+## Authentic captures and APK
+
+Bot2ea80d89b3dd695d01026a63e87fbde1a28b0932adopted77actualAPI35PNGs from artifact
+12768114597. Currentfingerprintmatches
+`5b413ac959a755c6d514952d0f7feb67ea5343dca4d59c0f50ff650c3e069fde`.
+Captureintegrity and sourcehash passed locally after ordinary fast-forward. Representative
+Home/Plan/Strength/LiveCoach/Paris/dark/200%renders were opened; no missingart, clipping or
+information-hierarchy regression found. See docs/VISUAL_REVIEW_0_9_0.md. Mockups remain
+separate. Image review is not physical acceptance.
+
+API35checkpointAPK artifact12768139397:48,075,565bytes (0.9.0-test1/code12). This is an
+architecture testartifact, not the final complete StrengthEngine2APK or mainrelease.
+Schema10/JSON7/raw2/complete1 unchanged; noINTERNETpermission or newruntime dependency.
+Existingcurrent/legacy backup tests passed. App-ownedGPS/history/PBs/favourites preserved.
+
+## Remaining work / physical status
+
+Phase2generatorfixes now pass91,439localdomain checks/21suites and43schema tests; their
+own Android/format gate is pending. FullPhases3–39remain in CONTINUE_CODEX.md. Do not merge
+PR14until fullscope is complete andgreen. LocalAndroidSDK/adb is absent; localwrapper
+failed beforecompilation. All Androidresults here are observedGitHubCIresults.
+GalaxyS24outdoor/sensors/audio/music/battery/recovery/backup/TalkBack/sunlight checks remain
+**UNPERFORMED**. No physical result is inferred fromemulator orsynthetic replay tests.
 
 ---
 

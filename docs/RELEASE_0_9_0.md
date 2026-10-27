@@ -47,4 +47,8 @@ The live 0.8.2 baseline is main 8b75755a0b74074047408b6444a11db3d6fef6f3, whose
 workflow 40330082255 passed. Before architecture edits, local checks passed 61,295 domain
 checks across 19 suites, 43 schema tests, 9 release-note tests, 11 Dream source tests,
 14 artwork-integrity tests, 6 screenshot-integrity tests and all packaged asset checks.
-Architecture compile/lint/instrumentation results must be recorded as they are observed.
+Architecture source38fcc59 passed workflow40578388101:240instrumentation tests EACH
+API28/35/36, build/lint/format and77authentic captures. Phase1localchecks:61,369domain
+checks/20suites and43schema tests. Phase2localchecks now pass91,439/21suites; its
+Androidgate and all subsequent product phases remain pending. These checkpoint results
+do not claim the full StrengthEngine2.0 release is complete.

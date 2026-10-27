@@ -1,87 +1,81 @@
-# Continue — Architecture Hardening + Strength Engine 2.0
+# Continue — 0.9 Architecture Hardening + Strength Engine 2.0
 
-## Current scope and branch
+## Current repository and scope
 
-- User requested the complete Architecture Hardening + Strength Engine 2.0 release.
-  This supersedes the completed 0.8.2 delivery scope. Do not restart Dream Routes.
-- Branch: `feature/strength-engine-2-architecture-hardening`.
-- Live main fetched and fast-forwarded: `8b75755a0b74074047408b6444a11db3d6fef6f3`
-  (release page standardisation after merged PRs #12/#13). Feature starts there.
-- Draft PR #14 is open. Published source checkpoint `96879387e5b6d2946fb3e62db2c37e6ec15d22bf`
-  exactly matches the protected local tree. Original local commits remain on
-  `checkpoint/strength-engine-2-local-c1bfac4`; no work was discarded.
-- Latest completed checkpoint: baseline audit/tests. **Phase 1 is in progress**;
-  implementation protected in local checkpoint `183dae46ff6ab0d028b8070ba44285ec459b4b4c`;
-  compile/format/API verification is pending. The full release is NOT complete.
-- Target: **0.9.0-test1 / versionCode 12**. Schema **10**, JSON **7**, raw archive **2**,
-  complete package **1** unchanged. Do not bump persistence versions until data changes.
-- Existing feature branch/commits are preserved. Baseline isolated worktree:
-  `/workspace/scratch/rdd-strength-baseline` (detached at live main, no edits).
+- Branch: `feature/strength-engine-2-architecture-hardening`; **draft PR #14**:
+  https://github.com/mmwiza1/Race-day-dreams/pull/14 . Do not merge before ALL scope passes.
+- Live-main baseline fetched: `8b75755a0b74074047408b6444a11db3d6fef6f3` (0.8.2/code11).
+  Main was not changed by this increment. Original local checkpoints183dae4/c1bfac4
+  remain on `checkpoint/strength-engine-2-local-c1bfac4`; no work was discarded.
+- Target **0.9.0-test1 / code12**. Current schema **10**, JSON **7**, raw archive **2**,
+  complete package **1** unchanged. No unnecessary persistence bump for architecture.
+- Latest completed phase: **Phase1 architecture hardening, verified**. Phase2 generator
+  fixes are implemented/tested locally and awaiting their own commit/Android gate.
+- The full Strength standalone/programming/execution release is NOT complete. Do not
+  confuse a green architecture checkpoint with completion of the requested product.
 
-## Observed baseline
+## Completed Phase1 checkpoint
 
-Before edits, local 61,295 domain checks / 19 suites, 43 schema tests, 9 release-note
-checks, 11 Dream source/provenance tests, 14 artwork-integrity and 6 screenshot-integrity
-tests passed. Strict guidance: 174/174 canonical +14/14 routine movements; 177 original
-exercise assets and20Dream WebPs intact. Screenshot source digest matches committed
-`db25ccc7a930e1f40a3885ef24091b905973641850d4784ced9888b1657835b0`.
-Live-main workflow40330082255 is green across API28/35/36 plus publication.
-Initial local Gradle attempt failed downloading its wrapper (Java proxy connection
-refused), before compilation. Shell git fetch succeeded with explicit network access.
-No SDK is installed. Network-enabled curl and git-push permission calls were interrupted
-  before execution. Do not repeat indefinite permission waits. Use connected GitHub tools
-  for CI/publication and preserve the original local checkpoint. No Android compile success
-  is claimed yet.
-Baseline logs: `/workspace/scratch/strength-2-baseline-domain.log` and
-`/workspace/scratch/strength-2-baseline-gradle.log`.
+Source `38fcc591024d1de858be16cd4c7d9860abb5ed34` passed complete workflow
+[40578388101](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40578388101):
+**240 instrumentation tests EACH API28/35/36**, build/lint/test compilation, domain,
+schema, source/provenance, strict174/174canonical+14/14routine guidance, real formatting
+and77authentic captures. Exact Finished240lines inspected in jobs122451503560(API28),
+122451503092(API35),122451503859(API36). Canonical bot2ea80d89b3dd695d01026a63e87fbde1a28b0932
+was fast-forwarded locally. All77PNGstructures and current source fingerprint match:
+`5b413ac959a755c6d514952d0f7feb67ea5343dca4d59c0f50ff650c3e069fde`.
 
-## Phase 1 implementation checkpoint (awaiting Android/format CI)
+Architecture decisions:
+- CoachViewModel is lifecycle/draft shell; feature coordinators own commands/repositories.
+  One coherent read model and operation runner remain intentionally shared.
+- Success callback/message stays inside its serial publication Mutex. A controlled test
+  proved unlock-before-callback allowed later snapshots to overtake it; original assertions
+  remain. Destinations query state providers INSIDE composition, not cached graph creation;
+  RunNow's nullable snapshot is deferred too. A realHomegraph5K->10K test guards reactivity.
+- Seven SQL-owning repositories retain one ProfileDatabase and outer restore transaction.
+  FeatureStore forwarders remain compatible; existing query/backup semantics retained.
+- One recording service delegates session/solemetricsengine/atomicstaging, execution,
+  cues and sensors. Capture batches/deepJSON on Main; serialIO only; cursors advance after
+  commit. Fake/realSQLite tests cover retry/lostack/inflight/paused/partialexecution/backup.
+- 36flat route contracts remain; no nested back-stack change. No unrelated UI redesign.
+- Real ktfmt0.54 andgoogle-java-format1.24.0 AOSP check57scoped sources (33KT+24Java).
+  Exact observed SHA256 locks are in config/formatting.json; cache metadata cannot override
+  them. Temporary Maven checksum diagnostic was removed. Tools are build-only Apache2.0.
 
-- CoachViewModel reduced to lifecycle/draft shell with feature coordinators, one shared
-  CoachOperationRunner and coherent CoachSnapshotReader; existing public forwarders
-  retained for integrations. Leaf screens call feature-owned coordinators. GymProgrammeOperations owns
-  generation/edit/substitution previews; Compose no longer duplicates those rules.
-- FeatureStore is a compatibility facade over SQL-owning activity/result/shoe/baseline/
-  settings/planned-workout/backup repositories. Domain contracts are Android-independent;
-  backup JSON stays application-layer. All use the same ProfileDatabase/transaction.
-- 36 existing flat destinations moved to feature navigation registrations. No nested
-  back-stack change. Home/goal/shared composables moved out of Activity without UI edits.
-- Recorder execution/event deltas and cue arbitration moved to domain coordinators;
-  sensor adapter lifecycle has an injectable coordinator. RecordingSessionCoordinator now owns the sole metrics engine, staged session, atomic
-  snapshots and post-commit cursors; service retains Android lifecycle/commands/policy.
-- New tests cover runner/callback ordering, scoped transaction/restore contracts, route
-  registration, execution/cue transitions, sensor wiring, failed/lost-ack staging and
-  complete-backup partial execution. Added74pure checks pass (61,369total/20suites);
-  43schema tests remain green. New26Androidcases await actual compile/execution.
-- Pinned Kotlin/Java formatting/check runner is implemented and wired into CI;9offline
-  harness tests pass. Local download did not execute (network permission call was
-  interrupted). CI will run real tools and emit an actionable patch; commit formatted
-  source before treating this gate as green. New sources are not formatted yet.
-- CI active capture branch/named APKs changed to this feature/0.9.0. Fresh actual captures
-  and fingerprint must be generated by the full matrix; never fabricate the digest.
-- No new durable Strength concepts are stored in Release08Store. Existing rows supported.
+Before edits, baseline61,295checks/19suites +43schema +9release-note +11Dream-source,
+14artwork-integrity and6screenshot-integrity tests passed; baseline mainCI40330082255green.
+Phase1adds74purechecks(61,369/20suites),27Androidcases and10formatter-harness tests.
+Actual newcaptures reviewed:Home,Plan,Strength,LiveCoach,Paris,Dream plusdark/200%Home;
+no missingart, harmfulclipping or hierarchy regression found. See docs/VISUAL_REVIEW_0_9_0.md.
 
-## Architecture invariants
+API35 architecture APK artifact12768139397,48,075,565bytes; captureartifact12768114597.
+These are checkpoint artifacts, NOT the final complete0.9 release. Main's rolling release
+remains0.8.2 until allStrengthEngine2work is complete/merged. No stabletag.
 
-One authoritative run service/engine. Engine mutations remain on Main; only immutable
-staging snapshots run on serial IO. Advance point/event cursors only after atomic append
-succeeds. Never silently resume tracking after process death/reboot. Keep explicit partial
-recovery. Feature commands share one Mutex; IO operation -> coherent read model -> Main
-success callback. Preserve draft suspension around save/reset/restore. Scoped SQL adapters
-share one helper and outer restore transaction; no second database or destructive fallback.
+## Phase2 now ready for checkpoint
 
-## Next exact tasks
+Three modified files (do not discard):
+- domain/src/main/java/org/racedaydreams/domain/strength/GymProgrammeGenerator.java
+- domain/src/test/java/org/racedaydreams/domain/strength/GymProgrammeAllocationTestSuite.java
+- app/src/main/java/org/racedaydreams/coach/application/GymProgrammeOperations.kt
 
-1. Source extraction/session boundaries and independent regression review are complete.
-   The discovered timezone-capture regression was fixed with a regression test. Complete
-   real formatting and Android compile/lint/API verification through CI; fix actual failures.
-2. Open a DRAFT PR, run full API28/35/36 instrumentation + canonical captures, inspect
-   actual renders and old/current backups. Commit coherent Phase1 checkpoint and update
-   this handoff. Do not proceed to feature redesign until architecture gate is healthy.
-3. Phase2: fix six-week start-anchored allocation (currently Tuesday/all-days/frequency2
-   can yield13sessions), explicit squat/hinge lower-session variation, same/before/after
-   demanding-run context including Full Body, and explanations from actual exercise list.
-   Add all-start-weekday/frequency tests and retain separate checkpoint.
+Implemented: six start-anchored seven-day windows; explicit lower occurrence variants;
+actual-exercise lower classification; same/before keyrun conflicts and softer after-run
+penalties/context; truthful retained-exercise explanations and trunk-substitute tradeoffs.
+No session removal, recurring availability change, schema/backup or progression change.
+Full local suite **91,439checks/21suites** (new30,070) and43schema tests passed.
+Next: add generator/newSuite to formatter scope, commit separatePhase2, run/fix CI,
+adopt fresh canonical captures and record observed results. Do not claim Android pass yet.
+
+## Next work
+
+1. Protect this documentedPhase1 checkpoint separately from Phase2 behaviour fixes.
+2. Complete Phase2 format/build/affectedinstrumentation gate and checkpoint.
+3. Phase3 typedtrainingfocus/onboarding/Settings: Running/Strength/Hybrid presentation,
+   StrengthneedsnoRaceGoal, allfeaturesremain. Existing settingsbackups preserveALLstring
+   keys, so a typed focusadapter can reuse that table without schema/envelopebump. Preserve
+   record/race/hybrid legacydraft flows; no automatic programme priority changes.
+4. Then Phase4 Strength-firstToday andPhase5 genuineGymNow, in coherent tested checkpoints.
 
 ## Remaining full product scope (not implemented yet)
 
@@ -110,56 +104,24 @@ Phases37–39: accessible real UX/captures, complete research/heuristic/architec
 full build/lint/format/domain/schema/API28/35/36/backup gates, PR review and final merge
 ONLY after full scope complete and green. Rolling test release; no stable production tag.
 
-## Physical/device and known status
 
-All S24 physical checks remain UNPERFORMED. Do not claim sensor/audio/battery/outdoor,
-TalkBack/sunlight or real complete-backup acceptance from emulator tests.
-No INTERNET permission, backend/account/ads/subscription/analytics/LLM dependency is added.
-The app recommends. The athlete decides. The plan adapts.
+## Tooling / continuity
 
-## First draft CI diagnosis
+Working read-only `git fetch origin <branch> --no-tags` with sandboxed network access
+successfully syncs bot captures. LocalSDK/adb is absent; default Gradle wrapper download
+failed with JavaConnectException before compilation. Network-enabledcurl/gitpush tool
+requests were interrupted before execution after long waits; do not repeat indefinitely.
+Use connectedGitHub create_tree/create_commit/update_ref for publication with expectedhead
+lease and exact treeSHA equality. Import remotecommit through
+`/workspace/scratch/rdd-github-commit-import.py` and fast-forward refs without reset/discard.
+Remote branch creation requires github_create_branch; update_ref does not create it.
 
-Workflow40575398058 is the first Android/format gate for PR14/source9687938. Formatting
-failed because Maven's `.sha256` sidecar returns404. Android compile failed on two extraction issues: wrong HistoricalStrengthRecord imports
-  (it belongs to domain.strength) and a nullable RunNow snapshot callback narrowed to String.
-  Both are corrected in the next source. All observed failures must still pass CI.
-A TEMPORARY formatter-lock diagnostic in the next commit downloads the exact pinned
-JARs in CI, verifies Maven's available publisher SHA1, prints actual SHA256 and seeds
-the checked cache so real formatters can produce an actionable patch. It must be
-removed after those SHA256 values are locked into config/formatting.json and the runner
-validates the pinned hashes directly. Do not leave the diagnostic in a completed gate.
-Then apply only the real FORMATTING_PATCH output, commit it, and run full CI again.
-No test is weakened; the formatting job stays red until source matches real tools.
+The approvedvisual assets/courses/0.8.2engine remain intact. New durable Strengthconcepts
+must use typed/versioned persistence, not Release08Store. Preserve all olderbackup reads;
+plan justified additive schema/JSON bump only when new models require it. Later audit
+StrengthProgressionAdvisor's datedoverload (stale second/future sessions currentlymay
+qualify): fix inPhase26 with proper regressions, not silently during architecture.
 
-## Formatter correction completed in working tree
-
-PR14 workflow40575940377/source7473b85913bf8e2f01782ae1f4ec2d7ffb9e5b40 ran
-real ktfmt0.54 andgoogle-java-format1.24.0. Actual publisher-verified artifactSHA256s
-are now pinned in config/formatting.json; runner verifies downloads AND caches against
-those fixed locks. Temporary bootstrap was removed. Applied its real394,200-byte patch
-to57scopedfiles after checking everypath againstformattertargetlist. No sourcewas
-hand-recreated. Finalformatcheck andAndroidcompile/APIresultsremainrequired.
-
-## Instrumentation findings and corrections (do not skip verification)
-
-Workflow40575940377 compiled allAndroid main/testcode, then API35 executed239tests
-with10failures. ExistingUI tests revealed a navigation extraction regression: passing
-a plainCoachUiState to NavGraphBuilder cached one snapshot for the graph lifetime.
-Featuregraphs now accept readState providers and invoke them INSIDE destinations;
-RunNow's nullable snapshot likewise stays a deferred provider. Added a production
-Homegraph recomposition test (5K->10K) while retaining all36route contracts.
-
-The controlled runner test observed callbacks[2,2] instead of[1,2]: unlock allowed
-the next command to publish before the prior callback. Success callback/message now
-remain inside the same Mutex publication boundary. The original failing assertions
-are unchanged. No testtimeout was increased or testremoved. Fullpost-fixCIrequired.
-27newAndroidcases nowexist (240totalexpected), not yetclaimedpassing.
-
-## Current verification checkpoint
-
-Committed sourcee63a0d655b3a15c1e2212bfec300e730a4dada2a contains reactive destination
-providers, deferred RunNow snapshot and callback serialization fixes. Its workflow
-40577997734 verified pinned formatter downloads and produced only a small additional
-format patch for the new reactivity code/test. That actual patch is applied in the next
-commit. The updated fullmatrix must pass before Phase1 is accepted or Phase2 begins.
-PR14 remains DRAFT. Original239-test failures are NOT waived or hidden.
+All S24physical GNSS/BLE/TTS/music/calls/battery/recovery/backup/TalkBack/sunlight checks
+remain **UNPERFORMED**. NoInternetpermission/backend/account/analytics/ads/subscriptions/
+LLM dependency added. The app recommends. The athlete decides. The plan adapts.
