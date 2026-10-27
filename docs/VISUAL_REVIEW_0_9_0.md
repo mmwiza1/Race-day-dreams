@@ -34,3 +34,13 @@ No harmful clipping, missing artwork or navigation-label wrapping was found. The
 hero and annual geographic route retain the accepted0.8.2 presentation; no artwork changed.
 The independent logging control is functional; full GymNow and live gym execution remain
 later checkpoints. These are actual emulator observations, not physical S24 acceptance.
+
+## Subsequent capture defect — not accepted
+
+Source171a210/workflow40595241800 passed255Android cases per supported API and published
+80PNGs in bot5220799. Actual inspection found home.png shows global Loading rather than
+Home, despite PNG integrity and instrumentation success. This capture set fails visual
+acceptance. StrengthHome light/200% remained readable when opened. The fixture now has
+positive current-activity snapshot/content readiness and rejects Loading for every capture;
+fresh CI execution and a new Home image review are still required. Reference artwork is
+unchanged and is never replaced by test captures.

@@ -8,33 +8,37 @@
 - Live-main baseline8b75755a0b74074047408b6444a11db3d6fef6f3 remains0.8.2/code11.
   Current target0.9.0-test1/code12. Do not restart or reset to main on continuation.
 - Schema10 / JSON7 / raw2 / complete1 unchanged. No Internet/runtime dependencies added.
-- Last fully verified SOURCE: e9768ff3c13800dfdb8915f3b2ad273d5643f30b.
-  Canonical capture bot c1fa18dd9d3319857764a1c1b7c43419f1d49a47 was fast-forwarded locally.
-  Documentation/formatter checkpoint6f950350d5e743e6e16a0ceda79f4e03725ebc20 is above
-  that bot commit; the Phase5domain checkpoint follows it. Inspect actual HEAD.
+- Last fully verified SOURCE: 171a2108197f8ce2dc3a68a8a6bb7e4df633c997.
+  Canonical capture bot: 5220799a9efd53a97e90b546a2d44a04e26aead5. Inspect actual HEAD
+  and fast-forward status before editing; preserve subsequent uncommitted phase work.
 - Phases1–3 verified; Phase4 Strength-first Today implemented/verified (full GymNow is
   Phase5). Phase6 canonical metadata implemented/verified. Full release NOT complete.
 
 ## Last complete gate and visual review
 
-Workflow40592585867 SUCCESS:
-https://github.com/mmwiza1/Race-day-dreams/actions/runs/40592585867
-- 253 instrumentation tests EACH API28/35/36. Exact Finished253 logs inspected in
-  jobs122500333538 /122500333740 /122500333523.
+Workflow40595241800 SUCCESS:
+https://github.com/mmwiza1/Race-day-dreams/actions/runs/40595241800
+- 255 instrumentation tests EACH API28/35/36. Exact Finished255 logs inspected in
+  jobs122509582203 /122509582007 /122509582052.
 - Build, lint, domain/schema/source/guidance and actual pinned formatting all passed.
-  Formatting job122500333497 checked36Kotlin+37Java (73sources), both actual modes.
-- 80authentic captures (all77old + StrengthHome light/dark/200%). Integrity passes.
-  Fingerprint0c67ec5c9cef6acac61f86829ad1a1b6e0fa5c4cf7aa37707e1867fd3b667d5b.
-- Opened StrengthHome light/dark/200%, RunningHome, Plan, annualParis2026. Primary
-  Strength logging action remains visible at200%; lower details scroll normally; no
-  harmful clipping, missing art or hierarchy regression. See docs/VISUAL_REVIEW_0_9_0.md.
-- API35 checkpoint APK artifact12774623099:48,190,253bytes, screenshots12774418148.
+  Formatting job122509581631 checked36Kotlin+44Java (80sources), both actual modes,
+  including bounded byte-stable formatter convergence; all14harness cases passed.
+- 80authentic captures (all77old + StrengthHome light/dark/200%) published by the bot
+  and fast-forwarded. StrengthHome light/200% were opened; controls/wrapping retained.
+  VISUAL FAILURE FOUND: home.png captured global Loading despite green tests. New
+  current-scenario loaded/content guards reject this; fresh capture/review is REQUIRED.
+  Do not claim the 171 screenshot set passed the visual gate. Source digest:
+  6be033098cdaad7b0808cfd2711375958c6ae4ab771841838afaadd0af3a7e6e.
+- Previous sourcee9768ff/workflow40592585867 passed253cases each and its80captures were
+  reviewed: StrengthHome light/dark/200%, RunningHome, Plan and annualParis2026 showed
+  no harmful clipping, missing art or hierarchy regression. See docs/VISUAL_REVIEW_0_9_0.md.
+- API35 checkpoint APK artifact12777070406:48,239,405bytes, screenshots12775783471.
   These are draft0.9 checkpoint artifacts, NOT a complete StrengthEngine2release.
 - All S24 physical outdoor/BLE/TTS/music/calls/battery/recovery/backup/TalkBack checks
   remain UNPERFORMED. Rolling main release stays0.8.2; no stable tag or merge.
 
-Local verified Phase4/metadata:94,072checks/24domain suites;43schema;9release notes;
-10formatter harness;11Dream source;14artwork integrity;7screenshot-validator tests.
+Verified Phase5 foundation:94,241checks/25domain suites;43schema;9release notes;
+14formatter harness;11Dream source;14artwork integrity;7screenshot-validator tests.
 All geographic generation checks reproduce. Strict174/174guides +14/14routines and
 177exercise/20Dream assets remain intact. Existing tests/assertions were not removed.
 
@@ -80,13 +84,13 @@ All geographic generation checks reproduce. Strict174/174guides +14/14routines a
 - Production domain must use API28-safe Immutable/Collections/Collectors. No Java9
   List.of/Set.of/Map.of/copyOf or Java16 Stream.toList. JVM tests alone do not prove this.
 
-## Current next checkpoint — Phase5 domain, NOT full GymNow
+## Phase5 domain checkpoint — verified, NOT full GymNow
 
 Seven files now checkpointed as Phase5 domain foundation (preserve them):
 - domain/.../strength/GymWorkoutDefinition.java
 - GymExecution.java, GymExecutionSet.java, GymExecutionEngine.java, GymWorkoutAdapter.java
 - domain/.../strength/GymExecutionTestSuite.java
-- app/src/androidTest/.../data/GymExecutionAndroidTest.java (2cases, Android pending)
+- app/src/androidTest/.../data/GymExecutionAndroidTest.java (2cases, passed all supported APIs)
 
 169newchecks; aggregate94,241checks/25suites and43schema tests passed locally.
 Definitions are date-free immutable revisions/stable slots/frozen exercises+targets.
@@ -99,16 +103,29 @@ NO storage/coordinator/UI wiring yet: do not describe models as a working GymNow
 Formatter follow-up is in ONLY scripts/format-code.py, scripts/test-format-code.py,
 docs/FORMATTING.md. Actual pinned --apply and isolated patch generation require byte-stable
 output within4passes, otherwise fail. Plain --check and checksum locks unchanged. All10
-original harness cases plus4new ones =14pass locally; actual CI verification pending.
+original harness cases plus4new ones =14pass locally; actual pinned-tool CI passed above.
 This prevents repeated real google-java-format long-string normalisation patch rounds.
 
 NEXT EXACT TASKS:
-1. Formatter/docs are checkpointed separately above c1fa18d; all7gym files are in their
-   own domain checkpoint and formatter scope. Publish using the safe expected-head lease.
-2. Run actual formatter (apply bounded stable patch), compile + supported API gate for
-   new engine smoke tests (expected255Android cases). Do not claim a pass before observed.
-3. Adopt matching80canonical captures; preserve all previous screenshot requirements.
-4. Implement full Phase5 typed durability/coordinators/GymNow screens with all six paths,
+1. Preserve the uncommitted cross-week lower-body scheduling correction in
+   GymProgrammeGenerator.java and GymProgrammeAllocationTestSuite.java. The previous
+   search considered within-week spacing but could allocate Monday then Tuesday across
+   programme windows although Wednesday was available. The fix retains requested
+   sessions, penalises the previous planned day separately from completed evidence, and
+   explains unavoidable consecutive planned dates. Its320newchecks passed locally in the
+   preceding work (94,561total/25suites); the resumed run is rechecking them. It has not
+   passed a new full CI gate yet. Commit and verify this correction separately.
+2. Strict v1 GymWorkoutJson/GymExecutionJson codecs and Android malformed/round-trip tests
+   are in progress. Do not stage unfinished codec files with the scheduling correction.
+   These codecs do not yet provide a repository, migration, backup or UI feature.
+3. StrengthProgressionAdvisor now rejects stale second and future supporting sessions;
+   inclusive28day boundary, effort/optionalincrease/actualimmutability have20newchecks.
+4. Strict codec files are complete with12newAndroid cases; source validator has60domain
+   checks and1Android case. Hybrid Today/Strength Plan coherence adds2Android UI cases.
+   Local aggregate94,641checks/26suites; expected270Android cases awaits actual CI.
+   Obtain pinned formatting, full supported-API gate and fresh80captures. Inspect Home
+   specifically for the loading-screen race; retain all original screenshot requirements.
+5. Implement full Phase5 typed durability/coordinators/GymNow screens with all six paths,
    then continue ALL remaining product phases below. No fake buttons or copied actuals.
 
 ## Concrete GymNow durability design — not implemented
@@ -121,11 +138,14 @@ staging/events atomically; stable set IDs support retries. Existing saveStrength
 resolves gym.current() at finish, so it is insufficient for frozen live-source associations.
 Recovery must explain recorded timing/gaps, never pretend uninterrupted exercise.
 
-Proposed schema11 families (NOT published): strength_workout_versions/current,
-strength_executions/sets/events, strength_exercise_exclusions,
-strength_custom_exercise_metadata, strength_athlete_decisions. Settle programme/block
-persistence and ALL durable families before circulating a schema11APK; never silently
-extend a circulated schema version. Dedicated typed repositories/codecs, not Release08Store.
+Typed staging implementation is now in progress but NOT committed/published: schema11
+settles workout_versions/preferences and executions/sets/events only. Later durable
+families receive explicit schema12+ migrations; NEVER silently extend a circulated11.
+Do not invent future table layouts merely to reserve them. Dedicated typed repositories/
+codecs, not Release08Store. Normalised append-only bounded rows avoid CursorWindow limits;
+summary queries exclude actual/event payloads. Exact programme source and stable IDs are
+required for atomic finalisation. Retain repeat-source evidence independently of deleted
+original actuals. No unfinished draft is completed coaching/PB evidence.
 JSON8 would require validated strengthEngine data while retaining reads1–7 and outer
 transactional restore. Existing8MiB/depth/token bounds need conscious scale evaluation.
 Keep raw2/complete1 unless a justified independently versioned change is required.

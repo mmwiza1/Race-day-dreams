@@ -40,6 +40,10 @@ Coach will each work independently, with additional context when an athlete uses
   that could cover the next action or reappear after rotation.
 - Strength Today uses collection calls compatible with the supported Android runtimes;
   the API 28 instrumentation gate guards the new summary and metadata initialisation.
+- Consecutive lower-body sessions are considered across programme-week boundaries;
+  unavoidable spacing is explained without removing requested sessions.
+- Dated progression requires both supporting sessions to be recent and nonfuture.
+  Missing effort and one successful session still do not justify a load increase.
 
 ## Known limitations
 
@@ -62,16 +66,19 @@ introduced. Future persistence changes require explicit migrations and backup te
 Live-main baseline8b75755 passed workflow40330082255 before this increment. Architecture
 source38fcc59 then passed240instrumentation cases on each API28/35/36.
 
-The standalone focus/Today, scheduling fixes and canonical metadata checkpoint e9768ff
-passed workflow40592585867:253cases on EACH supported API, build/lint/domain/schema,
-real pinned formatting and80authentic captures. The new StrengthHome light/dark/200%
-images and representative RunningHome/Plan/Paris renders were opened and reviewed.
-API35 checkpoint APK artifact12774623099 is48,190,253bytes. These are checkpoint results,
-not completion of the entire StrengthEngine2.0 product scope.
+The latest execution-foundation checkpoint171a210 passed workflow40595241800 with255
+instrumentation cases on EACH API28/35/36, build/lint/domain/schema/source/guidance and
+actual pinned formatting (36Kotlin+44Javafiles). The80newauthentic captures are published;
+their exact-image visual review remains to be recorded. API35 checkpoint APK
+artifact12777070406 is48,239,405bytes; screenshots artifact12775783471. These are checkpoint
+results, not completion of the entire StrengthEngine2.0 product scope. Earlier standalone
+StrengthHome light/dark/200% and representative RunningHome/Plan/Paris renders from the
+253-case checkpoint were reviewed separately.
 
 Local checks also passed strict174/174canonical+14/14routine guidance,43schema tests,
 9release-note tests,11Dreamsource tests,14artwork-integrity and7screenshot-validator cases.
-The next unshipped GymNow domain foundation adds169checks (94,241across25suites) and two
-Android smoke cases pending CI. New formatter convergence handling passes14localharness
-cases and still requires actual pinned-tool CI verification. Physical S24 acceptance
-remains unperformed.
+The GymNow domain foundation adds169checks (94,241across25suites) and two Android runtime
+cases, now passed on all supported APIs. Full GymNow storage, backup and UI wiring remain
+in development. Formatter convergence handling passes14harness cases and actual pinned-tool
+CI. Later scheduling, strict JSON codec and progression-recency changes require their own
+verification. Physical S24 acceptance remains unperformed.

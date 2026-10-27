@@ -76,8 +76,10 @@ Storage codecs must additionally validate the frozen source against retained ver
 This is a tested domain foundation, not a shipped Gym Now screen: typed storage, backup,
 coordinators and all six entry flows remain unimplemented. No unfinished actuals are put
 into CoachingStore, and no actual sets are fabricated from targets. Two Android runtime
-smoke cases cover the domain adapters/engine on the supported APIs; their CI result must
-be observed before claiming runtime verification.
+smoke cases cover the domain adapters/engine and passed on API28/35/36 in source171a210,
+workflow40595241800 (255instrumentation tests on each API). The domain foundation has
+169newchecks, bringing that checkpoint to94,241checks across25suites. Strict v1 JSON
+codecs are a separate checkpoint in progress; they do not yet provide durable staging.
 
 See VERIFICATION.md for observed CI results, including failures and subsequent fixes.
 Domain metadata tests exercise every canonical ID, immutable collections, setup truth

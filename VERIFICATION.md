@@ -1,23 +1,41 @@
 # Verification — 0.9 development checkpoints
 
-## Current candidate: Phases 2–4 and canonical metadata
+## Current verified checkpoint: Phase5 execution foundation
 
-**Verified checkpoint:** source `e9768ff3c13800dfdb8915f3b2ad273d5643f30b` passed
-[workflow 40592585867](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40592585867).
-All **253 instrumentation tests passed on each API 28/35/36**, alongside build, lint,
-domain/schema/source/guidance and actual pinned formatting (36 Kotlin + 37 Java files).
-Exact Finished253 lines were inspected in jobs122500333538/122500333740/122500333523.
-Bot `c1fa18d` adopted all 80 authentic captures; integrity passed locally. Source digest:
-`0c67ec5c9cef6acac61f86829ad1a1b6e0fa5c4cf7aa37707e1867fd3b667d5b`.
-Strength Home light/dark/200%, Running Home, Plan and annual Paris2026 were visually
-opened: the primary logging control remains visible at 200%, lower details scroll,
-and no harmful clipping, missing artwork or hierarchy regression was found.
-API35 APK artifact12774623099 is **48,190,253 bytes**; screenshots artifact12774418148.
+**Verified checkpoint:** source `171a2108197f8ce2dc3a68a8a6bb7e4df633c997` passed
+[workflow 40595241800](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40595241800).
+All **255 instrumentation tests passed on each API 28/35/36**, alongside build, lint,
+domain/schema/source/guidance and actual pinned formatting (36 Kotlin + 44 Java files).
+Exact Finished255 lines were inspected in jobs122509582203/122509582007/122509582052.
+Formatter job122509581631 passed the bounded convergence path and all14harness cases.
+Bot `5220799a9efd53a97e90b546a2d44a04e26aead5` published 80 authentic captures and was
+fast-forwarded. Source digest is6be033098cdaad7b0808cfd2711375958c6ae4ab771841838afaadd0af3a7e6e.
+Strength Home light/200% were opened and retained readable controls/wrapping. Visual review
+also found a real capture defect: home.png shows global Loading. This set does NOT pass
+the visual gate. The pending fixture fix requires the current activity's loaded snapshot
+and focus-specific content, and rejects global Loading before every PNG write. A new
+full CI capture and actual-image review must demonstrate the correction.
+API35 APK artifact12777070406 is **48,239,405 bytes**; screenshots artifact12775783471.
 This remains a draft feature checkpoint, not the complete Strength Engine 2.0 release.
 
-The next unshipped GymNow domain foundation adds169 checks (94,241 /25 suites locally)
-and two Android smoke cases awaiting CI. No storage or UI wiring is claimed. Formatter
-convergence hardening passes14 harness cases locally; actual new-tool-path CI is pending.
+The GymNow domain foundation adds169 checks (**94,241 /25 suites**) and two Android
+runtime cases now verified on each supported API. Prescriptions, actual sets, monotonic
+pause/recovery and partial completion are validated. No storage or UI wiring is claimed.
+Cross-week lower-body allocation follow-up, strict JSON codecs and dated progression
+recency work are separate pending changes, not covered by this checkpoint's full CI.
+These follow-ups now pass94,641local checks/26suites (320allocation,20recency and60source
+validation additions). Strict codec tests add12Android cases, source validation adds1,
+and Hybrid Today/Strength Plan regressions add2: expected270cases awaits real CI.
+
+## Previous standalone Strength checkpoint
+
+Source `e9768ff3c13800dfdb8915f3b2ad273d5643f30b` passed workflow40592585867 with253cases
+on each supported API. Botc1fa18d adopted80captures; integrity passed locally. Digest:
+`0c67ec5c9cef6acac61f86829ad1a1b6e0fa5c4cf7aa37707e1867fd3b667d5b`.
+Strength Home light/dark/200%, Running Home, Plan and annual Paris2026 were visually
+opened: the primary logging control remained visible at200%, lower details scrolled,
+and no harmful clipping, missing artwork or hierarchy regression was found.
+API35 APK artifact12774623099 was48,190,253bytes; screenshots artifact12774418148.
 
 PR #14 remains draft. Source `083e8b0` in workflow
 [40590307831](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40590307831)
@@ -26,7 +44,7 @@ projection: `NoSuchMethodError` aborted instrumentation after 11 tests. This is 
 runtime compatibility defect, not an emulator flake. It is replaced with API-compatible
 `Collectors`/`Collections` calls. An Android registry-initialisation case was added so
 all 174 canonical metadata entries execute on each supported runtime. Verification of
-the fix passed the 253-case gate above.
+the fix passed the subsequent253-case gate and the latest255-case gate above.
 
 Earlier source `438ee5f` built/linted and ran 249 cases per API but had two deterministic
 new onboarding failures. Focus-save confirmation covered the next lower-page action;
@@ -102,8 +120,8 @@ Existingcurrent/legacy backup tests passed. App-ownedGPS/history/PBs/favourites 
 
 ## Remaining work / physical status
 
-Phase2 generator fixes, Phase3 focus, Phase4 Today and Phase6 metadata passed the combined
-supported-API gate above. Phase5 GymNow
+Phase2 generator fixes, Phase3 focus, Phase4 Today, Phase6 metadata and the Phase5 domain
+foundation passed the combined supported-API gate above. The complete Phase5 GymNow flow
 and the remaining product phases are tracked in CONTINUE_CODEX.md. Do not merge
 PR14until fullscope is complete andgreen. LocalAndroidSDK/adb is absent; localwrapper
 failed beforecompilation. All Androidresults here are observedGitHubCIresults.
