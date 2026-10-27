@@ -64,8 +64,8 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                 try (Cursor c =
                         read().rawQuery(
                                         "SELECT COUNT(*) FROM recording_points p JOIN"
-                                            + " recording_sessions s ON s.id=p.session_id WHERE"
-                                            + " s.activity_id=?",
+                                                + " recording_sessions s ON s.id=p.session_id WHERE"
+                                                + " s.activity_id=?",
                                         new String[] {a.id()})) {
                     if (c.moveToFirst()) count = c.getInt(0);
                 }
@@ -100,7 +100,7 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                         ? " WHERE a.id=?"
                         : before != null
                                 ? " WHERE (a.start_millis<CAST(? AS INTEGER) OR"
-                                      + " (a.start_millis=CAST(? AS INTEGER) AND a.id>?))"
+                                        + " (a.start_millis=CAST(? AS INTEGER) AND a.id>?))"
                                 : "";
         String[] arguments =
                 onlyId != null
@@ -115,10 +115,10 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
         try (Cursor cursor =
                 db.rawQuery(
                         "SELECT a.payload, n.provider, n.notes, n.rpe, n.shoe_id,"
-                            + " r.planned_workout_id FROM activities a LEFT JOIN"
-                            + " activity_annotations n ON a.provider=n.provider AND"
-                            + " a.record_id=n.record_id LEFT JOIN run_responses r ON"
-                            + " r.activity_id=a.id"
+                                + " r.planned_workout_id FROM activities a LEFT JOIN"
+                                + " activity_annotations n ON a.provider=n.provider AND"
+                                + " a.record_id=n.record_id LEFT JOIN run_responses r ON"
+                                + " r.activity_id=a.id"
                                 + where
                                 + " ORDER BY a.start_millis DESC, a.id"
                                 + (limit == 0 ? "" : " LIMIT " + limit),
@@ -242,7 +242,7 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
         try (Cursor existing =
                 db.rawQuery(
                         "SELECT id,provider,record_id FROM activities WHERE id=? OR (provider=? AND"
-                            + " record_id=?)",
+                                + " record_id=?)",
                         new String[] {a.id(), a.source().provider(), a.source().recordId()})) {
             while (existing.moveToNext()) {
                 existed = true;
@@ -353,7 +353,7 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
             try (Cursor old =
                     db.rawQuery(
                             "SELECT notes,rpe,shoe_id FROM activity_annotations WHERE provider=?"
-                                + " AND record_id=?",
+                                    + " AND record_id=?",
                             new String[] {provider, record})) {
                 if (old.moveToFirst()) {
                     oldNotes = old.getString(0);

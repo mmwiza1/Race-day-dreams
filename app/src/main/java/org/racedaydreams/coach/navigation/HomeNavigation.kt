@@ -7,7 +7,11 @@ import androidx.navigation.compose.composable
 import org.racedaydreams.coach.*
 
 /** Feature-owned destinations retain the existing flat routes and back stack. */
-fun NavGraphBuilder.homeGraph(readState: () -> CoachUiState, model: CoachViewModel, nav: NavHostController) {
+fun NavGraphBuilder.homeGraph(
+    readState: () -> CoachUiState,
+    model: CoachViewModel,
+    nav: NavHostController,
+) {
     composable("welcome") {
         StartingPath(model) { nav.navigate(it) { popUpTo(nav.graph.id) { inclusive = true } } }
     }

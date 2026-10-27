@@ -53,7 +53,7 @@ public final class SqliteResultRepository extends SqliteStoreAccess implements R
                             if (!table.equals("manual_results"))
                                 throw new IllegalArgumentException(
                                         "A manual result cannot replace a derived effort"
-                                            + " identity.");
+                                                + " identity.");
                         } else
                             registerDistance(
                                     catalog,

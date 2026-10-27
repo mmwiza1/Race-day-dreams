@@ -115,7 +115,7 @@ public final class RecordingCueCoordinator {
                             new CoachCues.Cue(
                                     "complete",
                                     "Workout complete. Recording continues until you finish and"
-                                        + " save.",
+                                            + " save.",
                                     1,
                                     active,
                                     true));

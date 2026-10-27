@@ -139,7 +139,9 @@ fun NavGraphBuilder.runningGraph(
             { nav.navigate("workout/${Uri.encode(it)}") },
             { date ->
                 val gym =
-                    readState().gymProgramme?.sessions()?.firstOrNull { s -> s.date().toString() == date }
+                    readState().gymProgramme?.sessions()?.firstOrNull { s ->
+                        s.date().toString() == date
+                    }
                 nav.navigate(
                     gym?.let { "gym/session/${Uri.encode(it.id())}" } ?: "strength?date=$date"
                 )

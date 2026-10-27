@@ -119,7 +119,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             try (Cursor c =
                     db.rawQuery(
                             "SELECT id,payload,provider,record_id,origin_package FROM"
-                                + " preserved_best_efforts ORDER BY id",
+                                    + " preserved_best_efforts ORDER BY id",
                             null)) {
                 while (c.moveToNext())
                     if (effortIds.add(c.getString(0)))
@@ -141,7 +141,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             try (Cursor c =
                     db.rawQuery(
                             "SELECT provider,record_id,notes,rpe,shoe_id FROM activity_annotations"
-                                + " ORDER BY provider,record_id",
+                                    + " ORDER BY provider,record_id",
                             null)) {
                 while (c.moveToNext())
                     annotations.put(
@@ -388,7 +388,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                             if (!mirror.equals(new HashSet<>(version.plan().workouts())))
                                 throw new IllegalArgumentException(
                                         "Backup current programme and reminder prescriptions"
-                                            + " disagree.");
+                                                + " disagree.");
                         }
                 }
             }
@@ -465,7 +465,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             try (Cursor active =
                     db.rawQuery(
                             "SELECT 1 FROM recording_sessions WHERE state IN"
-                                + " ('ACTIVE','PAUSED','RECOVERABLE')",
+                                    + " ('ACTIVE','PAUSED','RECOVERABLE')",
                             null)) {
                 if (active.moveToFirst())
                     throw new IllegalArgumentException(

@@ -154,3 +154,12 @@ the next command to publish before the prior callback. Success callback/message 
 remain inside the same Mutex publication boundary. The original failing assertions
 are unchanged. No testtimeout was increased or testremoved. Fullpost-fixCIrequired.
 27newAndroidcases nowexist (240totalexpected), not yetclaimedpassing.
+
+## Current verification checkpoint
+
+Committed sourcee63a0d655b3a15c1e2212bfec300e730a4dada2a contains reactive destination
+providers, deferred RunNow snapshot and callback serialization fixes. Its workflow
+40577997734 verified pinned formatter downloads and produced only a small additional
+format patch for the new reactivity code/test. That actual patch is applied in the next
+commit. The updated fullmatrix must pass before Phase1 is accepted or Phase2 begins.
+PR14 remains DRAFT. Original239-test failures are NOT waived or hidden.

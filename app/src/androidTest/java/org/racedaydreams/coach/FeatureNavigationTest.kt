@@ -20,15 +20,15 @@ import androidx.navigation.createGraph
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import java.time.DayOfWeek
+import java.util.EnumSet
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Test
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.racedaydreams.coach.navigation.*
 import org.racedaydreams.domain.*
-import java.time.DayOfWeek
-import java.util.EnumSet
 
 /** Existing flat route contracts must survive feature ownership changes. */
 @RunWith(AndroidJUnit4::class)
@@ -45,21 +45,26 @@ class FeatureNavigationTest {
             model = CoachViewModel(application, SavedStateHandle())
             viewModels.put("reactive-navigation", model)
         }
-        fun profile(distance: RaceDistance) = UserProfile(
-            RaceGoal(distance, "", null, GoalMode.FINISH, null),
-            TrainingPreferences(
-                TrainingStrategy.ZONE_2, EnumSet.allOf(DayOfWeek::class.java), 3,
-                DayOfWeek.SUNDAY, EnumSet.noneOf(DayOfWeek::class.java),
-                ScheduleType.FLEXIBLE, UnitSystem.METRIC,
-            ), false,
-        )
-        val current = mutableStateOf(CoachUiState(loading = false, profile = profile(RaceDistance.FIVE_K)))
+        fun profile(distance: RaceDistance) =
+            UserProfile(
+                RaceGoal(distance, "", null, GoalMode.FINISH, null),
+                TrainingPreferences(
+                    TrainingStrategy.ZONE_2,
+                    EnumSet.allOf(DayOfWeek::class.java),
+                    3,
+                    DayOfWeek.SUNDAY,
+                    EnumSet.noneOf(DayOfWeek::class.java),
+                    ScheduleType.FLEXIBLE,
+                    UnitSystem.METRIC,
+                ),
+                false,
+            )
+        val current =
+            mutableStateOf(CoachUiState(loading = false, profile = profile(RaceDistance.FIVE_K)))
         try {
             compose.setContent {
                 val nav = rememberNavController()
-                NavHost(nav, startDestination = "home") {
-                    homeGraph({ current.value }, model, nav)
-                }
+                NavHost(nav, startDestination = "home") { homeGraph({ current.value }, model, nav) }
             }
             compose.onNodeWithText("5K").performScrollTo().assertIsDisplayed()
             compose.runOnIdle {

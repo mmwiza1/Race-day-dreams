@@ -23,7 +23,12 @@ fun NavGraphBuilder.strengthGraph(
     composable("strength/pbs") { StrengthScreen(readState(), model, section = "pbs") }
 
     composable("strength/source/{id}") { d ->
-        StrengthScreen(readState(), model, section = "history", sourceId = d.arguments?.getString("id"))
+        StrengthScreen(
+            readState(),
+            model,
+            section = "history",
+            sourceId = d.arguments?.getString("id"),
+        )
     }
 
     composable("strength/history") { StrengthScreen(readState(), model, section = "history") }
