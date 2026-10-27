@@ -13,8 +13,15 @@ public interface GymExecutionRepository {
     }
 
     /** Summary queries never hydrate actual sets, event histories or workout definitions. */
-    record Summary(String id, GymExecution.Origin origin, GymExecution.Status status, String title,
-            Instant startedAt, long recordedElapsedMillis, long activeMillis, int actualSetCount,
+    record Summary(
+            String id,
+            GymExecution.Origin origin,
+            GymExecution.Status status,
+            String title,
+            Instant startedAt,
+            long recordedElapsedMillis,
+            long activeMillis,
+            int actualSetCount,
             long revision) {}
 
     record Preference(String workoutId, int currentRevision, boolean favourite) {
@@ -30,7 +37,9 @@ public interface GymExecutionRepository {
 
     List<Summary> unfinished();
 
-    /** Append actuals/events and update timing atomically. An identical lost-ack retry is harmless. */
+    /**
+     * Append actuals/events and update timing atomically. An identical lost-ack retry is harmless.
+     */
     Stored save(GymExecution snapshot, long expectedRevision);
 
     /** Final actual evidence and its exact explicit planned association commit together. */

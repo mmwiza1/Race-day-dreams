@@ -181,7 +181,8 @@ public final class BackupManager {
             if (((Integer) version) >= 7 && !envelope.getJSONObject("data").has("release08"))
                 throw new IOException("Backup is missing saved workouts and runner decisions.");
             if (((Integer) version) >= 8 && !envelope.getJSONObject("data").has("strengthEngine"))
-                throw new IOException("Version-eight backup is missing its gym execution evidence.");
+                throw new IOException(
+                        "Version-eight backup is missing its gym execution evidence.");
             Instant.parse(envelope.getString("createdAt"));
             store.validateSnapshot(envelope.getJSONObject("data"));
             return envelope;

@@ -3,6 +3,17 @@ package org.racedaydreams.portability;
 import android.os.Handler;
 import android.os.Looper;
 import android.test.AndroidTestCase;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.racedaydreams.data.FeatureStore;
+import org.racedaydreams.domain.activity.ActivityRecord;
+import org.racedaydreams.domain.activity.PerformanceDistance;
+import org.racedaydreams.domain.activity.RecordedResult;
+import org.racedaydreams.domain.activity.ResultSource;
+import org.racedaydreams.domain.activity.Shoe;
+import org.racedaydreams.domain.activity.SourceIdentity;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,15 +29,6 @@ import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.racedaydreams.data.FeatureStore;
-import org.racedaydreams.domain.activity.ActivityRecord;
-import org.racedaydreams.domain.activity.PerformanceDistance;
-import org.racedaydreams.domain.activity.RecordedResult;
-import org.racedaydreams.domain.activity.ResultSource;
-import org.racedaydreams.domain.activity.Shoe;
-import org.racedaydreams.domain.activity.SourceIdentity;
 
 /** Uses Android's actual JSON implementation and the transactional local store. */
 @SuppressWarnings("deprecation")
@@ -34,15 +36,20 @@ public final class BackupManagerTest extends AndroidTestCase {
     private FeatureStore store;
     private BackupManager manager;
 
-    @Override protected void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
         getContext().deleteDatabase("racedaydreams.db");
         store = new FeatureStore(getContext());
-        manager = new BackupManager(getContext(), store,
-                Clock.fixed(Instant.parse("2030-04-01T12:00:00Z"), ZoneOffset.UTC));
+        manager =
+                new BackupManager(
+                        getContext(),
+                        store,
+                        Clock.fixed(Instant.parse("2030-04-01T12:00:00Z"), ZoneOffset.UTC));
     }
 
-    @Override protected void tearDown() throws Exception {
+    @Override
+    protected void tearDown() throws Exception {
         store.close();
         getContext().deleteDatabase("racedaydreams.db");
         super.tearDown();
@@ -51,10 +58,19 @@ public final class BackupManagerTest extends AndroidTestCase {
     public void testHumanReadableVersionedRoundTrip() throws Exception {
         Shoe shoe = shoe("shoe");
         ActivityRecord manual = activity("manual", "manual", 5000.0, "shoe");
-        RecordedResult official = new RecordedResult("result", PerformanceDistance.FIVE_K,
-                Duration.ofSeconds(1500), LocalDate.of(2030, 3, 25), "Spring 5K",
-                ResultSource.OFFICIAL_CHIP, "manual", "Chip time");
-        store.saveShoe(shoe); store.upsertManualActivity(manual); store.saveResult(official);
+        RecordedResult official =
+                new RecordedResult(
+                        "result",
+                        PerformanceDistance.FIVE_K,
+                        Duration.ofSeconds(1500),
+                        LocalDate.of(2030, 3, 25),
+                        "Spring 5K",
+                        ResultSource.OFFICIAL_CHIP,
+                        "manual",
+                        "Chip time");
+        store.saveShoe(shoe);
+        store.upsertManualActivity(manual);
+        store.saveResult(official);
         byte[] snapshot = export();
         String text = new String(snapshot, StandardCharsets.UTF_8);
         assertTrue(text.contains("\n  \"format\""));
@@ -62,9 +78,12 @@ public final class BackupManagerTest extends AndroidTestCase {
         assertEquals(BackupManager.FORMAT, envelope.getString("format"));
         assertEquals(8, envelope.getInt("version"));
         store.saveShoe(shoe("extra"));
-        BackupManager.RestoreSummary summary = manager.restoreFrom(new ByteArrayInputStream(snapshot));
-        assertEquals(8, summary.version()); assertEquals(1, summary.manualActivities());
-        assertEquals(1, summary.manualResults()); assertEquals(1, summary.shoes());
+        BackupManager.RestoreSummary summary =
+                manager.restoreFrom(new ByteArrayInputStream(snapshot));
+        assertEquals(8, summary.version());
+        assertEquals(1, summary.manualActivities());
+        assertEquals(1, summary.manualResults());
+        assertEquals(1, summary.shoes());
         assertEquals(Collections.singletonList(shoe), store.shoes());
         assertEquals(Collections.singletonList(manual), store.activities());
         assertEquals(Collections.singletonList(official), store.results());
@@ -72,39 +91,84 @@ public final class BackupManagerTest extends AndroidTestCase {
 
     public void testOriginalVersionOneBackupRemainsReadable() throws Exception {
         store.saveShoe(shoe("legacy"));
-        JSONObject envelope=objectExport();envelope.put("version",1);envelope.getJSONObject("data").remove("coaching");
+        JSONObject envelope = objectExport();
+        envelope.put("version", 1);
+        envelope.getJSONObject("data").remove("coaching");
         store.saveShoe(shoe("later"));
-        BackupManager.RestoreSummary summary=manager.restoreFrom(new ByteArrayInputStream(envelope.toString().getBytes(StandardCharsets.UTF_8)));
-        assertEquals(1,summary.version());assertEquals(1,store.shoes().size());assertEquals("legacy",store.shoes().get(0).id());
+        BackupManager.RestoreSummary summary =
+                manager.restoreFrom(
+                        new ByteArrayInputStream(
+                                envelope.toString().getBytes(StandardCharsets.UTF_8)));
+        assertEquals(1, summary.version());
+        assertEquals(1, store.shoes().size());
+        assertEquals("legacy", store.shoes().get(0).id());
     }
-    public void testVersionThreeBackupRestoresLegacyStrengthAndRemovedProviderPreference() throws Exception {
+
+    public void testVersionThreeBackupRestoresLegacyStrengthAndRemovedProviderPreference()
+            throws Exception {
         store.saveShoe(shoe("legacy-v3"));
-        var exercise=org.racedaydreams.domain.strength.ExerciseCatalog.definition("back-squat").exercise();
-        var set=new org.racedaydreams.domain.strength.StrengthSession.SetEntry("old-set",5,80,7.0,false);
-        var session=new org.racedaydreams.domain.strength.StrengthSession("legacy-lift",Instant.now().minusSeconds(3600),ZoneOffset.UTC,Duration.ofMinutes(30),7.0,"Legacy note",Collections.singletonList(new org.racedaydreams.domain.strength.StrengthSession.ExerciseSets(exercise,Collections.singletonList(set))));
-        var coaching=new org.racedaydreams.data.CoachingStore(getContext());coaching.saveStrength(session);
-        JSONObject envelope=objectExport();envelope.put("version",3);JSONObject data=envelope.getJSONObject("data");
-        data.remove("strengthState");data.remove("gymProgramming");data.getJSONObject("settings").put("provider.preference","SAMSUNG_EXPERIMENTAL");
-        JSONObject row=data.getJSONObject("coaching").getJSONArray("strength_sessions").getJSONObject(0);
-        JSONObject payload=new JSONObject(row.getString("payload"));JSONObject block=payload.getJSONArray("exercises").getJSONObject(0);
-        block.getJSONObject("exercise").remove("measurement");JSONObject oldSet=block.getJSONArray("sets").getJSONObject(0);
-        oldSet.remove("seconds");oldSet.remove("metres");oldSet.remove("rir");row.put("payload",payload.toString());
+        var exercise =
+                org.racedaydreams.domain.strength.ExerciseCatalog.definition("back-squat")
+                        .exercise();
+        var set =
+                new org.racedaydreams.domain.strength.StrengthSession.SetEntry(
+                        "old-set", 5, 80, 7.0, false);
+        var session =
+                new org.racedaydreams.domain.strength.StrengthSession(
+                        "legacy-lift",
+                        Instant.now().minusSeconds(3600),
+                        ZoneOffset.UTC,
+                        Duration.ofMinutes(30),
+                        7.0,
+                        "Legacy note",
+                        Collections.singletonList(
+                                new org.racedaydreams.domain.strength.StrengthSession.ExerciseSets(
+                                        exercise, Collections.singletonList(set))));
+        var coaching = new org.racedaydreams.data.CoachingStore(getContext());
+        coaching.saveStrength(session);
+        JSONObject envelope = objectExport();
+        envelope.put("version", 3);
+        JSONObject data = envelope.getJSONObject("data");
+        data.remove("strengthState");
+        data.remove("gymProgramming");
+        data.getJSONObject("settings").put("provider.preference", "SAMSUNG_EXPERIMENTAL");
+        JSONObject row =
+                data.getJSONObject("coaching").getJSONArray("strength_sessions").getJSONObject(0);
+        JSONObject payload = new JSONObject(row.getString("payload"));
+        JSONObject block = payload.getJSONArray("exercises").getJSONObject(0);
+        block.getJSONObject("exercise").remove("measurement");
+        JSONObject oldSet = block.getJSONArray("sets").getJSONObject(0);
+        oldSet.remove("seconds");
+        oldSet.remove("metres");
+        oldSet.remove("rir");
+        row.put("payload", payload.toString());
         store.saveShoe(shoe("newer-data"));
-        var result=manager.restoreFrom(new ByteArrayInputStream(envelope.toString().getBytes(StandardCharsets.UTF_8)));
-        assertEquals(3,result.version());assertEquals("HEALTH_CONNECT",store.getSetting("provider.preference"));
-        assertEquals(1,store.shoes().size());assertEquals("legacy-v3",store.shoes().get(0).id());
-        assertEquals(session,coaching.strength().get(0));
+        var result =
+                manager.restoreFrom(
+                        new ByteArrayInputStream(
+                                envelope.toString().getBytes(StandardCharsets.UTF_8)));
+        assertEquals(3, result.version());
+        assertEquals("HEALTH_CONNECT", store.getSetting("provider.preference"));
+        assertEquals(1, store.shoes().size());
+        assertEquals("legacy-v3", store.shoes().get(0).id());
+        assertEquals(session, coaching.strength().get(0));
     }
 
     public void testVersionTwoRequiresCoachingSectionBeforeReplacement() throws Exception {
-        store.saveShoe(shoe("retained"));JSONObject envelope=objectExport();envelope.getJSONObject("data").remove("coaching");
-        rejected(envelope.toString());assertEquals("retained",store.shoes().get(0).id());
+        store.saveShoe(shoe("retained"));
+        JSONObject envelope = objectExport();
+        envelope.getJSONObject("data").remove("coaching");
+        rejected(envelope.toString());
+        assertEquals("retained", store.shoes().get(0).id());
     }
 
     public void testExternalPayloadAndImportTokenAreNotExported() throws Exception {
         store.upsertManualActivity(activity("own", "manual", 5000.0, null));
-        store.applyImport("health-connect", Collections.singletonList(
-                activity("external", "health-connect", 8473.29, null)), Collections.emptyList(), "SECRET_IMPORT_CHECKPOINT");
+        store.applyImport(
+                "health-connect",
+                Collections.singletonList(activity("external", "health-connect", 8473.29, null)),
+                Collections.emptyList(),
+                "SECRET_IMPORT_CHECKPOINT");
         JSONObject envelope = new JSONObject(new String(export(), StandardCharsets.UTF_8));
         JSONObject data = envelope.getJSONObject("data");
         assertEquals(1, data.getJSONArray("activities").length());
@@ -116,23 +180,28 @@ public final class BackupManagerTest extends AndroidTestCase {
 
     public void testUnknownVersionDoesNotReplaceExistingData() throws Exception {
         store.saveShoe(shoe("original"));
-        JSONObject envelope = objectExport(); envelope.put("version", 999);
+        JSONObject envelope = objectExport();
+        envelope.put("version", 999);
         rejected(envelope.toString());
         assertEquals("original", store.shoes().get(0).id());
     }
 
     public void testFractionalOrStringVersionIsNotSilentlyCoerced() throws Exception {
-        JSONObject envelope = objectExport(); envelope.put("version", 1.5);
+        JSONObject envelope = objectExport();
+        envelope.put("version", 1.5);
         rejected(envelope.toString());
-        envelope.put("version", "1"); rejected(envelope.toString());
+        envelope.put("version", "1");
+        rejected(envelope.toString());
     }
 
     public void testInvalidTypedPayloadIsRejectedBeforeReplacement() throws Exception {
         store.saveShoe(shoe("original"));
         JSONObject envelope = objectExport();
-        envelope.getJSONObject("data").put("shoes", new JSONArray().put(new JSONObject().put("id", "broken")));
+        envelope.getJSONObject("data")
+                .put("shoes", new JSONArray().put(new JSONObject().put("id", "broken")));
         rejected(envelope.toString());
-        assertEquals(1, store.shoes().size()); assertEquals("original", store.shoes().get(0).id());
+        assertEquals(1, store.shoes().size());
+        assertEquals("original", store.shoes().get(0).id());
     }
 
     public void testTruncatedOrTrailingDataIsRejected() throws Exception {
@@ -143,14 +212,17 @@ public final class BackupManagerTest extends AndroidTestCase {
     }
 
     public void testInvalidDateAndWrongFormatAreRejected() throws Exception {
-        JSONObject envelope = objectExport(); envelope.put("createdAt", "not-a-date");
+        JSONObject envelope = objectExport();
+        envelope.put("createdAt", "not-a-date");
         rejected(envelope.toString());
-        envelope = objectExport(); envelope.put("format", "another-app"); rejected(envelope.toString());
+        envelope = objectExport();
+        envelope.put("format", "another-app");
+        rejected(envelope.toString());
     }
 
     public void testMalformedUtf8DoesNotReachDatabase() throws Exception {
         try {
-            manager.restoreFrom(new ByteArrayInputStream(new byte[]{(byte) 0xc3, 0x28}));
+            manager.restoreFrom(new ByteArrayInputStream(new byte[] {(byte) 0xc3, 0x28}));
             fail("Malformed UTF-8 must be rejected.");
         } catch (IOException expected) {
             assertTrue(store.activities().isEmpty());
@@ -162,46 +234,101 @@ public final class BackupManagerTest extends AndroidTestCase {
         for (int i = 0; i < 40; i++) deep.append('[');
         for (int i = 0; i < 40; i++) deep.append(']');
         rejected(deep.toString());
-        InputStream tooLarge = new InputStream() {
-            private int remaining = BackupManager.MAX_BYTES + 1;
-            @Override public int read() { return remaining-- > 0 ? ' ' : -1; }
-            @Override public int read(byte[] bytes, int offset, int length) {
-                if (remaining <= 0) return -1;
-                int count = Math.min(length, remaining);
-                Arrays.fill(bytes, offset, offset + count, (byte) ' ');
-                remaining -= count;
-                return count;
-            }
-        };
-        try { manager.restoreFrom(tooLarge); fail("Oversized backup must be rejected."); }
-        catch (IOException expected) { assertTrue(store.shoes().isEmpty()); }
+        InputStream tooLarge =
+                new InputStream() {
+                    private int remaining = BackupManager.MAX_BYTES + 1;
+
+                    @Override
+                    public int read() {
+                        return remaining-- > 0 ? ' ' : -1;
+                    }
+
+                    @Override
+                    public int read(byte[] bytes, int offset, int length) {
+                        if (remaining <= 0) return -1;
+                        int count = Math.min(length, remaining);
+                        Arrays.fill(bytes, offset, offset + count, (byte) ' ');
+                        remaining -= count;
+                        return count;
+                    }
+                };
+        try {
+            manager.restoreFrom(tooLarge);
+            fail("Oversized backup must be rejected.");
+        } catch (IOException expected) {
+            assertTrue(store.shoes().isEmpty());
+        }
     }
 
     public void testMainThreadFileWorkIsRejected() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<Throwable> failure = new AtomicReference<>();
-        new Handler(Looper.getMainLooper()).post(() -> {
-            try { manager.exportTo(new ByteArrayOutputStream()); }
-            catch (Throwable error) { failure.set(error); }
-            finally { latch.countDown(); }
-        });
+        new Handler(Looper.getMainLooper())
+                .post(
+                        () -> {
+                            try {
+                                manager.exportTo(new ByteArrayOutputStream());
+                            } catch (Throwable error) {
+                                failure.set(error);
+                            } finally {
+                                latch.countDown();
+                            }
+                        });
         assertTrue(latch.await(5, TimeUnit.SECONDS));
         assertTrue(failure.get() instanceof IllegalStateException);
     }
 
     private byte[] export() throws IOException {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream(); manager.exportTo(bytes); return bytes.toByteArray();
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        manager.exportTo(bytes);
+        return bytes.toByteArray();
     }
-    private JSONObject objectExport() throws Exception { return new JSONObject(new String(export(), StandardCharsets.UTF_8)); }
+
+    private JSONObject objectExport() throws Exception {
+        return new JSONObject(new String(export(), StandardCharsets.UTF_8));
+    }
+
     private void rejected(String text) throws Exception {
-        try { manager.restoreFrom(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8))); fail("Invalid backup was accepted."); }
-        catch (IOException expected) { /* No destructive operation should have run. */ }
+        try {
+            manager.restoreFrom(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
+            fail("Invalid backup was accepted.");
+        } catch (IOException expected) {
+            /* No destructive operation should have run. */
+        }
     }
-    private static Shoe shoe(String id) { return new Shoe(id, "Example", "Daily", LocalDate.of(2030, 1, 1), 50_000.0, false, "Synthetic", false); }
-    private static ActivityRecord activity(String id, String provider, double metres, String shoeId) {
-        return new ActivityRecord(id, new SourceIdentity(provider, id, "example.synthetic"),
-                Instant.parse("2030-03-25T09:00:00Z"), Instant.parse("2030-03-25T09:30:00Z"),
-                ZoneOffset.UTC, ZoneOffset.UTC, metres, null, null, null, null, null, 5.0, "Synthetic",
-                Collections.emptyList(), Collections.emptyList(), null, shoeId);
+
+    private static Shoe shoe(String id) {
+        return new Shoe(
+                id,
+                "Example",
+                "Daily",
+                LocalDate.of(2030, 1, 1),
+                50_000.0,
+                false,
+                "Synthetic",
+                false);
+    }
+
+    private static ActivityRecord activity(
+            String id, String provider, double metres, String shoeId) {
+        return new ActivityRecord(
+                id,
+                new SourceIdentity(provider, id, "example.synthetic"),
+                Instant.parse("2030-03-25T09:00:00Z"),
+                Instant.parse("2030-03-25T09:30:00Z"),
+                ZoneOffset.UTC,
+                ZoneOffset.UTC,
+                metres,
+                null,
+                null,
+                null,
+                null,
+                null,
+                5.0,
+                "Synthetic",
+                Collections.emptyList(),
+                Collections.emptyList(),
+                null,
+                shoeId);
     }
 }

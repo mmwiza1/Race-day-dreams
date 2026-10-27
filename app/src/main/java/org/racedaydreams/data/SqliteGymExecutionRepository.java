@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -42,32 +41,45 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
     private static final String UNFINISHED = "state IN ('ACTIVE','PAUSED','RECOVERY_REQUIRED')";
 
     private record WorkoutKey(String id, int revision) {}
-    private record WorkoutRow(GymWorkoutDefinition definition, GymExecution.SourceReference source,
+
+    private record WorkoutRow(
+            GymWorkoutDefinition definition,
+            GymExecution.SourceReference source,
             JSONObject sourceSnapshot) {}
+
     private record Parts(String header, List<String> sets, List<String> events) {}
+
     private record BlockKey(String slotId, StrengthExercise exercise) {}
 
-    public SqliteGymExecutionRepository(Context context) { super(context); }
+    public SqliteGymExecutionRepository(Context context) {
+        super(context);
+    }
 
     @Override
     public Stored start(GymExecution initial) {
         Objects.requireNonNull(initial, "initial gym execution");
-        if (initial.status() != GymExecution.Status.ACTIVE || !initial.actualSets().isEmpty()
-                || initial.events().size() != 1 || initial.recordedElapsedMillis() != 0
+        if (initial.status() != GymExecution.Status.ACTIVE
+                || !initial.actualSets().isEmpty()
+                || initial.events().size() != 1
+                || initial.recordedElapsedMillis() != 0
                 || initial.activeMillis() != 0) {
             throw new IllegalArgumentException("Start with an empty, active gym execution.");
         }
-        if (initial.source() != null && initial.source().kind() == GymExecution.SourceKind.ACTUAL_SESSION
-                && initial.id().equals(initial.source().id())) throw new IllegalArgumentException(
-                        "A gym execution cannot repeat itself.");
+        if (initial.source() != null
+                && initial.source().kind() == GymExecution.SourceKind.ACTUAL_SESSION
+                && initial.id().equals(initial.source().id()))
+            throw new IllegalArgumentException("A gym execution cannot repeat itself.");
         Parts prepared = parts(initial);
         SQLiteDatabase db = write();
         db.beginTransaction();
         try {
-            try (Cursor actual = db.rawQuery("SELECT 1 FROM strength_sessions WHERE id=?",
-                    new String[]{initial.id()})) {
-                if (actual.moveToFirst()) throw new IllegalArgumentException(
-                        "This gym identity already belongs to a completed strength workout.");
+            try (Cursor actual =
+                    db.rawQuery(
+                            "SELECT 1 FROM strength_sessions WHERE id=?",
+                            new String[] {initial.id()})) {
+                if (actual.moveToFirst())
+                    throw new IllegalArgumentException(
+                            "This gym identity already belongs to a completed strength workout.");
             }
             Stored existing = load(db, initial.id());
             if (existing != null) {
@@ -75,13 +87,16 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                 db.setTransactionSuccessful();
                 return existing;
             }
-            if (hasUnfinished(db)) throw new IllegalArgumentException(
-                    "Finish or recover the unfinished gym workout before starting another.");
+            if (hasUnfinished(db))
+                throw new IllegalArgumentException(
+                        "Finish or recover the unfinished gym workout before starting another.");
             ensureWorkout(db, initial.prescription(), initial.source());
             insertExecution(db, initial, 1, prepared);
             db.setTransactionSuccessful();
             return new Stored(initial, 1);
-        } finally { db.endTransaction(); }
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
@@ -92,39 +107,59 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             Stored stored = load(db, validId(id));
             db.setTransactionSuccessful();
             return stored;
-        } finally { db.endTransaction(); }
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
     public List<Summary> unfinished() {
         var out = new ArrayList<Summary>();
-        try (Cursor c = read().rawQuery("SELECT id,origin,state,title,started_at,recorded_elapsed,"
-                + "active_millis,set_count,revision FROM strength_executions WHERE " + UNFINISHED
-                + " ORDER BY started_at DESC,id", null)) {
-            while (c.moveToNext()) out.add(new Summary(c.getString(0),
-                    GymExecution.Origin.valueOf(c.getString(1)), GymExecution.Status.valueOf(c.getString(2)),
-                    c.getString(3), Instant.parse(c.getString(4)), c.getLong(5), c.getLong(6),
-                    c.getInt(7), c.getLong(8)));
+        try (Cursor c =
+                read().rawQuery(
+                                "SELECT"
+                                    + " id,origin,state,title,started_at,recorded_elapsed,active_millis,set_count,revision"
+                                    + " FROM strength_executions WHERE "
+                                        + UNFINISHED
+                                        + " ORDER BY started_at DESC,id",
+                                null)) {
+            while (c.moveToNext())
+                out.add(
+                        new Summary(
+                                c.getString(0),
+                                GymExecution.Origin.valueOf(c.getString(1)),
+                                GymExecution.Status.valueOf(c.getString(2)),
+                                c.getString(3),
+                                Instant.parse(c.getString(4)),
+                                c.getLong(5),
+                                c.getLong(6),
+                                c.getInt(7),
+                                c.getLong(8)));
         }
         return Immutable.copyList(out);
     }
 
     public static boolean hasUnfinished(SQLiteDatabase db) {
-        try (Cursor c = db.rawQuery("SELECT 1 FROM strength_executions WHERE " + UNFINISHED
-                + " LIMIT 1", null)) { return c.moveToFirst(); }
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT 1 FROM strength_executions WHERE " + UNFINISHED + " LIMIT 1",
+                        null)) {
+            return c.moveToFirst();
+        }
     }
 
     @Override
     public Stored save(GymExecution snapshot, long expectedRevision) {
-        if (snapshot.status() == GymExecution.Status.FINISHED) throw new IllegalArgumentException(
-                "Final gym evidence must use atomic finalisation.");
+        if (snapshot.status() == GymExecution.Status.FINISHED)
+            throw new IllegalArgumentException("Final gym evidence must use atomic finalisation.");
         return persist(snapshot, expectedRevision, false);
     }
 
     @Override
     public Stored finish(GymExecution finished, long expectedRevision) {
-        if (finished.status() != GymExecution.Status.FINISHED) throw new IllegalArgumentException(
-                "Finish the gym execution before finalising its actual evidence.");
+        if (finished.status() != GymExecution.Status.FINISHED)
+            throw new IllegalArgumentException(
+                    "Finish the gym execution before finalising its actual evidence.");
         return persist(finished, expectedRevision, true);
     }
 
@@ -132,12 +167,14 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         Objects.requireNonNull(next, "gym execution");
         if (expectedRevision < 1 || expectedRevision == Long.MAX_VALUE) throw conflict();
         Parts prepared = parts(next);
-        String actualPayload = finish ? bounded(CoachingJson.strength(next.completedSession())) : null;
+        String actualPayload =
+                finish ? bounded(CoachingJson.strength(next.completedSession())) : null;
         SQLiteDatabase db = write();
         db.beginTransaction();
         try {
             Stored previous = load(db, next.id());
-            if (previous == null) throw new IllegalArgumentException("The staged gym workout is missing.");
+            if (previous == null)
+                throw new IllegalArgumentException("The staged gym workout is missing.");
             if (previous.execution().equals(next)) {
                 if (finish) verifyCompleted(db, next);
                 db.setTransactionSuccessful();
@@ -158,18 +195,25 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                     || !prefix(before.events(), next.events())) throw conflict();
             ensureWorkout(db, next.prescription(), next.source());
             if (finish) {
-                if (next.startedAt().isAfter(Instant.now())) throw new IllegalArgumentException(
-                        "A completed strength session cannot be in the future.");
+                if (next.startedAt().isAfter(Instant.now()))
+                    throw new IllegalArgumentException(
+                            "A completed strength session cannot be in the future.");
                 saveActualAndAssociation(db, next, actualPayload);
             }
             ContentValues summary = summary(next, expectedRevision + 1, prepared.header());
-            int changed = db.update("strength_executions", summary, "id=? AND revision=?",
-                    new String[]{next.id(), Long.toString(expectedRevision)});
+            int changed =
+                    db.update(
+                            "strength_executions",
+                            summary,
+                            "id=? AND revision=?",
+                            new String[] {next.id(), Long.toString(expectedRevision)});
             if (changed != 1) throw conflict();
             appendRows(db, next, prepared, before.actualSets().size(), before.events().size());
             db.setTransactionSuccessful();
             return new Stored(next, expectedRevision + 1);
-        } finally { db.endTransaction(); }
+        } finally {
+            db.endTransaction();
+        }
     }
 
     private static boolean prefix(List<?> before, List<?> after) {
@@ -181,8 +225,12 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         Objects.requireNonNull(workout, "workout");
         SQLiteDatabase db = write();
         db.beginTransaction();
-        try { ensureWorkout(db, workout, source); db.setTransactionSuccessful(); }
-        finally { db.endTransaction(); }
+        try {
+            ensureWorkout(db, workout, source);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
@@ -194,9 +242,13 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
     @Override
     public List<Preference> preferences() {
         var out = new ArrayList<Preference>();
-        try (Cursor c = read().rawQuery("SELECT workout_id,current_revision,favourite FROM "
-                + "strength_workout_preferences ORDER BY workout_id", null)) {
-            while (c.moveToNext()) out.add(new Preference(c.getString(0), c.getInt(1), c.getInt(2) == 1));
+        try (Cursor c =
+                read().rawQuery(
+                                "SELECT workout_id,current_revision,favourite FROM "
+                                        + "strength_workout_preferences ORDER BY workout_id",
+                                null)) {
+            while (c.moveToNext())
+                out.add(new Preference(c.getString(0), c.getInt(1), c.getInt(2) == 1));
         }
         return Immutable.copyList(out);
     }
@@ -213,11 +265,16 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             row.put("workout_id", preference.workoutId());
             row.put("current_revision", preference.currentRevision());
             row.put("favourite", preference.favourite() ? 1 : 0);
-            if (db.update("strength_workout_preferences", row, "workout_id=?",
-                    new String[]{preference.workoutId()}) == 0)
-                db.insertOrThrow("strength_workout_preferences", null, row);
+            if (db.update(
+                            "strength_workout_preferences",
+                            row,
+                            "workout_id=?",
+                            new String[] {preference.workoutId()})
+                    == 0) db.insertOrThrow("strength_workout_preferences", null, row);
             db.setTransactionSuccessful();
-        } finally { db.endTransaction(); }
+        } finally {
+            db.endTransaction();
+        }
     }
 
     /** Explicit deletion removes only this terminal execution; repeat templates remain retained. */
@@ -226,21 +283,27 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         db.beginTransaction();
         try {
             deleteCompleted(db, validId(id));
-            db.delete("strength_sessions", "id=?", new String[]{id});
-            db.delete("coach_evidence", "kind='STRENGTH_LINK' AND id=?", new String[]{id});
+            db.delete("strength_sessions", "id=?", new String[] {id});
+            db.delete("coach_evidence", "kind='STRENGTH_LINK' AND id=?", new String[] {id});
             db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
         }
-        finally { db.endTransaction(); }
     }
 
     static void deleteCompleted(SQLiteDatabase db, String id) {
-        try (Cursor c = db.rawQuery("SELECT state FROM strength_executions WHERE id=?",
-                new String[]{validId(id)})) {
-            if (c.moveToFirst() && !c.getString(0).equals("FINISHED") && !c.getString(0).equals("DISCARDED"))
-                throw new IllegalArgumentException("Finish or discard the unfinished gym workout first.");
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT state FROM strength_executions WHERE id=?",
+                        new String[] {validId(id)})) {
+            if (c.moveToFirst()
+                    && !c.getString(0).equals("FINISHED")
+                    && !c.getString(0).equals("DISCARDED"))
+                throw new IllegalArgumentException(
+                        "Finish or discard the unfinished gym workout first.");
         }
         acknowledgeSourceChange(db, id, null, Instant.now());
-        db.delete("strength_executions", "id=?", new String[]{id});
+        db.delete("strength_executions", "id=?", new String[] {id});
     }
 
     /** Called in the same transaction as an explicitly accepted edit to the completed actual. */
@@ -248,14 +311,18 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         Objects.requireNonNull(edited, "edited actual workout");
         Objects.requireNonNull(at, "edit observation time");
         boolean staged = false;
-        try (Cursor c = db.rawQuery("SELECT state,accepted_actual FROM strength_executions WHERE id=?",
-                new String[]{edited.id()})) {
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT state,accepted_actual FROM strength_executions WHERE id=?",
+                        new String[] {edited.id()})) {
             if (c.moveToFirst()) {
                 staged = true;
-                if (!c.getString(0).equals("FINISHED")) throw new IllegalArgumentException(
-                    "An unfinished gym execution cannot be replaced by a completed workout.");
-                if (!GymAcceptedActualJson.read(FeatureJson.object(c.getString(1))).equals(actual(db, edited.id())))
-                    throw conflict();
+                if (!c.getString(0).equals("FINISHED"))
+                    throw new IllegalArgumentException(
+                            "An unfinished gym execution cannot be replaced by a completed"
+                                    + " workout.");
+                if (!GymAcceptedActualJson.read(FeatureJson.object(c.getString(1)))
+                        .equals(actual(db, edited.id()))) throw conflict();
             }
         }
         acknowledgeSourceChange(db, edited.id(), edited, at);
@@ -263,7 +330,7 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         ContentValues values = new ContentValues();
         values.put("accepted_actual", bounded(CoachingJson.strength(edited)));
         values.put("actual_edited_at", at.toString());
-        db.update("strength_executions", values, "id=?", new String[]{edited.id()});
+        db.update("strength_executions", values, "id=?", new String[] {edited.id()});
     }
 
     private static Stored load(SQLiteDatabase db, String id) {
@@ -271,17 +338,28 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         long revision;
         int sets, events;
         Object[] indexed;
-        try (Cursor c = db.rawQuery("SELECT revision,header,set_count,event_count,origin,state,started_at,"
-                + "title,recorded_elapsed,active_millis,workout_id,workout_revision FROM "
-                + "strength_executions WHERE id=?", new String[]{id})) {
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT"
+                            + " revision,header,set_count,event_count,origin,state,started_at,title,recorded_elapsed,active_millis,workout_id,workout_revision"
+                            + " FROM strength_executions WHERE id=?",
+                        new String[] {id})) {
             if (!c.moveToFirst()) return null;
             revision = c.getLong(0);
             header = GymJsonSupport.read(c.getString(1));
             sets = c.getInt(2);
             events = c.getInt(3);
-            indexed = new Object[]{c.getString(4), c.getString(5), c.getString(6), c.getString(7),
-                    c.getLong(8), c.getLong(9), c.isNull(10) ? null : c.getString(10),
-                    c.isNull(11) ? null : c.getInt(11)};
+            indexed =
+                    new Object[] {
+                        c.getString(4),
+                        c.getString(5),
+                        c.getString(6),
+                        c.getString(7),
+                        c.getLong(8),
+                        c.getLong(9),
+                        c.isNull(10) ? null : c.getString(10),
+                        c.isNull(11) ? null : c.getInt(11)
+                    };
         }
         JSONArray actual = rows(db, "strength_execution_sets", id, sets);
         JSONArray timeline = rows(db, "strength_execution_events", id, events);
@@ -290,29 +368,45 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             if (!isNull(header, "completedSession")) {
                 child(header, "completedSession").put("exercises", actualBlocks(actual));
             }
-        } catch (JSONException invalid) { throw FeatureJson.invalid(invalid); }
+        } catch (JSONException invalid) {
+            throw FeatureJson.invalid(invalid);
+        }
         GymExecution execution = GymExecutionJson.decode(header);
-        if (!execution.id().equals(id)) throw new IllegalArgumentException("Gym storage identity differs.");
+        if (!execution.id().equals(id))
+            throw new IllegalArgumentException("Gym storage identity differs.");
         GymWorkoutDefinition prescription = execution.prescription();
-        Object[] expected = new Object[]{execution.origin().name(), execution.status().name(),
-                execution.startedAt().toString(), prescription == null ? "Free workout" : prescription.title(),
-                execution.recordedElapsedMillis(), execution.activeMillis(),
-                prescription == null ? null : prescription.id(), prescription == null ? null : prescription.revision()};
-        if (!java.util.Arrays.equals(indexed, expected)) throw new IllegalArgumentException(
-                "Gym summary columns differ from the retained execution.");
+        Object[] expected =
+                new Object[] {
+                    execution.origin().name(),
+                    execution.status().name(),
+                    execution.startedAt().toString(),
+                    prescription == null ? "Free workout" : prescription.title(),
+                    execution.recordedElapsedMillis(),
+                    execution.activeMillis(),
+                    prescription == null ? null : prescription.id(),
+                    prescription == null ? null : prescription.revision()
+                };
+        if (!java.util.Arrays.equals(indexed, expected))
+            throw new IllegalArgumentException(
+                    "Gym summary columns differ from the retained execution.");
         return new Stored(execution, revision);
     }
 
     private static JSONArray rows(SQLiteDatabase db, String table, String id, int expected) {
         JSONArray out = new JSONArray();
-        try (Cursor c = db.rawQuery("SELECT sequence,payload FROM " + table
-                + " WHERE execution_id=? ORDER BY sequence", new String[]{id})) {
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT sequence,payload FROM "
+                                + table
+                                + " WHERE execution_id=? ORDER BY sequence",
+                        new String[] {id})) {
             while (c.moveToNext()) {
                 if (c.getInt(0) != out.length() || out.length() >= expected) throw conflict();
                 out.put(GymJsonSupport.read(c.getString(1)));
             }
         }
-        if (out.length() != expected) throw new IllegalArgumentException("Gym staging rows are incomplete.");
+        if (out.length() != expected)
+            throw new IllegalArgumentException("Gym staging rows are incomplete.");
         return out;
     }
 
@@ -320,8 +414,10 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         var groups = new LinkedHashMap<BlockKey, JSONObject>();
         for (int i = 0; i < actual.length(); i++) {
             JSONObject row = row(actual, i);
-            var key = new BlockKey(text(row, "slotId", 256),
-                    GymWorkoutJson.exercise(child(row, "exercise")));
+            var key =
+                    new BlockKey(
+                            text(row, "slotId", 256),
+                            GymWorkoutJson.exercise(child(row, "exercise")));
             JSONObject block = groups.get(key);
             if (block == null) {
                 block = object("exercise", child(row, "exercise"), "sets", new JSONArray());
@@ -351,8 +447,9 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
     private static String bounded(JSONObject json) {
         String payload = json.toString();
         if (payload == null || payload.getBytes(StandardCharsets.UTF_8).length > MAX_ROW_BYTES)
-            throw new IllegalArgumentException("This gym record exceeds the supported 256 KiB row limit."
-                    + " Existing staged sets were retained.");
+            throw new IllegalArgumentException(
+                    "This gym record exceeds the supported 256 KiB row limit."
+                            + " Existing staged sets were retained.");
         return payload;
     }
 
@@ -363,51 +460,74 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         row.put("origin", snapshot.origin().name());
         row.put("state", snapshot.status().name());
         row.put("started_at", snapshot.startedAt().toString());
-        row.put("title", snapshot.prescription() == null ? "Free workout" : snapshot.prescription().title());
+        row.put(
+                "title",
+                snapshot.prescription() == null ? "Free workout" : snapshot.prescription().title());
         row.put("recorded_elapsed", snapshot.recordedElapsedMillis());
         row.put("active_millis", snapshot.activeMillis());
         row.put("set_count", snapshot.actualSets().size());
         row.put("event_count", snapshot.events().size());
-        row.put("workout_id", snapshot.prescription() == null ? null : snapshot.prescription().id());
+        row.put(
+                "workout_id",
+                snapshot.prescription() == null ? null : snapshot.prescription().id());
         if (snapshot.prescription() == null) row.putNull("workout_revision");
         else row.put("workout_revision", snapshot.prescription().revision());
         row.put("header", header);
-        row.put("accepted_actual", snapshot.completedSession() == null ? null
-                : bounded(CoachingJson.strength(snapshot.completedSession())));
+        row.put(
+                "accepted_actual",
+                snapshot.completedSession() == null
+                        ? null
+                        : bounded(CoachingJson.strength(snapshot.completedSession())));
         row.putNull("actual_edited_at");
         return row;
     }
 
-    private static void insertExecution(SQLiteDatabase db, GymExecution snapshot, long revision, Parts prepared) {
-        db.insertOrThrow("strength_executions", null, summary(snapshot, revision, prepared.header()));
+    private static void insertExecution(
+            SQLiteDatabase db, GymExecution snapshot, long revision, Parts prepared) {
+        db.insertOrThrow(
+                "strength_executions", null, summary(snapshot, revision, prepared.header()));
         appendRows(db, snapshot, prepared, 0, 0);
     }
 
-    private static void appendRows(SQLiteDatabase db, GymExecution snapshot, Parts prepared,
-            int existingSets, int existingEvents) {
+    private static void appendRows(
+            SQLiteDatabase db,
+            GymExecution snapshot,
+            Parts prepared,
+            int existingSets,
+            int existingEvents) {
         for (int i = existingSets; i < prepared.sets().size(); i++) {
             ContentValues row = new ContentValues();
-            row.put("execution_id", snapshot.id()); row.put("sequence", i);
+            row.put("execution_id", snapshot.id());
+            row.put("sequence", i);
             row.put("actual_set_id", snapshot.actualSets().get(i).actual().id());
             row.put("payload", prepared.sets().get(i));
             db.insertOrThrow("strength_execution_sets", null, row);
         }
         for (int i = existingEvents; i < prepared.events().size(); i++) {
             ContentValues row = new ContentValues();
-            row.put("execution_id", snapshot.id()); row.put("sequence", i);
+            row.put("execution_id", snapshot.id());
+            row.put("sequence", i);
             row.put("payload", prepared.events().get(i));
             db.insertOrThrow("strength_execution_events", null, row);
         }
     }
 
     private static WorkoutRow workoutRow(SQLiteDatabase db, String id, int revision) {
-        try (Cursor c = db.rawQuery("SELECT payload,source_kind,source_id FROM strength_workout_versions WHERE "
-                + "workout_id=? AND revision=?", new String[]{id, Integer.toString(revision)})) {
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT payload,source_kind,source_id FROM strength_workout_versions WHERE "
+                                + "workout_id=? AND revision=?",
+                        new String[] {id, Integer.toString(revision)})) {
             if (!c.moveToFirst()) return null;
             WorkoutRow row = workoutRow(GymJsonSupport.read(c.getString(0)));
-            if (!row.definition().id().equals(id) || row.definition().revision() != revision
-                    || !Objects.equals(row.source() == null ? null : row.source().kind().name(), c.isNull(1) ? null : c.getString(1))
-                    || !Objects.equals(row.source() == null ? null : row.source().id(), c.isNull(2) ? null : c.getString(2))) throw conflict();
+            if (!row.definition().id().equals(id)
+                    || row.definition().revision() != revision
+                    || !Objects.equals(
+                            row.source() == null ? null : row.source().kind().name(),
+                            c.isNull(1) ? null : c.getString(1))
+                    || !Objects.equals(
+                            row.source() == null ? null : row.source().id(),
+                            c.isNull(2) ? null : c.getString(2))) throw conflict();
             return row;
         }
     }
@@ -417,43 +537,72 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         var definition = GymWorkoutJson.decode(child(json, "definition"));
         var source = isNull(json, "source") ? null : source(child(json, "source"));
         if (source != null && source.kind() == GymExecution.SourceKind.SAVED_WORKOUT)
-            throw new IllegalArgumentException("A saved revision cannot create itself as a source.");
+            throw new IllegalArgumentException(
+                    "A saved revision cannot create itself as a source.");
         var proof = isNull(json, "sourceSnapshot") ? null : child(json, "sourceSnapshot");
         if (source == null || source.kind() != GymExecution.SourceKind.ACTUAL_SESSION) {
-            if (proof != null) throw new IllegalArgumentException("Unexpected repeated-source evidence.");
+            if (proof != null)
+                throw new IllegalArgumentException("Unexpected repeated-source evidence.");
         } else {
-            fields(proof, "kind", "actualSessionId", "definition", "templateKind", "originalSourceSlots",
-                    "originalSourceFingerprint", "currentSourceFingerprint", "sourceEditedAt", "sourceDeletedAt");
+            fields(
+                    proof,
+                    "kind",
+                    "actualSessionId",
+                    "definition",
+                    "templateKind",
+                    "originalSourceSlots",
+                    "originalSourceFingerprint",
+                    "currentSourceFingerprint",
+                    "sourceEditedAt",
+                    "sourceDeletedAt");
             if (!text(proof, "kind", 64).equals("REPEATED_TEMPLATE")
                     || !text(proof, "actualSessionId", 256).equals(source.id())
                     || !GymWorkoutJson.decode(child(proof, "definition")).equals(definition))
-                throw new IllegalArgumentException("Repeated-source evidence differs from its frozen template.");
+                throw new IllegalArgumentException(
+                        "Repeated-source evidence differs from its frozen template.");
             validateFrozenRepeat(definition, proof);
         }
         return new WorkoutRow(definition, source, proof);
     }
 
     private static JSONObject workoutJson(WorkoutRow row) {
-        return object("definition", GymWorkoutJson.encode(row.definition()),
-                "source", row.source() == null ? null : source(row.source()),
-                "sourceSnapshot", row.sourceSnapshot());
+        return object(
+                "definition",
+                GymWorkoutJson.encode(row.definition()),
+                "source",
+                row.source() == null ? null : source(row.source()),
+                "sourceSnapshot",
+                row.sourceSnapshot());
     }
 
     private static JSONObject source(GymExecution.SourceReference source) {
-        return object("kind", source.kind().name(), "id", source.id(), "revision", source.revision(),
-                "sessionId", source.sessionId());
+        return object(
+                "kind",
+                source.kind().name(),
+                "id",
+                source.id(),
+                "revision",
+                source.revision(),
+                "sessionId",
+                source.sessionId());
     }
 
     private static GymExecution.SourceReference source(JSONObject json) {
         fields(json, "kind", "id", "revision", "sessionId");
-        return new GymExecution.SourceReference(choice(json, "kind", GymExecution.SourceKind.class),
-                text(json, "id", 256), integer(json, "revision"), nullableText(json, "sessionId", 256));
+        return new GymExecution.SourceReference(
+                choice(json, "kind", GymExecution.SourceKind.class),
+                text(json, "id", 256),
+                integer(json, "revision"),
+                nullableText(json, "sessionId", 256));
     }
 
-    private static void ensureWorkout(SQLiteDatabase db, GymWorkoutDefinition definition,
+    private static void ensureWorkout(
+            SQLiteDatabase db,
+            GymWorkoutDefinition definition,
             GymExecution.SourceReference source) {
         if (definition == null) {
-            if (source != null) throw new IllegalArgumentException("A workout source requires its prescription.");
+            if (source != null)
+                throw new IllegalArgumentException("A workout source requires its prescription.");
             return;
         }
         WorkoutRow existing = workoutRow(db, definition.id(), definition.revision());
@@ -463,8 +612,11 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                 GymWorkoutSourceValidator.savedWorkout(definition, source, existing.definition());
             } else if (!Objects.equals(existing.source(), source)) throw conflict();
             validateProgrammeSource(db, existing);
-            if (existing.source() != null && existing.source().kind() == GymExecution.SourceKind.ACTUAL_SESSION)
-                validateAvailableSource(existing, actual(db, existing.source().id()),
+            if (existing.source() != null
+                    && existing.source().kind() == GymExecution.SourceKind.ACTUAL_SESSION)
+                validateAvailableSource(
+                        existing,
+                        actual(db, existing.source().id()),
                         execution(db, existing.source().id()));
             return;
         }
@@ -484,22 +636,27 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
 
     private static void insertWorkout(SQLiteDatabase db, WorkoutRow row) {
         ContentValues values = new ContentValues();
-        values.put("workout_id", row.definition().id()); values.put("revision", row.definition().revision());
+        values.put("workout_id", row.definition().id());
+        values.put("revision", row.definition().revision());
         values.put("source_kind", row.source() == null ? null : row.source().kind().name());
         values.put("source_id", row.source() == null ? null : row.source().id());
         values.put("payload", bounded(workoutJson(row)));
         db.insertOrThrow("strength_workout_versions", null, values);
     }
 
-    private static JSONObject actualSourceProof(SQLiteDatabase db, GymWorkoutDefinition definition,
+    private static JSONObject actualSourceProof(
+            SQLiteDatabase db,
+            GymWorkoutDefinition definition,
             GymExecution.SourceReference source) {
         StrengthSession actual = actual(db, source.id());
-        if (actual == null) throw new IllegalArgumentException("The actual repeat source is missing.");
+        if (actual == null)
+            throw new IllegalArgumentException("The actual repeat source is missing.");
         Stored prior = load(db, source.id());
         if (prior != null && prior.execution().status() == GymExecution.Status.FINISHED) {
             try {
                 GymWorkoutSourceValidator.repeatedExecution(definition, source, prior.execution());
-                return repeatProof(definition, source, "EXECUTION", prior.execution().slots(), actual);
+                return repeatProof(
+                        definition, source, "EXECUTION", prior.execution().slots(), actual);
             } catch (IllegalArgumentException notExecutionStructure) {
                 // An explicit repeat of its actual working exercise list is also supported.
             }
@@ -513,15 +670,32 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         return row == null ? null : row.execution();
     }
 
-    private static JSONObject repeatProof(GymWorkoutDefinition definition,
-            GymExecution.SourceReference source, String kind, List<GymWorkoutDefinition.Slot> slots,
+    private static JSONObject repeatProof(
+            GymWorkoutDefinition definition,
+            GymExecution.SourceReference source,
+            String kind,
+            List<GymWorkoutDefinition.Slot> slots,
             StrengthSession actual) {
         String fingerprint = fingerprint(actual);
-        return object("kind", "REPEATED_TEMPLATE", "actualSessionId", source.id(),
-                "definition", GymWorkoutJson.encode(definition), "templateKind", kind,
-                "originalSourceSlots", GymWorkoutJson.slots(slots),
-                "originalSourceFingerprint", fingerprint, "currentSourceFingerprint", fingerprint,
-                "sourceEditedAt", null, "sourceDeletedAt", null);
+        return object(
+                "kind",
+                "REPEATED_TEMPLATE",
+                "actualSessionId",
+                source.id(),
+                "definition",
+                GymWorkoutJson.encode(definition),
+                "templateKind",
+                kind,
+                "originalSourceSlots",
+                GymWorkoutJson.slots(slots),
+                "originalSourceFingerprint",
+                fingerprint,
+                "currentSourceFingerprint",
+                fingerprint,
+                "sourceEditedAt",
+                null,
+                "sourceDeletedAt",
+                null);
     }
 
     private static void validateFrozenRepeat(GymWorkoutDefinition definition, JSONObject proof) {
@@ -531,17 +705,24 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         var expected = new ArrayList<GymWorkoutDefinition.Slot>();
         for (int i = 0; i < originals.size(); i++) {
             var slot = originals.get(i);
-            if (templateKind.equals("ACTUAL") && (slot.target() != null || slot.supersetGroup() != null
-                    || !slot.id().equals("slot-" + i))) throw conflict();
-            expected.add(new GymWorkoutDefinition.Slot(slot.id(), slot.exercise(),
-                    slot.target() == null ? null : slot.target().withoutLoadReference(), slot.supersetGroup()));
+            if (templateKind.equals("ACTUAL")
+                    && (slot.target() != null
+                            || slot.supersetGroup() != null
+                            || !slot.id().equals("slot-" + i))) throw conflict();
+            expected.add(
+                    new GymWorkoutDefinition.Slot(
+                            slot.id(),
+                            slot.exercise(),
+                            slot.target() == null ? null : slot.target().withoutLoadReference(),
+                            slot.supersetGroup()));
         }
         if (!definition.slots().equals(expected)) throw conflict();
         requireFingerprint(text(proof, "originalSourceFingerprint", 64));
         if (isNull(proof, "sourceDeletedAt")) {
             requireFingerprint(text(proof, "currentSourceFingerprint", 64));
-            if (isNull(proof, "sourceEditedAt") && !text(proof, "originalSourceFingerprint", 64)
-                    .equals(text(proof, "currentSourceFingerprint", 64))) throw conflict();
+            if (isNull(proof, "sourceEditedAt")
+                    && !text(proof, "originalSourceFingerprint", 64)
+                            .equals(text(proof, "currentSourceFingerprint", 64))) throw conflict();
         } else {
             instant(proof, "sourceDeletedAt");
             if (!isNull(proof, "currentSourceFingerprint")) throw conflict();
@@ -549,29 +730,40 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         if (!isNull(proof, "sourceEditedAt")) instant(proof, "sourceEditedAt");
     }
 
-    private static void validateAvailableSource(WorkoutRow row, StrengthSession actual, GymExecution execution) {
+    private static void validateAvailableSource(
+            WorkoutRow row, StrengthSession actual, GymExecution execution) {
         JSONObject proof = row.sourceSnapshot();
         if (!isNull(proof, "sourceDeletedAt")) {
-            if (actual != null || execution != null) throw new IllegalArgumentException(
-                    "A deleted repeat source still appears as retained evidence.");
+            if (actual != null || execution != null)
+                throw new IllegalArgumentException(
+                        "A deleted repeat source still appears as retained evidence.");
             return;
         }
-        if (actual == null || !fingerprint(actual).equals(text(proof, "currentSourceFingerprint", 64)))
-            throw new IllegalArgumentException("The repeat source changed without an explicit retained decision.");
+        if (actual == null
+                || !fingerprint(actual).equals(text(proof, "currentSourceFingerprint", 64)))
+            throw new IllegalArgumentException(
+                    "The repeat source changed without an explicit retained decision.");
         String kind = text(proof, "templateKind", 16);
         if (kind.equals("EXECUTION")) {
-            if (execution == null || !execution.slots().equals(
-                    GymWorkoutJson.slots(array(proof, "originalSourceSlots", 100)))) throw conflict();
+            if (execution == null
+                    || !execution
+                            .slots()
+                            .equals(GymWorkoutJson.slots(array(proof, "originalSourceSlots", 100))))
+                throw conflict();
             GymWorkoutSourceValidator.repeatedExecution(row.definition(), row.source(), execution);
         } else if (isNull(proof, "sourceEditedAt")) {
             GymWorkoutSourceValidator.repeatedActual(row.definition(), row.source(), actual);
         }
     }
 
-    private static void acknowledgeSourceChange(SQLiteDatabase db, String id, StrengthSession changed, Instant at) {
+    private static void acknowledgeSourceChange(
+            SQLiteDatabase db, String id, StrengthSession changed, Instant at) {
         var rows = new ArrayList<WorkoutRow>();
-        try (Cursor c = db.rawQuery("SELECT payload FROM strength_workout_versions WHERE source_kind='ACTUAL_SESSION' AND source_id=?",
-                new String[]{id})) {
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT payload FROM strength_workout_versions WHERE"
+                                + " source_kind='ACTUAL_SESSION' AND source_id=?",
+                        new String[] {id})) {
             while (c.moveToNext()) rows.add(workoutRow(GymJsonSupport.read(c.getString(0))));
         }
         if (rows.isEmpty()) return;
@@ -582,24 +774,43 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             JSONObject proof = row.sourceSnapshot();
             if (changed == null && !isNull(proof, "sourceDeletedAt")) continue;
             try {
-                if (changed == null) proof.put("sourceDeletedAt", at.toString()).put("currentSourceFingerprint", JSONObject.NULL);
-                else proof.put("sourceEditedAt", at.toString()).put("currentSourceFingerprint", fingerprint(changed));
-            } catch (JSONException invalid) { throw FeatureJson.invalid(invalid); }
-            ContentValues values = new ContentValues(); values.put("payload", bounded(workoutJson(row)));
-            db.update("strength_workout_versions", values, "workout_id=? AND revision=?",
-                    new String[]{row.definition().id(), Integer.toString(row.definition().revision())});
+                if (changed == null)
+                    proof.put("sourceDeletedAt", at.toString())
+                            .put("currentSourceFingerprint", JSONObject.NULL);
+                else
+                    proof.put("sourceEditedAt", at.toString())
+                            .put("currentSourceFingerprint", fingerprint(changed));
+            } catch (JSONException invalid) {
+                throw FeatureJson.invalid(invalid);
+            }
+            ContentValues values = new ContentValues();
+            values.put("payload", bounded(workoutJson(row)));
+            db.update(
+                    "strength_workout_versions",
+                    values,
+                    "workout_id=? AND revision=?",
+                    new String[] {
+                        row.definition().id(), Integer.toString(row.definition().revision())
+                    });
         }
     }
 
     private static String fingerprint(StrengthSession actual) {
         try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(
-                    CoachingJson.strength(actual).toString().getBytes(StandardCharsets.UTF_8));
+            byte[] digest =
+                    MessageDigest.getInstance("SHA-256")
+                            .digest(
+                                    CoachingJson.strength(actual)
+                                            .toString()
+                                            .getBytes(StandardCharsets.UTF_8));
             StringBuilder hex = new StringBuilder();
-            for (byte value : digest) hex.append(Character.forDigit((value >>> 4) & 15, 16))
-                    .append(Character.forDigit(value & 15, 16));
+            for (byte value : digest)
+                hex.append(Character.forDigit((value >>> 4) & 15, 16))
+                        .append(Character.forDigit(value & 15, 16));
             return hex.toString();
-        } catch (NoSuchAlgorithmException impossible) { throw new IllegalStateException("SHA-256 is required.", impossible); }
+        } catch (NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException("SHA-256 is required.", impossible);
+        }
     }
 
     private static void requireFingerprint(String fingerprint) {
@@ -607,48 +818,75 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
     }
 
     private static GymProgramme programme(SQLiteDatabase db, GymExecution.SourceReference source) {
-        try (Cursor c = db.rawQuery("SELECT payload FROM gym_plan_versions WHERE version_id=?",
-                new String[]{source.id() + ":v" + source.revision()})) {
-            if (!c.moveToFirst()) throw new IllegalArgumentException("The retained programme revision is missing.");
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT payload FROM gym_plan_versions WHERE version_id=?",
+                        new String[] {source.id() + ":v" + source.revision()})) {
+            if (!c.moveToFirst())
+                throw new IllegalArgumentException("The retained programme revision is missing.");
             return GymProgrammeStore.parse(FeatureJson.object(c.getString(0)));
         }
     }
 
     private static void validateProgrammeSource(SQLiteDatabase db, WorkoutRow row) {
         if (row.source() != null && row.source().kind() == GymExecution.SourceKind.PROGRAMME)
-            GymWorkoutSourceValidator.programme(row.definition(), row.source(), programme(db, row.source()));
+            GymWorkoutSourceValidator.programme(
+                    row.definition(), row.source(), programme(db, row.source()));
     }
 
     private static StrengthSession actual(SQLiteDatabase db, String id) {
-        try (Cursor c = db.rawQuery("SELECT payload FROM strength_sessions WHERE id=?", new String[]{id})) {
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT payload FROM strength_sessions WHERE id=?", new String[] {id})) {
             if (!c.moveToFirst()) return null;
-            try { return CoachingJson.strength(FeatureJson.object(c.getString(0))); }
-            catch (JSONException invalid) { throw FeatureJson.invalid(invalid); }
+            try {
+                return CoachingJson.strength(FeatureJson.object(c.getString(0)));
+            } catch (JSONException invalid) {
+                throw FeatureJson.invalid(invalid);
+            }
         }
     }
 
-    private static void saveActualAndAssociation(SQLiteDatabase db, GymExecution finished, String payload) {
+    private static void saveActualAndAssociation(
+            SQLiteDatabase db, GymExecution finished, String payload) {
         StrengthSession existing = actual(db, finished.id());
         if (existing != null && !existing.equals(finished.completedSession())) throw conflict();
         if (existing == null) {
             ContentValues row = new ContentValues();
-            row.put("id", finished.id()); row.put("started_at", finished.startedAt().toString());
-            row.put("payload", payload); db.insertOrThrow("strength_sessions", null, row);
+            row.put("id", finished.id());
+            row.put("started_at", finished.startedAt().toString());
+            row.put("payload", payload);
+            db.insertOrThrow("strength_sessions", null, row);
         }
         var source = finished.plannedAssociation();
         if (source != null) {
-            var session = GymWorkoutSourceValidator.programme(finished.prescription(), source, programme(db, source));
-            JSONObject expected = object("id", finished.id(), "plannedDate", session.date().toString(),
-                    "gymVersion", source.id() + ":v" + source.revision(), "gymSession", source.sessionId());
-            try (Cursor c = db.rawQuery("SELECT payload FROM coach_evidence WHERE kind='STRENGTH_LINK' AND id=?",
-                    new String[]{finished.id()})) {
+            var session =
+                    GymWorkoutSourceValidator.programme(
+                            finished.prescription(), source, programme(db, source));
+            JSONObject expected =
+                    object(
+                            "id",
+                            finished.id(),
+                            "plannedDate",
+                            session.date().toString(),
+                            "gymVersion",
+                            source.id() + ":v" + source.revision(),
+                            "gymSession",
+                            source.sessionId());
+            try (Cursor c =
+                    db.rawQuery(
+                            "SELECT payload FROM coach_evidence WHERE kind='STRENGTH_LINK' AND"
+                                    + " id=?",
+                            new String[] {finished.id()})) {
                 if (c.moveToFirst()) {
                     if (!sameLink(FeatureJson.object(c.getString(0)), expected)) throw conflict();
                     return;
                 }
             }
-            ContentValues row = new ContentValues(); row.put("kind", "STRENGTH_LINK");
-            row.put("id", finished.id()); row.put("payload", bounded(expected));
+            ContentValues row = new ContentValues();
+            row.put("kind", "STRENGTH_LINK");
+            row.put("id", finished.id());
+            row.put("payload", bounded(expected));
             db.insertOrThrow("coach_evidence", null, row);
         }
     }
@@ -656,48 +894,104 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
     private static void verifyCompleted(SQLiteDatabase db, GymExecution finished) {
         if (!finished.completedSession().equals(actual(db, finished.id()))) throw conflict();
         if (finished.plannedAssociation() != null) {
-            try (Cursor c = db.rawQuery("SELECT payload FROM coach_evidence WHERE kind='STRENGTH_LINK' AND id=?",
-                    new String[]{finished.id()})) {
+            try (Cursor c =
+                    db.rawQuery(
+                            "SELECT payload FROM coach_evidence WHERE kind='STRENGTH_LINK' AND"
+                                    + " id=?",
+                            new String[] {finished.id()})) {
                 if (!c.moveToFirst()) throw conflict();
-                checkLink(finished, FeatureJson.object(c.getString(0)), programme(db, finished.source()));
+                checkLink(
+                        finished,
+                        FeatureJson.object(c.getString(0)),
+                        programme(db, finished.source()));
             }
         }
     }
 
     private static void checkLink(GymExecution execution, JSONObject link, GymProgramme programme) {
-        var session = GymWorkoutSourceValidator.programme(execution.prescription(), execution.source(), programme);
-        JSONObject expected = object("id", execution.id(), "plannedDate", session.date().toString(),
-                "gymVersion", programme.id() + ":v" + programme.version(), "gymSession", session.id());
-        if (!sameLink(link, expected)) throw new IllegalArgumentException("The gym execution association differs from its original prescription.");
+        var session =
+                GymWorkoutSourceValidator.programme(
+                        execution.prescription(), execution.source(), programme);
+        JSONObject expected =
+                object(
+                        "id",
+                        execution.id(),
+                        "plannedDate",
+                        session.date().toString(),
+                        "gymVersion",
+                        programme.id() + ":v" + programme.version(),
+                        "gymSession",
+                        session.id());
+        if (!sameLink(link, expected))
+            throw new IllegalArgumentException(
+                    "The gym execution association differs from its original prescription.");
     }
 
     private static boolean sameLink(JSONObject actual, JSONObject expected) {
-        for (String name : new String[]{"id", "plannedDate", "gymVersion", "gymSession"}) {
+        for (String name : new String[] {"id", "plannedDate", "gymVersion", "gymSession"}) {
             if (!Objects.equals(actual.opt(name), expected.opt(name))) return false;
         }
         return true;
     }
 
     public static JSONObject exportData(SQLiteDatabase db) {
-        JSONArray workouts = new JSONArray(), preferences = new JSONArray(), executions = new JSONArray();
-        try (Cursor c = db.rawQuery("SELECT payload FROM strength_workout_versions ORDER BY workout_id,revision", null)) {
+        JSONArray workouts = new JSONArray(),
+                preferences = new JSONArray(),
+                executions = new JSONArray();
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT payload FROM strength_workout_versions ORDER BY"
+                                + " workout_id,revision",
+                        null)) {
             while (c.moveToNext()) workouts.put(GymJsonSupport.read(c.getString(0)));
         }
-        try (Cursor c = db.rawQuery("SELECT workout_id,current_revision,favourite FROM strength_workout_preferences ORDER BY workout_id", null)) {
-            while (c.moveToNext()) preferences.put(object("id", c.getString(0), "currentRevision", c.getInt(1), "favourite", c.getInt(2) == 1));
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT workout_id,current_revision,favourite FROM"
+                                + " strength_workout_preferences ORDER BY workout_id",
+                        null)) {
+            while (c.moveToNext())
+                preferences.put(
+                        object(
+                                "id",
+                                c.getString(0),
+                                "currentRevision",
+                                c.getInt(1),
+                                "favourite",
+                                c.getInt(2) == 1));
         }
-        try (Cursor c = db.rawQuery("SELECT id,accepted_actual,actual_edited_at FROM strength_executions ORDER BY started_at,id", null)) {
+        try (Cursor c =
+                db.rawQuery(
+                        "SELECT id,accepted_actual,actual_edited_at FROM strength_executions ORDER"
+                                + " BY started_at,id",
+                        null)) {
             while (c.moveToNext()) {
                 Stored row = load(db, c.getString(0));
-                executions.put(object("revision", row.revision(), "snapshot", GymExecutionJson.encode(row.execution()),
-                        "currentActual", c.isNull(1) ? null : FeatureJson.object(c.getString(1)),
-                        "actualEditedAt", c.isNull(2) ? null : c.getString(2)));
+                executions.put(
+                        object(
+                                "revision",
+                                row.revision(),
+                                "snapshot",
+                                GymExecutionJson.encode(row.execution()),
+                                "currentActual",
+                                c.isNull(1) ? null : FeatureJson.object(c.getString(1)),
+                                "actualEditedAt",
+                                c.isNull(2) ? null : c.getString(2)));
             }
         }
-        return object("version", BACKUP_VERSION, "workouts", workouts, "preferences", preferences, "executions", executions);
+        return object(
+                "version",
+                BACKUP_VERSION,
+                "workouts",
+                workouts,
+                "preferences",
+                preferences,
+                "executions",
+                executions);
     }
 
-    public static void validate(JSONObject data, JSONObject coaching, JSONObject gym, JSONObject development) {
+    public static void validate(
+            JSONObject data, JSONObject coaching, JSONObject gym, JSONObject development) {
         fields(data, "version", "workouts", "preferences", "executions");
         version(data, BACKUP_VERSION);
         var workouts = new HashMap<WorkoutKey, WorkoutRow>();
@@ -705,40 +999,58 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         for (int i = 0; i < rows.length(); i++) {
             WorkoutRow workout = workoutRow(row(rows, i));
             bounded(workoutJson(workout));
-            WorkoutKey key = new WorkoutKey(workout.definition().id(), workout.definition().revision());
-            if (workouts.put(key, workout) != null) throw new IllegalArgumentException("Duplicate frozen workout revision.");
+            WorkoutKey key =
+                    new WorkoutKey(workout.definition().id(), workout.definition().revision());
+            if (workouts.put(key, workout) != null)
+                throw new IllegalArgumentException("Duplicate frozen workout revision.");
         }
         var programmes = new HashMap<String, GymProgramme>();
         if (gym != null) {
             rows = array(gym, "versions", 1000);
             for (int i = 0; i < rows.length(); i++) {
-                var p = GymProgrammeStore.parse(row(rows, i)); programmes.put(p.id() + ":v" + p.version(), p);
+                var p = GymProgrammeStore.parse(row(rows, i));
+                programmes.put(p.id() + ":v" + p.version(), p);
             }
         }
         for (WorkoutRow workout : workouts.values()) {
             var source = workout.source();
             if (source != null && source.kind() == GymExecution.SourceKind.PROGRAMME)
-                GymWorkoutSourceValidator.programme(workout.definition(), source,
+                GymWorkoutSourceValidator.programme(
+                        workout.definition(),
+                        source,
                         programmes.get(source.id() + ":v" + source.revision()));
             if (source != null && source.kind() == GymExecution.SourceKind.SAVED_WORKOUT)
-                throw new IllegalArgumentException("A saved revision cannot create itself as a source.");
+                throw new IllegalArgumentException(
+                        "A saved revision cannot create itself as a source.");
         }
         var preferenceIds = new HashSet<String>();
         rows = array(data, "preferences", 10000);
         for (int i = 0; i < rows.length(); i++) {
-            JSONObject row = row(rows, i); fields(row, "id", "currentRevision", "favourite");
-            var p = new Preference(text(row, "id", 256), integer(row, "currentRevision"), bool(row, "favourite"));
-            if (!preferenceIds.add(p.workoutId()) || !workouts.containsKey(new WorkoutKey(p.workoutId(), p.currentRevision())))
-                throw new IllegalArgumentException("Saved workout preference is duplicated or missing its revision.");
+            JSONObject row = row(rows, i);
+            fields(row, "id", "currentRevision", "favourite");
+            var p =
+                    new Preference(
+                            text(row, "id", 256),
+                            integer(row, "currentRevision"),
+                            bool(row, "favourite"));
+            if (!preferenceIds.add(p.workoutId())
+                    || !workouts.containsKey(new WorkoutKey(p.workoutId(), p.currentRevision())))
+                throw new IllegalArgumentException(
+                        "Saved workout preference is duplicated or missing its revision.");
         }
         var actuals = new HashMap<String, StrengthSession>();
         if (coaching != null) {
             rows = array(coaching, "strength_sessions", 100000);
             for (int i = 0; i < rows.length(); i++) {
                 try {
-                    var actual = CoachingJson.strength(FeatureJson.object(text(row(rows, i), "payload", 16 * 1024 * 1024)));
+                    var actual =
+                            CoachingJson.strength(
+                                    FeatureJson.object(
+                                            text(row(rows, i), "payload", 16 * 1024 * 1024)));
                     actuals.put(actual.id(), actual);
-                } catch (JSONException invalid) { throw FeatureJson.invalid(invalid); }
+                } catch (JSONException invalid) {
+                    throw FeatureJson.invalid(invalid);
+                }
             }
         }
         var links = new HashMap<String, JSONObject>();
@@ -746,7 +1058,8 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             rows = array(development, "records", 100000);
             for (int i = 0; i < rows.length(); i++) {
                 JSONObject row = row(rows, i);
-                if (text(row, "kind", 64).equals("STRENGTH_LINK")) links.put(text(row, "id", 256), child(row, "payload"));
+                if (text(row, "kind", 64).equals("STRENGTH_LINK"))
+                    links.put(text(row, "id", 256), child(row, "payload"));
             }
         }
         var executionIds = new HashSet<String>();
@@ -754,46 +1067,75 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         int unfinished = 0;
         rows = array(data, "executions", 100000);
         for (int i = 0; i < rows.length(); i++) {
-            JSONObject row = row(rows, i); fields(row, "revision", "snapshot", "currentActual", "actualEditedAt");
+            JSONObject row = row(rows, i);
+            fields(row, "revision", "snapshot", "currentActual", "actualEditedAt");
             if (whole(row, "revision") < 1) throw conflict();
             GymExecution execution = GymExecutionJson.decode(child(row, "snapshot"));
             parts(execution);
-            if (!executionIds.add(execution.id())) throw new IllegalArgumentException("Duplicate gym execution.");
+            if (!executionIds.add(execution.id()))
+                throw new IllegalArgumentException("Duplicate gym execution.");
             retainedExecutions.put(execution.id(), execution);
             var source = execution.source();
-            if (source != null && source.kind() == GymExecution.SourceKind.ACTUAL_SESSION
-                    && source.id().equals(execution.id())) throw new IllegalArgumentException("A gym execution cannot repeat itself.");
+            if (source != null
+                    && source.kind() == GymExecution.SourceKind.ACTUAL_SESSION
+                    && source.id().equals(execution.id()))
+                throw new IllegalArgumentException("A gym execution cannot repeat itself.");
             if (execution.prescription() != null) {
-                WorkoutRow retained = workouts.get(new WorkoutKey(execution.prescription().id(), execution.prescription().revision()));
-                if (retained == null || !retained.definition().equals(execution.prescription())) throw new IllegalArgumentException("The execution's exact workout snapshot is missing.");
+                WorkoutRow retained =
+                        workouts.get(
+                                new WorkoutKey(
+                                        execution.prescription().id(),
+                                        execution.prescription().revision()));
+                if (retained == null || !retained.definition().equals(execution.prescription()))
+                    throw new IllegalArgumentException(
+                            "The execution's exact workout snapshot is missing.");
                 if (source != null && source.kind() == GymExecution.SourceKind.SAVED_WORKOUT)
-                    GymWorkoutSourceValidator.savedWorkout(execution.prescription(), source, retained.definition());
-                else if (!Objects.equals(source, retained.source())) throw new IllegalArgumentException("Execution and workout source disagree.");
-            } else if (source != null) throw new IllegalArgumentException("A source requires its workout.");
+                    GymWorkoutSourceValidator.savedWorkout(
+                            execution.prescription(), source, retained.definition());
+                else if (!Objects.equals(source, retained.source()))
+                    throw new IllegalArgumentException("Execution and workout source disagree.");
+            } else if (source != null)
+                throw new IllegalArgumentException("A source requires its workout.");
             if (execution.status() == GymExecution.Status.FINISHED) {
                 bounded(CoachingJson.strength(execution.completedSession()));
                 StrengthSession current = GymAcceptedActualJson.read(child(row, "currentActual"));
                 bounded(CoachingJson.strength(current));
-                if (!current.id().equals(execution.id()) || !current.equals(actuals.get(execution.id())))
-                    throw new IllegalArgumentException("Accepted gym evidence is missing or differs from its actual workout.");
+                if (!current.id().equals(execution.id())
+                        || !current.equals(actuals.get(execution.id())))
+                    throw new IllegalArgumentException(
+                            "Accepted gym evidence is missing or differs from its actual workout.");
                 if (!isNull(row, "actualEditedAt")) instant(row, "actualEditedAt");
                 if (!current.equals(execution.completedSession()) && isNull(row, "actualEditedAt"))
-                    throw new IllegalArgumentException("A changed actual workout needs its explicit edit observation.");
+                    throw new IllegalArgumentException(
+                            "A changed actual workout needs its explicit edit observation.");
                 if (execution.plannedAssociation() != null) {
                     JSONObject link = links.get(execution.id());
-                    if (link == null) throw new IllegalArgumentException("The original planned gym association is missing.");
-                    checkLink(execution, link, programmes.get(source.id() + ":v" + source.revision()));
+                    if (link == null)
+                        throw new IllegalArgumentException(
+                                "The original planned gym association is missing.");
+                    checkLink(
+                            execution,
+                            link,
+                            programmes.get(source.id() + ":v" + source.revision()));
                 }
             } else {
-                if (!isNull(row, "currentActual") || !isNull(row, "actualEditedAt") || actuals.containsKey(execution.id()))
-                    throw new IllegalArgumentException("Unfinished or discarded execution cannot claim completed actual evidence.");
+                if (!isNull(row, "currentActual")
+                        || !isNull(row, "actualEditedAt")
+                        || actuals.containsKey(execution.id()))
+                    throw new IllegalArgumentException(
+                            "Unfinished or discarded execution cannot claim completed actual"
+                                    + " evidence.");
                 if (execution.status() != GymExecution.Status.DISCARDED && ++unfinished > 1)
-                    throw new IllegalArgumentException("A backup contains several unfinished gym workouts.");
+                    throw new IllegalArgumentException(
+                            "A backup contains several unfinished gym workouts.");
             }
         }
         for (WorkoutRow workout : workouts.values()) {
-            if (workout.source() != null && workout.source().kind() == GymExecution.SourceKind.ACTUAL_SESSION)
-                validateAvailableSource(workout, actuals.get(workout.source().id()),
+            if (workout.source() != null
+                    && workout.source().kind() == GymExecution.SourceKind.ACTUAL_SESSION)
+                validateAvailableSource(
+                        workout,
+                        actuals.get(workout.source().id()),
                         retainedExecutions.get(workout.source().id()));
         }
     }
@@ -808,14 +1150,16 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
 
     /** The complete graph must be validated by the backup boundary before replacement starts. */
     public static void restore(SQLiteDatabase db, JSONObject data) {
-        fields(data, "version", "workouts", "preferences", "executions"); version(data, BACKUP_VERSION);
+        fields(data, "version", "workouts", "preferences", "executions");
+        version(data, BACKUP_VERSION);
         JSONArray rows = array(data, "workouts", 10000);
         for (int i = 0; i < rows.length(); i++) insertWorkout(db, workoutRow(row(rows, i)));
         rows = array(data, "preferences", 10000);
         for (int i = 0; i < rows.length(); i++) {
             JSONObject row = row(rows, i);
             ContentValues values = new ContentValues();
-            values.put("workout_id", text(row, "id", 256)); values.put("current_revision", integer(row, "currentRevision"));
+            values.put("workout_id", text(row, "id", 256));
+            values.put("current_revision", integer(row, "currentRevision"));
             values.put("favourite", bool(row, "favourite") ? 1 : 0);
             db.insertOrThrow("strength_workout_preferences", null, values);
         }
@@ -828,17 +1172,20 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                 ContentValues values = new ContentValues();
                 values.put("accepted_actual", bounded(child(row, "currentActual")));
                 values.put("actual_edited_at", nullableText(row, "actualEditedAt", 64));
-                db.update("strength_executions", values, "id=?", new String[]{execution.id()});
+                db.update("strength_executions", values, "id=?", new String[] {execution.id()});
             }
         }
     }
 
     private static String validId(String id) {
-        if (id == null || id.trim().isEmpty() || id.length() > 256) throw new IllegalArgumentException("A stable gym ID is required.");
+        if (id == null || id.trim().isEmpty() || id.length() > 256)
+            throw new IllegalArgumentException("A stable gym ID is required.");
         return id;
     }
 
     private static IllegalArgumentException conflict() {
-        return new IllegalArgumentException("The gym workout changed or conflicts with retained evidence. Reload it before saving.");
+        return new IllegalArgumentException(
+                "The gym workout changed or conflicts with retained evidence. Reload it before"
+                        + " saving.");
     }
 }

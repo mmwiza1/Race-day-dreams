@@ -8,8 +8,8 @@ import org.racedaydreams.domain.strength.StrengthExercise;
 import org.racedaydreams.domain.strength.StrengthSession;
 
 /**
- * The engine section uses the existing actual-row encoding, with a strict new-format reader.
- * Legacy coaching backups retain their older optional-field/default rules in CoachingJson.
+ * The engine section uses the existing actual-row encoding, with a strict new-format reader. Legacy
+ * coaching backups retain their older optional-field/default rules in CoachingJson.
  */
 final class GymAcceptedActualJson {
     private GymAcceptedActualJson() {}

@@ -405,7 +405,10 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                     data.has("strengthEngine") ? data.getJSONObject("strengthEngine") : null;
             if (strengthEngine != null)
                 SqliteGymExecutionRepository.validate(
-                        strengthEngine, coaching, data.optJSONObject("gymProgramming"), development);
+                        strengthEngine,
+                        coaching,
+                        data.optJSONObject("gymProgramming"),
+                        development);
             return new RestoreData(
                     profile,
                     draft,
