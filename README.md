@@ -65,8 +65,11 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. These 0.8.2 captures were adopted from the verified API-35 build
-after all three supported APIs passed 213 instrumentation tests each.
+data, not UI mockups. The active 0.9 development checkpoint refreshed these captures
+after all three supported APIs passed 253 instrumentation tests each. Full Strength
+Engine 2.0 remains in development; the rolling main download above still follows the
+last complete merged release. Strength-first Home captures are also available in the
+canonical directory, including dark mode and 200% text.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).

@@ -146,6 +146,78 @@ class FormattingTest(unittest.TestCase):
             subprocess.run(["git", "-C", str(original), "apply", str(patch_file)], check=True)
             self.assertEqual("class One {}\n", source.read_text())
 
+    def test_patch_check_formats_to_a_byte_stable_result_before_writing_diagnostics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "One.java"
+            source.write_text("first\n")
+            output = root / "format.patch"
+
+            def run(command, check):
+                target = Path(command[-1])
+                target.write_text({"first\n": "middle\n", "middle\n": "final\n",
+                                   "final\n": "final\n"}[target.read_text()])
+                return subprocess.CompletedProcess(command, 0)
+
+            with patch.object(formatter, "ROOT", root), \
+                    patch.object(formatter, "tool_jar", return_value=root / "tool.jar"), \
+                    patch.object(formatter.subprocess, "run", side_effect=run) as process:
+                status = formatter.check_with_patch({"tools": {"java": {}}}, [source], root, output)
+            self.assertEqual(1, status)
+            self.assertEqual(3, process.call_count)
+            self.assertEqual("first\n", source.read_text())
+            self.assertIn("+final\n", output.read_text())
+            self.assertNotIn("middle", output.read_text())
+
+    def test_apply_formats_the_requested_files_until_the_bytes_are_stable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "One.kt"
+            source.write_text("first\n")
+
+            def run(command, check):
+                target = Path(command[-1])
+                target.write_text({"first\n": "middle\n", "middle\n": "final\n",
+                                   "final\n": "final\n"}[target.read_text()])
+                return subprocess.CompletedProcess(command, 0)
+
+            with patch.object(formatter.subprocess, "run", side_effect=run) as process:
+                status = formatter.apply_until_stable("kotlin", {}, Path("tool.jar"), [source])
+            self.assertEqual(0, status)
+            self.assertEqual(3, process.call_count)
+            self.assertEqual("final\n", source.read_text())
+
+    def test_nonconverging_patch_check_is_bounded_and_preserves_the_original(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "One.java"
+            source.write_text("first\n")
+            output = root / "format.patch"
+
+            def run(command, check):
+                target = Path(command[-1])
+                target.write_text(target.read_text() + " ")
+                return subprocess.CompletedProcess(command, 0)
+
+            with patch.object(formatter, "ROOT", root), \
+                    patch.object(formatter, "tool_jar", return_value=root / "tool.jar"), \
+                    patch.object(formatter.subprocess, "run", side_effect=run) as process:
+                with self.assertRaisesRegex(ValueError, "did not converge after 4 passes"):
+                    formatter.check_with_patch({"tools": {"java": {}}}, [source], root, output)
+            self.assertEqual(formatter.MAX_FORMAT_PASSES, process.call_count)
+            self.assertEqual("first\n", source.read_text())
+            self.assertFalse(output.exists())
+
+    def test_tool_failure_cannot_be_mistaken_for_unchanged_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "One.kt"
+            source.write_text("unchanged\n")
+            with patch.object(formatter.subprocess, "run",
+                              return_value=subprocess.CompletedProcess([], 7)) as process:
+                status = formatter.apply_until_stable("kotlin", {}, Path("tool.jar"), [source])
+            self.assertEqual(7, status)
+            self.assertEqual(1, process.call_count)
+            self.assertEqual("unchanged\n", source.read_text())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

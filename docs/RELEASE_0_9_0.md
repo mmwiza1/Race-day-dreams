@@ -59,17 +59,19 @@ introduced. Future persistence changes require explicit migrations and backup te
 
 ## Verification
 
-The live 0.8.2 baseline is main 8b75755a0b74074047408b6444a11db3d6fef6f3, whose
-workflow 40330082255 passed. Before architecture edits, local checks passed 61,295 domain
-checks across 19 suites, 43 schema tests, 9 release-note tests, 11 Dream source tests,
-14 artwork-integrity tests, 6 screenshot-integrity tests and all packaged asset checks.
-Architecture source38fcc59 passed workflow40578388101:240instrumentation tests EACH
-API28/35/36, build/lint/format and77authentic captures. Phase1localchecks:61,369domain
-checks/20suites and43schema tests. Phase2localchecks now pass91,439/21suites; its
-Androidgate and all subsequent product phases remain pending. These checkpoint results
-do not claim the full StrengthEngine2.0 release is complete.
+Live-main baseline8b75755 passed workflow40330082255 before this increment. Architecture
+source38fcc59 then passed240instrumentation cases on each API28/35/36.
 
-The Phase3 focus implementation adds 19 domain checks (91,458 across 22 suites) and
-eight Android cases for onboarding, focus changes, legacy race drafts, SQLite and backup
-rollback. Those Android cases are awaiting actual supported-API CI execution. The focus
-adapter uses the existing settings table and preserves schema/backup versions.
+The standalone focus/Today, scheduling fixes and canonical metadata checkpoint e9768ff
+passed workflow40592585867:253cases on EACH supported API, build/lint/domain/schema,
+real pinned formatting and80authentic captures. The new StrengthHome light/dark/200%
+images and representative RunningHome/Plan/Paris renders were opened and reviewed.
+API35 checkpoint APK artifact12774623099 is48,190,253bytes. These are checkpoint results,
+not completion of the entire StrengthEngine2.0 product scope.
+
+Local checks also passed strict174/174canonical+14/14routine guidance,43schema tests,
+9release-note tests,11Dreamsource tests,14artwork-integrity and7screenshot-validator cases.
+The next unshipped GymNow domain foundation adds169checks (94,241across25suites) and two
+Android smoke cases pending CI. New formatter convergence handling passes14localharness
+cases and still requires actual pinned-tool CI verification. Physical S24 acceptance
+remains unperformed.

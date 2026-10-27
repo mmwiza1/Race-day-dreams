@@ -4,15 +4,16 @@ Architecture Hardening + Strength Engine 2.0 is in development on
 `feature/strength-engine-2-architecture-hardening`, based on live main `8b75755`.
 Phase 1's behaviour-preserving extraction passed the existing backup/build/API gates
 (240 instrumentation tests on each supported API). Phase 2 corrects start-anchored gym
-weeks, lower-session variation and exercise-backed fatigue context; its Android gate is
-being run separately. The full requested phases are retained in
+weeks, lower-session variation and exercise-backed fatigue context. The combined
+checkpoint passed253 tests on EACH API28/35/36 in workflow40592585867. All requested phases remain in
 CONTINUE_CODEX.md; this increment does not reduce them to architecture alone.
 
 Phase 3 implements a typed Running / Strength / Hybrid focus preference, race-free
 Strength setup and later Settings changes. Existing goals and programme versions stay
-intact. Local domain/schema checks pass; new Android entry and backup cases await CI.
+intact. Android entry, focus-preservation and backup cases passed the supported-API gate.
 Strength-first Today is implemented with actual/versioned associations and IO-prepared
-summary evidence. Its three new authentic capture modes and component cases await CI.
+summary evidence. Its three authentic capture modes and component cases passed CI;
+the actual light/dark/200% images were visually inspected.
 The complete Gym Now flow is the next product checkpoint; independent logging works now.
 
 Running Coach and Strength Coach will each be independently usable. Hybrid use adds

@@ -23,3 +23,14 @@ cases passed on API28/35/36, including unchangednavigation/screenshot/accessibil
 Date/fixture changes are expected. This is agent-assisted actualimage review, not human
 S24sunlight/TalkBack/sensor acceptance. NewStrengthEngine2screens must receive their own
 actualcapture/visualreview when implemented; this record does not stand in for those.
+# Standalone Strength checkpoint
+
+Source e9768ff3c13800dfdb8915f3b2ad273d5643f30b passed workflow40592585867 on
+API28/35/36 (253 instrumentation cases each). Botc1fa18d published 80 real API35 renders.
+Opened StrengthHome light, dark and200% captures, plus RunningHome, Plan and Paris.
+Strength Home leads with today's prescription, exercises, duration and an independent
+logging path. The primary logging action is visible at200%; lower content scrolls.
+No harmful clipping, missing artwork or navigation-label wrapping was found. The Paris
+hero and annual geographic route retain the accepted0.8.2 presentation; no artwork changed.
+The independent logging control is functional; full GymNow and live gym execution remain
+later checkpoints. These are actual emulator observations, not physical S24 acceptance.

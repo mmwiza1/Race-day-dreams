@@ -24,6 +24,14 @@ tools, writes a git-compatible patch and still fails if any difference exists.
 It never applies that patch or mutates source during verification. This gives CI
 reviewable diagnostics where local build-tool download access is unavailable.
 
+Apply and patch-output mode run the same pinned formatter until the selected files are
+byte-for-byte stable, with at most four passes including the unchanged confirmation pass.
+This handles observed multi-pass long-string layout changes in google-java-format rather
+than generating a patch that immediately needs another formatting patch. A tool failure
+or failure to converge remains an error. Patch-output mode does all passes on isolated
+copies and still returns failure when the stable result differs from committed source.
+Plain `--check` remains the formatter's unchanged read-only verification command.
+
 `config/formatting.json` pins exact artifact versions/HTTPS Maven Central URLs.
 The runner verifies each download against the exact SHA-256 recorded in the repository,
 validates the complete JAR and caches the tool and checksum in `.gradle/rdd-formatters/`.

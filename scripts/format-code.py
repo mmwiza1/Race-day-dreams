@@ -26,6 +26,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "config/formatting.json"
 MAX_JAR_BYTES = 128 * 1024 * 1024
+MAX_FORMAT_PASSES = 4
 JAVA_EXPORTS = [
     "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
     "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
@@ -128,6 +129,19 @@ def difference_patch(root: Path, formatted: Path, paths: list[Path]) -> str:
     return "".join(parts)
 
 
+def apply_until_stable(language: str, tool: dict, jar: Path, paths: list[Path]) -> int:
+    # Long-string wrapping can expose another layout change on a subsequent pass.
+    # Compare actual bytes, not the formatter's success code, and bound the work.
+    for _ in range(MAX_FORMAT_PASSES):
+        before = [path.read_bytes() for path in paths]
+        result = subprocess.run(command(language, tool, jar, paths, True), check=False)
+        if result.returncode:
+            return result.returncode
+        if all(path.read_bytes() == original for path, original in zip(paths, before)):
+            return 0
+    raise ValueError(f"{language} formatter did not converge after {MAX_FORMAT_PASSES} passes")
+
+
 def check_with_patch(config: dict, paths: list[Path], cache: Path, output: Path) -> int:
     # Run the actual tools against isolated copies: producing diagnostics must
     # never mutate application sources or weaken the check's exit code.
@@ -143,9 +157,9 @@ def check_with_patch(config: dict, paths: list[Path], cache: Path, output: Path)
                 continue
             tool = config["tools"][language]
             jar = tool_jar(language, tool, cache)
-            result = subprocess.run(command(language, tool, jar, selected, True), check=False)
-            if result.returncode:
-                return result.returncode
+            status = apply_until_stable(language, tool, jar, selected)
+            if status:
+                return status
         patch = difference_patch(ROOT, formatted, paths)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(patch, encoding="utf-8")
@@ -185,9 +199,12 @@ def main(argv: list[str] | None = None) -> int:
             continue
         tool = config["tools"][language]
         jar = tool_jar(language, tool, cache)
-        result = subprocess.run(command(language, tool, jar, selected, args.apply), check=False)
-        if result.returncode:
-            return result.returncode
+        if args.apply:
+            status = apply_until_stable(language, tool, jar, selected)
+        else:
+            status = subprocess.run(command(language, tool, jar, selected, False), check=False).returncode
+        if status:
+            return status
         print(f"{language} {tool['version']}: {len(selected)} files {'formatted' if args.apply else 'checked'}")
     return 0
 
