@@ -13,7 +13,7 @@ fun NavGraphBuilder.runningGraph(
     model: CoachViewModel,
     nav: NavHostController,
     runSnapshot: String?,
-    startSpontaneous: (String) -> Unit,
+    startSpontaneous: (String?) -> Unit,
     connect: (Boolean, Boolean) -> Unit,
     providerUpdate: () -> Unit,
 ) {

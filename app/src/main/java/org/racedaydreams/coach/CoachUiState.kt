@@ -13,7 +13,7 @@ import org.racedaydreams.domain.baseline.AssessmentResult
 import org.racedaydreams.domain.baseline.ManualBaselineInput
 import org.racedaydreams.domain.baseline.RunnerBaseline
 import org.racedaydreams.domain.body.BodyWeight
-import org.racedaydreams.domain.body.HistoricalStrengthRecord
+import org.racedaydreams.domain.strength.HistoricalStrengthRecord
 import org.racedaydreams.domain.body.MassUnit
 import org.racedaydreams.domain.coaching.AdjustmentProposal
 import org.racedaydreams.domain.coaching.PlanVersion

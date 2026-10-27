@@ -5,7 +5,7 @@ import java.time.LocalDate
 import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.StrengthUserStore
-import org.racedaydreams.domain.body.HistoricalStrengthRecord
+import org.racedaydreams.domain.strength.HistoricalStrengthRecord
 import org.racedaydreams.domain.coaching.CoachingRepository
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.domain.strength.StrengthExercise

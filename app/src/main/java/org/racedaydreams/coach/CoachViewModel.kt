@@ -17,7 +17,7 @@ import org.racedaydreams.domain.UserProfile
 import org.racedaydreams.domain.activity.RecordedResult
 import org.racedaydreams.domain.activity.Shoe
 import org.racedaydreams.domain.baseline.ManualBaselineInput
-import org.racedaydreams.domain.body.HistoricalStrengthRecord
+import org.racedaydreams.domain.strength.HistoricalStrengthRecord
 import org.racedaydreams.domain.coaching.AdjustmentProposal
 import org.racedaydreams.domain.reminders.ReminderPreferences
 import org.racedaydreams.domain.strength.GymProgramme

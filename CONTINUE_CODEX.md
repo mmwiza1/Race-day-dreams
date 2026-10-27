@@ -7,6 +7,9 @@
 - Branch: `feature/strength-engine-2-architecture-hardening`.
 - Live main fetched and fast-forwarded: `8b75755a0b74074047408b6444a11db3d6fef6f3`
   (release page standardisation after merged PRs #12/#13). Feature starts there.
+- Draft PR #14 is open. Published source checkpoint `96879387e5b6d2946fb3e62db2c37e6ec15d22bf`
+  exactly matches the protected local tree. Original local commits remain on
+  `checkpoint/strength-engine-2-local-c1bfac4`; no work was discarded.
 - Latest completed checkpoint: baseline audit/tests. **Phase 1 is in progress**;
   implementation protected in local checkpoint `183dae46ff6ab0d028b8070ba44285ec459b4b4c`;
   compile/format/API verification is pending. The full release is NOT complete.
@@ -113,3 +116,17 @@ All S24 physical checks remain UNPERFORMED. Do not claim sensor/audio/battery/ou
 TalkBack/sunlight or real complete-backup acceptance from emulator tests.
 No INTERNET permission, backend/account/ads/subscription/analytics/LLM dependency is added.
 The app recommends. The athlete decides. The plan adapts.
+
+## First draft CI diagnosis
+
+Workflow40575398058 is the first Android/format gate for PR14/source9687938. Formatting
+failed because Maven's `.sha256` sidecar returns404. Android compile failed on two extraction issues: wrong HistoricalStrengthRecord imports
+  (it belongs to domain.strength) and a nullable RunNow snapshot callback narrowed to String.
+  Both are corrected in the next source. All observed failures must still pass CI.
+A TEMPORARY formatter-lock diagnostic in the next commit downloads the exact pinned
+JARs in CI, verifies Maven's available publisher SHA1, prints actual SHA256 and seeds
+the checked cache so real formatters can produce an actionable patch. It must be
+removed after those SHA256 values are locked into config/formatting.json and the runner
+validates the pinned hashes directly. Do not leave the diagnostic in a completed gate.
+Then apply only the real FORMATTING_PATCH output, commit it, and run full CI again.
+No test is weakened; the formatting job stays red until source matches real tools.
