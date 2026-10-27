@@ -76,6 +76,9 @@ jobs:
             adb shell wm size 540x1200
             adb shell wm density 210
             ./gradlew :app:connectedDebugAndroidTest
+            # Only the named instrumentation fixture reports bounded resource measurements.
+            # Do not dump application/device logs, health values or route evidence.
+            adb logcat -d -s GymBackupFixture:I '*:S'
             mkdir -p build/canonical-screenshots
             adb pull /data/local/tmp/racedaydreams-screenshots/. build/canonical-screenshots/
             python3 scripts/verify-dream-screenshots.py build/canonical-screenshots
