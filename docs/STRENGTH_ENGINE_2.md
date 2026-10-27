@@ -60,6 +60,25 @@ exercise additions are quality-gated rather than a raw catalogue-count target.
 
 ## Verification and durability
 
+The next Gym Now foundation has one Android-independent GymExecutionEngine for all
+origins. Immutable date-free GymWorkoutDefinition revisions preserve exercise-slot IDs,
+frozen exercise definitions, measurement/effort targets, optional references and superset
+groups. Programme adapters bind an exact programme/session/revision; repeated workouts
+copy structure and intentions, never completed actual sets. Today-only replacements
+retain original prescriptions and actual evidence and remove incompatible load references.
+
+GymExecution snapshots hold actual entered sets separately, with idempotent stable IDs,
+explicit pause/resume and recovery gaps, monotonic timing and partial-completion evidence.
+Corrupted event sequences, mismatched actual references and invented completion are rejected.
+Only an explicitly started planned execution can propose its preserved association.
+Storage codecs must additionally validate the frozen source against retained versions.
+
+This is a tested domain foundation, not a shipped Gym Now screen: typed storage, backup,
+coordinators and all six entry flows remain unimplemented. No unfinished actuals are put
+into CoachingStore, and no actual sets are fabricated from targets. Two Android runtime
+smoke cases cover the domain adapters/engine on the supported APIs; their CI result must
+be observed before claiming runtime verification.
+
 See VERIFICATION.md for observed CI results, including failures and subsequent fixes.
 Domain metadata tests exercise every canonical ID, immutable collections, setup truth
 tables, role/experience boundaries, invalid definitions and unchanged measurements.

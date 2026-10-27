@@ -10,7 +10,8 @@
 - Schema10 / JSON7 / raw2 / complete1 unchanged. No Internet/runtime dependencies added.
 - Last fully verified SOURCE: e9768ff3c13800dfdb8915f3b2ad273d5643f30b.
   Canonical capture bot c1fa18dd9d3319857764a1c1b7c43419f1d49a47 was fast-forwarded locally.
-  The next checkpoint records documentation/formatter work above that bot commit.
+  Documentation/formatter checkpoint6f950350d5e743e6e16a0ceda79f4e03725ebc20 is above
+  that bot commit; the Phase5domain checkpoint follows it. Inspect actual HEAD.
 - Phases1–3 verified; Phase4 Strength-first Today implemented/verified (full GymNow is
   Phase5). Phase6 canonical metadata implemented/verified. Full release NOT complete.
 
@@ -81,7 +82,7 @@ All geographic generation checks reproduce. Strict174/174guides +14/14routines a
 
 ## Current next checkpoint — Phase5 domain, NOT full GymNow
 
-Seven NEW files prepared by gym_execution_domain (preserve them):
+Seven files now checkpointed as Phase5 domain foundation (preserve them):
 - domain/.../strength/GymWorkoutDefinition.java
 - GymExecution.java, GymExecutionSet.java, GymExecutionEngine.java, GymWorkoutAdapter.java
 - domain/.../strength/GymExecutionTestSuite.java
@@ -102,8 +103,8 @@ original harness cases plus4new ones =14pass locally; actual CI verification pen
 This prevents repeated real google-java-format long-string normalisation patch rounds.
 
 NEXT EXACT TASKS:
-1. Commit formatter/docs checkpoint separately above c1fa18d. Add all7new gym files to
-   config/formatting.json, checkpoint Phase5 domain separately, publish using safe protocol.
+1. Formatter/docs are checkpointed separately above c1fa18d; all7gym files are in their
+   own domain checkpoint and formatter scope. Publish using the safe expected-head lease.
 2. Run actual formatter (apply bounded stable patch), compile + supported API gate for
    new engine smoke tests (expected255Android cases). Do not claim a pass before observed.
 3. Adopt matching80canonical captures; preserve all previous screenshot requirements.
