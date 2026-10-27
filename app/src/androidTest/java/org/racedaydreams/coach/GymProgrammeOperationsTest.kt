@@ -101,7 +101,16 @@ class GymProgrammeOperationsTest {
     @Test
     fun conflictPreviewUsesActualExerciseContentAndIncludesPostRunRecovery() {
         val original = plan()
-        val keyRun = PlannedWorkout("key-run", today, WorkoutCategory.INTERVALS, 6.0, null, emptyList(), "Key run")
+        val keyRun =
+            PlannedWorkout(
+                "key-run",
+                today,
+                WorkoutCategory.INTERVALS,
+                6.0,
+                null,
+                emptyList(),
+                "Key run",
+            )
         val session = original.sessions().first()
         assertTrue(operations.conflicts(session, listOf(keyRun), emptyList()).isEmpty())
         val lower = session.copyExercise("back-squat")
@@ -116,7 +125,9 @@ class GymProgrammeOperationsTest {
 
     private fun GymProgramme.Session.copyExercise(id: String) =
         GymProgramme.Session(
-            id(), date(), title(),
+            id(),
+            date(),
+            title(),
             listOf(GymProgramme.Prescription(id, 2, 6, 8, null, null, 6, 8, 90, "Retained work")),
             explanation(),
         )
