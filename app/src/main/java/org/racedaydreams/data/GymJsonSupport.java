@@ -27,7 +27,8 @@ final class GymJsonSupport {
         JSONObject result = new JSONObject();
         try {
             for (int i = 0; i < pairs.length; i += 2)
-                result.put((String) pairs[i], pairs[i + 1] == null ? JSONObject.NULL : pairs[i + 1]);
+                result.put(
+                        (String) pairs[i], pairs[i + 1] == null ? JSONObject.NULL : pairs[i + 1]);
         } catch (JSONException invalid) {
             throw new IllegalArgumentException("Invalid gym JSON value.", invalid);
         }
@@ -89,7 +90,9 @@ final class GymJsonSupport {
         return (Boolean) value;
     }
 
-    /** JSON integer tokens only: no strings, fractional clocks or lossy doubles near Long.MAX_VALUE. */
+    /**
+     * JSON integer tokens only: no strings, fractional clocks or lossy doubles near Long.MAX_VALUE.
+     */
     static long whole(JSONObject json, String key) {
         Object value = value(json, key);
         if (!(value instanceof Byte)
@@ -101,7 +104,8 @@ final class GymJsonSupport {
 
     static int integer(JSONObject json, String key) {
         long value = whole(json, key);
-        if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) throw invalid(key + " integer range");
+        if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE)
+            throw invalid(key + " integer range");
         return (int) value;
     }
 
@@ -130,13 +134,19 @@ final class GymJsonSupport {
     }
 
     static Instant instant(JSONObject json, String key) {
-        try { return Instant.parse(text(json, key, 64)); }
-        catch (DateTimeException invalid) { throw new IllegalArgumentException("Invalid gym timestamp: " + key, invalid); }
+        try {
+            return Instant.parse(text(json, key, 64));
+        } catch (DateTimeException invalid) {
+            throw new IllegalArgumentException("Invalid gym timestamp: " + key, invalid);
+        }
     }
 
     static ZoneOffset offset(JSONObject json, String key) {
-        try { return ZoneOffset.of(text(json, key, 16)); }
-        catch (DateTimeException invalid) { throw new IllegalArgumentException("Invalid gym offset: " + key, invalid); }
+        try {
+            return ZoneOffset.of(text(json, key, 16));
+        } catch (DateTimeException invalid) {
+            throw new IllegalArgumentException("Invalid gym offset: " + key, invalid);
+        }
     }
 
     static void version(JSONObject json, int expected) {
@@ -159,7 +169,8 @@ final class GymJsonSupport {
         try {
             JSONTokener parser = new JSONTokener(input);
             Object result = parser.nextValue();
-            if (!(result instanceof JSONObject) || parser.nextClean() != 0) throw invalid("root object");
+            if (!(result instanceof JSONObject) || parser.nextClean() != 0)
+                throw invalid("root object");
             return (JSONObject) result;
         } catch (JSONException invalid) {
             throw new IllegalArgumentException("Malformed gym JSON.", invalid);
@@ -167,7 +178,8 @@ final class GymJsonSupport {
     }
 
     private static void checkSize(String input) {
-        if (input == null || input.length() > MAX_BYTES
+        if (input == null
+                || input.length() > MAX_BYTES
                 || input.getBytes(StandardCharsets.UTF_8).length > MAX_BYTES)
             throw invalid("payload size");
     }
@@ -182,7 +194,9 @@ final class GymJsonSupport {
         private int at;
         private int tokens;
 
-        Syntax(String input) { this.input = input; }
+        Syntax(String input) {
+            this.input = input;
+        }
 
         void validate() {
             whitespace();
@@ -208,8 +222,11 @@ final class GymJsonSupport {
                     string();
                     String raw = input.substring(start, at);
                     String key;
-                    try { key = (String) new JSONTokener(raw).nextValue(); }
-                    catch (JSONException invalid) { throw GymJsonSupport.invalid("object key"); }
+                    try {
+                        key = (String) new JSONTokener(raw).nextValue();
+                    } catch (JSONException invalid) {
+                        throw GymJsonSupport.invalid("object key");
+                    }
                     if (!keys.add(key)) throw invalid("duplicate field");
                     whitespace();
                     if (!take(':')) throw invalid("object separator");
@@ -230,10 +247,22 @@ final class GymJsonSupport {
                 } while (take(','));
                 throw invalid("array ending");
             }
-            if (c == '"') { string(); return; }
-            if (c == 't') { literal("true"); return; }
-            if (c == 'f') { literal("false"); return; }
-            if (c == 'n') { literal("null"); return; }
+            if (c == '"') {
+                string();
+                return;
+            }
+            if (c == 't') {
+                literal("true");
+                return;
+            }
+            if (c == 'f') {
+                literal("false");
+                return;
+            }
+            if (c == 'n') {
+                literal("null");
+                return;
+            }
             number();
         }
 
@@ -283,7 +312,10 @@ final class GymJsonSupport {
         }
 
         private boolean take(char value) {
-            if (at < input.length() && input.charAt(at) == value) { at++; return true; }
+            if (at < input.length() && input.charAt(at) == value) {
+                at++;
+                return true;
+            }
             return false;
         }
     }

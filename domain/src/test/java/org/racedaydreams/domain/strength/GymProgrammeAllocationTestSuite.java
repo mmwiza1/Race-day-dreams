@@ -349,57 +349,79 @@ public final class GymProgrammeAllocationTestSuite {
     private static void lowerAdjacencyCrossesProgrammeWeekBoundaries() {
         var start = MONDAY.plusDays(1);
         for (var priority : GymProgramme.Priority.values()) {
-            var settings = new GymProgramme.Settings(
-                    GymProgramme.Goal.GENERAL,
-                    priority,
-                    GymProgramme.Experience.INTERMEDIATE,
-                    Set.of(DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                            DayOfWeek.FRIDAY, DayOfWeek.MONDAY),
-                    3,
-                    Set.of("full gym"),
-                    45,
-                    GymProgramme.Effort.RPE);
+            var settings =
+                    new GymProgramme.Settings(
+                            GymProgramme.Goal.GENERAL,
+                            priority,
+                            GymProgramme.Experience.INTERMEDIATE,
+                            Set.of(
+                                    DayOfWeek.TUESDAY,
+                                    DayOfWeek.WEDNESDAY,
+                                    DayOfWeek.FRIDAY,
+                                    DayOfWeek.MONDAY),
+                            3,
+                            Set.of("full gym"),
+                            45,
+                            GymProgramme.Effort.RPE);
             var plan = generate(settings, start, List.of());
             verifyAllocation(plan, settings, start);
             for (int i = 1; i < plan.sessions().size(); i++) {
-                ok(ChronoUnit.DAYS.between(plan.sessions().get(i - 1).date(),
-                                plan.sessions().get(i).date()) > 1,
-                        "An available Wednesday avoids Monday-to-Tuesday lower work across block weeks");
+                ok(
+                        ChronoUnit.DAYS.between(
+                                        plan.sessions().get(i - 1).date(),
+                                        plan.sessions().get(i).date())
+                                > 1,
+                        "An available Wednesday avoids Monday-to-Tuesday lower work across block"
+                                + " weeks");
             }
-            ok(plan.tradeoffs().stream().noneMatch(text -> text.contains("consecutive days")),
+            ok(
+                    plan.tradeoffs().stream().noneMatch(text -> text.contains("consecutive days")),
                     "A separated block does not claim consecutive lower sessions");
-            ok(plan.equals(generate(settings, start, List.of())),
+            ok(
+                    plan.equals(generate(settings, start, List.of())),
                     "Cross-week allocation remains deterministic");
         }
     }
 
     private static void unavoidablePlannedAdjacencyRemainsExplicit() {
         var start = MONDAY.plusDays(1);
-        var settings = new GymProgramme.Settings(
-                GymProgramme.Goal.GENERAL,
-                GymProgramme.Priority.BALANCED,
-                GymProgramme.Experience.INTERMEDIATE,
-                Set.of(DayOfWeek.TUESDAY, DayOfWeek.FRIDAY, DayOfWeek.MONDAY),
-                3,
-                Set.of("full gym"),
-                45,
-                GymProgramme.Effort.RPE);
+        var settings =
+                new GymProgramme.Settings(
+                        GymProgramme.Goal.GENERAL,
+                        GymProgramme.Priority.BALANCED,
+                        GymProgramme.Experience.INTERMEDIATE,
+                        Set.of(DayOfWeek.TUESDAY, DayOfWeek.FRIDAY, DayOfWeek.MONDAY),
+                        3,
+                        Set.of("full gym"),
+                        45,
+                        GymProgramme.Effort.RPE);
         var plan = generate(settings, start, List.of());
         verifyAllocation(plan, settings, start);
-        ok(plan.tradeoffs().size() == 5,
+        ok(
+                plan.tradeoffs().size() == 5,
                 "All five unavoidable consecutive block-week boundaries are explained");
         for (int week = 1; week < 6; week++) {
             var day = start.plusWeeks(week);
-            var previousLabel = day.minusDays(1).format(
-                    java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu", Locale.UK));
-            var dayLabel = day.format(
-                    java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu", Locale.UK));
-            ok(plan.tradeoffs().stream().anyMatch(text -> text.contains("Planned lower-body")
-                            && text.contains(previousLabel) && text.contains(dayLabel)
-                            && text.contains("nothing has been removed")),
+            var previousLabel =
+                    day.minusDays(1)
+                            .format(
+                                    java.time.format.DateTimeFormatter.ofPattern(
+                                            "d MMM uuuu", Locale.UK));
+            var dayLabel =
+                    day.format(
+                            java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu", Locale.UK));
+            ok(
+                    plan.tradeoffs().stream()
+                            .anyMatch(
+                                    text ->
+                                            text.contains("Planned lower-body")
+                                                    && text.contains(previousLabel)
+                                                    && text.contains(dayLabel)
+                                                    && text.contains("nothing has been removed")),
                     "Unavoidable planned adjacency preserves both dates and an explicit choice");
         }
-        ok(plan.tradeoffs().stream().noneMatch(text -> text.contains("actually recorded")),
+        ok(
+                plan.tradeoffs().stream().noneMatch(text -> text.contains("actually recorded")),
                 "Planned adjacency is never represented as completed evidence");
     }
 

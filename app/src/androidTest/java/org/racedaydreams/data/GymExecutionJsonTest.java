@@ -29,20 +29,45 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
         for (var measurement : StrengthExercise.MeasurementProfile.values()) {
             var exercise = exercise("custom-" + measurement.name(), measurement);
             boolean reps = measurement.usesReps();
-            var target = new GymWorkoutDefinition.Target(2, reps ? 5 : null, reps ? 8 : null,
-                    measurement.usesDuration() ? 30L : null, measurement.usesDistance() ? 25.5 : null,
-                    new GymWorkoutDefinition.EffortRange(reps ? GymWorkoutDefinition.EffortScale.RIR
-                            : GymWorkoutDefinition.EffortScale.RPE, 2, 4), 90,
-                    measurement.usesLoad() ? 12.5 : null);
-            slots.add(new GymWorkoutDefinition.Slot(measurement.name(), exercise, target,
-                    slots.size() < 2 ? "pair" : null));
+            var target =
+                    new GymWorkoutDefinition.Target(
+                            2,
+                            reps ? 5 : null,
+                            reps ? 8 : null,
+                            measurement.usesDuration() ? 30L : null,
+                            measurement.usesDistance() ? 25.5 : null,
+                            new GymWorkoutDefinition.EffortRange(
+                                    reps
+                                            ? GymWorkoutDefinition.EffortScale.RIR
+                                            : GymWorkoutDefinition.EffortScale.RPE,
+                                    2,
+                                    4),
+                            90,
+                            measurement.usesLoad() ? 12.5 : null);
+            slots.add(
+                    new GymWorkoutDefinition.Slot(
+                            measurement.name(),
+                            exercise,
+                            target,
+                            slots.size() < 2 ? "pair" : null));
         }
-        slots.add(new GymWorkoutDefinition.Slot("open", exercise("open", StrengthExercise.MeasurementProfile.REPS_ONLY), null, null));
+        slots.add(
+                new GymWorkoutDefinition.Slot(
+                        "open",
+                        exercise("open", StrengthExercise.MeasurementProfile.REPS_ONLY),
+                        null,
+                        null));
         var workout = new GymWorkoutDefinition("saved", 2, NOW, "Frozen custom workout", slots);
         assertEquals(workout, GymWorkoutJson.read(GymWorkoutJson.write(workout)));
         assertEquals(workout, GymWorkoutJson.decode(GymWorkoutJson.encode(workout)));
         assertNull(GymWorkoutJson.read(GymWorkoutJson.write(workout)).slots().get(6).target());
-        assertEquals("Custom LOAD_REPS", GymWorkoutJson.read(GymWorkoutJson.write(workout)).slots().get(0).exercise().name());
+        assertEquals(
+                "Custom LOAD_REPS",
+                GymWorkoutJson.read(GymWorkoutJson.write(workout))
+                        .slots()
+                        .get(0)
+                        .exercise()
+                        .name());
     }
 
     public void testEveryOriginRoundTripsWithoutInventingActualSetsOrAssociation() {
@@ -52,15 +77,30 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
             GymWorkoutDefinition selected = definition;
             if (origin == GymExecution.Origin.FREE) selected = null;
             if (origin == GymExecution.Origin.REPEATED)
-                source = new GymExecution.SourceReference(GymExecution.SourceKind.ACTUAL_SESSION, "previous-actual", 0, null);
+                source =
+                        new GymExecution.SourceReference(
+                                GymExecution.SourceKind.ACTUAL_SESSION, "previous-actual", 0, null);
             if (origin == GymExecution.Origin.FAVOURITE)
-                source = new GymExecution.SourceReference(GymExecution.SourceKind.SAVED_WORKOUT, definition.id(), definition.revision(), null);
+                source =
+                        new GymExecution.SourceReference(
+                                GymExecution.SourceKind.SAVED_WORKOUT,
+                                definition.id(),
+                                definition.revision(),
+                                null);
             if (origin == GymExecution.Origin.PLANNED) {
                 var prepared = planned();
                 source = prepared.source();
                 selected = prepared.definition();
             }
-            var before = GymExecutionEngine.start("execution-" + origin.name(), origin, selected, source, ZoneOffset.ofHoursMinutes(5, 30), tick(0)).snapshot();
+            var before =
+                    GymExecutionEngine.start(
+                                    "execution-" + origin.name(),
+                                    origin,
+                                    selected,
+                                    source,
+                                    ZoneOffset.ofHoursMinutes(5, 30),
+                                    tick(0))
+                            .snapshot();
             var restored = roundTrip(before);
             assertEquals(before, restored);
             assertTrue(restored.actualSets().isEmpty());
@@ -72,12 +112,26 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
     public void testOriginalTodayOnlyAndActualDefinitionsRemainIndependent() {
         var engine = engine();
         engine.saveSet("slot", new StrengthSession.SetEntry("warm", 5, 20, null, true), tick(1000));
-        engine.saveSet("slot", new StrengthSession.SetEntry("original-working", 8, 60, null, false, null, null, 2.0), tick(2000));
-        var replacement = new StrengthExercise("replacement", "Frozen replacement name", StrengthExercise.Region.UPPER,
-                StrengthExercise.Mode.WEIGHTED, true, StrengthExercise.MeasurementProfile.LOAD_REPS);
+        engine.saveSet(
+                "slot",
+                new StrengthSession.SetEntry(
+                        "original-working", 8, 60, null, false, null, null, 2.0),
+                tick(2000));
+        var replacement =
+                new StrengthExercise(
+                        "replacement",
+                        "Frozen replacement name",
+                        StrengthExercise.Region.UPPER,
+                        StrengthExercise.Mode.WEIGHTED,
+                        true,
+                        StrengthExercise.MeasurementProfile.LOAD_REPS);
         engine.replaceExercise("slot", replacement, tick(3000));
-        engine.saveSet("slot", new StrengthSession.SetEntry("replacement-working", 6, 15, 8.0, false), tick(4000));
-        var finished = engine.finish(tick(5000), null, "Recorded actuals, not suggested loading", true);
+        engine.saveSet(
+                "slot",
+                new StrengthSession.SetEntry("replacement-working", 6, 15, 8.0, false),
+                tick(4000));
+        var finished =
+                engine.finish(tick(5000), null, "Recorded actuals, not suggested loading", true);
         var restored = roundTrip(finished);
         assertEquals(finished, restored);
         assertEquals("Frozen bench name", restored.prescription().slots().get(0).exercise().name());
@@ -89,40 +143,66 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
         assertEquals(15.0, restored.actualSets().get(2).actual().kilograms(), 0);
         assertTrue(restored.actualSets().get(0).actual().warmUp());
         assertNull(restored.actualSets().get(1).actual().rpe());
-        assertEquals(Double.valueOf(2), restored.actualSets().get(1).actual().repetitionsInReserve());
+        assertEquals(
+                Double.valueOf(2), restored.actualSets().get(1).actual().repetitionsInReserve());
         assertTrue(restored.partial());
     }
 
     public void testPausedAndInterruptedClocksRoundTripWithoutAddingGapTime() {
         var engine = engine();
-        engine.saveSet("slot", new StrengthSession.SetEntry("working", 8, 60, 8.0, false), tick(1000));
+        engine.saveSet(
+                "slot", new StrengthSession.SetEntry("working", 8, 60, 8.0, false), tick(1000));
         engine.pause(tick(2000));
         var paused = roundTrip(engine.snapshot());
         assertEquals(GymExecution.Status.PAUSED, paused.status());
-        var recovered = GymExecutionEngine.recover(paused,
-                new GymExecution.Tick("new-boot", Long.MAX_VALUE - 10000, NOW.plusSeconds(200000)));
+        var recovered =
+                GymExecutionEngine.recover(
+                        paused,
+                        new GymExecution.Tick(
+                                "new-boot", Long.MAX_VALUE - 10000, NOW.plusSeconds(200000)));
         assertEquals(recovered.snapshot(), roundTrip(recovered.snapshot()));
         assertEquals(GymExecution.Status.PAUSED, recovered.snapshot().status());
-        recovered.resume(new GymExecution.Tick("new-boot", Long.MAX_VALUE - 9000, NOW.minusSeconds(1000)));
-        recovered.observe(new GymExecution.Tick("new-boot", Long.MAX_VALUE - 8000, NOW.minusSeconds(2000)));
+        recovered.resume(
+                new GymExecution.Tick("new-boot", Long.MAX_VALUE - 9000, NOW.minusSeconds(1000)));
+        recovered.observe(
+                new GymExecution.Tick("new-boot", Long.MAX_VALUE - 8000, NOW.minusSeconds(2000)));
         var active = roundTrip(recovered.snapshot());
         assertEquals(4000L, active.recordedElapsedMillis());
         assertEquals(3000L, active.activeMillis());
-        var interrupted = GymExecutionEngine.recover(active, new GymExecution.Tick("third-boot", 1, NOW));
-        assertEquals(GymExecution.Status.RECOVERY_REQUIRED, roundTrip(interrupted.snapshot()).status());
+        var interrupted =
+                GymExecutionEngine.recover(active, new GymExecution.Tick("third-boot", 1, NOW));
+        assertEquals(
+                GymExecution.Status.RECOVERY_REQUIRED, roundTrip(interrupted.snapshot()).status());
         assertEquals(3000L, roundTrip(interrupted.snapshot()).activeMillis());
     }
 
     public void testCompletedActualMeasurementTypesAndMissingEffortSurvive() {
-        var engine = GymExecutionEngine.start("all-measurements", GymExecution.Origin.FREE, null, null, ZoneOffset.UTC, tick(0));
+        var engine =
+                GymExecutionEngine.start(
+                        "all-measurements",
+                        GymExecution.Origin.FREE,
+                        null,
+                        null,
+                        ZoneOffset.UTC,
+                        tick(0));
         int sequence = 0;
         for (var measurement : StrengthExercise.MeasurementProfile.values()) {
             String slot = measurement.name();
             var exercise = exercise(slot, measurement);
-            engine.addExercises(Immutable.list(new GymWorkoutDefinition.Slot(slot, exercise, null, null)), tick(++sequence * 1000));
-            engine.saveSet(slot, new StrengthSession.SetEntry("actual-" + slot, measurement.usesReps() ? 7 : 0,
-                    measurement.usesLoad() ? 12.5 : 0, null, false,
-                    measurement.usesDuration() ? 20L : null, measurement.usesDistance() ? 30.25 : null), tick(++sequence * 1000));
+            engine.addExercises(
+                    Immutable.list(new GymWorkoutDefinition.Slot(slot, exercise, null, null)),
+                    tick(++sequence * 1000));
+            engine.saveSet(
+                    slot,
+                    new StrengthSession.SetEntry(
+                            "actual-" + slot,
+                            measurement.usesReps() ? 7 : 0,
+                            measurement.usesLoad() ? 12.5 : 0,
+                            null,
+                            false,
+                            measurement.usesDuration() ? 20L : null,
+                            measurement.usesDistance() ? 30.25 : null),
+                    tick(++sequence * 1000));
         }
         var finished = engine.finish(tick(++sequence * 1000), null, "", false);
         assertEquals(finished, roundTrip(finished));
@@ -196,12 +276,20 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
         badSequence.getJSONArray("events").getJSONObject(1).put("sequence", 0);
         reject(() -> GymExecutionJson.decode(badSequence));
         var finished = GymExecutionJson.encode(engine.finish(tick(2000), null, "", false));
-        finished.getJSONObject("completedSession").getJSONArray("exercises").getJSONObject(0)
-                .getJSONArray("sets").getJSONObject(0).put("kilograms", 80);
+        finished.getJSONObject("completedSession")
+                .getJSONArray("exercises")
+                .getJSONObject(0)
+                .getJSONArray("sets")
+                .getJSONObject(0)
+                .put("kilograms", 80);
         reject(() -> GymExecutionJson.decode(finished));
         var partialEngine = engine();
-        partialEngine.replaceExercise("slot", exercise("different", StrengthExercise.MeasurementProfile.LOAD_REPS), tick(1000));
-        partialEngine.saveSet("slot", new StrengthSession.SetEntry("actual", 6, 15, null, false), tick(2000));
+        partialEngine.replaceExercise(
+                "slot",
+                exercise("different", StrengthExercise.MeasurementProfile.LOAD_REPS),
+                tick(1000));
+        partialEngine.saveSet(
+                "slot", new StrengthSession.SetEntry("actual", 6, 15, null, false), tick(2000));
         var partial = GymExecutionJson.encode(partialEngine.finish(tick(3000), null, "", true));
         partial.put("partial", false);
         reject(() -> GymExecutionJson.decode(partial));
@@ -209,7 +297,14 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
 
     public void testSourceIdentityChecksDoNotResolveCurrentCatalog() throws Exception {
         var prepared = planned();
-        var engine = GymExecutionEngine.start("planned", GymExecution.Origin.PLANNED, prepared.definition(), prepared.source(), ZoneOffset.UTC, tick(0));
+        var engine =
+                GymExecutionEngine.start(
+                        "planned",
+                        GymExecution.Origin.PLANNED,
+                        prepared.definition(),
+                        prepared.source(),
+                        ZoneOffset.UTC,
+                        tick(0));
         assertEquals(engine.snapshot(), roundTrip(engine.snapshot()));
         var badSource = GymExecutionJson.encode(engine.snapshot());
         badSource.getJSONObject("source").put("revision", 2);
@@ -218,8 +313,13 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
         badSession.getJSONObject("source").put("sessionId", "different");
         reject(() -> GymExecutionJson.decode(badSession));
         var frozen = GymWorkoutJson.encode(workout());
-        frozen.getJSONArray("slots").getJSONObject(0).getJSONObject("exercise").put("id", "canonical-no-longer-installed");
-        assertEquals("canonical-no-longer-installed", GymWorkoutJson.decode(frozen).slots().get(0).exercise().id());
+        frozen.getJSONArray("slots")
+                .getJSONObject(0)
+                .getJSONObject("exercise")
+                .put("id", "canonical-no-longer-installed");
+        assertEquals(
+                "canonical-no-longer-installed",
+                GymWorkoutJson.decode(frozen).slots().get(0).exercise().id());
     }
 
     public void testArrayBoundsAndDuplicateSlotsRejectBeforePersistence() throws Exception {
@@ -244,10 +344,22 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
     }
 
     public void testMalformedLenientDuplicateAndDeepJsonAreRejected() {
-        String[] invalid = {"{} trailing", "/* comment */ {}", "{version:1}", "{'version':1}",
-                "{\"version\":1,\"version\":1}", "{\"version\":1,\"\\u0076ersion\":1}", "{\"a\":01}",
-                "{\"a\":1,}", "{\"a\":[1,]}", "{\"a\":NaN}", "{\"a\":1e}", "{\"a\":\"bad\ntext\"}",
-                "{\"a\":\"\\x\"}", "{\"a\":false;\"b\":1}"};
+        String[] invalid = {
+            "{} trailing",
+            "/* comment */ {}",
+            "{version:1}",
+            "{'version':1}",
+            "{\"version\":1,\"version\":1}",
+            "{\"version\":1,\"\\u0076ersion\":1}",
+            "{\"a\":01}",
+            "{\"a\":1,}",
+            "{\"a\":[1,]}",
+            "{\"a\":NaN}",
+            "{\"a\":1e}",
+            "{\"a\":\"bad\ntext\"}",
+            "{\"a\":\"\\x\"}",
+            "{\"a\":false;\"b\":1}"
+        };
         for (String payload : invalid) reject(() -> GymExecutionJson.read(payload));
         StringBuilder deep = new StringBuilder("{\"a\":");
         for (int i = 0; i < 30; i++) deep.append('[');
@@ -273,40 +385,109 @@ public final class GymExecutionJsonTest extends AndroidTestCase {
     }
 
     private static GymWorkoutDefinition workout() {
-        var exercise = new StrengthExercise("bench-press", "Frozen bench name", StrengthExercise.Region.UPPER,
-                StrengthExercise.Mode.WEIGHTED, true, StrengthExercise.MeasurementProfile.LOAD_REPS);
-        var target = new GymWorkoutDefinition.Target(1, 5, 8, null, null,
-                new GymWorkoutDefinition.EffortRange(GymWorkoutDefinition.EffortScale.RPE, 6, 8), 120, 80.0);
-        return new GymWorkoutDefinition("saved", 1, NOW, "Frozen workout", Immutable.list(new GymWorkoutDefinition.Slot("slot", exercise, target, null)));
+        var exercise =
+                new StrengthExercise(
+                        "bench-press",
+                        "Frozen bench name",
+                        StrengthExercise.Region.UPPER,
+                        StrengthExercise.Mode.WEIGHTED,
+                        true,
+                        StrengthExercise.MeasurementProfile.LOAD_REPS);
+        var target =
+                new GymWorkoutDefinition.Target(
+                        1,
+                        5,
+                        8,
+                        null,
+                        null,
+                        new GymWorkoutDefinition.EffortRange(
+                                GymWorkoutDefinition.EffortScale.RPE, 6, 8),
+                        120,
+                        80.0);
+        return new GymWorkoutDefinition(
+                "saved",
+                1,
+                NOW,
+                "Frozen workout",
+                Immutable.list(new GymWorkoutDefinition.Slot("slot", exercise, target, null)));
     }
 
-    private static StrengthExercise exercise(String id, StrengthExercise.MeasurementProfile measurement) {
-        return new StrengthExercise(id, "Custom " + measurement.name(), StrengthExercise.Region.FULL,
-                measurement.usesLoad() ? StrengthExercise.Mode.WEIGHTED : StrengthExercise.Mode.BODYWEIGHT,
-                false, measurement);
+    private static StrengthExercise exercise(
+            String id, StrengthExercise.MeasurementProfile measurement) {
+        return new StrengthExercise(
+                id,
+                "Custom " + measurement.name(),
+                StrengthExercise.Region.FULL,
+                measurement.usesLoad()
+                        ? StrengthExercise.Mode.WEIGHTED
+                        : StrengthExercise.Mode.BODYWEIGHT,
+                false,
+                measurement);
     }
 
     private static GymWorkoutAdapter.PreparedWorkout planned() {
         var start = LocalDate.of(2026, 10, 27);
-        var settings = new GymProgramme.Settings(GymProgramme.Goal.GENERAL, GymProgramme.Priority.STRENGTH_FIRST,
-                GymProgramme.Experience.INTERMEDIATE, Immutable.set(DayOfWeek.TUESDAY), 1,
-                Immutable.set("full gym"), 45, GymProgramme.Effort.RPE);
-        var programme = new GymProgramme("retained-programme", 1, NOW, "Athlete choice", settings, start,
-                start.plusDays(41), Immutable.list(new GymProgramme.Session("retained-session", start, "Upper",
-                Immutable.list(new GymProgramme.Prescription("bench-press", 1, 5, 8, null, null, 6, 8, 120, "", 80.0)), "")), Immutable.list());
+        var settings =
+                new GymProgramme.Settings(
+                        GymProgramme.Goal.GENERAL,
+                        GymProgramme.Priority.STRENGTH_FIRST,
+                        GymProgramme.Experience.INTERMEDIATE,
+                        Immutable.set(DayOfWeek.TUESDAY),
+                        1,
+                        Immutable.set("full gym"),
+                        45,
+                        GymProgramme.Effort.RPE);
+        var programme =
+                new GymProgramme(
+                        "retained-programme",
+                        1,
+                        NOW,
+                        "Athlete choice",
+                        settings,
+                        start,
+                        start.plusDays(41),
+                        Immutable.list(
+                                new GymProgramme.Session(
+                                        "retained-session",
+                                        start,
+                                        "Upper",
+                                        Immutable.list(
+                                                new GymProgramme.Prescription(
+                                                        "bench-press",
+                                                        1,
+                                                        5,
+                                                        8,
+                                                        null,
+                                                        null,
+                                                        6,
+                                                        8,
+                                                        120,
+                                                        "",
+                                                        80.0)),
+                                        "")),
+                        Immutable.list());
         return GymWorkoutAdapter.fromProgramme(programme, "retained-session");
     }
 
     private static GymExecutionEngine engine() {
-        return GymExecutionEngine.start("execution", GymExecution.Origin.CUSTOM, workout(), null, ZoneOffset.UTC, tick(0));
+        return GymExecutionEngine.start(
+                "execution", GymExecution.Origin.CUSTOM, workout(), null, ZoneOffset.UTC, tick(0));
     }
 
-    private static GymExecution.Tick tick(long millis) { return new GymExecution.Tick("boot", millis, NOW.plusMillis(millis)); }
+    private static GymExecution.Tick tick(long millis) {
+        return new GymExecution.Tick("boot", millis, NOW.plusMillis(millis));
+    }
 
-    private static GymExecution roundTrip(GymExecution before) { return GymExecutionJson.read(GymExecutionJson.write(before)); }
+    private static GymExecution roundTrip(GymExecution before) {
+        return GymExecutionJson.read(GymExecutionJson.write(before));
+    }
 
     private static void reject(Runnable operation) {
-        try { operation.run(); fail("Invalid gym payload was accepted."); }
-        catch (IllegalArgumentException expected) { /* Rejected before any persistence mutation. */ }
+        try {
+            operation.run();
+            fail("Invalid gym payload was accepted.");
+        } catch (IllegalArgumentException expected) {
+            /* Rejected before any persistence mutation. */
+        }
     }
 }
