@@ -28,6 +28,8 @@ import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.*
 import org.racedaydreams.domain.coaching.PlanVersion
+import org.racedaydreams.domain.strength.StrengthExercise
+import org.racedaydreams.domain.strength.StrengthSession
 import org.racedaydreams.reminders.EveningReminders
 
 /** Completion navigation must observe the committed activity and its preserved prescription. */
@@ -109,6 +111,43 @@ class CoachCompletionStateTest {
         assertEquals(preserved, snapshot.currentPlan)
         assertEquals(5.0, snapshot.currentPlan!!.plan().workouts().single().distanceKm()!!, 0.0)
         assertEquals(1, FeatureStore(app).activities().size)
+        assertEquals(preserved, CoachingStore(app).current())
+    }
+
+    @Test fun strengthAndRunningCoordinatorsPublishOneCoherentCommittedSnapshot() {
+        val completed = CountDownLatch(2)
+        val strengthSnapshot = AtomicReference<CoachUiState>()
+        val runningSnapshot = AtomicReference<CoachUiState>()
+        val exercise = StrengthExercise.starters().first {
+            it.mode() == StrengthExercise.Mode.WEIGHTED && it.measurement().usesReps()
+        }
+        val started = LocalDate.now().minusDays(1).atTime(0, 1).atZone(ZoneId.systemDefault())
+        val session = StrengthSession("coordinator-strength", started.toInstant(), started.offset,
+            Duration.ofMinutes(30), 7.0, "Actual strength evidence",
+            listOf(StrengthSession.ExerciseSets(exercise,
+                listOf(StrengthSession.SetEntry("actual-set", 5, 40.0, 7.0, false)))))
+        instrumentation.runOnMainSync {
+            model.strength.saveStrength(session, {
+                strengthSnapshot.set(model.state.value)
+                completed.countDown()
+            })
+            model.runningEvidence.completeRun(preserved.id(), "completion-workout", 5.0,
+                Duration.ofMinutes(32), LocalDate.now().minusDays(1), LocalTime.of(0, 1),
+                3.0, "Actual running evidence") {
+                runningSnapshot.set(model.state.value)
+                completed.countDown()
+            }
+        }
+        assertTrue("Both coordinated saves must finish: ${model.state.value.error}", completed.await(20, TimeUnit.SECONDS))
+        assertEquals(session, strengthSnapshot.get().strengthSessions.single())
+        val snapshot = runningSnapshot.get()
+        assertFalse(snapshot.busy)
+        assertNull(snapshot.error)
+        assertEquals(session, snapshot.strengthSessions.single())
+        assertEquals(1, snapshot.activities.size)
+        assertEquals(preserved.id(), snapshot.runResponses.single().planVersionId())
+        assertEquals(preserved, snapshot.currentPlan)
+        assertEquals(listOf(session), CoachingStore(app).strength())
         assertEquals(preserved, CoachingStore(app).current())
     }
 }

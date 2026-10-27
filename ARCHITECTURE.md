@@ -1,5 +1,36 @@
 # Architecture
 
+## 0.9 application boundaries — behaviour-preserving checkpoint
+
+Feature-owned application coordinators now orchestrate running plans/evidence, Strength,
+progress, baseline, health and settings/portability. `CoachViewModel` retains lifecycle,
+SavedStateHandle draft protection and compatibility entry points. `CoachOperationRunner`
+serialises commands and publishes one coherent `CoachUiState` through `CoachSnapshotReader`;
+features do not create competing snapshots or duplicate core training rules.
+
+```text
+CoachActivity + feature destination registrations + presentation screens
+  -> feature application coordinators / one command runner + coherent read model
+  -> Android-independent domain policies and narrow repository contracts
+  -> scoped SQL adapters / shared ProfileDatabase / one transaction pool
+```
+
+`FeatureStore` remains a compatibility composition facade. Activity, result, shoe,
+baseline, settings, planned-workout and backup adapters own their actual SQL. Existing
+recording import hooks and whole-backup operations retain the shared transaction.
+No schema or backup-format change is required for these extractions.
+
+Navigation ownership is split by Home, running, Strength, Progress and Settings while
+retaining the original flat routes and Up/pop behaviour. Native recording keeps one
+foreground service; execution events, cue arbitration and optional sensor wiring have
+injected/testable internal coordinators. The extraction preserves Main-thread engine
+mutation and serial-IO incremental atomic staging, with cursors advancing after commit.
+
+These are implementation boundaries, not a claim that Strength Engine 2.0 product phases
+are delivered. See CONTINUE_CODEX.md for the current gate and exact remaining scope.
+
+## Architecture history and retained contracts
+
 ## Incremental modernization decision
 
 The original branch used Java 17, programmatic platform Views, a small IO

@@ -1,3 +1,20 @@
+# Active increment — 0.9.0-test1
+
+Architecture Hardening + Strength Engine 2.0 is in development on
+`feature/strength-engine-2-architecture-hardening`, based on live main `8b75755`.
+Phase1 is a behaviour-preserving extraction and must pass existing backup/build/API gates
+before goal-specific Strength feature work. The full requested phases are retained in
+CONTINUE_CODEX.md; this increment does not reduce them to architecture alone.
+
+Running Coach and Strength Coach will each be independently usable. Hybrid use adds
+context without silently sacrificing either discipline. New Strength durability belongs
+in typed/versioned storage, with explicit immutable programme and athlete decisions.
+No new durable concepts go into the legacy Release08Store catch-all.
+
+The app recommends. The athlete decides. The plan adapts.
+
+---
+
 # Development status — 0.8.2-test1
 
 The app recommends. The runner decides. The plan adapts.

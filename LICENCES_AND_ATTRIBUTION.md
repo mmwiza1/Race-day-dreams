@@ -147,3 +147,12 @@ geographic landmark positions. Exact source-plate hashes, processing/crops and a
 hashes are recorded in docs/dream-artwork-0.8.2.json. Existing geographic datasets, ODbL
 notices and source licences are unchanged; maps remain coordinate/vector rendered.
 No runtime/build dependency or permission was added.
+
+## Build-only source formatting tools
+
+The 0.9 architecture surfaces are checked by ktfmt 0.54
+(https://github.com/facebook/ktfmt) and google-java-format 1.24.0
+(https://github.com/google/google-java-format), both Apache-2.0. These are pinned
+developer/CI executables, downloaded from Maven Central with publisher SHA-256
+validation; no formatter source or JAR ships in the Android APK. No third-party
+implementation is adapted into app/domain code. See docs/FORMATTING.md.

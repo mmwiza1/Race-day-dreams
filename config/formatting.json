@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "tools": {
+    "kotlin": {
+      "version": "0.54",
+      "url": "https://repo.maven.apache.org/maven2/com/facebook/ktfmt/0.54/ktfmt-0.54-jar-with-dependencies.jar",
+      "sha256_url": "https://repo.maven.apache.org/maven2/com/facebook/ktfmt/0.54/ktfmt-0.54-jar-with-dependencies.jar.sha256",
+      "arguments": [
+        "--kotlinlang-style"
+      ]
+    },
+    "java": {
+      "version": "1.24.0",
+      "url": "https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/1.24.0/google-java-format-1.24.0-all-deps.jar",
+      "sha256_url": "https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/1.24.0/google-java-format-1.24.0-all-deps.jar.sha256",
+      "arguments": [
+        "--aosp"
+      ]
+    }
+  },
+  "targets": [
+    "app/src/main/java/org/racedaydreams/coach/application/**/*.kt",
+    "app/src/main/java/org/racedaydreams/coach/navigation/**/*.kt",
+    "app/src/main/java/org/racedaydreams/coach/CoachActivity.kt",
+    "app/src/main/java/org/racedaydreams/coach/CoachComponents.kt",
+    "app/src/main/java/org/racedaydreams/coach/CoachUiState.kt",
+    "app/src/main/java/org/racedaydreams/coach/CoachViewModel.kt",
+    "app/src/main/java/org/racedaydreams/coach/HomeScreen.kt",
+    "app/src/main/java/org/racedaydreams/coach/GoalFormScreen.kt",
+    "app/src/main/java/org/racedaydreams/recording/*Coordinator.kt",
+    "app/src/main/java/org/racedaydreams/recording/RunRecordingService.kt",
+    "app/src/main/java/org/racedaydreams/data/FeatureStore.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteStoreAccess.java",
+    "app/src/main/java/org/racedaydreams/data/BackupRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteActivityRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteBaselineRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteBackupRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqlitePlannedWorkoutRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteResultRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteSettingsRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteShoeRepository.java",
+    "app/src/main/java/org/racedaydreams/portability/BackupManager.java",
+    "domain/src/main/java/org/racedaydreams/domain/activity/*Repository.java",
+    "domain/src/main/java/org/racedaydreams/domain/baseline/BaselineRepository.java",
+    "domain/src/main/java/org/racedaydreams/domain/coaching/PlannedWorkoutRepository.java",
+    "domain/src/main/java/org/racedaydreams/domain/execution/*Coordinator.java",
+    "domain/src/main/java/org/racedaydreams/domain/health/HealthImportRepository.java",
+    "domain/src/main/java/org/racedaydreams/domain/reminders/ReminderScheduleRepository.java",
+    "domain/src/main/java/org/racedaydreams/domain/settings/SettingsRepository.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/FeatureNavigationTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/GymProgrammeOperationsTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/CoachOperationRunnerTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/CoachSnapshotReaderTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/*RepositoryBoundaryTest*",
+    "app/src/androidTest/java/org/racedaydreams/data/ScopedRepositoriesTest.java",
+    "app/src/androidTest/java/org/racedaydreams/data/RecordingCoordinationStoreTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/recording/*CoordinatorTest.kt",
+    "domain/src/test/java/org/racedaydreams/domain/RecordingCoordinationTestSuite.java",
+    "domain/src/test/java/org/racedaydreams/domain/execution/RecordingCoordinationTestSuite.java",
+    "app/src/main/java/org/racedaydreams/portability/BackupManager.java",
+    "app/src/androidTest/java/org/racedaydreams/data/ScopedRepositoriesTest.java",
+    "app/src/androidTest/java/org/racedaydreams/data/RecordingCoordinationStoreTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/CoachCompletionStateTest.kt"
+  ]
+}

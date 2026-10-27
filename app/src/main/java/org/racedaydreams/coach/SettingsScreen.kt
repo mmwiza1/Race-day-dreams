@@ -124,9 +124,9 @@ private fun ReminderSettings(state: CoachUiState, model: CoachViewModel) {
             permissionPending = false
             try {
                 val chosen = preferences()
-                if (granted) model.saveReminderPreferences(chosen)
+                if (granted) model.settings.saveReminderPreferences(chosen)
                 else {
-                    model.saveReminderPreferences(ReminderPreferences(ReminderPreferences.Mode.DISABLED, chosen.eveningTime(), chosen.quietHours(), chosen.zone()))
+                    model.settings.saveReminderPreferences(ReminderPreferences(ReminderPreferences.Mode.DISABLED, chosen.eveningTime(), chosen.quietHours(), chosen.zone()))
                     error = "Notification access was declined. Reminders remain disabled; every other feature is available."
                 }
             } catch (_: Exception) { error = "Check the reminder time and quiet hours before trying again." }
@@ -159,7 +159,7 @@ private fun ReminderSettings(state: CoachUiState, model: CoachViewModel) {
                     context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                     permissionPending = true
                     notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                } else model.saveReminderPreferences(chosen)
+                } else model.settings.saveReminderPreferences(chosen)
             } catch (_: Exception) { error = "Enter valid times in HH:MM format. Quiet hours must start and end at different times." }
         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save reminder choices") }
         TextButton(onClick = {

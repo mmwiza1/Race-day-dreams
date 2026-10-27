@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.racedaydreams.data.FeatureStore;
+import org.racedaydreams.data.BackupRepository;
 
 /**
  * User-directed file portability. Call from IO with a Storage Access Framework stream. The caller
@@ -34,17 +35,27 @@ public final class BackupManager {
     private static final int MAX_DEPTH = 32;
     private static final int MAX_STRUCTURAL_TOKENS = 200_000;
     private static final int MAX_STRING_CHARACTERS = 256_000;
-    private final FeatureStore store;
+    private final BackupRepository store;
     private final Clock clock;
 
     public record RestoreSummary(int version, Instant createdAt, int manualActivities,
                                  int manualResults, int shoes) { }
 
+    /** Compatibility overload for older composition roots. */
     public BackupManager(Context context, FeatureStore store) {
+        this(context, store.backupRepository(), Clock.systemUTC());
+    }
+
+    /** Compatibility overload; features should depend on the scoped backup boundary. */
+    public BackupManager(Context context, FeatureStore store, Clock clock) {
+        this(context, store.backupRepository(), clock);
+    }
+
+    public BackupManager(Context context, BackupRepository store) {
         this(context, store, Clock.systemUTC());
     }
 
-    public BackupManager(Context context, FeatureStore store, Clock clock) {
+    public BackupManager(Context context, BackupRepository store, Clock clock) {
         Objects.requireNonNull(context, "application context");
         this.store = Objects.requireNonNull(store, "local store");
         this.clock = Objects.requireNonNull(clock, "clock");
@@ -56,7 +67,7 @@ public final class BackupManager {
         Objects.requireNonNull(output, "backup output");
         try {
             JSONObject data = store.exportUserData();
-            FeatureStore.validateUserData(data);
+            store.validateSnapshot(data);
             JSONObject envelope = new JSONObject().put("format", FORMAT).put("version", VERSION)
                     .put("createdAt", clock.instant().toString()).put("data", data);
             String json = envelope.toString(2);
@@ -79,7 +90,7 @@ public final class BackupManager {
         JSONObject envelope = inspect(input);
         try {
             JSONObject data = envelope.getJSONObject("data");
-            FeatureStore.validateUserData(data);
+            store.validateSnapshot(data);
             RestoreSummary result = new RestoreSummary(envelope.getInt("version"),
                     Instant.parse(envelope.getString("createdAt")),
                     data.getJSONArray("activities").length(), data.getJSONArray("results").length(),
@@ -128,7 +139,7 @@ public final class BackupManager {
                 throw new IOException("This version-two backup is missing its coaching data section.");
             if (((Integer) version) >= 6 && !envelope.getJSONObject("data").has("support")) throw new IOException("Backup is missing support evidence.");
             Instant.parse(envelope.getString("createdAt"));
-            FeatureStore.validateUserData(envelope.getJSONObject("data"));
+            store.validateSnapshot(envelope.getJSONObject("data"));
             return envelope;
         } catch (JSONException | IllegalArgumentException | DateTimeException error) {
             throw new IOException("The backup is incomplete or invalid. Your existing data was not changed.", error);

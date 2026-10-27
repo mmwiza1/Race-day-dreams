@@ -1,67 +1,115 @@
-# Continue — 0.8.2-test1 verified delivery checkpoint
+# Continue — Architecture Hardening + Strength Engine 2.0
 
-## Scope and preserved work
+## Current scope and branch
 
-The premium Dream Routes implementation is complete. Do not restart it or expand scope.
-PR #12 merged at `5ffa63029897365c84aeacd92b75f3339a935462`.
-Version **0.8.2-test1 / code 11**; schema **10**, JSON **7**, raw archive **2** and complete
-package **1** are unchanged. Five original city heroes and 15 landmark posters total
-1,472,726 bytes. Geographic courses, immutable IDs, saved assignments, offsets,
-interpolation, annual Marathon de Paris 2026 and all backups are preserved.
-No permission or runtime dependency was added; the app has no INTERNET permission.
+- User requested the complete Architecture Hardening + Strength Engine 2.0 release.
+  This supersedes the completed 0.8.2 delivery scope. Do not restart Dream Routes.
+- Branch: `feature/strength-engine-2-architecture-hardening`.
+- Live main fetched and fast-forwarded: `8b75755a0b74074047408b6444a11db3d6fef6f3`
+  (release page standardisation after merged PRs #12/#13). Feature starts there.
+- Latest completed checkpoint: baseline audit/tests. **Phase 1 is in progress**;
+  implementation protected in local checkpoint `183dae46ff6ab0d028b8070ba44285ec459b4b4c`;
+  compile/format/API verification is pending. The full release is NOT complete.
+- Target: **0.9.0-test1 / versionCode 12**. Schema **10**, JSON **7**, raw archive **2**,
+  complete package **1** unchanged. Do not bump persistence versions until data changes.
+- Existing feature branch/commits are preserved. Baseline isolated worktree:
+  `/workspace/scratch/rdd-strength-baseline` (detached at live main, no edits).
 
-## Test-only follow-up and observed verification
+## Observed baseline
 
-PR #13: https://github.com/mmwiza1/Race-day-dreams/pull/13
-Branch: `feature/0.8.2-dream-routes-visual-redesign`.
-
-The initial main workflow 40139578803 passed API 28/35 but API 36 timed out waiting for
-asynchronous Route story evidence. Publication correctly remained blocked. The follow-up
-waits for and scrolls to the actual Route story and Long-run durability sections before
-the original two 20-second evidence assertions. It also checks retained native samples
-and adds labelled failure diagnostics. No assertion/time limit was removed or weakened;
-no production UI, recorder, route, assignment, format, permission or dependency changed.
-
-Source `57c1044ea5eb372090f4c300ee6f660732ec7deb` passed complete workflow
-[40176513799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40176513799):
-**213 instrumentation tests on EACH API 28/35/36**, build/lint/domain/schema/source,
-strict **174/174 canonical + 14/14 routine** guidance and **77 authentic captures**.
-Exact Finished 213 tests log lines were inspected for all three jobs.
-API-35 APK artifact **12592851563** contains a **47,976,994-byte** test APK:
-+1,574,381 bytes / 3.393% versus merged 0.8.1.
-
-Canonical bot `22de99c91b4483ffb681d71151b9a85c0a65a6b9` adopted all 77 fresh API-35 PNGs from artifact
-**12593011391**. Source fingerprint:
+Before edits, local 61,295 domain checks / 19 suites, 43 schema tests, 9 release-note
+checks, 11 Dream source/provenance tests, 14 artwork-integrity and 6 screenshot-integrity
+tests passed. Strict guidance: 174/174 canonical +14/14 routine movements; 177 original
+exercise assets and20Dream WebPs intact. Screenshot source digest matches committed
 `db25ccc7a930e1f40a3885ef24091b905973641850d4784ced9888b1657835b0`.
-All 14 Dream city/theme top and landmark panels were opened and directly reviewed
-against the owner's inline premium reference. The five-city design, annual Paris,
-strong section emphasis, dark legibility and natural 200% stacking remain intact.
-Reference files were not changed or substituted with captures.
+Live-main workflow40330082255 is green across API28/35/36 plus publication.
+Initial local Gradle attempt failed downloading its wrapper (Java proxy connection
+refused), before compilation. Shell git fetch succeeded with explicit network access.
+No SDK is installed. Network-enabled curl and git-push permission calls were interrupted
+  before execution. Do not repeat indefinite permission waits. Use connected GitHub tools
+  for CI/publication and preserve the original local checkpoint. No Android compile success
+  is claimed yet.
+Baseline logs: `/workspace/scratch/strength-2-baseline-domain.log` and
+`/workspace/scratch/strength-2-baseline-gradle.log`.
 
-## Delivery verification on resumption
+## Phase 1 implementation checkpoint (awaiting Android/format CI)
 
-This checkpoint finalises evidence and release documentation for PR #13. Inspect actual
-GitHub state before acting: if PR #13 is still open, require its final-head complete
-green CI, then mark ready and squash-merge using the established convention. If already
-merged, do not merge again or redo the accepted work. Verify the actual latest main
-workflow and the rolling release below instead.
+- CoachViewModel reduced to lifecycle/draft shell with feature coordinators, one shared
+  CoachOperationRunner and coherent CoachSnapshotReader; existing public forwarders
+  retained for integrations. Leaf screens call feature-owned coordinators. GymProgrammeOperations owns
+  generation/edit/substitution previews; Compose no longer duplicates those rules.
+- FeatureStore is a compatibility facade over SQL-owning activity/result/shoe/baseline/
+  settings/planned-workout/backup repositories. Domain contracts are Android-independent;
+  backup JSON stays application-layer. All use the same ProfileDatabase/transaction.
+- 36 existing flat destinations moved to feature navigation registrations. No nested
+  back-stack change. Home/goal/shared composables moved out of Activity without UI edits.
+- Recorder execution/event deltas and cue arbitration moved to domain coordinators;
+  sensor adapter lifecycle has an injectable coordinator. RecordingSessionCoordinator now owns the sole metrics engine, staged session, atomic
+  snapshots and post-commit cursors; service retains Android lifecycle/commands/policy.
+- New tests cover runner/callback ordering, scoped transaction/restore contracts, route
+  registration, execution/cue transitions, sensor wiring, failed/lost-ack staging and
+  complete-backup partial execution. Added74pure checks pass (61,369total/20suites);
+  43schema tests remain green. New26Androidcases await actual compile/execution.
+- Pinned Kotlin/Java formatting/check runner is implemented and wired into CI;9offline
+  harness tests pass. Local download did not execute (network permission call was
+  interrupted). CI will run real tools and emit an actionable patch; commit formatted
+  source before treating this gate as green. New sources are not formatted yet.
+- CI active capture branch/named APKs changed to this feature/0.9.0. Fresh actual captures
+  and fingerprint must be generated by the full matrix; never fabricate the digest.
+- No new durable Strength concepts are stored in Release08Store. Existing rows supported.
 
-- https://github.com/mmwiza1/Race-day-dreams/releases/tag/development
-- Canonical download after successful main publication:
-  `Race-Day-Dreams-0.8.2-test1.apk`, with its SHA-256 companion.
-- Release notes identify the exact main commit and successful workflow. Confirm the
-  development tag and APK refer to that main commit; an old 0.8.1 asset is not delivery.
-- No stable/production tag is authorised or required.
-- Local checkout was clean at source 57c1044. The execution environment became unavailable
-  during remote CI; remote canonical/documentation commits may need an ordinary fetch
-  and fast-forward when it returns. Preserve existing commits; never reset/discard.
-- No product implementation or known failing test remains at this checkpoint. The final
-  PR-head and post-merge publication checks are delivery gates, not future feature work.
+## Architecture invariants
 
-## Physical acceptance
+One authoritative run service/engine. Engine mutations remain on Main; only immutable
+staging snapshots run on serial IO. Advance point/event cursors only after atomic append
+succeeds. Never silently resume tracking after process death/reboot. Keep explicit partial
+recovery. Feature commands share one Mutex; IO operation -> coherent read model -> Main
+success callback. Preserve draft suspension around save/reset/restore. Scoped SQL adapters
+share one helper and outer restore transaction; no second database or destructive fallback.
 
-Galaxy S24 outdoor GNSS, screen-off/background/long-run continuity, genuine splits,
-Health Connect providers/denial/revocation, BLE/reconnection, TTS over music/calls,
-battery/recovery, sunlight/TalkBack/large text and physical complete-backup checks remain
-**UNPERFORMED**. Follow TEST_BUILD.md. Emulator/image review is not physical acceptance.
-This remains a debug-signed development/test build. Do not start post-0.8.2 features.
+## Next exact tasks
+
+1. Source extraction/session boundaries and independent regression review are complete.
+   The discovered timezone-capture regression was fixed with a regression test. Complete
+   real formatting and Android compile/lint/API verification through CI; fix actual failures.
+2. Open a DRAFT PR, run full API28/35/36 instrumentation + canonical captures, inspect
+   actual renders and old/current backups. Commit coherent Phase1 checkpoint and update
+   this handoff. Do not proceed to feature redesign until architecture gate is healthy.
+3. Phase2: fix six-week start-anchored allocation (currently Tuesday/all-days/frequency2
+   can yield13sessions), explicit squat/hinge lower-session variation, same/before/after
+   demanding-run context including Full Body, and explanations from actual exercise list.
+   Add all-start-weekday/frequency tests and retain separate checkpoint.
+
+## Remaining full product scope (not implemented yet)
+
+Phases3–5: selectable Running / Strength / Hybrid priority, race-free Strength onboarding,
+Strength-first Today and all Gym Now paths without programme mutation.
+Phases6–11: exercise roles/body/equipment/experience metadata, quality-gated selective
+catalogue expansion, reversible exclusions/reasons, hierarchical browse/search and typed
+custom exercise metadata/opt-in generation.
+Phases12–16: ranked intent-preserving substitution and busy-equipment choices; today-only
+vs immutable programme versions; custom programmes and original editable templates.
+Phases17–21: goal/experience-specific multi-block plans, volume balance, real power work,
+preview/trade-offs and safe remaining-programme regeneration.
+Phases22–25: live gym actual-set persistence, optional rest timer, evidence-backed optional
+warm-up ramps and conservative supersets.
+Phases26–30: measurement-specific optional progression, existing exact-exercise StartingLoad
+safeguards, evidence-based optional recovery and today-only fatigue vs structural changes,
+independent/priority-aware hybrid context. Audit dated progression overload: currently it
+checks only latest evidence age, so stale second/future sessions may wrongly qualify.
+Phases31–34: weekly actual muscle-group exposure, PB/history visuals, restrained real-evidence
+achievements, programme/recent/favourite-first logging selection.
+Phase35: typed/versioned additive persistence plus older/current transactional backups for
+new user-owned concepts. Plan single justified schema/envelope bump after model design.
+Phase36: thousands of deterministic programme-quality combinations across all preferences,
+equipment/roles/time/frequency/start weekdays/favourites/exclusions/hybrid schedules.
+Phases37–39: accessible real UX/captures, complete research/heuristic/architecture docs,
+full build/lint/format/domain/schema/API28/35/36/backup gates, PR review and final merge
+ONLY after full scope complete and green. Rolling test release; no stable production tag.
+
+## Physical/device and known status
+
+All S24 physical checks remain UNPERFORMED. Do not claim sensor/audio/battery/outdoor,
+TalkBack/sunlight or real complete-backup acceptance from emulator tests.
+No INTERNET permission, backend/account/ads/subscription/analytics/LLM dependency is added.
+The app recommends. The athlete decides. The plan adapts.

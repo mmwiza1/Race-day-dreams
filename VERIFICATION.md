@@ -1,3 +1,32 @@
+# 0.9 architecture checkpoint — in progress
+
+Live baseline main `8b75755a0b74074047408b6444a11db3d6fef6f3` was fetched before edits;
+feature branch is `feature/strength-engine-2-architecture-hardening`. Baseline workflow
+40330082255 is green on API28/35/36. Local baseline:61,295domain checks/19suites,
+43schema,9release-note,11Dream-source,14artwork-integrity and6screenshot-integrity tests
+passed; strict174/174canonical+14/14routine resources and committed capture hash matched.
+
+Phase1 implementation adds feature coordinators/shared operation runner, scoped SQL
+repositories, flat feature navigation and internal recording coordination. Local checks
+now pass61,369domain checks/20suites (74new recording/cue checks),43schema and9release-note
+tests. Nine offline formatter-harness tests pass; actual formatter execution is pending
+CI. Independent review found/fixed one timezone-capture regression and found no remaining
+concrete semantic blocker; review does not replace Android build/instrumentation.
+
+Local Gradle failed before compilation while downloading its distribution (Java connection
+refused). No Android SDK/adb exists. One network-enabled tool capability probe was
+interrupted before execution; no SDK download or TLS workaround occurred. Android
+compile/lint/API28/35/36 tests and fresh captures must run in GitHub CI. No unperformed
+Android or physical result is claimed. All GalaxyS24 acceptance remains UNPERFORMED.
+
+Target0.9.0-test1/code12;schema10/JSON7/raw2/complete1 unchanged in this phase.
+The full Strength Engine2.0 product phases are pending, listed in CONTINUE_CODEX.md.
+Do not merge the draft release before complete scope and all verification gates pass.
+
+---
+
+# Historical 0.8.2 verification
+
 # Verification — Race Day Dreams 0.8.2-test1
 
 Version **0.8.2-test1 / versionCode 11**. Schema **10**, JSON envelope **7**, raw

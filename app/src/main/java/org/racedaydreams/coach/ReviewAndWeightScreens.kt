@@ -37,7 +37,7 @@ import org.racedaydreams.domain.body.MassUnit
         var previewId by rememberSaveable(r.id()){mutableStateOf<String?>(null)}
         val preview=r.choices().firstOrNull{it.id()==previewId}
         if(s.weeklyDecision!=null)Text("Your decision: ${s.weeklyDecision}. Your choice is retained.")else r.choices().forEach{c->
-            OutlinedButton(onClick={if(c.replacements().isEmpty())model.weeklyDecision(c.id())else previewId=c.id()},enabled=!s.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(c.label())}
+            OutlinedButton(onClick={if(c.replacements().isEmpty())model.runningPlan.weeklyDecision(c.id())else previewId=c.id()},enabled=!s.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(c.label())}
         }
         if(preview!=null)AlertDialog(onDismissRequest={previewId=null},title={Text("Preview plan change")},text={Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(12.dp)){
             Text(if(preview.id()=="paces")"Optional quality-pace reassessment"else r.recommendation())
@@ -53,14 +53,14 @@ import org.racedaydreams.domain.body.MassUnit
                 Text("Proposed: ${workoutSummary(next,s)}")
             }
             Text("Other sessions stay unchanged. Your race goal stays unchanged.")
-        }},confirmButton={TextButton(onClick={model.weeklyDecision(preview.id());previewId=null},enabled=!s.busy){Text("Accept change")}},dismissButton={TextButton(onClick={previewId=null}){Text("Keep original plan")}})
+        }},confirmButton={TextButton(onClick={model.runningPlan.weeklyDecision(preview.id());previewId=null},enabled=!s.busy){Text("Accept change")}},dismissButton={TextButton(onClick={previewId=null}){Text("Keep original plan")}})
 
     }
     var report by rememberSaveable{mutableStateOf(false)}
     TextButton(onClick={report=!report}){Text("Report a training break")}
     if(report){var from by rememberSaveable{mutableStateOf(LocalDate.now().minusWeeks(2).toString())};var returned by rememberSaveable{mutableStateOf(LocalDate.now().toString())};var reason by rememberSaveable{mutableStateOf("Life / travel")}
         DateInput("Break began",from,{from=it});DateInput("Returning",returned,{returned=it});CoachInput("Reason",reason,{reason=it});Text("This is return-to-training guidance, not medical clearance. If you have symptoms or injury concerns, seek appropriate advice.")
-        CoachButton("Review my return",{model.reportInterruption(LocalDate.parse(from),LocalDate.parse(returned),reason);report=false})
+        CoachButton("Review my return",{model.runningPlan.reportInterruption(LocalDate.parse(from),LocalDate.parse(returned),reason);report=false})
     }
 }
 
@@ -68,7 +68,7 @@ import org.racedaydreams.domain.body.MassUnit
 @Composable fun WeightSection(s:CoachUiState,model:CoachViewModel){
     var range by rememberSaveable{mutableStateOf("Month")};var value by rememberSaveable{mutableStateOf("")};var date by rememberSaveable{mutableStateOf(LocalDate.now().toString())};var editId by rememberSaveable{mutableStateOf<String?>(null)};var error by rememberSaveable{mutableStateOf<String?>(null)}
     CoachHeading("Body weight")
-    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){MassUnit.entries.forEach{u->FilterChip(selected=s.massUnit==u,onClick={model.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
+    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){MassUnit.entries.forEach{u->FilterChip(selected=s.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
     FlowRow(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("Week","Month","3 Months","Year","All").forEach{r->FilterChip(selected=range==r,onClick={range=r},modifier=Modifier.heightIn(min=48.dp),label={Text(r)})}}
     val graph=remember(s.weights,range,s.massUnit){org.racedaydreams.domain.presentation.WeightGraphData.of(s.weights,LocalDate.now(),range,s.massUnit)}
     val points=graph.points()
@@ -99,10 +99,10 @@ import org.racedaydreams.domain.body.MassUnit
     TextButton(onClick={adding=!adding}){Text(if(adding)"Hide weight form" else "Record a measurement")}
     if(adding){ DateInput("Measurement date",date,{date=it});CoachInput("Weight (${s.massUnit.name.lowercase()})",value,{value=it},true)
     error?.let{Text(it)}
-    CoachButton(if(editId==null)"Add weight" else "Save measurement",{try{require(value.toDouble()>0);model.saveWeight(value.toDouble(),LocalDate.parse(date),editId);value="";editId=null;error=null}catch(e:Exception){error="Enter a positive weight."}})
+    CoachButton(if(editId==null)"Add weight" else "Save measurement",{try{require(value.toDouble()>0);model.progress.saveWeight(value.toDouble(),LocalDate.parse(date),editId);value="";editId=null;error=null}catch(e:Exception){error="Enter a positive weight."}})
     }
     points.takeLast(3).reversed().forEach{w->CoachCard{Text("${friendlyDate(w.at().atOffset(w.offset()).toLocalDate())} · ${decimal(s.massUnit.fromKilograms(w.kilograms()))} ${s.massUnit.name.lowercase()}");Text(org.racedaydreams.domain.activity.ActivitySources.friendly(org.racedaydreams.domain.activity.SourceIdentity(w.provider(),w.sourceId(),w.origin())))
-        if(w.provider()=="manual")Row{TextButton(onClick={adding=true;editId=w.id();value=decimal(s.massUnit.fromKilograms(w.kilograms()));date=w.at().atOffset(w.offset()).toLocalDate().toString()}){Text("Edit")};TextButton(onClick={model.deleteWeight(w.id())}){Text("Delete")}}
+        if(w.provider()=="manual")Row{TextButton(onClick={adding=true;editId=w.id();value=decimal(s.massUnit.fromKilograms(w.kilograms()));date=w.at().atOffset(w.offset()).toLocalDate().toString()}){Text("Edit")};TextButton(onClick={model.progress.deleteWeight(w.id())}){Text("Delete")}}
     }}
 }
 
