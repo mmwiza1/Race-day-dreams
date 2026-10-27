@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.espresso.Espresso.pressBack
+import androidx.lifecycle.ViewModelProvider
 import java.io.File
 import java.time.*
 import java.util.EnumSet
@@ -297,6 +298,9 @@ class CoachingScreenshotTest {
     }
 
     private fun capture(name:String, anchor:String?=null){
+        if(name == "home" || name.startsWith("home-") || name.startsWith("strength-home")) {
+            awaitHomeReady(name.startsWith("strength-home"))
+        }
         if(name.startsWith("dream-route")) {
             compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Offline city context ready")).fetchSemanticsNodes().isNotEmpty()}
             compose.waitUntil(20000){compose.onAllNodes(hasStateDescription("Offline Dream artwork ready")).fetchSemanticsNodes().isNotEmpty()}
@@ -305,6 +309,9 @@ class CoachingScreenshotTest {
         // Compose idleness can precede SurfaceFlinger presenting the last frame.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         android.os.SystemClock.sleep(200)
+        // Idleness alone does not prove an asynchronous application snapshot is ready.
+        // A valid PNG of the loading screen must never become a canonical app preview.
+        compose.onAllNodesWithText("Loading your local training information…").assertCountEquals(0)
         if(name.startsWith("dream-route")) {
             val heading=compose.onNode(if(anchor==null)hasText("Dream Route ·",substring=true)else hasText(anchor))
             heading.assertIsDisplayed()
@@ -327,5 +334,25 @@ class CoachingScreenshotTest {
         shell.executeShellCommand("cp ${File(dir,"$name.png").absolutePath} /data/local/tmp/racedaydreams-screenshots/$name.png").use { descriptor ->
             java.io.FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }
         }
+    }
+
+    private fun awaitHomeReady(strength:Boolean) {
+        compose.waitUntil(20000) {
+            // Use this scenario's model as well as semantics: a retiring activity's
+            // Today node must not satisfy readiness while the new activity is loading.
+            var snapshotReady=false
+            scenario?.onActivity { activity ->
+                val state=ViewModelProvider(activity)[CoachViewModel::class.java].state.value
+                snapshotReady=!state.loading && !state.busy &&
+                    (state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH) == strength
+            }
+            snapshotReady &&
+                compose.onAllNodesWithText("Loading your local training information…").fetchSemanticsNodes().isEmpty() &&
+                compose.onAllNodesWithText("Today").fetchSemanticsNodes().isNotEmpty() &&
+                compose.onAllNodesWithText(if(strength) "Your strength training" else "How am I doing?").fetchSemanticsNodes().isNotEmpty() &&
+                compose.onAllNodes(hasText(if(strength) "Log today's workout" else "Run now") and hasClickAction()).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("Today").assertIsDisplayed()
+        compose.onNodeWithText(if(strength) "Your strength training" else "How am I doing?").assertExists()
     }
 }

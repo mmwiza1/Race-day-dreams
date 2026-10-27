@@ -97,6 +97,7 @@ class FeatureNavigationTest {
                 "assessment",
                 "goals",
                 "plan",
+                "running-plan",
                 "workout/{id}",
                 "history?kind={kind}",
                 "calendar",

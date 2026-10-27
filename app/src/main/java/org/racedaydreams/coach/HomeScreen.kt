@@ -116,6 +116,27 @@ private fun RunningTodayScreen(
                 }
         }
     }
+    if (today != null && state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID) {
+        state.gymProgramme
+            ?.sessions()
+            ?.firstOrNull { it.date() == java.time.LocalDate.now() }
+            ?.let { gym ->
+                SemanticCard(Tile.Strength) {
+                    Text("Today's strength", style = MaterialTheme.typography.titleMedium)
+                    Text(gym.title(), style = MaterialTheme.typography.titleLarge)
+                    Text("${gym.exercises().size} exercises · up to ${state.gymProgramme!!.settings().minutes()} min")
+                    TextButton(onClick = { quick("gym/session/${Uri.encode(gym.id())}") }) {
+                        Text("View strength session")
+                    }
+                    OutlinedButton(
+                        onClick = { quick("strength?date=${gym.date()}") },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                    ) {
+                        Text("Log today's strength workout")
+                    }
+                }
+            }
+    }
     SemanticCard(Tile.Planned) {
         Text("Run now", style = MaterialTheme.typography.titleLarge)
         Text("Not on the plan? Record a spontaneous run anytime.")

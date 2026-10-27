@@ -44,13 +44,16 @@ import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.SqlitePrimaryFocusRepository
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.GoalMode
+import org.racedaydreams.domain.PlannedWorkout
 import org.racedaydreams.domain.RaceDistance
 import org.racedaydreams.domain.RaceGoal
 import org.racedaydreams.domain.ScheduleType
 import org.racedaydreams.domain.TrainingPreferences
+import org.racedaydreams.domain.TrainingPlan
 import org.racedaydreams.domain.TrainingStrategy
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.UserProfile
+import org.racedaydreams.domain.WorkoutCategory
 import org.racedaydreams.domain.baseline.RunnerBaseline
 import org.racedaydreams.domain.coaching.OriginalTrainingPlanGenerator
 import org.racedaydreams.domain.coaching.PlanVersion
@@ -221,6 +224,89 @@ class PrimaryFocusOnboardingTest {
         onView(withHint(R.string.onboarding_target_hint)).check(matches(withText("1:")))
         assertNull(GymProgrammeStore(context).current())
         assertEquals("race", store.getSetting("starting.path"))
+    }
+
+    @Test
+    fun hybridTodayShowsBothPrescriptionsWithWorkingStrengthDetailAndLoggingActions() {
+        val (running, gym) = seedBothProgrammes(PrimaryFocus.HYBRID)
+        launch()
+        awaitFocus(PrimaryFocus.HYBRID)
+        await("Today")
+        compose.onNodeWithText("Start with Live Coach").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Today's strength").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("View strength session").performScrollTo().performClick()
+        await("Why this session?")
+        compose.onNodeWithText(gym.sessions().first { it.date() == LocalDate.now() }.title())
+            .performScrollTo().assertIsDisplayed()
+
+        androidx.test.espresso.Espresso.pressBack()
+        await("Today's strength")
+        compose.onNodeWithText("Log today's strength workout").performScrollTo().performClick()
+        await("Hide workout form")
+        compose.onNodeWithText("Planned strength · ${friendlyDate(LocalDate.now())}. Log what you actually did.")
+            .performScrollTo().assertIsDisplayed()
+        assertEquals(running, CoachingStore(context).current())
+        assertEquals(gym, GymProgrammeStore(context).current())
+        assertEquals(listOf(running), CoachingStore(context).versions())
+        assertEquals(listOf(gym), GymProgrammeStore(context).versions())
+        assertEquals(emptyList<org.racedaydreams.domain.strength.StrengthSession>(), CoachingStore(context).strength())
+    }
+
+    @Test
+    fun strengthPlanLeadsWithGymWhileRetainingExplicitRunningAccessAndBackBehaviour() {
+        val (running, gym) = seedBothProgrammes(PrimaryFocus.STRENGTH)
+        launch()
+        awaitFocus(PrimaryFocus.STRENGTH)
+        await("Your strength training")
+        compose.onNodeWithText("Plan").performClick()
+        await("Change programme settings")
+        compose.onNodeWithText("Gym programme").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("View running programme").performClick()
+        await("This week")
+        compose.onNodeWithText("This week").assertIsDisplayed()
+        androidx.test.espresso.Espresso.pressBack()
+        await("Change programme settings")
+        compose.onNodeWithText("Gym programme").performScrollTo().assertIsDisplayed()
+
+        // Changing emphasis changes presentation, never either programme or its history.
+        compose.onNodeWithText("⚙ Settings").performClick()
+        await("Primary focus")
+        compose.onNodeWithTag("primary-focus-choice-running").performScrollTo().performClick()
+        compose.onNodeWithText("Save primary focus").performScrollTo().performClick()
+        awaitFocus(PrimaryFocus.RUNNING)
+        androidx.test.espresso.Espresso.pressBack()
+        await("This week")
+        compose.onNodeWithText("This week").assertIsDisplayed()
+        assertEquals(running, CoachingStore(context).current())
+        assertEquals(gym, GymProgrammeStore(context).current())
+        assertEquals(running.goalSnapshot(), SqliteUserPreferencesRepository(context).load().get())
+        assertEquals(listOf(running), CoachingStore(context).versions())
+        assertEquals(listOf(gym), GymProgrammeStore(context).versions())
+    }
+
+    private fun seedBothProgrammes(focus: PrimaryFocus): Pair<PlanVersion, GymProgramme> {
+        val today = LocalDate.now()
+        val profile = profile()
+        SqliteUserPreferencesRepository(context).save(profile)
+        SqlitePrimaryFocusRepository(context).save(focus)
+        val plan = TrainingPlan(
+            "both-focus-running-plan", today, today.plusWeeks(6), emptyList(),
+            listOf(PlannedWorkout("both-focus-easy", today, WorkoutCategory.EASY_RUN,
+                5.0, null, emptyList(), "Athlete's preserved easy-running prescription")),
+        )
+        val running = PlanVersion("both-focus-running-v1", plan.id(), 1, Instant.now(),
+            "Explicit test-only programme", profile, "Synthetic fixture baseline", plan)
+        CoachingStore(context).saveCurrent(running)
+        val gym = GymProgrammeGenerator().generate(
+            "both-focus-gym", 1, Instant.now(), "Explicit test-only gym programme",
+            GymProgramme.Settings(GymProgramme.Goal.GENERAL, GymProgramme.Priority.STRENGTH_FIRST,
+                GymProgramme.Experience.BEGINNER,
+                EnumSet.of(today.dayOfWeek, today.plusDays(3).dayOfWeek), 2,
+                setOf("bodyweight"), 45, GymProgramme.Effort.RPE),
+            today, emptyList(), emptyList(),
+        )
+        GymProgrammeStore(context).save(gym)
+        return running to gym
     }
 
     private fun launch() {

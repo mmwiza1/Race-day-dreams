@@ -1,6 +1,16 @@
 package org.racedaydreams.coach.navigation
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -96,27 +106,27 @@ fun NavGraphBuilder.runningGraph(
 
     composable("plan") {
         val state = readState()
-        if (state.profile == null && state.primaryFocus == PrimaryFocus.STRENGTH) {
-            GymProgrammeScreen(state, model) { nav.navigate("gym/session/${Uri.encode(it)}") }
-        } else
-            TrainingPlanScreen(
-                readState(),
-                model,
-                { nav.navigate("workout/${Uri.encode(it)}") },
-                { nav.navigate("goals") },
-                {
-                    val gym =
-                        readState().gymProgramme?.sessions()?.firstOrNull { s -> s.date() == it }
-                    nav.navigate(
-                        gym?.let { "gym/session/${Uri.encode(it.id())}" } ?: "strength?date=$it"
-                    )
-                },
-                { nav.navigate("routines") },
-                { id, related ->
-                    nav.navigate("routine/${Uri.encode(id)}?related=${Uri.encode(related?:"")}")
-                },
-            )
+        if (state.primaryFocus == PrimaryFocus.STRENGTH) {
+            Column(Modifier.fillMaxSize()) {
+                Box(Modifier.weight(1f)) {
+                    GymProgrammeScreen(state, model) {
+                        nav.navigate("gym/session/${Uri.encode(it)}")
+                    }
+                }
+                if (state.profile != null) {
+                    TextButton(
+                        onClick = { nav.navigate("running-plan") },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                    ) {
+                        Text("View running programme")
+                    }
+                }
+            }
+        } else RunningPlanDestination(readState, model, nav)
     }
+
+    // An explicit secondary destination preserves Back to the athlete's Strength-first Plan.
+    composable("running-plan") { RunningPlanDestination(readState, model, nav) }
 
     composable("workout/{id}") { destination ->
         PlannedWorkoutScreen(
@@ -160,4 +170,26 @@ fun NavGraphBuilder.runningGraph(
     composable("activity/{id}") { destination ->
         ActivityDetailScreen(readState(), model, destination.arguments?.getString("id"))
     }
+}
+
+@Composable
+private fun RunningPlanDestination(
+    readState: () -> CoachUiState,
+    model: CoachViewModel,
+    nav: NavHostController,
+) {
+    TrainingPlanScreen(
+        readState(),
+        model,
+        { nav.navigate("workout/${Uri.encode(it)}") },
+        { nav.navigate("goals") },
+        {
+            val gym = readState().gymProgramme?.sessions()?.firstOrNull { s -> s.date() == it }
+            nav.navigate(gym?.let { "gym/session/${Uri.encode(it.id())}" } ?: "strength?date=$it")
+        },
+        { nav.navigate("routines") },
+        { id, related ->
+            nav.navigate("routine/${Uri.encode(id)}?related=${Uri.encode(related?:"")}")
+        },
+    )
 }
