@@ -56,6 +56,7 @@ public final class GymProgrammeGenerator {
         var tradeoffs = new LinkedHashSet<String>();
         LocalDate end = start.plusWeeks(6).minusDays(1);
         var hardActual = StrengthAnalytics.hardLowerBodyDates(actual);
+        var plannedLowerDates = new LinkedHashSet<LocalDate>();
         var plans = new ArrayList<SessionPlan>();
         int lowerSessionOrdinal = 0;
         for (int i = 0; i < settings.frequency(); i++) {
@@ -74,12 +75,13 @@ public final class GymProgrammeGenerator {
                 LocalDate day = week.plusDays(i);
                 if (settings.days().contains(day.getDayOfWeek())) candidates.add(day);
             }
-            var best = new Search(settings, runs, hardActual, plans, week);
+            var best = new Search(settings, runs, hardActual, plannedLowerDates, plans, week);
             best.permute(candidates, new ArrayList<>(), new HashSet<>());
             for (int i = 0; i < best.chosen.size(); i++) {
                 LocalDate day = best.chosen.get(i);
                 SessionPlan plan = plans.get(i);
                 tradeoffs.addAll(conflicts(day, plan.lower(), runs, hardActual));
+                if (plan.lower()) plannedLowerDates.add(day);
                 sessions.add(
                         new GymProgramme.Session(
                                 id + "-v" + version + "-" + day,
@@ -90,6 +92,21 @@ public final class GymProgrammeGenerator {
             }
         }
         sessions.sort(Comparator.comparing(GymProgramme.Session::date));
+        var lowerDates = new ArrayList<>(plannedLowerDates);
+        lowerDates.sort(Comparator.naturalOrder());
+        for (int i = 1; i < lowerDates.size(); i++) {
+            LocalDate previous = lowerDates.get(i - 1);
+            LocalDate day = lowerDates.get(i);
+            if (ChronoUnit.DAYS.between(previous, day) == 1) {
+                tradeoffs.add(
+                        "Planned lower-body strength falls on consecutive days, "
+                                + date(previous)
+                                + " and "
+                                + date(day)
+                                + ". Consider moving a session or reducing gym effort; nothing has"
+                                + " been removed.");
+            }
+        }
         if (settings.frequency() > 3
                 && settings.priority() == GymProgramme.Priority.RUNNING_FIRST) {
             tradeoffs.add(
@@ -149,6 +166,7 @@ public final class GymProgrammeGenerator {
         final LocalDate week;
         final List<PlannedWorkout> runs;
         final Set<LocalDate> actual;
+        final Set<LocalDate> plannedLowerDates;
         List<LocalDate> chosen = new ArrayList<>();
         long best = Long.MAX_VALUE;
 
@@ -156,11 +174,13 @@ public final class GymProgrammeGenerator {
                 GymProgramme.Settings settings,
                 List<PlannedWorkout> runs,
                 Set<LocalDate> actual,
+                Set<LocalDate> plannedLowerDates,
                 List<SessionPlan> plans,
                 LocalDate week) {
             this.settings = settings;
             this.runs = runs;
             this.actual = actual;
+            this.plannedLowerDates = Immutable.copySet(plannedLowerDates);
             this.plans = plans;
             this.week = week;
         }
@@ -175,6 +195,10 @@ public final class GymProgrammeGenerator {
                 for (int i = 0; i < current.size(); i++) {
                     boolean lower = plans.get(i).lower();
                     score += schedulingPenalty(current.get(i), lower, runs, actual, conflictWeight);
+                    // Planned sessions remain separate from evidence of actually completed work.
+                    if (lower && plannedLowerDates.contains(current.get(i).minusDays(1))) {
+                        score += 40;
+                    }
                     for (int j = 0; j < i; j++) {
                         if (lower
                                 && plans.get(j).lower()
