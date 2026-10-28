@@ -153,3 +153,14 @@ next expected total330 (not observed). Current gate7cd32f6/workflow40704503974 c
 and91captures; do not confuse it with final pending refinements. All local checks pass.
 No deferred work started. Commit/push current refinement, run final matrix, adopt and
 review91authentic captures, finish truthful docs/PR metadata; PR14 staysdraft until green.
+
+## Resumption diagnosis (do not lose these fixes)
+
+dc2da60 contains all latest valid busy/default-exclusion polish, committed locally but
+not pushed when checked. 7cd32f6/workflow40704503974 is failed: API35/36 ran329, onecapture
+failure atCoachingScreenshotTest506 (fixture remained inExcluded afterRestore). Fixedby
+explicitForYou selection beforepositiveRDLsearch. API28 ran31 thenSlotTable disposal
+exception inDreamArtworkReadinessTest. Removed unnecessarymovablekeygroup fromartwork
+loader, retaining asset-keyedState/LaunchedEffect/atomicpublication; addedexplicitcontent
+removal after15cityswitches toregression. No timeouts/assertionsremoved. Nextpublishmust
+include dc2da60 andthesefixes. Run330matrix/91captures, fixrealremainingissues. Draft14.

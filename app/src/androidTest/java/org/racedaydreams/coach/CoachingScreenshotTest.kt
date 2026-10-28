@@ -499,11 +499,13 @@ class CoachingScreenshotTest {
         compose.waitUntil(20000) {
             compose.onAllNodesWithText("Restore exercise").fetchSemanticsNodes().isEmpty()
         }
+        // Restore removes the only Excluded row; leave that explicit filter before searching.
+        compose.onNodeWithTag("exercise-shortcut-For you").performScrollTo().performClick()
         compose
             .onNodeWithText("Search exercises or aliases")
             .performScrollTo()
             .performTextReplacement("RDL")
-        compose.onNodeWithText("Romanian Deadlift").performClick()
+        compose.onNodeWithTag("exercise-row-romanian-deadlift").performScrollTo().performClick()
         await("Overview")
         click("How to do it")
         compose.waitForIdle()

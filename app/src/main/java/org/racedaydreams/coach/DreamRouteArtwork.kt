@@ -33,14 +33,18 @@ internal data class DreamCityArtwork(val hero: ImageBitmap?, val posters: List<I
 @Composable internal fun rememberDreamCityArtwork(city: DreamCityPresentation): State<DreamCityArtwork> {
     val context = LocalContext.current.applicationContext
     val assets = listOf(city.hero) + city.landmarks.map { it.asset }
-    return key(assets) {
-        produceState(DreamCityArtwork(null, List(city.landmarks.size) { null }), assets) {
-            value = withContext(Dispatchers.IO) {
-                val loaded = assets.map { DreamArtworkCache.load(context, it) }
-                DreamCityArtwork(loaded.first(), loaded.drop(1))
-            }
+    // Reset only the snapshot/effect on a city change. A movable keyed composition group
+    // is unnecessary here and complicates disposal during rapid navigation on older runtimes.
+    val snapshot = remember(assets) {
+        mutableStateOf(DreamCityArtwork(null, List(city.landmarks.size) { null }))
+    }
+    LaunchedEffect(assets) {
+        snapshot.value = withContext(Dispatchers.IO) {
+            val loaded = assets.map { DreamArtworkCache.load(context, it) }
+            DreamCityArtwork(loaded.first(), loaded.drop(1))
         }
     }
+    return snapshot
 }
 
 internal data class DreamLandmarkPoster(val label: String, val asset: String)

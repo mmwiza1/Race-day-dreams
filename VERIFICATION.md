@@ -1,3 +1,18 @@
+## Connected association/capture gate and diagnosed corrections
+
+Source7cd32f6/workflow40704503974 compiled and linted onAPI28/35/36. API35/36 ran329
+tests with one capture-flow failure: after restoring the sole Excluded row, the fixture
+left the Excluded filter selected and searched for that restored exercise. It now leaves
+the filter before searching, retaining the positive restore and guide assertions. API28
+ran31tests before a subsequent Compose SlotTable disposal failure in the artwork-switch
+regression stopped that process. Artwork state/effect remain asset-keyed and atomic; an
+unnecessary movable key group is removed, and the15switch regression now explicitly
+removes its content before activity disposal. No timeout/assertion was weakened.
+
+The busy-context/default-suggestion refinement was committed locally asdc2da60 but not
+yet pushed at the resumption check. Current corrected330-test/91capture matrix is pending;
+PR14 remainsdraft. Latest fullygreen remains5527cce/workflow40702322526 (328each).
+
 ## Reduced0.9 storage/exclusions supported-API gate
 
 Source5527ccec99066577256faa6392453ddeb59f0034/workflow40702322526 passed build, lint

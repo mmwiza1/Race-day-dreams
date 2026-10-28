@@ -19,11 +19,16 @@ class DreamArtworkReadinessTest {
     fun eachCityPublishesItsArtworkAndReadinessTogetherWhenSwitching() {
         val routes = DreamRoutes.routes().map { DreamRoutes.currentGeometry(it) }
         val selected = mutableStateOf(routes.first())
+        val shown = mutableStateOf(true)
         compose.setContent {
             MaterialTheme {
                 CoachPage {
                     val route = selected.value
-                    DreamRouteExperience(route, DreamRoutes.Assignment(route.id(), 1000.0, 7190.0))
+                    if (shown.value)
+                        DreamRouteExperience(
+                            route,
+                            DreamRoutes.Assignment(route.id(), 1000.0, 7190.0),
+                        )
                 }
             }
         }
@@ -52,5 +57,11 @@ class DreamArtworkReadinessTest {
                 }
             }
         }
+        // Exercise actual removal/disposal before the ActivityScenario teardown as well.
+        compose.runOnIdle { shown.value = false }
+        compose.waitForIdle()
+        compose
+            .onAllNodes(hasStateDescription("Offline Dream artwork ready"), useUnmergedTree = true)
+            .assertCountEquals(0)
     }
 }
