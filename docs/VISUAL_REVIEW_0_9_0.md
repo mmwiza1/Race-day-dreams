@@ -111,3 +111,15 @@ audio, recovery and TalkBack acceptance remain **unperformed**.
 Workflow40649295266 passed303cases on EACH supported API;bot33d13c0 supplies86real captures. Integrity passed. Opened gym-now, gym-workout, gym-workout-saved and gym-workout-large-font: clear actual/target distinction, prominent saved heading, readable natural wrapping at200%dark, no harmful overlap observed. Builder/normaldark still need direct review. New227df1a browsing/substitution changes require new captures and review; these images do not certify them. PhysicalS24 acceptance remains unperformed.
 
 Continuation completed direct review of the retained dbaca95 builder and normal-dark GymNow captures. Ordered target cards, editor controls and actual-only entry remain readable; no harmful overlap observed. All six GymNow captures now reviewed. New browsing/substitution source still requires its own captures and visual gate.
+
+## Reduced0.9 checkpoint5527cce direct review
+
+Canonical bot5b66454 supplies88actual captures from successful workflow40702322526
+(API28/35/36,328tests each). Opened exercise-browse, gym-equipment-alternatives,
+gym-workout-dark and gym-workout-large-font. Browser has readable context and bounded
+initial choices; dark and200% actual-entry controls retain readable wrap and usable
+scrolling. Busy-equipment capture exposed too much supporting context before options:
+context/goal detail is now disclosed with equipment choices, keeping concise capability
+context and explained alternatives primary. That refinement and new91capture set require
+their own current-source gate/review. No exercise or approved Dream reference art changed.
+PhysicalTalkBack/fitness-use acceptance remains unperformed.

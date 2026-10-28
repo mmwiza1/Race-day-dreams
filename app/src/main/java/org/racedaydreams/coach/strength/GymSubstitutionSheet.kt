@@ -113,10 +113,6 @@ fun GymSubstitutionSheet(model: GymNowViewModel) {
                             "Equipment for this swap",
                             style = MaterialTheme.typography.titleMedium,
                         )
-                        Text(swap.contextExplanation)
-                        Text(
-                            "Goal: ${gymEquipmentName(swap.goal.name)} · ${swap.experience.name.lowercase(Locale.UK)} experience"
-                        )
                         Text(
                             if (swap.equipment.isEmpty())
                                 "No external equipment confirmed. Matching bodyweight alternatives can still appear."
@@ -133,6 +129,10 @@ fun GymSubstitutionSheet(model: GymNowViewModel) {
                             )
                         }
                         if (equipmentExpanded) {
+                            Text(swap.contextExplanation)
+                            Text(
+                                "Goal: ${gymEquipmentName(swap.goal.name)} · ${swap.experience.name.lowercase(Locale.UK)} experience"
+                            )
                             Text(
                                 "Choose every item needed for a complete setup. A cable station does not imply every attachment, and one machine does not imply all machines. These choices apply only to this swap."
                             )
@@ -181,7 +181,7 @@ fun GymSubstitutionSheet(model: GymNowViewModel) {
                     state.error?.let { error -> SemanticCard(Tile.Warning) { Text(error) } }
                     Text("Comparable alternatives", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "Matched by movement role, body area, measurement, equipment and experience. Loads do not transfer between exercises."
+                        "Comparable training role and available setup. Choose a fresh load; loads do not transfer."
                     )
                     if (swap.suggestions.isEmpty()) {
                         SemanticCard(Tile.Insight) {

@@ -65,12 +65,12 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The active 0.9 development checkpoint refreshed these captures
-after all three supported APIs passed 293 instrumentation tests each. The actual Home,
-Strength-first Home light/dark/200% and Paris captures were opened and reviewed. Full Strength
-Engine 2.0 remains in development; the rolling main download above still follows the
-last complete merged release. Strength-first Home captures are also available in the
-canonical directory, including dark mode and 200% text.
+data, not UI mockups. The reduced 0.9 development checkpoint adds standalone Strength,
+Gym Now, exercise discovery, reversible exclusions and explained substitutions. The
+latest adopted set passed 328 instrumentation tests on each supported API; current
+association controls and captures require their own recorded gate before merge. Browser,
+busy-equipment, dark and 200% gym captures were opened and reviewed. The rolling main
+download above still follows the last merged release.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).

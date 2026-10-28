@@ -368,3 +368,13 @@ the same database. Reviewed immutable decisions and an indexed target projection
 atomically with the existing coaching association. No source execution, actual set or
 programme version is rewritten. Backup strengthEngine section 2 reads older section 1;
 root JSON 8/raw 2/complete 1 remain unchanged. No new generic release-store records.
+
+## Reduced0.9 exclusions and association application protocol
+
+Schema13 adds typed reversible exercise exclusions, distinct from legacy visibility state;
+strengthState2 reads1. Generation/recommendation consults this policy without rewriting
+existing intentions or actual evidence. `GymAssociationCoordinator` owns exact pending
+reviewed decisions, retries and explicit reload; the feature VM serialises repository
+calls on IO and publishes immutable state. Completed native membership is queried in one
+bounded SQL lookup, not by hydrating every recent execution. Final source/gates are in
+CONTINUE_CODEX.md and VERIFICATION.md; the original larger Strength backlog is deferred.

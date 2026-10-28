@@ -586,6 +586,7 @@ private fun GymExercisePicker(
             recent,
             state.favouriteExerciseIds,
             state.archivedExerciseIds,
+            state.excludedExerciseIds,
         ) {
             ExerciseSearch.search(
                     state.exercises,
@@ -594,6 +595,7 @@ private fun GymExercisePicker(
                     recent,
                     state.archivedExerciseIds,
                 )
+                .filter { query.isNotBlank() || it.id() !in state.excludedExerciseIds }
                 .take(8)
         }
     AlertDialog(

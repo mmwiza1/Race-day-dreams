@@ -173,6 +173,45 @@ class GymSubstitutionScreenTest {
         finishAndVerifyOriginalProgramme()
     }
 
+    @Test
+    fun explicitExclusionRemovesAnOtherwiseSuitableBusyAlternativeAndRestoreReenablesIt() {
+        install()
+        val preferences = org.racedaydreams.data.SqliteExerciseExclusionRepository(application)
+        io {
+            preferences.exclude(
+                org.racedaydreams.domain.strength.ExerciseExclusionRepository.Exclusion(
+                    "dumbbell-bench-press",
+                    org.racedaydreams.domain.strength.ExerciseExclusionRepository.Reason
+                        .EQUIPMENT_UNAVAILABLE,
+                    Instant.now(),
+                )
+            )
+        }
+        compose.onNodeWithText("Equipment busy?").performScrollTo().performClick()
+        await { model.state.value.substitution != null }
+        compose.runOnIdle {
+            model.changeSubstitutionEquipment(setOf(Equipment.DUMBBELLS, Equipment.BENCH))
+        }
+        await { model.state.value.substitution?.equipment?.size == 2 }
+        assertFalse(
+            model.state.value.substitution!!.suggestions.any {
+                it.exercise().id() == "dumbbell-bench-press"
+            }
+        )
+        io { preferences.restoreExercise("dumbbell-bench-press") }
+        compose.runOnIdle {
+            model.changeSubstitutionEquipment(setOf(Equipment.DUMBBELLS, Equipment.BENCH))
+        }
+        await {
+            model.state.value.substitution!!.suggestions.any {
+                it.exercise().id() == "dumbbell-bench-press"
+            }
+        }
+        assertEquals(original, io { GymProgrammeStore(application).current() })
+        assertEquals("bench-press", execution().slots().single().exercise().id())
+        assertTrue(execution().actualSets().isEmpty())
+    }
+
     private fun install(dark: Boolean = false) {
         compose.runOnIdle {
             val factory =

@@ -235,6 +235,7 @@ fun GymWorkoutBuilderScreen(model: GymNowViewModel, onWorkout: () -> Unit, onBac
                     .flatMap { session -> session.exercises().map { it.exercise().id() } }
                     .distinct(),
             archived = state.archivedExerciseIds,
+            excluded = state.excludedExerciseIds,
             error = state.error,
             onDismiss = {
                 editorOpen = false
@@ -278,6 +279,7 @@ private fun GymSlotEditor(
     favourites: Set<String>,
     recent: List<String>,
     archived: Set<String>,
+    excluded: Set<String>,
     error: String?,
     onDismiss: () -> Unit,
     onSave: (StrengthExercise, GymSlotInput) -> Unit,
@@ -318,8 +320,10 @@ private fun GymSlotEditor(
         exercises.firstOrNull { it.id() == selectedId }
             ?: slot?.exercise()?.takeIf { it.id() == selectedId }
     val results =
-        remember(exercises, query, favourites, recent, archived) {
-            ExerciseSearch.search(exercises, query, favourites, recent, archived).take(12)
+        remember(exercises, query, favourites, recent, archived, excluded) {
+            ExerciseSearch.search(exercises, query, favourites, recent, archived)
+                .filter { query.isNotBlank() || it.id() !in excluded }
+                .take(12)
         }
 
     Dialog(
@@ -396,6 +400,10 @@ private fun GymSlotEditor(
                                     gymExerciseContext(exercise),
                                     style = MaterialTheme.typography.bodySmall,
                                 )
+                                if (exercise.id() in excluded)
+                                    Text(
+                                        "Excluded from recommendations · choose explicitly if wanted"
+                                    )
                             }
                         }
                     }

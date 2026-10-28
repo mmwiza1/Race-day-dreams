@@ -141,3 +141,15 @@ Commit/publish current UI/capture/docs, run329matrix, fix actual failures, adopt
 captures and open/review newExcluded/association/busy-equipment/dark/large-font images.
 Then final retained-scope/accessibility/backup/noINTERNET review, update truthful docs/PR14,
 prepare ready only when the retained scope/gates are fullygreen. No deferred feature work.
+
+## Final retained selection/disclosure polish
+
+88checkpoint images from5527cce were adopted via bot5b66454 and merged (7cd32f6).
+Directly opened browser, busy-equipment, gymdark and200% captures. Busy supporting
+context moved behind equipment expansion to expose actual alternatives sooner. Default
+add-exercise/builder suggestions omit exclusions; explicit searches retain deliberate
+selection and warning. Added real substitution exclusion/restore integration case, so
+next expected total330 (not observed). Current gate7cd32f6/workflow40704503974 covers329
+and91captures; do not confuse it with final pending refinements. All local checks pass.
+No deferred work started. Commit/push current refinement, run final matrix, adopt and
+review91authentic captures, finish truthful docs/PR metadata; PR14 staysdraft until green.
