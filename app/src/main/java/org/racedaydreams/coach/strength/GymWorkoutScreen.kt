@@ -84,7 +84,13 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) {
             Text(if (terminal) "Back to Strength" else "Back to Gym Now")
         }
-        CoachHeading(execution?.prescription()?.title() ?: "Gym workout")
+        CoachHeading(
+            when (execution?.status()) {
+                GymExecution.Status.FINISHED -> "Workout saved"
+                GymExecution.Status.DISCARDED -> "Workout discarded"
+                else -> execution?.prescription()?.title() ?: "Gym workout"
+            }
+        )
         if (state.loading || state.busy) CircularProgressIndicator()
         state.error?.let { SemanticCard(Tile.Warning) { Text(it) } }
         state.notice?.let { SemanticCard(Tile.Insight) { Text(it) } }
@@ -103,8 +109,7 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                 else Tile.Neutral
             ) {
                 Text(
-                    if (execution.status() == GymExecution.Status.FINISHED) "Workout saved"
-                    else "Workout discarded",
+                    execution.prescription()?.title() ?: "Your workout",
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 if (execution.status() == GymExecution.Status.FINISHED) {
