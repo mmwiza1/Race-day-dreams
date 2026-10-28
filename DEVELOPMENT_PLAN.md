@@ -1,28 +1,27 @@
-# Active increment — 0.9.0-test1
+# Completed retained increment — 0.9.0-test1
 
 Architecture Hardening + Standalone Strength + Gym Now + Exercise Discovery, Exclusions
-and Smart Substitution. Branch `feature/strength-engine-2-architecture-hardening`, draft
-PR14. The owner's reduced release boundary in CONTINUE_CODEX.md is authoritative.
+and Smart Substitution. Feature branch `feature/strength-engine-2-architecture-hardening`,
+PR14. Sourcef3a988a/workflow40741473316 passed331tests EACHAPI28/35/36 plus fullbuild/lint/
+format/domain/schema/backup/guidance and91canonical captures; direct visual review passed
+for the new and representative accessibility screens. Final documentation-only required
+checks must pass before readiness. Physical S24 acceptance remains unperformed.
 
 Implemented: feature-owned orchestration/repositories/navigation, recorder coordinators,
 pinned formatting, six-week/Lower variation/fatigue fixes, race-free focus selection,
-Strength-first Today, one durable Gym Now execution flow, preserved saved intentions,
-174-exercise metadata/discovery, today-only explained substitutions, typed explicit
-completed-workout associations and reversible exclusions. Newer UI/storage checkpoints
-require the complete current-source gate recorded in VERIFICATION.md before merge.
+Strength-first Today, one durable Gym Now engine, saved intentions,174-exercise metadata/
+discovery, today-only explained swaps, reviewed association history and reversible exclusions.
+Recorded-route/Story publication and Compose lifecycle/layout reliability were hardened.
+
+Data: schema13, rootJSON8, strengthEngine2/read1, strengthState2/read1, raw2/complete1.
+No destructive migration, new generic release-store records, Internet permission, account,
+backend, analytics or runtime LLM. Existing Compose family updated within Apache2 tostable
+UI/runtime/foundation1.8.3 andMaterial3 1.3.2; all other runtime families stay unchanged.
 
 Deferred beyond0.9: full custom programmes/templates/mesocycles, major generator redesign,
-rest timer, generated warm-up sets, supersets, catalogue expansion, advanced progression,
-analytics/PB redesign/achievements/deload and advanced hybrid decisions. Do not start them
-as release blockers. Existing completed stable functionality remains available.
-
-Current data: schema13, rootJSON8, strengthEngine2 (reads1), strengthState2 (reads1), raw2,
-complete1. No destructive migration or new generic release-store records. Actuals,
-immutable prescriptions and explicit athlete choices remain separate.
-
-Complete the retained UI, supportedAPI28/35/36 gate, old/current backup checks, authentic
-captures and accessibility/release review. Keep PR14draft until all retained automated
-work is complete; physical GalaxyS24 acceptance remains unperformed.
+rest timer, generated warm-ups, supersets, catalogue expansion/new custom-exercise features,
+advanced progression/analytics/PB redesign/achievements/deload and advanced hybrid decisions.
+Do not restart these as release blockers. Existing completed stable functionality remains.
 
 The app recommends. The athlete decides. The plan adapts.
 

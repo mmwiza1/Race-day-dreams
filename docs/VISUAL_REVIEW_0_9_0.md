@@ -123,3 +123,25 @@ context/goal detail is now disclosed with equipment choices, keeping concise cap
 context and explained alternatives primary. That refinement and new91capture set require
 their own current-source gate/review. No exercise or approved Dream reference art changed.
 PhysicalTalkBack/fitness-use acceptance remains unperformed.
+
+## Final retained 0.9 acceptance — source f3a988a
+
+Workflow40741473316 passes331tests on each API28/35/36, with91canonical captures adopted
+from botb768e0b. Opened the newly generated actual images after the Compose1.8.3 alignment:
+RDL guide, busy alternatives, exclusions, saved association, Strength Today light/dark/200%
+and gym actual entry dark/200%. This is direct visual review, separate from PNG checks.
+
+- RDL keeps the approved original athlete artwork, blue illustration panel, navy headings,
+  green cues and pink mistake card. Transient preference feedback no longer covers guidance.
+- Busy alternatives expose the first exercise, meaningful rationale and Choose action
+  without scrolling. Reasons and full evidence remain available through disclosures.
+- Exclusions retain visible Restore and history/PB/favourite preservation language.
+  Association review/confirmed states show explicit choice, preserved version and actuals.
+- Strength-first Today is readable in both themes and200% text. Primary Start is visible;
+  expanded content scrolls naturally. Gym load/reps/effort/save controls retain wrapping and
+  large targets. No harmful overlap observed in the inspected captures.
+- Existing174exercise and14routine assets, Plan/Live Coach/Dream visual direction and all
+  five geographic routes remain preserved; no design reference file was replaced.
+
+Physical S24/TalkBack/outdoor/audio/battery/backup acceptance is UNPERFORMED. The original
+larger Strength Engine2.0 roadmap is deferred, not a reason to expand this completed scope.

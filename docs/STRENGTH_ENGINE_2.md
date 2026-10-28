@@ -1,135 +1,108 @@
-# Strength Engine 2.0 — implementation checkpoints
+# Strength Coach — retained 0.9 scope
 
 The app recommends. The athlete decides. The plan adapts.
 
-This is ongoing 0.9.0-test1 development, not the completed release. The reduced remaining
-0.9 scope is authoritative in CONTINUE_CODEX.md. The main rolling build remains the last verified
-merged release until all delivery gates pass.
+0.9.0-test1 delivers Architecture Hardening + Standalone Strength + Gym Now + Exercise
+Discovery, Exclusions and Smart Substitution. This document retains its historical filename;
+it does not claim the original larger Strength Engine2.0 roadmap has shipped. Current
+source-bound gates and remaining acceptance work are in VERIFICATION.md and CONTINUE_CODEX.md.
 
-## Standalone focus and Today
+## Independent training focus
 
-Running, Strength and Hybrid are changeable presentation priorities over the same local
-database. Strength can create a gym programme without a race goal or running profile.
-Changing focus does not rewrite goals, programme priorities, versions or actual workouts.
-The typed primary-focus adapter uses existing backed-up string settings, including legacy
-starting-path interpretation; no schema or backup-envelope change is needed for it.
+Running, Strength and Hybrid are changeable presentation priorities over one local database.
+Strength setup needs no race goal or running profile. Switching focus preserves existing
+goals, programme priorities/versions, actual history and unfinished workouts. Running users
+are not required to configure Strength. Hybrid Today can show both same-day disciplines.
 
-Strength-first Today shows the day's prescription, independent logging, actual workouts,
-explicit programme completion, recent actual PB evidence and one optional coaching review.
-A workout on the same date never implies prescription completion. Versioned associations
-preserve the identity of the accepted programme. PB/coaching history is prepared off the
-main thread in the coherent application snapshot. No running configuration is required.
+Strength-first Today leads with today's preserved gym session, Gym Now, actual completion,
+PB evidence and at most one conservative coaching note. Programme association is explicit;
+sharing a date never makes an actual workout complete a prescription. Summary preparation
+runs off the main thread, and supporting detail remains available without crowding Today.
 
-Gym Now now connects planned, quick, custom-built, repeated, favourite and generated
-workouts to the same durable gym execution flow. It is available from Strength-first
-Today and Strength navigation, alongside independent manual logging. The connected UI
-checkpoint still needs its own observed Android/API acceptance results; implementing
-these screens does not complete the entire Strength Engine 2.0 release. See
-[GYM_NOW.md](GYM_NOW.md) for the entry flows, actual-set controls and remaining phases.
+## Corrected existing programme rules
 
-## Corrected block allocation
+Six weeks are six seven-day programme windows from the actual start, including mid-week
+starts. Frequency is allocated within each window, without a seventh calendar-week session.
+Lower variations use their own occurrence count, preserving squat and hinge emphasis.
+Scheduling classifies retained exercises: meaningful Full Body lower work counts; core-only
+work does not. Same-day/before demanding runs have conflict context, the following day a
+softer penalty. Consecutive lower sessions across week boundaries are considered, and
+unavoidable spacing is explained rather than silently removing sessions. Explanations name
+movements actually retained within the time budget. These are inspectable product heuristics.
 
-Six programme weeks are six consecutive seven-day windows from the selected start date,
-including a mid-week start. The requested frequency is allocated in each window. Lower
-session variants use their own occurrence count, rather than overall session-index parity,
-so Upper/Lower includes squat and hinge emphasis where equipment permits.
+The existing generator remains deliberately conservative. This release does not introduce
+mesocycles or a major goal/experience redesign. Progression requires two recent comparable
+sessions, intended recorded effort and proven loading; missing effort, stale evidence and
+one success do not justify an increase. Starting references require exact-exercise recent
+working evidence. Suggestions remain optional and never overwrite actual performance.
 
-Scheduling classifies the retained exercises: meaningful lower-body work in a Full Body
-session counts, while core-only work does not. Same-day and immediately-before demanding
-runs carry conflict context; the following day carries a softer recovery penalty. These
-are original inspectable product heuristics, not medical rules. Sessions are not silently
-removed. Explanations name only movement types actually retained within the time budget.
+## Explicit exercise metadata and discovery
 
-## Explicit canonical exercise metadata
+All174canonical IDs retain their original measurement definitions and illustrated guides.
+Reviewed metadata identifies movement roles, broad primary/secondary body areas, experience
+suitability and OR-of-complete-equipment setups. A barbell bench requires its complete
+bar/bench/rack setup; one machine never implies all machines. Suitability describes movement
+complexity, not medical safety or measured biological stimulus. Legacy custom exercises
+remain loggable; unknown metadata is not invented and does not enter automatic selection.
 
-ExerciseMetadataCatalog version 1 covers every existing canonical exercise (currently
-174). Stable IDs map to an explicit primary movement role, other relevant roles, broad
-primary/secondary body areas, experience suitability and equipment requirements. This
-does not alter historical StrengthExercise definitions, measurement profiles, sets or PBs.
+Browse by supported area, role or equipment. Programme/recent/favourite shortcuts and exact
+name/alias relevance reduce flat-library browsing. Existing favourites, hide/archive and
+actual history remain intact. New canonical entries require guidance/metadata integrity;
+this release keeps174complete entries and14routine movements rather than expanding count.
 
-Equipment is an OR of complete setups: a goblet squat can use dumbbells OR a kettlebell;
-a barbell bench press requires its complete bar/bench/rack setup. Individual machines and
-accessories are distinguished. Owning one machine does not imply owning all machines.
-Requirements describe the taught canonical setup rather than every improvised variation.
+## Reversible exclusions
 
-Suitability describes complexity, not medical safety. Broad muscle areas describe
-involvement, not measured stimulus or fractional set-equivalence weights. These original
-product classifications support later browsing and intent-preserving selection; this
-checkpoint does not change generator selection to use them yet. Unknown/custom exercise
-metadata remains unknown until explicitly supplied. A new canonical ID without reviewed
-metadata fails catalogue validation and the completeness test.
+Exercise detail offers an explicit exclusion with a non-medical preference reason. Exercises
+→ Excluded offers Restore. Default recommendations in generation, Gym Now and the retained
+manual picker omit exclusions; explicit search keeps them discoverable. Excluded search
+results are labelled, while original prescriptions and recorded actuals remain usable.
+Restoring removes only the exclusion preference, preserving favourites, history and PBs.
+Old archive/hide choices are not silently reinterpreted. If no supported candidate remains,
+generation explains the conflict without ignoring preferences or filling unrelated roles.
 
-The 174 original canonical visual guides and 14 routine movements remain intact. New
-exercise additions are quality-gated rather than a raw catalogue-count target.
+## Gym Now and smart alternatives
 
-## Verification and durability
+Planned, quick, custom-workout, favourite, repeated, generated and open workouts share one
+GymExecutionEngine and application session coordinator. Custom workouts are saved date-free
+intentions, not a full custom programme builder. Repeats copy intentions, never actual sets.
+Actual entry remains independent, each accepted set saves locally, and visible forms clear
+only after acknowledgement. Pending snapshots retain exact IDs/revisions; retry cannot
+duplicate sets or silently replace a later action. Explicit interrupted recovery preserves
+pause state, records timing gaps and never secretly restarts a clock. Early finish retains
+partial evidence. No unfinished stage is promoted to completed history or PB evidence.
 
-Gym Now has one Android-independent GymExecutionEngine for all
-origins. Immutable date-free GymWorkoutDefinition revisions preserve exercise-slot IDs,
-frozen exercise definitions, measurement/effort targets, optional references and superset
-groups. Programme adapters bind an exact programme/session/revision; repeated workouts
-copy structure and intentions, never completed actual sets. Today-only replacements
-retain original prescriptions and actual evidence and remove incompatible load references.
+Busy/unavailable alternatives match training role, goal, body area, measurement, complete
+available setup, experience and exclusions before favourites/history. The initial list is
+bounded; more alternatives and explanation detail are available. The reason/equipment
+controls apply only to this swap. Confirmation preserves original targets and prior actual
+sets, removing incompatible load references. Discomfort guidance is non-diagnostic and never
+claims an alternative is medically appropriate for an injury. Structural programme editing
+remains separate; no nonfunctional permanent-change control is presented in this flow.
 
-GymExecution snapshots hold actual entered sets separately, with idempotent stable IDs,
-explicit pause/resume and recovery gaps, monotonic timing and partial-completion evidence.
-Corrupted event sequences, mismatched actual references and invented completion are rejected.
-An explicitly started planned execution preserves its exact association. Spontaneous
-actuals require a separate reviewed Count/Keep decision and never associate automatically.
-Storage codecs must additionally validate the frozen source against retained versions.
+Completed spontaneous native workouts remain extra unless the athlete reviews Count toward
+session. Frozen actual/target/programme-version evidence is retained in an immutable decision.
+Lost-ACK retries reuse the same ID, and reviewed Keep as extra reverses the current link
+without altering origin, actuals or programme history. Reopening native recorded workouts
+from Gym Now's recent/repeat list exposes this review. Association does not claim every
+prescribed set was completed. See GYM_NOW.md and STRENGTH_STORAGE_2.md for detailed contracts.
 
-The domain engine is connected through an activity-shared GymNowViewModel and one
-GymWorkoutSessionCoordinator. Accepted actual sets are saved immediately; the UI clears
-entered values only after acknowledgement. Exact pending writes can be retried without
-new set IDs or events, while other mutations remain blocked. Reopening an interrupted
-stage requires an explicit recovery choice; retained pause state and recovery gaps remain
-honest. Finishing with target working sets missing requires an early-finish confirmation.
-No unfinished actuals are put into CoachingStore, and no actual sets are fabricated from
-targets. Strict v1 JSON codecs and typed storage provide durable staging independently
-of Android's saved UI state.
+## Durability, privacy and acceptance
 
-See VERIFICATION.md for observed CI results, including failures and subsequent fixes.
-Domain metadata tests exercise every canonical ID, immutable collections, setup truth
-tables, role/experience boundaries, invalid definitions and unchanged measurements.
-The typed durability checkpoint, source77fd0b4, passed its complete supported-API gate
-with293Android tests on each API28/35/36 in workflow40601581173. It uses schema 11 and
-JSON envelope 8; raw archive 2 and complete container 1 remain unchanged. These observed
-foundation results do not certify the subsequently connected Gym Now screens. Their
-build, interaction, screenshot and supported-API results must be recorded separately in
-VERIFICATION.md. No physical Galaxy S24 acceptance has been performed.
+Typed repositories retain one SQLite database and transactional restore. Additive schema13
+reads supported1–12 upgrades. JSON8 reads1–7; strengthEngine2 reads1, strengthState2 reads1;
+raw archive2 and complete package1 remain unchanged. Full graph validation precedes
+replacement, and an active local gym workout must be finished/discarded first. No new
+concept is placed in the generic release store. No Internet permission, backend, account,
+analytics, advertising, subscription or runtime LLM is introduced.
 
-## Typed durability increment
+Current full API28/35/36, screenshot and physical acceptance status is recorded with exact
+source IDs in VERIFICATION.md. S24 outdoor/sensor/audio/battery/TalkBack and complete-backup
+acceptance remain separate human checks; emulator success is not physical verification.
 
-The repository foundation stores frozen workout revisions/preferences and normalised
-execution headers, append-only entered sets and events on the existing shared database.
-It uses revision-checked atomic saves, harmless identical retries, one unfinished stage,
-and an atomic completed actual plus exact planned-source association. Summary reads do
-not hydrate set/event histories. Original prescriptions and execution evidence remain
-frozen; explicitly accepted edits retain a separate current actual and edit observation,
-and PBs follow the current actual history. Repeat templates preserve validated source
-proof even if the original completed actual is later deleted.
+## Deliberately beyond 0.9
 
-Schema 11 is limited to those five typed table families. Later exclusions, custom
-exercises and programme/block data require explicit subsequent migrations rather than
-silently extending a circulated schema. Envelope 8's independently versioned strength
-section retains preferences, source proof, stages and accepted edits, while older readers
-1–7 remain supported. Restore validates the whole graph before a shared transaction and
-refuses to replace a local unfinished gym workout. Each storage row is bounded; sets and
-events do not accumulate in an unbounded cursor cell.
-
-This persistence foundation now backs the connected Gym Now and live actual-set UI.
-See [STRENGTH_STORAGE_2.md](STRENGTH_STORAGE_2.md) for the precise format, recovery, bounds
-and compatibility contract, and [GYM_NOW.md](GYM_NOW.md) for the UI boundary. Current
-Gym Now integration is pending its own observed API28/35/36 gate; no expected test count
-is a reported pass. Optional rest timers/notifications, warm-up ramps, superset execution,
-ranked substitutions, custom programme templates and the richer multi-block generator
-remain later checkpoints retained in CONTINUE_CODEX.md. The working actual-set flow does
-not imply those features are complete.
-
-## Scope-controlled 0.9 completion
-
-The original larger Strength Engine 2.0 roadmap is deferred beyond this release. Current
-0.9 includes typed reviewed association/retry storage (schema12/strengthEngine2) and explicit
-reversible exclusions (schema13/strengthState2); older independent sections remain readable.
-See GYM_NOW.md and CONTINUE_CODEX.md for the retained product boundary. Rest timers,
-mesocycles, new programme builders and advanced analytics are not active acceptance tasks.
+Full custom programme builder, templates, multi-block/mesocycles, major Strength/Muscle/Power
+redesign, rest timer, generated warm-ups, supersets, catalogue expansion/new custom-exercise
+features, advanced progression/weekly volume/PB redesign/achievements/deload and advanced
+hybrid decisions are deferred. They are not unfinished release blockers. Existing stable
+functionality remains supported; do not restart the larger roadmap as part of this release.

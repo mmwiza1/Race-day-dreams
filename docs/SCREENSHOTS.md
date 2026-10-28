@@ -1,17 +1,24 @@
-# Reduced 0.9 capture gate (current source pending)
+# 0.9 canonical capture acceptance
 
-Required set is now91: the previous88 plus exercise-excluded, gym-association-review and
- gym-association-saved. These captures exercise production screens, durable native actuals,
-explicit preference/association controls and real SQLite. They remain test-only fixtures,
-not production demo data. Current-source API28/35/36 generation and direct visual review
-must pass before adoption. Keep approved reference artwork separate and unchanged. The
-current checked-in86images still refer to their recorded verified source, not new UI.
+**91 authentic current-source API35 captures**, adopted from botb768e0b after successful
+workflow40741473316. Sourcef3a988a68f3d1b6dbb618422a80612b90cf4d92e, fingerprint:
+`2f31ea66e537562c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722`.
+The source-commit.txt/source.sha256 files beside the PNGs are the authoritative identities;
+documentation-only commits do not change these rendering inputs. All required names,
+540×1200 dimensions and PNG integrity pass scripts/verify-dream-screenshots.py.
 
-# Strength Engine2 current capture checkpoint
+Current direct review includes RDL, exclusions, busy alternatives, saved association,
+Strength Today light/dark/200%, and gym entry dark/200%. The first alternative and Choose
+control fit the initial viewport; extra reason/equipment/rationale detail remains available.
+A bounded wait observes normal preference feedback expiry, so it does not cover exercise
+artwork or restore controls. Readable scroll/wrap is preserved at200%; device TalkBack
+and outdoor usability remain human checks. Original reference artwork remains separate.
 
-Source dbaca95 passed workflow40649295266 with303tests perAPI28/35/36;86canonical captures adopted in bot33d13c0. Six GymNow captures are required in addition to the preserved80. Current227df1a browse/swap source awaits its own full gate/captures. See VERIFICATION.md and docs/VISUAL_REVIEW_0_9_0.md for observed review, not PNG consistency alone. Approved references remain separate.
+Integrity is not design acceptance. See VISUAL_REVIEW_0_9_0.md for actual opened screens.
+README curates8 authentic captures, including independent Strength Today and Gym Now.
+No test/mock interface or visible fixture/debug wording replaces production UI.
 
----
+## Retained reference provenance and earlier visual history
 
 # 0.8.2 premium Dream Routes — verified canonical captures
 

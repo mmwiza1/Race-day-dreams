@@ -1,11 +1,10 @@
 # Strength Engine 2.0 — typed durability
 
-This document describes the 0.9 data foundation. It is not a claim that the full Gym Now
-or live gym interface has shipped. The latest completed supported-API gate is recorded in
-VERIFICATION.md. Source77fd0b4 passed the complete supported-API gate with293Android
-cases on each API28/35/36, including12repository and11backup cases. Physical Galaxy S24
-acceptance remains unperformed. Subsequent uncommitted coordinator/UI/resource guards
-require their own gate; they are not covered by that source's results.
+This document describes the retained0.9 typed persistence contract. Gym Now/live execution,
+reviewed associations and reversible exclusions are connected through feature-owned
+application orchestration; the original larger Strength Engine2.0 backlog is deferred.
+Source-bound automated results are in VERIFICATION.md, including old/current backup tests.
+Physical GalaxyS24 acceptance remains unperformed.
 
 ## Ownership and version boundaries
 

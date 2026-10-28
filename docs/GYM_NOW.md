@@ -143,3 +143,11 @@ used. If no supported candidate fits, the app explains that selection cannot be 
 The full API28/35/36 gate and authentic captures must accompany these changes. Physical
 S24 recovery, accessibility and complete-backup acceptance remain unperformed until a
 human records results in TEST_BUILD.md.
+
+## Verified retained release boundary
+
+Application/capture source f3a988a passed workflow40741473316 with 331 tests on each API28,
+35 and36, full build/lint/format/data gates and91authentic captures. New exclusions, explicit
+associations and concise busy alternatives were directly reviewed, alongside dark/200%
+layouts. Real S24 acceptance remains unperformed. No further Strength2.0 feature phase
+is required for this scope-controlled release; only final PR-head checks/review remain.

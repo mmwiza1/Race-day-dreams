@@ -54,10 +54,10 @@ API-35 package. Publication waits for the full API 28/35/36 matrix and canonical
 No permanent stable release is created by merging this test update.
 
 These are **debug-signed test APKs**, not Play Store production packages. Actions
-artifacts for the verified 0.8.2 commit are named
-`Race-Day-Dreams-0.8.2-test1-debug-api-35` and contain
-`Race-Day-Dreams-0.8.2-test1-debug.apk`. The rolling release uses
-`Race-Day-Dreams-0.8.2-test1.apk` after publication. Verify the intended commit in
+artifacts for the 0.9 test build are named
+`Race-Day-Dreams-0.9.0-test1-debug-api-35` and contain
+`Race-Day-Dreams-0.9.0-test1-debug.apk`. The rolling release uses
+`Race-Day-Dreams-0.9.0-test1.apk` after the verified change merges to main. Verify the intended commit in
 [VERIFICATION.md](VERIFICATION.md), and export a complete local backup before upgrading.
 Debug keys can differ between clean CI runners; reinstall may require backup/restore.
 GitHub artifact downloads require GitHub sign-in; the app requires no account.
@@ -65,12 +65,12 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The reduced 0.9 development checkpoint adds standalone Strength,
-Gym Now, exercise discovery, reversible exclusions and explained substitutions. The
-latest adopted set passed 328 instrumentation tests on each supported API; current
-association controls and captures require their own recorded gate before merge. Browser,
-busy-equipment, dark and 200% gym captures were opened and reviewed. The rolling main
-download above still follows the last merged release.
+data, not UI mockups. The retained 0.9 source passed **331 instrumentation tests on each
+of API28,35 and36**, with **91 authentic captures**. New exclusions, explicit associations,
+concise busy-equipment choices and representative dark/200% layouts were visually reviewed.
+The rolling main download still follows the last merged release; a
+[verified 0.9 test APK](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40741473316/artifacts/12840411651)
+is available from the feature build. No physical S24 pass is implied.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
@@ -79,9 +79,9 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 | --- | --- | --- | --- |
 | ![Today](docs/screenshots/home.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
 
-| Race preparation | Training trends | Romanian Deadlift | Bench Press |
+| Strength Today | Gym Now | Romanian Deadlift | Race preparation |
 | --- | --- | --- | --- |
-| ![Race preparation](docs/screenshots/race-day.png) | ![Training trends](docs/screenshots/training-trends.png) | ![RDL technique](docs/screenshots/exercise-rdl-howto.png) | ![Bench Press technique](docs/screenshots/exercise-bench-howto.png) |
+| ![Strength Today](docs/screenshots/strength-home.png) | ![Gym Now](docs/screenshots/gym-now.png) | ![RDL technique](docs/screenshots/exercise-rdl-howto.png) | ![Race preparation](docs/screenshots/race-day.png) |
 
 The route is drawn from retained observations on an offline canvas, not street tiles.
 Dream Routes use versioned sourced geographic lines and original city illustrations,

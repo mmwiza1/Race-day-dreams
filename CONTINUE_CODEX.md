@@ -1,123 +1,96 @@
-# Continue — scope-controlled 0.9.0-test1
+# Continue — retained 0.9 scope COMPLETE
 
-## Authority and branch
+## Authority / branch
 
 Headline: Architecture Hardening + Standalone Strength + Gym Now + Exercise Discovery,
-Exclusions and Smart Substitution. The owner's reduced release scope is authoritative.
-Do not restart/reset to main or reintroduce the original Strength Engine2.0 backlog.
+Exclusions and Smart Substitution. Do not restart/reset to main or revive the larger
+Strength Engine2.0 backlog. Repository /workspace/Race-day-dreams, branch
+feature/strength-engine-2-architecture-hardening, PR14. Main remains8b75755a/0.8.2.
+Version0.9.0-test1/code12. Inspect git status/log, remote and PR state on continuation;
+this final documentation commit follows canonical botb768e0b. No force/reset.
 
-Repository /workspace/Race-day-dreams; branch feature/strength-engine-2-architecture-hardening.
-PR14 OPEN/DRAFT; base main8b75755a. Version0.9.0-test1/code12. Current implementation
-HEAD21118c65454f2715861140b3614d56fa031bcb49, pushed. Inspect live status/remote before work;
-CI's canonical bot can advance the branch. No force/reset; preserve completed work.
+## Completed retained implementation
 
-## Retained implementation is complete; current-source acceptance remains
+Architecture coordinators/scoped repositories/navigation, one shared SQLite/restoreTX,
+one authoritative run service and internal recording/execution/sensor/cue coordinators,
+pinned automated formatting; start-anchored six-week gym allocation/distinctLower variation/
+truthful fatigue context; Running/Strength/Hybrid focus and race-free Strength-first Today;
+GymNow planned/quick/custom-workout/favourite/repeat/generated/open entry paths and one
+crash-safe execution engine, exact entered actuals/retries/pause/partialfinish/recovery;
+174canonical metadata/guides+14routine movements; relevance-first hierarchical discovery;
+explicit reversible exclusions separate from archive/hide and honoured by generation,
+one-offs, normal add-exercise/manual-picker suggestions and alternative ranking, while
+explicit search/history/PBs/favourites remain; explained busy/unavailable today-only swaps;
+reviewed spontaneous Count/Keep association history with exactpending IDs/retry/reversal,
+immutable actual/target/version/source and native completed review; conservative existing
+progression/StartingLoad; retained GPS points and oneprepared RouteStory projection.
 
-- Feature-owned application operations/scoped SQL repositories, coherent serialized UI
-  read/command model, feature navigation and one shared DB/restore transaction.
-- Single authoritative run service with internal recording/execution/sensor/cue coordinators.
-- Automated pinned Kotlin/Java formatting, six start-anchored gym weeks, distinct Lower
-  variations, exercise-backed fatigue context, truthful explanations and dated progression.
-- Running/Strength/Hybrid focus, no race-goal requirement for Strength, Strength-first Today.
-- GymNow planned/quick/custom-workout/favourite/repeated/generated/open paths, immutable
-  saved intentions, one durable execution engine, independent actuals, exact retries,
-  explicit partial finish/pause/interruption recovery. No background gym clock after reboot.
-- Existing174canonical metadata/guides +14routine movements preserved, richer browsing,
-  relevance-first alias search, programme/recent/favourite shortcuts and legacy custom logging.
-- Explicit reversible exclusions with non-medical reasons, separate from archive/hide.
-  New programme/one-off/default add-exercise/substitution recommendations omit exclusions;
-  explicit search can find them. History/PBs/favourites/existing prescriptions stay intact.
-  The old manual strength/PB picker is also covered (21118c6).
-- Explained equipment-busy/unavailable today-only swaps, complete equipment capabilities,
-  incompatible load-reference/input clearing only after ACK, earlier actuals unchanged.
-  Busy supporting rationale is now inside equipment disclosure, so options lead sooner.
-- Reviewed spontaneous Count/Keep associations: immutable reviewed actual/target/version,
-  stable pending IDs, no auto-association or native-origin rewrite, exact retry and explicit
-  reversal. Native completed review is reachable from the GymNow repeat/recent list.
-- Existing conservative StartingLoad/progression intact. No deferred engine redesign.
-- RecordedRouteProjection publishes retained points/path/markers/pauses/Story together.
-  All stored route points remain intact; route analysis is off-main and detail-only.
+## Current verified source / gates
 
-## Explicitly deferred — not active0.9 blockers
+**f3a988a68f3d1b6dbb618422a80612b90cf4d92e**, FULLGREEN
+[workflow40741473316](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40741473316):
+**331instrumentation tests EACHAPI28/35/36**, build/lint/domain/format/schema/guidance and
+**91authentic canonical captures**. Botb768e0b adopted; fingerprint:
+2f31ea66e537562c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722.
+Current fingerprint matches metadata. Local219,527domain assertions/31suites,55schema,
+9release-note,14formatter-harness,8capture-validator,11Dreamsource,14artwork-integrity;
+strict174/174canonical+14/14routine guidance pass. Old/current backups and corrupt restore
+safety pass, including450workouts/2250sets~19.1MB (before/afterheap isNOTpeakproof).
 
-Full custom programme builder; large templates; multi-block/mesocycles; major Strength/
-Hypertrophy/Power redesign; advanced experience differentiation; rest timer; generated
-warm-ups; supersets; catalogue expansion220+; new custom-exercise features; advanced
-progression; weekly volume analytics; PB redesign; achievements; deload; advanced hybrid.
-Preserve existing stable pieces, but do not start these after retained0.9acceptance.
+API35 verified debug APK artifact12840411651,50,799,716bytes; screenshots12839284580.
+https://github.com/mmwiza1/Race-day-dreams/actions/runs/40741473316/artifacts/12840411651
+Compose alignment adds1,528,119bytes/3.10% vs priorcheckpoint; no newartwork.
 
-## Data / compatibility
+Opened current RDL,busy alternatives,exclusions,savedassociation, StrengthHome light/dark/
+200%, andgymactualentry dark/200%. Firstalternative/rationale/Choosefitsinitialviewport;
+feedback no longer coversguide/Restore; textwrap/scroll readable. Approvedrefs unchanged.
+All91files validate; directreview is recorded in docs/VISUAL_REVIEW_0_9_0.md.
 
-Additive schema13: schema11 gym staging/saved intentions; schema12 immutable association
-ledger + indexed current targets; schema13 separate exclusions. All supported1–12 upgrades
-are explicit. Historical actual edits never cascade-delete association history.
-JSON envelope8 reads1–7; strengthEngine2 reads1, strengthState2 reads1 (no old hide→exclusion
-inference). Raw2/complete1 unchanged. Restore validates the entire graph before replacement
-in the shared transaction. Invalid/future/corrupt backups remain non-destructive.
+## Reliability decisions / data contract
 
-## Exact observed CI / captures
+PriorAPI28fatalreentrantmeasurement ona1e79fe was investigated, notblindlyrerun. Existing
+Composefamily aligned toBOM2025.07.00 (UI/runtime/foundation1.8.3,Material3 1.3.2,Apache2),
+with documented upstreamremeasure/focus/dialogfixes; citywindows drainUIbeforeteardown.
+Subsequentfullmatrix above passes. Originalassertions/timeouts/GPSpoints retained. City
+artwork is oneasset-keyed atomic snapshot/effect; capture waits owningunmergedreadiness.
+Preferencefeedback expires normally beforeeverycapture, never removedfromproductionUI.
 
-Latest FULL GREEN source5527ccec99066577256faa6392453ddeb59f0034, workflow40702322526:
-328instrumentation tests EACHAPI28/35/36, build/lint/format/guidance and canonical publication.
-Includes actual association transactions/rollback/retries/old-current restore and exclusions.
-Bot5b66454's88images adopted via merge7cd32f6. Fingerprint:
-58edfdf5e4bc8b99036d8d0d48ed7ba5c5a7234b521c840f7629495fa8ba9330.
-Opened/reviewed browser, busy-equipment, gymdark,200% captures. New source needs91images.
+Additive schema13 supports1–12. RootJSON8 reads1–7; strengthEngine2 reads1, strengthState2
+reads1, raw2/complete1 unchanged. Ledger/targetindex/exclusions use typed tables, notgeneric
+JSONbucket. Oldarchive choices areNOTinferredasexclusions. Historicalactual edits retain
+reviewed decisions; corrupt/future restore validates before sharedtransaction replacement.
+NoINTERNET/account/backend/analytics/LLM or newservice/SDK introduced. All174/14assets intact.
 
-7cd32f6/workflow40704503974 FAILED: API35/36 ran329 withonecapture navigation failure
-(CoachingScreenshotTest506, Excluded filter stayed selected afterRestore, soRDLcorrectly
-notinExcludedresults). API28 ran31then SlotTable disposal failure in nextartwork test.
-53e1553 explicitly leaves the filter beforepositiveRDLsearch and removes an unnecessary
-movablekeygroup from artwork loader while retaining asset-keyedstate/effect/atomicimages.
-15city-switch test now explicitly removes/disposes content. No timeout/assertion weakened.
-dc2da60 includes reviewed busy-context/default-exclusion polish and was recovered/committed/
-pushed, not duplicated. 21118c6 finishes legacy manual-picker consistency and adds1case.
+## Exact remaining release procedure (NO feature phases)
 
-Source21118c6/workflow40733453412 PASSED331tests EACHAPI28/35/36 plusbuild/lint/format/
-guidance and91canonical captures. Botf72d075 adopted; fingerprint
-89fb431aebc33f93a9a43b2015474708c8e6937dfe86354c067e6b5ede1587fe. PR14 remainsdraft.
-Local219,527domainchecks/31suites,55schema,9release-note,8capture-validator,14formatter-harness,
-11Dreamsource,14artwork-integrity and strict174/174canonical+14/14routine guidance pass.
-No INTERNET/dependency/artwork/geometry change beyond the described original implementation.
+1. Commit/push final documentation-only changes (if notalreadycommitted), including observed
+   verification, release notes, curatedREADME, screenshots/visualreview, privacy/storage docs
+   andthishandoff. Run9release-note/format/diff/integrity checks. Rendering fingerprint must
+   remain unchanged. Inspect actualgitstatus; preserve any validchanges.
+2. Waitfor ALLrequired current-head checks. DoNOTmarkPR14ready while red/pending; inspect
+   actualfailures/fixrootcause ratherthanblindrerun. The app/fixture alreadypassed above;
+   the finaldocs-only commit still needs its ownPRgate. No newcanonicalbotcommit expected
+   whenfingerprintunchanged. Keep91canonicalfiles andsourceidentities intact.
+3. Once exacthead isgreen, preparePR14ready forreview/merge perlatestowner instruction,
+   updatePRmetadata withcurrentartifact/check links andphysical-only remainingchecks.
+   Do notmerge a checkpoint orcreate a stabletag. Userlatestasks prepareformerger; main
+   rollingdevelopment build updates onlyafteranactual merge. Inspect livePRstate before
+   repeatingreadiness actions. Noimplementationwork remains aftergates.
 
-## Remaining work IN ORDER (no additional feature phases)
+## Deferred (not0.9 blockers)
 
-1. Finish current331API28/35/36 gate. Inspect actual failed job logs and fix root causes;
-   never blind rerun, weaken assertions, drop valid route points or increase timeouts.
-2. If green, fetch/ff canonical bot commit (merge if needed, preserving local commits).
-   Verify all91captures and source fingerprint. Open excluded, association-review/saved,
-   browser, concise busy choices and representative dark/200% images. Check labels/controls
-   and compare retained design family; no mockups presented as build screenshots.
-3. Fix only real remaining retained-scope/accessibility/regression issues. Verify previous
-   supported backup restore/current roundtrip, schema paths, nativeGPS/sample preservation,
-   noINTERNET/account/backend/analytics/runtimeLLM. Current tests already cover these, but
-   source-bound complete gate is mandatory. Do not add deferred features.
-4. Update VERIFICATION/README/RELEASE_0_9_0/SCREENSHOTS/VISUAL_REVIEW and this handoff with
-   actual final results/artifact IDs/size; remove stale pending claims for completed gates.
-   Keep release notes contract and run python3 scripts/test-release-notes.py.
-5. Publish final commits, ensure exact current required checks/canonical integrity green.
-   Only then prepare PR14ready for review/merge per latest owner instruction. No stable tag.
-   Clearly list only remaining real GalaxyS24 tests; do not claim physical acceptance.
+Fullcustom programmebuilder/templates/mesocycles; majorStrength/Muscle/Power redesign;
+advancedexperience differentiation; resttimer; generatedwarm-ups; supersets; catalogue220+;
+newcustom-exercise features; advancedprogression/volumeanalytics/PBredesign/achievements/
+deload/advancedhybrid. Preserve existingstable pieces. DoNOTbegin these afteracceptance.
 
-## Tooling and physical limitations
+## Only physical Galaxy S24 acceptance remains unperformed
 
-No verified localAndroidSDK/adb; actual Android builds/lint/instrumentation are GitHub CI.
-Local pinned formatters and domain/schema/source/release scripts work. Git fetch/push work
-with sandbox network permission; GitHub connector reads job logs and updates PRmetadata.
-Source5527cce tests and subsequent code/results must not be conflated. Bulk backup450runs/
-2250sets ~19.1MB passes, but before/afterheap samples are NOT a worst-case peak guarantee.
+Realoutdoor/locked/background/longrecording, GPSloss/return, battery/reboot/recovery;
+HCproviderread/write/reimport/permissions; BLEHRreconnect andgenuinecadence ifhardware;
+TTS/music/calls/audiofocus; TalkBack/200%realuse andcompletebackup/restore. TEST_BUILD.md
+hasuncheckedmanualchecklist. No physicalpass claimed. Test/development build only.
 
-All physical GalaxyS24 acceptance remains UNPERFORMED: real outdoor/locked/background/long
-recording, GPS loss/recovery, battery/reboot, HCproviders/write/reimport, BLEHRreconnect,
-TTS/music/calls/audiofocus, TalkBack/large-text real use and complete backup ondevice.
-TEST_BUILD.md has the acceptance checklist. Test/development release only.
-
-## Current visual-gate refinements (must test before ready)
-
-Opened actual91set: exclusions + both association stages readable. Busy firstchoice still
-belowfold, so reasonselector is now compact with expandableallreasons; eachchoice shows
-its first meaningful rationale sentence and discloses full explanation without dropping
-it. Existing discomforttest explicitlyopens reasonselector (assertionspreserved). Excluded
-capture waits for realtransient saveSnackbar toclear under original20sbound. No data/
-algorithm/schema/dependency changes. Currentnew331matrix and91recaptures required. APK
-for passed21118c6:API35artifact12836957116,49,271,597bytes; screenshots12836038576.
+NoverifiedlocalAndroidSDK/adb: actualAndroid evidence isGitHubCI. Localpinnedformatters/
+domain/schema/source/release scriptswork. Gitfetch/push andGitHubconnector work; canonical
+bot canadvancefeaturebranch, sofetch/ff orordinarymerge preservinglocalcommits. Noreset.

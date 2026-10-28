@@ -1,3 +1,71 @@
+# Verification — retained 0.9.0-test1 acceptance
+
+The scope-controlled application and capture source **f3a988a68f3d1b6dbb618422a80612b90cf4d92e** passed
+[workflow 40741473316](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40741473316).
+The final documentation commit changes no application, fixture or dependency inputs;
+its own required PR checks must also be green before PR14 leaves draft.
+
+## Observed automated results
+
+- **331 instrumentation tests on EACH API28,35,36**, all passed; no skipped/removed tests.
+- `:domain:check`, `:app:assembleDebug`, `:app:lintDebug`, and
+  `:app:assembleDebugAndroidTest` passed on the supported matrix.
+- **219,527 domain assertions /31 suites**, **55 schema/migration tests**,9release-note,
+  14formatter-harness,8capture-validator,11Dreamsource and14artwork-integrity cases pass.
+- Strict **174/174 canonical +14/14 routine** guidance passes. All five course projections,
+  retained source/provenance checks and original artwork integrity remain intact.
+- Old supported backup envelopes1–7 and current8 restore; strengthEngine2/read1 and
+  strengthState2/read1, reviewed association history, current choices/exclusions, rollback
+  and corrupt/future non-destructive rejection pass real repository instrumentation.
+- Supported schema1–12 upgrades to additive13 pass SQL checks; real key migration paths
+  retain original actuals, programmes, favourites, PB evidence and native execution source.
+- The450workout/2250working-set backup fixture round-trips approximately19.1MB on allAPIs.
+  Before/afterheap measurements are NOT peak-memory proof or a worst-case32MiB guarantee.
+- Installed-package privacy checks pass: no INTERNET/account/backend/analytics dependency
+  introduced. Existing Compose family is aligned to UI/runtime/foundation1.8.3 and
+  Material3 1.3.2 using BOM2025.07.00 (Apache2); all other runtime families remain unchanged.
+
+## APK and authentic captures
+
+API35 verified debug test APK: **50,799,716 bytes**, artifact
+[12840411651](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40741473316/artifacts/12840411651).
+Screenshots artifact
+[12839284580](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40741473316/artifacts/12839284580).
+The Compose refresh adds1,528,119bytes/3.10% versus the preceding49,271,597byte checkpoint;
+no exercise or Dream artwork was added. Version0.9.0-test1/code12 remains a test build.
+
+Bot **b768e0b** supplies **91 authentic API35 captures**. Metadata records the source above
+and fingerprint **2f31ea66e537562c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722**; the current source fingerprint matches.
+PNG integrity, dimensions540×1200 and the complete required set pass separately from visual
+acceptance. Opened current RDL, busy alternatives, exclusions, saved association, Strength
+Today light/dark/200%, and gym entry dark/200%. The first alternative/rationale/Choose action
+is visible without scrolling; details remain expandable. RDL and restore controls are clear
+of transient feedback. No harmful overlap observed; large text scrolls naturally. Original
+approved artwork/design-reference files remain unchanged. See docs/VISUAL_REVIEW_0_9_0.md.
+
+## Reliability corrections actually verified
+
+Recorded points/path/markers/pauses/Route Story publish as one prepared detail projection;
+all stored GPS points remain retained. City artwork publishes atomically from an asset-keyed
+snapshot/effect, and capture readiness observes its own unmerged semantics owner. The
+15city-switch/disposal regression and original positive route-evidence assertions pass.
+
+The API28 framework re-entrant measure/layout failure on a1e79fe was investigated rather
+than blindly retried. Existing Compose was aligned with stable layout/focus/dialog fixes,
+and city windows drain UI work before teardown. The subsequent full supported matrix above
+passed. A bounded capture-only wait lets normal preference feedback expire before artwork
+captures; production feedback and all original assertions/timeouts remain.
+
+## Physical Galaxy S24 status — UNPERFORMED
+
+Outdoor/locked/background/long recording, real GPS degradation/return, battery/reboot and
+unexpected closure recovery; real HC provider read/write/reimport and permission revocation;
+BLE HR reconnect/cadence where hardware supplies it; TTS/music/calls/audio focus; TalkBack/
+large-text real-device use and complete backup/restore require the TEST_BUILD.md checklist.
+No emulator or synthetic result is described as physical acceptance. No stable tag created.
+
+## Historical checkpoint log (superseded by current results above)
+
 ## API28 layout fault: dependency/lifecycle correction pending verification
 
 Capture-only sourcea1e79fe/workflow40739365929 failed API28 after28tests with a fatal

@@ -1,3 +1,14 @@
+# Current retained 0.9 application status
+
+Feature-owned orchestration, standalone training focus, Gym Now, typed association and
+exclusion persistence, exercise discovery and today-only substitution are implemented.
+Application/capture source f3a988a passed workflow40741473316:331tests per API28/35/36 with
+build/lint/format/migration/backup/guidance and91authentic captures. See VERIFICATION.md for
+source-bound results and S24 limitations. The final documentation commit adds no app or
+fixture inputs. The original larger Strength Engine2.0 roadmap is explicitly deferred.
+Existing Compose family is aligned on UI/runtime/foundation1.8.3/Material3 1.3.2 (Apache2)
+for framework layout/focus stability; this does not change the data or coaching contracts.
+
 # Architecture
 
 ## 0.9 application boundaries — behaviour-preserving checkpoint

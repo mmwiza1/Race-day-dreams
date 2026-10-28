@@ -1,3 +1,12 @@
+# Retained 0.9 automated baseline / physical acceptance
+
+Application/capture sourcef3a988a passed workflow40741473316:331tests on EACHAPI28/35/36,
+build/lint/format/migrations/backup and91authentic captures. Version0.9.0-test1/code12,
+schema13, JSON8, strengthEngine2/read1, strengthState2/read1, raw2/complete1. The verified
+API35APK is50,799,716bytes (artifact12840411651). These are automated/emulator results.
+All Galaxy S24 checkboxes below remain UNPERFORMED until a human records a result.
+The retained0.9 feature scope is complete; deferred0.10+ work is not an acceptance task.
+
 # Galaxy S24 evaluation — 0.8.2-test1
 
 0.8.2 adds illustrated city heroes, landmark posters and clearer equivalent-distance
@@ -288,11 +297,11 @@ These physical checks remain unperformed; CI emulator results are recorded separ
 
 All checks below are **UNPERFORMED**. Record the intended APK commit, Android/One UI
 version, date, result and observations. The current branch connects Gym Now and live
-actual-set recording to the typed storage foundation; its own automated UI/API gate is
-still pending an observed result. Use the specific APK under test rather than assuming
-the main development download contains this draft work. A repository test or green
+actual-set recording to typed storage. Source f3a988a passed 331 automated cases on each
+API 28, 35 and 36; this does not perform the physical checks below. Use the specific APK
+under test rather than assuming the main development download contains this branch. A repository test or green
 emulator run is not a device result. See [Gym Now](docs/GYM_NOW.md) for implemented
-controls and the remaining Strength Engine 2.0 phases.
+retained controls; the larger deferred Strength Engine 2.0 roadmap is not an acceptance task.
 
 - [ ] Back up the existing install before upgrading from schema 10/JSON envelope 7.
   Compare retained gym programmes, actual sets, favourites and actual rep PBs after
