@@ -494,14 +494,6 @@ class CoachingScreenshotTest {
         compose.onNodeWithTag("exercise-shortcut-Excluded").performScrollTo().performClick()
         await("Excluded exercises")
         alignHeading("Excluded exercises")
-        compose.waitUntil(20000) {
-            compose
-                .onAllNodesWithText(
-                    "Exercise preference saved. Existing targets, history and PBs are unchanged."
-                )
-                .fetchSemanticsNodes()
-                .isEmpty()
-        }
         capture("exercise-excluded")
         compose.onNodeWithText("Restore exercise").performScrollTo().performClick()
         compose.waitUntil(20000) {
@@ -1356,6 +1348,17 @@ class CoachingScreenshotTest {
     }
 
     private fun capture(name: String, anchor: String? = null) {
+        // Both exclude and restore acknowledge through normal app feedback. Never capture it
+        // over instructional artwork or controls; wait for its real lifecycle, do not dismiss it.
+        compose.waitUntil(20000) {
+            compose
+                .onAllNodesWithText(
+                    "Exercise preference saved. Existing targets, history and PBs are unchanged."
+                )
+                .fetchSemanticsNodes()
+                .isEmpty()
+        }
+
         if (
             name in
                 setOf(
