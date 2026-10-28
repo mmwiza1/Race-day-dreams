@@ -1,3 +1,15 @@
+## API28 layout fault: dependency/lifecycle correction pending verification
+
+Capture-only sourcea1e79fe/workflow40739365929 failed API28 after28tests with a fatal
+Compose `performMeasureAndLayout called during measure layout` in the sourced-city
+scenario. The stack is framework draw/measurement; the app has no custom measurement
+callback. No assertions/timeouts or route evidence were removed. Existing Compose
+BOM2024.12.01 (UI1.7.6) is aligned to BOM2025.07.00 (UI/runtime/foundation1.8.3,Material3
+1.3.2), retaining Kotlin2.0.21/minAPI28 and existing Apache2 notices. Official UI notes
+document1.8.1 precomposed-node remeasurement and1.8.2 dialog/focus lifecycle corrections.
+City capture now drains the preceding UI frame before destroying its window. The
+new complete331/API28/35/36 and91capture gate is required; no fix is claimed proven yet.
+
 ## Full retained-source gate passed; visual refinement pending
 
 21118c65454f2715861140b3614d56fa031bcb49/workflow40733453412 passed331tests EACHAPI28/35/36,

@@ -1086,7 +1086,12 @@ class CoachingScreenshotTest {
     @Test
     fun capturesSourcedCityRoutesWithDarkAndLargeText() {
         fun openCity(city: org.racedaydreams.domain.support.DreamRoutes.Route) {
+            // Drain the prior route's layout before destroying its Android window.
+            // Closing during a pending frame is not the configuration scenario being captured.
+            compose.waitForIdle()
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
             scenario?.close()
+            scenario = null
             val route = org.racedaydreams.domain.support.DreamRoutes.currentGeometry(city)
             val recorded =
                 FeatureStore(context).activitySummaries().single {
