@@ -574,7 +574,7 @@ private fun GymBuilderField(
 
 internal fun gymExerciseContext(exercise: StrengthExercise): String =
     ExerciseCatalog.definition(exercise.id())?.let { "${it.category()} · ${it.equipment()}" }
-        ?: "Custom exercise · ${exercise.measurement().name().lowercase(Locale.UK).replace('_', ' ')}"
+        ?: "Custom exercise · ${exercise.measurement().name.lowercase(Locale.UK).replace('_', ' ')}"
 
 internal fun gymTargetDescription(slot: GymWorkoutDefinition.Slot): String {
     val target = slot.target() ?: return "Open · record the sets you choose"
@@ -588,7 +588,7 @@ internal fun gymTargetDescription(slot: GymWorkoutDefinition.Slot): String {
             ?: ""
     val effort =
         target.effort()?.let {
-            " · ${it.scale().name()} ${gymNumber(it.minimum())}–${gymNumber(it.maximum())}"
+            " · ${it.scale().name} ${gymNumber(it.minimum())}–${gymNumber(it.maximum())}"
         } ?: ""
     val rest = target.restSeconds()?.let { " · ${it}s rest" } ?: ""
     val reference = target.referenceLoadKg()?.let { " · ${gymNumber(it)} kg reference" } ?: ""
