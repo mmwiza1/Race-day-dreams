@@ -1262,17 +1262,30 @@ class CoachingScreenshotTest {
             awaitHomeReady(name.startsWith("strength-home"))
         }
         if (name.startsWith("dream-route")) {
-            compose.waitUntil(20000) {
-                compose
-                    .onAllNodes(hasStateDescription("Offline city context ready"))
-                    .fetchSemanticsNodes()
-                    .isNotEmpty()
-            }
-            compose.waitUntil(20000) {
-                compose
-                    .onAllNodes(hasStateDescription("Offline Dream artwork ready"))
-                    .fetchSemanticsNodes()
-                    .isNotEmpty()
+            try {
+                compose.waitUntil(20000) {
+                    compose
+                        .onAllNodes(
+                            hasStateDescription("Offline city context ready"),
+                            useUnmergedTree = true,
+                        )
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+                }
+                compose.waitUntil(20000) {
+                    compose
+                        .onAllNodes(
+                            hasStateDescription("Offline Dream artwork ready"),
+                            useUnmergedTree = true,
+                        )
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+                }
+            } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
+                throw AssertionError(
+                    "Bundled city readiness failed for $name. UI: ${compose.onRoot(useUnmergedTree = true).printToString().take(20000)}",
+                    failure,
+                )
             }
         }
         // Idleness alone does not prove an asynchronous application snapshot is ready.
