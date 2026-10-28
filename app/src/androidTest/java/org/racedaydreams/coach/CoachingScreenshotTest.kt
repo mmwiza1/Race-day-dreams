@@ -476,6 +476,7 @@ class CoachingScreenshotTest {
         back()
         compose.onNodeWithText("Exercises").performScrollTo().performClick()
         await("Search exercises or aliases")
+        capture("exercise-browse")
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("de")
         compose.waitForIdle()
         capture("exercise-search")
@@ -910,6 +911,14 @@ class CoachingScreenshotTest {
             Assert.assertTrue(CoachingStore(context).strength().isEmpty())
             alignHeading("Bench Press")
             capture("gym-workout")
+            compose.onNodeWithText("Equipment busy?").performScrollTo().performClick()
+            awaitGymReady { it.substitution != null }
+            await("Why swap?")
+            capture("gym-equipment-alternatives")
+            scenario?.onActivity { activity ->
+                ViewModelProvider(activity)[GymNowViewModel::class.java].closeSubstitutions()
+            }
+            awaitGymReady { it.substitution == null }
             pauseGymForRelaunch()
 
             shell("cmd uimode night yes")
