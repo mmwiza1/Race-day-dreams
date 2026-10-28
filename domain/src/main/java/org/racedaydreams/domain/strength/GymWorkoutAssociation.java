@@ -12,6 +12,8 @@ import java.util.Set;
 
 /** Explicit post-workout choices. Association is not a claim that every target was performed. */
 public final class GymWorkoutAssociation {
+    public static final int FORMAT_VERSION = 1;
+
     private GymWorkoutAssociation() {}
 
     public enum Choice {

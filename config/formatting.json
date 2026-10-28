@@ -114,6 +114,7 @@
     "app/src/androidTest/java/org/racedaydreams/data/ScopedRepositoriesTest.java",
     "app/src/androidTest/java/org/racedaydreams/data/RecordingCoordinationStoreTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/CoachCompletionStateTest.kt",
-    "domain/src/test/java/org/racedaydreams/domain/strength/GymWorkoutAssociationTestSuite.java"
+    "domain/src/test/java/org/racedaydreams/domain/strength/GymWorkoutAssociationTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/data/GymAssociationJsonTest.java"
   ]
 }
