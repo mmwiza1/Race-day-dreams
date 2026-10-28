@@ -87,9 +87,9 @@ Avoid storing a whole long programme in a single CursorWindow-sized payload.
 
 ## Verification boundary
 
-Current local checks: 459,664 domain assertions across 33 suites; 55 schema cases;
+Current local checks: 587,615 domain assertions across 33 suites; 55 schema cases;
 9 release-note cases; strict 174/174 canonical and 14/14 routine guidance. The new
-1,620-configuration simulator checks actual catalogue metadata, equipment, exclusions,
+2,430-configuration simulator checks actual catalogue metadata, equipment, exclusions,
 duration, primary balance, controlled power volume, support roles, determinism and
 weekday boundaries. See VERIFICATION.md and CONTINUE_CODEX.md for exact CI state.
 No physical Galaxy S24 acceptance is claimed.

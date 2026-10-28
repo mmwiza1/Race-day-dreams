@@ -134,7 +134,24 @@ public final class StrengthProgrammeGenerator {
                         tradeoffs.add(
                                 "Race-week previews use fewer working sets; activation is your"
                                         + " choice and the running plan stays unchanged.");
+                    boolean lowerSession =
+                            split == Split.UPPER_LOWER && day % 2 == 1
+                                    || split == Split.PUSH_PULL_LEGS && day % 3 == 2;
+                    int required =
+                            split == Split.FULL_BODY
+                                    ? settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING
+                                            ? settings.frequency() == 1 ? 6 : 5
+                                            : 3
+                                    : lowerSession ? 4 : 2;
+                    if (settings.goal() == GymProgramme.Goal.POWER
+                            && settings.experience() != GymProgramme.Experience.BEGINNER)
+                        required++;
+                    required = Math.min(required, Math.min(limit, roles.size()));
+                    int roleIndex = 0;
                     for (var role : roles) {
+                        // Current generated targets need at most two minutes for one working
+                        // set plus transition. Reserve that floor for required later roles.
+                        int reservedMinutes = Math.max(0, required - roleIndex++ - 1) * 2;
                         if (slots.size() >= limit) break;
                         var exercise =
                                 select(
@@ -155,12 +172,18 @@ public final class StrengthProgrammeGenerator {
                                         settings,
                                         raceWeek);
                         int estimate = estimateMinutes(target);
+                        int initialSets = target.sets();
                         // Reduce optional volume rather than inventing a shorter session estimate.
-                        while (minutes + estimate > settings.sessionMinutes()
+                        while (minutes + estimate + reservedMinutes > settings.sessionMinutes()
                                 && target.sets() > 1) {
                             target = sets(target, target.sets() - 1);
                             estimate = estimateMinutes(target);
                         }
+                        if (target.sets() < initialSets)
+                            tradeoffs.add(
+                                    "Working sets are reduced to fit your time budget while"
+                                            + " retaining key movement exposure. Review the preview"
+                                            + " before activation.");
                         if (minutes + estimate > settings.sessionMinutes()) {
                             tradeoffs.add(
                                     "The session time budget limits accessory exposure; review"

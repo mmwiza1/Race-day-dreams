@@ -12,6 +12,34 @@ continue from the repository exactly as it exists. Inspect the live repo before 
 
 Do not blindly reset, force-push, discard valid changes, or recreate already-completed work.
 
+## Latest checkpoint authority (overrides older observed counts below)
+
+Branch feature/0.10-strength-programming / DRAFT PR15. Do NOT merge: SQL/durable
+programme activation, backups and user-facing builder integration remain unfinished.
+Latest adopted bot3d941ef contains91authentic captures from application sourcec4b2664.
+FULL workflow40781957551 passed339tests EACH API28/35/36 plus build/lint/format/domain/
+schema/guidance. Prior repair source55af2aa also passed339 EACH in40780023551 after
+investigating the initial API36 Paris readiness failure. No assertion was weakened.
+Paris light, London dark/200% and gym200% captures were directly reviewed; native route
+capture from3d941ef also opened and retains actual route/altitude evidence.
+
+New local short-session correction in StrengthProgrammeGenerator reserves time for
+required later roles, preserving pulling rather than letting early compounds consume
+all20minutes. Reductions in working sets are explained in the preview. Expanded
+StrengthProgrammeTestSuite covers2,430 configurations across20/30/60minutes and
+varied constrained availability. Full local suite passed587,615 assertions/33suites
+(367,936 programme checks +152 modality/source checks +retained219,527).
+Latest log:/tmp/rdd010-domain-final-short.txt. Schema/backup formats still13/8,
+strengthEngine2/strengthState2/raw2/complete1. No new programme data can be created in
+app yet; do not present this foundation as a finished builder/release.
+
+A checkpoint command was interrupted BEFORE execution: the two domain files remain
+valid locally, not committed/pushed at that point. Inspect git status/log before acting.
+Next: commit/push these files and this handoff with relevant format/schema/release checks;
+inspect the new current-head workflow rather than assumingc4b2664 certifies later code.
+Then continue the exact typed SQL/repository/backup and UI work listed below. Preserve
+all completed work. No0.11 timer/warm-up/superset/analytics/deload/achievement scope.
+
 ## Active release — 0.10.0-test1: Strength Programming 2.0
 
 The latest owner brief supersedes the earlier broad Strength Engine 2.0 backlog.

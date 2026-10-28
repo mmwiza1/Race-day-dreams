@@ -869,7 +869,7 @@ public final class StrengthProgrammeTestSuite {
             for (var experience : GymProgramme.Experience.values())
                 for (var priority : GymProgramme.Priority.values())
                     for (int frequency = 1; frequency <= 6; frequency++)
-                        for (int minutes : List.of(30, 60))
+                        for (int minutes : List.of(20, 30, 60))
                             for (var equipment : setups) {
                                 var s =
                                         settings(
@@ -879,6 +879,26 @@ public final class StrengthProgrammeTestSuite {
                                                 frequency,
                                                 minutes,
                                                 equipment);
+                                var days = EnumSet.noneOf(DayOfWeek.class);
+                                int dayCount =
+                                        priority == GymProgramme.Priority.RUNNING_FIRST
+                                                ? frequency
+                                                : priority == GymProgramme.Priority.BALANCED
+                                                        ? Math.min(7, frequency + 1)
+                                                        : 7;
+                                for (int d = 0; d < dayCount; d++)
+                                    days.add(
+                                            START.plusDays((d * 2 + experience.ordinal()) % 7)
+                                                    .getDayOfWeek());
+                                s =
+                                        new Settings(
+                                                s.goal(),
+                                                s.priority(),
+                                                s.experience(),
+                                                days,
+                                                s.frequency(),
+                                                s.sessionMinutes(),
+                                                s.equipment());
                                 Set<String> excluded =
                                         Set.of("bench-press", "romanian-deadlift", "power-clean");
                                 var r =
@@ -934,7 +954,29 @@ public final class StrengthProgrammeTestSuite {
                                             roles.contains(ExerciseMetadata.Role.HORIZONTAL_PULL),
                                             "running support preserves pulling maintenance");
                                 }
+                                if (equipment.equals(ALL)) {
+                                    var weeklyRoles =
+                                            p.workouts().stream()
+                                                    .flatMap(w -> w.definition().slots().stream())
+                                                    .map(
+                                                            slot ->
+                                                                    ExerciseMetadataCatalog.require(
+                                                                                    slot.exercise()
+                                                                                            .id())
+                                                                            .primaryRole())
+                                                    .collect(Collectors.toSet());
+                                    check(
+                                            weeklyRoles.contains(
+                                                            ExerciseMetadata.Role.HORIZONTAL_PULL)
+                                                    || weeklyRoles.contains(
+                                                            ExerciseMetadata.Role.VERTICAL_PULL),
+                                            "short sessions still preserve pulling exposure across"
+                                                    + " the programme");
+                                }
                                 for (var w : p.workouts()) {
+                                    check(
+                                            days.contains(w.date().getDayOfWeek()),
+                                            "unavailable days never generated");
                                     if (goal == GymProgramme.Goal.POWER) {
                                         check(
                                                 w.definition().slots().size() <= 5,
@@ -1029,7 +1071,7 @@ public final class StrengthProgrammeTestSuite {
         check(
                 longPlan.workouts().stream().allMatch(w -> w.notes().contains("demanding run")),
                 "dated conflict evidence not truncated");
-        check(plans + honestFailures == 1620, "simulator covers full configuration space");
+        check(plans + honestFailures == 2430, "simulator covers full configuration space");
         check(
                 plans > 800 && honestFailures > 0,
                 "useful generation plus explicit impossible contexts");
