@@ -368,14 +368,13 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
                         "Association history has a missing or inconsistent source.");
             GymWorkoutAssociation.validateRetainedEvidence(p, p.actual(), execution.origin(), plan);
             if (d.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
-                    && GymWorkoutAssociation.proposals(
+                    && !GymWorkoutAssociation.proposals(
                                     p.actual(),
                                     p.origin(),
                                     plan,
                                     java.util.Collections.emptySet(),
                                     p.reviewedAt())
-                            .stream()
-                            .noneMatch(p::equals)) throw conflict();
+                            .contains(p)) throw conflict();
             actualIds.add(p.actual().id());
         }
         var occupied = new HashSet<TargetKey>();

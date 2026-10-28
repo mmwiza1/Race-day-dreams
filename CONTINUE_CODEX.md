@@ -84,6 +84,8 @@ verified yet. All174/174canonical+14/14routine guides remain intact.
 2. Validate/commit/push current typed association backend coherently with documentation.
    Run build/lint/format/domain/schema and real migration/backup/rollback/retry tests.
    Current expected test count322=315existing+7new, not an observed pass.
+09bb360/workflow40700851417 compiled but lint rejected record p::equals API34;
+fixed with equivalent List.contains, no validation/assertion weakened. Next matrix pending.
 3. Complete only the already-active association feature: saved spontaneous workout offers
    Keep as extra / Count toward reviewed prescription, exact pending retries and source
    snapshots; edits refresh actual evidence; no automatic date-based completion.

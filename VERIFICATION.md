@@ -1,3 +1,10 @@
+## Association-backend lint correction
+
+Source09bb360/workflow40700851417 compiled the app and instrumentation but lint rejected
+a record equals method reference as API34-only. The validator now uses equivalent
+List.contains membership (Object equality), retaining the exact reviewed-proposal check.
+No instrumentation result is claimed for that lint-blocked run. The next matrix is pending.
+
 ## Current retained-scope gate (pending)
 
 Route projection source bce6486/workflow40694457701 passed 315 tests on API28 and36;
