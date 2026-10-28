@@ -173,6 +173,13 @@ public final class GymExecutionRepositoryTest extends AndroidTestCase {
         assertEquals(finished, gym.finish(finished.execution(), 1));
         assertEquals(1, coaching.strength().size());
         assertEquals(1, count("strength_execution_sets"));
+        coaching.deleteStrength("planned");
+        assertNull(gym.load("planned"));
+        assertTrue(new DevelopmentStore(getContext()).gymLinks().isEmpty());
+        assertTrue(coaching.strength().isEmpty());
+        assertEquals(2, programmes.versions().size());
+        var features = new FeatureStore(getContext());
+        features.validateSnapshot(features.exportUserData());
     }
 
     public void testAssociationFailureRollsBackActualAndExecutionTogether() {
@@ -310,6 +317,38 @@ public final class GymExecutionRepositoryTest extends AndroidTestCase {
                         });
         db().execSQL("UPDATE strength_executions SET active_millis=999 WHERE id='summary'");
         rejects(() -> gym.load("summary"));
+    }
+
+    public void testSelectionQueriesAreBoundedAndFavouritesUseTheSelectedRevision() {
+        var template = custom("template").snapshot().prescription();
+        for (int i = 0; i < 8; i++) {
+            String id = "favourite-" + i;
+            var definition = new GymWorkoutDefinition(id, 1, NOW, "Saved " + i, template.slots());
+            gym.saveWorkout(definition, null);
+            gym.savePreference(new GymExecutionRepository.Preference(id, 1, i >= 3));
+            coaching.saveStrength(manual("actual-" + i, "bench-press", 65));
+        }
+        var latest =
+                new GymWorkoutDefinition(
+                        "favourite-3",
+                        2,
+                        NOW.plusSeconds(1),
+                        "Athlete's revised workout",
+                        template.slots());
+        gym.saveWorkout(latest, null);
+        gym.savePreference(new GymExecutionRepository.Preference("favourite-3", 2, true));
+        assertEquals(2, gym.favouriteWorkouts(2).size());
+        assertEquals(latest, gym.favouriteWorkouts(2).get(0));
+        assertEquals("favourite-5", gym.favouriteWorkouts(2, 2).get(0).id());
+        assertEquals(1, gym.favouriteWorkouts(2, 4).size());
+        assertEquals(2, gym.recentActual(2).size());
+        assertEquals("actual-0", gym.recentActual(2).get(0).id());
+        assertEquals(8, coaching.strength().size());
+        rejects(() -> gym.favouriteWorkouts(0));
+        rejects(() -> gym.favouriteWorkouts(51));
+        rejects(() -> gym.favouriteWorkouts(1, -1));
+        rejects(() -> gym.recentActual(21));
+        assertTrue(gym.unfinished().isEmpty());
     }
 
     public void testConcurrentReadsSeeCoherentHeadersAndAppendRows() throws Exception {

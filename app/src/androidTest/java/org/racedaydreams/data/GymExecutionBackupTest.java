@@ -496,6 +496,93 @@ public final class GymExecutionBackupTest extends AndroidTestCase {
                         + Runtime.getRuntime().maxMemory());
     }
 
+    public void testProvablyOversizedHistoryIsRejectedBeforeJsonHydrationOrDestinationWrites()
+            throws Exception {
+        SQLiteDatabase db = ProfileDatabase.get(getContext()).getWritableDatabase();
+        var exercise = workout().slots().get(0).exercise();
+        char[] title = new char[120];
+        Arrays.fill(title, 'w');
+        var slots = new ArrayList<GymWorkoutDefinition.Slot>();
+        for (int index = 0; index < 100; index++) {
+            slots.add(
+                    new GymWorkoutDefinition.Slot(
+                            "retained-slot-" + index,
+                            new StrengthExercise(
+                                    "retained-exercise-" + index,
+                                    new String(title),
+                                    exercise.region(),
+                                    exercise.mode(),
+                                    exercise.estimateOneRepMax(),
+                                    exercise.measurement()),
+                            workout().slots().get(0).target(),
+                            null));
+        }
+        int rowCount;
+        db.beginTransaction();
+        try {
+            var first = new GymWorkoutDefinition("overflow-0000", 1, NOW, new String(title), slots);
+            gym.saveWorkout(first, null);
+            long rowBytes;
+            try (var cursor =
+                    db.rawQuery(
+                            "SELECT length(CAST(payload AS BLOB)) FROM strength_workout_versions"
+                                    + " WHERE workout_id='overflow-0000'",
+                            null)) {
+                assertTrue(cursor.moveToFirst());
+                rowBytes = cursor.getLong(0);
+            }
+            assertTrue(rowBytes > 0);
+            assertTrue(rowBytes <= SqliteGymExecutionRepository.MAX_ROW_BYTES);
+            rowCount = (int) (BackupManager.MAX_BYTES / rowBytes) + 1;
+            assertTrue("The fixture must fit the supported workout-count bound.", rowCount < 10000);
+            for (int index = 1; index < rowCount; index++) {
+                String id = String.format(java.util.Locale.ROOT, "overflow-%04d", index);
+                gym.saveWorkout(
+                        new GymWorkoutDefinition(id, 1, NOW, new String(title), slots), null);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        long retainedBytes;
+        try (var cursor =
+                db.rawQuery(
+                        "SELECT SUM(length(CAST(payload AS BLOB))),COUNT(*)"
+                                + " FROM strength_workout_versions",
+                        null)) {
+            assertTrue(cursor.moveToFirst());
+            retainedBytes = cursor.getLong(0);
+            assertEquals(rowCount, cursor.getInt(1));
+        }
+        assertTrue(retainedBytes > BackupManager.MAX_BYTES);
+        settings.putSetting("oversized-export-sentinel", "retained");
+        var destination = new ByteArrayOutputStream();
+        try {
+            manager.exportTo(destination);
+            fail("A provably oversized history must be rejected before building the JSON tree.");
+        } catch (IOException expected) {
+            assertEquals(0, destination.size());
+            assertTrue(expected.getCause() instanceof IllegalArgumentException);
+            assertTrue(expected.getCause().getMessage().contains("retained gym data"));
+        }
+        assertEquals("retained", settings.getSetting("oversized-export-sentinel"));
+        assertEquals(100, gym.workout("overflow-0000", 1).slots().size());
+        String lastId = String.format(java.util.Locale.ROOT, "overflow-%04d", rowCount - 1);
+        assertEquals(100, gym.workout(lastId, 1).slots().size());
+        try (var cursor = db.rawQuery("SELECT COUNT(*) FROM strength_workout_versions", null)) {
+            assertTrue(cursor.moveToFirst());
+            assertEquals(rowCount, cursor.getInt(0));
+        }
+        Log.i(
+                "GymBackupFixture",
+                "oversizedRetainedBytes="
+                        + retainedBytes
+                        + " frozenWorkouts="
+                        + rowCount
+                        + " destinationBytes="
+                        + destination.size());
+    }
+
     private GymExecutionRepository.Stored finishCustom(String id, int workingSets, String notes) {
         var engine = engine(id);
         var stored = gym.start(engine.snapshot());

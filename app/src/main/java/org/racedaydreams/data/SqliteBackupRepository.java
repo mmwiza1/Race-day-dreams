@@ -51,6 +51,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
         SQLiteDatabase db = read();
         db.beginTransactionNonExclusive();
         try {
+            GymExportBudget.requireFits(db, org.racedaydreams.portability.BackupManager.MAX_BYTES);
             UserProfile profile = SqliteUserPreferencesRepository.readProfile(db).orElse(null);
             JSONObject out =
                     FeatureJson.json(

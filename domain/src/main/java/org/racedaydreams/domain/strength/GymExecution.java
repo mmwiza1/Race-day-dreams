@@ -305,6 +305,11 @@ public record GymExecution(
         return origin == Origin.PLANNED && status == Status.FINISHED ? source : null;
     }
 
+    /** Whether prescribed working sets remain, excluding warm-up sets from completion. */
+    public boolean hasUnfinishedTargets() {
+        return hasUnfinishedTargets(prescription, slots, actualSets);
+    }
+
     private record BlockKey(String slotId, StrengthExercise exercise) {}
 
     static boolean hasUnfinishedTargets(

@@ -190,6 +190,9 @@ public final class GymExecutionTestSuite {
     private static void prescribedAndActualStaySeparate() {
         var definition = workout(List.of(slot("bench", "bench-press", 2)));
         var engine = start(definition);
+        ok(
+                engine.snapshot().hasUnfinishedTargets(),
+                "An unperformed prescription needs confirmation before finishing early");
         rejects(
                 () -> engine.finish(tick(1000), null, "", false),
                 "cannot finalise an empty prescription");
@@ -197,11 +200,15 @@ public final class GymExecutionTestSuite {
         var warm = new StrengthSession.SetEntry("warm", 5, 20, null, true);
         engine.saveSet("bench", warm, tick(1000));
         equal(0, engine.workingSets("bench"), "Warm-up is not working completion");
+        ok(
+                engine.snapshot().hasUnfinishedTargets(),
+                "Warm-up sets do not satisfy the finish confirmation projection");
         equal(
                 null,
                 engine.snapshot().completedSession(),
                 "Saved live sets are staged, not completed evidence");
         engine.saveSet("bench", set("work", 7, 65, 8.0), tick(2000));
+        ok(engine.snapshot().hasUnfinishedTargets(), "One of two working sets remains incomplete");
         var finished = engine.finish(tick(3000), 8.0, "Stopped early", false);
         ok(
                 finished.partial(),
@@ -228,6 +235,12 @@ public final class GymExecutionTestSuite {
         ok(
                 finished.completedSession().exercises().get(0).sets().get(0).warmUp(),
                 "Warm-up flag survives finalisation");
+        var complete = start(definition);
+        complete.saveSet("bench", set("one", 8, 60, 7.0), tick(1000));
+        complete.saveSet("bench", set("two", 8, 60, 7.0), tick(2000));
+        ok(
+                !complete.snapshot().hasUnfinishedTargets(),
+                "All actual working sets satisfy the preserved prescription");
     }
 
     private static void lostAcknowledgementIsIdempotent() {

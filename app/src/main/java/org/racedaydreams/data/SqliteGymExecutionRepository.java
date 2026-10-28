@@ -239,6 +239,55 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         return row == null ? null : row.definition();
     }
 
+    /** Bounded favourite definitions for selection; execution/set/event histories stay unloaded. */
+    public List<GymWorkoutDefinition> favouriteWorkouts(int limit) {
+        return favouriteWorkouts(limit, 0);
+    }
+
+    public List<GymWorkoutDefinition> favouriteWorkouts(int limit, int offset) {
+        if (limit < 1 || limit > 50 || offset < 0 || offset > 10000)
+            throw new IllegalArgumentException("Choose a bounded saved-workout page.");
+        var out = new ArrayList<GymWorkoutDefinition>();
+        try (Cursor c =
+                read().rawQuery(
+                                "SELECT w.payload FROM strength_workout_preferences p JOIN"
+                                    + " strength_workout_versions w ON w.workout_id=p.workout_id"
+                                    + " AND w.revision=p.current_revision WHERE p.favourite=1 ORDER"
+                                    + " BY p.workout_id LIMIT ? OFFSET ?",
+                                new String[] {Integer.toString(limit), Integer.toString(offset)})) {
+            while (c.moveToNext())
+                out.add(workoutRow(GymJsonSupport.read(c.getString(0))).definition());
+        }
+        return Immutable.copyList(out);
+    }
+
+    /**
+     * Explicit repeat selection needs a few actuals, never the athlete's entire workout history.
+     */
+    public List<StrengthSession> recentActual(int limit) {
+        if (limit < 1 || limit > 20)
+            throw new IllegalArgumentException("Choose 1–20 recent actual workouts.");
+        var out = new ArrayList<StrengthSession>();
+        String epoch = "CAST(ROUND((julianday(started_at)-2440587.5)*86400000) AS INTEGER)";
+        try (Cursor c =
+                read().rawQuery(
+                                "SELECT payload FROM strength_sessions WHERE "
+                                        + epoch
+                                        + "<=? ORDER BY "
+                                        + epoch
+                                        + " DESC,id LIMIT ?",
+                                new String[] {
+                                    Long.toString(Instant.now().toEpochMilli()),
+                                    Integer.toString(limit)
+                                })) {
+            while (c.moveToNext())
+                out.add(CoachingJson.strength(FeatureJson.object(c.getString(0))));
+        } catch (JSONException invalid) {
+            throw FeatureJson.invalid(invalid);
+        }
+        return Immutable.copyList(out);
+    }
+
     @Override
     public List<Preference> preferences() {
         var out = new ArrayList<Preference>();
