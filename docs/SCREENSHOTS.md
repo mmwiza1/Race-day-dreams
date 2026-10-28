@@ -1,3 +1,12 @@
+# Reduced 0.9 capture gate (current source pending)
+
+Required set is now91: the previous88 plus exercise-excluded, gym-association-review and
+ gym-association-saved. These captures exercise production screens, durable native actuals,
+explicit preference/association controls and real SQLite. They remain test-only fixtures,
+not production demo data. Current-source API28/35/36 generation and direct visual review
+must pass before adoption. Keep approved reference artwork separate and unchanged. The
+current checked-in86images still refer to their recorded verified source, not new UI.
+
 # Strength Engine2 current capture checkpoint
 
 Source dbaca95 passed workflow40649295266 with303tests perAPI28/35/36;86canonical captures adopted in bot33d13c0. Six GymNow captures are required in addition to the preserved80. Current227df1a browse/swap source awaits its own full gate/captures. See VERIFICATION.md and docs/VISUAL_REVIEW_0_9_0.md for observed review, not PNG consistency alone. Approved references remain separate.

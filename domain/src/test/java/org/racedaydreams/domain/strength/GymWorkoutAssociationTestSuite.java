@@ -190,7 +190,79 @@ public final class GymWorkoutAssociationTestSuite {
                 GymWorkoutAssociation.proposals(
                                 timed, GymExecution.Origin.FREE, plan, Set.of(), NOW)
                         .isEmpty());
+        exactAssociationAcknowledgementProtocol(reviewed);
         System.out.println("GymWorkoutAssociationTestSuite: " + checks + " checks passed.");
+    }
+
+    private static void exactAssociationAcknowledgementProtocol(GymWorkoutAssociation.Proposal p) {
+        class Store implements GymAssociationRepository {
+            GymWorkoutAssociation.Decision current;
+            boolean loseAck = true;
+            int writes;
+
+            public List<GymWorkoutAssociation.Proposal> proposals(String id, Instant at) {
+                return current == null
+                                || current.choice() == GymWorkoutAssociation.Choice.KEEP_EXTRA
+                        ? List.of(p)
+                        : List.of();
+            }
+
+            public GymWorkoutAssociation.Decision current(String id) {
+                return current;
+            }
+
+            public GymWorkoutAssociation.Proposal reviewCurrent(String id, Instant at) {
+                return current == null ? null : p;
+            }
+
+            public GymWorkoutAssociation.Decision decide(GymWorkoutAssociation.Decision d) {
+                if (!d.equals(current)) {
+                    current = d;
+                    writes++;
+                }
+                if (loseAck) {
+                    loseAck = false;
+                    throw new IllegalArgumentException("Lost acknowledgement");
+                }
+                return current;
+            }
+        }
+        var store = new Store();
+        var idCount = new int[] {0};
+        var coordinator =
+                new GymAssociationCoordinator(
+                        store, Clock.fixed(NOW, ZoneOffset.UTC), () -> "choice-" + (++idCount[0]));
+        coordinator.review(p.actual().id());
+        check(store.current == null);
+        check(coordinator.view().proposals().size() == 1);
+        reject(() -> coordinator.choose(p, GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION));
+        var pending = coordinator.view().pending();
+        check(pending != null);
+        check(store.writes == 1);
+        reject(() -> coordinator.choose(p, GymWorkoutAssociation.Choice.KEEP_EXTRA));
+        reject(() -> coordinator.clear());
+        reject(() -> coordinator.review(p.actual().id()));
+        coordinator.retry();
+        check(store.writes == 1);
+        check(idCount[0] == 1);
+        check(coordinator.view().pending() == null);
+        check(coordinator.view().current().equals(pending));
+        coordinator.choose(
+                coordinator.view().currentReview(), GymWorkoutAssociation.Choice.KEEP_EXTRA);
+        check(store.writes == 2);
+        check(idCount[0] == 2);
+        check(coordinator.view().current().choice() == GymWorkoutAssociation.Choice.KEEP_EXTRA);
+        coordinator.clear();
+        check(coordinator.view().actualId() == null);
+        coordinator.review(p.actual().id());
+        store.loseAck = true;
+        reject(() -> coordinator.choose(p, GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION));
+        coordinator.reloadSaved();
+        check(coordinator.view().pending() == null);
+        check(
+                coordinator.view().current().choice()
+                        == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION);
+        check(store.writes == 3);
     }
 
     private static StrengthSession actual(boolean warm, double load) {

@@ -40,6 +40,10 @@ and Smart Substitution. Running and Strength can be used independently.
   workouts through one durable engine; its new end-to-end verification is pending.
   Targets never prefill actual sets. Interrupted stages require explicit recovery.
 
+- Completed spontaneous workouts can be explicitly reviewed as extra or associated with
+  a preserved programme session. Reopening a native workout permits reviewed reversal;
+  failed acknowledgements retry the same decision without duplicating or rewriting evidence.
+
 ## Fixes
 
 - Six-week gym blocks contain six complete programme weeks anchored to the selected
@@ -109,5 +113,5 @@ Physical S24 acceptance remains unperformed.
 Schema 12 adds immutable reviewed Keep as extra / Count toward session decisions and an
 indexed target projection. Retries are idempotent, actual edits retain reviewed history,
 and replacement is validated before the shared restore transaction. Spontaneous origins
-are never rewritten. This backend is pending its supported-API gate; association UI is
-not yet enabled. Existing planned-origin completion remains unchanged.
+are never rewritten. The connected confirmation and reversal UI has a pending current-source supported-API
+gate. Existing planned-origin completion remains unchanged.

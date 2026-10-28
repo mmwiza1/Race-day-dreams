@@ -56,7 +56,7 @@ Subsequent gates:
  points and valid durability. Original20s/assertions retained.
 -bce6486/40694457701:API28/36 pass315;API35 artwork-ready timeout. cf76ea6
  observes owning unmerged readiness semantics (same20s/assertions), pending new gate.
-Required current capture set is88, including new exercise-browse and busy-equipment
+Required current capture set is91, including new exercise-browse and busy-equipment
 screens. New set must be fully captured, adopted and visually reviewed before acceptance.
 All physical GalaxyS24 checks remain UNPERFORMED.
 
@@ -89,11 +89,12 @@ fixed with equivalent List.contains, no validation/assertion weakened. Next matr
 3. Complete only the already-active association feature: saved spontaneous workout offers
    Keep as extra / Count toward reviewed prescription, exact pending retries and source
    snapshots; edits refresh actual evidence; no automatic date-based completion.
-   UI must be enabled only after backend/restore gate passes.
+   Backend/exclusions source5527cce now passes328tests on EACHAPI28/35/36 plusbuild/lint.
+   Connected association UI is implemented, awaiting its own329-test/91capture gate.
 4. Implement reversible explicit exclusions separately from legacy archive/hide choices;
    enforce generation and substitution eligibility, preserve PB/history/favourites, add
    typed/versioned persistence and older backup readers. Keep actual source IDs intact.
-5. Harden retained features and accessibility; capture/review all88current authentic
+5. Harden retained features and accessibility; capture/review all91current authentic
    screenshots plus exclusions if added. Update release notes/README/TEST_BUILD/VERIFICATION.
 6. Run complete supported matrix, old/current backup round-trips and no-INTERNET check.
    Only then make PR14ready and prepare merge per owner instruction. List only genuine
@@ -117,3 +118,26 @@ Existing prescriptions/history/PBs/favourites untouched. RootJSON8/strengthEngin
 New deterministic domain simulator, SQL constraints/rollback, real12→13 migration, current
 and old section readers, corrupt restore safety and real UI confirmation tests added.
 Current Android gate pending; association UI still not enabled until backend verified.
+
+## Current association UI work
+
+GymAssociationCoordinator owns reviewed choices/stable pending decision IDs and lost-ACK
+retry/reload;20 additional JVM checks cover commit-before-ACK and explicit reversal. The
+feature VM publishes immutable association state after IO; completed native review is
+reachable from GymNow's recent/repeat list via one bounded membership query without
+hydrating execution histories. Count/Keep requires a frozen review/confirm and never
+rewrites origin/sets/programme. One real VM/SQL/UI regression added. New captures bring
+the requirement to91 (excluded, association-review, association-saved). Current connected
+UI/captures are not yet Android-verified; publish only after association backend gate.
+
+## Latest observed gate and immediate next work
+
+5527ccec99066577256faa6392453ddeb59f0034/workflow40702322526 passes328tests EACHAPI28/35/36,
+build/lint/format/guidance. Canonical job was still publishing; fetch and merge its bot
+commit preserving current changes. Local219,527domainchecks/31suites,55schema,9release-note,
+8capture-validator pass. Connected association UI adds one realVM/SQL case (expected329,
+not an observed result) and91capture requirement. The backend/restore precondition is met.
+Commit/publish current UI/capture/docs, run329matrix, fix actual failures, adopt91canonical
+captures and open/review newExcluded/association/busy-equipment/dark/large-font images.
+Then final retained-scope/accessibility/backup/noINTERNET review, update truthful docs/PR14,
+prepare ready only when the retained scope/gates are fullygreen. No deferred feature work.

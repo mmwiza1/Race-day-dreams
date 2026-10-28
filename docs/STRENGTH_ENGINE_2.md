@@ -2,8 +2,8 @@
 
 The app recommends. The athlete decides. The plan adapts.
 
-This is ongoing 0.9.0-test1 development, not the completed release. The complete remaining
-scope is retained in CONTINUE_CODEX.md. The main rolling build remains the last verified
+This is ongoing 0.9.0-test1 development, not the completed release. The reduced remaining
+0.9 scope is authoritative in CONTINUE_CODEX.md. The main rolling build remains the last verified
 merged release until all delivery gates pass.
 
 ## Standalone focus and Today
@@ -74,7 +74,8 @@ retain original prescriptions and actual evidence and remove incompatible load r
 GymExecution snapshots hold actual entered sets separately, with idempotent stable IDs,
 explicit pause/resume and recovery gaps, monotonic timing and partial-completion evidence.
 Corrupted event sequences, mismatched actual references and invented completion are rejected.
-Only an explicitly started planned execution can propose its preserved association.
+An explicitly started planned execution preserves its exact association. Spontaneous
+actuals require a separate reviewed Count/Keep decision and never associate automatically.
 Storage codecs must additionally validate the frozen source against retained versions.
 
 The domain engine is connected through an activity-shared GymNowViewModel and one
@@ -124,3 +125,11 @@ is a reported pass. Optional rest timers/notifications, warm-up ramps, superset 
 ranked substitutions, custom programme templates and the richer multi-block generator
 remain later checkpoints retained in CONTINUE_CODEX.md. The working actual-set flow does
 not imply those features are complete.
+
+## Scope-controlled 0.9 completion
+
+The original larger Strength Engine 2.0 roadmap is deferred beyond this release. Current
+0.9 includes typed reviewed association/retry storage (schema12/strengthEngine2) and explicit
+reversible exclusions (schema13/strengthState2); older independent sections remain readable.
+See GYM_NOW.md and CONTINUE_CODEX.md for the retained product boundary. Rest timers,
+mesocycles, new programme builders and advanced analytics are not active acceptance tasks.

@@ -112,6 +112,26 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         }
     }
 
+    /** Bounded membership lookup for recent actual cards; does not hydrate execution evidence. */
+    public java.util.Set<String> finishedActualIds(java.util.List<String> candidates) {
+        if (candidates.size() > 20)
+            throw new IllegalArgumentException("Use a bounded recent page.");
+        var out = new java.util.HashSet<String>();
+        if (candidates.isEmpty()) return out;
+        String placeholders =
+                String.join(",", java.util.Collections.nCopies(candidates.size(), "?"));
+        try (var c =
+                read().rawQuery(
+                                "SELECT id FROM strength_executions WHERE state='FINISHED' AND id"
+                                        + " IN ("
+                                        + placeholders
+                                        + ")",
+                                candidates.toArray(new String[0]))) {
+            while (c.moveToNext()) out.add(c.getString(0));
+        }
+        return java.util.Collections.unmodifiableSet(out);
+    }
+
     @Override
     public List<Summary> unfinished() {
         var out = new ArrayList<Summary>();

@@ -1,3 +1,15 @@
+## Reduced0.9 storage/exclusions supported-API gate
+
+Source5527ccec99066577256faa6392453ddeb59f0034/workflow40702322526 passed build, lint
+and328instrumentation tests EACH onAPI28/35/36, including reviewed-association transaction,
+rollback, legacy migration, current/old backup and explicit-exclusion restoration cases.
+Pinned formatting and strict174canonical+14routine guidance passed. Canonical publication
+was still running when this entry was written. Connected association UI and its additional
+VM/SQL regression,91capture requirement and current screenshots require the next gate.
+Local219,527domainchecks/31suites,55schema,9release-note and8capture-validator cases pass.
+No physicalS24 result is claimed. RootJSON8/strengthEngine2/strengthState2/raw2/complete1;
+additive schema13. The reduced0.9boundary in CONTINUE_CODEX.md is authoritative.
+
 ## Explicit exclusions checkpoint
 
 Local tests now pass 55 schema cases, 9 release-note cases and the domain suite including

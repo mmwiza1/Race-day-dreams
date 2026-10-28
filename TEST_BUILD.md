@@ -355,3 +355,30 @@ Schema 11 / envelope 8 repository and backup results are recorded in VERIFICATIO
 the connected Gym Now UI checkpoint needs its own observed automated API28/35/36 gate.
 Outdoor recording, Health Connect, Bluetooth HR,
 TTS/music/calls, battery and other earlier S24 checks remain separately unperformed.
+
+## Reduced 0.9 retained feature acceptance — Galaxy S24 UNPERFORMED
+
+- [ ] Choose Strength without any running/race setup. Open Today → Gym Now, save an open
+  workout and verify actual load/reps remain exactly entered. Check Running and Hybrid
+  remain available without replacing existing data.
+- [ ] Browse/search an exercise, star it, then explicitly exclude it. Check Excluded,
+  reason text and search badge; restore it. Favourite, history, technique and PB evidence
+  must remain. Old Hide from My Exercises must not silently become an exclusion.
+- [ ] Generate a new programme/one-off with an excluded movement; it must not be selected.
+  Existing frozen workouts remain unchanged. Unsatisfied choices must explain the conflict.
+- [ ] Use Equipment busy/unavailable during a live workout. Review the explained 2–4
+  alternatives, confirm Just for today, verify reference load/input clears only after save,
+  and that earlier actual sets keep their exercise while the programme stays unchanged.
+- [ ] Finish a spontaneous workout near a compatible programme session. Before any choice,
+  verify it is extra. Review Count toward session and its exact programme version/actual;
+  confirm, reopen from Gym Now's recent/repeat list and explicitly Keep as extra instead.
+  Actual values, original prescription and spontaneous source must remain unchanged.
+- [ ] On expendable data, edit a counted actual and change the current programme version.
+  Reopen the workout, refresh evidence and reverse its association; retained decisions
+  and old programme versions must survive. Never perform fault injection on valuable logs.
+- [ ] Back up and restore current data on an expendable installation, comparing exclusions,
+  favourite exercises/workouts, explicit association choices, actual edits and programme
+  history. Confirm old supported backups restore and unsupported/corrupt copies fail safely.
+- [ ] Verify this flow in dark mode, 200% text and TalkBack. Continue the existing outdoor
+  recording/locked-screen/recovery/HC/BLE/TTS/battery checks above. No physical result is
+  inferred from synthetic traces or emulator/API tests.

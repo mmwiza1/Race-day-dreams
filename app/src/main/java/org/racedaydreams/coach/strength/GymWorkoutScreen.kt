@@ -69,7 +69,7 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
     var chooseExercise by rememberSaveable { mutableStateOf(false) }
     var discardConfirmation by rememberSaveable { mutableStateOf(false) }
     val execution = state.view?.observed()
-    val pending = state.view?.pending() != null
+    val pending = state.view?.pending() != null || state.association?.pending() != null
     val enabled = !state.loading && !state.busy && !pending
     val active = execution?.status() == GymExecution.Status.ACTIVE
     val terminal =
@@ -131,10 +131,30 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                             "Finished early · actual sets and the original prescription are preserved."
                         )
                     if (execution.origin() != GymExecution.Origin.PLANNED)
-                        Text("Saved as an extra workout. It has not completed a programme session.")
+                        Text(
+                            if (
+                                state.association?.current()?.choice() ==
+                                    org.racedaydreams.domain.strength.GymWorkoutAssociation.Choice
+                                        .COUNT_TOWARD_SESSION
+                            )
+                                "Associated with your explicitly reviewed programme session. Actual performance is retained separately."
+                            else
+                                "Saved as an extra workout. It has not completed a programme session."
+                        )
                 } else Text("This stage does not count as completed training or PB evidence.")
             }
             if (execution.status() == GymExecution.Status.FINISHED) {
+                if (execution.origin() != GymExecution.Origin.PLANNED)
+                    GymAssociationCard(
+                        state.association,
+                        enabled,
+                        onChoose = model::reviewAssociation,
+                        onRefresh = model::refreshAssociation,
+                    )
+                Text(
+                    "Execution as recorded · later actual edits remain in workout history.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
                 execution
                     .actualSets()
                     .groupBy { it.exercise() }
@@ -528,7 +548,7 @@ internal fun GymPendingWriteCard(model: GymNowViewModel, enabled: Boolean) {
             title = { Text("Reload the saved workout?") },
             text = {
                 Text(
-                    "Use this if an exact retry keeps reporting a conflict. Unacknowledged values stay in the form, but are not claimed as saved. The retained workout will require an explicit resume."
+                    "Use this if an exact retry keeps reporting a conflict. Unacknowledged values stay in the form, but are not claimed as saved. An unfinished workout will require an explicit resume; completed association choices are reloaded without restarting execution."
                 )
             },
             confirmButton = {

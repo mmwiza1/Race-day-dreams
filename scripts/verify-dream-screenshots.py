@@ -80,6 +80,9 @@ STRENGTH_REQUIRED = (
     'strength-home-large-font.png',
 )
 GYM_REQUIRED = (
+    'exercise-excluded.png',
+    'gym-association-review.png',
+    'gym-association-saved.png',
     'exercise-browse.png',
     'gym-equipment-alternatives.png',
     'gym-now.png',

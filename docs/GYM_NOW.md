@@ -104,28 +104,42 @@ training. There is no background GPS behaviour in gym execution. Form values and
 stable input IDs also use `SavedStateHandle` where Android supplies saved UI
 state; the SQLite stage remains the durable source of accepted evidence.
 
-Saved definitions, favourite preferences, execution stages, events and accepted
-actuals use schema 11 and the versioned `strengthEngine` section of JSON envelope
+Saved definitions, favourite preferences, execution stages, events, reviewed associations,
+exclusions and accepted actuals use additive schemas 11–13 and the versioned `strengthEngine` section of JSON envelope
 8. Complete-container and raw-recording archive versions are unchanged. See
 [STRENGTH_STORAGE_2.md](STRENGTH_STORAGE_2.md) for validation, bounds, migration,
 source-proof and transactional backup rules. Unsaved editor drafts are UI state,
 not a saved favourite or completed workout.
 
-## Current checkpoint and remaining Strength Engine 2.0 work
+## Retained 0.9 boundary
 
-This document describes the implemented Gym Now integration, whose Android build
-and UI regression gate must be recorded in `VERIFICATION.md`; it is not evidence
-that the full Strength Engine 2.0 release or physical acceptance has passed.
+This release finishes Architecture Hardening + Standalone Strength + Gym Now + Exercise
+Discovery, Exclusions and Smart Substitution. The one-off factory uses the current safe
+planner rather than introducing a major programming redesign. Actual load entry remains
+independent of optional references. Full custom programmes/templates/multiblock systems,
+rest timers, generated warm-ups, supersets, expanded catalogue and advanced analytics,
+progression and hybrid engines are deferred; they are not release blockers.
 
-The one-off factory still uses the current planner's heuristics. The requested
-goal/experience-specific multi-block generator, stronger power programming,
-explicit spontaneous-to-programme association choice, permanent programme
-substitutions, exclusions/custom exercise controls, optional rest timer and
-notifications, evidence-based warm-up ramps, superset execution and wider
-measurement-specific progression remain later phases. Preserved optional load
-references are shown; actual load entry remains independent.
+## Explicit completed-workout association
 
-The full Android API 28/35/36 gate, authentic captures and real-device checklist
-must accompany the integrated checkpoint. Galaxy S24 backgrounding, process
-interruption, recovery, accessibility and complete backup/restore checks remain
-unperformed until a human records their results in `TEST_BUILD.md`.
+After a spontaneous native workout, nearby supported programme targets can be reviewed.
+Keep as extra or Count toward session requires an explicit confirmation of the current
+actual and frozen programme version. It never changes native origin or invents completed
+sets. The same decision ID is retried after a failed acknowledgement; another choice is
+blocked until retry or explicit reload. Completed native workouts can be reopened from
+Gym Now's repeat/recent list to review or reverse a choice. Later actual edits preserve
+original decision evidence and refresh the review used for reversal. Planned executions
+retain their original exact association rather than offering a spontaneous substitute.
+
+## Exercise exclusions
+
+Exercise detail offers a reversible explicit exclusion with a non-medical reason. Browse
+→ Excluded offers Restore; matching searches label excluded exercises. This is separate
+from legacy archive/hide and does not erase historical evidence or favourites. New
+programmes, generated one-offs and today-only alternatives consult exclusions. Existing
+prescriptions and saved workout intentions remain frozen, and may still be deliberately
+used. If no supported candidate fits, the app explains that selection cannot be generated.
+
+The full API28/35/36 gate and authentic captures must accompany these changes. Physical
+S24 recovery, accessibility and complete-backup acceptance remain unperformed until a
+human records results in TEST_BUILD.md.

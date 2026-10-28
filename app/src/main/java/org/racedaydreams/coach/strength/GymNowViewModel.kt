@@ -5,6 +5,7 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
 import java.util.UUID
@@ -23,15 +24,18 @@ import kotlinx.coroutines.withContext
 import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.GymWorkoutJson
+import org.racedaydreams.data.SqliteGymAssociationRepository
 import org.racedaydreams.data.SqliteGymExecutionRepository
 import org.racedaydreams.data.StrengthUserStore
 import org.racedaydreams.domain.strength.ExerciseMetadata
 import org.racedaydreams.domain.strength.ExerciseSubstitutionEngine
+import org.racedaydreams.domain.strength.GymAssociationCoordinator
 import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.GymExecutionRepository
 import org.racedaydreams.domain.strength.GymNowWorkouts
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.domain.strength.GymWorkoutAdapter
+import org.racedaydreams.domain.strength.GymWorkoutAssociation
 import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.GymWorkoutSessionCoordinator
 import org.racedaydreams.domain.strength.StrengthExercise
@@ -109,6 +113,8 @@ data class GymNowState(
     val generated: GymNowWorkouts.Suggestion? = null,
     val finishEarlyRequired: Boolean = false,
     val substitution: GymSwapState? = null,
+    val association: GymAssociationCoordinator.View? = null,
+    val nativeRecentIds: Set<String> = emptySet(),
 )
 
 /**
@@ -118,6 +124,10 @@ data class GymNowState(
 class GymNowViewModel(application: Application, private val retained: SavedStateHandle) :
     AndroidViewModel(application) {
     private val repository = SqliteGymExecutionRepository(application)
+    private val associations =
+        GymAssociationCoordinator(SqliteGymAssociationRepository(application), Clock.systemUTC()) {
+            UUID.randomUUID().toString()
+        }
     private val coaching = CoachingStore(application)
     private val programmes = GymProgrammeStore(application)
     private val userChoices = StrengthUserStore(application)
@@ -159,21 +169,24 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         val favouriteIds: Set<String>,
         val archivedIds: Set<String>,
         val excludedIds: Set<String>,
+        val nativeRecentIds: Set<String>,
     )
 
     private fun panel(page: Int): Panel {
         val saved = repository.favouriteWorkouts(21, page * 20)
         val choices = userChoices.choices()
+        val recent = repository.recentActual(10)
         return Panel(
             programmes.current(),
             repository.unfinished(),
             saved.take(20),
             saved.size > 20,
-            repository.recentActual(10),
+            recent,
             coaching.exercises(),
             choices.filter { it.favourite() }.map { it.exerciseId() }.toSet(),
             choices.filter { it.archived() }.map { it.exerciseId() }.toSet(),
             userChoices.exclusions().map { it.exerciseId() }.toSet(),
+            repository.finishedActualIds(recent.map { it.id() }),
         )
     }
 
@@ -182,7 +195,13 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         allowPending: Boolean = false,
         action: () -> Unit,
     ) {
-        if (mutable.value.busy || !allowPending && mutable.value.view?.pending() != null) return
+        if (
+            mutable.value.busy ||
+                !allowPending &&
+                    (mutable.value.view?.pending() != null ||
+                        mutable.value.association?.pending() != null)
+        )
+            return
         mutable.update { it.copy(busy = true, error = null, notice = null) }
         viewModelScope.launch {
             var accepted = false
@@ -217,6 +236,14 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                                 else current
                             }
                         try {
+                            val completed = view?.accepted()?.execution()
+                            if (
+                                completed?.status() == GymExecution.Status.FINISHED &&
+                                    completed.origin() != GymExecution.Origin.PLANNED &&
+                                    associations.view().actualId() != completed.id()
+                            ) {
+                                associations.review(completed.id())
+                            }
                             fresh = panel(mutable.value.favouritePage)
                         } catch (error: RuntimeException) {
                             if (failure == null)
@@ -241,6 +268,8 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                         archivedExerciseIds = fresh?.archivedIds ?: previous.archivedExerciseIds,
                         excludedExerciseIds = fresh?.excludedIds ?: previous.excludedExerciseIds,
                         view = snapshot,
+                        association = associations.view(),
+                        nativeRecentIds = fresh?.nativeRecentIds ?: previous.nativeRecentIds,
                     )
                 }
                 syncFormToSelection()
@@ -330,7 +359,12 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         }
 
     private fun start(onReady: () -> Unit, action: () -> Unit) {
-        if (mutable.value.busy || mutable.value.view?.pending() != null) return
+        if (
+            mutable.value.busy ||
+                mutable.value.view?.pending() != null ||
+                mutable.value.association?.pending() != null
+        )
+            return
         afterAcknowledgement = onReady
         command(
             onSuccess = {
@@ -338,6 +372,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                 afterAcknowledgement = null
             }
         ) {
+            associations.clear()
             action()
             terminalView = null
             mutable.update { it.copy(finishEarlyRequired = false) }
@@ -532,12 +567,45 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                 callback?.invoke()
             },
         ) {
-            coordinator.retryPending()
+            if (associations.view().pending() != null) associations.retry()
+            else coordinator.retryPending()
+        }
+
+    fun reviewAssociation(
+        proposal: GymWorkoutAssociation.Proposal,
+        choice: GymWorkoutAssociation.Choice,
+    ) = command { associations.choose(proposal, choice) }
+
+    fun refreshAssociation() = command { associations.reloadSaved() }
+
+    fun openCompleted(id: String, onReady: () -> Unit) =
+        command(onSuccess = onReady) {
+            require(repository.unfinished().isEmpty()) {
+                "Finish or discard the active workout before opening completed evidence."
+            }
+            val stored = repository.load(id) ?: error("Recorded workout is no longer available.")
+            require(stored.execution().status() == GymExecution.Status.FINISHED) {
+                "Choose a completed workout."
+            }
+            associations.clear()
+            if (stored.execution().origin() != GymExecution.Origin.PLANNED) associations.review(id)
+            coordinator = GymWorkoutSessionCoordinator(repository, ticks)
+            terminalView = stored
         }
 
     /** Explicit escape from an unrecoverable stale-write conflict, never a silent pending drop. */
     fun reloadSavedEvidence() =
         command(allowPending = true) {
+            if (associations.view().pending() != null) {
+                associations.reloadSaved()
+                mutable.update {
+                    it.copy(
+                        notice =
+                            "Saved association reloaded. Review the current choice before changing it."
+                    )
+                }
+                return@command
+            }
             val pending = coordinator.view().pending() ?: error("There is no unacknowledged write.")
             val stored = repository.load(pending.snapshot().id())
             val replacement = GymWorkoutSessionCoordinator(repository, ticks)

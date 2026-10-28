@@ -51,7 +51,11 @@ fun GymNowScreen(
     var discardId by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmReload by rememberSaveable { mutableStateOf(false) }
     var plannedLimit by rememberSaveable { mutableStateOf(7) }
-    val mutable = !state.loading && !state.busy && state.view?.pending() == null
+    val mutable =
+        !state.loading &&
+            !state.busy &&
+            state.view?.pending() == null &&
+            state.association?.pending() == null
     val mayStart = mutable && state.unfinished.isEmpty()
     BackHandler(enabled = section != "Overview") { section = "Overview" }
 
@@ -73,7 +77,7 @@ fun GymNowScreen(
             }
         }
         state.notice?.let { message -> SemanticCard(Tile.Insight) { Text(message) } }
-        if (state.view?.pending() != null) {
+        if (state.view?.pending() != null || state.association?.pending() != null) {
             SemanticCard(Tile.Warning) {
                 Text("Save needs acknowledgement", style = MaterialTheme.typography.titleLarge)
                 Text(
@@ -319,6 +323,14 @@ fun GymNowScreen(
                         ) {
                             Text("Repeat workout")
                         }
+                        if (actual.id() in state.nativeRecentIds)
+                            TextButton(
+                                onClick = { model.openCompleted(actual.id(), onWorkout) },
+                                enabled = mayStart,
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) {
+                                Text("Review recorded workout")
+                            }
                     }
                 }
             }

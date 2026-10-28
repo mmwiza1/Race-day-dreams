@@ -484,6 +484,27 @@ class CoachingScreenshotTest {
         compose.onNodeWithText("Romanian Deadlift").performClick()
         await("Overview")
         capture("exercise-rdl")
+        compose.onNodeWithText("Exclude from recommendations").performScrollTo().performClick()
+        click("Exclude exercise")
+        await("Restore exercise")
+        back()
+        await("Search exercises or aliases")
+        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNodeWithTag("exercise-shortcut-Excluded").performScrollTo().performClick()
+        await("Excluded exercises")
+        alignHeading("Excluded exercises")
+        capture("exercise-excluded")
+        compose.onNodeWithText("Restore exercise").performScrollTo().performClick()
+        compose.waitUntil(20000) {
+            compose.onAllNodesWithText("Restore exercise").fetchSemanticsNodes().isEmpty()
+        }
+        compose
+            .onNodeWithText("Search exercises or aliases")
+            .performScrollTo()
+            .performTextReplacement("RDL")
+        compose.onNodeWithText("Romanian Deadlift").performClick()
+        await("Overview")
         click("How to do it")
         compose.waitForIdle()
         capture("exercise-rdl-howto")
@@ -970,6 +991,86 @@ class CoachingScreenshotTest {
             Assert.assertEquals(60.0, actual.exercises().first().sets().first().kilograms(), 0.0)
             Assert.assertEquals(8, actual.exercises().first().sets().first().reps())
             Assert.assertEquals(2, actual.exercises().size)
+            val programmeDay = LocalDate.now()
+            val associationPlan =
+                org.racedaydreams.domain.strength.GymProgramme(
+                    "gym-association-capture",
+                    1,
+                    Instant.now(),
+                    "Explicitly reviewed programme",
+                    org.racedaydreams.domain.strength.GymProgramme.Settings(
+                        org.racedaydreams.domain.strength.GymProgramme.Goal.STRENGTH,
+                        org.racedaydreams.domain.strength.GymProgramme.Priority.STRENGTH_FIRST,
+                        org.racedaydreams.domain.strength.GymProgramme.Experience.INTERMEDIATE,
+                        setOf(programmeDay.dayOfWeek),
+                        1,
+                        setOf("full gym"),
+                        45,
+                        org.racedaydreams.domain.strength.GymProgramme.Effort.RPE,
+                    ),
+                    programmeDay,
+                    programmeDay.plusDays(41),
+                    listOf(
+                        org.racedaydreams.domain.strength.GymProgramme.Session(
+                            "review-upper",
+                            programmeDay,
+                            "Upper body strength",
+                            listOf(
+                                org.racedaydreams.domain.strength.GymProgramme.Prescription(
+                                    "bench-press",
+                                    2,
+                                    6,
+                                    8,
+                                    null,
+                                    null,
+                                    6,
+                                    8,
+                                    120,
+                                    "Controlled working sets",
+                                ),
+                                org.racedaydreams.domain.strength.GymProgramme.Prescription(
+                                    "seated-cable-row",
+                                    2,
+                                    8,
+                                    12,
+                                    null,
+                                    null,
+                                    6,
+                                    8,
+                                    90,
+                                    "Controlled pulling work",
+                                ),
+                            ),
+                            "Actual evidence remains separate from this prescription.",
+                        )
+                    ),
+                    emptyList(),
+                )
+            GymProgrammeStore(context).save(associationPlan)
+            scenario?.onActivity { activity ->
+                ViewModelProvider(activity)[GymNowViewModel::class.java].refreshAssociation()
+            }
+            awaitGymReady { it.association?.proposals()?.size == 1 }
+            Assert.assertTrue(org.racedaydreams.data.DevelopmentStore(context).gymLinks().isEmpty())
+            alignHeading("Keep extra or associate?")
+            capture("gym-association-review")
+            compose
+                .onNodeWithTag("gym-association-count-review-upper")
+                .performScrollTo()
+                .performClick()
+            compose.onNodeWithTag("gym-association-confirm").performClick()
+            awaitGymReady {
+                it.association?.current()?.choice() ==
+                    org.racedaydreams.domain.strength.GymWorkoutAssociation.Choice
+                        .COUNT_TOWARD_SESSION
+            }
+            alignHeading("Your programme association")
+            capture("gym-association-saved")
+            Assert.assertEquals(
+                retained,
+                SqliteGymExecutionRepository(context).load(executionId).execution(),
+            )
+            Assert.assertEquals(actual, CoachingStore(context).strength().single())
         } finally {
             scenario?.close()
             scenario = null
@@ -1248,6 +1349,8 @@ class CoachingScreenshotTest {
         if (
             name in
                 setOf(
+                    "gym-association-review",
+                    "gym-association-saved",
                     "gym-now",
                     "gym-workout-builder",
                     "gym-workout",

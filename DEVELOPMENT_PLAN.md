@@ -1,25 +1,28 @@
 # Active increment — 0.9.0-test1
 
-Architecture Hardening + Strength Engine 2.0 is in development on
-`feature/strength-engine-2-architecture-hardening`, based on live main `8b75755`.
-Phase 1's behaviour-preserving extraction passed the existing backup/build/API gates
-(240 instrumentation tests on each supported API). Phase 2 corrects start-anchored gym
-weeks, lower-session variation and exercise-backed fatigue context. The combined
-checkpoint passed253 tests on EACH API28/35/36 in workflow40592585867. All requested phases remain in
-CONTINUE_CODEX.md; this increment does not reduce them to architecture alone.
+Architecture Hardening + Standalone Strength + Gym Now + Exercise Discovery, Exclusions
+and Smart Substitution. Branch `feature/strength-engine-2-architecture-hardening`, draft
+PR14. The owner's reduced release boundary in CONTINUE_CODEX.md is authoritative.
 
-Phase 3 implements a typed Running / Strength / Hybrid focus preference, race-free
-Strength setup and later Settings changes. Existing goals and programme versions stay
-intact. Android entry, focus-preservation and backup cases passed the supported-API gate.
-Strength-first Today is implemented with actual/versioned associations and IO-prepared
-summary evidence. Its three authentic capture modes and component cases passed CI;
-the actual light/dark/200% images were visually inspected.
-The complete Gym Now flow is the next product checkpoint; independent logging works now.
+Implemented: feature-owned orchestration/repositories/navigation, recorder coordinators,
+pinned formatting, six-week/Lower variation/fatigue fixes, race-free focus selection,
+Strength-first Today, one durable Gym Now execution flow, preserved saved intentions,
+174-exercise metadata/discovery, today-only explained substitutions, typed explicit
+completed-workout associations and reversible exclusions. Newer UI/storage checkpoints
+require the complete current-source gate recorded in VERIFICATION.md before merge.
 
-Running Coach and Strength Coach will each be independently usable. Hybrid use adds
-context without silently sacrificing either discipline. New Strength durability belongs
-in typed/versioned storage, with explicit immutable programme and athlete decisions.
-No new durable concepts go into the legacy Release08Store catch-all.
+Deferred beyond0.9: full custom programmes/templates/mesocycles, major generator redesign,
+rest timer, generated warm-up sets, supersets, catalogue expansion, advanced progression,
+analytics/PB redesign/achievements/deload and advanced hybrid decisions. Do not start them
+as release blockers. Existing completed stable functionality remains available.
+
+Current data: schema13, rootJSON8, strengthEngine2 (reads1), strengthState2 (reads1), raw2,
+complete1. No destructive migration or new generic release-store records. Actuals,
+immutable prescriptions and explicit athlete choices remain separate.
+
+Complete the retained UI, supportedAPI28/35/36 gate, old/current backup checks, authentic
+captures and accessibility/release review. Keep PR14draft until all retained automated
+work is complete; physical GalaxyS24 acceptance remains unperformed.
 
 The app recommends. The athlete decides. The plan adapts.
 
