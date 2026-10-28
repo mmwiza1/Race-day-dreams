@@ -43,6 +43,7 @@ import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
 import org.racedaydreams.domain.strength.ExerciseSearch
+import org.racedaydreams.domain.strength.ExerciseSubstitutionEngine
 import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.StrengthExercise
 import org.racedaydreams.domain.strength.StrengthSession
@@ -77,7 +78,15 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
     val slot = execution?.slots()?.firstOrNull { it.id() == execution.selectedSlotId() }
     val currentSets =
         remember(execution?.actualSets(), slot) {
-            execution?.actualSets()?.filter { it.slotId() == slot?.id() } ?: emptyList()
+            execution?.actualSets()?.filter {
+                slot != null && it.slotId() == slot.id() && it.exercise() == slot.exercise()
+            } ?: emptyList()
+        }
+    val beforeSwap =
+        remember(execution?.actualSets(), slot) {
+            execution?.actualSets()?.filter {
+                slot != null && it.slotId() == slot.id() && it.exercise() != slot.exercise()
+            } ?: emptyList()
         }
 
     CoachPage {
@@ -181,6 +190,30 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                         "Targets and references are guidance. Record the load and repetitions, time or distance you actually perform.",
                         style = MaterialTheme.typography.bodySmall,
                     )
+                    if (active) {
+                        OutlinedButton(
+                            onClick = {
+                                model.openSubstitutions(
+                                    ExerciseSubstitutionEngine.Reason.EQUIPMENT_BUSY
+                                )
+                            },
+                            enabled = enabled,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                        ) {
+                            Text("Equipment busy?")
+                        }
+                        TextButton(
+                            onClick = {
+                                model.openSubstitutions(
+                                    ExerciseSubstitutionEngine.Reason.ALTERNATIVES
+                                )
+                            },
+                            enabled = enabled,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                        ) {
+                            Text("Swap exercise")
+                        }
+                    }
                 }
 
                 val previous =
@@ -326,6 +359,20 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                         }
                     }
                 }
+                if (beforeSwap.isNotEmpty()) {
+                    SemanticCard(Tile.Neutral) {
+                        Text("Before this swap", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "These saved sets retain their original exercise. They do not count toward the replacement's target."
+                        )
+                        beforeSwap
+                            .groupBy { it.exercise() }
+                            .forEach { (exercise, sets) ->
+                                Text(exercise.name(), style = MaterialTheme.typography.titleSmall)
+                                sets.forEach { Text(gymActualDescription(it.actual(), exercise)) }
+                            }
+                    }
+                }
             } else {
                 SemanticCard(Tile.Insight) {
                     Text("Choose your first exercise", style = MaterialTheme.typography.titleLarge)
@@ -393,6 +440,8 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
             }
         }
     }
+
+    if (state.substitution != null) GymSubstitutionSheet(model)
 
     if (state.finishEarlyRequired) {
         AlertDialog(

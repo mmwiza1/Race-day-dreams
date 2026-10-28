@@ -182,6 +182,38 @@ public final class GymExecutionRepositoryTest extends AndroidTestCase {
         features.validateSnapshot(features.exportUserData());
     }
 
+    public void testExactProgrammeLookupDoesNotHydrateUnrelatedHistoryOrChangeCurrent() {
+        var programmes = new GymProgrammeStore(getContext());
+        var original = programme(1, 80);
+        programmes.save(original);
+        programmes.save(programme(2, 82.5));
+        assertEquals(original, programmes.version(original.id(), 1));
+        assertNull(programmes.version(original.id(), 3));
+        assertEquals(2, programmes.current().version());
+        var db = ProfileDatabase.get(getContext()).getWritableDatabase();
+        db.execSQL(
+                "UPDATE gym_plan_versions SET payload='{}' WHERE version_id=?",
+                new Object[] {original.id() + ":v2"});
+        // An unrelated broken historical row must not be decoded just to read this version.
+        assertEquals(original, programmes.version(original.id(), 1));
+        try (var cursor =
+                db.rawQuery(
+                        "EXPLAIN QUERY PLAN SELECT payload FROM gym_plan_versions WHERE"
+                                + " version_id=?",
+                        new String[] {original.id() + ":v1"})) {
+            assertTrue(cursor.moveToFirst());
+            assertTrue(cursor.getString(3).toUpperCase(java.util.Locale.ROOT).contains("INDEX"));
+        }
+        try {
+            programmes.version(original.id(), 2);
+            fail("A corrupted selected version must not be fabricated.");
+        } catch (IllegalArgumentException expected) {
+            assertNotNull(expected.getMessage());
+        }
+        programmes.disable();
+        assertEquals(original, programmes.version(original.id(), 1));
+    }
+
     public void testAssociationFailureRollsBackActualAndExecutionTogether() {
         var original = programme(1, 80);
         new GymProgrammeStore(getContext()).save(original);

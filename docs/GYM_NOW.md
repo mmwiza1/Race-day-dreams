@@ -53,6 +53,35 @@ requires a confirmation. The result retains actual evidence and a partial flag;
 it does not invent the omitted sets. An open workout can finish after at least
 one actual set. Discarded stages do not count as completed training.
 
+## Equipment busy and today-only swaps
+
+The live exercise card offers **Equipment busy?** and **Swap exercise**. A prepared
+choice shows up to four intent-compatible alternatives, with more available on request.
+Reasons include busy/unavailable equipment, movement discomfort, easier/harder variation
+and general alternatives. Each option explains movement/body-area overlap, its complete
+equipment setup and any measurement change. A shared upper/lower-body region alone does
+not qualify an alternative. Archived exercises are not normally recommended; favourites
+and recent history are tie-breakers after training compatibility.
+
+The context uses this execution's preserved programme goal, experience and equipment
+when available. Otherwise it explicitly defaults to general-fitness, beginner-compatible
+choices and asks the athlete to confirm equipment. A generic machines label does not
+imply every machine; a cable station does not imply every attachment. The optional typed
+capability picker applies to this swap only and does not change programme settings.
+
+The athlete confirms **Use just for today** before the existing execution coordinator
+records a replacement. The original prescription, already saved sets, programme and
+favourites remain unchanged. Previous-exercise sets stay visible separately and do not
+count toward the replacement's target. Incompatible targets and every load reference
+are cleared by the domain engine. Unsaved set inputs clear only after the replacement
+write is acknowledged, and actual loads are never copied. A failed write uses the same
+visible exact-retry path as actual-set entry.
+
+Movement-discomfort guidance advises avoiding movements that reproduce pain and states
+that alternatives are not medical clearance. No alternative is described as safe for an
+injury. Permanent programme substitutions remain a separate phase; this flow does not
+offer a nonfunctional permanent-change control.
+
 ## Ownership and interruption handling
 
 `GymNowViewModel` is shared by the activity's Gym Now, builder and active-workout
@@ -90,7 +119,7 @@ that the full Strength Engine 2.0 release or physical acceptance has passed.
 
 The one-off factory still uses the current planner's heuristics. The requested
 goal/experience-specific multi-block generator, stronger power programming,
-explicit spontaneous-to-programme association choice, ranked busy-equipment
+explicit spontaneous-to-programme association choice, permanent programme
 substitutions, exclusions/custom exercise controls, optional rest timer and
 notifications, evidence-based warm-up ramps, superset execution and wider
 measurement-specific progression remain later phases. Preserved optional load

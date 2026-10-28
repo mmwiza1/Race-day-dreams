@@ -25,6 +25,8 @@ import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.GymWorkoutJson
 import org.racedaydreams.data.SqliteGymExecutionRepository
 import org.racedaydreams.data.StrengthUserStore
+import org.racedaydreams.domain.strength.ExerciseMetadata
+import org.racedaydreams.domain.strength.ExerciseSubstitutionEngine
 import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.GymExecutionRepository
 import org.racedaydreams.domain.strength.GymNowWorkouts
@@ -72,6 +74,20 @@ data class GymBuilderDraft(
     val savedRevision: Int? = null,
 )
 
+/** A prepared, bounded today-only choice. None of these capabilities change saved gym settings. */
+data class GymSwapState(
+    val executionId: String,
+    val slotId: String,
+    val original: StrengthExercise,
+    val goal: GymProgramme.Goal,
+    val experience: GymProgramme.Experience,
+    val equipment: Set<ExerciseMetadata.Equipment>,
+    val contextExplanation: String,
+    val reason: ExerciseSubstitutionEngine.Reason,
+    val suggestions: List<ExerciseSubstitutionEngine.Suggestion>,
+    val visibleLimit: Int = 4,
+)
+
 data class GymNowState(
     val loading: Boolean = true,
     val busy: Boolean = false,
@@ -91,6 +107,7 @@ data class GymNowState(
     val builder: GymBuilderDraft = GymBuilderDraft(),
     val generated: GymNowWorkouts.Suggestion? = null,
     val finishEarlyRequired: Boolean = false,
+    val substitution: GymSwapState? = null,
 )
 
 /**
@@ -346,6 +363,153 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         coordinator.addExercises(
             listOf(GymWorkoutDefinition.Slot(UUID.randomUUID().toString(), exercise, null, null))
         )
+    }
+
+    fun openSubstitutions(reason: ExerciseSubstitutionEngine.Reason) = command {
+        val execution =
+            coordinator.view().accepted()?.execution()
+                ?: error("Open your active workout before choosing a replacement.")
+        require(execution.status() == GymExecution.Status.ACTIVE) {
+            "Resume the workout before choosing a replacement."
+        }
+        val slot = execution.slots().first { it.id() == execution.selectedSlotId() }
+        val source = execution.source()
+        val preserved =
+            if (source?.kind() == GymExecution.SourceKind.PROGRAMME)
+                programmes.version(source.id(), source.revision())?.settings()
+            else null
+        val available = initialSwapEquipment(preserved?.equipment() ?: emptySet())
+        val prepared =
+            GymSwapState(
+                execution.id(),
+                slot.id(),
+                slot.exercise(),
+                preserved?.goal() ?: GymProgramme.Goal.GENERAL,
+                preserved?.experience() ?: GymProgramme.Experience.BEGINNER,
+                available,
+                if (preserved != null)
+                    "Based on this workout's preserved programme settings. Check which equipment is available for this swap."
+                else
+                    "No preserved programme preferences are available. General-fitness and beginner-compatible alternatives are shown; choose the equipment available for this swap.",
+                reason,
+                emptyList(),
+            )
+        val suggestions = rankSubstitutions(prepared)
+        mutable.update { it.copy(substitution = prepared.copy(suggestions = suggestions)) }
+    }
+
+    fun changeSubstitutionReason(reason: ExerciseSubstitutionEngine.Reason) = command {
+        val current = mutable.value.substitution ?: error("Open the replacement choices first.")
+        val next = current.copy(reason = reason, visibleLimit = 4)
+        val suggestions = rankSubstitutions(next)
+        mutable.update { it.copy(substitution = next.copy(suggestions = suggestions)) }
+    }
+
+    fun changeSubstitutionEquipment(equipment: Set<ExerciseMetadata.Equipment>) = command {
+        val current = mutable.value.substitution ?: error("Open the replacement choices first.")
+        val next = current.copy(equipment = equipment.toSet(), visibleLimit = 4)
+        val suggestions = rankSubstitutions(next)
+        mutable.update { it.copy(substitution = next.copy(suggestions = suggestions)) }
+    }
+
+    fun showMoreSubstitutions() {
+        if (mutable.value.busy || mutable.value.view?.pending() != null) return
+        mutable.update { state ->
+            state.copy(
+                substitution =
+                    state.substitution?.let {
+                        it.copy(visibleLimit = (it.visibleLimit + 6).coerceAtMost(50))
+                    }
+            )
+        }
+    }
+
+    fun closeSubstitutions() {
+        if (mutable.value.busy) return
+        mutable.update { it.copy(substitution = null) }
+    }
+
+    /** The athlete confirms this command. No programme or saved favourite is rewritten. */
+    fun replaceForToday(replacement: StrengthExercise) {
+        if (mutable.value.busy || mutable.value.view?.pending() != null) return
+        val choice = mutable.value.substitution ?: return
+        val key = formKey(choice.slotId)
+        afterAcknowledgement = {
+            val clean = GymSetDraft()
+            saveForm(key, clean)
+            mutable.update {
+                it.copy(
+                    form = clean,
+                    notice =
+                        "Changed to ${replacement.name()} for today only. Previous sets and the original prescription are preserved. Choose a fresh load or task.",
+                )
+            }
+        }
+        // A failed write must expose the normal exact-retry controls, not leave a dialog over them.
+        mutable.update { it.copy(substitution = null) }
+        command(
+            onSuccess = {
+                afterAcknowledgement?.invoke()
+                afterAcknowledgement = null
+            }
+        ) {
+            val execution =
+                coordinator.view().accepted()?.execution()
+                    ?: error("The workout is no longer active.")
+            require(
+                execution.id() == choice.executionId &&
+                    execution.status() == GymExecution.Status.ACTIVE &&
+                    execution.selectedSlotId() == choice.slotId &&
+                    execution.slots().any {
+                        it.id() == choice.slotId && it.exercise() == choice.original
+                    }
+            ) {
+                "The selected exercise changed. Review replacement choices again."
+            }
+            require(rankSubstitutions(choice).any { it.exercise() == replacement }) {
+                "That alternative no longer matches these choices. Review the options again."
+            }
+            coordinator.replaceExercise(choice.slotId, replacement)
+        }
+    }
+
+    private fun rankSubstitutions(
+        choice: GymSwapState
+    ): List<ExerciseSubstitutionEngine.Suggestion> {
+        val choices = userChoices.choices()
+        return ExerciseSubstitutionEngine.rank(
+            ExerciseSubstitutionEngine.Context(
+                choice.original,
+                choice.goal,
+                choice.experience,
+                choice.equipment,
+                choices.filter { it.archived() }.map { it.exerciseId() }.toSet(),
+                choices.filter { it.favourite() }.map { it.exerciseId() }.toSet(),
+                mutable.value.recent
+                    .flatMap { session -> session.exercises().map { it.exercise().id() } }
+                    .toSet(),
+                choice.reason,
+            ),
+            50,
+        )
+    }
+
+    /** Legacy broad equipment labels never imply that every machine or attachment exists. */
+    private fun initialSwapEquipment(labels: Set<String>): Set<ExerciseMetadata.Equipment> {
+        if ("full gym" in labels) return ExerciseMetadata.Equipment.values().toSet()
+        val capabilities =
+            mapOf(
+                "barbell" to ExerciseMetadata.Equipment.BARBELL,
+                "dumbbells" to ExerciseMetadata.Equipment.DUMBBELLS,
+                "kettlebells" to ExerciseMetadata.Equipment.KETTLEBELLS,
+                "squat rack" to ExerciseMetadata.Equipment.SQUAT_RACK,
+                "bench" to ExerciseMetadata.Equipment.BENCH,
+                "cables" to ExerciseMetadata.Equipment.CABLE_STATION,
+                "pull-up bar" to ExerciseMetadata.Equipment.PULL_UP_BAR,
+                "trap bar" to ExerciseMetadata.Equipment.TRAP_BAR,
+                "sled" to ExerciseMetadata.Equipment.SLED,
+            )
+        return labels.mapNotNull(capabilities::get).toSet()
     }
 
     fun pause() = command { coordinator.pause() }

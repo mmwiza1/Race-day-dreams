@@ -39,17 +39,7 @@ fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{
     return ExerciseSearch.search(state.exercises,query,state.exerciseChoices.filter{it.favourite()}.map{it.exerciseId()}.toSet(),recent,state.exerciseChoices.filter{it.archived()}.map{it.exerciseId()}.toSet())
 }
 @Composable fun ExerciseBrowser(state:CoachUiState,model:CoachViewModel,open:(String)->Unit){
-    var favouritesOnly by rememberSaveable{mutableStateOf(false)};var query by rememberSaveable{mutableStateOf("")};var custom by rememberSaveable{mutableStateOf(false)};var name by rememberSaveable{mutableStateOf("")};var profile by rememberSaveable{mutableStateOf("LOAD_REPS")};var region by rememberSaveable{mutableStateOf("FULL")};var showHidden by rememberSaveable{mutableStateOf(false)}
-    val rows=remember(state.exercises,state.exerciseChoices,state.strengthSessions,query,showHidden,favouritesOnly){exerciseMatches(if(showHidden)state.copy(exerciseChoices=state.exerciseChoices.map{org.racedaydreams.data.StrengthUserStore.Choice(it.exerciseId(),it.favourite(),false)})else state,query).filter{!favouritesOnly||state.exerciseChoices.any{c->c.exerciseId()==it.id()&&c.favourite()}}}
-    Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
-        CoachHeading("Exercises")
-        CoachInput("Search exercises or aliases",query,{query=it})
-        Row{TextButton(onClick={custom=true}){Text("Add custom exercise")};FilterChip(selected=showHidden,onClick={showHidden=!showHidden},label={Text("Show archived")})}
-        FilterChip(selected=favouritesOnly,onClick={favouritesOnly=!favouritesOnly},label={Text("Favourites")})
-        Text("${rows.size} exercises · relevance first, then favourites and recent choices")
-        LazyColumn(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(8.dp)){items(rows.size,key={rows[it].id()}){i->val e=rows[i];Card(onClick={open(e.id())},modifier=Modifier.fillMaxWidth().heightIn(min=64.dp)){Column(Modifier.padding(12.dp)){Text(e.name(),style=MaterialTheme.typography.titleMedium);Text(ExerciseCatalog.definition(e.id())?.category()?:"Custom exercise")}}}}
-    }
-    if(custom)AlertDialog(onDismissRequest={custom=false},title={Text("Custom exercise")},text={Column(Modifier.verticalScroll(rememberScrollState())){CoachInput("Exercise name",name,{name=it});Text("Measurement");StrengthExercise.MeasurementProfile.values().forEach{p->FilterChip(selected=profile==p.name,onClick={profile=p.name},label={Text(p.name.lowercase().replace('_',' '))})};Text("Training region");Row{StrengthExercise.Region.values().forEach{v->FilterChip(selected=region==v.name,onClick={region=v.name},label={Text(v.name.lowercase())})}}}},confirmButton={TextButton(enabled=name.isNotBlank(),onClick={val p=StrengthExercise.MeasurementProfile.valueOf(profile);model.strength.saveExercise(StrengthExercise(java.util.UUID.randomUUID().toString(),name.trim(),StrengthExercise.Region.valueOf(region),if(p.usesLoad())StrengthExercise.Mode.WEIGHTED else StrengthExercise.Mode.BODYWEIGHT,false,p));custom=false}){Text("Save")}},dismissButton={TextButton(onClick={custom=false}){Text("Cancel")}})
+    org.racedaydreams.coach.strength.ExerciseBrowseScreen(state,{model.strength.saveExercise(it)},open)
 }
 @Composable fun ExerciseDetail(state:CoachUiState,model:CoachViewModel,id:String?,source:(String)->Unit = {}){
     val e=state.exercises.firstOrNull{it.id()==id}?:return
