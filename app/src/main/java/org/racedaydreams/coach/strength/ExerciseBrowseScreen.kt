@@ -504,8 +504,12 @@ fun ExerciseBrowseScreen(
 }
 
 internal fun exerciseBrowseContext(exercise: StrengthExercise): String {
-    val metadata = ExerciseMetadataCatalog.find(exercise.id()) ?: return
-    "Custom exercise · ${browseEnum(exercise.region().name)} region · ${browseEnum(exercise.measurement().name)} · equipment and movement not classified"
+    val metadata = ExerciseMetadataCatalog.find(exercise.id())
+    if (metadata == null) {
+        val description =
+            "Custom exercise · ${browseEnum(exercise.region().name)} region · ${browseEnum(exercise.measurement().name)} · equipment and movement not classified"
+        return description
+    }
     val areas = metadata.primaryAreas().joinToString(" & ") { it.label() }
     val equipment =
         if (metadata.equipment().equipmentFree()) "Bodyweight"
