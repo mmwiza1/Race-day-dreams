@@ -1,5 +1,56 @@
 # Continue — Architecture Hardening + Strength Engine 2.0
 
+## Latest implementation state — inspect before continuing
+
+Branch feature/strength-engine-2-architecture-hardening, draft PR14. Current code
+checkpoint1f7f42ad7c9a487decb8110e5d429091e92508c6; this documentation commit follows it.
+Do not merge or restart from main. No completed source or accepted artwork was removed.
+
+The previously pending Android gate WAS fixed and completed: f21af7b passed workflow
+40684717270,311tests EACH API28/35/36 plus build/lint/format/guidance/canonical publication.
+The following work progressed in order to Phase5 explicit association:
+- GymWorkoutAssociation now has204new JVM checks (aggregate201,295/30suites), including
+  exact reviewed sources, provenance revalidation, local-offset boundary dates, compatible
+  measurement tasks and rejection of stale/occupied choices.
+- GymAssociationJson independently versions frozen decisions at1, strictly validates
+  fields/types/standard JSON, keeps historical actual names and distinct target/reference
+  loads. Three real Android codec cases were added. No database writes/UI enabled yet.
+- docs/GYM_ASSOCIATION.md records implemented rules and exact remaining integration.
+- Two actual production captures are now mandatory: exercise-browse and
+  gym-equipment-alternatives, taking the complete capture gate from86to88.
+
+The first expanded314-test gate (40687196167) passed build/lint/format and ran314cases on
+API28 with ONE failure: the screenshot helper assumed one root while the real full-screen
+substitution dialog and covered activity correctly provide two. Source1f7f42a selects
+isDialog() for that capture only, retains visible-dialog and raw-date assertions, and
+retains all other roots/readiness/integrity checks. No assertion/test was deleted.
+Its NEW full API28/35/36/88capture gate remains pending; inspect actual latest logs and
+fix regressions before describing the new codec/captures as fully verified.
+
+NEXT EXACT TASKS, IN ORDER:
+1. Finish current314-test/88capture gate; inspect all failures. Adopt matching canonical
+   captures and open browser + busy dialog + normal/dark/200% workout images. Earlier
+   f21af7b/86images cannot certify the subsequent capture/codec changes.
+2. Complete Phase5 post-workout association persistence/UI, rather than jumping to later
+   features. Add typed schema12+ decision history and indexed current association
+   projection; preserve historical planned/manual links. Revalidate retained recording
+   provenance and actual snapshot + current plan/target inside one SQLite transaction.
+   Stable retry IDs, no duplicate occupied-target link, no date-only inference.
+3. Extend strict backup graph/section version with older reads and validate before
+   replacement; exercise edit/delete/lostack/rollback. Existing actual REPLACE writes
+   must not cascade-delete decision history. Avoid scanning every historical JSON link.
+4. Wire explicit Keep as extra / Count toward the reviewed prescription in saved-workout
+   UI only when typed persistence and restore are tested. Preserve original actual origin,
+   frozen prescription and athlete decision. No UI control for this exists yet.
+5. Continue all retained remaining user phases below. Exclusions/custom metadata,
+   permanent ranked substitutions, custom/multiblock programmes, rest timers/warm-ups/
+   supersets, broader progression/analytics/achievements/hybrid work remain unfinished.
+
+Current source schema11 /JSON8 /strengthEngine1 /raw2 /complete1 are unchanged. Local
+formatting,49schema,9release and8capture-validator checks passed; all174canonical and
+14routine guides remain intact. S24 physical checks remain UNPERFORMED. Main/rolling
+release remains0.8.2. Working tree must be inspected; handoff is not full-release acceptance.
+
 ## Current continuation: 311-test gate green; explicit association phase started
 
 Latest verified source f21af7b7d31544a3bce742f7fe30614770dcec51 passed FULL workflow

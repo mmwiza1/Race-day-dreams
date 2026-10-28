@@ -445,3 +445,7 @@ Prior accepted verification history is retained separately in
 ## Browser continuation: compile correction pending new Android gate
 
 Source9c7717e corrects the observed40683366281 Kotlin custom-exercise context return error. Pinned formatting/checks pass; no test was weakened. Local201,091domain checks/29suites,49schema and9release-note cases pass. Its full Android gate and current browse/swap captures remain pending. All six earlier dbaca95 GymNow captures have now been opened, including builder and normaldark; readable targets/actuals/controls and no harmful overlap observed. These earlier images do not certify the newer browser or substitution UI.
+
+## Subsequent association and visual-gate work
+
+The original pending gate completed successfully at f21af7b/workflow40684717270 with311tests perAPI28/35/36. Association-domain coverage now adds204checks (201,295total/30suites), including retained-origin and local-offset boundaries. Strict GymAssociationJson has3Android cases;314-test attempt40687196167 ran all314 onAPI28 with one screenshot-root failure. The helper at1f7f42a now selects the actual dialog semantics while retaining assertions. Its full314-test/88capture matrix is pending; no new complete-pass or physical result is claimed. No database/backup version changed; explicit association UI/persistence remains unfinished.
