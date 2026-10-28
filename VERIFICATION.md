@@ -36,7 +36,7 @@
   rely on the incomplete /workspace/android-sdk bootstrap. Android results above are CI.
 
 
-## Latest complete gate: typed gym durability and transactional backup
+## Earlier complete gate: typed gym durability and transactional backup
 
 **Verified source:** `77fd0b4561225e2e2faf0fc9316da649e99d6a9a` passed full
 [workflow 40601581173](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40601581173).
@@ -436,3 +436,7 @@ development build until that real-device acceptance is completed.
 
 Prior accepted verification history is retained separately in
 [the pre-correction report](docs/verification-history/0.8.1-pre-paris-correction.md).
+
+## Browser continuation: compile correction pending new Android gate
+
+Source9c7717e corrects the observed40683366281 Kotlin custom-exercise context return error. Pinned formatting/checks pass; no test was weakened. Local201,091domain checks/29suites,49schema and9release-note cases pass. Its full Android gate and current browse/swap captures remain pending. All six earlier dbaca95 GymNow captures have now been opened, including builder and normaldark; readable targets/actuals/controls and no harmful overlap observed. These earlier images do not certify the newer browser or substitution UI.

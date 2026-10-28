@@ -1,5 +1,23 @@
 # Continue — Architecture Hardening + Strength Engine 2.0
 
+## Latest continuation — browser compile fix
+
+Current source9c7717e fixes the actual b630ef9 CI compile failure in
+ExerciseBrowseScreen.exerciseBrowseContext: Kotlin interpreted a bare multiline return
+as Unit. An explicit local String return now survives the pinned formatter. No test
+or assertion was removed. Workflow40683366281 failed compilation on API28/36;35was
+still running when inspected. The new source must pass its OWN full gate (expected311,
+not an observed pass). Next: inspect the branch's latest workflow, fix actual failures,
+then adopt matching captures and review browser/substitution screens. Do not merge.
+
+Serial local validation repeated:201,091domain checks/29suites,49schema and9release
+checks passed. Pinned apply/check and whitespace checks passed after the fix.
+Opened the two previously unreviewed dbaca95 captures, gym-workout-builder and
+normal-dark gym-workout: ordered targets/edit controls are readable, actual entry
+stays separate and dark text/controls retain contrast. These complete the six GymNow
+capture reviews for that VERIFIED303-test source, not the newer browse/swap source.
+All S24 checks remain unperformed; the full remaining Strength2 scope below remains.
+
 ## Resume checkpoint — 28 October 2026 (supersedes older checkpoint status below)
 
 - Current feature source:227df1a; draft PR14 stays draft, no merge. Main remains0.8.2.

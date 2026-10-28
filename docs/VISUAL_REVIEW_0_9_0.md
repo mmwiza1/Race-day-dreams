@@ -109,3 +109,5 @@ audio, recovery and TalkBack acceptance remain **unperformed**.
 ## Gym Now source dbaca95
 
 Workflow40649295266 passed303cases on EACH supported API;bot33d13c0 supplies86real captures. Integrity passed. Opened gym-now, gym-workout, gym-workout-saved and gym-workout-large-font: clear actual/target distinction, prominent saved heading, readable natural wrapping at200%dark, no harmful overlap observed. Builder/normaldark still need direct review. New227df1a browsing/substitution changes require new captures and review; these images do not certify them. PhysicalS24 acceptance remains unperformed.
+
+Continuation completed direct review of the retained dbaca95 builder and normal-dark GymNow captures. Ordered target cards, editor controls and actual-only entry remain readable; no harmful overlap observed. All six GymNow captures now reviewed. New browsing/substitution source still requires its own captures and visual gate.
