@@ -1,3 +1,19 @@
+## Full retained-source gate passed; visual refinement pending
+
+21118c65454f2715861140b3614d56fa031bcb49/workflow40733453412 passed331tests EACHAPI28/35/36,
+complete build/lint/format/guidance and91canonical capture publication. Adopted botf72d075;
+fingerprint89fb431aebc33f93a9a43b2015474708c8e6937dfe86354c067e6b5ede1587fe. API35APK
+artifact12836957116 is49,271,597bytes; screenshots12836038576. Local219,527domainchecks/
+31suites,55schema,9release-note,14formatter,8capture-validator,11source and14artwork tests
+pass;174/174canonical+14/14routine guidance remains. The450workout/2250set backup fixture
+roundtrips19,102,193–19,102,196bytes onallAPIs (before/afterheap is notpeakmemoryproof).
+
+Direct review opened exclusions, association-review, association-saved andbusy-alternatives.
+Controls are readable, butbusy firstchoice remained too low. A compact reasonselector and
+expandable fullrationale (initial meaningful sentence retained) address that; exclusion
+capture now waits for the transient saveSnackbar to clear. These visual-only changes
+need a new331matrix/91capture gate before readiness. PR14 remainsdraft; S24 unperformed.
+
 ## Connected association/capture gate and diagnosed corrections
 
 Source7cd32f6/workflow40704503974 compiled and linted onAPI28/35/36. API35/36 ran329

@@ -494,6 +494,14 @@ class CoachingScreenshotTest {
         compose.onNodeWithTag("exercise-shortcut-Excluded").performScrollTo().performClick()
         await("Excluded exercises")
         alignHeading("Excluded exercises")
+        compose.waitUntil(20000) {
+            compose
+                .onAllNodesWithText(
+                    "Exercise preference saved. Existing targets, history and PBs are unchanged."
+                )
+                .fetchSemanticsNodes()
+                .isEmpty()
+        }
         capture("exercise-excluded")
         compose.onNodeWithText("Restore exercise").performScrollTo().performClick()
         compose.waitUntil(20000) {

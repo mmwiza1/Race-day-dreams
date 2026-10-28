@@ -49,6 +49,7 @@ fun GymSubstitutionSheet(model: GymNowViewModel) {
     val enabled = !state.busy && state.view?.pending() == null
     var equipmentExpanded by
         rememberSaveable(swap.executionId, swap.slotId) { mutableStateOf(false) }
+    var reasonExpanded by rememberSaveable(swap.executionId, swap.slotId) { mutableStateOf(false) }
     var chosenId by
         rememberSaveable(swap.executionId, swap.slotId) { mutableStateOf<String?>(null) }
     val chosen = swap.suggestions.firstOrNull { it.exercise().id() == chosenId }
@@ -78,26 +79,33 @@ fun GymSubstitutionSheet(model: GymNowViewModel) {
                         modifier = Modifier.semantics { heading() },
                     )
                     Text(swap.original.name(), style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        "Choose an alternative for today. Your programme, saved workout and previous sets stay as recorded."
-                    )
+                    Text("Choose for today only. Your programme and saved sets stay unchanged.")
                 }
                 item {
                     Text("Why swap?", style = MaterialTheme.typography.titleMedium)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ExerciseSubstitutionEngine.Reason.values().forEach { reason ->
-                            FilterChip(
-                                selected = swap.reason == reason,
-                                onClick = {
-                                    chosenId = null
-                                    model.changeSubstitutionReason(reason)
-                                },
-                                enabled = enabled,
-                                label = { Text(gymSwapReason(reason)) },
-                                modifier = Modifier.heightIn(min = 48.dp),
-                            )
-                        }
+                    OutlinedButton(
+                        onClick = { reasonExpanded = !reasonExpanded },
+                        enabled = enabled,
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text("${gymSwapReason(swap.reason)} · Change reason")
                     }
+                    if (reasonExpanded)
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            ExerciseSubstitutionEngine.Reason.values().forEach { reason ->
+                                FilterChip(
+                                    selected = swap.reason == reason,
+                                    onClick = {
+                                        chosenId = null
+                                        reasonExpanded = false
+                                        model.changeSubstitutionReason(reason)
+                                    },
+                                    enabled = enabled,
+                                    label = { Text(gymSwapReason(reason)) },
+                                    modifier = Modifier.heightIn(min = 48.dp),
+                                )
+                            }
+                        }
                 }
                 if (swap.reason == ExerciseSubstitutionEngine.Reason.UNCOMFORTABLE) {
                     item {
@@ -200,13 +208,32 @@ fun GymSubstitutionSheet(model: GymNowViewModel) {
                             style = MaterialTheme.typography.titleLarge,
                         )
                         Text(gymExerciseContext(suggestion.exercise()))
-                        Text(suggestion.explanation())
+                        var explanationExpanded by
+                            rememberSaveable(suggestion.exercise().id()) { mutableStateOf(false) }
+                        val explanation = suggestion.explanation()
+                        Text(
+                            if (explanationExpanded || !explanation.contains(". ")) explanation
+                            else explanation.substringBefore(". ") + "."
+                        )
                         OutlinedButton(
                             onClick = { chosenId = suggestion.exercise().id() },
                             enabled = enabled,
                             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                         ) {
                             Text("Choose ${suggestion.exercise().name()}")
+                        }
+                        TextButton(
+                            onClick = { explanationExpanded = !explanationExpanded },
+                            modifier =
+                                Modifier.heightIn(min = 48.dp).semantics {
+                                    contentDescription =
+                                        "${if(explanationExpanded) "Hide" else "Show"} explanation for ${suggestion.exercise().name()}"
+                                },
+                        ) {
+                            Text(
+                                if (explanationExpanded) "Hide explanation"
+                                else "Why this alternative?"
+                            )
                         }
                     }
                 }
