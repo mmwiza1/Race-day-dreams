@@ -6,7 +6,7 @@ programme builder is not yet connected to the application.
 
 ## What's new
 
-- Android-independent programme previews now model explicit training blocks,
+- Android-independent programme previews and editable draft operations now model explicit training blocks,
   immutable revision lineage and preserved exercise/measurement targets.
 - Nine original starter structures and goal/experience-specific preview policies
   are under automated development. These are not yet exposed as app controls.
@@ -19,8 +19,10 @@ programme builder is not yet connected to the application.
 
 ## Fixes
 
-- Existing 0.9 fixes and evidence-preservation contracts are retained. No additional
-  user-visible defect resolution is claimed at this initial domain checkpoint.
+- Dream artwork publication now distinguishes pending loading from unavailable
+  illustrations and keeps readiness tied to the current city. The strict screenshot
+  deadline remains unchanged; new fault-injection tests and API verification are required.
+- Existing 0.9 fixes and evidence-preservation contracts are retained.
 
 ## Known limitations
 

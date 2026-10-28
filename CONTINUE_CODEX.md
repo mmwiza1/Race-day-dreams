@@ -18,7 +18,7 @@ The latest owner brief supersedes the earlier broad Strength Engine 2.0 backlog.
 0.9 is COMPLETE and merged, not unfinished work. Do not reset/restart it.
 
 - Repository: mmwiza1/Race-day-dreams.
-- Feature branch: feature/0.10-strength-programming, based on live main c6299e2
+- Feature branch: feature/0.10-strength-programming; draft PR15, based on live main c6299e2
   (documentation/rules update after 0.9 merge 1fd0d2d).
 - Version: 0.10.0-test1 / code13. Schema13, JSON8, strengthEngine2,
   strengthState2, raw2 and complete1 are currently UNCHANGED.
@@ -39,7 +39,9 @@ The app recommends. The athlete decides. The plan adapts.
 
 ## Current phase / decisions
 
-Phase A: domain authoring/preview foundation implemented and locally tested. StrengthProgramme models
+Phase A: domain authoring/preview checkpoint887eaa3 committed/pushed.
+Phase B: strict programme/draft/custom codecs, exact source adapter/validator and
+conservative modality progression are implemented locally, not yet connected to SQL/UI. StrengthProgramme models
 immutable lineage, contiguous dated blocks and frozen GymWorkoutDefinition targets;
 StrengthProgrammeEditor validates future-only revisions and permanent substitution
 proposals through the existing metadata/equipment/exclusion ranker, clearing loads.
@@ -50,11 +52,20 @@ Draft authoring supports partial saveable state, ordering/moves, duplicate worko
 custom targets/notes and strict complete-preview validation. Future regeneration protects
 past/actual-linked sessions even after availability changes. A shared transparent time
 budget explains custom session estimates and budget overruns.
-No persistence/activation/UI is connected to this model yet. Legacy programmes and
+No SQL repository, persistence/activation/UI is connected to this model yet.
+StrengthProgrammingJson reuses the strict gym parser/workout codec.
+GymWorkoutAdapter.fromAuthoredProgramme + authoredProgramme source validation use
+the existing execution engine, but SqliteGymExecutionRepository still resolves legacy
+programme rows only. Do NOT expose new sources until both repository/backup graphs and
+association/finalisation support them. Preserve null/fractional/RIR targets exactly.
+StrengthTargetProgression delegates weighted load advice to the existing rule and adds
+optional canonical task progression with two recent comparable sessions; custom tasks
+stay unsupported rather than gaining fabricated logic. Domain tests cover stale/future/
+duplicate/warm-up/missing-effort evidence, RIR, changed task identity and actual isolation. Legacy programmes and
 Gym Now behaviour are unchanged. Do not describe this domain checkpoint as a shipped
 builder or a complete 0.10 release.
 
-New programme-quality suite currently covers1,620 configurations and209,755 assertions. It verifies real metadata, exclusions, equipment, timing,
+New programme-quality suite currently covers1,620 configurations and239,973 assertions; modality/source suite152 checks. It verifies real metadata, exclusions, equipment, timing,
 repeatability, templates/blocks, weekday boundaries and future-only substitution rules.
 A canonical catalogue gap is explicit: no BEGINNER_FRIENDLY POWER-primary movement
 exists in the current174. Beginner power previews honestly describe stable strength
@@ -104,11 +115,21 @@ catalogue gaps may be filled with complete metadata/guidance and tests.
 
 ## Gates / exact next action
 
-Inspect actual git state first. Phase A local gate:429,282 assertions/32 suites,
+Inspect actual git state first. Latest local gate:459,652 assertions/33 suites,
 55schema and9release-note cases passed; pinned format/check and diff check pass.
-Commit/push this coherent checkpoint and open a DRAFT PR targeting main, then continue
-with Phase B typed codecs/repositories/backup integration before adding UI controls. Workflow capture branch/artifact version
+PR15 is DRAFT. Commit/push valid uncommitted codec/progression and readiness fixes,
+then require the current-head API matrix before claiming these Android changes verified.
+Continue with typed SQL repositories/backup integration before adding UI controls. Workflow capture branch/artifact version
 has been advanced to0.10; new source requires fresh91canonical captures before acceptance.
+Initial workflow40773971875/source887eaa3: build/lint/format/domain/schema/guidance
+passed;331instrumentation EACH on APIs28/35 passed, API36 had ONE Paris artwork
+readiness failure while city context was ready. Existing20sec assertion was retained.
+Current local repair uses a single producer-owned, asset-identified snapshot plus explicit
+missing-image state (instead of indefinitely saying Loading), with two deterministic
+cancellation/missing-poster tests. Exact underlying cause of that one emulator timeout
+is not proven; require fresh full CI and inspect failure diagnostics, never blind rerun.
+Six strict Android codec cases are also pending the next head. Canonical captures were
+NOT published by the failed initial run; existing repo captures still represent0.9.
 No local Android SDK/adb is verified; use actual GitHub CI rather than claiming local or
 physical tests. Record exact commit/run IDs, failures and next files here at each checkpoint.
 
