@@ -1,5 +1,10 @@
 # Verification — 0.9 development checkpoints
 
+## Latest observed full gate: browser and today-only substitutions
+
+Source f21af7b7d31544a3bce742f7fe30614770dcec51 passed workflow40684717270:311 tests EACH API28/35/36, build/lint/format/guidance and canonical publication. API35APK12813944987 is49,140,525bytes, screenshots12814742465. Canonical bot4fdf7d1 supplies86images; search capture was directly reviewed with keyboard visible and useful results. New88capture requirement and subsequent association-domain foundation are separate pending current-source gates. The invalid Compose onNode import was removed, with no test/assertion removed. Association-domain201new checks pass (201,292total/30suites);49schema,9release-note and8capture-validator cases pass. No physical S24 result is claimed.
+
+
 ## Gym Now verified checkpoint — 28 October 2026 (supersedes older checkpoint status below)
 
 - Current feature source:227df1a; draft PR14 stays draft, no merge. Main remains0.8.2.

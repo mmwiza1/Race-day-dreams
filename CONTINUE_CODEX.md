@@ -1,5 +1,42 @@
 # Continue — Architecture Hardening + Strength Engine 2.0
 
+## Current continuation: 311-test gate green; explicit association phase started
+
+Latest verified source f21af7b7d31544a3bce742f7fe30614770dcec51 passed FULL workflow
+40684717270:311instrumentation tests on EACH API28/35/36; build/lint/format/domain/
+schema/guidance all passed. Jobs28=122804005625,35=122804005680,36=122804005537.
+Canonical bot4fdf7d1 was merged without losing source work.86retained captures represent
+f21af7b, fingerprint2f827237087c2a1b78b8342e410a3e419c893df26973b1b679b9684f15641ba6.
+API35APK12813944987 is49,140,525bytes; screenshots12814742465. Browser search image
+opened: compact controls and meaningful results remain usable with keyboard visible.
+
+0df597d adds two mandatory real production captures: exercise-browse and
+ gym-equipment-alternatives (88required total). Feature merge558de78 preserves the
+canonical bot and these additions; its new capture gate still needs an observed result.
+
+NEXT IN ORDER: finish Phase5 explicit spontaneous-to-programme association.
+GymWorkoutAssociation now implements and tests the pure proposal/decision contract:
+nearby±3local days, exact working exercise AND measurement-task match, no warm-up-only
+or future actual proposals, no automatic planned-origin reassociation. Acceptance must
+revalidate actual snapshot, exact programme revision/target and occupied links atomically.
+201new checks pass; aggregate201,292checks/30suites. No UI button or database association
+feature is claimed: this is its tested domain foundation only.
+
+Exact remaining implementation: typed additive schema12 decision ledger/current selection
+(no new catch-all JSON), strict versioned decision codec; independently versioned
+strengthEngine2 reading old1 under existing envelope8; full transactional restore graph
+validation; accept/keep-extra UI on saved spontaneous workouts. Preserve actual origin,
+frozen prescriptions and explicit choice. Revalidate inside ONE shared SQLite transaction;
+never resolve a replacement by same date alone. Account for actual edit/delete and lost-ack
+retry. SQLite REPLACE on strength_sessions can delete parent rows, so avoid a cascading
+FK that would silently erase decisions on actual edits. Test every prior schema, old/current
+backup and full rollback before enabling UI. Do not extend circulated schema11 silently.
+Then continue the full remaining phases retained below; no scope is dropped.
+
+PR14 remains draft/unmerged. All physical S24 checks remain UNPERFORMED. Schema11 /
+JSON8 /strengthEngine1 /raw2 /complete1 currently remain unchanged. Pending88capture
+CI and the new foundation need their own current-source verification before acceptance.
+
 ## Latest continuation — browser compile fix
 
 Current source9c7717e fixes the actual b630ef9 CI compile failure in

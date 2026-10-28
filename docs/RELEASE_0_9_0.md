@@ -15,6 +15,8 @@ Coach will each work independently, with additional context when an athlete uses
   weekly completion, recorded PB evidence and one optional coaching review. A spontaneous
   session never completes a prescription merely because it occurred on the same date.
 
+- Browse exercises by body area, movement and equipment, with personal shortcuts and relevance-first search. Today-only swaps explain alternatives and preserve original targets and actual sets; reference loads are cleared when changing exercises.
+
 ## Improvements
 
 - Running, strength, progress, health and settings operations share one coherent read

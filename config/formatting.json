@@ -113,6 +113,7 @@
     "app/src/main/java/org/racedaydreams/portability/BackupManager.java",
     "app/src/androidTest/java/org/racedaydreams/data/ScopedRepositoriesTest.java",
     "app/src/androidTest/java/org/racedaydreams/data/RecordingCoordinationStoreTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/CoachCompletionStateTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/CoachCompletionStateTest.kt",
+    "domain/src/test/java/org/racedaydreams/domain/strength/GymWorkoutAssociationTestSuite.java"
   ]
 }
