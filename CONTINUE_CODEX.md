@@ -12,6 +12,96 @@ continue from the repository exactly as it exists. Inspect the live repo before 
 
 Do not blindly reset, force-push, discard valid changes, or recreate already-completed work.
 
+## Environment interruption — resume this section first
+
+The workspace executor became UNAVAILABLE during the next persistence phase. No reset,
+discard, stash, main change or force-push was performed. The experimental persistence
+work is LOCAL AND UNCOMMITTED, not a tested/published implementation. Last local HEAD
+was4180c28; remote now also contains57c46ec5a85a54d4de39951396e6056ec6f96150,
+a small association-dialog test synchronisation correction. Fetch/inspect on recovery;
+the remote changes are to this handoff and GymAssociationScreenTest.kt, which were not
+locally modified in this persistence phase. Preserve the local source edits; do not reset.
+
+Latest pushed CI40784342654/source4180c28 FAILED: API28/36 jobs passed, API35 finished339
+tests with ONE GymAssociationScreenTest failure at line92: second confirmation was
+clicked before TestTag gym-association-confirm existed. All evidence/history assertions
+remain. Remote fix57c46ec waits (same20sec bound) for the real confirmation, then asserts
+displayed+enabled and clicks for BOTH choices. It has NOT been verified yet; inspect its
+new workflow and fix failures rather than blindly rerunning. Do not merge PR15.
+
+### Local work preserved before disconnection (UNVERIFIED)
+
+- Schema14 candidate in ProfileDatabase.java: typed programme revisions, blocks, bounded
+  session rows, current pointer, ordered decision ledger, split draft/header/block rows,
+  custom metadata. Additive13→14; parent/header/session row bounds and FKs.
+- New domain StrengthProgrammingRepository.java with explicit legacy/authored references,
+  activation/stop decisions, protected-session IDs, summaries and optimistic draft API.
+- New SqliteStrengthProgrammingRepository.java: normalised reads, summary pages, draft
+  CAS/retries, custom-definition mirroring, explicit activation/stop and atomic decision
+  writes. Rejects legacy ID collisions, protects fresh actual-linked prescriptions and
+  checks replacement targets/equipment/exclusions without changing actuals.
+- New StrengthProgrammingArchive.java: strict versioned graph/lineage/current-pointer,
+  decision/draft/custom validation and typed row-size preflight. Current custom metadata
+  must agree with the logging definition before restore.
+- SqliteGymExecutionRepository.java and GymProgrammeStore.java: legacy/authored exact
+  source/date validation and planned finalisation/backup links, plus competing-current
+  guard. The original spontaneous association UI/domain remains LEGACY-only and needs
+  a truthful modern extension later; do not coerce optional/RIR targets into legacy RPE.
+- SqliteBackupRepository.java carries strengthProgramming and validates before the shared
+  restore transaction. BackupManager.VERSION candidate9 requires this section; reads1–8.
+  Raw archive2/complete package1 unchanged. GymExportBudget includes the new typed rows.
+- StrengthProgrammeEditor.java recomputes the changed workout's time estimate on swap.
+- Existing schema tests/Android old-schema fixture helpers updated for14/9. New
+  GymSchemaFixture.removeVersionFourteenTables removes children before old fixtures.
+
+### Actual observed results in this interrupted phase
+
+Fresh pre-change baseline:587,615 domain assertions and55schema cases passed.
+After initial DDL14/test expectation updates:55schema cases passed locally
+(/tmp/010-schema14-recheck.txt). This is NOT a compile, Android, repo or backup pass.
+The NEXT command intended to add five StrengthProgrammingMigrationTest SQL cases
+and run /tmp/010-schema14-complete.txt FAILED BEFORE PROCESS CREATION with
+"exec-server transport disconnected". Do not assume those tests/files exist.
+No new repository/activation/backup instrumentation tests have been written or run yet.
+No formatter target entries for the new persistence files have been added.
+The full uncommitted phase has NOT been compiled or domain-tested after its final edits.
+
+### Exact recovery tasks
+
+1. Restore usable execution environment, inspect git status/diff/log and fetch remote
+   feature/main. Preserve all uncommitted files; fast-forward remote handoff/test changes
+   only if Git permits without overwrite. Read current AGENTS. Do not recreate existing
+   source files or trust that the final disconnected command executed.
+2. First inspect/test remote dialog synchronisation fix and its current-head CI.
+3. Review/compile the persistence code before any UI wiring. Add formatter targets.
+   Check all static method signatures/JSON exceptions, RestoreData construction and
+   legacy/authored validation paths. Run domain + schema after the final local changes.
+4. Add the missing real repository tests: draft save/reload/stale retry/delete; immutable
+   activation and stop retries; legacy transition/ID collision; current-pointer conflict;
+   fresh completed-session protection; permanent swap reference clearing; normalized
+   large programme rows; bounded summary reads without session hydration; rollback via
+   injected SQL triggers. Fix any implementation defects these tests reveal.
+5. Add schema14-specific tests:13 upgrade retention; late-DDL rollback; FK/unique dates;
+   UTF8 row limits and summary query index. Existing55cases include paths1–13→14.
+6. Add backup9 tests: all new state round-trip; previous envelope8 without new section;
+  1–7 readers retained; missing/future/corrupt section rejection BEFORE replacement;
+   broken parent/decision/draft/custom/source refs; dual legacy/modern current rejection;
+   rollback after replacement starts; large retained history/preflight.
+7. Extend Gym Now source integration tests for modern planned start/pause/recovery/
+   finish/actual edits/delete and full backup restore. Historical roots/actual sets must
+   remain exact. Modern spontaneous Count/Keep is still unfinished and must be explicit.
+8. Optimise customExercises() (currently selects IDs then individual payloads); use one
+   payload query. Check activation's completed-ID intersection with retained current
+   sessions, and unchanged-future eligibility when equipment changes. Do not silently
+   transfer references or assume custom tasks support automatic progression.
+9. Only after durability gates pass: scoped programme builder/template/preview/activation
+   UI, custom metadata flow, future regeneration and permanent-vs-today swaps. Full0.10
+   scope remains below;0.11 additions remain forbidden.
+
+PR15 is DRAFT and 0.10 is NOT COMPLETE. This emergency handoff was saved through the
+GitHub connector because no local executor was available. Do not publish experimental
+SQL/app changes or mark physical S24 checks passed.
+
 ## Latest checkpoint authority (overrides older observed counts below)
 
 Branch feature/0.10-strength-programming / DRAFT PR15. Do NOT merge: SQL/durable
