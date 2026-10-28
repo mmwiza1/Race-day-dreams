@@ -27,12 +27,20 @@ private object DreamArtworkCache {
     }
 }
 
-@Composable internal fun rememberDreamArtwork(asset: String): ImageBitmap? = key(asset) {
+internal data class DreamCityArtwork(val hero: ImageBitmap?, val posters: List<ImageBitmap?>)
+
+/** Publish one coherent city snapshot; readiness and visible images observe the same state. */
+@Composable internal fun rememberDreamCityArtwork(city: DreamCityPresentation): State<DreamCityArtwork> {
     val context = LocalContext.current.applicationContext
-    val image by produceState<ImageBitmap?>(null, asset) {
-        value = withContext(Dispatchers.IO) { DreamArtworkCache.load(context, asset) }
+    val assets = listOf(city.hero) + city.landmarks.map { it.asset }
+    return key(assets) {
+        produceState(DreamCityArtwork(null, List(city.landmarks.size) { null }), assets) {
+            value = withContext(Dispatchers.IO) {
+                val loaded = assets.map { DreamArtworkCache.load(context, it) }
+                DreamCityArtwork(loaded.first(), loaded.drop(1))
+            }
+        }
     }
-    image
 }
 
 internal data class DreamLandmarkPoster(val label: String, val asset: String)
