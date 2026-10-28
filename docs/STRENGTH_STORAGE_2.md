@@ -2,8 +2,10 @@
 
 This document describes the 0.9 data foundation. It is not a claim that the full Gym Now
 or live gym interface has shipped. The latest completed supported-API gate is recorded in
-VERIFICATION.md; the new repository, schema and backup tests require their own observed
-gate. Physical Galaxy S24 acceptance remains unperformed.
+VERIFICATION.md. Source77fd0b4 passed the complete supported-API gate with293Android
+cases on each API28/35/36, including12repository and11backup cases. Physical Galaxy S24
+acceptance remains unperformed. Subsequent uncommitted coordinator/UI/resource guards
+require their own gate; they are not covered by that source's results.
 
 ## Ownership and version boundaries
 
@@ -120,12 +122,28 @@ claiming unbounded scale. Tests that measure heap before and after a fixture are
 measurements of peak allocation; no physical-memory or multi-year performance claim is
 inferred from them.
 
+The verified synthetic450workout/2250working-set export was19,102,019bytes on API35/36
+and19,102,016 on28. Observed heap after export was164,180,704 /165,440,400 /187,560,424
+bytes respectively. These are individual before/after samples, not peak measurements,
+and do not establish that every32MiB document fits memory. The near-row fixture retained
+238,630raw bytes and279,304escaped payload characters with2000actual sets. See the full
+measurement table and limitations in VERIFICATION.md.
+
+The current uncommitted `GymExportBudget` guard performs SQL aggregate UTF-8 byte counts
+over the five gym storage families inside the export snapshot transaction, before JSON
+construction. It returns counts rather than hydrating payloads through CursorWindow and
+rejects a provable lower bound beyond the backup limit before any destination bytes.
+Its new supported-API test is pending. Passing this lower-bound check does not guarantee
+the final serialised size or bound peak heap: escaping, wrappers and other sections add
+bytes. Complete streaming/resource hardening remains subsequent Phase35 work; the32MiB
+reader limit must not be advertised as a universally verified memory capacity.
+
 ## Verification boundary
 
 Required automated coverage includes all supported schema upgrades, strict codec
 round trips/malformed inputs, revision conflicts, retry idempotence, append-only actuals,
 partial recovery, exact source validation, actual edits/deletions, previous/current
 backup reads, transactional rollback and a history fixture above the former 8 MiB limit.
-Record actual totals, byte counts and supported-API outcomes in VERIFICATION.md after
-execution. The data foundation does not substitute for the forthcoming full Gym Now,
+The verified gate and measured fixtures are recorded in VERIFICATION.md. Subsequent
+additions need new observed results. The data foundation does not substitute for the full Gym Now,
 live set-entry, rest-timer, substitution or programme-builder acceptance gates.

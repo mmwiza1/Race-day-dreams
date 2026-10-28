@@ -1,25 +1,65 @@
 # Verification — 0.9 development checkpoints
 
-## Latest complete gate: execution codecs, source validation and focus coherence
+## Gym Now verified checkpoint — 28 October 2026 (supersedes older checkpoint status below)
 
-**Verified source:** `35664996a188653d06a2eb573004a50c33430c92` passed full
-[workflow40598574304](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40598574304).
+- Current feature source:227df1a; draft PR14 stays draft, no merge. Main remains0.8.2.
+- Latest FULL GREEN source:dbaca954c747117969910e02f87097cd65b32fd1,
+  workflow40649295266 SUCCESS. Exact Finished303 inspected on EACH API28/35/36
+  (jobs122685476841/122685476856/122685477076). Build/lint/format/guidance passed.
+- Canonical bot33d13c0 was fast-forwarded;86requiredPNG integrity passed. Fingerprint
+  ad793c4d782367f0b780f2146b5468a21111c231e7a191d8bbc0b1d3535bf599.
+  Opened real GymNow, live actual entry, saved summary and200%dark captures: readable,
+  no harmful overlap;200% content scrolls. Builder and normaldark still need direct review.
+  These captures represent dbaca95, NOT the newer227df1a browser/swap source.
+- API35APK artifact12799213089,48,911,149bytes; screenshots12799432729.
+- GymNow all6paths+openworkout, saved revisions, actual-onlysets, explicit recovery and
+  earlyfinish are connected and verified. Capture initially failed because completion
+  heading was buried at313px; production hierarchy fixed, original assertion retained.
+- New227df1a adds metadata browse/search (5Compose cases), intent-ranked today-only
+  substitutions (2realSQLite/Compose cases), and exact indexed programmeversion lookup
+  (1case). Own Android/visual gate PENDING, expected311 is NOT an observed pass.
+  Never merge until complete Strength2scope, not merely this checkpoint, is done.
+- Local201,091domainchecks/29suites passed, including86,485substitution checks;49schema,
+ 9release-note,8capture-validator and pinnedformatting pass.174/174+14/14guides intact.
+- No schema/backup/archive/permission/dependency changes in these UI/selection commits:
+  schema11 /JSON8 /strengthEngine1 /raw2 /complete1 remain.
+- Next EXACT: inspect227df1aCI, fix compile/lint/API failures, obtain matching86captures,
+  review browser/swap and all6gym captures. ExerciseSubstitutionScreen tests protect old
+  actuals from counting as replacement work, cleared references and explicit choices.
+  Preserve full remaining scope below: exclusions/custommetadata, permanent ranked swaps,
+  custom/multiblock programmes, resttimer/warmups/supersets, broader progression/analytics,
+  achievements, hybrid decisions, typed durability extensions and final quality simulator.
+- All GalaxyS24 physical checks remain UNPERFORMED. No main/stable release was published.
+- Local pinned format and gitpush now work. Gradlewrapper/plugins downloaded with
+  GRADLE_USER_HOME=/workspace/.gradle and Java HTTP proxy properties; local Android build
+  remains unverified (writable ANDROID_USER_HOME and actual SDK setup needed). Do not
+  rely on the incomplete /workspace/android-sdk bootstrap. Android results above are CI.
+
+
+## Latest complete gate: typed gym durability and transactional backup
+
+**Verified source:** `77fd0b4561225e2e2faf0fc9316da649e99d6a9a` passed full
+[workflow 40601581173](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40601581173).
 
 | API | Observed instrumentation result | Job |
 | --- | --- | --- |
-| 28 | 270 passed | 122521183424 |
-| 35 | 270 passed | 122521183354 |
-| 36 | 270 passed | 122521183323 |
+| 28 | 293 passed | 122530746133 |
+| 35 | 293 passed | 122530745938 |
+| 36 | 293 passed | 122530746051 |
 
-Exact Finished270 log lines were inspected for each API. Build, lint, actual pinned
+Exact Finished293 log lines were inspected for each API. Build, lint, actual pinned
 formatting, domain/schema/source/guidance and canonical screenshot publication passed.
-These include the strict codec/source regressions, cross-week planned lower-body spacing,
-progression-recency correction and Hybrid Today/Strength Plan coherence. No legitimate
+These include the existing strict codec/source, scheduling, progression and focus tests,
+plus 12 typed-repository and 11 backup cases. All supported schema 1–10 upgrades to11,
+old/current backup readers, rollback, actual edit/delete, repeat-source retention and
+synthetic large-backup tests passed. Formatting checked41Kotlin/65Java sources;14formatter
+harness cases passed. No legitimate
 test was removed, assertion weakened or timeout increased to obtain the result.
 
-Bot `7997dca03351b46e5598922b2ee6d3df7176fbca` was fast-forwarded and all80actual PNGs
+Bot `09cb5e80fc7171768a33799594dcecb4f1210e86` was fast-forwarded and all80actual PNGs
 passed integrity. Stored source fingerprint:
-`72e991bb52b062ddcd93a717aaa46a1f1e19b06dccdce9bc79465027db32ab96`.
+`25ea3535e45e4cda29d2c879a13e4269487b0c85c5fde89e14aeef3a3e5960e6`.
+It independently matches retained source77fd0b4 Git objects, not newer uncommitted code.
 Actual Home, StrengthHome light/dark/200% and annualParis2026 were opened and reviewed.
 Home is fully loaded; the earlier Loading capture defect is corrected. Important controls,
 wrapping, original artwork and hierarchy remain readable; no harmful clipping was found.
@@ -27,32 +67,55 @@ A partial multiplexed image display was a viewer-output issue rather than corrup
 the stored capture. The approved design references remain separate from actual images.
 See docs/VISUAL_REVIEW_0_9_0.md.
 
-API35 APK artifact **12778150145** is **48,272,173bytes**; actual screenshot artifact
-**12776884991**. This is a draft feature checkpoint, not the complete Strength Engine2.0
+API35 APK artifact **12778274454** is **48,321,325 bytes**; actual screenshot artifact
+**12778319076**. This is a draft feature checkpoint, not the complete Strength Engine2.0
 release. Main remains0.8.2; PR14stays draft and unmerged until the full scope is complete.
 
-## Typed execution durability: implemented code, Android gate pending
+## Verified durability and observed resource fixtures
 
-Source `7f0738cd0a6b710318dc7f14120e2579eb5c2583` is the next local source checkpoint.
-It adds typed SQLite staging, bounded normalised set/event rows, saved frozen workout
+The verified source adds typed SQLite staging, bounded normalised set/event rows, saved frozen workout
 revisions/preferences, revision-checked retries, atomic actual-plus-planned-association
 finalisation, accepted actual-edit tracking and retained repeat-source proof. Schema11 is
 additive from supported older schemas; JSON envelope8 requires strengthEngine1 and retains
 reads1–7. Raw archive2 and complete-backup container1 are unchanged. This is a data
-foundation: the full GymNow/live gym coordinator and UI remain unimplemented.
+foundation, not the complete Gym Now product.
 
-The new full supported-API result is **pending**. Expected293Android cases comprise the
-existing270 plus12repository and11backup cases; that expectation is not an observed pass.
-The backup/history fixture contains450workouts/2250sets above the old8MiB limit, but its
-Android run and measured output must be inspected before reporting a result. Before/after
-heap observations do not measure peak heap.
+The synthetic backup/history fixture contains450workouts/2250working sets. The actual
+`GymBackupFixture` log lines report:
 
-Observed current local checks: **94,641domain checks/26suites**, **49schema tests**,
+| API | Backup bytes | Elapsed ms | Heap before export | Heap after export | Heap after restore | Reported heap limit |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 28 | 19,102,016 | 11,020 | 13,980,800 | 187,560,424 | 38,376,736 | 402,653,184 |
+| 35 | 19,102,019 | 29,119 | 9,667,072 | 164,180,704 | 107,594,464 | 201,326,592 |
+| 36 | 19,102,019 | 11,721 | 7,228,304 | 165,440,400 | 33,332,112 | 201,326,592 |
+
+Heap figures are bytes sampled before/after operations, **not peak allocations**. These
+passing19.1MB fixtures do not prove every32MiB document fits memory. A separate near-row
+fixture retained238,630raw bytes,279,304escaped payload characters and2000actual sets;
+backup size was4,131,092bytes on28 and4,131,095 on35/36. Only synthetic fixture counts and
+resource measurements are logged; no athlete routes, health values or actual history are
+uploaded by diagnostics.
+
+Verified-source checks: **94,641domain checks/26suites**, **49schema tests**,
 **9release-note**, **14formatter-harness**, **7screenshot-validator**, **11Dreamsource** and
 **14artwork-integrity** cases. Strict174/174canonical and14/14routine guidance pass; all177
-exercise/20Dreamassets remain intact and manifest/attribution checks match. New repository/backup Android
-cases, old/current restore, migration and rollback assertions need their own complete CI
-gate; no physical memory, battery or GalaxyS24 result is inferred from these fixtures.
+exercise/20Dreamassets remain intact and manifest/attribution checks match. No physical
+memory, battery or GalaxyS24 result is inferred from these emulator fixtures.
+
+## Next uncommitted checkpoint — supported-API gate pending
+
+Current working changes add GymWorkoutSessionCoordinator, a one-off GymNowWorkouts factory,
+bounded favourite/recent selection queries, direct actual-deletion association cleanup,
+and GymExportBudget. The SQL byte-budget check rejects a provably oversized gym export
+before JSON construction or destination writes; it is a lower-bound guard, not a final
+size guarantee or peak-heap bound. Its new Android case still needs execution. New
+coordinator/factory/query tests also await their own complete compile/format/API gate.
+
+Focused Gym Now entry, builder and live actual-set screens are being implemented; their
+navigation, lifecycle/recovery, accessibility and authentic screenshot gates are not
+complete. Do not infer working end-to-end UI from the verified data foundation. Current
+uncommitted code is not represented by source77fd0b4's captures. Exact remaining work is
+tracked in CONTINUE_CODEX.md; PR14 must remain draft until the full scope is accepted.
 
 ## Previous checkpoints and diagnosed failures
 
@@ -62,7 +125,8 @@ and44Java files;14formatter-harness cases passed. API35 artifact12777070406 was4
 Its bot5220799 produced80valid PNGs, but actual review found Home still showed global
 Loading. This was a real capture-readiness defect despite green instrumentation/integrity.
 Positive current-activity loaded/content checks and a negative Loading guard now precede
-capture. The latest270gate produced a new fully loaded Home image and passed review.
+capture. The corrected270gate produced a new fully loaded Home image and passed review;
+the subsequent293gate's matching captures also passed the actual review above.
 
 Sourcee9768ff passed workflow40592585867 with253cases each; botc1fa18d adopted80captures.
 StrengthHome light/dark/200%, RunningHome, Plan and annualParis2026 were reviewed without

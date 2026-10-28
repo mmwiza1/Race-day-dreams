@@ -1,5 +1,41 @@
 # Continue — Architecture Hardening + Strength Engine 2.0
 
+## Resume checkpoint — 28 October 2026 (supersedes older checkpoint status below)
+
+- Current feature source:227df1a; draft PR14 stays draft, no merge. Main remains0.8.2.
+- Latest FULL GREEN source:dbaca954c747117969910e02f87097cd65b32fd1,
+  workflow40649295266 SUCCESS. Exact Finished303 inspected on EACH API28/35/36
+  (jobs122685476841/122685476856/122685477076). Build/lint/format/guidance passed.
+- Canonical bot33d13c0 was fast-forwarded;86requiredPNG integrity passed. Fingerprint
+  ad793c4d782367f0b780f2146b5468a21111c231e7a191d8bbc0b1d3535bf599.
+  Opened real GymNow, live actual entry, saved summary and200%dark captures: readable,
+  no harmful overlap;200% content scrolls. Builder and normaldark still need direct review.
+  These captures represent dbaca95, NOT the newer227df1a browser/swap source.
+- API35APK artifact12799213089,48,911,149bytes; screenshots12799432729.
+- GymNow all6paths+openworkout, saved revisions, actual-onlysets, explicit recovery and
+  earlyfinish are connected and verified. Capture initially failed because completion
+  heading was buried at313px; production hierarchy fixed, original assertion retained.
+- New227df1a adds metadata browse/search (5Compose cases), intent-ranked today-only
+  substitutions (2realSQLite/Compose cases), and exact indexed programmeversion lookup
+  (1case). Own Android/visual gate PENDING, expected311 is NOT an observed pass.
+  Never merge until complete Strength2scope, not merely this checkpoint, is done.
+- Local201,091domainchecks/29suites passed, including86,485substitution checks;49schema,
+ 9release-note,8capture-validator and pinnedformatting pass.174/174+14/14guides intact.
+- No schema/backup/archive/permission/dependency changes in these UI/selection commits:
+  schema11 /JSON8 /strengthEngine1 /raw2 /complete1 remain.
+- Next EXACT: inspect227df1aCI, fix compile/lint/API failures, obtain matching86captures,
+  review browser/swap and all6gym captures. ExerciseSubstitutionScreen tests protect old
+  actuals from counting as replacement work, cleared references and explicit choices.
+  Preserve full remaining scope below: exclusions/custommetadata, permanent ranked swaps,
+  custom/multiblock programmes, resttimer/warmups/supersets, broader progression/analytics,
+  achievements, hybrid decisions, typed durability extensions and final quality simulator.
+- All GalaxyS24 physical checks remain UNPERFORMED. No main/stable release was published.
+- Local pinned format and gitpush now work. Gradlewrapper/plugins downloaded with
+  GRADLE_USER_HOME=/workspace/.gradle and Java HTTP proxy properties; local Android build
+  remains unverified (writable ANDROID_USER_HOME and actual SDK setup needed). Do not
+  rely on the incomplete /workspace/android-sdk bootstrap. Android results above are CI.
+
+
 ## Repository and release boundary
 
 - Repository: mmwiza1/Race-day-dreams, /workspace/Race-day-dreams.
@@ -8,40 +44,46 @@
   the ENTIRE requested Strength Engine 2.0 scope and all delivery gates are complete.
 - Main baseline remains 8b75755a0b74074047408b6444a11db3d6fef6f3, version0.8.2/code11.
   Feature target:0.9.0-test1/code12. Do not restart or reset to main on continuation.
-- Last fully verified SOURCE:35664996a188653d06a2eb573004a50c33430c92.
-  Canonical bot7997dca03351b46e5598922b2ee6d3df7176fbca was fast-forwarded locally.
-- Latest typed durability source checkpoint:7f0738cd0a6b710318dc7f14120e2579eb5c2583.
-  It is committed locally but awaiting publication/format/full CI at this handoff edit.
+- Last fully verified SOURCE:77fd0b4561225e2e2faf0fc9316da649e99d6a9a.
+  Current local HEAD is matching canonical bot09cb5e80fc7171768a33799594dcecb4f1210e86.
+  The typed durability, strict accepted-actual codec, schema/backup migration fixtures
+  and resource-reporting checkpoint passed the complete supported-API gate below.
   Inspect actual HEAD, status and remote before proceeding; preserve all completed work.
 - Current source schema11 / JSON envelope8 / strengthEngine section1 / raw archive2 /
-  complete container1. The last fully verified source above still used schema10/JSON7;
-  the new durability formats require their own observed supported-API gate.
+  complete container1. These versions passed the complete gate; future durable families
+  require explicit subsequent migrations rather than extending circulated schema11.
 - Phases1–3, Strength-first Today/Hybrid coherence and canonical metadata are verified.
   Phase5 domain/codecs/source validation are verified; typed repository/backup code is
-  implemented but its Android gate is pending. Full Gym Now UI is NOT implemented.
+  verified. Source32b1812 adds the session coordinator, one-off factory, bounded selection
+  queries and SQL export preflight. Sourcefa034f5 corrects a test facade call.
+  Source3708db1 connects all six Gym Now flows, builder and actual-set UI with five
+  real UI cases and six additional required captures (86 total). Its own full
+  Android/visual gate is pending; do not claim the complete Strength product.
 - No Internet permission/runtime dependency/account/backend/analytics/ads/LLM added.
 
 ## Last full gate and actual visual review
 
-Workflow40598574304 SUCCESS:
-https://github.com/mmwiza1/Race-day-dreams/actions/runs/40598574304
-- 270 instrumentation tests passed on EACH API28/35/36. Exact Finished270 lines were
-  inspected in jobs122521183424 /122521183354 /122521183323 respectively.
+Workflow40601581173 SUCCESS:
+https://github.com/mmwiza1/Race-day-dreams/actions/runs/40601581173
+- 293 instrumentation tests passed on EACH API28/35/36. Exact Finished293 lines were
+  inspected in jobs122530746133 /122530745938 /122530746051 respectively.
 - Build, lint, domain/schema/source/guidance and actual pinned formatting passed.
   Bounded formatter convergence retains the pinned tools/checksums;14harness cases pass.
-- All80authentic captures were adopted from bot7997dca and passed local integrity.
-  Source fingerprint72e991bb52b062ddcd93a717aaa46a1f1e19b06dccdce9bc79465027db32ab96.
+- All80authentic captures were adopted from bot09cb5e8 and passed local integrity.
+  Source fingerprint25ea3535e45e4cda29d2c879a13e4269487b0c85c5fde89e14aeef3a3e5960e6.
+  It was independently recomputed from retained source77fd0b4 Git objects; the current
+  uncommitted working tree is NOT represented by those captures.
 - Opened actual Home, StrengthHome light/dark/200% and annualParis2026 images. Home is
   fully loaded, correcting the earlier171a210 Loading capture defect. Strength controls
   and wrapping remain readable, lower details scroll, and no harmful clipping, missing
   artwork or hierarchy regression was observed. A partial multiplexed image display
   was a viewer-output issue, not corruption in the stored PNG. See visual review docs.
-- API35 APK artifact12778150145:48,272,173bytes; screenshots artifact12776884991.
+- API35 APK artifact12778274454:48,321,325bytes; screenshots artifact12778319076.
   These are draft feature checkpoint artifacts, NOT a complete StrengthEngine2release.
 - All GalaxyS24 outdoor/BLE/TTS/music/calls/battery/recovery/backup/TalkBack checks remain
   UNPERFORMED. Main rolling release stays0.8.2; no stable tag or merge.
 
-Local current checks:94,641domain checks/26suites;49schema;9release notes;
+Verified source checks:94,641domain checks/26suites;49schema;9release notes;
 14formatter harness;7screenshot-validator;11Dream source;14artwork integrity cases;
 strict174/174canonical+14/14routine guides. All177exercise/20Dreamassets remain intact;
 manifest/attribution checks match. No original test/assertion was removed.
@@ -98,12 +140,12 @@ validates retained programme/saved/repeated sources; an identity hash alone is i
 Legacy programme IDs/targets can be proven, but old exercise names were not stored and
 cannot be independently authenticated. The newly frozen definition remains preserved.
 
-## Typed durability checkpoint — implemented, supported-API gate pending
+## Typed durability checkpoint — complete supported-API gate passed
 
-Source7f0738c adds domain GymExecutionRepository and SqliteGymExecutionRepository, strict
-GymAcceptedActualJson, schema/backup integration and real Android fixtures/tests. It has
-not passed its new full CI gate yet. Expected293Android cases =270existing +12repository
-+11backup cases; never report this expectation as an observed pass.
+Source77fd0b4 includes GymExecutionRepository and SqliteGymExecutionRepository, strict
+GymAcceptedActualJson, schema/backup integration and real Android fixtures/tests.
+The complete gate actually passed293Android cases on each API:270existing +12repository
++11backup cases. Formatting checked41Kotlin/65Java sources with the pinned tools.
 
 Schema11 has exactly five families: strength_workout_versions,
 strength_workout_preferences, strength_executions, strength_execution_sets and
@@ -129,10 +171,48 @@ Envelope8 requires independently versioned strengthEngine1, retaining reads1–7
 all source/actual/edit/association graphs before the shared outer replacement transaction;
 refuse replacement while a local unfinished gym stage exists. Complete container1 and raw2
 remain unchanged. Bounds are32MiB/depth32/2milliontokens/1MiBserialisedstring. Export must
-fail clearly before destination truncation. The450workout/2250set fixture above the old
-8MiB limit is an Android test awaiting execution; no peak-heap measurement is claimed.
+fail clearly before destination truncation. The450workout/2250set fixture passed on
+all three APIs:19,102,019bytes on35/36 and19,102,016 on28. Heap after export was
+164,180,704B /165,440,400B /187,560,424B on35/36/28 respectively. These are before/after
+observations, NOT peak allocations or proof that every32MiB backup fits device memory.
+The near-row fixture retained238,630rawbytes /279,304escaped characters and2000actualsets.
 See docs/STRENGTH_STORAGE_2.md for the detailed data contract and TEST_BUILD.md for the
-unchecked physical acceptance list. There is still NO full GymNow/live gym coordinator/UI.
+unchecked physical acceptance list.
+
+## Current Gym Now checkpoint — verify before claiming success
+
+- GymWorkoutSessionCoordinator serialises engine/storage commands, retains exact pending
+  snapshots for lost-ack retries and publishes accepted state only after persistence.
+  Display observations do not write to disk. Its methods must run on IO; Compose renders
+  returned immutable state. A failed start cannot display a different old workout.
+- GymNowWorkouts creates a date-free QUICK/GENERATED prescription through the existing
+  planner without saving a programme or actual sets. Goal/time/equipment limitations are
+  explicit. Its1080planner combinations are domain coverage, not completion of the future
+  full goal-specific programme-quality simulator.
+- SqliteGymExecutionRepository adds bounded favourite pagination and recent-actual
+  selection; no raw execution events or set histories are loaded for favourite cards.
+  Direct actual deletion also clears its exact retained programme association.
+- GymExportBudget runs an SQL aggregate lower-bound byte check before JSON construction.
+  Provably oversized retained gym data fails before destination output. The new Android
+  regression and all these additions require their own full API gate.
+  Passing a lower-bound check is NOT a guarantee of final size or bounded peak memory;
+  streaming/resource hardening remains Phase35 work.
+- New app/coach/strength files implement GymNowViewModel and focused entry/builder/live
+  screens are connected through one lazily created activity-scoped ViewModel and
+  three flat feature destinations. Explicit recovery, partial-finish confirmation,
+  five real SQLite/Compose cases and six new canonical captures are implemented.
+  Do not claim acceptance until the current API/visual gate passes.
+- No schema/backup version is changed by this checkpoint. Uncommitted source/tests and
+  documentation must be preserved; inspect git status rather than relying on a stale list.
+- Local pinned formatting now works. Network Git fetch/push now works too. Local Gradle
+  downloaded through the configured HTTP proxy using a workspace GRADLE_USER_HOME;
+  Android configuration still requires a writable ANDROID_USER_HOME and installed SDK.
+- Initial32b1812 CI failed because a new test called validateSnapshot on FeatureStore.
+  fa034f5 uses the typed SqliteBackupRepository instead; no assertion was removed.
+- Current local domain count114,606 checks/28suites;49schema,9release,14formatter
+  harness,8screenshot-validator,11source tests and strict174/174+14/14 guides pass.
+  The two simultaneous offline domain runs briefly shared compiler output and caused
+  a truncated-class error; a serial rerun passed. Do not run that script concurrently.
 
 ## Diagnosed failures — fixed without weakening tests
 
@@ -151,19 +231,17 @@ unchecked physical acceptance list. There is still NO full GymNow/live gym coord
 
 ## NEXT EXACT TASKS
 
-1. Inspect HEAD/status/remote; preserve7f0738c and all documentation work. Publish using
-   the expected-head lease, obtain actual pinned formatting if needed, and run the new
-   repository/backup/schema/build/lint/API28/35/36 gate. Expected293 is pending, not passed.
-2. Inspect every failure and fix root causes. Validate old envelopes1–7/current8,
-   all schema1–10 upgrades, current full-backup rollback and real actual edit/delete
-   semantics. Review the measured large-fixture result without inventing peak heap.
-3. Adopt matching80canonical captures and review affected screens; update actual gate/
-   artifacts/counts in this handoff and VERIFICATION.md. Keep PR14draft/fullscope boundary.
-4. Wire typed repository through application composition/coordinators and implement the
-   full Phase5 GymNow planned/quick/build/repeat/favourite/generate entry flows and one
-   live actual-set execution UI. Existing saveStrength(plannedDate) resolves gym.current()
-   at finish; use the new preserved source for live finalisation instead. Success follows
-   committed writes; prescription values must never prefill themselves as completed sets.
+1. Inspect actual HEAD/status/remote and the latest3708db1 workflow. Preserve the
+   completed coordinator/factory/UI/navigation/storage work and all documentation.
+2. Inspect and fix actual compile/lint/API28/35/36 failures. The current expected303
+   cases include293previous+4repository/factory/coordinator/budget+5UI+1capture.
+   Expected totals are NOT an observed pass. Never remove assertions to pass.
+3. Adopt/review matching86canonical captures (including Gym Now, builder, actual
+   sets, completion, dark and200%). Verify actual screenshots and source fingerprint
+   before updating VERIFICATION.md / README / screenshot docs.
+4. Once the checkpoint is green, continue explicit spontaneous-to-programme choice
+   and the remaining user phases. All six entry paths are implemented, not a claim
+   that timer/superset/substitution/multiblock work is complete.
 5. Continue ALL remaining user phases below; do not stop at storage/interfaces or treat a
    green foundation checkpoint as the completed release.
 

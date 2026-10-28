@@ -66,3 +66,46 @@ references remain separate. This is agent-assisted actual emulator-image review,
 GalaxyS24 sunlight/TalkBack/sensor/battery acceptance. The next typed durability checkpoint
 requires its own CI and matching capture adoption; full GymNow/live gym screens remain
 future work and are not implied by this existing-screen review.
+
+## Typed gym durability checkpoint — matching captures reviewed
+
+Source `77fd0b4561225e2e2faf0fc9316da649e99d6a9a` passed full
+[workflow 40601581173](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40601581173).
+The actual logs report **293 instrumentation tests on each API 28, 35 and 36**
+(jobs 122530746133, 122530745938 and 122530746051 respectively). Build, lint,
+domain/schema/source/guidance, pinned formatting and canonical publication succeeded.
+Bot `09cb5e80fc7171768a33799594dcecb4f1210e86` adopted the matching 80 API-35 captures.
+API-35 screenshots artifact: `12778319076`; APK artifact: `12778274454`.
+The build log reports an uncompressed APK size of **48,321,325 bytes**; the artifact's
+ZIP size is a separate quantity.
+
+On 28 October 2026, `python3 scripts/verify-dream-screenshots.py docs/screenshots`
+verified all 80 required PNGs, including all 14 Dream top/landmark panels, at 540×1200.
+The retained source commit was reconstructed from Git objects using the same path
+ordering as `scripts/screenshot-source.py`. Its fingerprint matches the capture metadata:
+`25ea3535e45e4cda29d2c879a13e4269487b0c85c5fde89e14aeef3a3e5960e6`.
+This verifies the captured source; it does **not** represent subsequently uncommitted
+Gym Now work in the current working tree.
+
+Opened the actual Home, Strength Home light/dark/200%-font and Paris Dream Route PNGs:
+
+- Home is fully loaded and presents the planned workout and Run Now actions.
+- Strength Home retains its Today heading, exercise summary, primary logging action
+  and independent-training card. Separate single-image inspection confirmed the full
+  stored light capture; a cropped multiplexed viewer display was not a PNG defect.
+- At 200% font, the principal workout action remains readable and the lower details
+  scroll. The compact bottom navigation avoids split labels. Dark surfaces and text
+  remain legible.
+- Paris retains the illustrated hero, annual Marathon de Paris 2026 course, dominant
+  blue equivalent section, geographic context, start/finish markers and clear progress.
+
+No harmful clipping, missing artwork or hierarchy regression was observed in those
+opened images. Approved references remain separate and unchanged. This is an
+agent-assisted emulator-image regression review, not a new design acceptance or a
+claim that full Gym Now/live gym UI is complete. Newly implemented screens still need
+their own actual captures and review. Galaxy S24 outdoor recording, sensors, battery,
+audio, recovery and TalkBack acceptance remain **unperformed**.
+
+## Gym Now source dbaca95
+
+Workflow40649295266 passed303cases on EACH supported API;bot33d13c0 supplies86real captures. Integrity passed. Opened gym-now, gym-workout, gym-workout-saved and gym-workout-large-font: clear actual/target distinction, prominent saved heading, readable natural wrapping at200%dark, no harmful overlap observed. Builder/normaldark still need direct review. New227df1a browsing/substitution changes require new captures and review; these images do not certify them. PhysicalS24 acceptance remains unperformed.

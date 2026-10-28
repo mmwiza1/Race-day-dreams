@@ -287,9 +287,12 @@ These physical checks remain unperformed; CI emulator results are recorded separ
 ## Strength Engine 2.0 durability — Galaxy S24 acceptance pending
 
 All checks below are **UNPERFORMED**. Record the intended APK commit, Android/One UI
-version, date, result and observations. The current typed storage foundation alone does
-not expose the forthcoming full Gym Now/live gym interface: perform its UI checks when
-those flows are present in the tested build. A repository test is not a device result.
+version, date, result and observations. The current branch connects Gym Now and live
+actual-set recording to the typed storage foundation; its own automated UI/API gate is
+still pending an observed result. Use the specific APK under test rather than assuming
+the main development download contains this draft work. A repository test or green
+emulator run is not a device result. See [Gym Now](docs/GYM_NOW.md) for implemented
+controls and the remaining Strength Engine 2.0 phases.
 
 - [ ] Back up the existing install before upgrading from schema 10/JSON envelope 7.
   Compare retained gym programmes, actual sets, favourites and actual rep PBs after
@@ -297,12 +300,21 @@ those flows are present in the tested build. A repository test is not a device r
 - [ ] Start a planned workout, enter actual sets different from its targets, and close
   and reopen the UI. Targets and original programme revision stay unchanged; the saved
   loads/reps/effort are exactly those entered. A warm-up is not working-volume/PB evidence.
-- [ ] Start spontaneous/quick/custom/repeated/favourite/generated workouts when available.
+- [ ] Exercise all six Gym Now paths: planned, quick, build, repeat, favourite and
+  generate. Also start an open workout. Review generated targets before starting,
+  and verify no race goal, Health Connect permission or network connection is required.
+- [ ] Start spontaneous/quick/custom/repeated/favourite/generated workouts.
   None completes today's programme merely by sharing its date. Repeats begin with empty
   actual sets and retain the accepted structure rather than copying prior performance.
 - [ ] Save a set, background/lock the phone and recreate the activity. Reopen the same
   execution: no duplicate set, invented reps, lost committed actual or duplicate completion.
   Confirm a second unfinished workout cannot silently replace the first.
+- [ ] Enter a load/reps or time/distance value different from the target. After Save,
+  confirm the exact actual is visible and the input clears only after acknowledgement.
+  If a save error is encountered, use the exact Retry action; values and set identity
+  must be retained, and later changes must remain blocked until the pending write is
+  resolved or saved evidence is explicitly reloaded. Do not fake a storage fault on
+  irreplaceable training data.
 - [ ] Pause, close unexpectedly and reboot where practical. Recovery explains retained
   timing and an interruption gap; it does not restart a clock secretly or claim the
   missing period was continuous training. Confirm safe partial finish and discard on
@@ -310,6 +322,18 @@ those flows are present in the tested build. A repository test is not a device r
 - [ ] Finish a planned workout, then change the current programme. The actual still
   refers to the revision/session used at start. Spontaneous evidence remains independent
   unless an explicit supported association is accepted.
+- [ ] On an expendable programme version 1, start a planned session, then accept a
+  version 2 programme change through the existing edit flow. Return to the active
+  workout and finish it: its source must remain version 1 and the original session.
+  Separately, change a displayed programme before starting its session; the stale
+  start must request a review instead of silently starting different targets.
+- [ ] Recover a paused stage after unexpected closure/reboot where practical. It
+  must remain paused until Resume is chosen. Check previously accepted sets, any
+  Android-restored unsaved input, no duplicate sets and no invented active time.
+- [ ] Finish a prescribed workout with missing working sets. Confirm the early-finish
+  choice, save only actual performed sets and check the partial-completion indication.
+  On a separate test choose Keep training. A spontaneous workout must not complete a
+  planned session without an explicit supported association decision.
 - [ ] Accept an edit to a completed actual, check PB recalculation, then complete a backup
   round trip. The edited actual is current, while the original execution evidence and
   prescription are preserved. Deleting an expendable completed actual must not erase a
@@ -327,6 +351,7 @@ those flows are present in the tested build. A repository test is not a device r
   announcements. No load suggestion may replace an actual entered value, and no recovery
   action may require network access.
 
-Schema 11 / envelope 8 repository and backup checks need their own observed automated
-API28/35/36 gate in VERIFICATION.md. Outdoor recording, Health Connect, Bluetooth HR,
+Schema 11 / envelope 8 repository and backup results are recorded in VERIFICATION.md;
+the connected Gym Now UI checkpoint needs its own observed automated API28/35/36 gate.
+Outdoor recording, Health Connect, Bluetooth HR,
 TTS/music/calls, battery and other earlier S24 checks remain separately unperformed.

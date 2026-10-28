@@ -66,7 +66,7 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
 data, not UI mockups. The active 0.9 development checkpoint refreshed these captures
-after all three supported APIs passed 270 instrumentation tests each. The actual Home,
+after all three supported APIs passed 293 instrumentation tests each. The actual Home,
 Strength-first Home light/dark/200% and Paris captures were opened and reviewed. Full Strength
 Engine 2.0 remains in development; the rolling main download above still follows the
 last complete merged release. Strength-first Home captures are also available in the

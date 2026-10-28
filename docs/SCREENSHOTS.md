@@ -1,3 +1,9 @@
+# Strength Engine2 current capture checkpoint
+
+Source dbaca95 passed workflow40649295266 with303tests perAPI28/35/36;86canonical captures adopted in bot33d13c0. Six GymNow captures are required in addition to the preserved80. Current227df1a browse/swap source awaits its own full gate/captures. See VERIFICATION.md and docs/VISUAL_REVIEW_0_9_0.md for observed review, not PNG consistency alone. Approved references remain separate.
+
+---
+
 # 0.8.2 premium Dream Routes — verified canonical captures
 
 The mandatory target is the owner-supplied **four-city premium Dream Routes reference

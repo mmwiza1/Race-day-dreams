@@ -28,11 +28,13 @@ Coach will each work independently, with additional context when an athlete uses
   and experience metadata for later Strength selection work. Existing guidance, actual
   sets, measurements and PB history are unchanged; programme selection is not altered
   by this metadata checkpoint.
-- The next data-foundation checkpoint adds typed, bounded gym execution staging and
+- Typed, bounded gym execution staging retains
   frozen saved workout revisions. Actual-set saves and final programme associations
   are transactional; accepted actual edits preserve the original execution evidence.
-  This storage work still requires its own supported-API verification and does not
-  yet expose the full Gym Now/live gym interface.
+  This storage work passed its supported-API verification. The full Gym Now/live gym
+  interface now connects planned, quick, custom, favourite, repeat and generated
+  workouts through one durable engine; its new end-to-end verification is pending.
+  Targets never prefill actual sets. Interrupted stages require explicit recovery.
 
 ## Fixes
 
@@ -77,19 +79,22 @@ schema 11 will not be silently extended after distribution.
 Live-main baseline8b75755 passed workflow40330082255 before this increment. Architecture
 source38fcc59 then passed240instrumentation cases on each API28/35/36.
 
-The latest fully verified source3566499 passed workflow40598574304 with270instrumentation
+The latest fully verified source77fd0b4 passed workflow40601581173 with293instrumentation
 cases on EACH API28/35/36, build/lint/domain/schema/source/guidance and actual pinned
-formatting. All80authentic captures passed integrity and were adopted from bot7997dca.
+formatting, including12repository and11backup cases. All80authentic captures passed
+integrity and were adopted from bot09cb5e8; their metadata matches the retained source.
 Actual Home, StrengthHome light/dark/200% and annualParis2026 were opened and reviewed;
 Home is fully loaded and the earlier capture-readiness defect is corrected. API35 APK
-artifact12778150145 is48,272,173bytes; screenshots artifact12776884991. These are checkpoint
+artifact12778274454 is48,321,325bytes; screenshots artifact12778319076. These are checkpoint
 results, not completion of the entire StrengthEngine2.0 product scope.
 
-Current local checks pass94,641domain checks/26suites,49schema tests,9release-note,
+Verified-source checks pass94,641domain checks/26suites,49schema tests,9release-note,
 14formatter-harness,7screenshot-validator,11Dreamsource and14artwork-integrity cases.
 Strict174/174canonical+14/14routine guidance passes and manifest/attribution checks match.
-The next durability source
-7f0738c has12newrepository and11newbackup Android cases; its expected293-case matrix is
-pending and is not claimed as passed. Full GymNow coordinators/UI and the remaining
-StrengthEngine2.0 product scope are still in development. Physical S24 acceptance remains
-unperformed.
+The synthetic450workout/2250working-set backup round-trip passed on all three APIs,
+producing approximately19.1MB. Before/after heap samples are not peaks and do not prove
+that every32MiB backup fits memory. Current uncommitted coordinator, one-off-workout,
+selection-query and export-budget additions require their own gate. The latter rejects
+provably oversized gym data before JSON construction; it is not a full memory guarantee.
+Full Gym Now UI and the remaining StrengthEngine2.0 product scope are still in development.
+Physical S24 acceptance remains unperformed.
