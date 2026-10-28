@@ -141,7 +141,7 @@ class GymSubstitutionScreenTest {
         val originalActual = execution().actualSets().single()
         compose.onNodeWithText("Swap exercise").performScrollTo().performClick()
         await { model.state.value.substitution != null }
-        chooseInSheet("Equipment busy · Change reason")
+        chooseInSheet("Show alternatives · Change reason")
         chooseInSheet("Movement uncomfortable")
         await { model.state.value.substitution?.reason?.name == "UNCOMFORTABLE" }
         compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Movement comfort"))
