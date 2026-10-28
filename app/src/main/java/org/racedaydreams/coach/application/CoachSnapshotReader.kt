@@ -166,6 +166,7 @@ class CoachSnapshotReader(
                     strengthToday = strengthToday,
                     gymVersions = gym.versions(),
                     exerciseChoices = choices.choices(),
+                    exerciseExclusions = choices.exclusions(),
                     acknowledgedPbs = choices.acknowledged(),
                     calendarView = settings.getSetting("calendar.view") ?: "List",
                     workoutDecisions = development.sessionDecisions(),

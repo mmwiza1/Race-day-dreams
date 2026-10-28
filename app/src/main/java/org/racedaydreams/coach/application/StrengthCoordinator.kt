@@ -33,6 +33,7 @@ class StrengthCoordinator(
             snapshot.plannedWorkouts,
             snapshot.strengthSessions,
             favourites,
+            snapshot.exerciseExclusions.map { it.exerciseId() }.toSet(),
         )
     }
 
@@ -50,17 +51,23 @@ class StrengthCoordinator(
     fun previewSkip(plan: GymProgramme, sessionId: String) =
         programmes.skip(plan, sessionId, operations.current.strengthPlannedDates.values.toSet())
 
-    fun previewSwap(plan: GymProgramme, sessionId: String, from: String, to: String) =
-        programmes.swap(
+    fun previewSwap(plan: GymProgramme, sessionId: String, from: String, to: String): GymProgramme {
+        require(operations.current.exerciseExclusions.none { it.exerciseId() == to }) {
+            "Restore this exercise before recommending it in a programme."
+        }
+        return programmes.swap(
             plan,
             sessionId,
             from,
             to,
             operations.current.strengthPlannedDates.values.toSet(),
         )
+    }
 
     fun alternatives(plan: GymProgramme, from: String, query: String) =
-        programmes.alternatives(plan, from, query, operations.current.exercises)
+        programmes.alternatives(plan, from, query, operations.current.exercises).filter { row ->
+            operations.current.exerciseExclusions.none { it.exerciseId() == row.id() }
+        }
 
     fun conflicts(session: GymProgramme.Session) =
         programmes.conflicts(
@@ -131,6 +138,27 @@ class StrengthCoordinator(
     fun disableGym() =
         operations.submit("Generated programming stopped. Your recorded workouts and PBs remain.") {
             gym.disable()
+        }
+
+    fun exerciseExclusion(
+        id: String,
+        reason: org.racedaydreams.domain.strength.ExerciseExclusionRepository.Reason?,
+    ) =
+        operations.submit(
+            "Exercise preference saved. Existing targets, history and PBs are unchanged."
+        ) {
+            require(coaching.exercises().any { it.id() == id }) {
+                "Exercise is no longer available."
+            }
+            if (reason == null) choices.restoreExercise(id)
+            else
+                choices.exclude(
+                    org.racedaydreams.domain.strength.ExerciseExclusionRepository.Exclusion(
+                        id,
+                        reason,
+                        Instant.now(),
+                    )
+                )
         }
 
     fun exerciseChoice(id: String, favourite: Boolean, archived: Boolean) =

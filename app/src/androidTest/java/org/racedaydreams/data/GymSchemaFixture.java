@@ -12,6 +12,7 @@ final class GymSchemaFixture {
         // Children must disappear before parents when the fixture connection enforces FKs.
         for (String table :
                 new String[] {
+                    "strength_exclusions",
                     "strength_association_targets",
                     "strength_association_decisions",
                     "strength_execution_events",

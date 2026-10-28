@@ -27,6 +27,7 @@ class GymProgrammeOperations(
         running: List<PlannedWorkout>,
         actualStrength: List<StrengthSession>,
         favourites: Set<String>,
+        excluded: Set<String> = emptySet(),
     ): GymProgramme {
         val actionClock = clockForAction()
         return GymProgrammeGenerator()
@@ -40,6 +41,7 @@ class GymProgrammeOperations(
                 running,
                 actualStrength,
                 favourites,
+                excluded,
             )
     }
 

@@ -106,3 +106,14 @@ formatters work (scripts/format-code.py); offline domain/schema/release scripts 
 Git fetch/push with sandbox network permission work; never force/reset unrelated changes.
 Feature CI publishes matching canonical screenshots through a bot; fetch/merge them before
 pushing if branch advances. Runtime app has no INTERNET/account/backend/analytics/LLM.
+
+## Current exclusions work (finish before release)
+
+Explicit exclusions implemented in typed schema13 table, separate from archived/hide.
+StrengthState2 reads1 with no inferred exclusions. Generation, GymNow one-offs and today
+substitution ranking consult exclusions; no candidate produces an honest explicit conflict.
+Browse has Excluded shortcut, search badges and Restore; detail has reason/confirm/restore.
+Existing prescriptions/history/PBs/favourites untouched. RootJSON8/strengthEngine2/raw2/complete1.
+New deterministic domain simulator, SQL constraints/rollback, real12→13 migration, current
+and old section readers, corrupt restore safety and real UI confirmation tests added.
+Current Android gate pending; association UI still not enabled until backend verified.

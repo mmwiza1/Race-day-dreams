@@ -120,6 +120,12 @@
     "app/src/main/java/org/racedaydreams/data/SqliteGymAssociationRepository.java",
     "domain/src/main/java/org/racedaydreams/domain/strength/GymAssociationRepository.java",
     "app/src/main/java/org/racedaydreams/data/DevelopmentStore.java",
-    "app/src/androidTest/java/org/racedaydreams/data/GymAssociationRepositoryTest.java"
+    "app/src/androidTest/java/org/racedaydreams/data/GymAssociationRepositoryTest.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/ExerciseExclusionRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteExerciseExclusionRepository.java",
+    "app/src/main/java/org/racedaydreams/data/StrengthUserStore.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/ExerciseExclusionTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/data/ExerciseExclusionRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/ExerciseExclusionControlTest.kt"
   ]
 }

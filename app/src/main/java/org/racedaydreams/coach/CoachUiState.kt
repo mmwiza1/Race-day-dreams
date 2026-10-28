@@ -56,6 +56,9 @@ data class CoachUiState(
     val gymProgramme: org.racedaydreams.domain.strength.GymProgramme? = null,
     val strengthToday: org.racedaydreams.domain.presentation.StrengthTodaySummary? = null,
     val gymVersions: List<org.racedaydreams.domain.strength.GymProgramme> = emptyList(),
+    val exerciseExclusions:
+        List<org.racedaydreams.domain.strength.ExerciseExclusionRepository.Exclusion> =
+        emptyList(),
     val exerciseChoices: List<org.racedaydreams.data.StrengthUserStore.Choice> = emptyList(),
     val acknowledgedPbs: Set<String> = emptySet(),
     val workoutDecisions: List<WorkoutDecision> = emptyList(),

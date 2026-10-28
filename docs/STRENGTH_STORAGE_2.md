@@ -161,3 +161,16 @@ readable. JSON envelope 8, raw archive 2 and complete package 1 remain unchanged
 validates retained source, actual, programme and current-link consistency before deletion.
 Seven repository/migration/backup instrumentation cases are added but their Android gate
 is pending. Local domain and 53 schema cases pass; no physical-device result is claimed.
+
+## Schema 13: reversible exercise exclusions
+
+A separate typed `strength_exclusions` table stores exercise ID, non-medical preference
+reason and choice timestamp. Existing archive/hide rows are never reinterpreted as
+exclusions. Restore removes only this preference; history, PBs, favourites and frozen
+prescriptions are untouched. Generation and today's alternative ranking consult exclusions;
+when no supported candidate remains, selection explains the conflict rather than ignoring it.
+
+The existing independently versioned strengthState section advances from 1 to 2, embedding
+exclusions format1. Old strengthState1 restores with no inferred exclusions. Root JSON8,
+strengthEngine2, raw2 and complete1 stay unchanged. Future/corrupt preferences are rejected
+before replacement. Schema13 is additive from supported1–12, including already circulated12.

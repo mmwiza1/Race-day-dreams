@@ -89,6 +89,15 @@ public final class GymNowWorkouts {
     /** Suitable favourites may affect the existing planner's tie-break; they never force a role. */
     public static Suggestion generate(
             String workoutId, Instant createdAt, Request request, Set<String> favourites) {
+        return generate(workoutId, createdAt, request, favourites, Collections.emptySet());
+    }
+
+    public static Suggestion generate(
+            String workoutId,
+            Instant createdAt,
+            Request request,
+            Set<String> favourites,
+            Set<String> excluded) {
         GymWorkoutDefinition.requireId(workoutId, "workout");
         Objects.requireNonNull(createdAt, "created at");
         Objects.requireNonNull(request, "one-off request");
@@ -126,7 +135,8 @@ public final class GymNowWorkouts {
                                 REFERENCE_START,
                                 Collections.emptyList(),
                                 Collections.emptyList(),
-                                Immutable.copySet(favourites));
+                                Immutable.copySet(favourites),
+                                Immutable.copySet(excluded));
         String prefix =
                 request.focus() == Focus.FULL_BODY
                         ? "Full body"

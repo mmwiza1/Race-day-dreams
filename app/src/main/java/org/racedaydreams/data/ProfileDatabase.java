@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 12;
+    static final int VERSION = 13;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -53,6 +53,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateNineToTen(db);
         migrateTenToEleven(db);
         migrateElevenToTwelve(db);
+        migrateTwelveToThirteen(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -364,10 +365,21 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         SqliteGymAssociationRepository.rebuildProjection(db);
     }
 
+    private static void migrateTwelveToThirteen(SQLiteDatabase db) {
+        // V13_SCHEMA_BEGIN
+        db.execSQL(
+                "CREATE TABLE strength_exclusions (exercise_id TEXT PRIMARY KEY NOT NULL"
+                        + " CHECK(length(exercise_id) BETWEEN 1 AND 200), reason TEXT NOT NULL"
+                        + " CHECK(reason IN"
+                        + " ('PREFERENCE','EQUIPMENT_UNAVAILABLE','UNCOMFORTABLE','OTHER')),"
+                        + " excluded_at TEXT NOT NULL)");
+        // V13_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 11)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 12)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -385,6 +397,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 8) migrateEightToNine(db);
         if (oldVersion <= 9) migrateNineToTen(db);
         if (oldVersion <= 10) migrateTenToEleven(db);
-        migrateElevenToTwelve(db);
+        if (oldVersion <= 11) migrateElevenToTwelve(db);
+        migrateTwelveToThirteen(db);
     }
 }

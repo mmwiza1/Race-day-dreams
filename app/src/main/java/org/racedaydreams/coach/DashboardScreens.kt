@@ -39,7 +39,7 @@ fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{
     return ExerciseSearch.search(state.exercises,query,state.exerciseChoices.filter{it.favourite()}.map{it.exerciseId()}.toSet(),recent,state.exerciseChoices.filter{it.archived()}.map{it.exerciseId()}.toSet())
 }
 @Composable fun ExerciseBrowser(state:CoachUiState,model:CoachViewModel,open:(String)->Unit){
-    org.racedaydreams.coach.strength.ExerciseBrowseScreen(state,{model.strength.saveExercise(it)},open)
+    org.racedaydreams.coach.strength.ExerciseBrowseScreen(state,{model.strength.saveExercise(it)},open,{model.exerciseExclusion(it,null)})
 }
 @Composable fun ExerciseDetail(state:CoachUiState,model:CoachViewModel,id:String?,source:(String)->Unit = {}){
     val e=state.exercises.firstOrNull{it.id()==id}?:return
@@ -49,6 +49,7 @@ fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{
     CoachPage{
         Row(Modifier.fillMaxWidth()){Text(e.name(),style=MaterialTheme.typography.headlineSmall,modifier=Modifier.weight(1f));IconButton(onClick={model.strength.exerciseChoice(e.id(),choice?.favourite()!=true,choice?.archived()==true)}){Text(if(choice?.favourite()==true)"★"else"☆",modifier=Modifier.semantics{contentDescription=(if(choice?.favourite()==true)"Remove ${e.name()} from favourites"else"Add ${e.name()} to favourites")})}}
         FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("Overview","How to do it","History","PBs").forEach{tab->FilterChip(selected=section==tab,onClick={section=tab},label={Text(tab)})}}
+        org.racedaydreams.coach.strength.ExerciseExclusionControl(e.name(),state.exerciseExclusions.any{it.exerciseId()==e.id()},state.busy){model.exerciseExclusion(e.id(),it)}
         when(section){
             "Overview"->{CoachCard{Text(ExerciseCatalog.definition(e.id())?.category()?:"Custom exercise");Text("Equipment: ${ExerciseCatalog.definition(e.id())?.equipment()?:"User defined"}");Text("Measurement: ${e.measurement().name.lowercase().replace('_',' ')}")};CoachButton(if(choice?.favourite()==true)"Unfavourite"else "Favourite"){model.strength.exerciseChoice(e.id(),choice?.favourite()!=true,choice?.archived()==true)};TextButton(onClick={model.strength.exerciseChoice(e.id(),choice?.favourite()==true,choice?.archived()!=true)}){Text(if(choice?.archived()==true)"Restore to My Exercises"else if(ExerciseCatalog.definition(e.id())==null)"Archive exercise"else "Hide from My Exercises")};Text("${sessions.size} recorded workouts");if(ExerciseCatalog.definition(e.id())==null){CoachInput("Custom exercise name",renamed,{renamed=it});CoachButton("Save exercise name"){model.strength.saveExercise(StrengthExercise(e.id(),renamed.trim(),e.region(),e.mode(),e.estimateOneRepMax(),e.measurement()))}}}
             "How to do it"->TechniqueSection(e.id())

@@ -1,3 +1,12 @@
+## Explicit exclusions checkpoint
+
+Local tests now pass 55 schema cases, 9 release-note cases and the domain suite including
+18,212 new exclusion checks. Schema13 adds typed preferences without reinterpreting legacy
+archive choices; strengthState2 reads1. Five real repository/migration/backup cases and
+one UI confirmation/restore case are added; the supported-API gate is pending. Exclusions
+do not alter existing actuals, PBs, favourites or prescriptions. No runtime dependency,
+manifest permission or artwork changed.
+
 ## Association-backend lint correction
 
 Source09bb360/workflow40700851417 compiled the app and instrumentation but lint rejected

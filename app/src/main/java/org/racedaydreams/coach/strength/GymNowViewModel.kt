@@ -101,6 +101,7 @@ data class GymNowState(
     val recent: List<StrengthSession> = emptyList(),
     val exercises: List<StrengthExercise> = emptyList(),
     val favouriteExerciseIds: Set<String> = emptySet(),
+    val excludedExerciseIds: Set<String> = emptySet(),
     val archivedExerciseIds: Set<String> = emptySet(),
     val view: GymWorkoutSessionCoordinator.View? = null,
     val form: GymSetDraft = GymSetDraft(),
@@ -157,6 +158,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         val exercises: List<StrengthExercise>,
         val favouriteIds: Set<String>,
         val archivedIds: Set<String>,
+        val excludedIds: Set<String>,
     )
 
     private fun panel(page: Int): Panel {
@@ -171,6 +173,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
             coaching.exercises(),
             choices.filter { it.favourite() }.map { it.exerciseId() }.toSet(),
             choices.filter { it.archived() }.map { it.exerciseId() }.toSet(),
+            userChoices.exclusions().map { it.exerciseId() }.toSet(),
         )
     }
 
@@ -236,6 +239,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                         exercises = fresh?.exercises ?: previous.exercises,
                         favouriteExerciseIds = fresh?.favouriteIds ?: previous.favouriteExerciseIds,
                         archivedExerciseIds = fresh?.archivedIds ?: previous.archivedExerciseIds,
+                        excludedExerciseIds = fresh?.excludedIds ?: previous.excludedExerciseIds,
                         view = snapshot,
                     )
                 }
@@ -483,7 +487,8 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                 choice.goal,
                 choice.experience,
                 choice.equipment,
-                choices.filter { it.archived() }.map { it.exerciseId() }.toSet(),
+                choices.filter { it.archived() }.map { it.exerciseId() }.toSet() +
+                    userChoices.exclusions().map { it.exerciseId() },
                 choices.filter { it.favourite() }.map { it.exerciseId() }.toSet(),
                 mutable.value.recent
                     .flatMap { session -> session.exercises().map { it.exercise().id() } }
@@ -674,6 +679,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                 Instant.now(),
                 request,
                 mutable.value.favouriteExerciseIds,
+                userChoices.exclusions().map { it.exerciseId() }.toSet(),
             )
         mutable.update { it.copy(generated = suggestion) }
     }

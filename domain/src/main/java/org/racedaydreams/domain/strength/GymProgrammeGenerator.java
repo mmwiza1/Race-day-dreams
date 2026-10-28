@@ -52,6 +52,32 @@ public final class GymProgrammeGenerator {
             List<PlannedWorkout> runs,
             List<StrengthSession> actual,
             Set<String> favourites) {
+        return generate(
+                id,
+                version,
+                createdAt,
+                reason,
+                settings,
+                start,
+                runs,
+                actual,
+                favourites,
+                Collections.emptySet());
+    }
+
+    /** Exclusions remove candidates, never existing prescriptions or completed evidence. */
+    public GymProgramme generate(
+            String id,
+            int version,
+            Instant createdAt,
+            String reason,
+            GymProgramme.Settings settings,
+            LocalDate start,
+            List<PlannedWorkout> runs,
+            List<StrengthSession> actual,
+            Set<String> favourites,
+            Set<String> excluded) {
+        java.util.Objects.requireNonNull(excluded, "exercise exclusions");
         var sessions = new ArrayList<GymProgramme.Session>();
         var tradeoffs = new LinkedHashSet<String>();
         LocalDate end = start.plusWeeks(6).minusDays(1);
@@ -62,7 +88,8 @@ public final class GymProgrammeGenerator {
         for (int i = 0; i < settings.frequency(); i++) {
             String template = template(settings.frequency(), i);
             boolean lowerTemplate = template.equals("Lower") || template.equals("Full body");
-            var exercises = prescriptions(settings, template, lowerSessionOrdinal, favourites);
+            var exercises =
+                    prescriptions(settings, template, lowerSessionOrdinal, favourites, excluded);
             if (lowerTemplate) lowerSessionOrdinal++;
             plans.add(new SessionPlan(template, exercises, hasLowerBodyWork(exercises)));
         }
@@ -355,9 +382,11 @@ public final class GymProgrammeGenerator {
         return true;
     }
 
-    private static String choose(Set<String> equipment, Set<String> favourites, String... ids) {
+    private static String choose(
+            Set<String> equipment, Set<String> favourites, Set<String> excluded, String... ids) {
         for (String id : ids) {
-            if (available(id, equipment)
+            if (!excluded.contains(id)
+                    && available(id, equipment)
                     && favourites.contains(id)
                     && TechniqueGuide.forExercise(id) != null
                     && TechniqueGuide.forExercise(ids[0]) != null
@@ -368,15 +397,18 @@ public final class GymProgrammeGenerator {
                             == ExerciseCatalog.definition(ids[0]).exercise().measurement())
                 return id;
         }
-        for (String id : ids) if (available(id, equipment)) return id;
-        throw new IllegalArgumentException("No suitable exercise for selected equipment.");
+        for (String id : ids) if (!excluded.contains(id) && available(id, equipment)) return id;
+        throw new IllegalArgumentException(
+                "No suitable exercise fits your equipment and exclusions. Review these preferences;"
+                        + " existing programmes are unchanged.");
     }
 
     private static List<GymProgramme.Prescription> prescriptions(
             GymProgramme.Settings settings,
             String template,
             int lowerSessionOrdinal,
-            Set<String> favourites) {
+            Set<String> favourites,
+            Set<String> excluded) {
         var equipment = settings.equipment();
         var ids = new ArrayList<String>();
         boolean lower = template.equals("Lower") || template.equals("Full body");
@@ -386,6 +418,7 @@ public final class GymProgrammeGenerator {
                     choose(
                             equipment,
                             favourites,
+                            excluded,
                             lowerSessionOrdinal % 2 == 0 ? "back-squat" : "romanian-deadlift",
                             "goblet-squat",
                             "deadlift",
@@ -394,6 +427,7 @@ public final class GymProgrammeGenerator {
                     choose(
                             equipment,
                             favourites,
+                            excluded,
                             settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING
                                     ? "split-squat"
                                     : "hip-thrust",
@@ -406,6 +440,7 @@ public final class GymProgrammeGenerator {
                         choose(
                                 equipment,
                                 favourites,
+                                excluded,
                                 "bench-press",
                                 "dumbbell-bench-press",
                                 "push-up"));
@@ -414,6 +449,7 @@ public final class GymProgrammeGenerator {
                         choose(
                                 equipment,
                                 favourites,
+                                excluded,
                                 "seated-cable-row",
                                 "dumbbell-row",
                                 "barbell-row",
@@ -424,15 +460,18 @@ public final class GymProgrammeGenerator {
                     choose(
                             equipment,
                             favourites,
+                            excluded,
                             "calf-raise",
                             "single-leg-calf-raise-bodyweight"));
         }
-        if (settings.minutes() >= 45 && ids.size() < 5) ids.add("plank");
+        if (settings.minutes() >= 45 && ids.size() < 5 && !excluded.contains("plank"))
+            ids.add("plank");
         if (settings.minutes() >= 60 && upper) {
             ids.add(
                     choose(
                             equipment,
                             favourites,
+                            excluded,
                             template.equals("Pull") ? "barbell-curl" : "overhead-press",
                             "dumbbell-shoulder-press",
                             "dead-bug"));

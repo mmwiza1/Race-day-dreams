@@ -242,6 +242,11 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
 
     fun disableGym() = strength.disableGym()
 
+    fun exerciseExclusion(
+        id: String,
+        reason: org.racedaydreams.domain.strength.ExerciseExclusionRepository.Reason?,
+    ) = strength.exerciseExclusion(id, reason)
+
     fun exerciseChoice(id: String, favourite: Boolean, archived: Boolean) =
         strength.exerciseChoice(id, favourite, archived)
 

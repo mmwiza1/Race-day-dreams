@@ -160,12 +160,13 @@ public final class GymAssociationRepositoryTest extends AndroidTestCase {
         legacy.linkGym("actual", DAY, "programme:v1", "session");
         var helper = ProfileDatabase.get(getContext());
         var db = helper.getWritableDatabase();
+        db.execSQL("DROP TABLE strength_exclusions");
         db.execSQL("DROP TABLE strength_association_targets");
         db.execSQL("DROP TABLE strength_association_decisions");
         db.setVersion(11);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(12, db.getVersion());
+        assertEquals(ProfileDatabase.VERSION, db.getVersion());
         assertEquals(0, count("strength_association_decisions"));
         assertNull(associations.current("actual"));
         assertTrue(associations.proposals("actual", NOW).isEmpty());

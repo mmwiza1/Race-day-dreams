@@ -16,6 +16,9 @@ and Smart Substitution. Running and Strength can be used independently.
 
 - Browse exercises by body area, movement and equipment, with personal shortcuts and relevance-first search. Today-only swaps explain alternatives and preserve original targets and actual sets; reference loads are cleared when changing exercises.
 
+- Exclude exercises from future programme/alternative selection and restore them at any
+  time from Exercises → Excluded. Existing targets, history, favourites and PBs remain.
+
 ## Improvements
 
 - Running, strength, progress, health and settings operations share one coherent read
@@ -66,7 +69,7 @@ and Smart Substitution. Running and Strength can be used independently.
 ## Data, privacy and licensing
 
 Version 0.9.0-test1 / versionCode 12. The new durability source introduces additive
-schemas 11–12 and JSON envelope 8 with strengthEngine section 2 (reads section 1). Readers
+schemas 11–13 and JSON envelope 8 with strengthEngine section 2 (reads section 1). Exercise choices section 2 retains explicit exclusions and reads old section 1. Readers
 for envelopes 1–7 remain supported. Raw recording archive 2 and complete-backup container
 1 remain unchanged. Validation precedes replacement in the shared transaction; a local
 unfinished gym workout blocks destructive replacement until it is finished or discarded.

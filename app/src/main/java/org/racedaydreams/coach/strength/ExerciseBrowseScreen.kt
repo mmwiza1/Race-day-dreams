@@ -52,6 +52,7 @@ fun ExerciseBrowseScreen(
     state: CoachUiState,
     onCreateCustom: (StrengthExercise) -> Unit,
     open: (String) -> Unit,
+    onRestore: ((String) -> Unit)? = null,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var shortcut by rememberSaveable { mutableStateOf("For you") }
@@ -65,6 +66,10 @@ fun ExerciseBrowseScreen(
     val favourites =
         remember(state.exerciseChoices) {
             state.exerciseChoices.filter { it.favourite() }.map { it.exerciseId() }.toSet()
+        }
+    val excluded =
+        remember(state.exerciseExclusions) {
+            state.exerciseExclusions.map { it.exerciseId() }.toSet()
         }
     val archived =
         remember(state.exerciseChoices) {
@@ -136,6 +141,7 @@ fun ExerciseBrowseScreen(
             recent,
             programmed,
             archived,
+            excluded,
             showArchived,
             shortcut,
             area,
@@ -148,16 +154,19 @@ fun ExerciseBrowseScreen(
                     query,
                     favourites,
                     recent,
-                    if (showArchived) emptySet() else archived,
+                    if (showArchived || shortcut == "Excluded") emptySet() else archived,
                 )
                 .filter { exercise ->
                     val id = exercise.id()
                     val personal =
                         when (shortcut) {
+                            "Excluded" -> id in excluded
                             "Favourites" -> id in favourites
                             "Recent" -> id in recent
                             "In my programme" -> id in programmed
-                            "For you" -> query.isNotBlank() || metadataFilter || id in relevant
+                            "For you" ->
+                                query.isNotBlank() ||
+                                    (id !in excluded && (metadataFilter || id in relevant))
                             else -> true
                         }
                     val metadata = ExerciseMetadataCatalog.find(id)
@@ -264,17 +273,32 @@ fun ExerciseBrowseScreen(
         if (query.isBlank() || refineSearch) {
             item(key = "shortcuts") {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("For you", "Favourites", "Recent", "In my programme").forEach { value ->
-                        FilterChip(
-                            selected = shortcut == value,
-                            onClick = { shortcut = value },
-                            label = { Text(value) },
-                            modifier =
-                                Modifier.heightIn(min = 48.dp).testTag("exercise-shortcut-$value"),
-                        )
-                    }
+                    listOf("For you", "Favourites", "Recent", "In my programme", "Excluded")
+                        .forEach { value ->
+                            FilterChip(
+                                selected = shortcut == value,
+                                onClick = {
+                                    shortcut = value
+                                    if (value == "Excluded") {
+                                        area = null
+                                        role = null
+                                        equipment = null
+                                    }
+                                },
+                                label = { Text(value) },
+                                modifier =
+                                    Modifier.heightIn(min = 48.dp)
+                                        .testTag("exercise-shortcut-$value"),
+                            )
+                        }
                 }
             }
+            if (shortcut == "Excluded")
+                item(key = "exclusion-explanation") {
+                    Text(
+                        "Excluded exercises are not selected for new programmes or alternatives. Existing workouts, favourites and PBs remain. Restore an exercise to make it eligible again."
+                    )
+                }
             item(key = "browse") {
                 SemanticCard(Tile.Strength) {
                     Text("Browse the library", style = MaterialTheme.typography.titleMedium)
@@ -465,11 +489,22 @@ fun ExerciseBrowseScreen(
                         exerciseBrowseContext(exercise),
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                    if (exercise.id() in excluded && onRestore != null)
+                        TextButton(
+                            onClick = { onRestore(exercise.id()) },
+                            enabled = !state.busy,
+                            modifier =
+                                Modifier.heightIn(min = 48.dp)
+                                    .testTag("restore-exercise-${exercise.id()}"),
+                        ) {
+                            Text("Restore exercise")
+                        }
                     val status =
                         listOfNotNull(
                             if (exercise.id() in favourites) "Favourite" else null,
                             if (exercise.id() in programmed) "In your programme" else null,
                             if (exercise.id() in archived) "Archived" else null,
+                            if (exercise.id() in excluded) "Excluded from recommendations" else null,
                         )
                     if (status.isNotEmpty())
                         Text(
