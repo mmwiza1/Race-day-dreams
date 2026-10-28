@@ -3,3 +3,16 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '2.0.21' apply false
     id 'org.jetbrains.kotlin.plugin.compose' version '2.0.21' apply false
 }
+
+// Build-time tools only. The standalone runner also works without an Android SDK.
+tasks.register('formatCheck', Exec) {
+    group = 'verification'
+    description = 'Check the scoped architecture sources with pinned Kotlin/Java formatters.'
+    commandLine 'python3', 'scripts/format-code.py', '--check'
+}
+
+tasks.register('formatApply', Exec) {
+    group = 'formatting'
+    description = 'Format the scoped architecture sources with pinned Kotlin/Java formatters.'
+    commandLine 'python3', 'scripts/format-code.py', '--apply'
+}

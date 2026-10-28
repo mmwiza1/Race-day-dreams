@@ -1,4 +1,74 @@
+# Current retained 0.9 application status
+
+Feature-owned orchestration, standalone training focus, Gym Now, typed association and
+exclusion persistence, exercise discovery and today-only substitution are implemented.
+Application/capture source f3a988a passed workflow40741473316:331tests per API28/35/36 with
+build/lint/format/migration/backup/guidance and91authentic captures. See VERIFICATION.md for
+source-bound results and S24 limitations. The final documentation commit adds no app or
+fixture inputs. The original larger Strength Engine2.0 roadmap is explicitly deferred.
+Existing Compose family is aligned on UI/runtime/foundation1.8.3/Material3 1.3.2 (Apache2)
+for framework layout/focus stability; this does not change the data or coaching contracts.
+
 # Architecture
+
+## 0.9 application boundaries — behaviour-preserving checkpoint
+
+Feature-owned application coordinators now orchestrate running plans/evidence, Strength,
+progress, baseline, health and settings/portability. `CoachViewModel` retains lifecycle,
+SavedStateHandle draft protection and compatibility entry points. `CoachOperationRunner`
+serialises commands and publishes one coherent `CoachUiState` through `CoachSnapshotReader`;
+features do not create competing snapshots or duplicate core training rules.
+
+```text
+CoachActivity + feature destination registrations + presentation screens
+  -> feature application coordinators / one command runner + coherent read model
+  -> Android-independent domain policies and narrow repository contracts
+  -> scoped SQL adapters / shared ProfileDatabase / one transaction pool
+```
+
+`FeatureStore` remains a compatibility composition facade. Activity, result, shoe,
+baseline, settings, planned-workout and backup adapters own their actual SQL. Existing
+recording import hooks and whole-backup operations retain the shared transaction.
+No schema or backup-format change is required for these extractions.
+
+Navigation ownership is split by Home, running, Strength, Progress and Settings while
+retaining the original flat routes and Up/pop behaviour. Graph registrations accept
+state providers and read them inside destination composition; caching a plain snapshot
+would freeze later updates. RunNow snapshot selection is deferred for the same reason.
+Each command publishes and delivers its success callback before releasing the shared
+operation lock, preventing a queued feature from replacing that callback's snapshot.
+Native recording keeps one
+foreground service; execution events, cue arbitration and optional sensor wiring have
+injected/testable internal coordinators. The extraction preserves Main-thread engine
+mutation and serial-IO incremental atomic staging, with cursors advancing after commit.
+
+These are implementation boundaries, not a claim that Strength Engine 2.0 product phases
+are delivered. See CONTINUE_CODEX.md for the current gate and exact remaining scope.
+
+## Typed gym durability — 0.9 data foundation
+
+`GymExecutionEngine` owns the Android-independent execution state; a narrow
+`GymExecutionRepository` and `SqliteGymExecutionRepository` persist it through the existing
+shared database. The additive schema 11 contract has five families: immutable workout
+revisions, saved preferences, execution summaries/headers, entered set rows and event
+rows. Revision-checked writes append actual evidence atomically, and finalisation commits
+the actual workout and its exact explicit programme association with the terminal stage.
+An unfinished stage never becomes completed training/PB evidence. Summary reads do not
+hydrate set/event histories; rows have an explicit 256 KiB bound.
+
+Original prescriptions and execution evidence stay frozen. An accepted later edit retains
+its current actual and timestamp separately; PBs use current actual history. Exact source
+validation never resolves historical definitions through today's exercise catalogue.
+Recovery retains observed time and records interruption gaps. Envelope 8 adds independently
+versioned strength data while reading envelopes 1–7; validation precedes the existing
+outer restore transaction. Raw archive 2 and complete container 1 remain unchanged.
+
+This increment is a data foundation with its own pending verification gate, not a shipped
+Gym Now/live gym interface. Later durable Strength concepts require explicit subsequent
+migrations; schema 11 must not be silently extended after distribution. See
+[Strength storage](docs/STRENGTH_STORAGE_2.md) for the complete contract and limits.
+
+## Architecture history and retained contracts
 
 ## Incremental modernization decision
 
@@ -292,3 +362,30 @@ editions), decodes only displayed local WebPs on IO and uses a bounded8MiB image
 DreamDrawing prepares preserved geographic paths off-main and draws a soft overview
 with distinct full-course pins and blue equivalent-section rings. No schema, backup,
 assignment, recorder, sample, provider or network architecture change is involved.
+# Strength-first Today projection (0.9 checkpoint)
+
+PrimaryFocus is a typed view over existing backed-up settings. Legacy starting paths
+resolve without rewriting records; focus changes never edit programme priorities or goals.
+StrengthTodaySummary is Android-independent and uses explicit actual/session/version
+associations. CoachSnapshotReader computes its PB and coaching projection on IO with the
+same observations used in CoachUiState, so navigation sees one coherent snapshot and
+Compose does not repeatedly analyse retained history. The screen shares existing gym
+logging/programme routes. Full Gym Now execution is a later checkpoint.
+
+## Reviewed gym associations (0.9 retained scope)
+
+Schema 12 adds typed `GymAssociationRepository` / `SqliteGymAssociationRepository` over
+the same database. Reviewed immutable decisions and an indexed target projection update
+atomically with the existing coaching association. No source execution, actual set or
+programme version is rewritten. Backup strengthEngine section 2 reads older section 1;
+root JSON 8/raw 2/complete 1 remain unchanged. No new generic release-store records.
+
+## Reduced0.9 exclusions and association application protocol
+
+Schema13 adds typed reversible exercise exclusions, distinct from legacy visibility state;
+strengthState2 reads1. Generation/recommendation consults this policy without rewriting
+existing intentions or actual evidence. `GymAssociationCoordinator` owns exact pending
+reviewed decisions, retries and explicit reload; the feature VM serialises repository
+calls on IO and publishes immutable state. Completed native membership is queried in one
+bounded SQL lookup, not by hydrating every recent execution. Final source/gates are in
+CONTINUE_CODEX.md and VERIFICATION.md; the original larger Strength backlog is deferred.

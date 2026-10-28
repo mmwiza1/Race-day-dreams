@@ -26,8 +26,9 @@ import org.racedaydreams.domain.support.DreamRoutes
 @Composable internal fun DreamRouteExperience(route: DreamRoutes.Route, assignment: DreamRoutes.Assignment) {
     val city = remember(route.id()) { dreamCityPresentation(route) }
     val progress = remember(assignment) { DreamRouteProgress.of(assignment) }
-    val hero = rememberDreamArtwork(city.hero)
-    val posters = city.landmarks.map { rememberDreamArtwork(it.asset) }
+    val artwork by rememberDreamCityArtwork(city)
+    val hero = artwork.hero
+    val posters = artwork.posters
     val dark = isSystemInDarkTheme()
     val expandedText = LocalDensity.current.fontScale >= 1.4f
     val blue = if (dark) Color(0xff86BFFF) else Color(0xff0066DA)

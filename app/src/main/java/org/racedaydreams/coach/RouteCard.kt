@@ -17,17 +17,34 @@ import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.data.RecordingStore
 import org.racedaydreams.domain.activity.ActivityRecord
 
+private data class RecordedRouteProjection(
+    val points: List<RunMetricsEngine.Point>,
+    val xy: List<RoutePresentation.XY>,
+    val kilometres: List<RoutePresentation.Section>,
+    val pauses: List<RecordingStore.Pause>,
+    val story: List<String>,
+)
+
 @Composable fun RecordedRouteCard(activity:ActivityRecord){
     if(activity.source().provider() !in listOf("rdd","gpx"))return
-    val context=LocalContext.current
-    val points by produceState<List<RunMetricsEngine.Point>>(emptyList(),activity.id()){value=withContext(Dispatchers.IO){RecordingStore(context).points(activity.source().recordId())}}
-    val data by produceState<Pair<List<RoutePresentation.XY>,List<RoutePresentation.Section>>?>(null,points){value=withContext(Dispatchers.Default){RoutePresentation.fit(points) to RoutePresentation.kilometres(points)}}
-    val (xy,km)=data?:return;if(xy.size<2)return
+    val context=LocalContext.current.applicationContext
+    // One published detail snapshot prevents an initial empty derived result from being retained
+    // independently of the asynchronously fetched accepted points.
+    val projection by produceState<RecordedRouteProjection?>(null,activity.id(),activity.source()) {
+        val (points,pauses)=withContext(Dispatchers.IO){
+            val store=RecordingStore(context)
+            store.points(activity.source().recordId()) to store.pauses(activity.source().recordId())
+        }
+        value=withContext(Dispatchers.Default){RecordedRouteProjection(points,RoutePresentation.fit(points),
+            RoutePresentation.kilometres(points),pauses,RoutePresentation.story(points))}
+    }
+    val prepared=projection?:return
+    val points=prepared.points;val xy=prepared.xy;val km=prepared.kilometres
+    if(xy.size<2)return
+    val pauses=prepared.pauses;val story=prepared.story
     val primary=MaterialTheme.colorScheme.primary;val fastColour=MaterialTheme.colorScheme.tertiary;val slowColour=MaterialTheme.colorScheme.error;val neutral=MaterialTheme.colorScheme.outline
     val fastest=km.minByOrNull{it.secondsPerKm()}?.kilometre();val slowest=km.maxByOrNull{it.secondsPerKm()}?.kilometre()
-    val pauses by produceState<List<RecordingStore.Pause>>(emptyList(),activity.id()){value=withContext(Dispatchers.IO){RecordingStore(context).pauses(activity.source().recordId())}}
     val pauseIndices=remember(points,pauses){pauses.map{pause->var lo=0;var hi=points.size;while(lo<hi){val mid=(lo+hi)/2;if(points[mid].fix().monotonicMillis()<=pause.start)lo=mid+1 else hi=mid};(lo-1).coerceAtLeast(0)}}
-    val story by produceState<List<String>>(emptyList(),points){value=withContext(Dispatchers.Default){RoutePresentation.story(points)}}
     SemanticCard(Tile.Planned){
         Text("Your recorded route",style=MaterialTheme.typography.titleLarge)
         Canvas(Modifier.fillMaxWidth().height(280.dp).semantics{contentDescription="Recorded route with start and finish, direction arrows, full kilometre markers and ${pauses.size} explicit pauses. Gaps are not joined. ${story.joinToString(" ")}"}){

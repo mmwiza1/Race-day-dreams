@@ -1,52 +1,552 @@
 package org.racedaydreams.data;
 
+import static org.racedaydreams.data.FeatureJson.*;
+
 import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import org.json.*;
+import org.racedaydreams.domain.body.*;
+import org.racedaydreams.domain.coaching.*;
+import org.racedaydreams.domain.strength.*;
+
 import java.time.*;
 import java.util.*;
-import org.racedaydreams.domain.body.*;
-import org.racedaydreams.domain.strength.*;
-import org.racedaydreams.domain.coaching.*;
-import static org.racedaydreams.data.FeatureJson.*;
 
 /** Schema-five app-owned evidence. Typed validation is also used before transactional restore. */
 public final class DevelopmentStore {
     private final ProfileDatabase helper;
-    public DevelopmentStore(Context context){helper=ProfileDatabase.get(context);}
-    private SQLiteDatabase db(){return helper.getWritableDatabase();}
-    private void put(String kind,String id,JSONObject payload){validatePayload(kind,id,payload);ContentValues v=new ContentValues();v.put("kind",kind);v.put("id",id);v.put("payload",payload.toString());if(db().update("coach_evidence",v,"kind=? AND id=?",new String[]{kind,id})==0)db().insertOrThrow("coach_evidence",null,v);}
-    private List<JSONObject> rows(String kind){List<JSONObject> values=new ArrayList<>();try(Cursor c=db().rawQuery("SELECT payload FROM coach_evidence WHERE kind=? ORDER BY id",new String[]{kind})){while(c.moveToNext())values.add(object(c.getString(0)));}return values;}
-    public void deleteWeight(String id){db().delete("coach_evidence","kind='WEIGHT' AND id=?",new String[]{id});}
-    public List<BodyWeight> weights(){List<BodyWeight> out=new ArrayList<>();for(var j:rows("WEIGHT"))out.add(weight(j));out.sort(Comparator.comparing(BodyWeight::at));return out;}
-    public void saveWeight(BodyWeight w){put("WEIGHT",w.id(),json("id",w.id(),"kg",w.kilograms(),"at",w.at().toString(),"offset",w.offset().toString(),"provider",w.provider(),"sourceId",w.sourceId(),"origin",w.origin()));}
+
+    public DevelopmentStore(Context context) {
+        helper = ProfileDatabase.get(context);
+    }
+
+    private SQLiteDatabase db() {
+        return helper.getWritableDatabase();
+    }
+
+    private void put(String kind, String id, JSONObject payload) {
+        validatePayload(kind, id, payload);
+        var db = db();
+        db.beginTransaction();
+        try {
+            ContentValues v = new ContentValues();
+            v.put("kind", kind);
+            v.put("id", id);
+            v.put("payload", payload.toString());
+            if (db.update("coach_evidence", v, "kind=? AND id=?", new String[] {kind, id}) == 0)
+                db.insertOrThrow("coach_evidence", null, v);
+            if (kind.equals("STRENGTH_LINK"))
+                SqliteGymAssociationRepository.project(db, id, payload);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private List<JSONObject> rows(String kind) {
+        List<JSONObject> values = new ArrayList<>();
+        try (Cursor c =
+                db().rawQuery(
+                                "SELECT payload FROM coach_evidence WHERE kind=? ORDER BY id",
+                                new String[] {kind})) {
+            while (c.moveToNext()) values.add(object(c.getString(0)));
+        }
+        return values;
+    }
+
+    public void deleteWeight(String id) {
+        db().delete("coach_evidence", "kind='WEIGHT' AND id=?", new String[] {id});
+    }
+
+    public List<BodyWeight> weights() {
+        List<BodyWeight> out = new ArrayList<>();
+        for (var j : rows("WEIGHT")) out.add(weight(j));
+        out.sort(Comparator.comparing(BodyWeight::at));
+        return out;
+    }
+
+    public void saveWeight(BodyWeight w) {
+        put(
+                "WEIGHT",
+                w.id(),
+                json(
+                        "id",
+                        w.id(),
+                        "kg",
+                        w.kilograms(),
+                        "at",
+                        w.at().toString(),
+                        "offset",
+                        w.offset().toString(),
+                        "provider",
+                        w.provider(),
+                        "sourceId",
+                        w.sourceId(),
+                        "origin",
+                        w.origin()));
+    }
+
     /** Replace only a successfully fetched provider window; manual data is untouched. */
-    public void replaceWeightWindow(String provider,Instant from,Instant to,List<BodyWeight> weights){var db=db();db.beginTransaction();try{for(var w:weights())if(w.provider().equals(provider)&&!w.at().isBefore(from)&&w.at().isBefore(to))deleteWeight(w.id());for(var w:weights){if(!w.provider().equals(provider)||w.at().isBefore(from)||!w.at().isBefore(to))throw new IllegalArgumentException("Weight is outside its import scope.");saveWeight(w);}db.setTransactionSuccessful();}finally{db.endTransaction();}}
-    private static BodyWeight weight(JSONObject j){try{return new BodyWeight(required(j,"id"),requiredNumber(j,"kg"),Instant.parse(required(j,"at")),ZoneOffset.of(required(j,"offset")),required(j,"provider"),required(j,"sourceId"),text(j,"origin"));}catch(JSONException e){throw invalid(e);}}
-    public void saveHistorical(HistoricalStrengthRecord r){put("HISTORICAL_PB",r.id(),json("id",r.id(),"exercise",CoachingJson.exercise(r.exercise()),"kg",r.kilograms(),"reps",r.reps(),"date",r.date()==null?null:r.date().toString(),"precision",r.precision().name(),"notes",r.notes(),"seconds",r.durationSeconds(),"metres",r.distanceMetres()));}
-    public List<HistoricalStrengthRecord> historical(){List<HistoricalStrengthRecord> out=new ArrayList<>();for(var j:rows("HISTORICAL_PB"))out.add(historical(j));return out;}
-    public void deleteHistorical(String id){db().delete("coach_evidence","kind='HISTORICAL_PB' AND id=?",new String[]{id});}
-    private static HistoricalStrengthRecord historical(JSONObject j){try{return new HistoricalStrengthRecord(required(j,"id"),CoachingJson.exercise(j.getJSONObject("exercise")),requiredNumber(j,"kg"),requiredInteger(j,"reps"),text(j,"date")==null?null:LocalDate.parse(required(j,"date")),HistoricalStrengthRecord.DatePrecision.valueOf(required(j,"precision")),text(j,"notes"),j.isNull("seconds")?null:requiredLong(j,"seconds"),number(j,"metres"));}catch(JSONException e){throw invalid(e);}}
-    public void saveSessionDecision(WorkoutDecision d){put("SESSION_DECISION",d.id(),json("id",d.id(),"workoutId",d.workoutId(),"versionId",d.versionId(),"originalDate",d.originalDate().toString(),"movedTo",d.movedTo()==null?null:d.movedTo().toString(),"kind",d.kind().name(),"at",d.at().toString()));}
-    public List<WorkoutDecision> sessionDecisions(){var out=new ArrayList<WorkoutDecision>();for(var j:rows("SESSION_DECISION"))out.add(sessionDecision(j));out.sort(Comparator.comparing(WorkoutDecision::at));return out;}
-    private static WorkoutDecision sessionDecision(JSONObject j){try{return new WorkoutDecision(required(j,"id"),required(j,"workoutId"),required(j,"versionId"),LocalDate.parse(required(j,"originalDate")),text(j,"movedTo")==null?null:LocalDate.parse(required(j,"movedTo")),WorkoutDecision.Kind.valueOf(required(j,"kind")),Instant.parse(required(j,"at")));}catch(JSONException e){throw invalid(e);}}
-    public Map<String,LocalDate> strengthLinks(){Map<String,LocalDate> out=new HashMap<>();for(var j:rows("STRENGTH_LINK"))try{out.put(required(j,"id"),LocalDate.parse(required(j,"plannedDate")));}catch(JSONException e){throw invalid(e);}return out;}
-    public record GymLink(String actualSessionId,String versionKey,String prescribedSessionId){}
-    public Map<String,GymLink> gymLinks(){Map<String,GymLink> out=new HashMap<>();for(var j:rows("STRENGTH_LINK"))try{String version=text(j,"gymVersion"),session=text(j,"gymSession");if(version!=null&&session!=null){String actual=required(j,"id");out.put(actual,new GymLink(actual,version,session));}}catch(JSONException e){throw invalid(e);}return out;}
-    public void linkGym(String actual,LocalDate planned,String version,String session){put("STRENGTH_LINK",actual,json("id",actual,"plannedDate",planned.toString(),"gymVersion",version,"gymSession",session));}
-    public void deleteStrengthLink(String id){db().delete("coach_evidence","kind='STRENGTH_LINK' AND id=?",new String[]{id});}
-    public void linkStrength(String sessionId,LocalDate planned){put("STRENGTH_LINK",sessionId,json("id",sessionId,"plannedDate",planned.toString()));}
-    public WeeklyCoaching.Interruption interruption(){var rows=rows("INTERRUPTION");if(rows.isEmpty())return null;try{var j=rows.get(0);return new WeeklyCoaching.Interruption(LocalDate.parse(required(j,"from")),LocalDate.parse(required(j,"returned")),required(j,"reason"));}catch(JSONException e){throw invalid(e);}}
-    public void saveInterruption(WeeklyCoaching.Interruption i){put("INTERRUPTION","current",json("id","current","from",i.from().toString(),"returned",i.returned().toString(),"reason",i.reason()));}
-    public boolean reviewKnown(String id){try(Cursor c=db().rawQuery("SELECT 1 FROM coach_evidence WHERE kind='WEEKLY_REVIEW' AND id=?",new String[]{id})){return c.moveToFirst();}}
-    public String reviewDecision(String id){try(Cursor c=db().rawQuery("SELECT payload FROM coach_evidence WHERE kind='REVIEW_DECISION' AND id=?",new String[]{id})){if(!c.moveToFirst())return null;try{return object(c.getString(0)).getString("choice");}catch(JSONException e){throw invalid(e);}}}
-    public String decisionForReview(WeeklyCoaching.Review review){for(var decision:rows("REVIEW_DECISION")){try{String id=required(decision,"id");try(Cursor c=db().rawQuery("SELECT payload FROM coach_evidence WHERE kind='WEEKLY_REVIEW' AND id=?",new String[]{id})){if(c.moveToFirst()&&review.week().toString().equals(object(c.getString(0)).optString("week"))&&review.recommendation().equals(object(c.getString(0)).optString("recommendation"))&&new JSONArray(review.observations()).toString().equals(object(c.getString(0)).optJSONArray("observations").toString()))return required(decision,"choice");}}catch(JSONException e){throw invalid(e);}}return null;}
-    public void saveReview(WeeklyCoaching.Review r){JSONArray channels=new JSONArray(),choices=new JSONArray();for(var c:r.channels())channels.put(json("name",c.name(),"state",c.state().name(),"reason",c.reason()));for(var c:r.choices()){JSONArray changes=new JSONArray();for(var w:c.replacements())changes.put(planned(w));choices.put(json("id",c.id(),"label",c.label(),"replacements",changes));}put("WEEKLY_REVIEW",r.id(),json("id",r.id(),"base",r.baseVersionId(),"week",r.week().toString(),"planned",r.planned(),"completed",r.completed(),"km",r.kilometres(),"strength",r.strengthSessions(),"longest",r.longestKm(),"observations",new JSONArray(r.observations()),"channels",channels,"recommendation",r.recommendation(),"choices",choices));}
-    public void decide(WeeklyCoaching.Review r,String choice,CoachingRepository coaching,Set<String> completed){var db=db();db.beginTransaction();try{if(reviewDecision(r.id())!=null)throw new IllegalArgumentException("This review was already resolved.");var current=coaching.current();var selected=r.choices().stream().filter(c->c.id().equals(choice)).findFirst().orElseThrow(()->new IllegalArgumentException("Choose a review option."));var plan=WeeklyCoaching.apply(current,r,selected,completed);String resulting=current.id();if(!selected.replacements().isEmpty()){resulting=UUID.randomUUID().toString();coaching.saveCurrent(new PlanVersion(resulting,current.planId(),current.version()+1,Instant.now(),"Weekly review: "+selected.label(),current.goalSnapshot(),current.evidenceSnapshot(),plan));}put("REVIEW_DECISION",r.id(),json("id",r.id(),"base",current.id(),"choice",choice,"result",resulting));db.setTransactionSuccessful();}finally{db.endTransaction();}}
-    private static void validatePayload(String kind,String id,JSONObject j){try{if(!id.equals(required(j,"id")))throw new IllegalArgumentException("Evidence identity differs.");switch(kind){case "WEIGHT"->weight(j);case "HISTORICAL_PB"->historical(j);case "INTERRUPTION"->new WeeklyCoaching.Interruption(LocalDate.parse(required(j,"from")),LocalDate.parse(required(j,"returned")),required(j,"reason"));case "SESSION_DECISION"->sessionDecision(j);case "STRENGTH_LINK"->{LocalDate.parse(required(j,"plannedDate"));if((text(j,"gymVersion")==null)!=(text(j,"gymSession")==null))throw new IllegalArgumentException("Gym prescription identity is incomplete.");}case "REVIEW_DECISION"->{required(j,"base");required(j,"choice");required(j,"result");}case "WEEKLY_REVIEW"->{required(j,"base");LocalDate.parse(required(j,"week"));if(requiredInteger(j,"planned")<0||requiredInteger(j,"completed")<0||requiredNumber(j,"km")<0)throw new IllegalArgumentException("Invalid weekly summary.");j.getJSONArray("observations");j.getJSONArray("channels");JSONArray choices=j.getJSONArray("choices");for(int i=0;i<choices.length();i++){JSONArray changes=choices.getJSONObject(i).getJSONArray("replacements");for(int k=0;k<changes.length();k++)planned(changes.getJSONObject(k));}}default->throw new IllegalArgumentException("Unsupported evidence kind.");}}catch(JSONException e){throw invalid(e);}}
-    static JSONObject exportData(SQLiteDatabase db){JSONArray out=new JSONArray();try(Cursor c=db.rawQuery("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id",null)){while(c.moveToNext()){JSONObject p=object(c.getString(2));if(c.getString(0).equals("WEIGHT")&&!"manual".equals(p.optString("provider")))continue;out.put(json("kind",c.getString(0),"id",c.getString(1),"payload",p));}}return json("version",1,"records",out);}
-    static void validate(JSONObject data){try{if(requiredInteger(data,"version")!=1)throw new IllegalArgumentException("Unsupported evidence format.");JSONArray a=data.getJSONArray("records");if(a.length()>100000)throw new IllegalArgumentException("Too many evidence records.");Set<String> ids=new HashSet<>();for(int i=0;i<a.length();i++){JSONObject r=a.getJSONObject(i);String kind=required(r,"kind"),id=required(r,"id");if(!ids.add(kind+":"+id))throw new IllegalArgumentException("Duplicated evidence.");validatePayload(kind,id,r.getJSONObject("payload"));}}catch(JSONException e){throw invalid(e);}}
-    static void clear(SQLiteDatabase db){db.delete("coach_evidence",null,null);}
-    static void restore(SQLiteDatabase db,JSONObject data){try{JSONArray a=data.getJSONArray("records");for(int i=0;i<a.length();i++){JSONObject r=a.getJSONObject(i);ContentValues v=new ContentValues();v.put("kind",r.getString("kind"));v.put("id",r.getString("id"));v.put("payload",r.getJSONObject("payload").toString());db.insertOrThrow("coach_evidence",null,v);}}catch(JSONException e){throw invalid(e);}}
+    public void replaceWeightWindow(
+            String provider, Instant from, Instant to, List<BodyWeight> weights) {
+        var db = db();
+        db.beginTransaction();
+        try {
+            for (var w : weights())
+                if (w.provider().equals(provider) && !w.at().isBefore(from) && w.at().isBefore(to))
+                    deleteWeight(w.id());
+            for (var w : weights) {
+                if (!w.provider().equals(provider) || w.at().isBefore(from) || !w.at().isBefore(to))
+                    throw new IllegalArgumentException("Weight is outside its import scope.");
+                saveWeight(w);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private static BodyWeight weight(JSONObject j) {
+        try {
+            return new BodyWeight(
+                    required(j, "id"),
+                    requiredNumber(j, "kg"),
+                    Instant.parse(required(j, "at")),
+                    ZoneOffset.of(required(j, "offset")),
+                    required(j, "provider"),
+                    required(j, "sourceId"),
+                    text(j, "origin"));
+        } catch (JSONException e) {
+            throw invalid(e);
+        }
+    }
+
+    public void saveHistorical(HistoricalStrengthRecord r) {
+        put(
+                "HISTORICAL_PB",
+                r.id(),
+                json(
+                        "id",
+                        r.id(),
+                        "exercise",
+                        CoachingJson.exercise(r.exercise()),
+                        "kg",
+                        r.kilograms(),
+                        "reps",
+                        r.reps(),
+                        "date",
+                        r.date() == null ? null : r.date().toString(),
+                        "precision",
+                        r.precision().name(),
+                        "notes",
+                        r.notes(),
+                        "seconds",
+                        r.durationSeconds(),
+                        "metres",
+                        r.distanceMetres()));
+    }
+
+    public List<HistoricalStrengthRecord> historical() {
+        List<HistoricalStrengthRecord> out = new ArrayList<>();
+        for (var j : rows("HISTORICAL_PB")) out.add(historical(j));
+        return out;
+    }
+
+    public void deleteHistorical(String id) {
+        db().delete("coach_evidence", "kind='HISTORICAL_PB' AND id=?", new String[] {id});
+    }
+
+    private static HistoricalStrengthRecord historical(JSONObject j) {
+        try {
+            return new HistoricalStrengthRecord(
+                    required(j, "id"),
+                    CoachingJson.exercise(j.getJSONObject("exercise")),
+                    requiredNumber(j, "kg"),
+                    requiredInteger(j, "reps"),
+                    text(j, "date") == null ? null : LocalDate.parse(required(j, "date")),
+                    HistoricalStrengthRecord.DatePrecision.valueOf(required(j, "precision")),
+                    text(j, "notes"),
+                    j.isNull("seconds") ? null : requiredLong(j, "seconds"),
+                    number(j, "metres"));
+        } catch (JSONException e) {
+            throw invalid(e);
+        }
+    }
+
+    public void saveSessionDecision(WorkoutDecision d) {
+        put(
+                "SESSION_DECISION",
+                d.id(),
+                json(
+                        "id",
+                        d.id(),
+                        "workoutId",
+                        d.workoutId(),
+                        "versionId",
+                        d.versionId(),
+                        "originalDate",
+                        d.originalDate().toString(),
+                        "movedTo",
+                        d.movedTo() == null ? null : d.movedTo().toString(),
+                        "kind",
+                        d.kind().name(),
+                        "at",
+                        d.at().toString()));
+    }
+
+    public List<WorkoutDecision> sessionDecisions() {
+        var out = new ArrayList<WorkoutDecision>();
+        for (var j : rows("SESSION_DECISION")) out.add(sessionDecision(j));
+        out.sort(Comparator.comparing(WorkoutDecision::at));
+        return out;
+    }
+
+    private static WorkoutDecision sessionDecision(JSONObject j) {
+        try {
+            return new WorkoutDecision(
+                    required(j, "id"),
+                    required(j, "workoutId"),
+                    required(j, "versionId"),
+                    LocalDate.parse(required(j, "originalDate")),
+                    text(j, "movedTo") == null ? null : LocalDate.parse(required(j, "movedTo")),
+                    WorkoutDecision.Kind.valueOf(required(j, "kind")),
+                    Instant.parse(required(j, "at")));
+        } catch (JSONException e) {
+            throw invalid(e);
+        }
+    }
+
+    public Map<String, LocalDate> strengthLinks() {
+        Map<String, LocalDate> out = new HashMap<>();
+        for (var j : rows("STRENGTH_LINK"))
+            try {
+                out.put(required(j, "id"), LocalDate.parse(required(j, "plannedDate")));
+            } catch (JSONException e) {
+                throw invalid(e);
+            }
+        return out;
+    }
+
+    public record GymLink(String actualSessionId, String versionKey, String prescribedSessionId) {}
+
+    public Map<String, GymLink> gymLinks() {
+        Map<String, GymLink> out = new HashMap<>();
+        for (var j : rows("STRENGTH_LINK"))
+            try {
+                String version = text(j, "gymVersion"), session = text(j, "gymSession");
+                if (version != null && session != null) {
+                    String actual = required(j, "id");
+                    out.put(actual, new GymLink(actual, version, session));
+                }
+            } catch (JSONException e) {
+                throw invalid(e);
+            }
+        return out;
+    }
+
+    public void linkGym(String actual, LocalDate planned, String version, String session) {
+        put(
+                "STRENGTH_LINK",
+                actual,
+                json(
+                        "id",
+                        actual,
+                        "plannedDate",
+                        planned.toString(),
+                        "gymVersion",
+                        version,
+                        "gymSession",
+                        session));
+    }
+
+    public void deleteStrengthLink(String id) {
+        var db = db();
+        db.beginTransaction();
+        try {
+            SqliteGymAssociationRepository.removeLegacyLink(db, id);
+            db.delete("coach_evidence", "kind='STRENGTH_LINK' AND id=?", new String[] {id});
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void linkStrength(String sessionId, LocalDate planned) {
+        put("STRENGTH_LINK", sessionId, json("id", sessionId, "plannedDate", planned.toString()));
+    }
+
+    public WeeklyCoaching.Interruption interruption() {
+        var rows = rows("INTERRUPTION");
+        if (rows.isEmpty()) return null;
+        try {
+            var j = rows.get(0);
+            return new WeeklyCoaching.Interruption(
+                    LocalDate.parse(required(j, "from")),
+                    LocalDate.parse(required(j, "returned")),
+                    required(j, "reason"));
+        } catch (JSONException e) {
+            throw invalid(e);
+        }
+    }
+
+    public void saveInterruption(WeeklyCoaching.Interruption i) {
+        put(
+                "INTERRUPTION",
+                "current",
+                json(
+                        "id",
+                        "current",
+                        "from",
+                        i.from().toString(),
+                        "returned",
+                        i.returned().toString(),
+                        "reason",
+                        i.reason()));
+    }
+
+    public boolean reviewKnown(String id) {
+        try (Cursor c =
+                db().rawQuery(
+                                "SELECT 1 FROM coach_evidence WHERE kind='WEEKLY_REVIEW' AND id=?",
+                                new String[] {id})) {
+            return c.moveToFirst();
+        }
+    }
+
+    public String reviewDecision(String id) {
+        try (Cursor c =
+                db().rawQuery(
+                                "SELECT payload FROM coach_evidence WHERE kind='REVIEW_DECISION'"
+                                        + " AND id=?",
+                                new String[] {id})) {
+            if (!c.moveToFirst()) return null;
+            try {
+                return object(c.getString(0)).getString("choice");
+            } catch (JSONException e) {
+                throw invalid(e);
+            }
+        }
+    }
+
+    public String decisionForReview(WeeklyCoaching.Review review) {
+        for (var decision : rows("REVIEW_DECISION")) {
+            try {
+                String id = required(decision, "id");
+                try (Cursor c =
+                        db().rawQuery(
+                                        "SELECT payload FROM coach_evidence WHERE"
+                                                + " kind='WEEKLY_REVIEW' AND id=?",
+                                        new String[] {id})) {
+                    if (c.moveToFirst()
+                            && review.week()
+                                    .toString()
+                                    .equals(object(c.getString(0)).optString("week"))
+                            && review.recommendation()
+                                    .equals(object(c.getString(0)).optString("recommendation"))
+                            && new JSONArray(review.observations())
+                                    .toString()
+                                    .equals(
+                                            object(c.getString(0))
+                                                    .optJSONArray("observations")
+                                                    .toString()))
+                        return required(decision, "choice");
+                }
+            } catch (JSONException e) {
+                throw invalid(e);
+            }
+        }
+        return null;
+    }
+
+    public void saveReview(WeeklyCoaching.Review r) {
+        JSONArray channels = new JSONArray(), choices = new JSONArray();
+        for (var c : r.channels())
+            channels.put(json("name", c.name(), "state", c.state().name(), "reason", c.reason()));
+        for (var c : r.choices()) {
+            JSONArray changes = new JSONArray();
+            for (var w : c.replacements()) changes.put(planned(w));
+            choices.put(json("id", c.id(), "label", c.label(), "replacements", changes));
+        }
+        put(
+                "WEEKLY_REVIEW",
+                r.id(),
+                json(
+                        "id",
+                        r.id(),
+                        "base",
+                        r.baseVersionId(),
+                        "week",
+                        r.week().toString(),
+                        "planned",
+                        r.planned(),
+                        "completed",
+                        r.completed(),
+                        "km",
+                        r.kilometres(),
+                        "strength",
+                        r.strengthSessions(),
+                        "longest",
+                        r.longestKm(),
+                        "observations",
+                        new JSONArray(r.observations()),
+                        "channels",
+                        channels,
+                        "recommendation",
+                        r.recommendation(),
+                        "choices",
+                        choices));
+    }
+
+    public void decide(
+            WeeklyCoaching.Review r,
+            String choice,
+            CoachingRepository coaching,
+            Set<String> completed) {
+        var db = db();
+        db.beginTransaction();
+        try {
+            if (reviewDecision(r.id()) != null)
+                throw new IllegalArgumentException("This review was already resolved.");
+            var current = coaching.current();
+            var selected =
+                    r.choices().stream()
+                            .filter(c -> c.id().equals(choice))
+                            .findFirst()
+                            .orElseThrow(
+                                    () -> new IllegalArgumentException("Choose a review option."));
+            var plan = WeeklyCoaching.apply(current, r, selected, completed);
+            String resulting = current.id();
+            if (!selected.replacements().isEmpty()) {
+                resulting = UUID.randomUUID().toString();
+                coaching.saveCurrent(
+                        new PlanVersion(
+                                resulting,
+                                current.planId(),
+                                current.version() + 1,
+                                Instant.now(),
+                                "Weekly review: " + selected.label(),
+                                current.goalSnapshot(),
+                                current.evidenceSnapshot(),
+                                plan));
+            }
+            put(
+                    "REVIEW_DECISION",
+                    r.id(),
+                    json(
+                            "id",
+                            r.id(),
+                            "base",
+                            current.id(),
+                            "choice",
+                            choice,
+                            "result",
+                            resulting));
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private static void validatePayload(String kind, String id, JSONObject j) {
+        try {
+            if (!id.equals(required(j, "id")))
+                throw new IllegalArgumentException("Evidence identity differs.");
+            switch (kind) {
+                case "WEIGHT" -> weight(j);
+                case "HISTORICAL_PB" -> historical(j);
+                case "INTERRUPTION" ->
+                        new WeeklyCoaching.Interruption(
+                                LocalDate.parse(required(j, "from")),
+                                LocalDate.parse(required(j, "returned")),
+                                required(j, "reason"));
+                case "SESSION_DECISION" -> sessionDecision(j);
+                case "STRENGTH_LINK" -> {
+                    LocalDate.parse(required(j, "plannedDate"));
+                    if ((text(j, "gymVersion") == null) != (text(j, "gymSession") == null))
+                        throw new IllegalArgumentException(
+                                "Gym prescription identity is incomplete.");
+                }
+                case "REVIEW_DECISION" -> {
+                    required(j, "base");
+                    required(j, "choice");
+                    required(j, "result");
+                }
+                case "WEEKLY_REVIEW" -> {
+                    required(j, "base");
+                    LocalDate.parse(required(j, "week"));
+                    if (requiredInteger(j, "planned") < 0
+                            || requiredInteger(j, "completed") < 0
+                            || requiredNumber(j, "km") < 0)
+                        throw new IllegalArgumentException("Invalid weekly summary.");
+                    j.getJSONArray("observations");
+                    j.getJSONArray("channels");
+                    JSONArray choices = j.getJSONArray("choices");
+                    for (int i = 0; i < choices.length(); i++) {
+                        JSONArray changes = choices.getJSONObject(i).getJSONArray("replacements");
+                        for (int k = 0; k < changes.length(); k++)
+                            planned(changes.getJSONObject(k));
+                    }
+                }
+                default -> throw new IllegalArgumentException("Unsupported evidence kind.");
+            }
+        } catch (JSONException e) {
+            throw invalid(e);
+        }
+    }
+
+    static JSONObject exportData(SQLiteDatabase db) {
+        JSONArray out = new JSONArray();
+        try (Cursor c =
+                db.rawQuery("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id", null)) {
+            while (c.moveToNext()) {
+                JSONObject p = object(c.getString(2));
+                if (c.getString(0).equals("WEIGHT") && !"manual".equals(p.optString("provider")))
+                    continue;
+                out.put(json("kind", c.getString(0), "id", c.getString(1), "payload", p));
+            }
+        }
+        return json("version", 1, "records", out);
+    }
+
+    static void validate(JSONObject data) {
+        try {
+            if (requiredInteger(data, "version") != 1)
+                throw new IllegalArgumentException("Unsupported evidence format.");
+            JSONArray a = data.getJSONArray("records");
+            if (a.length() > 100000)
+                throw new IllegalArgumentException("Too many evidence records.");
+            Set<String> ids = new HashSet<>();
+            for (int i = 0; i < a.length(); i++) {
+                JSONObject r = a.getJSONObject(i);
+                String kind = required(r, "kind"), id = required(r, "id");
+                if (!ids.add(kind + ":" + id))
+                    throw new IllegalArgumentException("Duplicated evidence.");
+                validatePayload(kind, id, r.getJSONObject("payload"));
+            }
+        } catch (JSONException e) {
+            throw invalid(e);
+        }
+    }
+
+    static void clear(SQLiteDatabase db) {
+        db.delete("coach_evidence", null, null);
+    }
+
+    static void restore(SQLiteDatabase db, JSONObject data) {
+        try {
+            JSONArray a = data.getJSONArray("records");
+            for (int i = 0; i < a.length(); i++) {
+                JSONObject r = a.getJSONObject(i);
+                ContentValues v = new ContentValues();
+                v.put("kind", r.getString("kind"));
+                v.put("id", r.getString("id"));
+                v.put("payload", r.getJSONObject("payload").toString());
+                db.insertOrThrow("coach_evidence", null, v);
+            }
+        } catch (JSONException e) {
+            throw invalid(e);
+        }
+    }
 }

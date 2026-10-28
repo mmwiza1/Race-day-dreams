@@ -1,3 +1,25 @@
+# 0.9 canonical capture acceptance
+
+**91 authentic current-source API35 captures**, adopted from botb768e0b after successful
+workflow40741473316. Sourcef3a988a68f3d1b6dbb618422a80612b90cf4d92e, fingerprint:
+`2f31ea66e537562c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722`.
+The source-commit.txt/source.sha256 files beside the PNGs are the authoritative identities;
+documentation-only commits do not change these rendering inputs. All required names,
+540×1200 dimensions and PNG integrity pass scripts/verify-dream-screenshots.py.
+
+Current direct review includes RDL, exclusions, busy alternatives, saved association,
+Strength Today light/dark/200%, and gym entry dark/200%. The first alternative and Choose
+control fit the initial viewport; extra reason/equipment/rationale detail remains available.
+A bounded wait observes normal preference feedback expiry, so it does not cover exercise
+artwork or restore controls. Readable scroll/wrap is preserved at200%; device TalkBack
+and outdoor usability remain human checks. Original reference artwork remains separate.
+
+Integrity is not design acceptance. See VISUAL_REVIEW_0_9_0.md for actual opened screens.
+README curates8 authentic captures, including independent Strength Today and Gym Now.
+No test/mock interface or visible fixture/debug wording replaces production UI.
+
+## Retained reference provenance and earlier visual history
+
 # 0.8.2 premium Dream Routes — verified canonical captures
 
 The mandatory target is the owner-supplied **four-city premium Dream Routes reference
@@ -240,3 +262,11 @@ are adopted in f9b06c4; all60 PNG/metadata blob hashes matched. Five added actua
 machine/squat/carry guides were visually inspected. Full mandatory reference fidelity
 still remains open; these captures do not certify the missing127canonical guides or
 three unfinished geographic routes. Source fingerprint d385f63ff4b97230cea4ecc923ff4bb8f43cbab32f642a2cfbd7c972ba4f2692.
+# Strength Engine 2.0 capture additions
+
+The active 0.9 feature branch now requires 80 authentic captures: all 77 established
+images plus Strength-first Home in light mode, dark mode and 200% text. The new fixture
+launches the real CoachActivity with no running profile or race goal and uses actual
+test-only retained sets and a generated Strength programme. Do not describe those new
+captures as reviewed until the supported-API workflow produces them. Existing design
+references remain separate from app captures.

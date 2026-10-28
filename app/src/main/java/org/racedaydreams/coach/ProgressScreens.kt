@@ -105,7 +105,7 @@ fun ProgressScreen(state: CoachUiState, model: CoachViewModel, onActivity: (Stri
                     Text("${friendlyDate(result.date())} · ${resultSource(result)}")
                     result.eventName()?.takeIf { it.isNotBlank() }?.let { Text(it) }
                     LinkedActivity(result, state, onActivity)
-                    TextButton(onClick = { model.deleteResult(result.id()) }, enabled = !state.busy) { Text("Remove entered result") }
+                    TextButton(onClick = { model.runningEvidence.deleteResult(result.id()) }, enabled = !state.busy) { Text("Remove entered result") }
                 }
             }
             if (entered.size > 20) TextButton(onClick = { showAllEntered = !showAllEntered }) {
@@ -229,7 +229,7 @@ private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () 
                     event.trim().takeIf { it.isNotEmpty() }, if (official) ResultSource.OFFICIAL_CHIP else ResultSource.MANUAL,
                     activityId, note.trim().takeIf { it.isNotEmpty() })
                 error = null
-                model.saveResult(result, onDone)
+                model.runningEvidence.saveResult(result, onDone)
             } catch (failure: Exception) { error = failure.message ?: "Check the result date and finishing time." }
         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save result") }
     }
@@ -314,7 +314,7 @@ private fun ShoeEditor(shoe: Shoe?, state: CoachUiState, model: CoachViewModel, 
                 val result = Shoe(shoe?.id() ?: UUID.randomUUID().toString(), brand.trim(), name.trim(), purchase,
                     mileage, retired, notes.trim().takeIf { it.isNotEmpty() }, default && !retired)
                 error = null
-                model.saveShoe(result, onDone)
+                model.runningEvidence.saveShoe(result, onDone)
             } catch (failure: Exception) { error = failure.message ?: "Check the shoe details." }
         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save shoes") }
         TextButton(onClick = onDone) { Text("Cancel shoe changes") }

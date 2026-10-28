@@ -11,6 +11,7 @@ import kotlinx.coroutines.*
 import org.json.*
 import org.racedaydreams.data.*
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.support.DreamRoutes
 import java.time.*
 
@@ -25,9 +26,9 @@ import java.time.*
     val date=activity.start().atZone(ZoneId.systemDefault()).toLocalDate();val version=state.currentPlan
     val candidates=version?.plan()?.workouts()?.filter{it.date()<=LocalDate.now()&&kotlin.math.abs(java.time.temporal.ChronoUnit.DAYS.between(date,it.date()))<=2&&state.runResponses.none{r->r.plannedWorkoutId()==it.id()}&&state.activities.none{a->a.plannedWorkoutId()==it.id()}}?:emptyList()
     val tomorrow=version?.plan()?.workouts()?.firstOrNull{it.date()==date.plusDays(1)&&it.date()>=LocalDate.now()&&org.racedaydreams.domain.strength.GymProgrammeGenerator.demanding(it.category())}
-    if(tomorrow!=null&&org.racedaydreams.domain.polish.TrainingInsights.extraRunDemand(activity))SemanticCard(Tile.Insight){Text("Review tomorrow's demand",style=MaterialTheme.typography.titleMedium);Text("You recorded an extra run before ${workoutName(tomorrow.category())}. It may feel more demanding. Your plan is unchanged.");var preview by remember{mutableStateOf(false)};TextButton(onClick={preview=true}){Text("Preview easy alternative")};if(preview)AlertDialog(onDismissRequest={preview=false},title={Text("Choose easy instead?")},text={Text("Only tomorrow's session changes to conversational effort. Its current distance/time ceiling is retained; no extra mileage is added. The original plan version is preserved.")},confirmButton={TextButton(onClick={model.chooseEasy(tomorrow.id(),"Runner chose an easy alternative after an extra recorded run");preview=false}){Text("Choose easy")}},dismissButton={TextButton(onClick={preview=false}){Text("Keep original")}})}
+    if(tomorrow!=null&&org.racedaydreams.domain.polish.TrainingInsights.extraRunDemand(activity))SemanticCard(Tile.Insight){Text("Review tomorrow's demand",style=MaterialTheme.typography.titleMedium);Text("You recorded an extra run before ${workoutName(tomorrow.category())}. It may feel more demanding. Your plan is unchanged.");var preview by remember{mutableStateOf(false)};TextButton(onClick={preview=true}){Text("Preview easy alternative")};if(preview)AlertDialog(onDismissRequest={preview=false},title={Text("Choose easy instead?")},text={Text("Only tomorrow's session changes to conversational effort. Its current distance/time ceiling is retained; no extra mileage is added. The original plan version is preserved.")},confirmButton={TextButton(onClick={model.runningPlan.chooseEasy(tomorrow.id(),"Runner chose an easy alternative after an extra recorded run");preview=false}){Text("Choose easy")}},dismissButton={TextButton(onClick={preview=false}){Text("Keep original")}})}
     if(candidates.isNotEmpty())SemanticCard(Tile.Insight){Text("Extra run or planned training?",style=MaterialTheme.typography.titleMedium);Text("Kept as an extra run unless you explicitly link it. The original prescription and actual GPS remain unchanged.");candidates.forEach{w->TextButton(onClick={selected=w}){Text("Count toward ${workoutName(w.category())} · ${friendlyDate(w.date())}")}}}
-    selected?.let{w->AlertDialog(onDismissRequest={selected=null},title={Text("Link this actual run?")},text={Text("This will compare your run with the preserved ${friendlyDate(w.date())} prescription. It does not rewrite GPS or change the programme.")},confirmButton={TextButton(onClick={model.linkRun(activity.id(),version!!.id(),w.id());selected=null}){Text("Confirm link")}},dismissButton={TextButton(onClick={selected=null}){Text("Keep as extra run")}})}
+    selected?.let{w->AlertDialog(onDismissRequest={selected=null},title={Text("Link this actual run?")},text={Text("This will compare your run with the preserved ${friendlyDate(w.date())} prescription. It does not rewrite GPS or change the programme.")},confirmButton={TextButton(onClick={model.runningEvidence.linkRun(activity.id(),version!!.id(),w.id());selected=null}){Text("Confirm link")}},dismissButton={TextButton(onClick={selected=null}){Text("Keep as extra run")}})}
 }
 
 @Composable fun DreamPreferences(){
@@ -45,10 +46,10 @@ import java.time.*
 
 @Composable fun StartingPath(model:CoachViewModel,choose:(String)->Unit)=CoachPage {
     CoachHeading("Make today yours")
-    Text("Choose where to start. Every feature remains available later.")
-    SemanticCard(Tile.Planned){Text("Run independently",style=MaterialTheme.typography.titleLarge);Text("No training programme or health access required.");CoachButton("Record my runs"){model.startingPath("record");choose("home")}}
-    SemanticCard(Tile.Race){Text("A race goal",style=MaterialTheme.typography.titleLarge);CoachButton("Train for a race"){model.startingPath("race");choose("baseline")}}
-    SemanticCard(Tile.Strength){Text("Integrated training",style=MaterialTheme.typography.titleLarge);Text("Begin with your running goal; strength stays optional.");CoachButton("Running + strength"){model.startingPath("hybrid");choose("baseline")}}
+    Text("Choose your primary focus. You can change it in Settings, and every feature remains available.")
+    SemanticCard(Tile.Planned){Text("Running",style=MaterialTheme.typography.titleLarge);Text("Run independently or work towards a race. No gym programme or health access required.");CoachButton("Record my runs"){model.settings.startingPath("record"){choose("home")}};CoachButton("Train for a race"){model.settings.startingPath("race"){choose("baseline")}}}
+    SemanticCard(Tile.Strength){Text("Strength",style=MaterialTheme.typography.titleLarge);Text("Set up optional strength programming or log your own workouts. No race goal or running profile required.");CoachButton("Focus on strength"){model.settings.primaryFocus(PrimaryFocus.STRENGTH){choose("gym")}}}
+    SemanticCard(Tile.Race){Text("Hybrid",style=MaterialTheme.typography.titleLarge);Text("Begin with your running goal; add strength when you choose.");CoachButton("Running + strength"){model.settings.startingPath("hybrid"){choose("baseline")}}}
 }
 
 @Composable fun RaceWeekChecklist(goal:org.racedaydreams.domain.RaceGoal){

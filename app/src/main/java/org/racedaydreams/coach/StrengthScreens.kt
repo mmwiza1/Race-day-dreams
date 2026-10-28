@@ -20,8 +20,8 @@ import org.racedaydreams.domain.strength.*
     fun mass(kg:Double)="${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}"
     CoachPage{
         CoachHeading("Strength")
-        Text("Your optional strength training, records and running context.")
-        Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->FilterChip(selected=state.massUnit==u,onClick={model.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
+        Text("Your strength training, records and progression.")
+        Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->FilterChip(selected=state.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
         if(plannedDate!=null)Text("Planned strength · ${friendlyDate(plannedDate)}. Log what you actually did.")
         if(section=="log" && !logging) {
             val today=LocalDate.now()
@@ -61,7 +61,7 @@ import org.racedaydreams.domain.strength.*
                         if(r.sessionId()==null||!r.notes().isNullOrBlank())TextButton(onClick={details=!details},modifier=Modifier.heightIn(min=48.dp)){Text(if(details)"Hide record details"else "Record details")}
                         if(details){
                             if(r.sessionId()==null){var edit by rememberSaveable(r.id()){mutableStateOf(false)};TextButton(onClick={edit=!edit}){Text("Edit historical PB")};if(edit)state.historicalStrength.firstOrNull{it.id()==r.id()}?.let{HistoricalForm(state,model,it){edit=false}}}
-                            r.notes()?.takeIf{it.isNotBlank()}?.let{Text(it)};if(r.sessionId()==null)TextButton(onClick={model.deleteHistorical(r.id())}){Text("Delete historical entry")}}
+                            r.notes()?.takeIf{it.isNotBlank()}?.let{Text(it)};if(r.sessionId()==null)TextButton(onClick={model.strength.deleteHistorical(r.id())}){Text("Delete historical entry")}}
                     }
                 }
             }
@@ -88,16 +88,47 @@ import org.racedaydreams.domain.strength.*
             var editing by rememberSaveable(s.id()){mutableStateOf(sourceId==s.id())}
             TextButton(onClick={editing=!editing}){Text("Edit source workout")}
             if(editing)key(s.id()){StrengthForm(state,model,state.strengthPlannedDates[s.id()],s){editing=false}}
-            TextButton(onClick={model.deleteStrength(s.id())}){Text("Delete session and recalculate PBs")}
+            TextButton(onClick={model.strength.deleteStrength(s.id())}){Text("Delete session and recalculate PBs")}
         }}
         if(state.strengthSessions.size>historyLimit)TextButton(onClick={historyLimit+=20}){Text("Load more workouts")}
         }
     }
 }
-@Composable private fun ExercisePicker(state:CoachUiState,selected:String,onSelect:(String)->Unit){
-    var menu by remember{mutableStateOf(false)};var query by rememberSaveable{mutableStateOf("")}
-    OutlinedButton(onClick={menu=true},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(state.exercises.firstOrNull{it.id()==selected}?.name()?:"Choose exercise")}
-    if(menu)AlertDialog(onDismissRequest={menu=false},title={Text("Choose exercise")},text={Column{CoachInput("Search exercises or aliases",query,{query=it});val rows=exerciseMatches(state,query);Text("${rows.size} matching exercises");androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max=320.dp)){items(rows.size){i->TextButton(onClick={onSelect(rows[i].id());menu=false},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(rows[i].name())}}}}},confirmButton={TextButton(onClick={menu=false}){Text("Cancel")}})
+@Composable
+private fun ExercisePicker(state: CoachUiState, selected: String, onSelect: (String) -> Unit) {
+    var menu by remember { mutableStateOf(false) }
+    var query by rememberSaveable { mutableStateOf("") }
+    OutlinedButton(onClick = { menu = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+        Text(state.exercises.firstOrNull { it.id() == selected }?.name() ?: "Choose exercise")
+    }
+    if (state.exerciseExclusions.any { it.exerciseId() == selected }) {
+        Text("Excluded from recommendations. Existing actuals remain editable; search to choose it explicitly.", style = MaterialTheme.typography.bodySmall)
+    }
+    if (menu) AlertDialog(
+        onDismissRequest = { menu = false },
+        title = { Text("Choose exercise") },
+        text = {
+            Column {
+                CoachInput("Search exercises or aliases", query, { query = it })
+                val rows = exerciseMatches(state, query)
+                Text("${rows.size} matching exercises")
+                androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max = 320.dp)) {
+                    items(rows.size) { index ->
+                        val exercise = rows[index]
+                        TextButton(onClick = { onSelect(exercise.id()); menu = false }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                            Column {
+                                Text(exercise.name())
+                                if (state.exerciseExclusions.any { it.exerciseId() == exercise.id() }) {
+                                    Text("Excluded from recommendations · explicit selection", style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = { menu = false }) { Text("Cancel") } },
+    )
 }
 @Composable private fun HistoricalForm(s:CoachUiState,model:CoachViewModel,existing:HistoricalStrengthRecord?=null,done:()->Unit){
     var exercise by rememberSaveable{mutableStateOf(existing?.exercise()?.id()?:s.exercises.first().id())};var kg by rememberSaveable{mutableStateOf(existing?.kilograms()?.let{s.massUnit.fromKilograms(it).toString()}?:"")};var reps by rememberSaveable{mutableStateOf(existing?.let{it.durationSeconds()?.toString()?:it.distanceMetres()?.toString()?:it.reps().toString()}?:"")};var notes by rememberSaveable{mutableStateOf(existing?.notes()?:"")};var precision by rememberSaveable{mutableStateOf(existing?.precision()?.name?:"UNKNOWN")};var date by rememberSaveable{mutableStateOf((existing?.date()?:LocalDate.now()).toString())};var error by rememberSaveable{mutableStateOf<String?>(null)}
@@ -105,7 +136,7 @@ import org.racedaydreams.domain.strength.*
     LaunchedEffect(s.massUnit){if(enteredUnit!=s.massUnit.name){kg=kg.toDoubleOrNull()?.let{s.massUnit.fromKilograms(org.racedaydreams.domain.body.MassUnit.valueOf(enteredUnit).toKilograms(it)).toString()}?:kg;enteredUnit=s.massUnit.name}}
     CoachCard{Text("Historical strength PB");ExercisePicker(s,exercise,{next->if(s.exercises.first{it.id()==exercise}.measurement()!=s.exercises.first{it.id()==next}.measurement()){reps="";kg=""};exercise=next});val selected=s.exercises.first{it.id()==exercise};val profile=selected.measurement();if(profile.usesLoad())CoachInput("Load (${s.massUnit.name.lowercase()}; added load for weighted bodyweight)",kg,{kg=it},true);if(profile.usesReps())CoachInput("Reps",reps,{reps=it},true);if(profile.usesDuration())CoachInput("Duration (seconds or m:ss)",reps,{reps=it});if(profile.usesDistance())CoachInput("Distance (metres)",reps,{reps=it},true)
         HistoricalStrengthRecord.DatePrecision.values().forEach{p->FilterChip(selected=precision==p.name,onClick={precision=p.name},label={Text(p.name.lowercase())})};if(precision!="UNKNOWN")DateInput("PB date",date,{date=it});CoachInput("Notes (optional)",notes,{notes=it});error?.let{Text(it)}
-        CoachButton("Save historical PB",{try{model.saveHistorical(HistoricalStrengthRecord(existing?.id()?:UUID.randomUUID().toString(),s.exercises.first{it.id()==exercise},if(profile.usesLoad())s.massUnit.toKilograms(kg.toDouble())else 0.0,if(profile.usesReps())reps.toInt()else 0,if(precision=="UNKNOWN")null else LocalDate.parse(date),HistoricalStrengthRecord.DatePrecision.valueOf(precision),notes,if(profile.usesDuration())StrengthMeasurements.seconds(reps)else null,if(profile.usesDistance())reps.toDouble()else null),done)}catch(e:Exception){error=e.message?:"Check record values."}})
+        CoachButton("Save historical PB",{try{model.strength.saveHistorical(HistoricalStrengthRecord(existing?.id()?:UUID.randomUUID().toString(),s.exercises.first{it.id()==exercise},if(profile.usesLoad())s.massUnit.toKilograms(kg.toDouble())else 0.0,if(profile.usesReps())reps.toInt()else 0,if(precision=="UNKNOWN")null else LocalDate.parse(date),HistoricalStrengthRecord.DatePrecision.valueOf(precision),notes,if(profile.usesDuration())StrengthMeasurements.seconds(reps)else null,if(profile.usesDistance())reps.toDouble()else null),done)}catch(e:Exception){error=e.message?:"Check record values."}})
     }
 }
 /** Draft storage uses strings internally, while visible entry has separate normal set fields. */
@@ -145,6 +176,6 @@ import org.racedaydreams.domain.strength.*
             Row{TextButton(onClick={if(sets.isNotEmpty()){error="Finish the current exercise first."}else{selected=b.substringBefore('\t');sets=ArrayList(b.substringAfter('\t').split(';'));blocks=ArrayList(blocks.filterIndexed{index,_->index!=i});editingSet=null}}){Text("Edit exercise")};TextButton(onClick={blocks=ArrayList(blocks.filterIndexed{index,_->index!=i})}){Text("Remove exercise")}}
         }}
         CoachInput("Notes (optional)",notes,{notes=it});error?.let{Text(it)}
-        CoachButton("Save strength workout",{try{require(sets.isEmpty()){ "Add the pending exercise and sets first." };val exercises=blocks.map{b->StrengthSession.ExerciseSets(s.exercises.first{it.id()==b.substringBefore('\t')},b.substringAfter('\t').split(';').map(::parseSet))};require(exercises.isNotEmpty()){ "Add at least one exercise." };val entered=LocalDate.parse(date).atTime(LocalTime.parse(time));val original=editing?.startedAt()?.atOffset(editing.offset());val start=if(original!=null&&entered==original.toLocalDateTime().truncatedTo(java.time.temporal.ChronoUnit.MINUTES))original.toZonedDateTime()else entered.atZone(editing?.offset()?:ZoneId.systemDefault());val duration=if(editing!=null&&minutes==editing.duration().toMinutes().toString())editing.duration()else Duration.ofMinutes(minutes.toLong());require(start.toInstant().plus(duration)<=Instant.now()){ "Completed session must end before now." };model.saveStrength(StrengthSession(editing?.id()?:UUID.randomUUID().toString(),start.toInstant(),start.offset,duration,rpe.takeIf{it.isNotBlank()}?.toDouble(),notes,exercises),done,plannedDate)}catch(e:Exception){error=e.message?:"Check workout values."}})
+        CoachButton("Save strength workout",{try{require(sets.isEmpty()){ "Add the pending exercise and sets first." };val exercises=blocks.map{b->StrengthSession.ExerciseSets(s.exercises.first{it.id()==b.substringBefore('\t')},b.substringAfter('\t').split(';').map(::parseSet))};require(exercises.isNotEmpty()){ "Add at least one exercise." };val entered=LocalDate.parse(date).atTime(LocalTime.parse(time));val original=editing?.startedAt()?.atOffset(editing.offset());val start=if(original!=null&&entered==original.toLocalDateTime().truncatedTo(java.time.temporal.ChronoUnit.MINUTES))original.toZonedDateTime()else entered.atZone(editing?.offset()?:ZoneId.systemDefault());val duration=if(editing!=null&&minutes==editing.duration().toMinutes().toString())editing.duration()else Duration.ofMinutes(minutes.toLong());require(start.toInstant().plus(duration)<=Instant.now()){ "Completed session must end before now." };model.strength.saveStrength(StrengthSession(editing?.id()?:UUID.randomUUID().toString(),start.toInstant(),start.offset,duration,rpe.takeIf{it.isNotBlank()}?.toDouble(),notes,exercises),done,plannedDate)}catch(e:Exception){error=e.message?:"Check workout values."}})
     }
 }

@@ -32,7 +32,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             CoachHeading("Plan")
             GuidanceCard { Text("Your next chapter", style=MaterialTheme.typography.titleLarge)
                 Text("Create a programme from your goal and availability, or record runs without a plan.")
-                CoachButton("Generate my programme") { model.generatePlan() }
+                CoachButton("Generate my programme") { model.runningPlan.generatePlan() }
             }
             WhyDetails("Missing or stale workload evidence starts with short conversational run/walk sessions. A short race horizon never triggers a catch-up build.")
             CoachButton("Edit goal and routine", editGoal)
@@ -99,7 +99,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             }
             }
             MobilitySupportCard(routines)
-            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
+            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.runningPlan.decide(proposal, it) } }
             TextButton(onClick={details=!details}) { Text(if(details)"Hide programme details"else"Programme details") }
             if(details) {
                 Text("${friendlyDate(plan.startDate())} – ${friendlyDate(plan.endDate())}")
@@ -119,7 +119,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
     }
     if(confirm) AlertDialog(onDismissRequest={confirm=false},title={Text("Rebuild your remaining programme?")},
         text={Text("Use your current goal, availability and evidence from today onward. Future sessions may change. Previous prescriptions remain in history. No catch-up mileage is added.")},
-        confirmButton={TextButton(onClick={confirm=false;model.generatePlan()}){Text("Rebuild")}},
+        confirmButton={TextButton(onClick={confirm=false;model.runningPlan.generatePlan()}){Text("Rebuild")}},
         dismissButton={TextButton(onClick={confirm=false}){Text("Keep current plan")}})
 }
 
@@ -164,7 +164,7 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             var moveDate by rememberSaveable { mutableStateOf(workout.date().toString()) }
             if(workout.category()!=WorkoutCategory.RACE && state.runResponses.none{it.plannedWorkoutId()==workout.id()}) {
                 TextButton(onClick={moving=!moving}){Text("Move or skip this session")}
-                if(moving){DateInput("Move to",moveDate,{moveDate=it});val proposed=runCatching{LocalDate.parse(moveDate)}.getOrNull();org.racedaydreams.domain.coaching.WorkoutContext.moveWarnings(workout,proposed,state.plannedWorkouts,state.strengthSessions,state.gymProgramme).forEach{Text(it)};if(proposed!=null&&state.profile?.preferences()?.runningDays()?.contains(proposed.dayOfWeek)==false)Text("Outside your normal running days. This one-off move will not change your regular routine.");CoachButton("Move this workout only",{model.changeWorkout(workout.id(),LocalDate.parse(moveDate))});OutlinedButton(onClick={model.changeWorkout(workout.id())}){Text("Skip this session")}}
+                if(moving){DateInput("Move to",moveDate,{moveDate=it});val proposed=runCatching{LocalDate.parse(moveDate)}.getOrNull();org.racedaydreams.domain.coaching.WorkoutContext.moveWarnings(workout,proposed,state.plannedWorkouts,state.strengthSessions,state.gymProgramme).forEach{Text(it)};if(proposed!=null&&state.profile?.preferences()?.runningDays()?.contains(proposed.dayOfWeek)==false)Text("Outside your normal running days. This one-off move will not change your regular routine.");CoachButton("Move this workout only",{model.runningPlan.changeWorkout(workout.id(),LocalDate.parse(moveDate))});OutlinedButton(onClick={model.runningPlan.changeWorkout(workout.id())}){Text("Skip this session")}}
             }
             WhyDetails(workout.note() ?: "No explanation was recorded.","Why this workout?")
             Text("Goal: ${version.goalSnapshot().raceGoal().distance().label()} · ${version.goalSnapshot().raceGoal().mode().label()}")
@@ -176,7 +176,7 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 if (recording) CompletionForm(state, model, version, workout, openActivity)
                 var linking by rememberSaveable{mutableStateOf(false)}
                 OutlinedButton(onClick={linking=true},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Link completed activity")}
-                if(linking)AlertDialog(onDismissRequest={linking=false},title={Text("Choose recorded run")},text={androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max=320.dp)){val candidates=state.activities.filter{a->a.plannedWorkoutId()==null}.sortedByDescending{it.start()}.take(100);if(candidates.isEmpty())item{Text("No unlinked activities. Import or record a run first.")};items(candidates.size){i->val a=candidates[i];TextButton(onClick={model.linkRun(a.id(),version.id(),workout.id());linking=false;openActivity(a.id())}){Text("${displayActivityDate(a)} · ${a.distanceMetres()?.let{formatDistance(it,state)}?:"Distance unavailable"}")}}}},confirmButton={TextButton(onClick={linking=false}){Text("Cancel")}})
+                if(linking)AlertDialog(onDismissRequest={linking=false},title={Text("Choose recorded run")},text={androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max=320.dp)){val candidates=state.activities.filter{a->a.plannedWorkoutId()==null}.sortedByDescending{it.start()}.take(100);if(candidates.isEmpty())item{Text("No unlinked activities. Import or record a run first.")};items(candidates.size){i->val a=candidates[i];TextButton(onClick={model.runningEvidence.linkRun(a.id(),version.id(),workout.id());linking=false;openActivity(a.id())}){Text("${displayActivityDate(a)} · ${a.distanceMetres()?.let{formatDistance(it,state)}?:"Distance unavailable"}")}}}},confirmButton={TextButton(onClick={linking=false}){Text("Cancel")}})
 
             } else Text("Record completion after the workout takes place. Phone GPS recording is available from Home → Record a run.")
         }
@@ -198,7 +198,7 @@ private fun CompletionForm(state: CoachUiState, model: CoachViewModel, version: 
         CoachInput("Notes (optional)", notes, { notes=it })
         error?.let { Text(it) }
         Button(enabled = !state.busy, onClick = {
-            try { model.completeRun(version.id(), workout.id(), km.toDouble() * (if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) 1.609344 else 1.0), PaceCalculator.parseTime(duration), LocalDate.parse(date), LocalTime.parse(time),
+            try { model.runningEvidence.completeRun(version.id(), workout.id(), km.toDouble() * (if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) 1.609344 else 1.0), PaceCalculator.parseTime(duration), LocalDate.parse(date), LocalTime.parse(time),
                 rpe.takeIf { it.isNotBlank() }?.toDouble(), notes, done); error=null }
             catch (e: Exception) { error=e.message ?: "Check actual values." }
         }, modifier = Modifier.fillMaxWidth().heightIn(min=48.dp)) { Text("Save actual run") }

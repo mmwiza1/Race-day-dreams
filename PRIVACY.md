@@ -121,3 +121,12 @@ Inspect the file before choosing to share it. No upload occurs. Custom workouts,
 recording origins, association choices, Dream preferences, race checklist and optional
 shoe observations stay private locally and are included in user-chosen backups.
 No Internet permission, direct Samsung SDK, account or analytics is added.
+
+## Retained0.9 Strength preferences and choices
+
+Training focus, explicit exercise exclusions (ID, non-medical reason and timestamp), saved
+workout intentions, actual sets and reviewed programme-association decisions stay in the
+shared private local database. They are included only in user-requested backups/exports;
+there is no automatic upload. Excluding/restoring an exercise does not delete recorded
+history or PBs. Diagnostics retain their existing allow-list; actual sets, exclusion reasons and reviewed
+decision payloads are not added. No Internet permission or runtime network dependency is added.

@@ -25,12 +25,26 @@ def png(width=320, height=640, pixels=None):
 class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
-        self.assertEqual(77, len(captures.REQUIRED))
-        self.assertEqual(77, len(set(captures.REQUIRED)))
+        self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
+        self.assertEqual(91, len(captures.REQUIRED))
+        self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):
             self.assertIn(f"dream-route-{city}.png", captures.REQUIRED)
             self.assertIn(f"dream-route-{city}-landmarks.png", captures.REQUIRED)
+
+    def test_strength_first_home_requires_all_three_real_capture_modes(self):
+        self.assertEqual({"strength-home.png", "strength-home-dark.png", "strength-home-large-font.png"},
+                         set(captures.STRENGTH_REQUIRED))
+        for name in captures.STRENGTH_REQUIRED:
+            self.assertIn(name, captures.REQUIRED)
+
+    def test_gym_now_requires_hub_builder_actuals_completion_and_accessibility_captures(self):
+        self.assertEqual({"exercise-excluded.png", "gym-association-review.png", "gym-association-saved.png", "exercise-browse.png", "gym-equipment-alternatives.png", "gym-now.png", "gym-workout-builder.png", "gym-workout.png",
+                          "gym-workout-saved.png", "gym-workout-dark.png", "gym-workout-large-font.png"},
+                         set(captures.GYM_REQUIRED))
+        for name in captures.GYM_REQUIRED:
+            self.assertIn(name, captures.REQUIRED)
 
     def test_complete_capture_set_validates_without_requiring_equal_api_hashes(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -38,8 +52,8 @@ class CaptureValidationTest(unittest.TestCase):
             for index, name in enumerate(captures.REQUIRED):
                 (directory / name).write_bytes(png(320 + index))
             result = captures.validate_captures(directory)
-            self.assertEqual(77, len(result))
-            self.assertEqual((396, 640), result[captures.REQUIRED[-1]])
+            self.assertEqual(len(captures.REQUIRED), len(result))
+            self.assertEqual((320 + len(captures.REQUIRED) - 1, 640), result[captures.REQUIRED[-1]])
 
     def test_missing_or_symlink_capture_rejected(self):
         with tempfile.TemporaryDirectory() as temp:

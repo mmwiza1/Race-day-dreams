@@ -126,7 +126,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
         CoachHeading(if (assessment != null) "Assessment run" else "Run detail")
         RecordedRouteCard(activity)
         SpontaneousAssociation(state,model,activity)
-        if(activity.shoeId()!=null)CheckRow("I noted discomfort while wearing this shoe (no cause inferred)",activity.id() in state.shoeDiscomfort){model.shoeDiscomfort(activity.id(),it)}
+        if(activity.shoeId()!=null)CheckRow("I noted discomfort while wearing this shoe (no cause inferred)",activity.id() in state.shoeDiscomfort){model.runningEvidence.shoeDiscomfort(activity.id(),it)}
         Text(activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM uuuu · HH:mm XXX", java.util.Locale.UK)))
         if (activity.startOffset() == null) Text("The source did not provide a time-zone offset; this time is shown explicitly in UTC.")
         CoachCard {
@@ -237,17 +237,17 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 val effort = optionalNumber(rpe)
                 require(effort == null || effort in 0.0..10.0) { "RPE must be between 0 and 10." }
                 error = null
-                model.saveNotes(activity.id(), notes, effort)
+                model.runningEvidence.saveNotes(activity.id(), notes, effort)
             } catch (failure: IllegalArgumentException) { error = failure.message }
         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save notes and effort") }
     }
     if (chooseShoe) AlertDialog(onDismissRequest = { chooseShoe = false },
         title = { Text("Assign a shoe") },
         text = { LazyColumn(Modifier.heightIn(max = 360.dp)) {
-            item { TextButton(onClick = { chooseShoe = false; model.assignShoe(activity.id(), null) },
+            item { TextButton(onClick = { chooseShoe = false; model.runningEvidence.assignShoe(activity.id(), null) },
                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("No shoe") } }
             items(state.shoes, key = { it.id() }) { shoe ->
-                TextButton(onClick = { chooseShoe = false; model.assignShoe(activity.id(), shoe.id()) },
+                TextButton(onClick = { chooseShoe = false; model.runningEvidence.assignShoe(activity.id(), shoe.id()) },
                     modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                     Text("${shoe.brand()} ${shoe.model()}${if (shoe.retired()) " · retired" else ""}")
                 }

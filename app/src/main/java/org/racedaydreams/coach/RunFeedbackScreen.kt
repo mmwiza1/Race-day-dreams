@@ -34,7 +34,7 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
         if (state.proposals.isEmpty()) Text("No programme adjustment is currently proposed. This run remains useful evidence for future reviews.")
         else {
             Text("Review the rest of your week. These proposals use the underlying run and strength evidence, not your rounded Run Score.")
-            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.decide(proposal, it) } }
+            state.proposals.forEach { proposal -> AdjustmentCard(proposal, state.busy) { model.runningPlan.decide(proposal, it) } }
         }
     }
     if(planned!=null){CoachCard {
@@ -48,7 +48,7 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
         if(state.currentPlan!=null){
             TextButton(onClick={showLink=!showLink},modifier=Modifier.heightIn(min=48.dp)){Text("Link to a planned workout…")}
             if(showLink) state.currentPlan.plan().workouts().filter { it.date()<=java.time.LocalDate.now() && state.activities.none { a->a.plannedWorkoutId()==it.id() } }.takeLast(14).forEach { w ->
-                OutlinedButton(onClick={model.linkRun(activity.id(),state.currentPlan.id(),w.id());showLink=false},enabled=!state.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){
+                OutlinedButton(onClick={model.runningEvidence.linkRun(activity.id(),state.currentPlan.id(),w.id());showLink=false},enabled=!state.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){
                     Text("${friendlyDate(w.date())} · ${workoutName(w.category())} · ${w.distanceKm()?.let { formatDistance(it * 1000, state) } ?: "timed"}")
                 }
             }

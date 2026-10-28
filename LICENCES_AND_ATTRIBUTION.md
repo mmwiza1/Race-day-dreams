@@ -147,3 +147,19 @@ geographic landmark positions. Exact source-plate hashes, processing/crops and a
 hashes are recorded in docs/dream-artwork-0.8.2.json. Existing geographic datasets, ODbL
 notices and source licences are unchanged; maps remain coordinate/vector rendered.
 No runtime/build dependency or permission was added.
+
+## Build-only source formatting tools
+
+The 0.9 architecture surfaces are checked by ktfmt 0.54
+(https://github.com/facebook/ktfmt) and google-java-format 1.24.0
+(https://github.com/google/google-java-format), both Apache-2.0. These are pinned
+developer/CI executables, downloaded from Maven Central with pinned SHA-256
+validation; no formatter source or JAR ships in the Android APK. No third-party
+implementation is adapted into app/domain code. See docs/FORMATTING.md.
+
+The0.9reliability checkpoint aligns existing Compose UI/runtime/foundation on1.8.3 and
+Material3 on1.3.2 using BOM2025.07.00 (Apache-2.0, existing AndroidX notices retained).
+This refresh adds no separate service/SDK or network permission. Official UI release notes
+record1.8.1 precomposed-node remeasurement and1.8.2 dialog-removal lifecycle fixes:
+https://developer.android.com/jetpack/androidx/releases/compose-ui . These upstream notes
+are engineering context, not a claim that they prove every device-specific fault fixed.

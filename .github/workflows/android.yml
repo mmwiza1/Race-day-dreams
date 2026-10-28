@@ -33,7 +33,7 @@ jobs:
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
       - name: Require current canonical screenshots on other branches
-        if: github.head_ref != 'feature/0.8.2-dream-routes-visual-redesign'
+        if: github.head_ref != 'feature/strength-engine-2-architecture-hardening'
         run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
@@ -76,19 +76,22 @@ jobs:
             adb shell wm size 540x1200
             adb shell wm density 210
             ./gradlew :app:connectedDebugAndroidTest
+            # Only the named instrumentation fixture reports bounded resource measurements.
+            # Do not dump application/device logs, health values or route evidence.
+            adb logcat -d -s GymBackupFixture:I '*:S'
             mkdir -p build/canonical-screenshots
             adb pull /data/local/tmp/racedaydreams-screenshots/. build/canonical-screenshots/
             python3 scripts/verify-dream-screenshots.py build/canonical-screenshots
       - name: Prepare named test APK
         run: |
           mkdir -p build/distributions
-          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.8.2-test1-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.9.0-test1-debug.apk
           stat --format='APK_BYTES=%s' app/build/outputs/apk/debug/app-debug.apk
       - name: Upload verified debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: Race-Day-Dreams-0.8.2-test1-debug-api-${{ matrix.api-level }}
-          path: build/distributions/Race-Day-Dreams-0.8.2-test1-debug.apk
+          name: Race-Day-Dreams-0.9.0-test1-debug-api-${{ matrix.api-level }}
+          path: build/distributions/Race-Day-Dreams-0.9.0-test1-debug.apk
       - name: Upload actual-build screenshots
         uses: actions/upload-artifact@v4
         with:
@@ -115,6 +118,37 @@ jobs:
           path: app/build/reports/androidTests/connected/
           if-no-files-found: ignore
 
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Check pinned Kotlin and Java formatting
+        run: |
+          python3 scripts/test-format-code.py
+          python3 scripts/format-code.py --check --patch-output build/formatting.patch
+          python3 scripts/format-code.py --check
+      - name: Upload actionable formatting patch
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: formatting-patch
+          path: build/formatting.patch
+          if-no-files-found: ignore
+      - name: Reviewable repository formatting patch
+        if: failure()
+        run: |
+          python3 - <<'PYFORMAT'
+          from pathlib import Path
+          import base64
+          patch = Path('build/formatting.patch')
+          if patch.is_file():
+              print('FORMATTING_PATCH ' + base64.b64encode(patch.read_bytes()).decode())
+          PYFORMAT
+
   guidance-completeness:
     runs-on: ubuntu-latest
     steps:
@@ -129,16 +163,16 @@ jobs:
         run: java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java
 
   canonical-screenshots:
-    needs: build
+    needs: [build, formatting]
     # Capture publication is confined to this same-repository feature branch, never main.
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/0.8.2-dream-routes-visual-redesign' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request' && github.head_ref == 'feature/strength-engine-2-architecture-hardening' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: feature/0.8.2-dream-routes-visual-redesign
+          ref: feature/strength-engine-2-architecture-hardening
           fetch-depth: 1
       - uses: actions/download-artifact@v4
         with:
@@ -161,7 +195,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/screenshots
           git commit -m 'Capture canonical API 35 screenshots from verified test build'
-          git push origin HEAD:feature/0.8.2-dream-routes-visual-redesign
+          git push origin HEAD:feature/strength-engine-2-architecture-hardening
       - name: Reviewable synthetic screenshot bytes
         # Text-only repository connectors can reconstruct these real PNGs for review.
         # Only instrumentation fixture renders are logged; no user data is available.
@@ -174,7 +208,7 @@ jobs:
           PYSCREEN
 
   publish-test-release:
-    needs: [build, guidance-completeness]
+    needs: [build, guidance-completeness, formatting]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-latest
     permissions:
@@ -196,7 +230,7 @@ jobs:
           python3 scripts/verify-dream-screenshots.py docs/screenshots
       - uses: actions/download-artifact@v4
         with:
-          name: Race-Day-Dreams-0.8.2-test1-debug-api-35
+          name: Race-Day-Dreams-0.9.0-test1-debug-api-35
           path: build/verified-apk
       - name: Publish verified APK and maintained release notes
         env:

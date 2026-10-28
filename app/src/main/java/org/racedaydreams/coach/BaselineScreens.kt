@@ -138,10 +138,10 @@ fun ManualBaselineScreen(state: CoachUiState, model: CoachViewModel, onDone: () 
                         ?: if (weeks.isBlank()) null else throw IllegalArgumentException("Enter whole weeks, or leave this field blank.")
                 )
                 error = null
-                model.saveManualBaseline(input, onDone)
+                model.baseline.saveManualBaseline(input, onDone)
             } catch (failure: IllegalArgumentException) { error = failure.message }
         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save optional baseline") }
-        OutlinedButton(onClick = { model.saveManualBaseline(ManualBaselineInput.empty(), onDone) }, enabled = !state.busy) { Text("Reset manual corrections") }
+        OutlinedButton(onClick = { model.baseline.saveManualBaseline(ManualBaselineInput.empty(), onDone) }, enabled = !state.busy) { Text("Reset manual corrections") }
         TextButton(onDone) { Text("Continue without changes") }
     }
 }
@@ -186,7 +186,7 @@ fun AssessmentScreen(state: CoachUiState, model: CoachViewModel, onDone: () -> U
                 val effort = optionalNumber(rpe)
                 require(effort == null || effort in 0.0..10.0) { "RPE must be between 0 and 10." }
                 error = null
-                model.saveAssessment(distance, duration, parsedDate, parsedTime, bestEffort, effort, notes, onDone)
+                model.baseline.saveAssessment(distance, duration, parsedDate, parsedTime, bestEffort, effort, notes, onDone)
             } catch (failure: Exception) { error = failure.message ?: "Check the assessment values." }
         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save completed assessment") }
         Text("No splits, HR, cadence or elevation are invented. When reliable imported samples exist, they can provide additional analysis.")

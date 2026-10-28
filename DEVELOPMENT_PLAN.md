@@ -1,3 +1,32 @@
+# Completed retained increment — 0.9.0-test1
+
+Architecture Hardening + Standalone Strength + Gym Now + Exercise Discovery, Exclusions
+and Smart Substitution. Feature branch `feature/strength-engine-2-architecture-hardening`,
+PR14. Sourcef3a988a/workflow40741473316 passed331tests EACHAPI28/35/36 plus fullbuild/lint/
+format/domain/schema/backup/guidance and91canonical captures; direct visual review passed
+for the new and representative accessibility screens. Final documentation-only required
+checks must pass before readiness. Physical S24 acceptance remains unperformed.
+
+Implemented: feature-owned orchestration/repositories/navigation, recorder coordinators,
+pinned formatting, six-week/Lower variation/fatigue fixes, race-free focus selection,
+Strength-first Today, one durable Gym Now engine, saved intentions,174-exercise metadata/
+discovery, today-only explained swaps, reviewed association history and reversible exclusions.
+Recorded-route/Story publication and Compose lifecycle/layout reliability were hardened.
+
+Data: schema13, rootJSON8, strengthEngine2/read1, strengthState2/read1, raw2/complete1.
+No destructive migration, new generic release-store records, Internet permission, account,
+backend, analytics or runtime LLM. Existing Compose family updated within Apache2 tostable
+UI/runtime/foundation1.8.3 andMaterial3 1.3.2; all other runtime families stay unchanged.
+
+Deferred beyond0.9: full custom programmes/templates/mesocycles, major generator redesign,
+rest timer, generated warm-ups, supersets, catalogue expansion/new custom-exercise features,
+advanced progression/analytics/PB redesign/achievements/deload and advanced hybrid decisions.
+Do not restart these as release blockers. Existing completed stable functionality remains.
+
+The app recommends. The athlete decides. The plan adapts.
+
+---
+
 # Development status — 0.8.2-test1
 
 The app recommends. The runner decides. The plan adapts.

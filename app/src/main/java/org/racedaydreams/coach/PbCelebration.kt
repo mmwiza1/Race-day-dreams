@@ -9,6 +9,6 @@ import androidx.compose.ui.unit.dp
 @Composable fun PbCelebration(state:CoachUiState,model:CoachViewModel,id:String,comparison:String?=null){
     if(id in state.acknowledgedPbs){Text("★ Personal best",style=MaterialTheme.typography.labelLarge);return}
     Card(colors=CardDefaults.cardColors(containerColor=tileColour(Tile.Achievement)),border=androidx.compose.foundation.BorderStroke(2.dp,Color(0xFFB88A24)),modifier=Modifier.fillMaxWidth()){
-        Column(Modifier.padding(12.dp)){Text("★ NEW PB",style=MaterialTheme.typography.titleMedium);comparison?.let{Text(it)};TextButton(onClick={model.acknowledgePb(id)}){Text("Acknowledge PB")}}
+        Column(Modifier.padding(12.dp)){Text("★ NEW PB",style=MaterialTheme.typography.titleMedium);comparison?.let{Text(it)};TextButton(onClick={model.strength.acknowledgePb(id)}){Text("Acknowledge PB")}}
     }
 }

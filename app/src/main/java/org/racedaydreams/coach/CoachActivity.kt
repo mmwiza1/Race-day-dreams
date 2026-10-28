@@ -1,61 +1,75 @@
 package org.racedaydreams.coach
 
 import android.content.ActivityNotFoundException
-import android.os.Bundle
 import android.net.Uri
+import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import org.racedaydreams.domain.GoalMode
-import org.racedaydreams.domain.PaceCalculator
-import org.racedaydreams.health.HealthAvailability
+import org.racedaydreams.coach.navigation.*
+import org.racedaydreams.coach.strength.GymNowViewModel
+import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.health.HealthConnectGateway
-import org.racedaydreams.ui.OnboardingView
-import java.time.ZoneOffset
 
 /** Modern shell; the established goal form remains an AndroidView during incremental migration. */
 class CoachActivity : ComponentActivity() {
     private lateinit var model: CoachViewModel
+    // All gym destinations share one session coordinator, created only when Strength needs it.
+    private val gymModel by lazy { ViewModelProvider(this)[GymNowViewModel::class.java] }
     private var hasResumed = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         model = ViewModelProvider(this)[CoachViewModel::class.java]
         setContent {
             val dark = isSystemInDarkTheme()
-            MaterialTheme(colorScheme = if (dark) darkColorScheme(primary = Color(0xFF9ACAFF), background = Color(0xFF101923), surface = Color(0xFF15202C), onSurface = Color(0xFFE8F0FA), onBackground = Color(0xFFE8F0FA))
-                else lightColorScheme(primary = Color(0xFF086AD8), background = Color(0xFFF6F9FD), surface = Color(0xFFFCFDFF), onSurface = Color(0xFF14243B), onBackground = Color(0xFF14243B))) {
-                Surface(Modifier.fillMaxSize()) { CoachApp(model) }
+            MaterialTheme(
+                colorScheme =
+                    if (dark)
+                        darkColorScheme(
+                            primary = Color(0xFF9ACAFF),
+                            background = Color(0xFF101923),
+                            surface = Color(0xFF15202C),
+                            onSurface = Color(0xFFE8F0FA),
+                            onBackground = Color(0xFFE8F0FA),
+                        )
+                    else
+                        lightColorScheme(
+                            primary = Color(0xFF086AD8),
+                            background = Color(0xFFF6F9FD),
+                            surface = Color(0xFFFCFDFF),
+                            onSurface = Color(0xFF14243B),
+                            onBackground = Color(0xFF14243B),
+                        )
+            ) {
+                Surface(Modifier.fillMaxSize()) { CoachApp(model) { gymModel } }
             }
         }
     }
 
-    override fun onStop() { model.flushDraft(); super.onStop() }
+    override fun onStop() {
+        model.flushDraft()
+        super.onStop()
+    }
 
     override fun onResume() {
         super.onResume()
@@ -67,7 +81,7 @@ class CoachActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CoachApp(model: CoachViewModel) {
+private fun CoachApp(model: CoachViewModel, gymModel: () -> GymNowViewModel) {
     val state by model.state.collectAsStateWithLifecycle()
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
@@ -77,41 +91,65 @@ private fun CoachApp(model: CoachViewModel) {
     var runSnapshot by rememberSaveable { mutableStateOf<String?>(null) }
     var resetDialog by rememberSaveable { mutableStateOf(false) }
     var restoreUri by rememberSaveable { mutableStateOf<String?>(null) }
-    val permissions = rememberLauncherForActivityResult(model.health.permissionContract(), model::permissionResult)
-    val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) {
-        if (it != null) model.exportBackup(it)
-    }
-    val restore = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
-        restoreUri = it?.toString()
-    }
+    val permissions =
+        rememberLauncherForActivityResult(
+            model.health.permissionContract(),
+            model::permissionResult,
+        )
+    val export =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("application/json")
+        ) {
+            if (it != null) model.exportBackup(it)
+        }
+    val restore =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
+            restoreUri = it?.toString()
+        }
     val connect: (Boolean, Boolean) -> Unit = { heartRate, history ->
         val requested = HealthConnectGateway.BASELINE_PERMISSIONS.toMutableSet()
         if (heartRate) requested.addAll(HealthConnectGateway.OPTIONAL_PERMISSIONS)
-        if (history && model.health.historyPermissionAvailable()) requested.add(HealthConnectGateway.HISTORY_PERMISSION)
+        if (history && model.health.historyPermissionAvailable())
+            requested.add(HealthConnectGateway.HISTORY_PERMISSION)
         permissions.launch(requested)
     }
     val providerUpdate: () -> Unit = {
-        try { context.startActivity(model.health.providerUpdateIntent()) }
-        catch (_: ActivityNotFoundException) { model.refresh() }
+        try {
+            context.startActivity(model.health.providerUpdateIntent())
+        } catch (_: ActivityNotFoundException) {
+            model.refresh()
+        }
     }
     val providerSettings: () -> Unit = {
-        try { context.startActivity(model.health.settingsIntent()) }
-        catch (_: ActivityNotFoundException) { model.refresh() }
+        try {
+            context.startActivity(model.health.settingsIntent())
+        } catch (_: ActivityNotFoundException) {
+            model.refresh()
+        }
     }
 
     LaunchedEffect(state.message, state.error) {
-        (state.error ?: state.message)?.let { snackbars.showSnackbar(it); model.dismissMessage() }
+        (state.error ?: state.message)?.let {
+            snackbars.showSnackbar(it)
+            model.dismissMessage()
+        }
     }
     LaunchedEffect(state.savedProfileRevision) {
         if (state.savedProfileRevision > 0 && state.profile != null) {
             nav.navigate("home") {
-                popUpTo(nav.graph.id) { inclusive = true }; launchSingleTop = true
+                popUpTo(nav.graph.id) { inclusive = true }
+                launchSingleTop = true
             }
             model.acknowledgeProfileSaved(state.savedProfileRevision)
         }
     }
-    LaunchedEffect(state.profile, state.loading) {
-        if (!state.loading && state.profile == null && route == "plan") {
+    LaunchedEffect(state.profile, state.loading, state.primaryFocus, route) {
+        if (
+            !state.loading &&
+                state.profile == null &&
+                state.primaryFocus != PrimaryFocus.STRENGTH &&
+                route == "plan"
+        ) {
             nav.navigate("baseline") { popUpTo(nav.graph.id) { inclusive = true } }
         }
     }
@@ -119,7 +157,7 @@ private fun CoachApp(model: CoachViewModel) {
     if (state.loading) {
         Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
             CircularProgressIndicator()
-            Text("Loading your local running information…", Modifier.padding(top = 16.dp))
+            Text("Loading your local training information…", Modifier.padding(top = 16.dp))
         }
         return
     }
@@ -129,36 +167,104 @@ private fun CoachApp(model: CoachViewModel) {
     val startDestination = rememberSaveable {
         when {
             org.racedaydreams.recording.RunRecordingService.running.value -> "record-run"
+            state.primaryFocus == PrimaryFocus.STRENGTH -> "home"
             state.profile != null -> "home"
-            state.startingPath=="record" -> "home"
+            state.startingPath == "record" -> "home"
             state.baselineReviewed -> "goals"
             else -> "welcome"
         }
     }
 
-    val tabs = listOf("home" to "Home", "plan" to "Plan", "calendar" to "Calendar", "progress" to "Progress", "strength" to "Strength")
+    val tabs =
+        listOf(
+            "home" to "Home",
+            "plan" to "Plan",
+            "calendar" to "Calendar",
+            "progress" to "Progress",
+            "strength" to "Strength",
+        )
     Scaffold(
-        topBar = { TopAppBar(title = { Text(if(androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.5f)"RDD"else"Race Day Dreams",maxLines=1,modifier=Modifier.semantics{contentDescription="Race Day Dreams"}) }, navigationIcon = {
-            if (route != null && route !in tabs.map { it.first } && route != "strength?date={date}" && route != "goals") {
-                TextButton(onClick = { if (!nav.popBackStack()) nav.navigate("home") }) { Text("Back") }
-            }
-        }, actions = { TextButton(onClick={nav.navigate("settings")}) { Text("⚙ Settings") } }) },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f)
+                            "RDD"
+                        else "Race Day Dreams",
+                        maxLines = 1,
+                        modifier = Modifier.semantics { contentDescription = "Race Day Dreams" },
+                    )
+                },
+                navigationIcon = {
+                    if (
+                        route != null &&
+                            route !in tabs.map { it.first } &&
+                            route != "strength?date={date}" &&
+                            route != "goals"
+                    ) {
+                        TextButton(
+                            onClick = {
+                                if (route == "gym-workout") {
+                                    model.refresh()
+                                    if (!nav.popBackStack("gym-now", false)) nav.navigate("gym-now")
+                                } else if (!nav.popBackStack()) nav.navigate("home")
+                            }
+                        ) {
+                            Text("Back")
+                        }
+                    }
+                },
+                actions = {
+                    TextButton(onClick = { nav.navigate("settings") }) { Text("⚙ Settings") }
+                },
+            )
+        },
         bottomBar = {
             if (route in (tabs.map { it.first } + "strength?date={date}")) {
                 NavigationBar {
                     tabs.forEach { (destination, label) ->
-                        val largeFont=androidx.compose.ui.platform.LocalDensity.current.fontScale>=1.5f
-                        val navLabel: (@Composable () -> Unit)? = if(largeFont)null else ({Text(label,maxLines=1,softWrap=false)})
-                        NavigationBarItem(modifier=if(largeFont)Modifier.semantics{contentDescription=label}else Modifier,selected = route == destination || destination == "strength" && route?.startsWith("strength") == true,
-                            icon = { Icon(androidx.compose.ui.res.painterResource(when(destination){"home"->org.racedaydreams.R.drawable.ic_nav_home;"plan"->org.racedaydreams.R.drawable.ic_nav_plan;"calendar"->org.racedaydreams.R.drawable.ic_nav_calendar;"progress"->org.racedaydreams.R.drawable.ic_nav_progress;else->org.racedaydreams.R.drawable.ic_nav_strength}),contentDescription=null) },
-                            label = navLabel, onClick = {
-                                nav.navigate(destination) { popUpTo("home"); launchSingleTop = true }
-                            })
+                        val largeFont =
+                            androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f
+                        val navLabel: (@Composable () -> Unit)? =
+                            if (largeFont) null
+                            else ({ Text(label, maxLines = 1, softWrap = false) })
+                        NavigationBarItem(
+                            modifier =
+                                if (largeFont) Modifier.semantics { contentDescription = label }
+                                else Modifier,
+                            selected =
+                                route == destination ||
+                                    destination == "strength" &&
+                                        route?.startsWith("strength") == true,
+                            icon = {
+                                Icon(
+                                    androidx.compose.ui.res.painterResource(
+                                        when (destination) {
+                                            "home" -> org.racedaydreams.R.drawable.ic_nav_home
+                                            "plan" -> org.racedaydreams.R.drawable.ic_nav_plan
+                                            "calendar" ->
+                                                org.racedaydreams.R.drawable.ic_nav_calendar
+                                            "progress" ->
+                                                org.racedaydreams.R.drawable.ic_nav_progress
+                                            else -> org.racedaydreams.R.drawable.ic_nav_strength
+                                        }
+                                    ),
+                                    contentDescription = null,
+                                )
+                            },
+                            label = navLabel,
+                            onClick = {
+                                nav.navigate(destination) {
+                                    popUpTo("home")
+                                    launchSingleTop = true
+                                }
+                            },
+                        )
                     }
                 }
             }
         },
-        snackbarHost = { SnackbarHost(snackbars) }
+        snackbarHost = { SnackbarHost(snackbars) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -169,132 +275,88 @@ private fun CoachApp(model: CoachViewModel) {
                     TextButton(onClick = { resetDialog = true }) { Text("Delete local data") }
                 }
             }
-            NavHost(navController = nav, startDestination = startDestination, modifier = Modifier.weight(1f)) {
-                composable("welcome") { StartingPath(model){nav.navigate(it){popUpTo(nav.graph.id){inclusive=true}}} }
-                composable("run-now") { RunNowScreen { snapshot -> runSnapshot=snapshot;nav.navigate("spontaneous-run") } }
-                composable("spontaneous-run") { RecordingScreen(model,customSnapshot=runSnapshot,startWhenPermitted=true,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
-                composable("record-run") { RecordingScreen(model,onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
-                composable("execute/{version}/{workout}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
-                composable("race") { RaceScreen(state,model,{v,w,h->nav.navigate("race-run/${Uri.encode(v)}/${Uri.encode(w)}/$h")},{nav.navigate("progress/pbs")},{r->nav.navigate("routine/$r")}) }
-                composable("race-run/{version}/{workout}/{hilly}") { d -> RecordingScreen(model,d.arguments?.getString("version"),d.arguments?.getString("workout"),d.arguments?.getString("hilly")=="true",onSaved={nav.navigate("activity/${Uri.encode(it)}")}) }
-                composable("routines") { RoutineLibrary {nav.navigate("routine/$it")} }
-                composable("routine/{id}?related={related}") { d -> RoutineScreen(d.arguments?.getString("id"),d.arguments?.getString("related")){nav.popBackStack()} }
-
-                composable("health-intelligence") { HealthIntelligenceScreen(model) }
-                composable("weekly") { WeeklyReviewScreen(state,model,{nav.navigate("goals")}) }
-                composable("home") { HomeScreen(state, { nav.navigate("weekly") }, { nav.navigate("baseline") }, { nav.navigate("assessment") }, { nav.navigate("history") }, { nav.navigate("plan") }, { nav.navigate("workout/${Uri.encode(it)}") }, record = {nav.navigate("run-now")},quick={nav.navigate(it)}, race={nav.navigate("race")}) }
-                composable("baseline") {
-                    BaselineScreen(state, model, model.health.historyPermissionAvailable(), connect, providerUpdate,
-                        onManual = { nav.navigate("manual") }, onAssessment = { nav.navigate("assessment") },
-                        onContinue = {
-                            model.reviewBaseline {
-                                nav.navigate(if (state.profile == null) "goals" else "home") { launchSingleTop = true }
-                            }
-                        })
-                }
-                composable("manual") { ManualBaselineScreen(state, model) { nav.popBackStack() } }
-                composable("assessment") { AssessmentScreen(state, model) { nav.navigate("calendar") { launchSingleTop = true } } }
-                composable("goals") { GoalForm(state, model) {
-                    model.cancelGoalEditing()
-                    if (state.profile == null) nav.navigate("baseline") else nav.navigate("home") { launchSingleTop = true }
-                } }
-                composable("plan") { TrainingPlanScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { nav.navigate("goals") }, { val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date()==it};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$it") },{nav.navigate("routines")},{id,related->nav.navigate("routine/${Uri.encode(id)}?related=${Uri.encode(related?:"")}")}) }
-                composable("workout/{id}") { destination -> PlannedWorkoutScreen(state, model, destination.arguments?.getString("id"), { nav.navigate("activity/${Uri.encode(it)}") }, {v,w->nav.navigate("execute/${Uri.encode(v)}/${Uri.encode(w)}")},{r,w->nav.navigate("routine/$r?related=${Uri.encode(w?:"")}")}) }
-                composable("strength?date={date}") { destination -> val date=destination.arguments?.getString("date");if(date!=null)StrengthScreen(state,model,date) else StrengthDashboard(state){nav.navigate(it)} }
-                composable("strength/log") { StrengthScreen(state,model) }
-                composable("strength/pbs") { StrengthScreen(state,model,section="pbs") }
-                composable("strength/source/{id}") { d -> StrengthScreen(state,model,section="history",sourceId=d.arguments?.getString("id")) }
-                composable("strength/history") { StrengthScreen(state,model,section="history") }
-                composable("gym") { GymProgrammeScreen(state,model){nav.navigate("gym/session/${Uri.encode(it)}")} }
-                composable("gym/session/{id}") { destination -> GymSessionScreen(state,model,destination.arguments?.getString("id")){nav.navigate("strength?date=$it")} }
-                composable("history?kind={kind}") { d -> WorkoutHistoryScreen(state,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("strength/source/${Uri.encode(it)}")},d.arguments?.getString("kind")?:"ALL") }
-                composable("exercises") { ExerciseBrowser(state,model){nav.navigate("exercise/${Uri.encode(it)}")} }
-                composable("exercise/{id}") { destination -> ExerciseDetail(state,model,destination.arguments?.getString("id")){nav.navigate("strength/source/${Uri.encode(it)}")} }
-
-                composable("calendar") { ActivityCalendarScreen(state, model, { nav.navigate("workout/${Uri.encode(it)}") }, { date -> val gym=state.gymProgramme?.sessions()?.firstOrNull{s->s.date().toString()==date};nav.navigate(gym?.let{"gym/session/${Uri.encode(it.id())}"}?:"strength?date=$date") }, activity={ nav.navigate("activity/${Uri.encode(it)}") }, allStrength={nav.navigate("history?kind=STRENGTH")}) }
-                composable("activity/{id}") { destination ->
-                    ActivityDetailScreen(state, model, destination.arguments?.getString("id"))
-                }
-                composable("progress") { ProgressDashboard(state){nav.navigate(it)} }
-                listOf("pbs","trends","weight").forEach { section -> composable("progress/$section") { ProgressScreen(state,model,{nav.navigate("activity/${Uri.encode(it)}")},{nav.navigate("shoes")},{nav.navigate("strength")},section) } }
-                composable("shoes") { ShoesScreen(state, model) }
-                composable("settings") { SettingsScreen(state, model, model.health.historyPermissionAvailable(), connect,
-                    providerUpdate, providerSettings,
-                    { nav.navigate("goals") }, { nav.navigate("baseline") }, { nav.navigate("shoes") },
-                    { export.launch("race-day-dreams-backup.json") }, { restore.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) },
-                    { resetDialog = true }, { permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION)) }, {nav.navigate("health-intelligence")}) }
+            NavHost(
+                navController = nav,
+                startDestination = startDestination,
+                modifier = Modifier.weight(1f),
+            ) {
+                homeGraph({ state }, model, nav)
+                runningGraph(
+                    { state },
+                    model,
+                    nav,
+                    { runSnapshot },
+                    startSpontaneous = { snapshot ->
+                        runSnapshot = snapshot
+                        nav.navigate("spontaneous-run")
+                    },
+                    connect = connect,
+                    providerUpdate = providerUpdate,
+                )
+                strengthGraph({ state }, model, nav, gymModel)
+                progressGraph({ state }, model, nav)
+                settingsGraph(
+                    { state },
+                    model,
+                    nav,
+                    connect,
+                    providerUpdate,
+                    providerSettings,
+                    exportBackup = { export.launch("race-day-dreams-backup.json") },
+                    restoreBackup = {
+                        restore.launch(
+                            arrayOf("application/json", "text/plain", "application/octet-stream")
+                        )
+                    },
+                    requestReset = { resetDialog = true },
+                    requestWeightPermission = {
+                        permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION))
+                    },
+                )
             }
         }
     }
-    if (resetDialog) AlertDialog(onDismissRequest = { resetDialog = false },
-        title = { Text("Delete local app data?") },
-        text = { Text("This deletes your local profile, goals, activities, results, shoes and draft. It does not delete records held by Health Connect. This cannot be undone without a backup.") },
-        confirmButton = { TextButton(onClick = { resetDialog = false; model.reset() }) { Text("Delete") } },
-        dismissButton = { TextButton(onClick = { resetDialog = false }) { Text("Cancel") } })
-    if (restoreUri != null) AlertDialog(onDismissRequest = { restoreUri = null },
-        title = { Text("Replace local app data from this backup?") },
-        text = { Text("The file is validated before changes are made. A successful restore replaces this app’s current local data. Health Connect records can be imported again. Export your current data first if you want to keep it.") },
-        confirmButton = { TextButton(onClick = { val uri = restoreUri; restoreUri = null; if (uri != null) model.restoreBackup(android.net.Uri.parse(uri)) }) { Text("Validate and replace") } },
-        dismissButton = { TextButton(onClick = { restoreUri = null }) { Text("Cancel") } })
+    if (resetDialog)
+        AlertDialog(
+            onDismissRequest = { resetDialog = false },
+            title = { Text("Delete local app data?") },
+            text = {
+                Text(
+                    "This deletes your local profile, goals, activities, results, shoes and draft. It does not delete records held by Health Connect. This cannot be undone without a backup."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        resetDialog = false
+                        model.reset()
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = { TextButton(onClick = { resetDialog = false }) { Text("Cancel") } },
+        )
+    if (restoreUri != null)
+        AlertDialog(
+            onDismissRequest = { restoreUri = null },
+            title = { Text("Replace local app data from this backup?") },
+            text = {
+                Text(
+                    "The file is validated before changes are made. A successful restore replaces this app’s current local data. Health Connect records can be imported again. Export your current data first if you want to keep it."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val uri = restoreUri
+                        restoreUri = null
+                        if (uri != null) model.restoreBackup(android.net.Uri.parse(uri))
+                    }
+                ) {
+                    Text("Validate and replace")
+                }
+            },
+            dismissButton = { TextButton(onClick = { restoreUri = null }) { Text("Cancel") } },
+        )
 }
-
-@Composable
-private fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () -> Unit) {
-    var form by remember { mutableStateOf<OnboardingView?>(null) }
-    BackHandler { if (form?.navigateBack() != true) onCancel() }
-    AndroidView(modifier = Modifier.fillMaxSize().imePadding(), factory = { context ->
-        OnboardingView(context, state.draft, state.profile, state.performanceEligible, object : OnboardingView.Listener {
-            override fun onSave(profile: org.racedaydreams.domain.UserProfile) { model.saveProfile(profile, createPlan = true) }
-            override fun onDraftChanged(json: String) { model.saveDraft(json) }
-            override fun onCancel() { onCancel() }
-        }).also { form = it; it.tag = false }
-    }, update = { view ->
-        if (view.tag != state.busy) { view.setSaving(state.busy); view.tag = state.busy }
-    })
-}
-
-@Composable
-private fun HomeScreen(state: CoachUiState, weekly: () -> Unit, baseline: () -> Unit, assessment: () -> Unit, history: () -> Unit, plan: () -> Unit, workout: (String) -> Unit, record: () -> Unit = {}, quick:(String)->Unit={}, race:()->Unit={}) = CoachPage {
-    CoachHeading("Today")
-    Text(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM",java.util.Locale.UK)))
-    val today=state.currentPlan?.plan()?.workouts()?.firstOrNull{it.date()==java.time.LocalDate.now()}
-    val completed=today!=null&&(state.runResponses.any{it.plannedWorkoutId()==today.id()}||state.activities.any{it.plannedWorkoutId()==today.id()})
-    SemanticCard(Tile.Planned){
-        Text(if(today==null)"Your day, your choice"else workoutName(today.category()),style=MaterialTheme.typography.headlineMedium)
-        if(today!=null){Text(today.distanceKm()?.let{"${decimal(it)} km"}?:today.duration()?.let{"${it.toMinutes()} min"}?:"Run by effort");Text(if(completed)"Completed training is retained. No catch-up mileage."else "Your planned session")
-            today.segments().firstOrNull{it.kind()==org.racedaydreams.domain.WorkoutSegment.Kind.RUN}?.let{segment->segment.rpe()?.let{Text("Target effort ~${decimal(it)}/10")};if(segment.minimumSecondsPerKm()!=null&&segment.maximumSecondsPerKm()!=null)Text("${formatPaceSeconds(segment.minimumSecondsPerKm())}–${formatPaceSeconds(segment.maximumSecondsPerKm())}/km")}
-            if(!completed)CoachButton("Start with Live Coach"){quick("execute/${Uri.encode(state.currentPlan!!.id())}/${Uri.encode(today.id())}")}
-            TextButton(onClick={workout(today.id())}){Text(if(completed)"View completed workout"else"View workout details")}
-        }else{Text("No running session is planned today. Rest or record independently.");state.gymProgramme?.sessions()?.firstOrNull{it.date()==java.time.LocalDate.now()}?.let{gym->Text(gym.title());CoachButton("View strength session"){quick("gym/session/${Uri.encode(gym.id())}")}}}
-    }
-    SemanticCard(Tile.Planned){Text("Run now",style=MaterialTheme.typography.titleLarge);Text("Not on the plan? Record a spontaneous run anytime.");CoachButton("Run now",record)}
-    val summary=org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
-    SemanticCard(Tile.Progress){Text("How am I doing?",style=MaterialTheme.typography.titleMedium);Text(summary.title(),style=MaterialTheme.typography.headlineSmall);summary.observations().take(3).forEach{Text(it)};Text("Plan recommendation: ${summary.recommendation()}");TextButton(onClick=weekly){Text("Weekly coaching review")}}
-    val hard=org.racedaydreams.domain.strength.StrengthAnalytics.hardLowerBodyDates(state.strengthSessions).contains(java.time.LocalDate.now().minusDays(1))
-    if(hard||state.proposals.isNotEmpty())SemanticCard(Tile.Insight){Text("Anything I should know?",style=MaterialTheme.typography.titleMedium);Text(if(hard)"Hard lower-body strength was recorded yesterday. Today's demanding running may feel harder; consider effort and your own response."else"A coaching recommendation is ready. Your programme has not been changed.");TextButton(onClick=weekly){Text("Review choices")}}
-    state.profile?.raceGoal()?.takeIf{it.raceDate()!=null}?.let{goal->SemanticCard(Tile.Race){Text(goal.raceName().ifBlank{goal.distance().label()},style=MaterialTheme.typography.titleLarge);Text("${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),goal.raceDate())} days · ${friendlyDate(goal.raceDate())}");TextButton(onClick=race){Text("Race preparation")}}}
-    if(state.profile?.preferences()?.strategy()==org.racedaydreams.domain.TrainingStrategy.PERFORMANCE&&!state.performanceEligible)SemanticCard(Tile.Warning){Text("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")}
-    state.profile?.raceGoal()?.takeIf{it.raceDate()==null}?.let{goal->SemanticCard(Tile.Race){Text("Current goal",style=MaterialTheme.typography.titleMedium);Text(goal.distance().label(),style=MaterialTheme.typography.titleLarge);Text(goal.mode().label())}}
-    CoachHeading("Quick actions")
-    CoachButton("Log strength"){quick("strength/log")}
-    OutlinedButton(onClick={quick("progress/weight")},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("Add weight")}
-    OutlinedButton(onClick=plan,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text("View plan")}
-    TextButton(onClick=history){Text("View activity history")}
-    TextButton(onClick=baseline){Text("Review running baseline")}
-    TextButton(onClick=weekly){Text("Not feeling 100%?")}
-}
-
-@Composable
-fun CoachPage(content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp), content = content)
-}
-
-@Composable fun CoachHeading(text: String) { Text(text, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() }) }
-@Composable fun CoachButton(text: String, onClick: () -> Unit) { Button(onClick, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(text) } }
-@Composable fun CoachCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content) }
-}
-
-fun displayActivityDate(activity: org.racedaydreams.domain.activity.ActivityRecord): String =
-    activity.start().atOffset(activity.startOffset() ?: ZoneOffset.UTC).toLocalDate().let(::friendlyDate)
