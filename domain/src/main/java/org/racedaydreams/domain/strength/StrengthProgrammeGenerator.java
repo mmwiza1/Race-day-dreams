@@ -79,7 +79,7 @@ public final class StrengthProgrammeGenerator {
         var blocks = new ArrayList<Block>();
         LocalDate start = request.start();
         int blockIndex = 0;
-        for (var phase : phases(request.weeks(), request.recoveryAssessment())) {
+        for (var phase : phases(request)) {
             String blockId = request.id() + "-block-" + blockIndex++;
             var workouts = new ArrayList<Workout>();
             for (int week = 0; week < phase.weeks; week++) {
@@ -242,14 +242,29 @@ public final class StrengthProgrammeGenerator {
 
     private record PhaseLength(Phase phase, int weeks) {}
 
-    private static List<PhaseLength> phases(int weeks, boolean recovery) {
+    private static List<PhaseLength> phases(Request request) {
+        int weeks = request.weeks();
+        var settings = request.settings();
         var result = new ArrayList<PhaseLength>();
         int remaining = weeks;
-        int recoveryWeeks = recovery && weeks >= 4 ? 1 : 0;
-        int foundation = weeks >= 8 ? 2 : 1;
+        int recoveryWeeks = request.recoveryAssessment() && weeks >= 4 ? 1 : 0;
+        int foundation =
+                weeks >= 8
+                        ? settings.experience() == GymProgramme.Experience.BEGINNER
+                                ? 3
+                                : settings.experience() == GymProgramme.Experience.EXPERIENCED
+                                        ? 1
+                                        : 2
+                        : 1;
         result.add(new PhaseLength(Phase.FOUNDATION, foundation));
         remaining -= foundation + recoveryWeeks;
-        int intensify = weeks >= 8 ? 2 : 0;
+        boolean appropriate =
+                settings.frequency() >= 2
+                        && (settings.experience() != GymProgramme.Experience.BEGINNER
+                                || settings.goal() == GymProgramme.Goal.STRENGTH && weeks >= 10)
+                        && !(settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING
+                                && settings.priority() == GymProgramme.Priority.RUNNING_FIRST);
+        int intensify = weeks >= 8 && appropriate ? 2 : 0;
         if (remaining > intensify)
             result.add(new PhaseLength(Phase.DEVELOPMENT, remaining - intensify));
         if (intensify > 0) result.add(new PhaseLength(Phase.INTENSIFICATION, intensify));
@@ -442,9 +457,15 @@ public final class StrengthProgrammeGenerator {
             high = 8;
         }
         if (phase == Phase.FOUNDATION) {
-            sets = Math.min(sets, 2);
-            minEffort = 5;
-            maxEffort = 7;
+            sets = Math.min(sets, beginner ? 1 : 2);
+            minEffort = beginner ? 4 : 5;
+            maxEffort = beginner ? 6 : 7;
+        }
+        if (phase == Phase.INTENSIFICATION && role == POWER) {
+            sets = 2;
+            low = 2;
+            high = 3;
+            rest = 210;
         }
         if (phase == Phase.INTENSIFICATION && primary && role != POWER) {
             if (s.goal() == GymProgramme.Goal.STRENGTH) {
@@ -465,9 +486,9 @@ public final class StrengthProgrammeGenerator {
             minEffort = 5;
             maxEffort = 6;
         }
-        if (s.goal() == GymProgramme.Goal.POWER) {
+        if (s.goal() == GymProgramme.Goal.POWER && phase != Phase.FOUNDATION) {
             minEffort = 5;
-            maxEffort = 7;
+            maxEffort = phase == Phase.RECOVERY_ASSESSMENT || raceWeek ? 6 : 7;
         }
         var effort =
                 new GymWorkoutDefinition.EffortRange(
@@ -532,6 +553,9 @@ public final class StrengthProgrammeGenerator {
             for (int i = 0; i < chosen.size(); i++) {
                 boolean lower =
                         split == Split.FULL_BODY
+                                || r.settings().goal() == GymProgramme.Goal.POWER
+                                        && r.settings().experience()
+                                                != GymProgramme.Experience.BEGINNER
                                 || split == Split.UPPER_LOWER && i % 2 == 1
                                 || split == Split.PUSH_PULL_LEGS && i % 3 == 2;
                 if (lower && r.focus() != PrimaryFocus.STRENGTH)

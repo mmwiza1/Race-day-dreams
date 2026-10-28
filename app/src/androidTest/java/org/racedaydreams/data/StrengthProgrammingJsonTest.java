@@ -20,7 +20,14 @@ public final class StrengthProgrammingJsonTest extends AndroidTestCase {
                 var plan = plan(goal, experience);
                 assertEquals(
                         plan, StrengthProgrammingJson.read(StrengthProgrammingJson.write(plan)));
-                assertEquals(4, plan.blocks().size());
+                int expectedBlocks =
+                        experience == GymProgramme.Experience.BEGINNER
+                                        && goal != GymProgramme.Goal.STRENGTH
+                                ? 3
+                                : 4;
+                assertEquals(expectedBlocks, plan.blocks().size());
+                assertEquals(
+                        10, plan.blocks().stream().mapToInt(StrengthProgramme.Block::weeks).sum());
                 assertEquals(1, plan.revision());
                 assertEquals(
                         plan.workouts().get(0).definition().slots(),

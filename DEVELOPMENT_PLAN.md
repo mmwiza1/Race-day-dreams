@@ -1,3 +1,15 @@
+# Active0.10 — Strength Programming 2.0
+
+Draft PR15 / feature/0.10-strength-programming starts from merged0.9. Domain authoring,
+block/template previews, future-only proposals, exact execution-source adaptation,
+strict codecs and conservative modality progression are implemented; SQL/backup and app
+builder/activation integration remain unfinished. CONTINUE_CODEX.md is the exact ordered
+remaining-work list. Do not merge a green foundation checkpoint as a complete release.
+0.11 nutrition/analytics/PB redesign/achievements/deload/advanced hybrid/rest timer/
+warm-up generation/supersets and catalogue-for-breadth remain explicitly deferred.
+
+The following sections retain earlier release history.
+
 # Completed retained increment — 0.9.0-test1
 
 Architecture Hardening + Standalone Strength + Gym Now + Exercise Discovery, Exclusions

@@ -1,20 +1,26 @@
 # 0.10 development checkpoint — not release acceptance
 
 Branch feature/0.10-strength-programming / draft PR15, based on live main c6299e2.
-Local 459,652 domain assertions/33 suites, 55 schema and9 release-note cases pass;
+Local 459,664 domain assertions/33 suites, 55 schema and9 release-note cases pass;
 strict174/174 canonical and14/14 routine guidance passes. New programme simulator
 covers1,620 configurations plus long conflicted histories, protected regeneration,
 manual drafts, source adaptation and conservative modality evidence. SQL/new programme
 activation/backup integration and UI remain unfinished; data formats are unchanged.
 
 Initial source887eaa3 workflow40773971875 passed build/lint/format/domain/schema/guidance
-and331 Android tests EACH on APIs28/35. API36 finished331 with ONE failing Paris
-artwork-readiness assertion (context ready; illustration still labelled Loading).
-No assertion/deadline was relaxed and no failed run was retried blindly. A producer-owned
-asset-identified publication/error-state repair and two deterministic cancellation/failure
-tests are pending a fresh head gate, alongside six new Android serialization tests.
-The exact cause of the initial emulator timeout is not established. No new canonical
-captures were adopted from that failed run. No physical S24 checks were performed.
+and331 Android tests EACH on APIs28/35; API36 finished331 with ONE Paris artwork-readiness
+failure. The20sec assertion was not relaxed and the failure was not blindly rerun.
+Repair source55af2aa passed FULL workflow40780023551:339tests EACH API28/35/36,
+including6strict serialization and2deterministic cancellation/missing-artwork cases.
+Build/lint/format/domain/schema/source/guidance passed. The exact cause of the initial
+emulator timeout is not established; the publisher now has one asset-identified producer
+state and explicit unavailable status instead of misleading indefinite loading.
+
+Bot5d5858c adopted91actual API35 captures from55af2aa. Integrity passed; directly opened
+Paris light, London dark/200%, and gym200% actual entry. Artwork/route/progress and readable
+wrapped controls retain the accepted design. APK50,898,024bytes. These images do not show
+an implemented new programme-builder UI. Following block-policy edits require their own
+current-head gate. No SQL/schema/backup integration is claimed and no S24 tests occurred.
 
 The following sections are historical completed0.9 evidence, not proof of0.10 completion.
 

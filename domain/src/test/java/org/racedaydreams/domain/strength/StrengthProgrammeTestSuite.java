@@ -21,6 +21,7 @@ public final class StrengthProgrammeTestSuite {
         startAnchoredWeeks();
         templatesAndBlocks();
         goalsAndExperience();
+        experienceChangesBlockStructure();
         futureOnlyEditsAndSubstitutions();
         customDraftAuthoring();
         schedulingAndRaceWeek();
@@ -292,6 +293,107 @@ public final class StrengthProgrammeTestSuite {
                                 Set.of(),
                                 null,
                                 false));
+    }
+
+    static void experienceChangesBlockStructure() {
+        for (var experience : GymProgramme.Experience.values()) {
+            var s =
+                    settings(
+                            GymProgramme.Goal.GENERAL,
+                            experience,
+                            GymProgramme.Priority.BALANCED,
+                            2,
+                            60,
+                            ALL);
+            var p =
+                    ENGINE.generate(
+                            request(
+                                    s,
+                                    10,
+                                    null,
+                                    Set.of(),
+                                    PrimaryFocus.STRENGTH,
+                                    Set.of(),
+                                    null,
+                                    true));
+            int expectedFoundation =
+                    experience == GymProgramme.Experience.BEGINNER
+                            ? 3
+                            : experience == GymProgramme.Experience.INTERMEDIATE ? 2 : 1;
+            check(
+                    p.blocks().get(0).weeks() == expectedFoundation,
+                    "experience changes practice phase length");
+            var phases = p.blocks().stream().map(Block::phase).collect(Collectors.toSet());
+            check(
+                    phases.contains(Phase.INTENSIFICATION)
+                            == (experience != GymProgramme.Experience.BEGINNER),
+                    "beginner general programming does not force intensification");
+            check(
+                    !p.blocks()
+                            .get(0)
+                            .workouts()
+                            .get(0)
+                            .definition()
+                            .slots()
+                            .get(0)
+                            .target()
+                            .equals(
+                                    p.blocks()
+                                            .get(1)
+                                            .workouts()
+                                            .get(0)
+                                            .definition()
+                                            .slots()
+                                            .get(0)
+                                            .target()),
+                    "beginner foundation/development are real prescription changes too");
+        }
+        var s =
+                settings(
+                        GymProgramme.Goal.POWER,
+                        GymProgramme.Experience.EXPERIENCED,
+                        GymProgramme.Priority.STRENGTH_FIRST,
+                        3,
+                        75,
+                        ALL);
+        var power =
+                ENGINE.generate(
+                        request(
+                                s,
+                                10,
+                                null,
+                                Set.of(),
+                                PrimaryFocus.STRENGTH,
+                                Set.of(),
+                                null,
+                                true));
+        var development =
+                power.blocks().get(1).workouts().get(0).definition().slots().get(0).target();
+        var specific = power.blocks().get(2).workouts().get(0).definition().slots().get(0).target();
+        check(
+                specific.maximumReps() < development.maximumReps()
+                        && specific.sets() < development.sets(),
+                "power specificity reduces reps and fatigue rather than renaming development");
+        check(
+                power.blocks().get(3).workouts().stream()
+                        .flatMap(w -> w.definition().slots().stream())
+                        .allMatch(
+                                slot ->
+                                        slot.target().sets() == 1
+                                                && slot.target().effort().maximum() <= 6),
+                "power does not overwrite optional recovery effort reserve");
+        var running =
+                settings(
+                        GymProgramme.Goal.SUPPORT_RUNNING,
+                        GymProgramme.Experience.INTERMEDIATE,
+                        GymProgramme.Priority.RUNNING_FIRST,
+                        2,
+                        60,
+                        ALL);
+        check(
+                generate(running, 10).blocks().stream()
+                        .noneMatch(b -> b.phase() == Phase.INTENSIFICATION),
+                "running-first support does not force an intensification block");
     }
 
     static void goalsAndExperience() {

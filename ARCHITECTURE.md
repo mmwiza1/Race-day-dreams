@@ -1,3 +1,16 @@
+# 0.10 in-progress programme authoring boundary
+
+New Android-independent StrengthProgramme/Draft models preserve dated blocks, frozen
+GymWorkoutDefinition targets, future-only revision proposals and exact source adaptation
+into the existing GymExecutionEngine. Original generation/templates and task progression
+remain preview policies. StrengthProgrammingJson reuses the strict frozen-workout codec.
+Typed SQL repositories, activation/backup graph integration and builder UI are still
+unfinished; current schema13/backup8 remain unchanged. Do not expose modern sources until
+repository/finalisation/association validation supports them alongside old sources.
+See docs/STRENGTH_PROGRAMMING_0_10.md and CONTINUE_CODEX.md for current scope and gates.
+
+The following sections record the preserved completed0.9 architecture.
+
 # Current retained 0.9 application status
 
 Feature-owned orchestration, standalone training focus, Gym Now, typed association and

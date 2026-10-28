@@ -33,7 +33,10 @@ not branded programmes or individually assessed recommendations.
 Generation distinguishes primary strength prescriptions, muscle volume, controlled
 power/support volume, unilateral/lower-leg/trunk running support, experience suitability,
 and optional Foundation/Development/Intensification/Recovery-Assessment phases. The
-optional assessment does not prescribe maximal testing. Power work stops when speed
+optional assessment does not prescribe maximal testing. Longer beginner programmes use
+more practice and do not force general-purpose intensification; Running First support
+also avoids a compulsory intensification block. Power specificity uses fewer quality
+repetitions/sets and recovery retains the lower-effort range. Power work stops when speed
 or control deteriorates. Beginner power currently has an explicit catalogue limitation:
 no existing POWER-primary exercise is classified beginner-friendly. The preview describes
 movement practice honestly; it does not relabel another movement as ballistic exposure.
@@ -84,7 +87,7 @@ Avoid storing a whole long programme in a single CursorWindow-sized payload.
 
 ## Verification boundary
 
-Current local checks: 459,652 domain assertions across 33 suites; 55 schema cases;
+Current local checks: 459,664 domain assertions across 33 suites; 55 schema cases;
 9 release-note cases; strict 174/174 canonical and 14/14 routine guidance. The new
 1,620-configuration simulator checks actual catalogue metadata, equipment, exclusions,
 duration, primary balance, controlled power volume, support roles, determinism and

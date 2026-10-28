@@ -41,7 +41,10 @@ The app recommends. The athlete decides. The plan adapts.
 
 Phase A: domain authoring/preview checkpoint887eaa3 committed/pushed.
 Phase B: strict programme/draft/custom codecs, exact source adapter/validator and
-conservative modality progression are implemented locally, not yet connected to SQL/UI. StrengthProgramme models
+conservative modality progression committed6c4bd0c; artwork repair committed55af2aa.
+Draft PR15 remains open. Follow-up block policy changes now give beginners longer
+practice, avoid unnecessary intensification for beginner/general and Running First,
+and differentiate power specificity/recovery targets; local tests pass. No SQL/UI activation yet. StrengthProgramme models
 immutable lineage, contiguous dated blocks and frozen GymWorkoutDefinition targets;
 StrengthProgrammeEditor validates future-only revisions and permanent substitution
 proposals through the existing metadata/equipment/exclusion ranker, clearing loads.
@@ -65,7 +68,7 @@ duplicate/warm-up/missing-effort evidence, RIR, changed task identity and actual
 Gym Now behaviour are unchanged. Do not describe this domain checkpoint as a shipped
 builder or a complete 0.10 release.
 
-New programme-quality suite currently covers1,620 configurations and239,973 assertions; modality/source suite152 checks. It verifies real metadata, exclusions, equipment, timing,
+New programme-quality suite currently covers1,620 configurations and239,985 assertions; modality/source suite152 checks. It verifies real metadata, exclusions, equipment, timing,
 repeatability, templates/blocks, weekday boundaries and future-only substitution rules.
 A canonical catalogue gap is explicit: no BEGINNER_FRIENDLY POWER-primary movement
 exists in the current174. Beginner power previews honestly describe stable strength
@@ -115,21 +118,42 @@ catalogue gaps may be filled with complete metadata/guidance and tests.
 
 ## Gates / exact next action
 
-Inspect actual git state first. Latest local gate:459,652 assertions/33 suites,
+Inspect actual git state first. Latest local gate:459,664 assertions/33 suites,
 55schema and9release-note cases passed; pinned format/check and diff check pass.
 PR15 is DRAFT. Commit/push valid uncommitted codec/progression and readiness fixes,
 then require the current-head API matrix before claiming these Android changes verified.
 Continue with typed SQL repositories/backup integration before adding UI controls. Workflow capture branch/artifact version
 has been advanced to0.10; new source requires fresh91canonical captures before acceptance.
-Initial workflow40773971875/source887eaa3: build/lint/format/domain/schema/guidance
-passed;331instrumentation EACH on APIs28/35 passed, API36 had ONE Paris artwork
-readiness failure while city context was ready. Existing20sec assertion was retained.
-Current local repair uses a single producer-owned, asset-identified snapshot plus explicit
-missing-image state (instead of indefinitely saying Loading), with two deterministic
-cancellation/missing-poster tests. Exact underlying cause of that one emulator timeout
-is not proven; require fresh full CI and inspect failure diagnostics, never blind rerun.
-Six strict Android codec cases are also pending the next head. Canonical captures were
-NOT published by the failed initial run; existing repo captures still represent0.9.
+Observed Android checkpoints:
+- Initial workflow40773971875/source887eaa3: API28/35 passed331 EACH; API36 had ONE
+  Paris artwork-readiness failure (context ready, illustrations labelled Loading).
+- Repair source55af2aa26941d5134d32747eaa09a3ad1ab7fdfe passed FULL workflow40780023551:
+  **339tests EACH API28/35/36**, including6strict codec and2deterministic publication
+  tests; build/lint/domain/schema/format/catalogue all green. No timeout/assertion relaxed.
+  The exact underlying cause of the initial emulator timeout was not proven; the repaired
+  publisher has one producer-owned asset identity and an explicit missing-image state.
+- Canonical bot5d5858c adopted91actual API35 captures from55af2aa. Fingerprint
+  54c8ea244c8d8a952f16f12d905d77bad5fd3168400ad68ece00c9be002fdbc3.
+  APK50,898,024bytes. Directly opened Paris light, London dark/200%, gym200% actual-entry:
+  artwork ready, accepted route/design preserved and controls readable. No new builder
+  screen is claimed; those controls do not exist yet.
+- The following goal/experience block-policy checkpoint changes domain generation and
+  one codec fixture expectation. Its current-head CI/canonical source must be inspected
+  independently;55af results do not automatically certify later code. PR15 stays DRAFT
+  regardless of checkpoint-green status because the full0.10 integration is incomplete.
+
+Exact next implementation files: add typed programme/draft/custom repositories using
+ProfileDatabase/SqliteStoreAccess and StrengthProgrammingJson; extend ProfileDatabase
+with an additive migration only when the complete table/backup contract is ready.
+ExistingSqliteGymExecutionRepository.programme/validateProgrammeSource and backup graph
+validation currently know ONLYlegacyGymProgrammeStore. Resolve authored source IDs and
+exact sessions too, preserving old versions and avoiding ID/version collisions. Preserve
+null/RIR/fractional targets through the new adapter instead of legacy coercion. Integrate
+planned finalisation, associations, current pointer and backup graphs atomically before
+exposing activation. Avoid a whole long programme in a CursorWindow-sized payload; use
+bounded session rows, summary queries and one shared transaction. No schema change has
+been made yet. See docs/STRENGTH_PROGRAMMING_0_10.md for the boundary and remaining phases.
+
 No local Android SDK/adb is verified; use actual GitHub CI rather than claiming local or
 physical tests. Record exact commit/run IDs, failures and next files here at each checkpoint.
 
