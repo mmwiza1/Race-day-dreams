@@ -164,3 +164,11 @@ exception inDreamArtworkReadinessTest. Removed unnecessarymovablekeygroup fromar
 loader, retaining asset-keyedState/LaunchedEffect/atomicpublication; addedexplicitcontent
 removal after15cityswitches toregression. No timeouts/assertionsremoved. Nextpublishmust
 include dc2da60 andthesefixes. Run330matrix/91captures, fixrealremainingissues. Draft14.
+
+## Retained legacy logging audit
+
+The legacy manual strength/PB picker also used exerciseMatches without explicit exclusion
+policy. It now omits exclusions for blank/default suggestions but retains explicit alias
+search with a status label. Existing selected actuals and historical definitions are not
+removed. Added a real Android helper regression for omit/search/restore, bringing expected
+current total331. This is retained exclusion correctness, not new logging scope.

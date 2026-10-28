@@ -37,4 +37,20 @@ class ExerciseExclusionControlTest {
         }
         compose.onNodeWithTag("exercise-exclude").assertIsDisplayed()
     }
+
+    @Test
+    fun legacyManualPickerOmitsExcludedDefaultsButRetainsExplicitAliasSearch() {
+        val excluded =
+            org.racedaydreams.domain.strength.ExerciseExclusionRepository.Exclusion(
+                "romanian-deadlift",
+                Reason.PREFERENCE,
+                java.time.Instant.now(),
+            )
+        val state = CoachUiState(loading = false, exerciseExclusions = listOf(excluded))
+        Assert.assertFalse(exerciseMatches(state, "").any { it.id() == excluded.exerciseId() })
+        Assert.assertTrue(exerciseMatches(state, "RDL").any { it.id() == excluded.exerciseId() })
+        val restored = state.copy(exerciseExclusions = emptyList())
+        Assert.assertTrue(exerciseMatches(restored, "").any { it.id() == excluded.exerciseId() })
+        Assert.assertEquals(state.exercises, restored.exercises)
+    }
 }

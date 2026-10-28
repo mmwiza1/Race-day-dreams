@@ -36,7 +36,7 @@ import org.racedaydreams.domain.UnitSystem
 }
 fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{
     val recent=state.strengthSessions.sortedByDescending{it.startedAt()}.flatMap{it.exercises().map{it.exercise().id()}}.distinct()
-    return ExerciseSearch.search(state.exercises,query,state.exerciseChoices.filter{it.favourite()}.map{it.exerciseId()}.toSet(),recent,state.exerciseChoices.filter{it.archived()}.map{it.exerciseId()}.toSet())
+    return ExerciseSearch.search(state.exercises,query,state.exerciseChoices.filter{it.favourite()}.map{it.exerciseId()}.toSet(),recent,state.exerciseChoices.filter{it.archived()}.map{it.exerciseId()}.toSet()).filter{candidate->query.isNotBlank()||state.exerciseExclusions.none{it.exerciseId()==candidate.id()}}
 }
 @Composable fun ExerciseBrowser(state:CoachUiState,model:CoachViewModel,open:(String)->Unit){
     org.racedaydreams.coach.strength.ExerciseBrowseScreen(state,{model.strength.saveExercise(it)},open,{model.exerciseExclusion(it,null)})

@@ -94,10 +94,41 @@ import org.racedaydreams.domain.strength.*
         }
     }
 }
-@Composable private fun ExercisePicker(state:CoachUiState,selected:String,onSelect:(String)->Unit){
-    var menu by remember{mutableStateOf(false)};var query by rememberSaveable{mutableStateOf("")}
-    OutlinedButton(onClick={menu=true},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(state.exercises.firstOrNull{it.id()==selected}?.name()?:"Choose exercise")}
-    if(menu)AlertDialog(onDismissRequest={menu=false},title={Text("Choose exercise")},text={Column{CoachInput("Search exercises or aliases",query,{query=it});val rows=exerciseMatches(state,query);Text("${rows.size} matching exercises");androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max=320.dp)){items(rows.size){i->TextButton(onClick={onSelect(rows[i].id());menu=false},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(rows[i].name())}}}}},confirmButton={TextButton(onClick={menu=false}){Text("Cancel")}})
+@Composable
+private fun ExercisePicker(state: CoachUiState, selected: String, onSelect: (String) -> Unit) {
+    var menu by remember { mutableStateOf(false) }
+    var query by rememberSaveable { mutableStateOf("") }
+    OutlinedButton(onClick = { menu = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+        Text(state.exercises.firstOrNull { it.id() == selected }?.name() ?: "Choose exercise")
+    }
+    if (state.exerciseExclusions.any { it.exerciseId() == selected }) {
+        Text("Excluded from recommendations. Existing actuals remain editable; search to choose it explicitly.", style = MaterialTheme.typography.bodySmall)
+    }
+    if (menu) AlertDialog(
+        onDismissRequest = { menu = false },
+        title = { Text("Choose exercise") },
+        text = {
+            Column {
+                CoachInput("Search exercises or aliases", query, { query = it })
+                val rows = exerciseMatches(state, query)
+                Text("${rows.size} matching exercises")
+                androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max = 320.dp)) {
+                    items(rows.size) { index ->
+                        val exercise = rows[index]
+                        TextButton(onClick = { onSelect(exercise.id()); menu = false }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                            Column {
+                                Text(exercise.name())
+                                if (state.exerciseExclusions.any { it.exerciseId() == exercise.id() }) {
+                                    Text("Excluded from recommendations · explicit selection", style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = { menu = false }) { Text("Cancel") } },
+    )
 }
 @Composable private fun HistoricalForm(s:CoachUiState,model:CoachViewModel,existing:HistoricalStrengthRecord?=null,done:()->Unit){
     var exercise by rememberSaveable{mutableStateOf(existing?.exercise()?.id()?:s.exercises.first().id())};var kg by rememberSaveable{mutableStateOf(existing?.kilograms()?.let{s.massUnit.fromKilograms(it).toString()}?:"")};var reps by rememberSaveable{mutableStateOf(existing?.let{it.durationSeconds()?.toString()?:it.distanceMetres()?.toString()?:it.reps().toString()}?:"")};var notes by rememberSaveable{mutableStateOf(existing?.notes()?:"")};var precision by rememberSaveable{mutableStateOf(existing?.precision()?.name?:"UNKNOWN")};var date by rememberSaveable{mutableStateOf((existing?.date()?:LocalDate.now()).toString())};var error by rememberSaveable{mutableStateOf<String?>(null)}
