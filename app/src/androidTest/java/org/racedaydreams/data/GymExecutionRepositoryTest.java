@@ -178,7 +178,7 @@ public final class GymExecutionRepositoryTest extends AndroidTestCase {
         assertTrue(new DevelopmentStore(getContext()).gymLinks().isEmpty());
         assertTrue(coaching.strength().isEmpty());
         assertEquals(2, programmes.versions().size());
-        var features = new FeatureStore(getContext());
+        var features = new SqliteBackupRepository(getContext());
         features.validateSnapshot(features.exportUserData());
     }
 
