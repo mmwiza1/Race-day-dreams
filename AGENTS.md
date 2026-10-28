@@ -1,5 +1,24 @@
 # Race Day Dreams repository instructions
 
+## Development workflow and main branch
+
+`main` is the protected integration/release branch by project policy, even when GitHub server-side branch protection is not available to the current automation connection.
+
+For implementation work:
+
+1. Do not develop directly on `main`.
+2. Fetch and inspect the live `main` branch before starting work.
+3. Create or continue a dedicated feature/fix branch.
+4. Preserve valid existing work; do not force-push, reset, or rewrite history unless the repository owner explicitly asks for it.
+5. Open a pull request targeting `main` for implementation changes.
+6. Do not merge while required CI is red or pending. Inspect and fix the root cause of failures rather than weakening tests or repeatedly rerunning them blindly.
+7. Merge only when the agreed scope is complete, migrations/backups are safe, required tests are green, and release documentation is accurate.
+8. After merge, verify the actual `main` head and post-merge workflow before treating the release checkpoint as complete.
+
+Small repository-maintenance/documentation updates may be made directly by the repository owner or an explicitly authorised maintenance action, but Codex feature development must still use a branch + PR workflow.
+
+When `CONTINUE_CODEX.md` is present, treat its generic continuation rules as permanent and its active-release section as the authoritative current scope. Always inspect live repository state before following checkpoint SHAs or version numbers recorded there.
+
 ## Release notes
 
 All GitHub releases — the rolling `development` release and permanent version tags —
