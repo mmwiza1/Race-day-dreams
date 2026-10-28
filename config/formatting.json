@@ -128,6 +128,10 @@
     "app/src/androidTest/java/org/racedaydreams/data/ExerciseExclusionRepositoryTest.java",
     "app/src/androidTest/java/org/racedaydreams/coach/ExerciseExclusionControlTest.kt",
     "domain/src/main/java/org/racedaydreams/domain/strength/GymAssociationCoordinator.java",
-    "app/src/androidTest/java/org/racedaydreams/coach/GymAssociationScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/GymAssociationScreenTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthProgramme*.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/StrengthProgrammeTestSuite.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/CustomStrengthExercise.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthWorkoutBudget.java"
   ]
 }
