@@ -1291,7 +1291,14 @@ class CoachingScreenshotTest {
                 top in 100f..300f,
             )
         }
-        val semantics = compose.onRoot(useUnmergedTree = true).printToString()
+        val semantics =
+            if (name == "gym-equipment-alternatives") {
+                // The full-screen production dialog and its covered activity are separate roots.
+                compose
+                    .onNode(isDialog(), useUnmergedTree = true)
+                    .assertIsDisplayed()
+                    .printToString()
+            } else compose.onRoot(useUnmergedTree = true).printToString()
         Assert.assertFalse(
             "Raw ISO date in normal UI",
             Regex("Text = .*\\b[0-9]{4}-[0-9]{2}-[0-9]{2}").containsMatchIn(semantics),

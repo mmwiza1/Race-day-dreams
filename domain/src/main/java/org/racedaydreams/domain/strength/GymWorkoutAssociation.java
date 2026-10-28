@@ -110,12 +110,15 @@ public final class GymWorkoutAssociation {
     public static void validateForAcceptance(
             Proposal proposal,
             StrengthSession currentActual,
+            GymExecution.Origin recordedOrigin,
             GymProgramme currentProgramme,
             Set<String> occupiedSessionIds,
             boolean actualLinked) {
         Objects.requireNonNull(proposal);
         Objects.requireNonNull(occupiedSessionIds);
+        Objects.requireNonNull(recordedOrigin, "retained workout provenance");
         if (actualLinked
+                || proposal.origin() != recordedOrigin
                 || !proposal.actual().equals(currentActual)
                 || currentProgramme == null
                 || !proposal.programmeId().equals(currentProgramme.id())

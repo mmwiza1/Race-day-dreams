@@ -22,7 +22,7 @@ public final class GymWorkoutAssociationTestSuite {
                 if (!proposals.isEmpty()) {
                     var proposal = proposals.get(0);
                     GymWorkoutAssociation.validateForAcceptance(
-                            proposal, actual, plan, Set.of(), false);
+                            proposal, actual, origin, plan, Set.of(), false);
                     check(
                             proposal.actual() == actual
                                     && proposal.prescription().equals(plan.sessions().get(0)));
@@ -50,19 +50,34 @@ public final class GymWorkoutAssociationTestSuite {
         reject(
                 () ->
                         GymWorkoutAssociation.validateForAcceptance(
-                                reviewed, actual(false, 65), plan, Set.of(), false));
+                                reviewed,
+                                actual(false, 65),
+                                GymExecution.Origin.FREE,
+                                plan,
+                                Set.of(),
+                                false));
         reject(
                 () ->
                         GymWorkoutAssociation.validateForAcceptance(
-                                reviewed, actual, plan(2, 0, "bench-press"), Set.of(), false));
+                                reviewed,
+                                actual,
+                                GymExecution.Origin.FREE,
+                                plan(2, 0, "bench-press"),
+                                Set.of(),
+                                false));
         reject(
                 () ->
                         GymWorkoutAssociation.validateForAcceptance(
-                                reviewed, actual, plan, Set.of("planned"), false));
+                                reviewed,
+                                actual,
+                                GymExecution.Origin.FREE,
+                                plan,
+                                Set.of("planned"),
+                                false));
         reject(
                 () ->
                         GymWorkoutAssociation.validateForAcceptance(
-                                reviewed, actual, plan, Set.of(), true));
+                                reviewed, actual, GymExecution.Origin.FREE, plan, Set.of(), true));
         reject(
                 () ->
                         new GymWorkoutAssociation.Decision(
@@ -99,6 +114,50 @@ public final class GymWorkoutAssociationTestSuite {
                                 actual, GymExecution.Origin.FREE, null, Set.of(), NOW)
                         .isEmpty());
         check(plan.sessions().get(0).exercises().get(0).referenceLoadKg() == 80);
+        var eastern =
+                new StrengthSession(
+                        "eastern",
+                        actual.startedAt(),
+                        ZoneOffset.ofHours(14),
+                        actual.duration(),
+                        null,
+                        "",
+                        actual.exercises());
+        check(
+                GymWorkoutAssociation.proposals(
+                                        eastern,
+                                        GymExecution.Origin.FREE,
+                                        plan(1, 4, "bench-press"),
+                                        Set.of(),
+                                        NOW)
+                                .size()
+                        == 1);
+        var western =
+                new StrengthSession(
+                        "western",
+                        actual.startedAt(),
+                        ZoneOffset.ofHours(-12),
+                        actual.duration(),
+                        null,
+                        "",
+                        actual.exercises());
+        check(
+                GymWorkoutAssociation.proposals(
+                                western,
+                                GymExecution.Origin.FREE,
+                                plan(1, 3, "bench-press"),
+                                Set.of(),
+                                NOW)
+                        .isEmpty());
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateForAcceptance(
+                                reviewed,
+                                actual,
+                                GymExecution.Origin.PLANNED,
+                                plan,
+                                Set.of(),
+                                false));
         var historicalTimedExercise =
                 new StrengthExercise(
                         "bench-press",
