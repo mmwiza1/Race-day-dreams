@@ -25,12 +25,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.racedaydreams.coach.navigation.*
+import org.racedaydreams.coach.strength.GymNowViewModel
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.health.HealthConnectGateway
 
 /** Modern shell; the established goal form remains an AndroidView during incremental migration. */
 class CoachActivity : ComponentActivity() {
     private lateinit var model: CoachViewModel
+    // All gym destinations share one session coordinator, created only when Strength needs it.
+    private val gymModel by lazy { ViewModelProvider(this)[GymNowViewModel::class.java] }
     private var hasResumed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +61,7 @@ class CoachActivity : ComponentActivity() {
                             onBackground = Color(0xFF14243B),
                         )
             ) {
-                Surface(Modifier.fillMaxSize()) { CoachApp(model) }
+                Surface(Modifier.fillMaxSize()) { CoachApp(model) { gymModel } }
             }
         }
     }
@@ -78,7 +81,7 @@ class CoachActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CoachApp(model: CoachViewModel) {
+private fun CoachApp(model: CoachViewModel, gymModel: () -> GymNowViewModel) {
     val state by model.state.collectAsStateWithLifecycle()
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
@@ -199,7 +202,14 @@ private fun CoachApp(model: CoachViewModel) {
                             route != "strength?date={date}" &&
                             route != "goals"
                     ) {
-                        TextButton(onClick = { if (!nav.popBackStack()) nav.navigate("home") }) {
+                        TextButton(
+                            onClick = {
+                                if (route == "gym-workout") {
+                                    model.refresh()
+                                    if (!nav.popBackStack("gym-now", false)) nav.navigate("gym-now")
+                                } else if (!nav.popBackStack()) nav.navigate("home")
+                            }
+                        ) {
                             Text("Back")
                         }
                     }
@@ -283,7 +293,7 @@ private fun CoachApp(model: CoachViewModel) {
                     connect = connect,
                     providerUpdate = providerUpdate,
                 )
-                strengthGraph({ state }, model, nav)
+                strengthGraph({ state }, model, nav, gymModel)
                 progressGraph({ state }, model, nav)
                 settingsGraph(
                     { state },

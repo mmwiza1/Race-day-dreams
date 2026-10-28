@@ -79,6 +79,7 @@ internal fun StrengthTodayScreen(
                 if (summary.todayCompleted()) {
                     Text("Actual workout recorded and explicitly linked to this session.")
                 } else {
+                    if (gymNow != null) CoachButton("Start workout", gymNow)
                     CoachButton("Log today's workout") { open("strength?date=$today") }
                 }
                 TextButton(onClick = { open("gym/session/${Uri.encode(session.id())}") }) {

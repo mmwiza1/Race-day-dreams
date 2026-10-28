@@ -18,6 +18,7 @@ import org.racedaydreams.domain.UnitSystem
 @Composable private fun DestinationCard(title:String,summary:String,action:()->Unit){Card(onClick=action,colors=CardDefaults.cardColors(containerColor=tileColour(if(title in listOf("Log workout","Gym programme","Exercises"))Tile.Strength else Tile.Progress)),modifier=Modifier.fillMaxWidth().heightIn(min=80.dp)){Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){Text(title,style=MaterialTheme.typography.titleLarge);Text(summary,style=MaterialTheme.typography.bodyMedium)}}}
 @Composable fun StrengthDashboard(state:CoachUiState,open:(String)->Unit)=CoachPage{
     CoachHeading("Strength")
+    DestinationCard("Gym now","Start a planned or spontaneous workout, with each actual set saved locally"){open("gym-now")}
     DestinationCard("Log workout","Record what you actually did"){open("strength/log")}
     DestinationCard("Gym programme","Programming for your strength goals, independently or with running"){open("gym")}
     DestinationCard("PBs & progression","Historical and workout records together"){open("strength/pbs")}

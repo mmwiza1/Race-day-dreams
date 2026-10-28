@@ -43,7 +43,7 @@ import org.racedaydreams.domain.settings.PrimaryFocus
 @Composable private fun ChoiceChips(options:List<String>,selected:String,choose:(String)->Unit){FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){options.forEach{o->FilterChip(selected=selected==o,onClick={choose(o)},label={Text(label(o))})}}}
 private fun label(value:String)=when(value){"SUPPORT_RUNNING"->"Support my running";"MUSCLE"->"Build muscle";"STRENGTH"->"Get stronger";"GENERAL"->"General strength & fitness";"POWER"->"Power / athletic performance";"RPE","RIR"->value;else->value.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}}
 private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort):String{val measure=if(e.seconds()!=null)"${e.seconds()} sec"else if(e.metres()!=null)"${e.metres()} m"else "${e.minimumReps()}–${e.maximumReps()} reps";val intensity=if(effort==GymProgramme.Effort.RIR&&e.minimumReps()>0)"~${10-e.maximumRpe()}–${10-e.minimumRpe()} RIR"else "RPE ~${e.minimumRpe()}–${e.maximumRpe()}";return "${e.sets()} × $measure · $intensity · ${e.restSeconds()/60.0} min rest"}
-@Composable fun GymSessionScreen(state:CoachUiState,model:CoachViewModel,id:String?,log:(String)->Unit){
+@Composable fun GymSessionScreen(state:CoachUiState,model:CoachViewModel,id:String?,log:(String)->Unit,start:(()->Unit)?=null){
     val p=state.gymProgramme?:return;val session=p.sessions().firstOrNull{it.id()==id}?:return
     var progressionPreview by rememberSaveable{mutableStateOf<String?>(null)}
     var swapFor by rememberSaveable{mutableStateOf<String?>(null)};var swapQuery by rememberSaveable{mutableStateOf("")}
@@ -86,7 +86,10 @@ private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort)
             }
         }
         WhyDetails(session.explanation(),"Why this session?")
-        if(session.date()<=LocalDate.now())CoachButton("Record actual strength workout"){log(session.date().toString())}
+        if(session.date()<=LocalDate.now()){
+            if(start!=null)CoachButton("Start workout",start)
+            CoachButton("Record actual strength workout"){log(session.date().toString())}
+        }
         if(session.date()>=LocalDate.now()&&session.date() !in completed){DateInput("Move this session to",move,{move=it});CoachButton("Preview one-off move"){preview{model.strength.previewMove(p,session.id(),LocalDate.parse(move))}};OutlinedButton(onClick={preview{model.strength.previewFewerSets(p,session.id())}}){Text("Preview fewer sets")};TextButton(onClick={preview{model.strength.previewSkip(p,session.id())}}){Text("Skip this session")}}
         error?.let{Text(it)}
         proposed?.let{next->CoachCard{Text("Change preview",style=MaterialTheme.typography.titleLarge);Text(next.reason());val changed=next.sessions().firstOrNull{it.id()==session.id()};Text("Current: ${friendlyDate(session.date())} · ${session.exercises().sumOf{it.sets()}} working sets");Text(changed?.let{"Proposed: ${friendlyDate(it.date())} · ${it.exercises().sumOf{e->e.sets()}} working sets"}?:"Proposed: session skipped");changed?.let{model.strength.conflicts(it).forEach{Text(it)}};Text("Other sessions and recurring availability stay unchanged.");CoachButton("Accept change"){model.strength.saveGym(next);proposed=null};TextButton(onClick={proposed=null}){Text("Keep original")}}}

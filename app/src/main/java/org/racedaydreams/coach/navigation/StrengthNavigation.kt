@@ -7,13 +7,44 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.racedaydreams.coach.*
+import org.racedaydreams.coach.strength.*
 
 /** Feature-owned destinations retain the existing flat routes and back stack. */
 fun NavGraphBuilder.strengthGraph(
     readState: () -> CoachUiState,
     model: CoachViewModel,
     nav: NavHostController,
+    gymModel: () -> GymNowViewModel = {
+        error("A gym session owner is required for this destination.")
+    },
 ) {
+    composable("gym-now") {
+        GymNowScreen(
+            gymModel(),
+            onWorkout = { nav.navigate("gym-workout") { launchSingleTop = true } },
+            onBuild = { nav.navigate("gym-workout-builder") },
+            onBack = {
+                model.refresh()
+                nav.popBackStack()
+            },
+        )
+    }
+
+    composable("gym-workout") {
+        GymWorkoutScreen(gymModel()) {
+            model.refresh()
+            if (!nav.popBackStack("gym-now", false)) nav.navigate("gym-now")
+        }
+    }
+
+    composable("gym-workout-builder") {
+        GymWorkoutBuilderScreen(
+            gymModel(),
+            onWorkout = { nav.navigate("gym-workout") },
+            onBack = { nav.popBackStack() },
+        )
+    }
+
     composable(
         "strength?date={date}",
         arguments =
@@ -50,9 +81,13 @@ fun NavGraphBuilder.strengthGraph(
     }
 
     composable("gym/session/{id}") { destination ->
-        GymSessionScreen(readState(), model, destination.arguments?.getString("id")) {
-            nav.navigate("strength?date=$it")
-        }
+        GymSessionScreen(
+            readState(),
+            model,
+            destination.arguments?.getString("id"),
+            log = { nav.navigate("strength?date=$it") },
+            start = { nav.navigate("gym-now") },
+        )
     }
 
     composable("exercises") {

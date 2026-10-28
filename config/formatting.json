@@ -66,6 +66,7 @@
     "app/src/androidTest/java/org/racedaydreams/data/GymNowWorkoutsAndroidTest.java",
     "app/src/main/java/org/racedaydreams/data/GymExportBudget.java",
     "app/src/main/java/org/racedaydreams/coach/strength/**/*.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/GymNowScreenTest.kt",
     "domain/src/test/java/org/racedaydreams/domain/strength/GymExecutionTestSuite.java",
     "app/src/androidTest/java/org/racedaydreams/data/GymExecutionAndroidTest.java",
     "app/src/main/java/org/racedaydreams/data/Gym*Json.java",

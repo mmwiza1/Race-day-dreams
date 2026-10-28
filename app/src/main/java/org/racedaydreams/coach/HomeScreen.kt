@@ -21,7 +21,7 @@ internal fun HomeScreen(
     race: () -> Unit = {},
 ) {
     if (state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH) {
-        StrengthTodayScreen(state, quick)
+        StrengthTodayScreen(state, quick, gymNow = { quick("gym-now") })
         return
     }
     RunningTodayScreen(
