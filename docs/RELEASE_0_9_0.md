@@ -1,7 +1,7 @@
 # Race Day Dreams 0.9.0-test1
 
-Architecture hardening and Strength Engine 2.0 development. Running Coach and Strength
-Coach will each work independently, with additional context when an athlete uses both.
+Architecture Hardening + Standalone Strength + Gym Now + Exercise Discovery, Exclusions
+and Smart Substitution. Running and Strength can be used independently.
 
 ## What's new
 
@@ -9,8 +9,7 @@ Coach will each work independently, with additional context when an athlete uses
   Strength setup can create a gym programme without a race goal or running profile.
   Focus changes preserve existing goals, programmes, actual workouts and unfinished drafts.
 - Feature-owned application operations and persistence boundaries support this work.
-  The full Strength Engine 2.0 experience is still in development; remaining phases
-  are tracked in CONTINUE_CODEX.md.
+  The retained 0.9 scope and remaining release gates are tracked in CONTINUE_CODEX.md.
 - Strength-focused Home leads with the day's gym session, independent logging, actual
   weekly completion, recorded PB evidence and one optional coaching review. A spontaneous
   session never completes a prescription merely because it occurred on the same date.
@@ -58,15 +57,16 @@ Coach will each work independently, with additional context when an athlete uses
 
 ## Known limitations
 
-- Strength Engine 2.0 product phases remain in development. Do not treat this draft
-  checkpoint as the completed release or merge it before all delivery gates pass.
+- The draft remains gated on retained 0.9 completion and automated verification. Full
+  programme builders, mesocycles, rest timers, supersets, catalogue expansion and advanced
+  Strength Engine 2.0 analytics/programming are deferred to later releases.
 - Real Galaxy S24 outdoor recording, sensors, audio, battery, accessibility and backup
   acceptance remain separate physical checks; no unperformed result is claimed.
 
 ## Data, privacy and licensing
 
 Version 0.9.0-test1 / versionCode 12. The new durability source introduces additive
-schema 11 and JSON envelope 8 with an independently versioned strength section. Readers
+schemas 11–12 and JSON envelope 8 with strengthEngine section 2 (reads section 1). Readers
 for envelopes 1–7 remain supported. Raw recording archive 2 and complete-backup container
 1 remain unchanged. Validation precedes replacement in the shared transaction; a local
 unfinished gym workout blocks destructive replacement until it is finished or discarded.
@@ -74,7 +74,7 @@ Existing records, plans, gym versions, PBs, favourites, recordings and Dream Rou
 assignments remain supported. No runtime dependency or permission is added. No account,
 backend, advertising, subscription, analytics, Internet permission or runtime LLM is
 introduced. Later durable concepts require explicit subsequent migrations and backup tests;
-schema 11 will not be silently extended after distribution.
+published schemas will not be silently extended after distribution.
 
 ## Verification
 
@@ -100,3 +100,11 @@ selection-query and export-budget additions require their own gate. The latter r
 provably oversized gym data before JSON construction; it is not a full memory guarantee.
 Full Gym Now UI and the remaining StrengthEngine2.0 product scope are still in development.
 Physical S24 acceptance remains unperformed.
+
+## Explicit workout association storage
+
+Schema 12 adds immutable reviewed Keep as extra / Count toward session decisions and an
+indexed target projection. Retries are idempotent, actual edits retain reviewed history,
+and replacement is validated before the shared restore transaction. Spontaneous origins
+are never rewritten. This backend is pending its supported-API gate; association UI is
+not yet enabled. Existing planned-origin completion remains unchanged.

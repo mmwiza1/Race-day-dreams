@@ -36,7 +36,7 @@ import java.util.Objects;
  */
 public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         implements GymExecutionRepository {
-    public static final int BACKUP_VERSION = 1;
+    public static final int BACKUP_VERSION = 2;
     public static final int MAX_ROW_BYTES = 256 * 1024;
     private static final String UNFINISHED = "state IN ('ACTIVE','PAUSED','RECOVERY_REQUIRED')";
 
@@ -929,6 +929,7 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                             new String[] {finished.id()})) {
                 if (c.moveToFirst()) {
                     if (!sameLink(FeatureJson.object(c.getString(0)), expected)) throw conflict();
+                    SqliteGymAssociationRepository.project(db, finished.id(), expected);
                     return;
                 }
             }
@@ -937,6 +938,7 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             row.put("id", finished.id());
             row.put("payload", bounded(expected));
             db.insertOrThrow("coach_evidence", null, row);
+            SqliteGymAssociationRepository.project(db, finished.id(), expected);
         }
     }
 
@@ -1036,13 +1038,14 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                 "preferences",
                 preferences,
                 "executions",
-                executions);
+                executions,
+                "associations",
+                SqliteGymAssociationRepository.exportData(db));
     }
 
     public static void validate(
             JSONObject data, JSONObject coaching, JSONObject gym, JSONObject development) {
-        fields(data, "version", "workouts", "preferences", "executions");
-        version(data, BACKUP_VERSION);
+        engineFields(data);
         var workouts = new HashMap<WorkoutKey, WorkoutRow>();
         JSONArray rows = array(data, "workouts", 10000);
         for (int i = 0; i < rows.length(); i++) {
@@ -1187,6 +1190,9 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                         actuals.get(workout.source().id()),
                         retainedExecutions.get(workout.source().id()));
         }
+        if (integer(data, "version") >= 2)
+            SqliteGymAssociationRepository.validate(
+                    child(data, "associations"), retainedExecutions, actuals, programmes, links);
     }
 
     public static void clear(SQLiteDatabase db) {
@@ -1199,8 +1205,7 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
 
     /** The complete graph must be validated by the backup boundary before replacement starts. */
     public static void restore(SQLiteDatabase db, JSONObject data) {
-        fields(data, "version", "workouts", "preferences", "executions");
-        version(data, BACKUP_VERSION);
+        engineFields(data);
         JSONArray rows = array(data, "workouts", 10000);
         for (int i = 0; i < rows.length(); i++) insertWorkout(db, workoutRow(row(rows, i)));
         rows = array(data, "preferences", 10000);
@@ -1224,6 +1229,16 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                 db.update("strength_executions", values, "id=?", new String[] {execution.id()});
             }
         }
+        if (integer(data, "version") >= 2)
+            SqliteGymAssociationRepository.restore(db, child(data, "associations"));
+    }
+
+    private static void engineFields(JSONObject data) {
+        int source = integer(data, "version");
+        if (source == 1) fields(data, "version", "workouts", "preferences", "executions");
+        else if (source == BACKUP_VERSION)
+            fields(data, "version", "workouts", "preferences", "executions", "associations");
+        else throw new IllegalArgumentException("Unsupported strength engine backup version.");
     }
 
     private static String validId(String id) {

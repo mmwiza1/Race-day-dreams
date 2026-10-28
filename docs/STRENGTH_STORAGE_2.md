@@ -147,3 +147,17 @@ backup reads, transactional rollback and a history fixture above the former 8 Mi
 The verified gate and measured fixtures are recorded in VERIFICATION.md. Subsequent
 additions need new observed results. The data foundation does not substitute for the full Gym Now,
 live set-entry, rest-timer, substitution or programme-builder acceptance gates.
+
+## Schema 12: explicit completed-workout choices
+
+`strength_association_decisions` retains bounded immutable reviewed actual/prescription
+snapshots; `strength_association_targets` provides an indexed current projection in the
+same transaction as the existing coaching link. Existing links are migrated without
+inventing runner decisions. Explicit actual deletion clears this metadata; ordinary
+actual edits preserve it. Stable decision retries cannot undo a later choice.
+
+Strength-engine section 2 exports this history and current pointers; section 1 remains
+readable. JSON envelope 8, raw archive 2 and complete package 1 remain unchanged. Restore
+validates retained source, actual, programme and current-link consistency before deletion.
+Seven repository/migration/backup instrumentation cases are added but their Android gate
+is pending. Local domain and 53 schema cases pass; no physical-device result is claimed.

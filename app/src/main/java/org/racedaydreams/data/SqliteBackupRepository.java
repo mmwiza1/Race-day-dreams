@@ -486,6 +486,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             if (SqliteGymExecutionRepository.hasUnfinished(db))
                 throw new IllegalArgumentException(
                         "Finish or discard the unfinished gym workout before replacing app data.");
+            SqliteGymAssociationRepository.clear(db);
             SqliteGymExecutionRepository.clear(db);
             GymProgrammeStore.clear(db);
             StrengthUserStore.clear(db);
@@ -571,6 +572,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                 StrengthUserStore.restore(db, snapshot.strengthState());
             if (snapshot.gymProgramming() != null)
                 GymProgrammeStore.restore(db, snapshot.gymProgramming());
+            SqliteGymAssociationRepository.rebuildProjection(db);
             if (snapshot.strengthEngine() != null)
                 SqliteGymExecutionRepository.restore(db, snapshot.strengthEngine());
             SupportStore.restore(db, snapshot.support());

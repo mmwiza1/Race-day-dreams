@@ -360,3 +360,11 @@ associations. CoachSnapshotReader computes its PB and coaching projection on IO 
 same observations used in CoachUiState, so navigation sees one coherent snapshot and
 Compose does not repeatedly analyse retained history. The screen shares existing gym
 logging/programme routes. Full Gym Now execution is a later checkpoint.
+
+## Reviewed gym associations (0.9 retained scope)
+
+Schema 12 adds typed `GymAssociationRepository` / `SqliteGymAssociationRepository` over
+the same database. Reviewed immutable decisions and an indexed target projection update
+atomically with the existing coaching association. No source execution, actual set or
+programme version is rewritten. Backup strengthEngine section 2 reads older section 1;
+root JSON 8/raw 2/complete 1 remain unchanged. No new generic release-store records.

@@ -140,6 +140,7 @@ public final class CoachingStore implements CoachingRepository {
         db.beginTransaction();
         try {
             SqliteGymExecutionRepository.deleteCompleted(db, id);
+            SqliteGymAssociationRepository.deleteActual(db, id);
             db.delete("strength_sessions", "id=?", new String[] {id});
             db.delete("coach_evidence", "kind='STRENGTH_LINK' AND id=?", new String[] {id});
             db.setTransactionSuccessful();

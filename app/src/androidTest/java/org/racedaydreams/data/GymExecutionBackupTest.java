@@ -63,7 +63,7 @@ public final class GymExecutionBackupTest extends AndroidTestCase {
         JSONObject envelope = object(bytes);
         assertEquals(8, envelope.getInt("version"));
         assertEquals(
-                1,
+                2,
                 envelope.getJSONObject("data").getJSONObject("strengthEngine").getInt("version"));
         settings.putSetting("retained", "temporary");
         manager.restoreFrom(new ByteArrayInputStream(bytes));
@@ -130,7 +130,7 @@ public final class GymExecutionBackupTest extends AndroidTestCase {
             reject(missingChoices);
         }
         var future = object(bytes);
-        future.getJSONObject("data").getJSONObject("strengthEngine").put("version", 2);
+        future.getJSONObject("data").getJSONObject("strengthEngine").put("version", 3);
         reject(future);
         var corrupt = object(bytes);
         corrupt.getJSONObject("data")

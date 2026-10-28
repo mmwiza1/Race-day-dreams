@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 11;
+    static final int VERSION = 12;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -52,6 +52,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateEightToNine(db);
         migrateNineToTen(db);
         migrateTenToEleven(db);
+        migrateElevenToTwelve(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -341,10 +342,32 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V11_SCHEMA_END
     }
 
+    private static void migrateElevenToTwelve(SQLiteDatabase db) {
+        // V12_SCHEMA_BEGIN
+        db.execSQL(
+                "CREATE TABLE strength_association_decisions (id TEXT PRIMARY KEY NOT NULL,"
+                    + " actual_id TEXT NOT NULL, decided_at TEXT NOT NULL, payload TEXT NOT NULL"
+                    + " CHECK(length(CAST(payload AS BLOB)) <= 524288))");
+        db.execSQL(
+                "CREATE INDEX strength_association_history ON"
+                        + " strength_association_decisions(actual_id,id)");
+        db.execSQL(
+                "CREATE TABLE strength_association_targets (actual_id TEXT PRIMARY KEY NOT NULL,"
+                    + " programme_key TEXT, session_id TEXT, planned_date TEXT, decision_id TEXT"
+                    + " REFERENCES strength_association_decisions(id), CHECK((programme_key IS"
+                    + " NULL) = (session_id IS NULL)), CHECK(programme_key IS NULL OR planned_date"
+                    + " IS NOT NULL), CHECK(planned_date IS NOT NULL OR decision_id IS NOT NULL))");
+        db.execSQL(
+                "CREATE INDEX strength_association_target ON"
+                        + " strength_association_targets(programme_key,session_id)");
+        // V12_SCHEMA_END
+        SqliteGymAssociationRepository.rebuildProjection(db);
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 10)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 11)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -361,6 +384,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 7) migrateSevenToEight(db);
         if (oldVersion <= 8) migrateEightToNine(db);
         if (oldVersion <= 9) migrateNineToTen(db);
-        migrateTenToEleven(db);
+        if (oldVersion <= 10) migrateTenToEleven(db);
+        migrateElevenToTwelve(db);
     }
 }

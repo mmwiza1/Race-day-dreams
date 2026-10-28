@@ -1,3 +1,16 @@
+## Current retained-scope gate (pending)
+
+Route projection source bce6486/workflow40694457701 passed 315 tests on API28 and36;
+API35 ran315 with one canonical artwork-readiness failure. The new real city-switch
+regression passed on all three APIs. Capture readiness now queries the owning unmerged
+semantics node (as the regression does), retaining the original 20s bound and assertions.
+Current-source full gate is pending; latest complete green remains f21af7b/40684717270.
+
+Schema12 association backend adds seven real Android repository/migration/backup cases
+(expected322 total, not an observed result). Local201,295domain checks/30suites and53
+schema tests passed. Strength section2 reads1; rootJSON8/raw2/complete1 unchanged.
+The revised reduced0.9scope is authoritative in CONTINUE_CODEX.md. S24 remains untested.
+
 # Verification — 0.9 development checkpoints
 
 ## Latest observed full gate: browser and today-only substitutions

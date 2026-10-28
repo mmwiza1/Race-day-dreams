@@ -41,7 +41,7 @@ superseded by the owner's scope reduction. Existing completed stable pieces stay
 
 ## Actual source and verification
 
-Latest committed source bce6486 publishes recorded points/route/pauses/story as one
+Route projection source bce6486 publishes recorded points/route/pauses/story as one
 prepared detail projection. Prior5993a2d batches city artwork and readiness atomically,
 with a real15-city-switch regression. No stored GPS points are discarded or altered.
 
@@ -54,14 +54,15 @@ Subsequent gates:
 -231b93d/40689616914:API35/36 pass314,API28 artwork-readiness timeout.
 -5993a2d/40691943309:API28/35 pass315;API36 missing RouteStory despite1801retained
  points and valid durability. Original20s/assertions retained.
--bce6486/40694457701:API28/36 success;API35 failure must be inspected and fixed.
+-bce6486/40694457701:API28/36 pass315;API35 artwork-ready timeout. cf76ea6
+ observes owning unmerged readiness semantics (same20s/assertions), pending new gate.
 Required current capture set is88, including new exercise-browse and busy-equipment
 screens. New set must be fully captured, adopted and visually reviewed before acceptance.
 All physical GalaxyS24 checks remain UNPERFORMED.
 
-## Current uncommitted association storage work — preserve and finish
+## Association storage checkpoint — preserve and finish
 
-The aborted previous command did NOT commit/push the backend. Inspect git status.
+Backend and documentation are being committed together; inspect current HEAD/status.
 Schema12 adds strength_association_decisions + indexed strength_association_targets.
 Typed SqliteGymAssociationRepository implements stable-ID retries, explicit keep/count/
 reversal, retained provenance, immutable reviewed actual/target snapshots, atomic coaching
@@ -78,8 +79,8 @@ verified yet. All174/174canonical+14/14routine guides remain intact.
 
 ## Next exact tasks in order
 
-1. Inspect bce6486 API35 failure, fix root cause while preserving route points and original
-   assertions/timeouts. Confirm APIs28/35/36; no blind reruns or weakened fixture checks.
+1. Confirm cf76ea6 owning-semantics readiness fix on APIs28/35/36 with the backend;
+   original assertions/timeouts and stored points are retained. No blind retries.
 2. Validate/commit/push current typed association backend coherently with documentation.
    Run build/lint/format/domain/schema and real migration/backup/rollback/retry tests.
    Current expected test count322=315existing+7new, not an observed pass.

@@ -114,19 +114,11 @@ public final class GymWorkoutAssociation {
             GymProgramme currentProgramme,
             Set<String> occupiedSessionIds,
             boolean actualLinked) {
-        Objects.requireNonNull(proposal);
+        validateRetainedEvidence(proposal, currentActual, recordedOrigin, currentProgramme);
         Objects.requireNonNull(occupiedSessionIds);
-        Objects.requireNonNull(recordedOrigin, "retained workout provenance");
-        if (actualLinked
-                || proposal.origin() != recordedOrigin
-                || !proposal.actual().equals(currentActual)
-                || currentProgramme == null
-                || !proposal.programmeId().equals(currentProgramme.id())
-                || proposal.programmeRevision() != currentProgramme.version()
-                || currentProgramme.sessions().stream().noneMatch(proposal.prescription()::equals)
-                || occupiedSessionIds.contains(proposal.prescription().id()))
+        if (actualLinked || occupiedSessionIds.contains(proposal.prescription().id()))
             throw new IllegalArgumentException(
-                    "The workout or programme changed. Review the association again.");
+                    "This workout or target already has an association. Review it again.");
         if (proposals(
                         currentActual,
                         proposal.origin(),
@@ -136,5 +128,23 @@ public final class GymWorkoutAssociation {
                 .stream()
                 .noneMatch(proposal::equals))
             throw new IllegalArgumentException("No comparable nearby prescription was reviewed.");
+    }
+
+    /** Keeping/unlinking an extra workout does not claim that its edited task matches a target. */
+    public static void validateRetainedEvidence(
+            Proposal proposal,
+            StrengthSession currentActual,
+            GymExecution.Origin recordedOrigin,
+            GymProgramme retainedProgramme) {
+        Objects.requireNonNull(proposal);
+        Objects.requireNonNull(recordedOrigin, "retained workout provenance");
+        if (proposal.origin() != recordedOrigin
+                || !proposal.actual().equals(currentActual)
+                || retainedProgramme == null
+                || !proposal.programmeId().equals(retainedProgramme.id())
+                || proposal.programmeRevision() != retainedProgramme.version()
+                || retainedProgramme.sessions().stream().noneMatch(proposal.prescription()::equals))
+            throw new IllegalArgumentException(
+                    "The reviewed actual or preserved prescription changed.");
     }
 }

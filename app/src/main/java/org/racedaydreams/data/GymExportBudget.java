@@ -32,6 +32,9 @@ final class GymExportBudget {
                         + " FROM strength_execution_sets"
                         + " UNION ALL SELECT TOTAL(length(CAST(payload AS BLOB)))"
                         + " FROM strength_execution_events";
+        query +=
+                " UNION ALL SELECT TOTAL(length(CAST(payload AS BLOB))) FROM"
+                        + " strength_association_decisions";
         long lowerBound = 0;
         try (Cursor cursor = db.rawQuery(query, null)) {
             while (cursor.moveToNext()) {

@@ -2,7 +2,9 @@ package org.racedaydreams.data;
 
 import android.database.sqlite.SQLiteDatabase;
 
-/** Removes only the v11 additions when constructing an authentic older-schema fixture. */
+/**
+ * Removes v11 and subsequent additive tables when constructing an authentic older-schema fixture.
+ */
 final class GymSchemaFixture {
     private GymSchemaFixture() {}
 
@@ -10,6 +12,8 @@ final class GymSchemaFixture {
         // Children must disappear before parents when the fixture connection enforces FKs.
         for (String table :
                 new String[] {
+                    "strength_association_targets",
+                    "strength_association_decisions",
                     "strength_execution_events",
                     "strength_execution_sets",
                     "strength_executions",
