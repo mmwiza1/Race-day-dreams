@@ -33,11 +33,13 @@ Latest log:/tmp/rdd010-domain-final-short.txt. Schema/backup formats still13/8,
 strengthEngine2/strengthState2/raw2/complete1. No new programme data can be created in
 app yet; do not present this foundation as a finished builder/release.
 
-A checkpoint command was interrupted BEFORE execution: the two domain files remain
-valid locally, not committed/pushed at that point. Inspect git status/log before acting.
-Next: commit/push these files and this handoff with relevant format/schema/release checks;
-inspect the new current-head workflow rather than assumingc4b2664 certifies later code.
-Then continue the exact typed SQL/repository/backup and UI work listed below. Preserve
+The interrupted checkpoint command was recovered safely. The two domain files and
+handoff were committed/pushed asae842452f9e75981055b98d6d7afed58eb07818a. No local
+feature edits remain. Workflow40784115944 started for that code head; the following
+handoff-only commit needs its own current-head check. Inspect live PR15 checks rather
+than treating prior green sources as proof for later source. Do not recreate/recommit
+the short-session fix. Next: complete the current-head gate, then continue the exact
+typed SQL/repository/backup and UI work listed below. Preserve
 all completed work. No0.11 timer/warm-up/superset/analytics/deload/achievement scope.
 
 ## Active release — 0.10.0-test1: Strength Programming 2.0
