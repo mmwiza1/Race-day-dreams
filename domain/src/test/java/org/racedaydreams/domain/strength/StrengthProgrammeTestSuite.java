@@ -805,7 +805,69 @@ public final class StrengthProgrammeTestSuite {
                                         p.equals(ENGINE.generate(r)),
                                         "deterministic entire programme");
                                 check(p.workouts().size() == frequency * 2, "frequency preserved");
+                                if (equipment.equals(ALL)
+                                        && minutes == 60
+                                        && goal == GymProgramme.Goal.SUPPORT_RUNNING) {
+                                    var roles =
+                                            p.workouts().stream()
+                                                    .flatMap(w -> w.definition().slots().stream())
+                                                    .map(
+                                                            slot ->
+                                                                    ExerciseMetadataCatalog.require(
+                                                                                    slot.exercise()
+                                                                                            .id())
+                                                                            .primaryRole())
+                                                    .collect(Collectors.toSet());
+                                    check(
+                                            roles.containsAll(
+                                                    Set.of(
+                                                            ExerciseMetadata.Role.SQUAT,
+                                                            ExerciseMetadata.Role.HINGE,
+                                                            ExerciseMetadata.Role.UNILATERAL,
+                                                            ExerciseMetadata.Role.CALF,
+                                                            ExerciseMetadata.Role.CORE)),
+                                            "running support covers real lower-body, lower-leg and"
+                                                    + " trunk roles");
+                                    check(
+                                            roles.contains(ExerciseMetadata.Role.HORIZONTAL_PULL),
+                                            "running support preserves pulling maintenance");
+                                }
                                 for (var w : p.workouts()) {
+                                    if (goal == GymProgramme.Goal.POWER) {
+                                        check(
+                                                w.definition().slots().size() <= 5,
+                                                "power quality over excessive exercise count");
+                                        check(
+                                                w.definition().slots().stream()
+                                                                .mapToInt(
+                                                                        slot ->
+                                                                                slot.target()
+                                                                                        .sets())
+                                                                .sum()
+                                                        <= 11,
+                                                "power support volume remains controlled");
+                                    }
+                                    var majorRoles =
+                                            EnumSet.of(
+                                                    ExerciseMetadata.Role.SQUAT,
+                                                    ExerciseMetadata.Role.HINGE,
+                                                    ExerciseMetadata.Role.HORIZONTAL_PUSH,
+                                                    ExerciseMetadata.Role.VERTICAL_PUSH,
+                                                    ExerciseMetadata.Role.HORIZONTAL_PULL,
+                                                    ExerciseMetadata.Role.VERTICAL_PULL);
+                                    check(
+                                            w.definition().slots().stream()
+                                                            .filter(
+                                                                    slot ->
+                                                                            majorRoles.contains(
+                                                                                    ExerciseMetadataCatalog
+                                                                                            .require(
+                                                                                                    slot.exercise()
+                                                                                                            .id())
+                                                                                            .primaryRole()))
+                                                            .count()
+                                                    <= 4,
+                                            "not five major compounds in one session");
                                     check(
                                             w.expectedMinutes() <= minutes,
                                             "bounded realistic duration");
@@ -838,6 +900,33 @@ public final class StrengthProgrammeTestSuite {
                                     }
                                 }
                             }
+        var hardDates = new HashSet<LocalDate>();
+        for (int day = 0; day < 26 * 7; day++) hardDates.add(START.plusDays(day));
+        var full =
+                settings(
+                        GymProgramme.Goal.SUPPORT_RUNNING,
+                        GymProgramme.Experience.INTERMEDIATE,
+                        GymProgramme.Priority.RUNNING_FIRST,
+                        6,
+                        60,
+                        ALL);
+        var longPlan =
+                ENGINE.generate(
+                        request(
+                                full,
+                                26,
+                                null,
+                                Set.of(),
+                                PrimaryFocus.HYBRID,
+                                hardDates,
+                                null,
+                                false));
+        check(
+                longPlan.workouts().size() == 156 && longPlan.tradeoffs().size() == 100,
+                "long conflicted plan has bounded summary");
+        check(
+                longPlan.workouts().stream().allMatch(w -> w.notes().contains("demanding run")),
+                "dated conflict evidence not truncated");
         check(plans + honestFailures == 1620, "simulator covers full configuration space");
         check(
                 plans > 800 && honestFailures > 0,

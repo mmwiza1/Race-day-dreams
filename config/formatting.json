@@ -132,6 +132,11 @@
     "domain/src/main/java/org/racedaydreams/domain/strength/StrengthProgramme*.java",
     "domain/src/test/java/org/racedaydreams/domain/strength/StrengthProgrammeTestSuite.java",
     "domain/src/main/java/org/racedaydreams/domain/strength/CustomStrengthExercise.java",
-    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthWorkoutBudget.java"
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthWorkoutBudget.java",
+    "app/src/main/java/org/racedaydreams/data/StrengthProgrammingJson.java",
+    "app/src/androidTest/java/org/racedaydreams/data/StrengthProgrammingJsonTest.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthTargetProgression.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/StrengthTargetProgressionTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/DreamArtworkPublicationTest.kt"
   ]
 }

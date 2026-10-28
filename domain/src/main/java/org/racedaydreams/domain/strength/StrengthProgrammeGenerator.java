@@ -53,9 +53,13 @@ public final class StrengthProgrammeGenerator {
         Split split =
                 request.templateId() != null
                         ? StrengthProgrammeTemplates.require(request.templateId()).split()
-                        : settings.frequency() >= 5
-                                ? Split.PUSH_PULL_LEGS
-                                : settings.frequency() == 4 ? Split.UPPER_LOWER : Split.FULL_BODY;
+                        : settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING
+                                ? Split.FULL_BODY
+                                : settings.frequency() >= 5
+                                        ? Split.PUSH_PULL_LEGS
+                                        : settings.frequency() == 4
+                                                ? Split.UPPER_LOWER
+                                                : Split.FULL_BODY;
         var tradeoffs = new LinkedHashSet<String>();
         if (request.templateId() != null)
             tradeoffs.add(StrengthProgrammeTemplates.require(request.templateId()).tradeoff());
@@ -85,6 +89,18 @@ public final class StrengthProgrammeGenerator {
                     LocalDate date = days.get(day);
                     var layout = layout(split, day, settings.goal());
                     var roles = new ArrayList<>(layout.roles);
+                    if (settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING
+                            && settings.frequency() == 1) {
+                        roles =
+                                new ArrayList<>(
+                                        Immutable.list(
+                                                SQUAT,
+                                                HINGE,
+                                                UNILATERAL,
+                                                CALF,
+                                                CORE,
+                                                HORIZONTAL_PULL));
+                    }
                     if (settings.goal() == GymProgramme.Goal.POWER
                             && settings.experience() != GymProgramme.Experience.BEGINNER)
                         roles.add(0, POWER);
@@ -103,6 +119,9 @@ public final class StrengthProgrammeGenerator {
                                         settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING
                                                 ? 5
                                                 : 4);
+                    if (settings.goal() == GymProgramme.Goal.POWER) limit = Math.min(limit, 5);
+                    if (settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING
+                            && settings.frequency() == 1) limit = 6;
                     var slots = new ArrayList<GymWorkoutDefinition.Slot>();
                     var seen = new HashSet<String>();
                     int minutes = 4;
@@ -159,20 +178,20 @@ public final class StrengthProgrammeGenerator {
                                 "Not enough eligible exercises for a balanced session. Review"
                                         + " equipment, exclusions or template.");
                     String id = request.id() + "-" + date;
-                    if (request.focus() != PrimaryFocus.STRENGTH && lowerBody(slots)) {
-                        int conflict = conflict(date, request.demandingRuns());
-                        if (conflict > 0)
-                            tradeoffs.add(
-                                    date
-                                            + ": lower-body work is "
-                                            + (request.demandingRuns().contains(date)
-                                                    ? "on a demanding run day"
-                                                    : request.demandingRuns()
-                                                                    .contains(date.plusDays(1))
-                                                            ? "before a demanding run"
-                                                            : "after a demanding run")
-                                            + "; consider moving it or keeping more effort"
-                                            + " reserve.");
+                    String sessionContext = "";
+                    if (request.focus() != PrimaryFocus.STRENGTH
+                            && lowerBody(slots)
+                            && conflict(date, request.demandingRuns()) > 0) {
+                        sessionContext =
+                                date
+                                        + ": lower-body work is "
+                                        + (request.demandingRuns().contains(date)
+                                                ? "on a demanding run day"
+                                                : request.demandingRuns().contains(date.plusDays(1))
+                                                        ? "before a demanding run"
+                                                        : "after a demanding run")
+                                        + "; consider moving it or keeping more effort reserve.";
+                        tradeoffs.add(sessionContext);
                     }
                     workouts.add(
                             new Workout(
@@ -182,7 +201,10 @@ public final class StrengthProgrammeGenerator {
                                     new GymWorkoutDefinition(
                                             id, 1, request.at(), layout.title, slots),
                                     "Use manageable working loads. "
-                                            + phaseExplanation(phase.phase)));
+                                            + phaseExplanation(phase.phase)
+                                            + (sessionContext.isEmpty()
+                                                    ? ""
+                                                    : " " + sessionContext)));
                 }
             }
             blocks.add(
@@ -196,6 +218,13 @@ public final class StrengthProgrammeGenerator {
                             phaseExplanation(phase.phase)));
             start = start.plusWeeks(phase.weeks);
         }
+        var summary = new ArrayList<>(tradeoffs);
+        if (summary.size() > 100) {
+            int remaining = summary.size() - 99;
+            summary = new ArrayList<>(summary.subList(0, 99));
+            summary.add(
+                    remaining + " additional trade-offs are retained in the dated workout notes.");
+        }
         return new StrengthProgramme(
                 request.id(),
                 1,
@@ -208,7 +237,7 @@ public final class StrengthProgrammeGenerator {
                 blocks,
                 request.start(),
                 "Athlete requested a preview; nothing is activated until explicitly accepted.",
-                new ArrayList<>(tradeoffs));
+                summary);
     }
 
     private record PhaseLength(Phase phase, int weeks) {}
@@ -407,6 +436,11 @@ public final class StrengthProgrammeGenerator {
             rest = 180;
         }
         int minEffort = beginner ? 5 : 6, maxEffort = beginner ? 7 : 8;
+        if (s.goal() == GymProgramme.Goal.POWER && role != POWER) {
+            sets = Math.min(sets, 2);
+            low = 6;
+            high = 8;
+        }
         if (phase == Phase.FOUNDATION) {
             sets = Math.min(sets, 2);
             minEffort = 5;
@@ -431,7 +465,7 @@ public final class StrengthProgrammeGenerator {
             minEffort = 5;
             maxEffort = 6;
         }
-        if (role == POWER) {
+        if (s.goal() == GymProgramme.Goal.POWER) {
             minEffort = 5;
             maxEffort = 7;
         }
