@@ -710,18 +710,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                     delay(1000)
                     if (!mutable.value.busy) {
                         try {
-                            mutex.withLock {
-                                if (!mutable.value.busy) {
-                                    val observed =
-                                        withContext(Dispatchers.IO) { coordinator.observe() }
-                                    // A command may begin while the IO observation is in flight.
-                                    // Its
-                                    // accepted snapshot must not be replaced by an older display
-                                    // tick.
-                                    if (!mutable.value.busy)
-                                        mutable.update { it.copy(view = observed) }
-                                }
-                            }
+                            observeWorkoutTime()
                         } catch (cancelled: CancellationException) {
                             throw cancelled
                         } catch (error: RuntimeException) {
@@ -737,6 +726,19 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                     }
                 }
             }
+    }
+
+    /** Display ticks never replace a saved terminal projection with an empty coordinator. */
+    internal suspend fun observeWorkoutTime() {
+        fun canObserve() =
+            !mutable.value.busy && mutable.value.view?.observed()?.let(::unfinished) == true
+        if (!canObserve()) return
+        mutex.withLock {
+            if (!canObserve()) return@withLock
+            val observed = withContext(Dispatchers.IO) { coordinator.observe() }
+            // A command can begin while observation is in flight. It owns the next snapshot.
+            if (canObserve()) mutable.update { it.copy(view = observed) }
+        }
     }
 
     fun generate(request: GymNowWorkouts.Request) = command {

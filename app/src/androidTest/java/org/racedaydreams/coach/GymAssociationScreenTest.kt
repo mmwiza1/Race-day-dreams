@@ -121,6 +121,9 @@ class GymAssociationScreenTest {
         compose.waitUntil(20_000) {
             compose.onAllNodesWithTag("gym-association-confirm").fetchSemanticsNodes().size == 1
         }
+        // Exercise the real display-ticker path while the review window is open. A reopened
+        // finished workout has a terminal projection, not an active coordinator session.
+        runBlocking(Dispatchers.Main) { model.observeWorkoutTime() }
         compose
             .onNodeWithTag("gym-association-confirm")
             .assertIsDisplayed()
