@@ -3,6 +3,7 @@ package org.racedaydreams.data;
 import static org.racedaydreams.data.GymJsonSupport.*;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.racedaydreams.domain.strength.GymExecution;
 import org.racedaydreams.domain.strength.GymProgramme;
 import org.racedaydreams.domain.strength.GymWorkoutAssociation;
@@ -16,6 +17,7 @@ public final class GymAssociationJson {
 
     public static String write(GymWorkoutAssociation.Decision decision) {
         var proposal = decision.proposal();
+        if (proposal.authored()) return writeAuthored(decision);
         var session = proposal.prescription();
         var exercises = new JSONArray();
         for (var p : session.exercises())
@@ -85,6 +87,7 @@ public final class GymAssociationJson {
     public static GymWorkoutAssociation.Decision read(String payload) {
         var root = GymJsonSupport.read(payload);
         fields(root, "version", "id", "choice", "decidedAt", "proposal");
+        if (integer(root, "version") == 2) return readAuthored(root);
         version(root, GymWorkoutAssociation.FORMAT_VERSION);
         var proposal = child(root, "proposal");
         fields(
@@ -150,5 +153,62 @@ public final class GymAssociationJson {
         } catch (java.time.DateTimeException invalid) {
             throw new IllegalArgumentException("Invalid gym association date.", invalid);
         }
+    }
+
+    /** Version2 adds an exact authored workout, never an approximation as a legacy Session. */
+    private static String writeAuthored(GymWorkoutAssociation.Decision decision) {
+        var p = decision.proposal();
+        var payload =
+                GymJsonSupport.write(
+                        object(
+                                "version",
+                                2,
+                                "id",
+                                decision.id(),
+                                "choice",
+                                decision.choice().name(),
+                                "decidedAt",
+                                decision.decidedAt().toString(),
+                                "proposal",
+                                object(
+                                        "actual",
+                                        CoachingJson.strength(p.actual()),
+                                        "origin",
+                                        p.origin().name(),
+                                        "programmeId",
+                                        p.programmeId(),
+                                        "programmeRevision",
+                                        p.programmeRevision(),
+                                        "reviewedAt",
+                                        p.reviewedAt().toString(),
+                                        "prescription",
+                                        StrengthProgrammingJson.encodeWorkout(
+                                                p.authoredPrescription()))));
+        read(payload);
+        return payload;
+    }
+
+    private static GymWorkoutAssociation.Decision readAuthored(JSONObject root) {
+        version(root, 2);
+        var p = child(root, "proposal");
+        fields(
+                p,
+                "actual",
+                "origin",
+                "programmeId",
+                "programmeRevision",
+                "reviewedAt",
+                "prescription");
+        return new GymWorkoutAssociation.Decision(
+                text(root, "id", 256),
+                GymWorkoutAssociation.Proposal.authored(
+                        GymAcceptedActualJson.read(child(p, "actual")),
+                        choice(p, "origin", GymExecution.Origin.class),
+                        text(p, "programmeId", 256),
+                        integer(p, "programmeRevision"),
+                        StrengthProgrammingJson.decodeWorkout(child(p, "prescription")),
+                        instant(p, "reviewedAt")),
+                choice(root, "choice", GymWorkoutAssociation.Choice.class),
+                instant(root, "decidedAt"));
     }
 }

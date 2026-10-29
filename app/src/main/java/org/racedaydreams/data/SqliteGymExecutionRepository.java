@@ -1234,7 +1234,12 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         }
         if (integer(data, "version") >= 2)
             SqliteGymAssociationRepository.validate(
-                    child(data, "associations"), retainedExecutions, actuals, programmes, links);
+                    child(data, "associations"),
+                    retainedExecutions,
+                    actuals,
+                    programmes,
+                    links,
+                    authored);
     }
 
     public static void clear(SQLiteDatabase db) {

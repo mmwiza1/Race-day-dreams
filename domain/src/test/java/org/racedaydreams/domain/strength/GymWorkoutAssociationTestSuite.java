@@ -190,8 +190,206 @@ public final class GymWorkoutAssociationTestSuite {
                 GymWorkoutAssociation.proposals(
                                 timed, GymExecution.Origin.FREE, plan, Set.of(), NOW)
                         .isEmpty());
+        check(
+                GymWorkoutAssociation.authoredProposals(
+                                timed,
+                                GymExecution.Origin.FREE,
+                                authoredPlan(1, 0, true),
+                                Set.of(),
+                                NOW)
+                        .isEmpty());
+        authoredAssociationEvidence();
         exactAssociationAcknowledgementProtocol(reviewed);
         System.out.println("GymWorkoutAssociationTestSuite: " + checks + " checks passed.");
+    }
+
+    private static void authoredAssociationEvidence() {
+        var actual = actual(false, 60);
+        for (var origin : GymExecution.Origin.values()) {
+            for (int days = -4; days <= 4; days++) {
+                var plan = authoredPlan(1, days, true);
+                var proposals =
+                        GymWorkoutAssociation.authoredProposals(
+                                actual, origin, plan, Set.of(), NOW);
+                check(
+                        proposals.size()
+                                == (origin != GymExecution.Origin.PLANNED && Math.abs(days) <= 3
+                                        ? 1
+                                        : 0));
+                if (proposals.isEmpty()) continue;
+                var p = proposals.get(0);
+                GymWorkoutAssociation.validateAuthoredForAcceptance(
+                        p, actual, origin, plan, Set.of(), false);
+                check(p.authored() && p.prescription() == null);
+                check(p.authoredPrescription().equals(plan.workouts().get(0)));
+                check(p.sessionId().equals("authored-session") && p.date().equals(plan.start()));
+                check(
+                        p.title().equals("Preserved authored workout")
+                                && p.prescribedExerciseCount() == 1);
+                var target = p.authoredPrescription().definition().slots().get(0).target();
+                check(target.effort().scale() == GymWorkoutDefinition.EffortScale.RIR);
+                check(target.effort().minimum() == 1.5 && target.effort().maximum() == 3.5);
+                check(target.restSeconds() == null && target.referenceLoadKg() == 80);
+                check(p.actual().exercises().get(0).sets().get(0).kilograms() == 60);
+            }
+        }
+        var plan = authoredPlan(1, 0, false);
+        var p =
+                GymWorkoutAssociation.authoredProposals(
+                                actual, GymExecution.Origin.FREE, plan, Set.of(), NOW)
+                        .get(0);
+        check(p.authoredPrescription().definition().slots().get(0).target().effort() == null);
+        check(p.reviewed(actual, GymExecution.Origin.FREE, NOW).equals(p));
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateAuthoredForAcceptance(
+                                p,
+                                actual(false, 65),
+                                GymExecution.Origin.FREE,
+                                plan,
+                                Set.of(),
+                                false));
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateAuthoredForAcceptance(
+                                p,
+                                actual,
+                                GymExecution.Origin.FREE,
+                                authoredPlan(2, 0, false),
+                                Set.of(),
+                                false));
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateAuthoredForAcceptance(
+                                p,
+                                actual,
+                                GymExecution.Origin.FREE,
+                                plan,
+                                Set.of("authored-session"),
+                                false));
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateAuthoredForAcceptance(
+                                p, actual, GymExecution.Origin.FREE, plan, Set.of(), true));
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateAuthoredRetainedEvidence(
+                                p, actual, GymExecution.Origin.PLANNED, plan));
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateRetainedEvidence(
+                                p, actual, GymExecution.Origin.FREE, plan(1, 0, "bench-press")));
+        var legacy =
+                GymWorkoutAssociation.proposals(
+                                actual,
+                                GymExecution.Origin.FREE,
+                                plan(1, 0, "bench-press"),
+                                Set.of(),
+                                NOW)
+                        .get(0);
+        reject(
+                () ->
+                        GymWorkoutAssociation.validateAuthoredRetainedEvidence(
+                                legacy, actual, GymExecution.Origin.FREE, plan));
+        reject(
+                () ->
+                        new GymWorkoutAssociation.Proposal(
+                                actual,
+                                GymExecution.Origin.FREE,
+                                plan.id(),
+                                1,
+                                legacy.prescription(),
+                                NOW,
+                                p.authoredPrescription()));
+        check(
+                GymWorkoutAssociation.authoredProposals(
+                                actual(true, 60), GymExecution.Origin.FREE, plan, Set.of(), NOW)
+                        .isEmpty());
+        check(
+                GymWorkoutAssociation.authoredProposals(
+                                actual,
+                                GymExecution.Origin.FREE,
+                                plan,
+                                Set.of("authored-session"),
+                                NOW)
+                        .isEmpty());
+        check(
+                GymWorkoutAssociation.authoredProposals(
+                                actual,
+                                GymExecution.Origin.FREE,
+                                plan,
+                                Set.of(),
+                                NOW.minusSeconds(4000))
+                        .isEmpty());
+        check(
+                GymWorkoutAssociation.authoredProposals(
+                                actual, GymExecution.Origin.FREE, null, Set.of(), NOW)
+                        .isEmpty());
+        exactAssociationAcknowledgementProtocol(p);
+    }
+
+    private static StrengthProgramme authoredPlan(int revision, int days, boolean rir) {
+        var day = LocalDate.of(2026, 10, 28).plusDays(days);
+        var slots =
+                List.of(
+                        new GymWorkoutDefinition.Slot(
+                                "bench",
+                                ExerciseCatalog.definition("bench-press").exercise(),
+                                new GymWorkoutDefinition.Target(
+                                        3,
+                                        5,
+                                        8,
+                                        null,
+                                        null,
+                                        rir
+                                                ? new GymWorkoutDefinition.EffortRange(
+                                                        GymWorkoutDefinition.EffortScale.RIR,
+                                                        1.5,
+                                                        3.5)
+                                                : null,
+                                        null,
+                                        80.0),
+                                null));
+        var workout =
+                new StrengthProgramme.Workout(
+                        "authored-session",
+                        day,
+                        StrengthWorkoutBudget.workoutMinutes(slots),
+                        new GymWorkoutDefinition(
+                                "authored-workout",
+                                1,
+                                NOW.minusSeconds(86400),
+                                "Preserved authored workout",
+                                slots),
+                        null);
+        return new StrengthProgramme(
+                "authored",
+                revision,
+                revision - 1,
+                NOW.minusSeconds(86400),
+                "Authored programme",
+                StrengthProgramme.Origin.CUSTOM,
+                null,
+                new StrengthProgramme.Settings(
+                        GymProgramme.Goal.STRENGTH,
+                        GymProgramme.Priority.STRENGTH_FIRST,
+                        GymProgramme.Experience.INTERMEDIATE,
+                        Set.of(day.getDayOfWeek()),
+                        1,
+                        45,
+                        EnumSet.allOf(ExerciseMetadata.Equipment.class)),
+                List.of(
+                        new StrengthProgramme.Block(
+                                "block",
+                                StrengthProgramme.Phase.FOUNDATION,
+                                "Foundation",
+                                day,
+                                1,
+                                List.of(workout),
+                                "Original authored prescription")),
+                day,
+                "Athlete chose this revision",
+                List.of());
     }
 
     private static void exactAssociationAcknowledgementProtocol(GymWorkoutAssociation.Proposal p) {

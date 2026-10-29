@@ -45,19 +45,7 @@ public final class StrengthProgrammingJson {
         var blocks = new JSONArray();
         for (var block : programme.blocks()) {
             var workouts = new JSONArray();
-            for (var workout : block.workouts())
-                workouts.put(
-                        object(
-                                "id",
-                                workout.id(),
-                                "date",
-                                workout.date().toString(),
-                                "expectedMinutes",
-                                workout.expectedMinutes(),
-                                "definition",
-                                GymWorkoutJson.encode(workout.definition()),
-                                "notes",
-                                workout.notes()));
+            for (var workout : block.workouts()) workouts.put(encodeWorkout(workout));
             blocks.put(
                     object(
                             "id",
@@ -131,17 +119,7 @@ public final class StrengthProgrammingJson {
             fields(block, "id", "phase", "name", "start", "weeks", "workouts", "explanation");
             var workouts = new ArrayList<Workout>();
             var rows = array(block, "workouts", 156);
-            for (int n = 0; n < rows.length(); n++) {
-                var workout = row(rows, n);
-                fields(workout, "id", "date", "expectedMinutes", "definition", "notes");
-                workouts.add(
-                        new Workout(
-                                text(workout, "id", 256),
-                                date(workout, "date"),
-                                integer(workout, "expectedMinutes"),
-                                GymWorkoutJson.decode(child(workout, "definition")),
-                                nullableText(workout, "notes", 2000)));
-            }
+            for (int n = 0; n < rows.length(); n++) workouts.add(decodeWorkout(row(rows, n)));
             blocks.add(
                     new Block(
                             text(block, "id", 256),
@@ -165,6 +143,31 @@ public final class StrengthProgrammingJson {
                 date(json, "effectiveFrom"),
                 text(json, "reason", 2000),
                 strings(array(json, "tradeoffs", 100), 2000));
+    }
+
+    /** Shared frozen row; its enclosing programme/association owns the format version. */
+    static JSONObject encodeWorkout(Workout workout) {
+        return object(
+                "id",
+                workout.id(),
+                "date",
+                workout.date().toString(),
+                "expectedMinutes",
+                workout.expectedMinutes(),
+                "definition",
+                GymWorkoutJson.encode(workout.definition()),
+                "notes",
+                workout.notes());
+    }
+
+    static Workout decodeWorkout(JSONObject workout) {
+        fields(workout, "id", "date", "expectedMinutes", "definition", "notes");
+        return new Workout(
+                text(workout, "id", 256),
+                date(workout, "date"),
+                integer(workout, "expectedMinutes"),
+                GymWorkoutJson.decode(child(workout, "definition")),
+                nullableText(workout, "notes", 2000));
     }
 
     public static JSONObject encodeDraft(StrengthProgrammeDraft draft) {

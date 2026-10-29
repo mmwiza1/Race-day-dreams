@@ -141,6 +141,8 @@
     "domain/src/main/java/org/racedaydreams/domain/strength/StrengthProgrammingRepository.java",
     "app/src/main/java/org/racedaydreams/data/SqliteStrengthProgrammingRepository.java",
     "app/src/main/java/org/racedaydreams/data/StrengthProgrammingArchive.java",
-    "app/src/androidTest/java/org/racedaydreams/data/StrengthProgrammingRepositoryTest.java"
+    "app/src/androidTest/java/org/racedaydreams/data/StrengthProgrammingRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/data/AuthoredGymAssociationRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymAssociationScreenTest.kt"
   ]
 }
