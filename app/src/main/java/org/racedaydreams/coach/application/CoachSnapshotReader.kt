@@ -45,6 +45,7 @@ class CoachSnapshotReader(
     private val reminders: EveningReminders,
     private val health: HealthConnectGateway,
     private val savedDraft: () -> String?,
+    private val programming: org.racedaydreams.domain.strength.StrengthProgrammingRepository? = null,
 ) {
     suspend fun read(): CoachUiState {
         val permissions =
@@ -121,22 +122,45 @@ class CoachSnapshotReader(
                 if (review != null && !development.reviewKnown(review.id()))
                     development.saveReview(review)
                 reminders.reconcile()
-                val gymProgramme = gym.current()
-                val gymLinks = development.gymLinks()
-                val strengthToday =
-                    org.racedaydreams.domain.presentation.StrengthTodaySummary.from(
-                        gymProgramme,
-                        strength,
-                        gymLinks.values.map {
-                            org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
-                                it.actualSessionId(),
-                                it.versionKey(),
-                                it.prescribedSessionId(),
-                            )
-                        },
-                        LocalDate.now(),
-                        Instant.now(),
+                val programmeReference = programming?.currentReference()
+                val authoredGymProgramme =
+                    if (
+                        programmeReference?.owner() ==
+                            org.racedaydreams.domain.strength.StrengthProgrammingRepository.Owner
+                                .AUTHORED
                     )
+                        programming?.programme(
+                            programmeReference.id(),
+                            programmeReference.revision(),
+                        ) ?: error("The current authored programme is missing.")
+                    else null
+                val gymProgramme = if (authoredGymProgramme == null) gym.current() else null
+                val gymLinks = development.gymLinks()
+                val associations =
+                    gymLinks.values.map {
+                        org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
+                            it.actualSessionId(),
+                            it.versionKey(),
+                            it.prescribedSessionId(),
+                        )
+                    }
+                val strengthToday =
+                    if (authoredGymProgramme != null)
+                        org.racedaydreams.domain.presentation.StrengthTodaySummary.fromAuthored(
+                            authoredGymProgramme,
+                            strength,
+                            associations,
+                            LocalDate.now(),
+                            now,
+                        )
+                    else
+                        org.racedaydreams.domain.presentation.StrengthTodaySummary.from(
+                            gymProgramme,
+                            strength,
+                            associations,
+                            LocalDate.now(),
+                            now,
+                        )
                 CoachUiState(
                     loading = false,
                     startingPath = settings.getSetting("starting.path"),
@@ -163,6 +187,7 @@ class CoachSnapshotReader(
                     gymLinks = gymLinks,
                     gymProgressionDecisions = gym.decisions(),
                     gymProgramme = gymProgramme,
+                    authoredGymProgramme = authoredGymProgramme,
                     strengthToday = strengthToday,
                     gymVersions = gym.versions(),
                     exerciseChoices = choices.choices(),

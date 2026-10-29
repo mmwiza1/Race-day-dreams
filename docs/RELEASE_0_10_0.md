@@ -13,6 +13,13 @@ programme builder is not yet connected to the application.
 
 ## Improvements
 
+- Authored current programmes now appear in Strength Today, the hybrid Home summary,
+  programme/block/workout details and the calendar without converting their optional
+  or fractional targets into legacy prescriptions.
+- Gym Now starts the exact reviewed authored revision through the existing workout engine.
+  Changed programme selections require a fresh review, and equipment alternatives use
+  the settings preserved with the started workout. Actual set fields remain empty until entered.
+
 - Reviewed extra-workout associations retain exact authored targets, including optional
   effort/rest and fractional RIR, while reading old legacy decisions.
 - Programme proposals can validate future-only changes without rewriting completed

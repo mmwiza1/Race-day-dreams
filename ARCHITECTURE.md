@@ -410,3 +410,23 @@ reviewed decisions, retries and explicit reload; the feature VM serialises repos
 calls on IO and publishes immutable state. Completed native membership is queried in one
 bounded SQL lookup, not by hydrating every recent execution. Final source/gates are in
 CONTINUE_CODEX.md and VERIFICATION.md; the original larger Strength backlog is deferred.
+
+
+## Authored programme application projection (0.10 in progress)
+
+The composition root injects StrengthProgrammingRepository into CoachSnapshotReader.
+The typed current owner selects either the legacy gym programme or the exact authored
+revision; the two models are not coerced into one another. StrengthTodaySummary has
+an explicit authored projection preserving nullable/fractional targets and using the
+same real actual IDs and retained revision links for adherence. PB/progression analysis
+runs on IO in the snapshot reader. Calendar decoration preserves existing category/state
+semantics and requires explicit valid associations, rather than treating a same-day gym
+visit as programme completion. Mobility remains outside calendar programming.
+
+GymNowViewModel reads the typed owner, compares the displayed revision before planned
+start and adapts that preserved source into the existing GymExecutionEngine. Runtime
+slots, actual sets, pause/recovery and finalisation use the same coordinator/repository.
+Substitution context resolves the started source revision, including precise equipment,
+goal and experience, rather than the latest programme. Programme screens display frozen
+exercise names and exact optional targets. Builder/activation/editing controls are a
+separate unfinished application phase; these read paths do not silently activate or edit.

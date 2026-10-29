@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -180,7 +181,8 @@ fun GymNowScreen(
             }
             "Planned workouts" -> {
                 val programme = state.programme
-                if (programme == null) {
+                val authored = state.authoredProgramme
+                if (programme == null && authored == null) {
                     Text(
                         "There is no active gym programme. You can create one from Strength, or choose a one-off workout here."
                     )
@@ -189,36 +191,61 @@ fun GymNowScreen(
                     }
                 } else {
                     Text(
-                        "Programme version ${programme.version()}. Starting a session preserves this exact prescription."
+                        "Programme version ${authored?.revision() ?: programme!!.version()}. Starting a session preserves this exact prescription."
                     )
-                    val today = LocalDate.now()
+                    if (authored != null)
+                        Text(authored.name(), style = MaterialTheme.typography.titleLarge)
                     val sessions =
-                        programme
-                            .sessions()
-                            .sortedBy { it.date() }
-                            .let { rows ->
-                                rows.filter { !it.date().isBefore(today) } +
-                                    rows.filter { it.date().isBefore(today) }.asReversed()
+                        remember(programme, authored, state.exercises) {
+                            authored?.workouts()?.map { w ->
+                                PlannedSessionDisplay(
+                                    w.id(),
+                                    w.date(),
+                                    w.definition().title(),
+                                    w.definition().slots().joinToString(" · ") {
+                                        it.exercise().name()
+                                    },
+                                    w.expectedMinutes(),
+                                )
                             }
+                                ?: programme!!.sessions().map { w ->
+                                    PlannedSessionDisplay(
+                                        w.id(),
+                                        w.date(),
+                                        w.title(),
+                                        w.exercises().joinToString(" · ") { p ->
+                                            state.exercises
+                                                .firstOrNull { it.id() == p.exerciseId() }
+                                                ?.name() ?: p.exerciseId()
+                                        },
+                                        null,
+                                    )
+                                }
+                        }
+                    val today = LocalDate.now()
+                    val ordered =
+                        remember(sessions, today) {
+                            sessions
+                                .sortedBy { it.date }
+                                .let { rows ->
+                                    rows.filter { !it.date.isBefore(today) } +
+                                        rows.filter { it.date.isBefore(today) }.asReversed()
+                                }
+                        }
                     Text(
                         "Today and upcoming sessions first. Earlier prescriptions remain available; there is no catch-up requirement."
                     )
-                    sessions.take(plannedLimit).forEach { session ->
+                    ordered.take(plannedLimit).forEach { session ->
                         SemanticCard(Tile.Planned) {
                             Text(
-                                session.date().format(GYM_DAY),
+                                session.date.format(GYM_DAY),
                                 style = MaterialTheme.typography.labelLarge,
                             )
-                            Text(session.title(), style = MaterialTheme.typography.titleLarge)
-                            Text(
-                                session.exercises().joinToString(" · ") { prescription ->
-                                    state.exercises
-                                        .firstOrNull { it.id() == prescription.exerciseId() }
-                                        ?.name() ?: prescription.exerciseId()
-                                }
-                            )
+                            Text(session.title, style = MaterialTheme.typography.titleLarge)
+                            Text(session.exercises)
+                            session.minutes?.let { Text("About $it min · planned, not recorded") }
                             Button(
-                                onClick = { model.startPlanned(session.id(), onWorkout) },
+                                onClick = { model.startPlanned(session.id, onWorkout) },
                                 enabled = mayStart,
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                             ) {
@@ -226,7 +253,7 @@ fun GymNowScreen(
                             }
                         }
                     }
-                    if (plannedLimit < sessions.size)
+                    if (plannedLimit < ordered.size)
                         TextButton(
                             onClick = { plannedLimit += 7 },
                             enabled = mutable,
@@ -605,3 +632,11 @@ private fun gymGoalLabel(goal: GymProgramme.Goal) =
         GymProgramme.Goal.GENERAL -> "General fitness"
         GymProgramme.Goal.POWER -> "Power preparation"
     }
+
+private data class PlannedSessionDisplay(
+    val id: String,
+    val date: LocalDate,
+    val title: String,
+    val exercises: String,
+    val minutes: Int?,
+)

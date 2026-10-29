@@ -143,6 +143,7 @@
     "app/src/main/java/org/racedaydreams/data/StrengthProgrammingArchive.java",
     "app/src/androidTest/java/org/racedaydreams/data/StrengthProgrammingRepositoryTest.java",
     "app/src/androidTest/java/org/racedaydreams/data/AuthoredGymAssociationRepositoryTest.java",
-    "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymAssociationScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymAssociationScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymNowScreenTest.kt"
   ]
 }

@@ -26,6 +26,7 @@ import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.GymWorkoutJson
 import org.racedaydreams.data.SqliteGymAssociationRepository
 import org.racedaydreams.data.SqliteGymExecutionRepository
+import org.racedaydreams.data.SqliteStrengthProgrammingRepository
 import org.racedaydreams.data.StrengthUserStore
 import org.racedaydreams.domain.strength.ExerciseMetadata
 import org.racedaydreams.domain.strength.ExerciseSubstitutionEngine
@@ -39,6 +40,8 @@ import org.racedaydreams.domain.strength.GymWorkoutAssociation
 import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.GymWorkoutSessionCoordinator
 import org.racedaydreams.domain.strength.StrengthExercise
+import org.racedaydreams.domain.strength.StrengthProgramme
+import org.racedaydreams.domain.strength.StrengthProgrammingRepository
 import org.racedaydreams.domain.strength.StrengthSession
 
 /**
@@ -98,6 +101,7 @@ data class GymNowState(
     val error: String? = null,
     val notice: String? = null,
     val programme: GymProgramme? = null,
+    val authoredProgramme: StrengthProgramme? = null,
     val unfinished: List<GymExecutionRepository.Summary> = emptyList(),
     val favourites: List<GymWorkoutDefinition> = emptyList(),
     val favouritePage: Int = 0,
@@ -130,6 +134,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         }
     private val coaching = CoachingStore(application)
     private val programmes = GymProgrammeStore(application)
+    private val programming = SqliteStrengthProgrammingRepository(application)
     private val userChoices = StrengthUserStore(application)
     private val mutex = Mutex()
     private val ticks =
@@ -161,6 +166,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
 
     private data class Panel(
         val programme: GymProgramme?,
+        val authoredProgramme: StrengthProgramme?,
         val unfinished: List<GymExecutionRepository.Summary>,
         val favourites: List<GymWorkoutDefinition>,
         val hasMore: Boolean,
@@ -176,8 +182,15 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         val saved = repository.favouriteWorkouts(21, page * 20)
         val choices = userChoices.choices()
         val recent = repository.recentActual(10)
+        val reference = programming.currentReference()
+        val authored =
+            if (reference?.owner() == StrengthProgrammingRepository.Owner.AUTHORED)
+                programming.programme(reference.id(), reference.revision())
+                    ?: error("The preserved authored programme is missing.")
+            else null
         return Panel(
-            programmes.current(),
+            if (authored == null) programmes.current() else null,
+            authored,
             repository.unfinished(),
             saved.take(20),
             saved.size > 20,
@@ -259,6 +272,9 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                         busy = false,
                         error = failure,
                         programme = if (fresh != null) fresh!!.programme else previous.programme,
+                        authoredProgramme =
+                            if (fresh != null) fresh!!.authoredProgramme
+                            else previous.authoredProgramme,
                         unfinished = fresh?.unfinished ?: previous.unfinished,
                         favourites = fresh?.favourites ?: previous.favourites,
                         hasMoreFavourites = fresh?.hasMore ?: previous.hasMoreFavourites,
@@ -294,21 +310,39 @@ class GymNowViewModel(application: Application, private val retained: SavedState
 
     fun startPlanned(sessionId: String, onReady: () -> Unit) {
         val selectedProgramme = mutable.value.programme
+        val selectedAuthored = mutable.value.authoredProgramme
         start(onReady) {
-            val programme = programmes.current() ?: error("There is no active gym programme.")
-            require(
-                selectedProgramme != null &&
-                    selectedProgramme.id() == programme.id() &&
-                    selectedProgramme.version() == programme.version()
-            ) {
-                "The programme changed. Review the refreshed session before starting."
-            }
+            val reference = programming.currentReference()
             val prepared =
-                GymWorkoutAdapter.fromProgramme(
-                    programme,
-                    sessionId,
-                    coaching.exercises().associateBy { it.id() },
-                )
+                if (selectedAuthored != null) {
+                    require(
+                        reference?.owner() == StrengthProgrammingRepository.Owner.AUTHORED &&
+                            reference.id() == selectedAuthored.id() &&
+                            reference.revision() == selectedAuthored.revision()
+                    ) {
+                        "The programme changed. Review the refreshed session before starting."
+                    }
+                    val programme =
+                        programming.programme(reference.id(), reference.revision())
+                            ?: error("The preserved authored programme is missing.")
+                    GymWorkoutAdapter.fromAuthoredProgramme(programme, sessionId)
+                } else {
+                    val programme =
+                        programmes.current() ?: error("There is no active gym programme.")
+                    require(
+                        selectedProgramme != null &&
+                            selectedProgramme.id() == programme.id() &&
+                            selectedProgramme.version() == programme.version() &&
+                            reference?.owner() == StrengthProgrammingRepository.Owner.LEGACY
+                    ) {
+                        "The programme changed. Review the refreshed session before starting."
+                    }
+                    GymWorkoutAdapter.fromProgramme(
+                        programme,
+                        sessionId,
+                        coaching.exercises().associateBy { it.id() },
+                    )
+                }
             coordinator.start(
                 UUID.randomUUID().toString(),
                 GymExecution.Origin.PLANNED,
@@ -413,20 +447,27 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         }
         val slot = execution.slots().first { it.id() == execution.selectedSlotId() }
         val source = execution.source()
-        val preserved =
+        val authored =
             if (source?.kind() == GymExecution.SourceKind.PROGRAMME)
+                programming.programme(source.id(), source.revision())?.settings()
+            else null
+        val preserved =
+            if (source?.kind() == GymExecution.SourceKind.PROGRAMME && authored == null)
                 programmes.version(source.id(), source.revision())?.settings()
             else null
-        val available = initialSwapEquipment(preserved?.equipment() ?: emptySet())
+        val available =
+            authored?.equipment() ?: initialSwapEquipment(preserved?.equipment() ?: emptySet())
         val prepared =
             GymSwapState(
                 execution.id(),
                 slot.id(),
                 slot.exercise(),
-                preserved?.goal() ?: GymProgramme.Goal.GENERAL,
-                preserved?.experience() ?: GymProgramme.Experience.BEGINNER,
+                authored?.goal() ?: preserved?.goal() ?: GymProgramme.Goal.GENERAL,
+                authored?.experience()
+                    ?: preserved?.experience()
+                    ?: GymProgramme.Experience.BEGINNER,
                 available,
-                if (preserved != null)
+                if (authored != null || preserved != null)
                     "Based on this workout's preserved programme settings. Check which equipment is available for this swap."
                 else
                     "No preserved programme preferences are available. General-fitness and beginner-compatible alternatives are shown; choose the equipment available for this swap.",

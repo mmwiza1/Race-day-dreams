@@ -7,6 +7,7 @@ import org.racedaydreams.domain.activity.ActivityRecord;
 import org.racedaydreams.domain.coaching.*;
 import org.racedaydreams.domain.strength.StrengthSession;
 import org.racedaydreams.domain.strength.GymProgramme;
+import org.racedaydreams.domain.strength.StrengthProgramme;
 
 /** Labelled calendar entries. A blank date is never sufficient evidence of rest. */
 public final class CalendarData {
@@ -25,6 +26,21 @@ public final class CalendarData {
             out.removeIf(e->e.category()==Category.REST);
             // Actual completion requires an explicit preserved link, not merely a gym visit that day.
             if(!actualByPrescription.containsKey(s.id()))out.add(new Entry(Category.STRENGTH,date.isBefore(today)?State.NOT_COMPLETED:State.PLANNED,s.title()+" · programmed strength",s.id(),null));
+        }
+        return Immutable.copyList(out);
+    }
+    /** Authored slots remain frozen; actual completion still requires an explicit valid link. */
+    public static List<Entry> withAuthoredGym(LocalDate date, LocalDate today, List<Entry> original,
+            StrengthProgramme programme, Map<String,String> actualByPrescription) {
+        if (programme == null || date.isBefore(programme.start()) || date.isAfter(programme.end())) return original;
+        var out = new ArrayList<Entry>();
+        for (var entry : original)
+            if (!(entry.category() == Category.STRENGTH && entry.state() == State.PLANNED && entry.label().equals("Strength routine"))) out.add(entry);
+        for (var workout : programme.workouts()) if (workout.date().equals(date)) {
+            out.removeIf(entry -> entry.category() == Category.REST);
+            if (!actualByPrescription.containsKey(workout.id())) out.add(new Entry(Category.STRENGTH,
+                    date.isBefore(today) ? State.NOT_COMPLETED : State.PLANNED,
+                    workout.definition().title() + " · programmed strength", workout.id(), null));
         }
         return Immutable.copyList(out);
     }

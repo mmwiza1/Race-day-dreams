@@ -120,3 +120,19 @@ coordinator. Display-clock observations now run only for unfinished displayed se
 reopening a finished workout must not let a later empty coordinator tick remove its review.
 The original UI test forces that real tick while the confirmation is open. This production
 fix addresses the reappearing API35 failure after the earlier appearance-wait-only repair.
+
+## Authored current-programme integration
+
+The current typed revision now projects into Strength Today, the hybrid Home summary,
+programme/block/workout details, calendar entries and Gym Now's planned-session list.
+Optional rest and fractional RIR are displayed directly from frozen slots. Dates use the
+existing UK presentation. The calendar suppresses a duplicate planned entry only after
+an explicit valid actual/prescription link; a spontaneous gym visit is not completion.
+
+Planned start compares the displayed programme identity/revision with the typed current
+pointer and refreshes a stale selection rather than silently changing targets. Execution,
+actual entry, pause/recovery and finalisation still use the original Gym Now coordinator.
+Equipment-busy alternatives resolve the started authored version's goal, experience and
+specific equipment capabilities. Today-only swaps clear incompatible reference loads and
+preserve the original prescription/source. The programme builder and activation/editing
+controls remain the next application phase; this integration does not activate previews.

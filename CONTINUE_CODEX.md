@@ -11,6 +11,71 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
+## LIVE current phase — authored current-programme integration, full CI next
+
+- Branch feature/0.10-strength-programming; PR15 remains OPEN/DRAFT. Main c6299e2.
+- Parent65340a86057bc647ca78ac746498fb286f25e160 is the canonical-capture bot from
+  source52e2f9b/workflow40865813724: **364tests/API28,35,36 all green**, formatting,
+  guidance and91canonical captures. The prior association race is fixed. These results
+  certify that source, not the newer integration below.
+- New phase is staged for a coherent code checkpoint. Preserve all staged/unstaged work;
+  inspect actual log/status on continuation. No reset/recreation. Final combined build
+  authored-current-build.log PASSED :domain:check, app build, AndroidTest build and lint
+  in6m55s.588,069domain checks/33suites (Today58checks),60schema,9release-note,
+  11Dream source,14artwork,14formatter-harness,8capture-validator tests; pinned formatting
+  59Kotlin/106Java; strict174canonical+14routine guides/177original assets all pass.
+- Gym Now now resolves typed current owner/revision, lists authored workouts, starts
+  exact preserved nullable/RIR/reference targets through the SAME native coordinator,
+  rejects/refreshed stale selection, and uses started authored settings for substitutions.
+- CoachSnapshotReader injects typed current repository on IO. Authored StrengthTodaySummary
+  preserves exact targets and explicit retained-version adherence/progression context.
+  Strength Today, hybrid Home, read-only programme/block/workout details and calendar
+  display authored programmes. No coercion into fake legacy integer-RPE prescriptions.
+- New AuthoredGymNowScreenTest has6cases: exact planned actual60-vs-reference80, stale
+  selection, preserved busy-equipment context/today-only swap, paused recreation without
+  duplicate sets/auto-resume, normal Today/details, dark200% Today/details. All6passed.
+- Focused local13selection reached **11passes** including all6new +2existingToday +3GymNow.
+  Android SYSTEM aborted in existing openWorkoutSavesOnlyEnteredActualsAndPauseRequiresExplicitResume;
+  final2cases incomplete. Do NOT claim13/13. Log authored-current-api28.log.
+  Frozen prior-source103selection similarly aborted after101passes. Direct SwiftShader /
+  Vulkan-disabled pinned37.2.12 had passed isolated5case class, but does NOT establish
+  long-suite stability. Full accelerated API28/35/36 CI is required for this checkpoint.
+  No test deadline/assertion/watchdog changed. Host OOM counters remain0. The first
+  installation attempt found no package service after a system crash; emulator was
+  restarted and boot/package readiness verified before the actual13case selection.
+- APK0.10.0-test1/code13:53,635,997bytes, SHA256
+  cc3ea418011088b52809c408a96530b418dfbb33b7870d726ceb2a10ee2ac843. Binary manifest has
+  no INTERNET permission. Schema14/rootJSON9/strengthProgramming1/raw2/complete1 unchanged
+  by this integration. No new dependency/artwork/catalogue/0.11 feature. No physical checks.
+- Logs, build/runner scripts and recovery patch/new-file tar under /workspace/scratch/rdd010.
+  The user repeated continuation while the final local cases were running; this was
+  steering to keep working, NOT permission to discard/restart.
+
+### Immediate next steps (authoritative)
+
+1. Commit/push this tested source checkpoint and these exact verification notes. Inspect
+   new full CI (expected370instrumentation cases/API; verify ACTUAL counts). Fix actual
+   failures, not the prior source's already-fixed failures. Keep PR15 DRAFT regardless of
+   checkpoint green. Adopt canonical capture bot without discarding local feature work.
+2. Continue feature-owned authoring orchestration + phone builder/template/generated preview,
+   persisted drafts and explicit activation. Next files: new strength/StrengthProgrammeViewModel.kt,
+   StrengthProgrammeBuilderScreen.kt, template/preview components and strengthGraph wiring.
+   Use typed repository and SavedState only for draft IDs/small inputs, no Binder-sized JSON.
+   Do NOT flatten generated dated/week-specific/hybrid prescriptions into one repeating
+   draft week silently: StrengthProgrammeDraft has repeating Day definitions per block;
+   preserve concrete generated previews when editing/confirming, explain structural changes.
+3. Add safe future-only edit/regeneration, modest custom metadata UI (existing UUID custom
+   definitions must retain history; no fake guidance), permanent-vs-today swaps with immutable
+   versions/provenance and cleared incompatible references, and optional conservative modality
+   target proposals. Review typed version-history presentation through the activated workflow.
+4. Complete simulator quality issues honestly (beginner Power catalogue gap remains), full
+   backup/migration/current+older/large history gates, authentic new builder/template/block/
+   custom/permanent-swap captures, light/dark200%/TalkBack and release docs. No0.11 scope.
+   Full agreed0.10 criteria are NOT done. Do not merge or mark ready early.
+
+All following checkpoint sections are historical context; this live section overrides stale
+pending/uncommitted/source claims below. Preserve the full remaining scope near the end.
+
 ## LIVE checkpoint — authored associations + production ticker fix; full CI required
 
 - Latest code: `9c6d24165d0571d871744443e04a897a17403d2d` (exact authored Count/Keep).
@@ -223,8 +288,8 @@ Failures were investigated and corrected, not hidden:
 
 ## Remaining agreed0.10 scope (ALL still required where not completed above)
 
-1. Complete current authored programme display and unified Gym Now planned start/source
-   context/Today/history. Exact explicit authored associations are implemented above. Preserve exact legacy
+1. Current authored display/Gym Now planned start/source context/Today/calendar are integrated
+   in the live checkpoint; finish full CI and review typed version/history navigation through activation. Exact explicit authored associations are implemented above. Preserve exact legacy
    versions and existing today-only substitutions; no incompatible target/load transfer.
 2. Feature-scoped authoring coordinator/ViewModel and full phone-usable builder: name,
    goal, duration/blocks, frequency/days, equipment, workout names/notes, exercises/order,

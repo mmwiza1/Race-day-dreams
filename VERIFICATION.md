@@ -8,7 +8,41 @@ remain unfinished. Passing this checkpoint is not0.10 release acceptance.
 
 Verified implementation source: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`.
 
-## Later association/ticker checkpoint —9c6d241, full matrix pending
+## Association/ticker full matrix — verified after the earlier failures
+
+Source52e2f9b passed workflow40865813724, including **364 instrumentation tests on each
+of API28, API35 and API36**, formatting, guidance and canonical screenshots. The previous
+terminal-review race and stale backup8 assertion are fixed in production/tests. Bot65340a8
+adopted91authentic captures without discarding local feature work. PR15 remains draft.
+These results certify the association/durability source, not the later integration below.
+
+## Authored current-programme integration — final build passed; local Android system abort documented
+
+The current phase connects typed authored programmes to Gym Now, Today/hybrid Home,
+programme/block/workout details and calendar entries. Exact nullable/fractional targets
+stay distinct from legacy prescriptions. Planned start rejects a changed displayed revision;
+substitutions use the started source's preserved settings. No actuals are prefilled.
+
+The final combined :domain:check / :app:assembleDebug / :app:assembleDebugAndroidTest /
+:app:lintDebug gate PASSED in6m55s. **588,069domain assertions/33suites**,60schema,
+9release-note,11Dream source,14artwork,14formatter-harness and8capture-validator cases
+pass. Pinned formatting59Kotlin/106Java passes; strict174canonical/14routine guide audit
+passes,177bundled original assets intact. No schema/envelope/archive/dependency/permission
+change in this phase. Built APK0.10.0-test1/code13 is53,635,997bytes, SHA256
+cc3ea418011088b52809c408a96530b418dfbb33b7870d726ceb2a10ee2ac843; binary manifest inspected,
+no INTERNET permission.
+
+Focused13-case API28 integration selection completed **11passes**: all6new authored UI
+cases,2retainedToday and3retainedGymNow. Android's SYSTEM then aborted in the existing
+openWorkoutSavesOnlyEnteredActualsAndPauseRequiresExplicitResume case; final2cases are
+incomplete. This is NOT13/13. Log authored-current-api28.log. The frozen prior-source
+long103selection also aborted after101passes. The direct software renderer had passed
+an isolated5case class but did not establish long-suite stability. Host OOM counters0.
+After the first crash package service was absent; emulator was restarted and boot/package
+readiness verified before the13case selection. No deadline/assertion/watchdog changed.
+Require the new source's full accelerated API28/35/36 matrix before phase acceptance.
+
+## Historical association/ticker local checkpoint — superseded by full matrix above
 
 Source95cefc0 fixes a production terminal-display race: a clock tick could replace a
 reopened finished workout with an empty coordinator projection, removing its review.
