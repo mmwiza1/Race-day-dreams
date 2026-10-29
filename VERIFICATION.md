@@ -3,10 +3,35 @@
 Branch `feature/0.10-strength-programming` / draft PR15, based on mainc6299e2.
 The recovered typed durability phase adds schema14 / JSON9 (read1–8), strengthProgramming1;
 strengthEngine2 / strengthState2 / raw2 / complete1 are unchanged. The full programme
-builder, template/activation/regeneration screens and modern spontaneous-association UI
+builder, template/activation/regeneration screens and current-programme/authoring UI
 remain unfinished. Passing this checkpoint is not0.10 release acceptance.
 
 Verified implementation source: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`.
+
+## Later association/ticker checkpoint —9c6d241, full matrix pending
+
+Source95cefc0 fixes a production terminal-display race: a clock tick could replace a
+reopened finished workout with an empty coordinator projection, removing its review.
+The existing UI test now invokes that real tick while the confirmation is open, retaining
+all original assertions/deadlines. PrimaryFocus backup assertion now correctly requires9.
+Source9c6d241 adds exact authored Count/Keep and decision2/read1 with strict frozen sources,
+transactional acceptance/reversal and backup validation; no schema/root-envelope bump.
+
+588,049domain assertions/33suites,60schema, pinned formatting57Kotlin/106Java,9release-note,
+app/test builds and lint pass. Local API28 selection reached101passing cases, including
+all new repo/JSON and light/dark200% authored reviews and the strengthened original
+association test. Android's system process then aborted during the final2GymNow UI cases:
+SurfaceControl.finalize timed out10seconds in nativeRelease (FinalizerWatchdogDaemon).
+The issue reproduced in an isolated class after aligning with CI's pinned37.2.12 emulator;
+that rerun passed3of5before the same system abort. No complete103/103pass or new full matrix
+pass is claimed. Host OOM counters remain0; root renderer/TCG cause beyond the native
+system stack is not established. Watchdogs/tests remain enabled. Persistent logs under
+/workspace/scratch/rdd010 record both runs and the crash evidence.
+
+The previous915f8b7 full workflow40856845725 failed only the stale PrimaryFocus8-vs9
+assertion on APIs28/36, plus the terminal-review race on35. Those failures were inspected;
+the new source needs its own accelerated28/35/36 matrix. PR15 stays draft, builder and
+current-programme UI integration remain incomplete. No physical S24 claims.
 
 ## Observed local final-source gate — 29 October2026
 

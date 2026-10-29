@@ -11,6 +11,84 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
+## LIVE checkpoint — authored associations + production ticker fix; full CI required
+
+- Latest code: `9c6d24165d0571d871744443e04a897a17403d2d` (exact authored Count/Keep).
+- Preceding production fix: `95cefc05c188c8dc031da448b3fdb5d9fec61351` (terminal display
+  ticker + deterministic original UI regression + PrimaryFocus backup9 assertion).
+- Prior verified durability:974a349, handoff915f8b7. PR15 remains DRAFT. No merge.
+- These two new code commits compile and have the results below. They are being pushed
+  with this documentation checkpoint; inspect actual remote HEAD/CI, not stale notes.
+
+### Why the prior matrix failed and what changed
+
+Source915f8b7 workflow40856845725 FAILED after354cases/API: API28/36 each had one
+PrimaryFocusRepositoryTest stale8-vs9 assertion. API35 also lost the second association
+confirmation AFTER readiness/display, at helper127 assertIsEnabled.
+
+Root code review identified a production race: openCompleted creates an empty coordinator
+and keeps terminalView for display; a later coordinator.observe tick replaced that finished
+projection with empty state, unmounting the review/dialog. GymNowViewModel.observeWorkoutTime
+now only observes an unfinished displayed session under the existing mutex/busy checks.
+The original GymAssociationScreenTest forces that REAL tick while each dialog is open.
+All20sec/display/enabled/Count/Keep/history assertions remain. PrimaryFocus asserts9.
+The earlier appearance-wait repair's green0483c96 run was not a permanent root-cause proof.
+
+### New association implementation — preserve it
+
+- Proposal preserves exactly one family: legacy Session OR authored Workout. The original
+  six-argument constructor/readers remain; shared sessionId/date/title/count/review helpers
+  preserve the exact frozen source. authoredProposals/acceptance require a nearby exact
+  working task, correct current version and free target. No automatic association.
+- GymAssociationJson writes authored decision2 and reads legacy1. Strict cross-family,
+  future/unknown/coerced fields reject. StrengthProgrammingJson shares its frozen-workout
+  codec instead of duplicating it. Root9/schema14/strengthEngine2 stay unchanged.
+- SqliteGymAssociationRepository current/retained lookups, acceptance/reversal, SQL rollback,
+  projection and backup validation support authored versions. Actual snapshots/history are
+  never rewritten. Actual edits require fresh review while prior decisions remain frozen.
+- GymAssociationCard displays exact nullable/fractional RIR/rest/load references using the
+  shared target description. Existing legacy rendering/tags remain. New light and dark200%
+  Compose reviews and6new repository/2additional JSON cases cover the path.
+
+### Observed checks for9c6d241 (not full release acceptance)
+
+- **588,049 domain assertions/33suites**, association suite658checks.
+- Final domain/build/lint: authored-association-final-build.log, API28-safe fixture rebuild
+  authored-association-api28-fixture-build.log both PASSED.
+- Formatting57Kotlin/106Java,60schema and9release-note cases PASSED.
+- `authored-association-api28.log`:103selected tests reached **101passes**. All new repo /
+  JSON / light+dark200% review cases, PrimaryFocus correction and original association
+  test with forced clock ticks passed. Android then aborted during GymNowScreenTest.
+  openWorkoutSavesOnlyEnteredActualsAndPauseRequiresExplicitResume; final2cases incomplete.
+  No test assertion failed before the abort. Do NOT claim103/103passed.
+- Local emulator was aligned from37.3.6 to CI-pinned37.2.12/build16428233 (verified archive
+  SHA1cd7362ea55dfb86a418958138dc396e74165dd01). Isolated5-case GymNow rerun passed3then
+  hit the SAME system abort in that method, so binary alignment alone did not resolve it.
+- Root diagnostic `pinned-system-crash.log` contains Android SYSTEM PROCESS stack:
+  FinalizerWatchdogDaemon, SurfaceControl.finalize timed out10seconds in nativeRelease.
+  Host cgroup has NO OOM. This is a system graphics-finalizer abort, not an app assertion;
+  the underlying renderer/TCG reason is still not proven. Do not disable watchdogs or tests.
+- Current emulator6017 uses pinned binary/swiftshader_indirect/TCG. Next: inspect actual
+  processes, test a supported software-rendering fallback if useful, while requiring the
+  full accelerated CI API28/35/36 matrix for the new head. CI renderer/matrix remains
+  unchanged. Local103selection must be recorded honestly until completed.
+
+Persistent logs/tools are under `/workspace/scratch/rdd010`: verify-authored-association.py,
+verify-gym-now-pinned.py, authored-association-api28.log, gym-now-pinned.log,
+pinned-system-crash.log and ci408568-summary.txt. Source backups also exist there.
+No new runtime dependency/permission, no S24 checks. Existing79-case persistence source
+974a349 DID complete before its code was committed (historical evidence below).
+
+### Immediate next tasks
+
+1. Fetch/check new pushed source and full CI. Fix actual assertions/root failures, never
+   rerun known-bad915f8b7 expecting success. Keep PR15 draft regardless of checkpoint green.
+2. Complete/localise the software-emulator graphics abort investigation where feasible;
+   require actual accelerated API28/35/36 results. Preserve tests and final source.
+3. Continue current-programme/Gym Now planned-start/source context/Today integration for
+   authored programmes, then full builder/template/activation/regeneration/custom/permanent
+   swaps and conservative modality controls below. No0.11 scope. The full0.10 UI is NOT done.
+
 ## Current recovery boundary — durability checkpoint, NOT release acceptance
 
 - Branch: `feature/0.10-strength-programming`; PR **15 remains DRAFT**.
@@ -99,9 +177,8 @@ Changes:
   includes new normalized rows;32MiB bound retained.
 - Old-schema test fixtures drop14 children before simulating older databases.
 - Added formatter targets and five schema tests. Docs updated for candidate14/9.
-- Modern spontaneous Count/Keep still LEGACY-only. Do not coerce new targets into old
-  GymProgramme.Session. Complete an exact, versioned modern association path before
-  claiming complete user-facing authored-programme integration.
+- Modern spontaneous Count/Keep has since been added in9c6d241 (see live checkpoint).
+  Current-programme display/start and the builder still need complete UI integration.
 
 ## Final observed local verification — 2026-10-29 after environment recovery
 
@@ -138,16 +215,16 @@ Failures were investigated and corrected, not hidden:
    API28/35/36, build/lint/format/domain/schema/source/catalogue and canonical capture gates.
    The prior0483c96 green run does not certify this new schema14/backup9 source. Fix failures
    at root cause, keep PR15 draft, adopt the new capture bot without discarding feature work.
-2. Continue application integration below: exact authored spontaneous Count/Keep without
-   legacy RPE coercion, current-programme/Gym Now/Today display, feature-owned authoring
+2. Continue application integration below: current-programme/Gym Now/Today display,
+   feature-owned authoring
    orchestration, builder/template/preview/activation/regeneration and permanent-swap UI.
 3. Keep this handoff updated at each verified phase. Do not start0.11, merge prematurely,
    relabel this checkpoint as a complete release or stop just because one gate is green.
 
 ## Remaining agreed0.10 scope (ALL still required where not completed above)
 
-1. Complete application integration for authored sources, explicit associations, current
-   programme display and unified Gym Now start/recovery/history. Preserve exact legacy
+1. Complete current authored programme display and unified Gym Now planned start/source
+   context/Today/history. Exact explicit authored associations are implemented above. Preserve exact legacy
    versions and existing today-only substitutions; no incompatible target/load transfer.
 2. Feature-scoped authoring coordinator/ViewModel and full phone-usable builder: name,
    goal, duration/blocks, frequency/days, equipment, workout names/notes, exercises/order,

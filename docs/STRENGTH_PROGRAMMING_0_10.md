@@ -60,9 +60,11 @@ generated without real exact-exercise evidence.
 tests verify that starting an authored prescription creates no actual sets.
 
 The Android repository now resolves exact legacy and authored PROGRAMME sources through
-the same execution engine, preserving frozen targets and finalisation links. Modern
-spontaneous Count/Keep association and activation UI are still pending; do not expose
-new start controls until both source families have complete user-facing integration.
+the same execution engine, preserving frozen targets and finalisation links. Reviewed spontaneous Count/Keep now accepts exact authored workouts through the existing
+association coordinator/projection. New decision payload2 retains the frozen definition,
+nullable/fractional RIR and optional rest; legacy decision1 remains readable. Current
+programme display and activation/start UI still need integration before the builder is
+exposed. No legacy RPE approximation is used.
 In particular, do not coerce optional/null/fractional effort into fake legacy RPE values.
 
 `StrengthTargetProgression` supplies optional domain proposals. It requires two distinct,
@@ -103,3 +105,18 @@ Current local checks: 587,615 domain assertions across 33 suites; 60 schema case
 duration, primary balance, controlled power volume, support roles, determinism and
 weekday boundaries. See VERIFICATION.md and CONTINUE_CODEX.md for exact CI state.
 No physical Galaxy S24 acceptance is claimed.
+
+## Association and terminal display hardening
+
+The association proposal carries exactly one preserved family (legacy Session or authored
+Workout). Discovery requires a nearby date and an exact working measurement task in common;
+it never implies that every prescribed set was completed. Current-version and occupied-target
+checks happen inside the acceptance transaction. Keeping extra can retain or reverse an old
+review without rewriting actuals or prescriptions. Backup validation checks each family
+against its exact retained version, including the original snapshot after later actual edits.
+
+Completed-workout history is a terminal projection, independent of an active execution
+coordinator. Display-clock observations now run only for unfinished displayed sessions;
+reopening a finished workout must not let a later empty coordinator tick remove its review.
+The original UI test forces that real tick while the confirmation is open. This production
+fix addresses the reappearing API35 failure after the earlier appearance-wait-only repair.

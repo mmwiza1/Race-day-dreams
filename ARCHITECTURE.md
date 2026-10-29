@@ -11,8 +11,10 @@ activation/stop decisions, fresh completed-session protection and immutable vers
 one write transaction. Legacy and authored planned executions use the same source validator
 and GymExecutionEngine. Logging-name edits keep typed custom metadata and its mirror atomic.
 Backup graph validation precedes transactional replacement; envelopes1–8 remain readable,
-raw2/complete1 unchanged. Builder/activation UI and modern spontaneous Count/Keep remain
-unfinished. Do not expose modern controls before completing the full integration.
+raw2/complete1 unchanged. Reviewed modern spontaneous Count/Keep uses exact authored snapshots and decision payload2,
+with legacy1 readers. Builder/activation and current-programme UI integration remain
+unfinished. Completed history is a terminal projection; unfinished-only clock observations
+must not replace it with an empty coordinator view.
 See docs/STRENGTH_PROGRAMMING_0_10.md and CONTINUE_CODEX.md for current scope and gates.
 
 The following sections record the preserved completed0.9 architecture.

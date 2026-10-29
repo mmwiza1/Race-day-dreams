@@ -13,6 +13,8 @@ programme builder is not yet connected to the application.
 
 ## Improvements
 
+- Reviewed extra-workout associations retain exact authored targets, including optional
+  effort/rest and fractional RIR, while reading old legacy decisions.
 - Programme proposals can validate future-only changes without rewriting completed
   prescriptions. Permanent-substitution proposals reuse existing exclusion,
   equipment and intent rules and discard incompatible load references.
@@ -22,8 +24,9 @@ programme builder is not yet connected to the application.
 - Dream artwork publication now distinguishes pending loading from unavailable
   illustrations and keeps readiness tied to the current city. The strict screenshot
   deadline remains unchanged; new fault-injection tests and API verification are required.
-- Association confirmation tests now wait for the real enabled dialog before either
-  reviewed choice; all explicit-association and immutable-history assertions remain.
+- Saved gym-workout reviews remain stable across display-clock ticks. Reopening a completed
+  workout no longer lets an empty active coordinator remove its confirmation dialog.
+  The regression forces that real tick and retains all explicit-choice/history assertions.
 - Existing 0.9 fixes and evidence-preservation contracts are retained.
 
 ## Known limitations
