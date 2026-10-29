@@ -6,6 +6,8 @@ strengthEngine2 / strengthState2 / raw2 / complete1 are unchanged. The full prog
 builder, template/activation/regeneration screens and modern spontaneous-association UI
 remain unfinished. Passing this checkpoint is not0.10 release acceptance.
 
+Verified implementation source: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`.
+
 ## Observed local final-source gate — 29 October2026
 
 - **587,615 domain assertions /33 suites**, including2,430programme configurations.

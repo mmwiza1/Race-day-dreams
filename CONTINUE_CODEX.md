@@ -14,11 +14,13 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
 ## Current recovery boundary — durability checkpoint, NOT release acceptance
 
 - Branch: `feature/0.10-strength-programming`; PR **15 remains DRAFT**.
+- Latest verified source checkpoint: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`
+  (`Persist versioned strength programmes and transactional authoring backups`).
 - Implementation parent: `df4d9ffa5b9a693981da841899aef0074f8bfe1c` (91canonical captures
   from0483c96). Main remains `c6299e2401525197260f69c6918c89794cfa4c3d`.
 - The interrupted schema14 / typed repository / backup9 work SURVIVED. No reset/discard
-  occurred. The verified durability checkpoint is being committed afterdf4d9ff; inspect
-  actual git log/current PR gates before proceeding. Do not recreate these source files.
+  occurred. The verified durability checkpoint is committed; inspect actual git log/current
+  PR gates before proceeding. Do not recreate these source files.
 - Version **0.10.0-test1 / code13**, schema **14**, JSON envelope **9** (reads1–8),
   strengthProgramming1. strengthEngine2 / strengthState2 / raw2 / complete1 unchanged.
 - The environment restarted again during verification. Source, tools and build outputs
@@ -36,7 +38,7 @@ enabled before clicking BOTH confirmations. All actual/history/association asser
 Source `0483c96` **passed FULL workflow40786866429**, all API28/35/36 jobs, formatting,
 source/domain/schema/guidance and canonical capture job. Bot `df4d9ff` adopted91captures.
 No assertion/time limit was weakened and the failed test was not blindly rerun.
-These results certify that pushed source, not the uncommitted persistence changes.
+These results certify that pushed source, not the later persistence checkpoint.
 
 ## Completed committed0.10 foundation — preserve it
 
