@@ -123,10 +123,32 @@ class AuthoredGymNowScreenTest {
         assertEquals(programme(1).settings().equipment(), choices.equipment)
         assertTrue(choices.suggestions.isNotEmpty())
         val original = execution()!!
-        val replacement = choices.suggestions.first().exercise()
+        // Ranking order is not a measurement contract. Exercise both supported paths explicitly.
+        val replacement =
+            choices.suggestions.first { it.exercise().id() == "dumbbell-bench-press" }.exercise()
+        assertEquals(original.slots().single().exercise().measurement(), replacement.measurement())
         compose.runOnIdle { model.replaceForToday(replacement) }
         await { execution()!!.slots().single().exercise() == replacement }
-        assertNull(execution()!!.slots().single().target().referenceLoadKg())
+        val compatibleTarget = execution()!!.slots().single().target()
+        assertNotNull(compatibleTarget)
+        assertEquals(original.slots().single().target().withoutLoadReference(), compatibleTarget)
+        assertNull(compatibleTarget!!.referenceLoadKg())
+        compose.runOnIdle {
+            model.openSubstitutions(ExerciseSubstitutionEngine.Reason.EQUIPMENT_BUSY)
+        }
+        await { model.state.value.substitution != null }
+        val bodyweight =
+            model.state.value.substitution!!
+                .suggestions
+                .first { it.exercise().id() == "push-up" }
+                .exercise()
+        assertNotEquals(replacement.measurement(), bodyweight.measurement())
+        compose.runOnIdle { model.replaceForToday(bodyweight) }
+        await { execution()!!.slots().single().exercise() == bodyweight }
+        assertNull(
+            "An incompatible measurement must not inherit a load/repetition task",
+            execution()!!.slots().single().target(),
+        )
         assertEquals(original.prescription(), execution()!!.prescription())
         assertEquals(original.source(), execution()!!.source())
         assertTrue(execution()!!.actualSets().isEmpty())

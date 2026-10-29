@@ -3,8 +3,8 @@
 Branch `feature/0.10-strength-programming` / draft PR15, based on mainc6299e2.
 The recovered typed durability phase adds schema14 / JSON9 (read1–8), strengthProgramming1;
 strengthEngine2 / strengthState2 / raw2 / complete1 are unchanged. The full programme
-builder, template/activation/regeneration screens and current-programme/authoring UI
-remain unfinished. Passing this checkpoint is not0.10 release acceptance.
+builder, template/activation/regeneration and authoring controls remain unfinished.
+Current-programme read/execution paths are integrated in the later checkpoint below. Passing this checkpoint is not0.10 release acceptance.
 
 Verified implementation source: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`.
 
@@ -18,7 +18,7 @@ These results certify the association/durability source, not the later integrati
 
 ## Authored current-programme integration — final build passed; local Android system abort documented
 
-The current phase connects typed authored programmes to Gym Now, Today/hybrid Home,
+Source5b80852d8c1f98de99f514c13552b9c5cea4250e connects typed authored programmes to Gym Now, Today/hybrid Home,
 programme/block/workout details and calendar entries. Exact nullable/fractional targets
 stay distinct from legacy prescriptions. Planned start rejects a changed displayed revision;
 substitutions use the started source's preserved settings. No actuals are prefilled.
@@ -40,7 +40,19 @@ long103selection also aborted after101passes. The direct software renderer had p
 an isolated5case class but did not establish long-suite stability. Host OOM counters0.
 After the first crash package service was absent; emulator was restarted and boot/package
 readiness verified before the13case selection. No deadline/assertion/watchdog changed.
-Require the new source's full accelerated API28/35/36 matrix before phase acceptance.
+Workflow40927512770 completed370tests on EACH of API28/35/36. Each API had ONE test
+error at AuthoredGymNowScreenTest129: the test selected the first ranked alternative and
+assumed its task remained non-null. A changed measurement correctly clears the task.
+All other369cases/API passed; formatting/guidance/build/lint passed and canonical capture
+publication was correctly skipped.
+
+The follow-up test explicitly exercises both contracts: Dumbbell Bench Press preserves
+its complete task except the load reference; Push-Up has a different measurement and
+must clear the whole task. Non-null/equality/cleared-reference and source/actual/history
+assertions remain or are strengthened. No deadline/assertion/watchdog was weakened.
+The correction's complete domain/app/test APK/lint gate passed in2m21s, pinned formatting
+passed, and the corrected real API28 case passed1/1 in53.513s. App APK hash/size is unchanged.
+New full API28/35/36 verification is still required for that corrected source.
 
 ## Historical association/ticker local checkpoint — superseded by full matrix above
 

@@ -11,19 +11,38 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## LIVE current phase — authored current-programme integration, full CI next
+## LIVE checkpoint — authored integration + verified substitution-test correction
 
 - Branch feature/0.10-strength-programming; PR15 remains OPEN/DRAFT. Main c6299e2.
 - Parent65340a86057bc647ca78ac746498fb286f25e160 is the canonical-capture bot from
   source52e2f9b/workflow40865813724: **364tests/API28,35,36 all green**, formatting,
   guidance and91canonical captures. The prior association race is fixed. These results
   certify that source, not the newer integration below.
-- New phase is staged for a coherent code checkpoint. Preserve all staged/unstaged work;
-  inspect actual log/status on continuation. No reset/recreation. Final combined build
+- Implementation committed/pushed:5b80852d8c1f98de99f514c13552b9c5cea4250e.
+  Workflow40927512770 completed370tests/API28,35,36: EACH had ONE failure in the new
+  busy-equipment test (NPE at line129); all other369cases/API passed. Format/guidance/build/
+  lint passed. Canonical capture publication was correctly skipped. Do NOT rerun this
+  known-bad source unchanged or report it green.
+  Preserve local/remote work; no reset/recreation. Final combined build
   authored-current-build.log PASSED :domain:check, app build, AndroidTest build and lint
   in6m55s.588,069domain checks/33suites (Today58checks),60schema,9release-note,
   11Dream source,14artwork,14formatter-harness,8capture-validator tests; pinned formatting
   59Kotlin/106Java; strict174canonical+14routine guides/177original assets all pass.
+- Root cause was a test assumption: suggestions.first() need not use the same measurement
+  profile. A bodyweight alternative legitimately clears the whole task, so dereferencing
+  target.referenceLoadKg was invalid. Production engine behaviour is correct. The follow-up
+  test explicitly selects Dumbbell Bench Press and asserts its complete target equals the
+  original without the load reference (including non-null target and retained fractional
+  RIR/rest). It then selects Push-Up, asserts a DIFFERENT measurement and a cleared task.
+  Original prescription/source/current version/actual/history assertions remain. No timeout
+  or assertion was weakened; both safety branches are now covered regardless of rank order.
+- Correction source passed full domain/app/test APK/lint gate in2m21s
+  (authored-swap-fix-build.log), pinned formatting59Kotlin/106Java, and the exact corrected
+  real Android API28 case **1/1 PASSED53.513s** (authored-swap-fix-api28.log). Fresh emulator
+  boot/package readiness verified first. App APK hash/size unchanged; test APK SHA256
+  4d4280c65a6b742745f5ba2535c9862fba9d90159102300ef5773ac701179ca3.
+  This follow-up must be committed/pushed and receive a NEW full matrix; the full0.10 scope
+  remains unfinished. Inspect actual HEAD/CI on continuation before any changes.
 - Gym Now now resolves typed current owner/revision, lists authored workouts, starts
   exact preserved nullable/RIR/reference targets through the SAME native coordinator,
   rejects/refreshed stale selection, and uses started authored settings for substitutions.
@@ -53,9 +72,9 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
 
 ### Immediate next steps (authoritative)
 
-1. Commit/push this tested source checkpoint and these exact verification notes. Inspect
-   new full CI (expected370instrumentation cases/API; verify ACTUAL counts). Fix actual
-   failures, not the prior source's already-fixed failures. Keep PR15 DRAFT regardless of
+1. Verify the pushed follow-up substitution-test correction and its NEW full workflow
+   (370cases/API expected). Workflow40927512770 is a known370-case/one-failure matrix,
+   corrected as above; do not blindly rerun that old source. Fix actual new failures. Keep PR15 DRAFT regardless of
    checkpoint green. Adopt canonical capture bot without discarding local feature work.
 2. Continue feature-owned authoring orchestration + phone builder/template/generated preview,
    persisted drafts and explicit activation. Next files: new strength/StrengthProgrammeViewModel.kt,
