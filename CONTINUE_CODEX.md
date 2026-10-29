@@ -11,6 +11,62 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
+## FINAL VERIFIED LIVE checkpoint — authored read/execution integration complete; builder next
+
+- Code sourceae92cdf52c47773b8d701890d04b140a39e9cbb6 passed COMPLETE workflow40931917209:
+  **370instrumentation tests/API28 +370/API35 +370/API36**, build/lint/domain/schema/release/
+  formatting/guidance and canonical capture publication all GREEN. Actual job logs checked,
+  not inferred. No physical S24 checks. PR15 remains OPEN/DRAFT; full0.10 is NOT complete.
+- App integration source5b80852 plus test correctionae92cdf are committed/pushed. Capture
+  bot087cf7fceea1f99217c4dcfb12007cf8abe0bc92 produced91authentic current-source captures.
+  Local notes-only3feda66 and bot were merged normally asd0c6af2, preserving BOTH histories;
+  no reset/rebase/force-push. Later notes commits do not change tested app source. Inspect
+  actual HEAD/status/remote/latest CI on continuation before touching anything.
+- docs/screenshots/source-commit.txt=ae92cdf. Source fingerprint
+  d6e50d86bf26b4609803aa0c79dba69a4b854b28981cc0fb663fda038a5f2628 matches current code.
+  Opened actual gym-now, gym-workout-dark and strength-home-large-font captures: readable
+  controls and natural scrolling at200%; these are retained-flow captures, NOT a visual
+  acceptance claim for the still-unbuilt programme builder/new authored screen captures.
+- Verified API35 APK artifact12924280621 (Race-Day-Dreams-0.10.0-test1-debug-api-35),
+  screenshot artifact12923732253, both workflow40931917209. Download through that run.
+  No stable release tag/merge/publication. Main remainsc6299e2. App0.10.0-test1/code13,
+  schema14/rootJSON9/strengthProgramming1/strengthEngine2/strengthState2/raw2/complete1.
+- Completed this phase: typed current owner/revision -> Gym Now planned list/start, stale
+  selection rejection/refresh, exact started-source substitution preferences; SAME native
+  coordinator, no prefilled actuals. Authored Today/hybrid Home/programme/block/workout
+  read paths and calendar completion semantics preserve exact nullable/fractional targets.
+  Six real new UI cases +20new domain checks; full370matrix includes all retained tests.
+- Local build/lint and588,069domain assertions/33suites;60schema/9release/strict174canonical
+  +14routine guides; formatting59Kotlin/106Java all pass. Corrected busy-equipment case
+  separately passed real local API28 1/1 in53.513s. Local long software suites still had
+  SYSTEM graphics aborts (103selection101passes;13selection11passes), NOT asserted app
+  failures or complete passes. Full accelerated CI above supplies complete source coverage.
+  No watchdog, assertion or deadline was weakened. Details/log paths in historical section.
+
+### Next work — continue full agreed0.10, do NOT restart completed foundations
+
+1. Inspect actual notes/capture merge HEAD and latest CI. Current app source is verified;
+   do not rerun old failed5b80852 or recreate its code. Keep PR15 draft.
+2. Implement feature-owned authoring VM/coordinator and complete phone builder/template/
+   generated-preview/draft/activation workflow. Exact next files: new
+   coach/strength/StrengthProgrammeViewModel.kt, StrengthProgrammeBuilderScreen.kt,
+   template/preview components, strengthGraph wiring; reuse typed repository/domain rules
+   and existing target editor/parser rather than duplicate execution. SavedState holds IDs
+   and small form values only. No Binder-sized programme JSON.
+3. Preserve concrete generated week/date/phase/hybrid variation; do not silently flatten
+   it into one repeated draft week. Add future-only edits/regeneration, explicit activation,
+   permanent-vs-today substitutions with durable revision/provenance, modest custom metadata
+   entry (legacy UUID history retained; no fake guides), conservative optional modality
+   target proposals and typed version/history navigation.
+4. Complete actual builder/template/block/custom/permanent-swap screenshots and light/dark/
+   200%/TalkBack review, current/older/large backup/rollback gates and final full release CI.
+   Resolve/document genuine generator/catalogue gaps honestly (beginner Power gap remains).
+   No0.11 timers/warm-up ramps/supersets/nutrition/dashboards/achievements/deload/advanced
+   hybrid/catalogue growth for breadth. Full acceptance and merge are NOT authorised yet.
+
+Persistent logs/recovery tools: /workspace/scratch/rdd010. All following sections are
+historical checkpoint detail; this verified live section overrides pending/source claims.
+
 ## LIVE checkpoint — authored integration + verified substitution-test correction
 
 - Branch feature/0.10-strength-programming; PR15 remains OPEN/DRAFT. Main c6299e2.

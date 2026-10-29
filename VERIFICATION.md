@@ -8,6 +8,27 @@ Current-programme read/execution paths are integrated in the later checkpoint be
 
 Verified implementation source: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`.
 
+## Verified authored integration checkpoint —ae92cdf
+
+[Workflow40931917209](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40931917209)
+PASSED: **370tests on EACH API28/35/36**, formatting, guidance, domain/schema/release,
+app/test build, lint and canonical screenshot publication. Actual completed counts were
+read from all three job logs. This is the source-bound integration checkpoint, not complete
+0.10 product acceptance. PR15 stays draft; builder/activation/edit/regeneration/custom/
+permanent-swap/progression UI and their authentic captures remain unfinished.
+
+Capture bot087cf7f adopted91actual screenshots fromae92cdf; a normal merge preserved the
+local notes commit as well. Screenshot source fingerprint matches current app code.
+Gym Now, dark workout and200%Strength Today actual images opened: readable controls,
+content scrolls below the viewport normally. This does not replace new authored/builder
+visual acceptance. API35 APK artifact12924280621 and screenshot artifact12923732253 are
+available in that workflow. No stable tag or main merge; no physical S24 claims.
+
+The earlier5b80852 matrix completed370tests/API but failed ONE test assumption on each
+API. The explicit compatible+incompatible substitution correctionae92cdf passed the
+complete matrix above. Historical local software SYSTEM aborts remain recorded below;
+no partial local selection was relabelled a full pass and no assertion was weakened.
+
 ## Association/ticker full matrix — verified after the earlier failures
 
 Source52e2f9b passed workflow40865813724, including **364 instrumentation tests on each
