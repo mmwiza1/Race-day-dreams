@@ -41,8 +41,12 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
   real Android API28 case **1/1 PASSED53.513s** (authored-swap-fix-api28.log). Fresh emulator
   boot/package readiness verified first. App APK hash/size unchanged; test APK SHA256
   4d4280c65a6b742745f5ba2535c9862fba9d90159102300ef5773ac701179ca3.
-  This follow-up must be committed/pushed and receive a NEW full matrix; the full0.10 scope
-  remains unfinished. Inspect actual HEAD/CI on continuation before any changes.
+  Correction committed/pushed:ae92cdf52c47773b8d701890d04b140a39e9cbb6.
+  New workflow40931917209 is running; inspect actual latest head/workflow on continuation
+  (a subsequent notes-only commit may supersede that run). No new full-matrix pass claimed.
+  Full0.10 remains unfinished. The executor restarted during the first notes update; actual
+  status/log/source were inspected afterwards: both code commits and test logs survived,
+  working tree was clean, interrupted notes changes had NOT run. Only missing notes resumed.
 - Gym Now now resolves typed current owner/revision, lists authored workouts, starts
   exact preserved nullable/RIR/reference targets through the SAME native coordinator,
   rejects/refreshed stale selection, and uses started authored settings for substitutions.
@@ -72,7 +76,7 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
 
 ### Immediate next steps (authoritative)
 
-1. Verify the pushed follow-up substitution-test correction and its NEW full workflow
+1. Verify correctionae92cdf and the latest full workflow (initial correction run40931917209)
    (370cases/API expected). Workflow40927512770 is a known370-case/one-failure matrix,
    corrected as above; do not blindly rerun that old source. Fix actual new failures. Keep PR15 DRAFT regardless of
    checkpoint green. Adopt canonical capture bot without discarding local feature work.

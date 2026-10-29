@@ -52,7 +52,11 @@ must clear the whole task. Non-null/equality/cleared-reference and source/actual
 assertions remain or are strengthened. No deadline/assertion/watchdog was weakened.
 The correction's complete domain/app/test APK/lint gate passed in2m21s, pinned formatting
 passed, and the corrected real API28 case passed1/1 in53.513s. App APK hash/size is unchanged.
-New full API28/35/36 verification is still required for that corrected source.
+Correction sourceae92cdf52c47773b8d701890d04b140a39e9cbb6 is committed/pushed.
+New workflow40931917209 is running; inspect the actual latest head/workflow after notes-only
+commits. No complete new API28/35/36 result or fresh canonical capture is claimed yet.
+An executor restart interrupted a later notes update; subsequent status/log inspection
+confirmed the committed source and persistent verification logs survived unchanged.
 
 ## Historical association/ticker local checkpoint — superseded by full matrix above
 
