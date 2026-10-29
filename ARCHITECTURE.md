@@ -4,9 +4,15 @@ New Android-independent StrengthProgramme/Draft models preserve dated blocks, fr
 GymWorkoutDefinition targets, future-only revision proposals and exact source adaptation
 into the existing GymExecutionEngine. Original generation/templates and task progression
 remain preview policies. StrengthProgrammingJson reuses the strict frozen-workout codec.
-Typed SQL repositories, activation/backup graph integration and builder UI are still
-unfinished; current schema13/backup8 remain unchanged. Do not expose modern sources until
-repository/finalisation/association validation supports them alongside old sources.
+Schema14 / JSON backup9 add a typed authoring repository over the shared helper. Programme
+headers, blocks and bounded session rows are separate; indexed summaries do not hydrate
+session payloads. Normalized detail reads share a transaction snapshot. Draft CAS, explicit
+activation/stop decisions, fresh completed-session protection and immutable versions share
+one write transaction. Legacy and authored planned executions use the same source validator
+and GymExecutionEngine. Logging-name edits keep typed custom metadata and its mirror atomic.
+Backup graph validation precedes transactional replacement; envelopes1–8 remain readable,
+raw2/complete1 unchanged. Builder/activation UI and modern spontaneous Count/Keep remain
+unfinished. Do not expose modern controls before completing the full integration.
 See docs/STRENGTH_PROGRAMMING_0_10.md and CONTINUE_CODEX.md for current scope and gates.
 
 The following sections record the preserved completed0.9 architecture.

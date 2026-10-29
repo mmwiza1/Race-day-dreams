@@ -211,7 +211,7 @@ public final class StrengthProgrammeEditor {
                 new StrengthProgramme.Workout(
                         original.id(),
                         original.date(),
-                        original.expectedMinutes(),
+                        StrengthWorkoutBudget.workoutMinutes(slots),
                         new GymWorkoutDefinition(
                                 original.definition().id(),
                                 original.definition().revision() + 1,

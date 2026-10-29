@@ -48,6 +48,10 @@ FROZEN_V2_ADDITIONS = [
 ]
 
 
+PROGRAMMING_TABLES = {"strength_programme_revisions", "strength_programme_blocks", "strength_programme_sessions",
+    "strength_programme_current", "strength_programme_decisions", "strength_programme_drafts",
+    "strength_programme_draft_blocks", "strength_custom_exercises"}
+
 def schema_statements(version):
     """Read the marked Java literals, testing the exact DDL used on Android."""
     source = SCHEMA.read_text(encoding="utf-8")
@@ -63,7 +67,7 @@ def schema_statements(version):
             for statement in statements]
 
 
-def create_schema(connection, version=13, frozen=False):
+def create_schema(connection, version=14, frozen=False):
     connection.execute("PRAGMA foreign_keys = ON")
     with connection:
         connection.execute("BEGIN")
@@ -75,11 +79,11 @@ def create_schema(connection, version=13, frozen=False):
         connection.execute(f"PRAGMA user_version = {version}")
 
 
-def migrate_to_latest(connection, target=13):
+def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if old not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12) or target != 13:
-        raise ValueError("Only explicit schemas 1–12 to schema 13 paths are supported")
+    if old not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13) or target != 14:
+        raise ValueError("Only explicit schemas 1–13 to schema 14 paths are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -211,7 +215,7 @@ class FeatureSchemaTest(unittest.TestCase):
             "SELECT name FROM sqlite_master WHERE type='index'"
         )}
         self.assertTrue({"activities_start", "shoes_one_default", "preserved_efforts_source"}.issubset(indexes))
-        self.assertEqual(13, self.db.execute("PRAGMA user_version").fetchone()[0])
+        self.assertEqual(14, self.db.execute("PRAGMA user_version").fetchone()[0])
 
     def test_source_record_identity_is_unique_but_other_provider_can_share_id(self):
         self.add_activity()
@@ -344,7 +348,7 @@ class MigrationSchemaTest(unittest.TestCase):
         before = self.snapshot()
         migrate_to_latest(self.db)
         self.assertEqual(before, self.snapshot())
-        self.assertEqual(13, self.db.execute("PRAGMA user_version").fetchone()[0])
+        self.assertEqual(14, self.db.execute("PRAGMA user_version").fetchone()[0])
         self.db.execute("INSERT INTO shoes VALUES ('new-shoe','{}',1)")
         self.assertEqual(1, self.db.execute("SELECT COUNT(*) FROM shoes").fetchone()[0])
 
@@ -415,7 +419,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
                 try:
                     before = self.snapshot(db)
                     migrate_to_latest(db)
-                    self.assertEqual(13, db.execute("PRAGMA user_version").fetchone()[0])
+                    self.assertEqual(14, db.execute("PRAGMA user_version").fetchone()[0])
                     self.assertEqual(before, {key: value for key, value in self.snapshot(db).items() if key in before})
                     columns = {row[1]: row for row in db.execute("PRAGMA table_info(activity_annotations)")}
                     self.assertEqual(0, columns['notes'][3])
@@ -459,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,14), (2,14), (13,13)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,15), (2,15), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -485,7 +489,7 @@ class CoachingSchemaTest(unittest.TestCase):
             migrate_to_latest(db)
             self.assertEqual([('existing','retained')], db.execute("SELECT * FROM settings").fetchall())
             self.assertEqual([], db.execute("PRAGMA foreign_key_check").fetchall())
-            self.assertEqual(13, db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual(14, db.execute("PRAGMA user_version").fetchone()[0])
         finally:
             db.close()
 
@@ -530,7 +534,7 @@ class EvidenceSchemaTest(unittest.TestCase):
                 db.commit()
                 migrate_to_latest(db)
                 self.assertEqual([(1,0)],db.execute("SELECT * FROM user_profile").fetchall())
-                self.assertEqual(13,db.execute("PRAGMA user_version").fetchone()[0])
+                self.assertEqual(14,db.execute("PRAGMA user_version").fetchone()[0])
                 self.assertEqual([],db.execute("PRAGMA foreign_key_check").fetchall())
             finally: db.close()
 
@@ -592,7 +596,7 @@ class RecordingMigrationSchemaTest(unittest.TestCase):
             before={name:db.execute("SELECT * FROM "+name).fetchall() for (name,) in db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
             migrate_to_latest(db)
             for name,rows in before.items():self.assertEqual(rows,db.execute("SELECT * FROM "+name).fetchall())
-            self.assertEqual(13,db.execute("PRAGMA user_version").fetchone()[0]);db.close()
+            self.assertEqual(14,db.execute("PRAGMA user_version").fetchone()[0]);db.close()
 
     def test_only_one_unfinished_run_and_orphan_points_rejected(self):
         db=sqlite3.connect(":memory:");create_schema(db)
@@ -615,7 +619,7 @@ class SupportMigrationSchemaTest(unittest.TestCase):
             db=sqlite3.connect(":memory:");create_schema(db,version=old)
             db.execute("INSERT INTO user_profile VALUES (1,0)");db.commit()
             migrate_to_latest(db)
-            self.assertEqual(13,db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual(14,db.execute("PRAGMA user_version").fetchone()[0])
             self.assertEqual(1,db.execute("SELECT COUNT(*) FROM user_profile").fetchone()[0])
             db.execute("INSERT INTO coach_support VALUES ('routine','one','{}')")
             with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO coach_support VALUES ('calendar','one','{}')")
@@ -635,7 +639,7 @@ class Release08MigrationTest(unittest.TestCase):
             db.execute("INSERT INTO onboarding_draft VALUES (1, '{}')")
             db.commit()
             migrate_to_latest(db)
-            self.assertEqual(13,db.execute("PRAGMA user_version").fetchone()[0])
+            self.assertEqual(14,db.execute("PRAGMA user_version").fetchone()[0])
             self.assertEqual('{}',db.execute("SELECT payload FROM onboarding_draft").fetchone()[0])
             db.execute("INSERT INTO release08 VALUES ('custom','saved','{}')")
             with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO release08 VALUES ('unknown','bad','{}')")
@@ -661,7 +665,7 @@ class Release081MigrationTest(unittest.TestCase):
             for name,rows in before.items():self.assertEqual(rows,db.execute('SELECT * FROM '+name).fetchall())
             indexes={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='index'")}
             self.assertTrue({'activities_history_order','strength_history_order'}<=indexes)
-            self.assertEqual(13,db.execute('PRAGMA user_version').fetchone()[0]);db.close()
+            self.assertEqual(14,db.execute('PRAGMA user_version').fetchone()[0]);db.close()
 
     def test_history_indexes_are_used_without_raw_sample_queries(self):
         db=sqlite3.connect(":memory:");create_schema(db)
@@ -683,7 +687,7 @@ class Release081MigrationTest(unittest.TestCase):
 
 class GymExecutionMigrationTest(unittest.TestCase):
     def test_every_supported_schema_retains_existing_data_and_adds_only_typed_gym_tables(self):
-        for old in range(1, 13):
+        for old in range(1, 14):
             with self.subTest(old=old):
                 db = sqlite3.connect(":memory:")
                 try:
@@ -718,14 +722,14 @@ class GymExecutionMigrationTest(unittest.TestCase):
                     migrate_to_latest(db)
                     after = AnnotationMigrationSchemaTest.snapshot(db)
                     self.assertEqual(before, {name: after[name] for name in before})
-                    self.assertEqual(13, db.execute("PRAGMA user_version").fetchone()[0])
+                    self.assertEqual(14, db.execute("PRAGMA user_version").fetchone()[0])
                     self.assertEqual([], db.execute("PRAGMA foreign_key_check").fetchall())
                     new_strength = {name for name in set(after) - set(before)
                                     if name.startswith("strength_")}
                     old_strength = {"strength_exercises", "strength_sessions", "strength_user_state"}
                     self.assertEqual({"strength_workout_versions", "strength_workout_preferences",
                                       "strength_executions", "strength_execution_sets", "strength_execution_events",
-                                      "strength_association_decisions", "strength_association_targets", "strength_exclusions"} - set(before),
+                                      "strength_association_decisions", "strength_association_targets", "strength_exclusions"}.union(PROGRAMMING_TABLES) - set(before),
                                      new_strength - old_strength)
                 finally:
                     db.close()
@@ -851,8 +855,8 @@ class GymAssociationMigrationTest(unittest.TestCase):
             migrate_to_latest(db)
             after=AnnotationMigrationSchemaTest.snapshot(db)
             self.assertEqual(before,{name:after[name] for name in before})
-            self.assertEqual(13,db.execute('PRAGMA user_version').fetchone()[0])
-            self.assertEqual({'strength_association_decisions','strength_association_targets','strength_exclusions'},set(after)-set(before))
+            self.assertEqual(14,db.execute('PRAGMA user_version').fetchone()[0])
+            self.assertEqual({'strength_association_decisions','strength_association_targets','strength_exclusions'}.union(PROGRAMMING_TABLES),set(after)-set(before))
         finally:db.close()
 
     def test_late_twelve_failure_rolls_back_both_new_tables(self):
@@ -912,6 +916,80 @@ class ExerciseExclusionMigrationTest(unittest.TestCase):
         with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db)
         self.assertEqual(before,AnnotationMigrationSchemaTest.snapshot(db))
         self.assertEqual(12,db.execute('PRAGMA user_version').fetchone()[0]);db.close()
+
+
+class StrengthProgrammingMigrationTest(unittest.TestCase):
+    def test_thirteen_upgrade_preserves_every_old_table(self):
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        create_schema(db, 13)
+        db.execute("INSERT INTO settings VALUES('preserve','yes')")
+        db.execute("INSERT INTO strength_sessions VALUES('actual','2026-10-28','retained')")
+        db.execute("INSERT INTO strength_exclusions VALUES('bench-press','PREFERENCE','2026-10-28T12:00:00Z')")
+        db.commit()
+        before = AnnotationMigrationSchemaTest.snapshot(db)
+        migrate_to_latest(db)
+        after = AnnotationMigrationSchemaTest.snapshot(db)
+        self.assertEqual(before, {key: after[key] for key in before})
+        self.assertEqual(PROGRAMMING_TABLES, set(after) - set(before))
+        self.assertEqual(14, db.execute('PRAGMA user_version').fetchone()[0])
+
+    def test_late_fourteen_collision_rolls_back_all_new_tables(self):
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        create_schema(db, 13)
+        db.execute('CREATE TABLE strength_custom_exercises(collision TEXT)')
+        db.execute("INSERT INTO settings VALUES('preserve','yes')")
+        db.commit()
+        before = AnnotationMigrationSchemaTest.snapshot(db)
+        with self.assertRaises(sqlite3.OperationalError):
+            migrate_to_latest(db)
+        self.assertEqual(before, AnnotationMigrationSchemaTest.snapshot(db))
+        self.assertEqual(13, db.execute('PRAGMA user_version').fetchone()[0])
+
+    def programming(self):
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        create_schema(db)
+        db.execute("INSERT INTO strength_programme_revisions VALUES('p',1,0,'Name','2026-10-28','2026-12-08','{}')")
+        db.execute("INSERT INTO strength_programme_blocks VALUES('p',1,0,'block','{}')")
+        return db
+
+    def test_current_foreign_key_lineage_and_unique_dates(self):
+        db = self.programming()
+        for sql in ["INSERT INTO strength_programme_current VALUES(1,'missing',1)",
+                    "INSERT INTO strength_programme_revisions VALUES('p',2,0,'Name','a','b','{}')",
+                    "INSERT INTO strength_programme_blocks VALUES('p',1,12,'bad','{}')"]:
+            with self.subTest(sql=sql), self.assertRaises(sqlite3.IntegrityError):
+                db.execute(sql)
+        db.execute("INSERT INTO strength_programme_sessions VALUES('p',1,'block',0,'s','2026-10-28','{}')")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO strength_programme_sessions VALUES('p',1,'block',1,'different','2026-10-28','{}')")
+        db.execute("INSERT INTO strength_programme_current VALUES(1,'p',1)")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("DELETE FROM strength_programme_revisions")
+        self.assertEqual([], db.execute('PRAGMA foreign_key_check').fetchall())
+
+    def test_utf8_limits_and_draft_deletion_do_not_delete_accepted_sessions(self):
+        db = self.programming()
+        db.execute("INSERT INTO strength_programme_sessions VALUES('p',1,'block',0,'s','2026-10-28','{}')")
+        db.execute("INSERT INTO strength_programme_drafts VALUES('draft',1,'p',1,'Name','2026-10-28','{}')")
+        db.execute("INSERT INTO strength_programme_draft_blocks VALUES('draft',0,'{}')")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE strength_programme_sessions SET payload=?", ('é' * 131073,))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO strength_custom_exercises VALUES('custom-x',?)", ('é' * 32769,))
+        db.execute("DELETE FROM strength_programme_drafts")
+        self.assertEqual(0, db.execute('SELECT COUNT(*) FROM strength_programme_draft_blocks').fetchone()[0])
+        self.assertEqual(1, db.execute('SELECT COUNT(*) FROM strength_programme_sessions').fetchone()[0])
+
+    def test_summary_query_uses_history_index_without_loading_sessions(self):
+        db = self.programming()
+        query = 'SELECT programme_id,revision,name,start_date,end_date FROM strength_programme_revisions ORDER BY start_date DESC,programme_id,revision DESC LIMIT 20 OFFSET 0'
+        plan = ' '.join(str(row) for row in db.execute('EXPLAIN QUERY PLAN ' + query))
+        self.assertIn('strength_programme_history', plan)
+        self.assertNotIn('strength_programme_sessions', plan)
+        self.assertNotIn('TEMP B-TREE', plan)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

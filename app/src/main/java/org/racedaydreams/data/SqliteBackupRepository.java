@@ -190,6 +190,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             out.put("support", SupportStore.exportData(db));
             out.put("release08", Release08Store.exportData(db));
             out.put("strengthEngine", SqliteGymExecutionRepository.exportData(db));
+            out.put("strengthProgramming", SqliteStrengthProgrammingRepository.exportData(db));
             db.setTransactionSuccessful();
             return out;
         } catch (JSONException e) {
@@ -238,6 +239,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             JSONObject strengthState,
             JSONObject gymProgramming,
             JSONObject strengthEngine,
+            StrengthProgrammingArchive.Snapshot strengthProgramming,
             JSONObject support) {}
 
     private record SourceKey(String provider, String recordId) {}
@@ -400,8 +402,22 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             if (development != null) DevelopmentStore.validate(development);
             if (data.has("gymProgramming"))
                 GymProgrammeStore.validate(data.getJSONObject("gymProgramming"));
+            StrengthProgrammingArchive.Snapshot strengthProgramming =
+                    data.has("strengthProgramming")
+                            ? StrengthProgrammingArchive.validate(
+                                    data.getJSONObject("strengthProgramming"),
+                                    data.optJSONObject("gymProgramming"))
+                            : null;
+            var authored =
+                    strengthProgramming == null
+                            ? java.util.Collections
+                                    .<String, org.racedaydreams.domain.strength.StrengthProgramme>
+                                            emptyMap()
+                            : strengthProgramming.programmes();
+            if (strengthProgramming != null)
+                StrengthProgrammingArchive.validateCoaching(strengthProgramming, coaching);
             GymProgrammeStore.validateLinks(
-                    development, coaching, data.optJSONObject("gymProgramming"));
+                    development, coaching, data.optJSONObject("gymProgramming"), authored);
             JSONObject strengthEngine =
                     data.has("strengthEngine") ? data.getJSONObject("strengthEngine") : null;
             if (strengthEngine != null)
@@ -409,7 +425,8 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                         strengthEngine,
                         coaching,
                         data.optJSONObject("gymProgramming"),
-                        development);
+                        development,
+                        authored);
             return new RestoreData(
                     profile,
                     draft,
@@ -430,6 +447,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                     data.optJSONObject("strengthState"),
                     data.optJSONObject("gymProgramming"),
                     strengthEngine,
+                    strengthProgramming,
                     data.optJSONObject("support"));
         } catch (JSONException | java.time.DateTimeException e) {
             throw FeatureJson.invalid(e);
@@ -488,6 +506,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                         "Finish or discard the unfinished gym workout before replacing app data.");
             SqliteGymAssociationRepository.clear(db);
             SqliteGymExecutionRepository.clear(db);
+            SqliteStrengthProgrammingRepository.clear(db);
             GymProgrammeStore.clear(db);
             StrengthUserStore.clear(db);
             DevelopmentStore.clear(db);
@@ -572,6 +591,8 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                 StrengthUserStore.restore(db, snapshot.strengthState());
             if (snapshot.gymProgramming() != null)
                 GymProgrammeStore.restore(db, snapshot.gymProgramming());
+            if (snapshot.strengthProgramming() != null)
+                SqliteStrengthProgrammingRepository.restore(db, snapshot.strengthProgramming());
             SqliteGymAssociationRepository.rebuildProjection(db);
             if (snapshot.strengthEngine() != null)
                 SqliteGymExecutionRepository.restore(db, snapshot.strengthEngine());

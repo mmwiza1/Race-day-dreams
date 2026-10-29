@@ -1,26 +1,46 @@
 # 0.10 development checkpoint — not release acceptance
 
-Branch feature/0.10-strength-programming / draft PR15, based on live main c6299e2.
-Local 459,664 domain assertions/33 suites, 55 schema and9 release-note cases pass;
-strict174/174 canonical and14/14 routine guidance passes. New programme simulator
-covers1,620 configurations plus long conflicted histories, protected regeneration,
-manual drafts, source adaptation and conservative modality evidence. SQL/new programme
-activation/backup integration and UI remain unfinished; data formats are unchanged.
+Branch `feature/0.10-strength-programming` / draft PR15, based on mainc6299e2.
+The recovered typed durability phase adds schema14 / JSON9 (read1–8), strengthProgramming1;
+strengthEngine2 / strengthState2 / raw2 / complete1 are unchanged. The full programme
+builder, template/activation/regeneration screens and modern spontaneous-association UI
+remain unfinished. Passing this checkpoint is not0.10 release acceptance.
 
-Initial source887eaa3 workflow40773971875 passed build/lint/format/domain/schema/guidance
-and331 Android tests EACH on APIs28/35; API36 finished331 with ONE Paris artwork-readiness
-failure. The20sec assertion was not relaxed and the failure was not blindly rerun.
-Repair source55af2aa passed FULL workflow40780023551:339tests EACH API28/35/36,
-including6strict serialization and2deterministic cancellation/missing-artwork cases.
-Build/lint/format/domain/schema/source/guidance passed. The exact cause of the initial
-emulator timeout is not established; the publisher now has one asset-identified producer
-state and explicit unavailable status instead of misleading indefinite loading.
+## Observed local final-source gate — 29 October2026
 
-Bot5d5858c adopted91actual API35 captures from55af2aa. Integrity passed; directly opened
-Paris light, London dark/200%, and gym200% actual entry. Artwork/route/progress and readable
-wrapped controls retain the accepted design. APK50,898,024bytes. These images do not show
-an implemented new programme-builder UI. Following block-policy edits require their own
-current-head gate. No SQL/schema/backup integration is claimed and no S24 tests occurred.
+- **587,615 domain assertions /33 suites**, including2,430programme configurations.
+- **60schema/migration tests**, supported1–13→14, real13upgrade fixture, old history /
+  favourites / exclusions preserved, late-DDL rollback, FK/unique-date/UTF8/index checks.
+- **79/79 real Android API28 instrumentation tests**,315.144seconds on software emulator.
+  Fifteen new repository cases cover optimistic drafts/retries, activation/stop, exact
+  legacy/modern sources, paused execution recovery, actuals, fresh completed protection,
+  similarly named programme IDs, normalized156-workout storage, scalar summaries, custom
+  metadata/logging agreement, old8/current9 restore, corrupt graph rejection and SQL rollback.
+  Sixty-four retained codec/execution/association/exclusion/backup/CoachingStore cases pass,
+  including large histories above8MiB and rejection before oversized export hydration.
+- `:domain:check`, `:app:assembleDebug`, `:app:assembleDebugAndroidTest`, `:app:lintDebug`
+  passed after final source edits. Pinned formatting passes (56Kotlin /105Java files).
+-9release-note,14formatter-harness,11Dream source,14artwork-integrity,8capture-validator
+  cases pass. Strict174/174canonical +14/14routine guidance unchanged;177packaged assets.
+- No new runtime dependency, account/backend or Internet permission. No physical S24 checks.
+
+The fixture/task mismatch, one stale backup-version assertion and two lint indentation
+errors found during recovery were corrected; no assertion was removed or weakened.
+Metadata/name edits now update the typed/logging mirror atomically without renaming old
+prescriptions. Normalized reads use one transaction snapshot and completed-session lookup
+uses exact programme keys. Final persistent local evidence: `/workspace/scratch/rdd010`.
+APK SHA256: `0abaf5cb47c22851eeaf8442bad50940d02fe3c945884a7d22fb38d508b5d631`.
+
+## Source-bound remote gate / screenshots
+
+Source0483c96 passed full workflow40786866429: API28/35/36, build/lint/domain/schema/
+format/guidance and canonical screenshots. It verifies the association dialog fix57c46ec:
+wait for the real displayed/enabled confirmation using the same20sec bound, retaining
+all explicit Count/Keep and immutable actual/history assertions. Botdf4d9ff adopted91
+actual API35 captures. Earlier55af2aa andc4b2664 full matrices also passed339tests each API.
+The new durability checkpoint requires its own full current-head matrix/captures after
+push; prior green sources must not be substituted for those gates. No new builder UI or
+new builder screenshots are claimed. See CONTINUE_CODEX.md for the exact active boundary.
 
 The following sections are historical completed0.9 evidence, not proof of0.10 completion.
 

@@ -22,12 +22,15 @@ programme builder is not yet connected to the application.
 - Dream artwork publication now distinguishes pending loading from unavailable
   illustrations and keeps readiness tied to the current city. The strict screenshot
   deadline remains unchanged; new fault-injection tests and API verification are required.
+- Association confirmation tests now wait for the real enabled dialog before either
+  reviewed choice; all explicit-association and immutable-history assertions remain.
 - Existing 0.9 fixes and evidence-preservation contracts are retained.
 
 ## Known limitations
 
-- Programme drafts, typed storage, activation, editing screens, future regeneration,
-  custom-exercise metadata, permanent-swap UI and modality progression remain in progress.
+- Programme builder/template screens, user-facing activation, future regeneration,
+  custom-exercise entry, permanent-swap UI and modality-progression controls remain in progress.
+  Their domain and typed persistence foundations are not yet a finished user workflow.
 - Beginner power previews explicitly report the current catalogue's lack of a
   beginner-classified ballistic movement instead of inventing power evidence.
 - This branch is not ready for release or merge. Current-build Android/accessibility
@@ -35,7 +38,9 @@ programme builder is not yet connected to the application.
 
 ## Data, privacy and licensing
 
-- No schema/backup changes at this checkpoint. The original 174 exercise guides
+- Schema 14 / JSON backup 9 add typed authored programmes, drafts, decisions and custom
+  metadata. Supported older backup readers remain. Raw archive 2 and complete package 1
+  are unchanged. The original 174 exercise guides
   and 14 routine visuals remain unchanged. No Internet permission, backend,
   account, advertising, analytics or runtime LLM is introduced.
 - New planning heuristics are original product decisions, not physiological

@@ -1,7 +1,8 @@
 # Strength Programming 2.0 — implementation checkpoint
 
-This is an in-progress 0.10 domain/codec checkpoint, **not** a completed programme-builder
-release. Existing 0.9 application behaviour, storage and backups remain authoritative.
+This is an in-progress 0.10 programming/durability checkpoint, **not** a completed
+programme-builder release. Existing 0.9 behaviour and historical prescriptions remain
+supported; schema/backup additions are described below.
 
 ## Programme authoring and proposals
 
@@ -58,10 +59,10 @@ generated without real exact-exercise evidence.
 `GymExecutionEngine`. No second execution engine or source kind is introduced. Domain
 tests verify that starting an authored prescription creates no actual sets.
 
-**The Android repository currently resolves PROGRAMME sources through legacy
-`GymProgrammeStore`; it has not yet been connected to authored-programme storage.**
-Do not expose modern activation/start controls until source resolution, finalisation,
-associations and full backup graph validation support both retained source families.
+The Android repository now resolves exact legacy and authored PROGRAMME sources through
+the same execution engine, preserving frozen targets and finalisation links. Modern
+spontaneous Count/Keep association and activation UI are still pending; do not expose
+new start controls until both source families have complete user-facing integration.
 In particular, do not coerce optional/null/fractional effort into fake legacy RPE values.
 
 `StrengthTargetProgression` supplies optional domain proposals. It requires two distinct,
@@ -79,15 +80,24 @@ the existing strict bounded gym parser and frozen-workout codec. It rejects unkn
 fields, duplicate/coerced fields and invalid nested structures. Android codec tests are
 required on all supported APIs. This is a serialization boundary, not a SQL repository.
 
-Schema 13, JSON envelope 8, strengthEngine 2, strengthState 2, raw archive 2 and complete
-package 1 are unchanged. Next work must add typed tables over the shared SQLite helper,
-optimistic drafts, immutable revisions/decisions and bounded per-session rows; integrate
-old/new source resolution and backup validation transactionally before activation UI.
-Avoid storing a whole long programme in a single CursorWindow-sized payload.
+Schema 14 adds typed revision/header, block, per-session, current-pointer, decision,
+draft/header, draft-block and custom-metadata tables over the shared database. Summaries
+query scalar columns with a history index; detail loads bounded session rows. Draft saves
+use optimistic revisions. Activation compares the current pointer, verifies fresh
+actual-linked protected sessions inside the transaction, appends an immutable revision and
+records the athlete's decision atomically. Stopping removes the pointer and retains history.
+Custom metadata mirrors the logging definition without inventing technique or progression.
+
+JSON envelope 9 requires the version-one strengthProgramming section and retains readers
+for envelopes 1–8. Restore checks references, lineage, ordered decisions, custom/logging
+agreement and row-size limits before replacing anything; all reconstruction uses the shared
+restore transaction. strengthEngine 2, strengthState 2, raw archive 2 and complete package 1
+are unchanged. Current source-bound test results belong in VERIFICATION.md; no UI completion
+or physical acceptance follows merely from this persistence boundary.
 
 ## Verification boundary
 
-Current local checks: 587,615 domain assertions across 33 suites; 55 schema cases;
+Current local checks: 587,615 domain assertions across 33 suites; 60 schema cases;
 9 release-note cases; strict 174/174 canonical and 14/14 routine guidance. The new
 2,430-configuration simulator checks actual catalogue metadata, equipment, exclusions,
 duration, primary balance, controlled power volume, support roles, determinism and

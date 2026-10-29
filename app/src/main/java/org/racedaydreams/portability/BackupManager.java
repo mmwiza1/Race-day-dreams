@@ -31,10 +31,10 @@ import java.util.Objects;
  */
 public final class BackupManager {
     public static final String FORMAT = "race-day-dreams-backup";
-    // v8 adds independently versioned frozen gym prescriptions/execution staging. Older apps
-    // reject this envelope instead of silently dropping actual sets or unfinished workouts.
-    // Readers for all original envelopes1–7 remain supported.
-    public static final int VERSION = 8;
+    // v9 requires typed authored programmes, drafts, custom metadata and explicit activation
+    // history.
+    // Readers for envelopes1–8 remain supported; older apps reject9 before losing authoring data.
+    public static final int VERSION = 9;
     // Gym execution retains both staged and completed actual evidence. Keep allocation bounded
     // while allowing multi-year strength history beyond the previous8MiB/200k-token ceiling.
     public static final int MAX_BYTES = 32 * 1024 * 1024;
@@ -183,6 +183,10 @@ public final class BackupManager {
             if (((Integer) version) >= 8 && !envelope.getJSONObject("data").has("strengthEngine"))
                 throw new IOException(
                         "Version-eight backup is missing its gym execution evidence.");
+            if (((Integer) version) >= 9
+                    && !envelope.getJSONObject("data").has("strengthProgramming"))
+                throw new IOException(
+                        "Version-nine backup is missing its programme authoring data.");
             Instant.parse(envelope.getString("createdAt"));
             store.validateSnapshot(envelope.getJSONObject("data"));
             return envelope;

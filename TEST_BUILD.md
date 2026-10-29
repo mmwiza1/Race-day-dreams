@@ -1,3 +1,17 @@
+# 0.10 programming development — not physical acceptance
+
+Version0.10.0-test1/code13 candidate schema14/JSON9 retains older backup readers1–8,
+strengthEngine2, strengthState2, raw2 and complete1. Typed authoring durability and legacy /
+authored planned execution are under automated verification. The full programme-builder,
+template/activation and modern spontaneous-association UI are unfinished; do not treat
+baseline screenshots as those new screens. See CONTINUE_CODEX.md for source-bound gates.
+
+Before release acceptance, require the API28/35/36 matrix, previous8/current9 backup
+round-trips,13→14 migration, immutable historical/actual-set evidence, authentic new
+builder/template/blocks/custom/permanent-swap captures and light/dark/200% review.
+The S24 checks below remain genuinely unperformed, including future human evaluation
+of building/activating/regenerating a programme and retaining it through complete restore.
+
 # Retained 0.9 automated baseline / physical acceptance
 
 Application/capture sourcef3a988a passed workflow40741473316:331tests on EACHAPI28/35/36,

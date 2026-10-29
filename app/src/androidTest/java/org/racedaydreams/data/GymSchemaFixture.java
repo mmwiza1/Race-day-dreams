@@ -9,6 +9,7 @@ final class GymSchemaFixture {
     private GymSchemaFixture() {}
 
     static void removeVersionElevenTables(SQLiteDatabase db) {
+        removeVersionFourteenTables(db);
         // Children must disappear before parents when the fixture connection enforces FKs.
         for (String table :
                 new String[] {
@@ -23,5 +24,19 @@ final class GymSchemaFixture {
                 }) {
             db.execSQL("DROP TABLE " + table);
         }
+    }
+
+    static void removeVersionFourteenTables(SQLiteDatabase db) {
+        for (String table :
+                new String[] {
+                    "strength_programme_current",
+                    "strength_programme_decisions",
+                    "strength_programme_sessions",
+                    "strength_programme_blocks",
+                    "strength_programme_revisions",
+                    "strength_programme_draft_blocks",
+                    "strength_programme_drafts",
+                    "strength_custom_exercises"
+                }) db.execSQL("DROP TABLE " + table);
     }
 }

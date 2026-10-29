@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 13;
+    static final int VERSION = 14;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -54,6 +54,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateTenToEleven(db);
         migrateElevenToTwelve(db);
         migrateTwelveToThirteen(db);
+        migrateThirteenToFourteen(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -376,10 +377,68 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V13_SCHEMA_END
     }
 
+    private static void migrateThirteenToFourteen(SQLiteDatabase db) {
+        // V14_SCHEMA_BEGIN
+        db.execSQL(
+                "CREATE TABLE strength_programme_revisions (programme_id TEXT NOT NULL, revision"
+                    + " INTEGER NOT NULL CHECK(revision > 0), parent_revision INTEGER NOT NULL"
+                    + " CHECK(parent_revision = revision - 1), name TEXT NOT NULL, start_date TEXT"
+                    + " NOT NULL, end_date TEXT NOT NULL, header TEXT NOT NULL"
+                    + " CHECK(length(CAST(header AS BLOB)) <= 262144), PRIMARY"
+                    + " KEY(programme_id,revision))");
+        db.execSQL(
+                "CREATE INDEX strength_programme_history ON strength_programme_revisions(start_date"
+                        + " DESC,programme_id,revision DESC)");
+        db.execSQL(
+                "CREATE TABLE strength_programme_blocks (programme_id TEXT NOT NULL, revision"
+                    + " INTEGER NOT NULL, position INTEGER NOT NULL CHECK(position BETWEEN 0 AND"
+                    + " 11), block_id TEXT NOT NULL, header TEXT NOT NULL CHECK(length(CAST(header"
+                    + " AS BLOB)) <= 262144), PRIMARY KEY(programme_id,revision,position),"
+                    + " UNIQUE(programme_id,revision,block_id), FOREIGN KEY(programme_id,revision)"
+                    + " REFERENCES strength_programme_revisions(programme_id,revision) ON DELETE"
+                    + " CASCADE)");
+        db.execSQL(
+                "CREATE TABLE strength_programme_sessions (programme_id TEXT NOT NULL, revision"
+                    + " INTEGER NOT NULL, block_id TEXT NOT NULL, position INTEGER NOT NULL"
+                    + " CHECK(position BETWEEN 0 AND 155), session_id TEXT NOT NULL, session_date"
+                    + " TEXT NOT NULL, payload TEXT NOT NULL CHECK(length(CAST(payload AS BLOB)) <="
+                    + " 262144), PRIMARY KEY(programme_id,revision,block_id,position),"
+                    + " UNIQUE(programme_id,revision,session_id),"
+                    + " UNIQUE(programme_id,revision,session_date), FOREIGN"
+                    + " KEY(programme_id,revision,block_id) REFERENCES"
+                    + " strength_programme_blocks(programme_id,revision,block_id) ON DELETE"
+                    + " CASCADE)");
+        db.execSQL(
+                "CREATE TABLE strength_programme_current (id INTEGER PRIMARY KEY CHECK(id=1),"
+                        + " programme_id TEXT NOT NULL, revision INTEGER NOT NULL, FOREIGN"
+                        + " KEY(programme_id,revision) REFERENCES"
+                        + " strength_programme_revisions(programme_id,revision))");
+        db.execSQL(
+                "CREATE TABLE strength_programme_decisions (id TEXT PRIMARY KEY NOT NULL, position"
+                        + " INTEGER NOT NULL UNIQUE CHECK(position > 0), payload TEXT NOT NULL"
+                        + " CHECK(length(CAST(payload AS BLOB)) <= 524288))");
+        db.execSQL(
+                "CREATE TABLE strength_programme_drafts (id TEXT PRIMARY KEY NOT NULL, revision"
+                        + " INTEGER NOT NULL CHECK(revision > 0), programme_id TEXT NOT NULL,"
+                        + " base_revision INTEGER NOT NULL CHECK(base_revision >= 0), name TEXT NOT"
+                        + " NULL, start_date TEXT NOT NULL, header TEXT NOT NULL"
+                        + " CHECK(length(CAST(header AS BLOB)) <= 262144))");
+        db.execSQL(
+                "CREATE TABLE strength_programme_draft_blocks (draft_id TEXT NOT NULL REFERENCES"
+                    + " strength_programme_drafts(id) ON DELETE CASCADE, position INTEGER NOT NULL"
+                    + " CHECK(position BETWEEN 0 AND 11), payload TEXT NOT NULL"
+                    + " CHECK(length(CAST(payload AS BLOB)) <= 262144), PRIMARY"
+                    + " KEY(draft_id,position))");
+        db.execSQL(
+                "CREATE TABLE strength_custom_exercises (id TEXT PRIMARY KEY NOT NULL, payload TEXT"
+                        + " NOT NULL CHECK(length(CAST(payload AS BLOB)) <= 65536))");
+        // V14_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 12)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 13)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -398,6 +457,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 9) migrateNineToTen(db);
         if (oldVersion <= 10) migrateTenToEleven(db);
         if (oldVersion <= 11) migrateElevenToTwelve(db);
-        migrateTwelveToThirteen(db);
+        if (oldVersion <= 12) migrateTwelveToThirteen(db);
+        migrateThirteenToFourteen(db);
     }
 }

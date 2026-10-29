@@ -1,284 +1,207 @@
-# Continue Codex — current main to 0.10.0-test1
+# Continue Codex — 0.10.0-test1 Strength Programming 2.0
 
-## Purpose
+## Permanent recovery rules
 
-This file is the canonical continuation handoff for Race Day Dreams.
+Inspect actual status/diff/log, live main, feature branch, PR and CI before changing anything.
+Preserve valid local/remote work. Do not reset, force-push, discard or recreate completed work.
+Continue the active release below; do not revive earlier/deferred backlogs. Use a feature
+branch and draft PR. Domain rules stay Android-independent; repositories share one database
+and restore transaction. Prescriptions, actual sets, historical versions and athlete choices
+remain distinct. Reuse Gym Now's one execution engine. No Internet permission, accounts,
+backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
+actual human results. The app recommends. The athlete decides. The plan adapts.
 
-When instructed with:
+## Current recovery boundary — durability checkpoint, NOT release acceptance
 
-`Read CONTINUE_CODEX.md and continue from the current repo state`
+- Branch: `feature/0.10-strength-programming`; PR **15 remains DRAFT**.
+- Implementation parent: `df4d9ffa5b9a693981da841899aef0074f8bfe1c` (91canonical captures
+  from0483c96). Main remains `c6299e2401525197260f69c6918c89794cfa4c3d`.
+- The interrupted schema14 / typed repository / backup9 work SURVIVED. No reset/discard
+  occurred. The verified durability checkpoint is being committed afterdf4d9ff; inspect
+  actual git log/current PR gates before proceeding. Do not recreate these source files.
+- Version **0.10.0-test1 / code13**, schema **14**, JSON envelope **9** (reads1–8),
+  strengthProgramming1. strengthEngine2 / strengthState2 / raw2 / complete1 unchanged.
+- The environment restarted again during verification. Source, tools and build outputs
+  survived, but /tmp logs/processes did not. Recovery copies and FINAL logs now persist
+  under `/workspace/scratch/rdd010`. This source was rebuilt and instrumented afterwards.
+- User-facing programme builder/template/activation/regeneration controls remain unfinished.
+  No new activation controls have been exposed. Do NOT merge or describe0.10 as complete.
 
-continue from the repository exactly as it exists. Inspect the live repo before changing anything. Preserve completed work, infer unfinished work from the current branch/diff/log, complete partial implementation, run the relevant tests/lint/build, fix regressions, and leave a concise summary of what was completed and what remains.
+## Previously pushed gate / association-dialog failure — RESOLVED
 
-Do not blindly reset, force-push, discard valid changes, or recreate already-completed work.
+`4180c28` run40784342654 passed API28/36 but API35 failed at the SECOND confirmation in
+GymAssociationScreenTest: the dialog window/test tag had not registered before the click.
+`57c46ec` waits for the actual dialog with the same20sec bound, then requires displayed +
+enabled before clicking BOTH confirmations. All actual/history/association assertions remain.
+Source `0483c96` **passed FULL workflow40786866429**, all API28/35/36 jobs, formatting,
+source/domain/schema/guidance and canonical capture job. Bot `df4d9ff` adopted91captures.
+No assertion/time limit was weakened and the failed test was not blindly rerun.
+These results certify that pushed source, not the uncommitted persistence changes.
 
-## Environment interruption — resume this section first
+## Completed committed0.10 foundation — preserve it
 
-The workspace executor became UNAVAILABLE during the next persistence phase. No reset,
-discard, stash, main change or force-push was performed. The experimental persistence
-work is LOCAL AND UNCOMMITTED, not a tested/published implementation. Last local HEAD
-was4180c28; remote now also contains57c46ec5a85a54d4de39951396e6056ec6f96150,
-a small association-dialog test synchronisation correction. Fetch/inspect on recovery;
-the remote changes are to this handoff and GymAssociationScreenTest.kt, which were not
-locally modified in this persistence phase. Preserve the local source edits; do not reset.
+- StrengthProgramme immutable revisions, concrete dated blocks, nullable/RIR/fractional
+  targets, frozen definitions; incomplete StrengthProgrammeDraft operations (edit/reorder/
+  move/duplicate/delete workouts and blocks); CustomStrengthExercise metadata, no fake
+  technique/progression. Authoring bounds52weeks/12blocks/12slots; generated previews26weeks.
+- Nine original editable template structures: Full Body2/3, Upper/Lower4, PPL3/6,
+  strength3, muscle4, running support2/3.
+- Goal/experience-specific generator, real metadata/equipment/exclusion filters, favourite
+  tie preferences, explained time budget and hybrid soft scheduling. Meaningful phases
+  and conservative optional recovery/assessment. Short sessions reserve time for later
+  required roles/pulling rather than exhausting the budget on early compounds.
+- 2,430-configuration deterministic quality simulator; future-only protected regeneration
+  and substitution proposals; substitutions clear load references and recalculate time.
+- Exact authored adapter/source validator into the SAME GymExecutionEngine/source kind.
+- Strict versioned programme/draft/custom JSON codec; six Android codec tests.
+- StrengthTargetProgression: two recent comparable real sessions, recorded effort, exact
+  task/load, enough working sets; optional load/rep/time/distance advice. Unknown effort,
+  stale/future/warm-up/custom-only evidence never invents progression. Existing0.9 advice
+  remains unchanged until new controls are connected.
+- Original174canonical +14routine guidance untouched. Beginner power still has an honest
+  catalogue gap (no POWER-primary beginner-friendly movement); do not relabel another
+  movement or fake guidance just to satisfy a count. Resolve/document responsibly before
+  final acceptance. No catalogue expansion for breadth.
 
-Latest pushed CI40784342654/source4180c28 FAILED: API28/36 jobs passed, API35 finished339
-tests with ONE GymAssociationScreenTest failure at line92: second confirmation was
-clicked before TestTag gym-association-confirm existed. All evidence/history assertions
-remain. Remote fix57c46ec waits (same20sec bound) for the real confirmation, then asserts
-displayed+enabled and clicks for BOTH choices. It has NOT been verified yet; inspect its
-new workflow and fix failures rather than blindly rerunning. Do not merge PR15.
+## Verified persistence implementation — inspect actual source
 
-### Local work preserved before disconnection (UNVERIFIED)
+New files:
+- domain/.../strength/StrengthProgrammingRepository.java
+- app/.../data/SqliteStrengthProgrammingRepository.java
+- app/.../data/StrengthProgrammingArchive.java
+- app/src/androidTest/.../data/StrengthProgrammingRepositoryTest.java (15 tests)
 
-- Schema14 candidate in ProfileDatabase.java: typed programme revisions, blocks, bounded
-  session rows, current pointer, ordered decision ledger, split draft/header/block rows,
-  custom metadata. Additive13→14; parent/header/session row bounds and FKs.
-- New domain StrengthProgrammingRepository.java with explicit legacy/authored references,
-  activation/stop decisions, protected-session IDs, summaries and optimistic draft API.
-- New SqliteStrengthProgrammingRepository.java: normalised reads, summary pages, draft
-  CAS/retries, custom-definition mirroring, explicit activation/stop and atomic decision
-  writes. Rejects legacy ID collisions, protects fresh actual-linked prescriptions and
-  checks replacement targets/equipment/exclusions without changing actuals.
-- New StrengthProgrammingArchive.java: strict versioned graph/lineage/current-pointer,
-  decision/draft/custom validation and typed row-size preflight. Current custom metadata
-  must agree with the logging definition before restore.
-- SqliteGymExecutionRepository.java and GymProgrammeStore.java: legacy/authored exact
-  source/date validation and planned finalisation/backup links, plus competing-current
-  guard. The original spontaneous association UI/domain remains LEGACY-only and needs
-  a truthful modern extension later; do not coerce optional/RIR targets into legacy RPE.
-- SqliteBackupRepository.java carries strengthProgramming and validates before the shared
-  restore transaction. BackupManager.VERSION candidate9 requires this section; reads1–8.
-  Raw archive2/complete package1 unchanged. GymExportBudget includes the new typed rows.
-- StrengthProgrammeEditor.java recomputes the changed workout's time estimate on swap.
-- Existing schema tests/Android old-schema fixture helpers updated for14/9. New
-  GymSchemaFixture.removeVersionFourteenTables removes children before old fixtures.
+Changes:
+- ProfileDatabase additive13→14: immutable revisions, normalized blocks/session rows,
+  scalar current pointer, ordered decisions, split draft/header/block rows, custom metadata.
+  Bounded UTF8 rows/FKs/unique dates and indexed lightweight summaries. No giant programme
+  row or generic JSON catch-all. Existing schemas1–13 supported; no destructive fallback.
+- Typed repository: draft CAS/idempotent retries, immutable explicit activation/stop,
+  legacy transition/identity collision guards, fresh actual-linked protected sessions
+  verified inside the write transaction, exact metadata/equipment/exclusion checks.
+  customExercises is ONE payload query (N+1 removed). Normalized programme/draft/current
+  reads use one transaction snapshot (included in final build and79-case Android pass).
+  Completed-session lookup joins exact retained programme keys, not ambiguous prefixes;
+  a real execution/activation/restore regression covers similarly named programme IDs.
+- Custom metadata mirrors strength_exercises. Existing CoachingStore.saveExercise now
+  updates typed metadata + logging definition atomically, rejecting measurement-task
+  changes under the same typed ID. Otherwise the old rename UI could break backup
+  consistency. Historical prescription snapshots are not renamed. Regression test added.
+- Existing SqliteGymExecutionRepository/GymProgrammeStore now resolve exact authored and
+  legacy sources/dates/finalisation links without coercing optional/RIR targets into fake
+  legacy RPE. Competing current pointers rejected; old histories retained.
+- Strict archive graph: lineage, activation ledger/current pointer, draft/custom refs,
+  normalized row-size preflight, custom/logging agreement before replacement.
+  SqliteBackupRepository includes strengthProgramming; BackupManager9 requires section,
+  reads1–8; restore reconstruction uses the existing shared transaction. GymExportBudget
+  includes new normalized rows;32MiB bound retained.
+- Old-schema test fixtures drop14 children before simulating older databases.
+- Added formatter targets and five schema tests. Docs updated for candidate14/9.
+- Modern spontaneous Count/Keep still LEGACY-only. Do not coerce new targets into old
+  GymProgramme.Session. Complete an exact, versioned modern association path before
+  claiming complete user-facing authored-programme integration.
 
-### Actual observed results in this interrupted phase
+## Final observed local verification — 2026-10-29 after environment recovery
 
-Fresh pre-change baseline:587,615 domain assertions and55schema cases passed.
-After initial DDL14/test expectation updates:55schema cases passed locally
-(/tmp/010-schema14-recheck.txt). This is NOT a compile, Android, repo or backup pass.
-The NEXT command intended to add five StrengthProgrammingMigrationTest SQL cases
-and run /tmp/010-schema14-complete.txt FAILED BEFORE PROCESS CREATION with
-"exec-server transport disconnected". Do not assume those tests/files exist.
-No new repository/activation/backup instrumentation tests have been written or run yet.
-No formatter target entries for the new persistence files have been added.
-The full uncommitted phase has NOT been compiled or domain-tested after its final edits.
+All FINAL evidence is under `/workspace/scratch/rdd010`:
+- `final-build.log`: **:domain:check, :app:assembleDebug, :app:assembleDebugAndroidTest,
+  :app:lintDebug PASSED** after the final source edits. Domain33suites /587,615assertions.
+- `api28-persistence.log`: **79/79 Android tests PASSED**,315.144seconds, software API28.
+  Includes15new repository tests +64retained JSON/execution/backup/association/exclusion/
+  CoachingStore/BackupManager cases. Runner verifies the exact installed APK SHA256.
+- `schema.log`: **60passed**, including13→14 and all supported upgrade paths, late-DDL
+  rollback, FK/uniqueness, UTF8 bounds, draft cascade and indexed scalar summaries.
+- `format.log`: pinned Kotlin56 +Java105files pass. `release.log`:9cases pass.
+- formatter harness14, Dream source11, artwork integrity14, capture validator8 pass.
+  Bundled artwork integrity177assets; strict174canonical +14routine guidance unchanged.
+- Final app APK SHA256: `0abaf5cb47c22851eeaf8442bad50940d02fe3c945884a7d22fb38d508b5d631`.
+- No new runtime dependency or manifest permission. No S24 physical checks performed.
 
-### Exact recovery tasks
+Failures were investigated and corrected, not hidden:
+- New weighted-actual fixture initially selected a General/Beginner all-bodyweight workout.
+  It now explicitly generates Strength/Intermediate, then a Muscle replacement; actual-set,
+  fresh completed-session protection and historical assertions remain.
+- The existing association backup test still expected8; it now asserts the new envelope9.
+  All corruption/history/explicit Count/Keep assertions remain.79-case rerun passed.
+- Lint flagged nested unbraced-loop indentation; braces fixed it without suppression.
+- The old name editor could diverge typed metadata/logging mirror; writes are now atomic,
+  with a regression preserving history and rejecting incompatible task changes.
+- Local parallel build attempts caused OOM before final verification. Unused daemons were
+  stopped, heap/workers constrained. The recovered final gate passed; do not count failed
+  host ADB helper attempts or erased /tmp logs as current verification.
 
-1. Restore usable execution environment, inspect git status/diff/log and fetch remote
-   feature/main. Preserve all uncommitted files; fast-forward remote handoff/test changes
-   only if Git permits without overwrite. Read current AGENTS. Do not recreate existing
-   source files or trust that the final disconnected command executed.
-2. First inspect/test remote dialog synchronisation fix and its current-head CI.
-3. Review/compile the persistence code before any UI wiring. Add formatter targets.
-   Check all static method signatures/JSON exceptions, RestoreData construction and
-   legacy/authored validation paths. Run domain + schema after the final local changes.
-4. Add the missing real repository tests: draft save/reload/stale retry/delete; immutable
-   activation and stop retries; legacy transition/ID collision; current-pointer conflict;
-   fresh completed-session protection; permanent swap reference clearing; normalized
-   large programme rows; bounded summary reads without session hydration; rollback via
-   injected SQL triggers. Fix any implementation defects these tests reveal.
-5. Add schema14-specific tests:13 upgrade retention; late-DDL rollback; FK/unique dates;
-   UTF8 row limits and summary query index. Existing55cases include paths1–13→14.
-6. Add backup9 tests: all new state round-trip; previous envelope8 without new section;
-  1–7 readers retained; missing/future/corrupt section rejection BEFORE replacement;
-   broken parent/decision/draft/custom/source refs; dual legacy/modern current rejection;
-   rollback after replacement starts; large retained history/preflight.
-7. Extend Gym Now source integration tests for modern planned start/pause/recovery/
-   finish/actual edits/delete and full backup restore. Historical roots/actual sets must
-   remain exact. Modern spontaneous Count/Keep is still unfinished and must be explicit.
-8. Optimise customExercises() (currently selects IDs then individual payloads); use one
-   payload query. Check activation's completed-ID intersection with retained current
-   sessions, and unchanged-future eligibility when equipment changes. Do not silently
-   transfer references or assume custom tasks support automatic progression.
-9. Only after durability gates pass: scoped programme builder/template/preview/activation
-   UI, custom metadata flow, future regeneration and permanent-vs-today swaps. Full0.10
-   scope remains below;0.11 additions remain forbidden.
+## Exact next tasks
 
-PR15 is DRAFT and 0.10 is NOT COMPLETE. This emergency handoff was saved through the
-GitHub connector because no local executor was available. Do not publish experimental
-SQL/app changes or mark physical S24 checks passed.
+1. Inspect the committed durability checkpoint and CURRENT full CI run after push. Require
+   API28/35/36, build/lint/format/domain/schema/source/catalogue and canonical capture gates.
+   The prior0483c96 green run does not certify this new schema14/backup9 source. Fix failures
+   at root cause, keep PR15 draft, adopt the new capture bot without discarding feature work.
+2. Continue application integration below: exact authored spontaneous Count/Keep without
+   legacy RPE coercion, current-programme/Gym Now/Today display, feature-owned authoring
+   orchestration, builder/template/preview/activation/regeneration and permanent-swap UI.
+3. Keep this handoff updated at each verified phase. Do not start0.11, merge prematurely,
+   relabel this checkpoint as a complete release or stop just because one gate is green.
 
-## Latest checkpoint authority (overrides older observed counts below)
+## Remaining agreed0.10 scope (ALL still required where not completed above)
 
-Branch feature/0.10-strength-programming / DRAFT PR15. Do NOT merge: SQL/durable
-programme activation, backups and user-facing builder integration remain unfinished.
-Latest adopted bot3d941ef contains91authentic captures from application sourcec4b2664.
-FULL workflow40781957551 passed339tests EACH API28/35/36 plus build/lint/format/domain/
-schema/guidance. Prior repair source55af2aa also passed339 EACH in40780023551 after
-investigating the initial API36 Paris readiness failure. No assertion was weakened.
-Paris light, London dark/200% and gym200% captures were directly reviewed; native route
-capture from3d941ef also opened and retains actual route/altitude evidence.
+1. Complete application integration for authored sources, explicit associations, current
+   programme display and unified Gym Now start/recovery/history. Preserve exact legacy
+   versions and existing today-only substitutions; no incompatible target/load transfer.
+2. Feature-scoped authoring coordinator/ViewModel and full phone-usable builder: name,
+   goal, duration/blocks, frequency/days, equipment, workout names/notes, exercises/order,
+   sets/reps or supported task, optional RPE/RIR/rest/reference, moves/duplicates/removal,
+   draft save/reload, preview and explicit activation. No timing/business rules in Compose.
+3. Editable template selection and meaningful generated preview: split/days/durations,
+   exercises/targets, blocks, movement emphasis/trade-offs; edit/regenerate before accept.
+   Future-only active edits/regeneration preserve actual-linked and historical sessions,
+   old revisions and explanations; CAS prevents stale acceptance.
+4. Modest custom-exercise metadata entry (name/body area/role/equipment/task/notes), logging
+   and history, no fabricated technique or unsupported progression. Existing UUID custom
+   exercises remain readable; new typed IDs use custom- prefix. Typed rename path is now
+   protected but the UI still needs metadata controls and consistency review.
+5. Permanent-vs-today swap UI with clear athlete choice; durable revision/provenance,
+   exclusion/equipment/intent validation and cleared incompatible references. Preserve
+   current quick equipment-busy/unavailable flows and original actual evidence.
+6. Connect conservative modality progression to explicit future-target proposals without
+   forcing increases; keep existing StartingLoad safeguards. Resolve goal/experience/
+   power/support/time-budget quality gaps found by simulator, not cosmetic labels.
+7. Realistic large strength-history/old backup/rollback coverage as needed; complete all
+   supported API28/35/36 release gates, no Internet permission/dependency regression.
+8. Authentic new builder/template/preview/blocks/custom/permanent-swap screenshots, light/
+   dark/200%/TalkBack review, current canonical captures; update README/release/storage/
+   architecture/TEST_BUILD/VERIFICATION docs to actual shipped behaviour. No mock UI.
+9. Prepare PR15 for review only after full0.10 criteria/automated gates green. No stable
+   production tag. Physical Galaxy S24 checks remain a separate honest manual checklist.
 
-New local short-session correction in StrengthProgrammeGenerator reserves time for
-required later roles, preserving pulling rather than letting early compounds consume
-all20minutes. Reductions in working sets are explained in the preview. Expanded
-StrengthProgrammeTestSuite covers2,430 configurations across20/30/60minutes and
-varied constrained availability. Full local suite passed587,615 assertions/33suites
-(367,936 programme checks +152 modality/source checks +retained219,527).
-Latest log:/tmp/rdd010-domain-final-short.txt. Schema/backup formats still13/8,
-strengthEngine2/strengthState2/raw2/complete1. No new programme data can be created in
-app yet; do not present this foundation as a finished builder/release.
+## Explicitly deferred0.11 — do NOT implement
 
-The interrupted checkpoint command was recovered safely. The two domain files and
-handoff were committed/pushed asae842452f9e75981055b98d6d7afed58eb07818a. No local
-feature edits remain. Workflow40784115944 started for that code head; the following
-handoff-only commit needs its own current-head check. Inspect live PR15 checks rather
-than treating prior green sources as proof for later source. Do not recreate/recommit
-the short-session fix. Next: complete the current-head gate, then continue the exact
-typed SQL/repository/backup and UI work listed below. Preserve
-all completed work. No0.11 timer/warm-up/superset/analytics/deload/achievement scope.
+Nutrition/protein, new height/weight intelligence, muscle-volume/PB dashboards,
+achievements, intelligent deload/recovery, advanced analytics/hybrid, rest timer,
+generated warm-up sets, supersets, major live-workout polish, catalogue expansion for breadth.
 
-## Active release — 0.10.0-test1: Strength Programming 2.0
+## Local environment recovery notes
 
-The latest owner brief supersedes the earlier broad Strength Engine 2.0 backlog.
-0.9 is COMPLETE and merged, not unfinished work. Do not reset/restart it.
+SDK `/workspace/android-sdk`, full JDK17 `/workspace/jdk17`, Gradle cache
+`/workspace/gradle-cache`, writable Android user dir `/workspace/android-user`.
+local.properties (ignored) points to SDK. Default Java21 runtime lacks a javac binary;
+standalone domain script uses its compiler module successfully. Builds need the full JDK.
+Use JAVA_HOME=/workspace/jdk17, ANDROID_USER_HOME=/workspace/android-user,
+GRADLE_USER_HOME=/workspace/gradle-cache, truststore `/etc/ssl/certs/java/cacerts` and the
+configured proxy JVM properties; do not override HOME or disable TLS. For heavy local
+builds use --no-daemon --max-workers=1, -Dorg.gradle.jvmargs='-Xmx1024m -Dfile.encoding=UTF-8'
+and -Pkotlin.compiler.execution.strategy=in-process. Do not run multiple heavy builds.
 
-- Repository: mmwiza1/Race-day-dreams.
-- Feature branch: feature/0.10-strength-programming; draft PR15, based on live main c6299e2
-  (documentation/rules update after 0.9 merge 1fd0d2d).
-- Version: 0.10.0-test1 / code13. Schema13, JSON8, strengthEngine2,
-  strengthState2, raw2 and complete1 are currently UNCHANGED.
-- Baseline: clean source tree; 219,527 domain assertions/31 suites,55 schema,
-  9 release-note cases passed locally before implementation. Merged 0.9 main
-  workflow40760699485 passed331 instrumentation cases EACH API28/35/36 and
-  publication. Main APK50,799,716bytes. S24 physical tests remain unperformed.
+No /dev/kvm. API28 AVD `/workspace/android-avd/recovery.avd`, software emulator launched
+with ANDROID_I_WANT_MY_TCG=yes / -memory1024 / -accel off / -no-window. It needs network
+sandbox permission for local sockets. Default adb cannot write ~/.android; local-only
+Python adb_shell is installed under `/workspace/android-python` and speaks directly to
+127.0.0.1:5555. Persistent runner `/workspace/scratch/rdd010/verify-persistence.py` prints APK SHA256 and streams
+instrumentation results. Transport/read300s accommodates software package installation;
+this is host tooling, not any relaxed Compose test deadline. Do not add these setup
+packages or dependencies to the app. GitHub CI retains accelerated API28/35/36 coverage.
 
-## Permanent continuation rules
-
-Inspect status/diff/log, current remote main and PR before working. Preserve valid
-local and remote changes. Use branch+PR, no force/reset, no main development.
-Domain rules stay Android-independent; typed repositories share one database and
-restore transaction. Reuse Gym Now's authoritative execution model. Prescriptions,
-actual sets, historical versions and explicit choices remain distinct. No Internet
-permission, account, backend, analytics, ads, subscriptions or runtime LLM.
-The app recommends. The athlete decides. The plan adapts.
-
-## Current phase / decisions
-
-Phase A: domain authoring/preview checkpoint887eaa3 committed/pushed.
-Phase B: strict programme/draft/custom codecs, exact source adapter/validator and
-conservative modality progression committed6c4bd0c; artwork repair committed55af2aa.
-Draft PR15 remains open. Follow-up block policy changes now give beginners longer
-practice, avoid unnecessary intensification for beginner/general and Running First,
-and differentiate power specificity/recovery targets; local tests pass. No SQL/UI activation yet. StrengthProgramme models
-immutable lineage, contiguous dated blocks and frozen GymWorkoutDefinition targets;
-StrengthProgrammeEditor validates future-only revisions and permanent substitution
-proposals through the existing metadata/equipment/exclusion ranker, clearing loads.
-StrengthProgrammeGenerator produces explicit dated previews with nine original
-editable template structures, goal/experience prescriptions, optional block phases,
-time budgeting, hybrid soft-placement/context and race-week preview reductions.
-Draft authoring supports partial saveable state, ordering/moves, duplicate workouts/blocks,
-custom targets/notes and strict complete-preview validation. Future regeneration protects
-past/actual-linked sessions even after availability changes. A shared transparent time
-budget explains custom session estimates and budget overruns.
-No SQL repository, persistence/activation/UI is connected to this model yet.
-StrengthProgrammingJson reuses the strict gym parser/workout codec.
-GymWorkoutAdapter.fromAuthoredProgramme + authoredProgramme source validation use
-the existing execution engine, but SqliteGymExecutionRepository still resolves legacy
-programme rows only. Do NOT expose new sources until both repository/backup graphs and
-association/finalisation support them. Preserve null/fractional/RIR targets exactly.
-StrengthTargetProgression delegates weighted load advice to the existing rule and adds
-optional canonical task progression with two recent comparable sessions; custom tasks
-stay unsupported rather than gaining fabricated logic. Domain tests cover stale/future/
-duplicate/warm-up/missing-effort evidence, RIR, changed task identity and actual isolation. Legacy programmes and
-Gym Now behaviour are unchanged. Do not describe this domain checkpoint as a shipped
-builder or a complete 0.10 release.
-
-New programme-quality suite currently covers1,620 configurations and239,985 assertions; modality/source suite152 checks. It verifies real metadata, exclusions, equipment, timing,
-repeatability, templates/blocks, weekday boundaries and future-only substitution rules.
-A canonical catalogue gap is explicit: no BEGINNER_FRIENDLY POWER-primary movement
-exists in the current174. Beginner power previews honestly describe stable strength
-practice rather than mislabelling another exercise; do not invent guidance/artwork.
-Review this limitation against final product acceptance before marking complete.
-
-## Remaining 0.10 work (in order)
-
-1. Domain draft operations, custom-exercise metadata, time-budget explanations and
-   protected future regeneration are now implemented and tested. Extend quality checks
-   further during integration for movement balance, goal/experience/priority and
-   constrained contexts; do not remove the existing simulator invariants.
-2. Typed repositories and additive schema from13 for authored programme revisions,
-   blocks/sessions/targets, drafts, explicit activation/change decisions and modest custom
-   exercise metadata. Resolve existing programme IDs/history through a compatibility
-   boundary; never refreeze history from today's catalogue. Define and test strict codecs.
-3. Wire preview/activation and custom programme/template builder to scoped application
-   coordinator/ViewModel/navigation. Support draft save/reload, equipment, days, effort,
-   rest, notes, add/remove/reorder/move/duplicate exercises/workouts/blocks, editing only
-   future work and explained regeneration. Every visible control must work.
-4. Connect modern programme sources to the ONE existing Gym Now execution model, actual
-   history/association and conservative starting-load guidance. Add permanent-vs-today
-   substitution choice with durable provenance and no load transfer; preserve existing
-   today-only path and exclusions. Modest custom exercises log/history without invented
-   technique or unsupported automated progression.
-5. Conservative modality progression (load/reps/bodyweight/weighted-bodyweight/duration/
-   carries/distance) from recent comparable real working sets and recorded effort; unknown
-   effort remains unknown; explicit optional proposals only. No automatic rewriting.
-6. Complete backup/version graph integration once schema is settled. Bump only as needed;
-   keep old supported readers, validate before replacement, one transaction, test all
-   old schemas including13, actual/history/exclusions/substitutions preservation,
-   corrupt/future rollback, current/old round-trips and realistic large histories.
-7. Full regression/API28/35/36, formatting/lint/build/release/source/catalogue integrity;
-   add authentic builder/template/preview/blocks/custom/permanent-swap captures and
-   review light/dark/200%/TalkBack semantics. Keep existing174+14 guidance truthful.
-8. Update release/architecture/storage/TEST_BUILD/VERIFICATION/README docs with actual
-   results; keep draft PR until ALL acceptance criteria green. Prepare for owner review;
-   do not merge prematurely or create a stable tag. S24 manual checks separate.
-
-## Explicitly OUT of 0.10 (0.11)
-
-Nutrition/protein; new height/weight intelligence; muscle-volume dashboard; major PB
-redesign; achievements; intelligent deload/recovery engine; advanced analytics/hybrid;
-rest timer; generated warm-up sets; supersets; major live-workout polish; catalogue
-expansion for breadth. Do not revive these from older handoff revisions. Only genuine
-catalogue gaps may be filled with complete metadata/guidance and tests.
-
-## Gates / exact next action
-
-Inspect actual git state first. Latest local gate:459,664 assertions/33 suites,
-55schema and9release-note cases passed; pinned format/check and diff check pass.
-PR15 is DRAFT. Commit/push valid uncommitted codec/progression and readiness fixes,
-then require the current-head API matrix before claiming these Android changes verified.
-Continue with typed SQL repositories/backup integration before adding UI controls. Workflow capture branch/artifact version
-has been advanced to0.10; new source requires fresh91canonical captures before acceptance.
-Observed Android checkpoints:
-- Initial workflow40773971875/source887eaa3: API28/35 passed331 EACH; API36 had ONE
-  Paris artwork-readiness failure (context ready, illustrations labelled Loading).
-- Repair source55af2aa26941d5134d32747eaa09a3ad1ab7fdfe passed FULL workflow40780023551:
-  **339tests EACH API28/35/36**, including6strict codec and2deterministic publication
-  tests; build/lint/domain/schema/format/catalogue all green. No timeout/assertion relaxed.
-  The exact underlying cause of the initial emulator timeout was not proven; the repaired
-  publisher has one producer-owned asset identity and an explicit missing-image state.
-- Canonical bot5d5858c adopted91actual API35 captures from55af2aa. Fingerprint
-  54c8ea244c8d8a952f16f12d905d77bad5fd3168400ad68ece00c9be002fdbc3.
-  APK50,898,024bytes. Directly opened Paris light, London dark/200%, gym200% actual-entry:
-  artwork ready, accepted route/design preserved and controls readable. No new builder
-  screen is claimed; those controls do not exist yet.
-- The following goal/experience block-policy checkpoint changes domain generation and
-  one codec fixture expectation. Its current-head CI/canonical source must be inspected
-  independently;55af results do not automatically certify later code. PR15 stays DRAFT
-  regardless of checkpoint-green status because the full0.10 integration is incomplete.
-
-Exact next implementation files: add typed programme/draft/custom repositories using
-ProfileDatabase/SqliteStoreAccess and StrengthProgrammingJson; extend ProfileDatabase
-with an additive migration only when the complete table/backup contract is ready.
-ExistingSqliteGymExecutionRepository.programme/validateProgrammeSource and backup graph
-validation currently know ONLYlegacyGymProgrammeStore. Resolve authored source IDs and
-exact sessions too, preserving old versions and avoiding ID/version collisions. Preserve
-null/RIR/fractional targets through the new adapter instead of legacy coercion. Integrate
-planned finalisation, associations, current pointer and backup graphs atomically before
-exposing activation. Avoid a whole long programme in a CursorWindow-sized payload; use
-bounded session rows, summary queries and one shared transaction. No schema change has
-been made yet. See docs/STRENGTH_PROGRAMMING_0_10.md for the boundary and remaining phases.
-
-No local Android SDK/adb is verified; use actual GitHub CI rather than claiming local or
-physical tests. Record exact commit/run IDs, failures and next files here at each checkpoint.
-
-## Physical S24 checks — unperformed
+## Galaxy S24 checks — UNPERFORMED
 
 Outdoor/locked/background/long GPS, poor GPS return, battery/reboot/process recovery;
 real Health Connect providers/write/reimport/revocation; BLE HR/cadence hardware;
-TTS/music/calls/audio focus; TalkBack/200% real use; complete backup/restore on hardware.
+TTS/music/calls/audio focus; TalkBack/200% actual use; complete backup/restore on hardware.

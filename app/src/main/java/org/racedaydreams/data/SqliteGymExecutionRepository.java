@@ -694,7 +694,7 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             if (source.kind() == GymExecution.SourceKind.SAVED_WORKOUT)
                 throw new IllegalArgumentException("The saved workout revision is missing.");
             if (source.kind() == GymExecution.SourceKind.PROGRAMME) {
-                GymWorkoutSourceValidator.programme(definition, source, programme(db, source));
+                programmeDate(db, definition, source);
             } else {
                 proof = actualSourceProof(db, definition, source);
             }
@@ -897,10 +897,17 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         }
     }
 
+    private static java.time.LocalDate programmeDate(
+            SQLiteDatabase db, GymWorkoutDefinition workout, GymExecution.SourceReference source) {
+        var authored = SqliteStrengthProgrammingRepository.load(db, source.id(), source.revision());
+        if (authored != null)
+            return GymWorkoutSourceValidator.authoredProgramme(workout, source, authored).date();
+        return GymWorkoutSourceValidator.programme(workout, source, programme(db, source)).date();
+    }
+
     private static void validateProgrammeSource(SQLiteDatabase db, WorkoutRow row) {
         if (row.source() != null && row.source().kind() == GymExecution.SourceKind.PROGRAMME)
-            GymWorkoutSourceValidator.programme(
-                    row.definition(), row.source(), programme(db, row.source()));
+            programmeDate(db, row.definition(), row.source());
     }
 
     private static StrengthSession actual(SQLiteDatabase db, String id) {
@@ -929,15 +936,13 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         }
         var source = finished.plannedAssociation();
         if (source != null) {
-            var session =
-                    GymWorkoutSourceValidator.programme(
-                            finished.prescription(), source, programme(db, source));
+            var date = programmeDate(db, finished.prescription(), source);
             JSONObject expected =
                     object(
                             "id",
                             finished.id(),
                             "plannedDate",
-                            session.date().toString(),
+                            date.toString(),
                             "gymVersion",
                             source.id() + ":v" + source.revision(),
                             "gymSession",
@@ -974,28 +979,39 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                 checkLink(
                         finished,
                         FeatureJson.object(c.getString(0)),
-                        programme(db, finished.source()));
+                        programmeDate(db, finished.prescription(), finished.source()));
             }
         }
     }
 
-    private static void checkLink(GymExecution execution, JSONObject link, GymProgramme programme) {
-        var session =
-                GymWorkoutSourceValidator.programme(
-                        execution.prescription(), execution.source(), programme);
+    private static void checkLink(
+            GymExecution execution, JSONObject link, java.time.LocalDate date) {
+        var source = execution.source();
         JSONObject expected =
                 object(
                         "id",
                         execution.id(),
                         "plannedDate",
-                        session.date().toString(),
+                        date.toString(),
                         "gymVersion",
-                        programme.id() + ":v" + programme.version(),
+                        source.id() + ":v" + source.revision(),
                         "gymSession",
-                        session.id());
+                        source.sessionId());
         if (!sameLink(link, expected))
             throw new IllegalArgumentException(
                     "The gym execution association differs from its original prescription.");
+    }
+
+    private static java.time.LocalDate programmeDate(
+            GymWorkoutDefinition workout,
+            GymExecution.SourceReference source,
+            java.util.Map<String, GymProgramme> legacy,
+            java.util.Map<String, org.racedaydreams.domain.strength.StrengthProgramme> authored) {
+        String key = source.id() + ":v" + source.revision();
+        var p = authored.get(key);
+        return p == null
+                ? GymWorkoutSourceValidator.programme(workout, source, legacy.get(key)).date()
+                : GymWorkoutSourceValidator.authoredProgramme(workout, source, p).date();
     }
 
     private static boolean sameLink(JSONObject actual, JSONObject expected) {
@@ -1065,6 +1081,15 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
 
     public static void validate(
             JSONObject data, JSONObject coaching, JSONObject gym, JSONObject development) {
+        validate(data, coaching, gym, development, java.util.Collections.emptyMap());
+    }
+
+    public static void validate(
+            JSONObject data,
+            JSONObject coaching,
+            JSONObject gym,
+            JSONObject development,
+            java.util.Map<String, org.racedaydreams.domain.strength.StrengthProgramme> authored) {
         engineFields(data);
         var workouts = new HashMap<WorkoutKey, WorkoutRow>();
         JSONArray rows = array(data, "workouts", 10000);
@@ -1087,10 +1112,7 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         for (WorkoutRow workout : workouts.values()) {
             var source = workout.source();
             if (source != null && source.kind() == GymExecution.SourceKind.PROGRAMME)
-                GymWorkoutSourceValidator.programme(
-                        workout.definition(),
-                        source,
-                        programmes.get(source.id() + ":v" + source.revision()));
+                programmeDate(workout.definition(), source, programmes, authored);
             if (source != null && source.kind() == GymExecution.SourceKind.SAVED_WORKOUT)
                 throw new IllegalArgumentException(
                         "A saved revision cannot create itself as a source.");
@@ -1188,7 +1210,7 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
                     checkLink(
                             execution,
                             link,
-                            programmes.get(source.id() + ":v" + source.revision()));
+                            programmeDate(execution.prescription(), source, programmes, authored));
                 }
             } else {
                 if (!isNull(row, "currentActual")
