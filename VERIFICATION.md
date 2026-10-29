@@ -8,6 +8,17 @@ Current-programme read/execution paths are integrated in the later checkpoint be
 
 Verified implementation source: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`.
 
+## Later notes-only gate: selected-city readiness synchronization
+
+Workflow40937904521 passed API28/35 with370cases each, but API36 failed one readiness
+assertion. The generic waiter could match the previous city's ready container before the
+newly selected city rendered. Its waiter now requires ready state and the selected city's
+heading within the same semantic subtree. Hero/landmark/disposal assertions and20sec
+bound remain unchanged. Full app/test compilation and lint passed; the real local API28
+five-city, three-round case passed1/1 in94.419s. No production artwork/geometry changes.
+The source-bound new full matrix remains required. Separate builder edits are in progress
+and are not certified by that readiness test.
+
 ## Verified authored integration checkpoint —ae92cdf
 
 [Workflow40931917209](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40931917209)

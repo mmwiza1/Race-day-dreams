@@ -38,7 +38,8 @@ class DreamArtworkReadinessTest {
                 compose.waitUntil(20000) {
                     compose
                         .onAllNodes(
-                            hasStateDescription("Offline Dream artwork ready"),
+                            hasStateDescription("Offline Dream artwork ready") and
+                                hasAnyDescendant(hasText("Dream Route · ${route.name()}")),
                             useUnmergedTree = true,
                         )
                         .fetchSemanticsNodes()

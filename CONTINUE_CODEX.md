@@ -11,6 +11,24 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
+## ACTIVE continuation — builder implementation underway; readiness waiter corrected
+
+- Branch feature/0.10-strength-programming, PR15 still DRAFT. Current parent50a03eb.
+  Latest notes-only workflow40937904521 passed API28/35 but API36 failed ONE of370tests:
+  DreamArtworkReadinessTest54 could see old-city readiness before selected-city composition.
+- Fix waits for ready state AND selected-city heading on the SAME semantic node. All image,
+  landmark, disposal assertions and20sec bound remain. No production artwork change needed.
+  Local domain588,069checks/33suites +60schema passed; full compile/build/lint passed;
+  exact real API28 five-city/three-round test PASSED1/1 in94.419s, readiness-fence-api28.log.
+  This fix is a separate committed checkpoint; inspect actual log/remote/full new CI.
+- New builder work is IN PROGRESS and must be preserved: shared GymTargetInput.kt parser
+  extracted from existing GymNowViewModel, GymSlotEditor reusable with allowOpen=false,
+  new StrengthProgrammeViewModel typed optimistic draft orchestration. These files are
+  NOT yet compiled/tested or exposed through navigation. Complete atomic draft+activation
+  verification in typed repository, full phone builder UI, tests and routing before exposure.
+- Existing authored programme integration and prior verified matrix are intact below.
+  No reset/main merge/0.11 work. New full0.10 builder and remaining scope still required.
+
 ## FINAL VERIFIED LIVE checkpoint — authored read/execution integration complete; builder next
 
 - Code sourceae92cdf52c47773b8d701890d04b140a39e9cbb6 passed COMPLETE workflow40931917209:
