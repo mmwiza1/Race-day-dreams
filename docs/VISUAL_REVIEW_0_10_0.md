@@ -27,8 +27,19 @@ shrinking. Four issues require the current follow-up and another real capture re
 - The custom entry capture leaves the keyboard over the form. Close the keyboard through
   the real Android test interaction before capture; keep the production form unchanged.
 
-The follow-up implements these fixes and a chronological-preview regression. Its regenerated
-images have NOT yet been reviewed; the existing0eb56d6 images do not prove those fixes.
+## Refined source reviewed
+
+Source1dc34c2665ced02a1a8f5e5f33f3b81abe30ec8f passed workflow41063159777:
+**388cases/API28,35,36**, build/lint/all supporting gates and98captures. Canonical
+bot2c7a59976634fda88b96e49425da6fc23f2eb9a6 preserves source fingerprint
+e6a0a1b0cb613ece151a6006cae97206f42391bf092b42b8daaf19c3afc047a6.
+
+All seven refined images were opened. The normal preview now shows30October then2November
+before6November; the explanations remain available through disclosures. All200% contextual
+navigation labels are visible at entry, with natural scrolling. Dark text/cards remain
+legible. The custom entry image now shows its selectors and notes without a covering
+keyboard. These findings accept the scoped manual-builder/custom-entry refinements;
+they do not certify unfinished template/generated/future-edit workflows or physical use.
 
 ## Remaining acceptance
 

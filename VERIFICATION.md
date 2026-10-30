@@ -1,5 +1,19 @@
 # 0.10 development checkpoint — not release acceptance
 
+## Refined manual/custom checkpoint — source1dc34c2
+
+Workflow41063159777 passed **388tests on each API28,35,36** plus all build/lint/domain/
+schema/release/format/guidance/canonical jobs. Actual job logs confirm the counts. API35
+APK artifact12982357035 is51,438,696bytes; screenshots12982127632. Canonical bot2c7a599
+was imported with identical verified blobs/tree/commit, preserving all98captures.
+Seven refined captures were opened; see docs/VISUAL_REVIEW_0_10_0.md for observed results.
+
+A subsequent small browser-inventory fix prioritises authored programmes and adds two
+real browser regressions for precedence/refresh and classified custom filters. Production
+and all instrumentation sources compile offline; Android execution for that newer fix
+is still required (390cases expected). No schema/backup/permission change or S24 result.
+
+
 ## Verified manual authoring and custom metadata — source0eb56d6
 
 Workflow41058603236 passed all required jobs: **387tests each on API28,35,36**,

@@ -86,11 +86,16 @@ fun ExerciseBrowseScreen(
                 .distinct()
         }
     val programmed =
-        remember(state.gymProgramme) {
-            state.gymProgramme
-                ?.sessions()
-                ?.flatMap { it.exercises().map { row -> row.exerciseId() } }
-                ?.distinct() ?: emptyList()
+        remember(state.authoredGymProgramme, state.gymProgramme) {
+            state.authoredGymProgramme
+                ?.workouts()
+                ?.flatMap { it.definition().slots().map { row -> row.exercise().id() } }
+                ?.distinct()
+                ?: state.gymProgramme
+                    ?.sessions()
+                    ?.flatMap { it.exercises().map { row -> row.exerciseId() } }
+                    ?.distinct()
+                ?: emptyList()
         }
     val catalogue =
         remember(state.exercises) {

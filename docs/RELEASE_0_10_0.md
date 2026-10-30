@@ -36,6 +36,10 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Fixes
 
+- Exercise discovery uses the current authored programme for its programme inventory,
+  with legacy inventory retained when appropriate. Custom area/role/equipment filters
+  use the metadata the athlete actually supplied.
+
 - Dream artwork publication now distinguishes pending loading from unavailable
   illustrations and keeps readiness tied to the current city. The strict screenshot
   deadline remains unchanged; new fault-injection tests and API verification are required.

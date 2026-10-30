@@ -11,59 +11,67 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## ACTIVE continuation — manual builder/custom metadata verified; visual-review fixes next
+## ACTIVE continuation — manual/custom/visual phase verified; inventory follow-up then templates
 
-- Continue `feature/0.10-strength-programming`, PR15 OPEN/DRAFT; mainc6299e2 unchanged.
-  Code0eb56d887861be69d178ca3cc40dbc1500895a6b passed COMPLETE workflow41058603236:
-  **387cases per API28/35/36**, build/lint/domain/schema/release/format/guidance/captures.
-  API35 APK artifact12978054237; screenshots12978786813; APK51,422,312bytes.
-- Canonical bot3deee3e585afa5184b48c7415c06b833271002af (parent0eb56d6) was adopted
-  locally by verified blob/tree/commit hashes. All100changed capture/metadata files were
-  copied byte-for-byte;98images verify540×1200. Local app/doc changes were preserved.
-  Bot's own follow-on workflow41060421446 is action_required, NOT a passing source gate.
-  The code gate above is green; inspect latest actual HEAD/CI before proceeding.
-- Completed: feature-owned manual builder + typed saved drafts, exact target parser/editor,
-  blocks/workouts/order/moves/duplicates, concrete dated preview, explicit activation/stop.
-  Atomic activateDraft checks reviewed draft/current pointer/exclusions/custom metadata
-  in ONE transaction, preserving retries and rollback. Six repository cases plus six UI
-  cases passed the387matrix. No invented actual sets or second execution engine.
-- Structured custom entry from Exercises/builder is implemented and passed4real UI/VM cases:
-  explicit body area/role/task/equipment/notes, six profiles+weighted bodyweight, legacy UUID
-  retention, metadata-aware browse/detail, native execution and JSON9round trip with actual
-  15kg independent of prescribed20kg. No fabricated technique/estimated1RM/progression.
-- Actual seven new light/dark200% builder/preview/custom-entry images opened. Review found
-  excessive preview calculations, weekday-grouped dates, section scroll carry-over and
-  keyboard-covered custom capture. Follow-up IMPLEMENTED locally (not yet Android-passed):
-  evidence disclosures; cached date sorting in both readers (no stored rewrites); section-keyed
-  scroll reset/contextual navigation; keyboard dismissal; singular exercise label; new
-  chronological-order test and immediate-heading assertions. Next matrix should have388cases.
-- Current uncommitted follow-up also updates architecture/strength docs and S24 checklist;
-  docs/VISUAL_REVIEW_0_10_0.md records findings without claiming refined captures passed.
-  Check latest final offline compiler logs after scroll change: preview-final-{production,tests}.log.
-  No schema/backup/dependency/permission change. Version/code/schema/root/authoring/raw/complete
-  stay0.10.0-test1/13/14/9/1/2/1. Strict174canonical+14routine/177asset audit passes.
-- Local sandbox denies Gradle daemon sockets/git network; permission requests stalled.
-  Use supported GitHub connector git-data APIs for needed pushes: verify blob/tree SHAs,
-  expected-head fast-forward, import IDENTICAL unsigned Git object locally. Helper
-  /workspace/scratch/rdd010/import-api-commit.py checks staged tree and exact parent.
-  No reset/force-push/policy bypass. All production/test sources also compile offline using
-  cached Kotlin/Java tools; this is not an APK/lint/device result. CI supplies real gates.
+- Branch `feature/0.10-strength-programming`, PR15 OPEN/DRAFT; mainc6299e2 unchanged.
+  Source **1dc34c2665ced02a1a8f5e5f33f3b81abe30ec8f** passed COMPLETE workflow41063159777:
+  **388tests/API28 +388/API35 +388/API36**, app/test build, lint,588,070domain checks/33suites,
+  60schema/9release, formatting, strict174canonical/14routine guidance and98captures.
+  API35 APK12982357035 (51,438,696bytes), screenshots12982127632. No physicalS24 results.
+- Canonical bot **2c7a59976634fda88b96e49425da6fc23f2eb9a6** (parent1dc34c2) adopted locally
+  with verified blob/tree/commit SHAs;98PNG540×1200, source fingerprint
+  e6a0a1b0cb613ece151a6006cae97206f42391bf092b42b8daaf19c3afc047a6. All7new manual/
+  preview/custom captures opened; refinements reviewed. Source/VERIFICATION/visual review
+  distinguish earlier0eb387-case and refined388-case results. Keep existing capture lineage.
+- Completed: feature-owned manual builder, typed optimistic drafts, blocks/workouts/order/
+  moves/duplicates, precise optional targets, saved recovery, dated preview and explicit
+  activation/stop. Atomic activateDraft validates reviewed draft/current pointer/fresh
+  eligibility in ONE SQL transaction, with idempotent retries and rollback tests.
+- Structured custom entry from library/builder passed4real UI/VM cases: explicit body area/
+  role/task/equipment/notes;6profiles+weighted bodyweight; legacy UUID/history retained;
+  metadata-aware browse/detail; native Gym Now execution; JSON9round trip preserves actual
+  15kg separately from prescribed20kg. No fake technique/estimated1RM/automatic progression.
+- Visual review fixed chronological display WITHOUT stored rewrites, moved long calculations
+  behind disclosures, reset scroll per editor/preview section (actual production key, not
+  test alignment), contextual navigation, keyboard dismissal and singular exercise label.
+  New chronology/immediate-heading cases passed388matrix. docs/VISUAL_REVIEW_0_10_0.md updated.
+- Final integration inspection found browser “In my programme” still used legacy inventory
+  only. Follow-up now prioritises current authored workouts and remembers both programme
+  families; two new real browser tests cover owner precedence/refresh and user-supplied
+  body-area/role/equipment filters. These files compile with all production/test sources;
+  full Android gate for this latest follow-up is STILL REQUIRED (390cases expected).
+  Test fixture's legacy explanation is non-null; erroneous assertDoesNotExist extension
+  import was corrected (the assertion itself remains). No assertions weakened.
+- Version/code/schema/rootbackup/authoring/raw/complete stay0.10.0-test1/13/14/9/1/2/1.
+  No new dependency/INTERNET permission, no destructive migration, no0.11 work, no merge/tag.
+  PR15 MUST remain draft: full0.10 templates/generated/future editing etc are unfinished.
+- Local sandbox blocks Gradle daemon sockets/git network; permission requests stalled.
+  GitHub connector reads/pushes work. Use expected-head fast-forward + exact blob/tree SHA
+  checks and import IDENTICAL unsigned Git objects; no reset/force. Helpers in
+  /workspace/scratch/rdd010: import-api-commit.py, ingest-git-files.py, offline-compile-*.py.
+  Offline compile is NOT an APK/lint/device pass; the real source-bound CI above supplies it.
 
 ### Immediate exact tasks
 
-1. Finish final offline compile/format/release checks; push coherent visual-review follow-up
-   on top of3deee3e. Run full API28/35/36, fix actual failures, require388cases/98captures.
-   Inspect regenerated builder/preview/custom images; current canonical0eb images are stale
-   for the new follow-up. Keep PR15 draft and update this section with actual new run/source.
-2. Continue FULL0.10 next: editable templates/generated CONCRETE previews, future-only
-   editing/regeneration, permanent-vs-today swaps, optional modality progression proposals,
-   goal/experience/time-budget quality gaps, version/history UI and final docs/release gate.
-   Do NOT flatten generated week/date/phase/hybrid variation into a recurring draft.
-3. Reuse the completed manual builder, typed repository/domain engines and native execution.
-   Next files: StrengthProgrammeViewModel.kt, StrengthProgrammeBuilderScreen.kt, new template/
-   concrete-preview editor components, StrengthProgrammeEditor/Generator and typed repository.
-   Save only IDs/small forms in SavedState. Custom metadata/UI are complete; do not recreate.
-4. No0.11 features, no merge/tag until full0.10 complete. Physical S24 checks are UNPERFORMED.
+1. Push/check this browser-inventory follow-up on top of2c7a599, inspect full new CI and
+   require390cases/API28/35/36 +98captures. Fix roots, never weaken or blindly rerun.
+   Inspect actual branch/log/PR before trusting these notes. Update this section/run/SHA.
+2. Continue FULL0.10 with editable templates/generated CONCRETE previews, preserving dated
+   week/phase/hybrid changes and explanations. Existing StrengthProgrammeDraft repeats one
+   Day across a WeekBlock and strict v1 JSON has no generated trade-off field; do NOT
+   flatten the first week or silently discard rationale to claim template editing complete.
+   Choose a typed durable concrete-preview/editing design and test its older/current backup
+   reads before changing formats. Reuse existing generator/templates/repository/native engine.
+3. Complete future-only edits/regeneration, permanent-vs-today substitutions, optional modality
+   progression proposals, goal/experience/time-budget quality gaps, version/history UI,
+   authentic remaining workflow captures and final docs/full release gate. Keep prior actuals/
+   prescriptions immutable and require explicit acceptance. Beginner Power catalogue gap
+   remains honestly documented; do not relabel ordinary strength as ballistic evidence.
+4. Next exact files: StrengthProgrammeViewModel.kt, StrengthProgrammeBuilderScreen.kt,
+   new template/concrete-preview components; StrengthProgrammeEditor/Generator/Draft,
+   StrengthProgrammingJson/Archive and typed repository as necessary. Manual builder and
+   custom metadata are implemented/tested; do not recreate them or restart from main.
+5. No0.11 features. No ready/merge until FULL0.10 complete. PhysicalS24 list is UNPERFORMED.
 
 ## Historical checkpoint — authored read/execution integration complete
 

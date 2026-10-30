@@ -140,3 +140,10 @@ next phase. Structured custom metadata entry reuses the typed custom repository/
 mirror, supports all existing measurement tasks, retains older UUID history and keeps
 custom movements out of automatic generated selection. No fake guide or estimated1RM is
 attached. Current source-specific Android/capture status is recorded in CONTINUE_CODEX.md.
+
+## Current programme inventory
+
+The exercise browser reads authored prescriptions before legacy programme inventory and
+refreshes when the current family changes. This is a read-only projection; historical
+programme rows and actual sets are unchanged. Typed custom metadata supplies body-area,
+movement and equipment filters without inferring classification from an exercise name.
