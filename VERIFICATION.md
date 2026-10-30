@@ -1,5 +1,21 @@
 # 0.10 development checkpoint — not release acceptance
 
+## Verified manual authoring and custom metadata — source0eb56d6
+
+Workflow41058603236 passed all required jobs: **387tests each on API28,35,36**,
+app/test build, lint, domain588,070checks/33suites,60schema,9release-note, formatting,
+strict174canonical/14routine guidance and98required captures. API35 APK12978054237
+is51,422,312bytes; screenshot artifact12978786813. Canonical bot3deee3e preserves
+those actual images. Its own follow-on run41060421446 needs action; it is not a green
+source result. The verified code run above remains the source-bound evidence.
+
+All seven new authoring captures were opened. Review found excessive explanations,
+weekday-grouped display, carried scroll position and the custom capture's keyboard.
+The new follow-up addresses these and adds a chronological-order regression (388expected
+cases). Cached compiler/source and formatter checks pass; another full Android/capture
+run is required for that newer code. See docs/VISUAL_REVIEW_0_10_0.md. No S24 check passed.
+
+
 ## Manual-builder Android follow-up and structured custom metadata (30 October 2026)
 
 Source93250d6 workflow41055834777 passed source/build/lint/format/guidance gates. API28/35/36 each completed382tests with one navigation-contract mismatch: the new builder route was absent from the exact

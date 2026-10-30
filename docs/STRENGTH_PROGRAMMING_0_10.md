@@ -134,5 +134,9 @@ pointer and refreshes a stale selection rather than silently changing targets. E
 actual entry, pause/recovery and finalisation still use the original Gym Now coordinator.
 Equipment-busy alternatives resolve the started authored version's goal, experience and
 specific equipment capabilities. Today-only swaps clear incompatible reference loads and
-preserve the original prescription/source. The programme builder and activation/editing
-controls remain the next application phase; this integration does not activate previews.
+preserve the original prescription/source. The manual builder now saves and previews typed recurring blocks and explicitly activates
+reviewed drafts. Editable generated/template previews and future-edit controls remain the
+next phase. Structured custom metadata entry reuses the typed custom repository/logging
+mirror, supports all existing measurement tasks, retains older UUID history and keeps
+custom movements out of automatic generated selection. No fake guide or estimated1RM is
+attached. Current source-specific Android/capture status is recorded in CONTINUE_CODEX.md.

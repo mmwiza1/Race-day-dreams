@@ -57,6 +57,7 @@ class StrengthProgrammeBuilderScreenTest {
         completeOneDayDraft()
         click("Preview programme")
         await { model.state.value.preview != null }
+        compose.onNodeWithText("Review programme").assertIsDisplayed()
         val candidate = model.state.value.preview!!.programme
         assertEquals(4, candidate.workouts().size)
         candidate.workouts().forEach {
@@ -213,10 +214,66 @@ class StrengthProgrammeBuilderScreenTest {
         compose.onNodeWithText("Cancel").performClick()
         click("Preview programme")
         await { model.state.value.preview != null }
+        compose.onNodeWithText("Review programme").assertIsDisplayed()
         compose.onNodeWithText("Review activation").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Keep editing draft").performScrollTo().performClick()
         await { model.state.value.preview == null }
         compose.onNodeWithText("Preview programme").performScrollTo().assertIsDisplayed()
+        assertNull(io { repository.currentReference() })
+    }
+
+    @Test
+    fun datedPreviewOrdersWeekdaysChronologicallyWithoutRewritingStoredPrescriptions() {
+        install()
+        click("Build a programme from scratch")
+        await { model.state.value.draft != null }
+        val draft = model.state.value.draft!!
+        val block = draft.blocks().single()
+        compose.runOnIdle { model.header("Two-day foundation", draft.start(), draft.settings()) }
+        await { model.state.value.draft!!.name() == "Two-day foundation" }
+        compose.runOnIdle {
+            model.putSlot(
+                block.id(),
+                block.days()[0].id(),
+                null,
+                ExerciseCatalog.definition("push-up").exercise(),
+                GymSlotInput(minimumReps = "6", maximumReps = "10"),
+                {},
+            )
+        }
+        await { model.state.value.draft!!.blocks().single().days()[0].slots().size == 1 }
+        compose.runOnIdle {
+            model.putSlot(
+                block.id(),
+                block.days()[1].id(),
+                null,
+                ExerciseCatalog.definition("plank").exercise(),
+                GymSlotInput(seconds = "30"),
+                {},
+            )
+        }
+        await { model.state.value.draft!!.blocks().single().days()[1].slots().size == 1 }
+        click("Preview programme")
+        await { model.state.value.preview != null }
+        val preserved = model.state.value.preview!!.programme
+        val dates = preserved.workouts()
+        assertEquals(8, dates.size)
+        fun position(index: Int): Float {
+            val workout = dates[index]
+            val label = "${friendlyDate(workout.date())} · ${workout.definition().title()} · about"
+            return compose
+                .onNodeWithText(label, substring = true)
+                .fetchSemanticsNode()
+                .positionInRoot
+                .y
+        }
+        assertTrue(
+            "First week's second day must precede the following week",
+            position(1) < position(2),
+        )
+        compose.onNodeWithText("Programme trade-offs").assertExists()
+        // Rendering must not rewrite the evidence model or activate a programme.
+        assertEquals(preserved, model.state.value.preview!!.programme)
         assertNull(io { repository.currentReference() })
     }
 

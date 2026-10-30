@@ -405,3 +405,35 @@ TTS/music/calls, battery and other earlier S24 checks remain separately unperfor
 - [ ] Verify this flow in dark mode, 200% text and TalkBack. Continue the existing outdoor
   recording/locked-screen/recovery/HC/BLE/TTS/battery checks above. No physical result is
   inferred from synthetic traces or emulator/API tests.
+
+## 0.10 manual programmes and custom exercises — Galaxy S24 UNPERFORMED
+
+Record APK/source SHA, Android/One UI version, date and observations. None of the following
+is claimed as physically passed. The complete0.10 release remains unfinished; use a named
+feature-branch APK and do not assume the rolling main download contains it.
+
+- [ ] Back up0.9(schema13/JSON8) before installing0.10(schema14/JSON9). Compare retained
+  programmes, actuals/PBs, exclusions and substitution provenance after upgrade. Test an older
+  supported restore on an expendable installation; rejected corrupt/future files must not replace data.
+- [ ] Choose Strength without a running/race profile. Open programme authoring, save an
+  incomplete draft, close/reopen the app and resume it. Existing programming stays active.
+- [ ] Build two workout days with optional fractional RIR/rest/reference targets and notes.
+  Add/reorder/move/remove exercises, duplicate workouts/blocks and review exact dates.
+  At200% text and dark mode, all controls scroll into view and TalkBack labels remain useful.
+- [ ] Cancel activation: no actuals/current programme change. Confirm activation: correct
+  programme becomes current; previous versions/history remain. Review a future start date:
+  confirmation explains that choosing it changes the current programme pointer immediately.
+- [ ] Start the authored workout through Gym Now. Actual fields begin empty. Enter different
+  loads/reps than prescribed, finish and verify retained source version and entered actuals.
+- [ ] Create a custom movement with body area/role/task/equipment/notes. Explicitly choose
+  equipment or no-equipment. Search/filter it and view its metadata. No unrelated technique
+  artwork, estimated1RM or invented progression appears. Existing UUID custom history stays.
+- [ ] Use a custom exercise in a manual programme, enter actuals and inspect valid recorded
+  PB/history. Complete JSON/complete-package backup round trips retain draft, custom metadata,
+  accepted programme, actuals, exclusions/favourites and source/substitution provenance.
+- [ ] Verify stale previews after another programme change request review instead of silently
+  activating newer programming. Killing/reopening an unaccepted preview never activates it.
+
+Generated/template editing, future regeneration, permanent-swap UI and progression proposal
+controls are not yet a finished workflow; their later acceptance cases must be added when
+implemented. Rest timers/supersets/generated warm-ups and other0.11 features are excluded.

@@ -30,7 +30,8 @@ internal fun AuthoredProgrammeOverview(
                     remember(programme.id(), programme.revision(), block.id()) {
                         mutableIntStateOf(7)
                     }
-                block.workouts().take(limit).forEach { workout ->
+                val chronological = remember(block) { block.workouts().sortedBy { it.date() } }
+                chronological.take(limit).forEach { workout ->
                     TextButton(onClick = { open(workout.id()) }) {
                         Text(
                             "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"

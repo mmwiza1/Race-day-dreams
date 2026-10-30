@@ -61,311 +61,334 @@ fun StrengthProgrammeBuilderScreen(
         if (!state.loading && section == "edit" && state.draft == null) section = "drafts"
     }
     BackHandler { back() }
-    CoachPage {
-        TextButton(onClick = ::back, enabled = !state.busy) { Text("Back") }
-        CoachHeading(
-            if (section == "drafts") "Strength programmes"
-            else if (section == "preview") "Review programme" else "Programme builder"
-        )
-        if (state.loading || state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-        state.error?.let {
-            Text(
-                it,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            )
-        }
-        state.notice?.let {
-            Text(it, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-        }
-        if (section == "drafts") {
-            Text(
-                "Build a programme without a race goal. Draft edits save locally; nothing starts until you review and activate."
-            )
-            Button(
-                onClick = {
-                    model.newDraft {
-                        section = "edit"
-                        expandedDay =
-                            model.state.value.draft
-                                ?.blocks()
-                                ?.firstOrNull()
-                                ?.days()
-                                ?.firstOrNull()
-                                ?.id()
-                    }
-                },
-                enabled = enabled,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("Build a programme from scratch")
-            }
-            if (onCreateCustom != null)
-                TextButton(onClick = onCreateCustom, enabled = enabled) {
-                    Text("Create custom exercise")
-                }
-            if (state.current != null)
-                SemanticCard(Tile.Strength) {
-                    Text("Current strength programme", style = MaterialTheme.typography.titleLarge)
-                    Text("Your current programming remains active while you prepare a draft.")
-                    WhyDetails(state.current!!.key(), "Preserved programme identity")
-                    TextButton(onClick = { confirmStop = state.current }, enabled = enabled) {
-                        Text("Stop programming")
-                    }
-                }
-            TextButton(onClick = { model.reload() }, enabled = enabled) {
-                Text("Refresh saved programmes")
-            }
-            Text("Saved drafts", style = MaterialTheme.typography.titleLarge)
-            if (state.drafts.isEmpty())
+    key(section) {
+        CoachPage {
+            TextButton(onClick = ::back, enabled = !state.busy) {
                 Text(
-                    "No drafts on this page. Create one above; your workout history stays independent."
+                    if (section == "preview") "Edit draft"
+                    else if (section == "edit") "Saved drafts" else "Back"
                 )
-            state.drafts.forEach { row ->
-                SemanticCard(Tile.Neutral) {
+            }
+            CoachHeading(
+                if (section == "drafts") "Strength programmes"
+                else if (section == "preview") "Review programme" else "Programme builder"
+            )
+            if (state.loading || state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+            state.error?.let {
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+            state.notice?.let {
+                Text(it, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+            }
+            if (section == "drafts") {
+                Text(
+                    "Build a programme without a race goal. Draft edits save locally; nothing starts until you review and activate."
+                )
+                Button(
+                    onClick = {
+                        model.newDraft {
+                            section = "edit"
+                            expandedDay =
+                                model.state.value.draft
+                                    ?.blocks()
+                                    ?.firstOrNull()
+                                    ?.days()
+                                    ?.firstOrNull()
+                                    ?.id()
+                        }
+                    },
+                    enabled = enabled,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Build a programme from scratch")
+                }
+                if (onCreateCustom != null)
+                    TextButton(onClick = onCreateCustom, enabled = enabled) {
+                        Text("Create custom exercise")
+                    }
+                if (state.current != null)
+                    SemanticCard(Tile.Strength) {
+                        Text(
+                            "Current strength programme",
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                        Text("Your current programming remains active while you prepare a draft.")
+                        WhyDetails(state.current!!.key(), "Preserved programme identity")
+                        TextButton(onClick = { confirmStop = state.current }, enabled = enabled) {
+                            Text("Stop programming")
+                        }
+                    }
+                TextButton(onClick = { model.reload() }, enabled = enabled) {
+                    Text("Refresh saved programmes")
+                }
+                Text("Saved drafts", style = MaterialTheme.typography.titleLarge)
+                if (state.drafts.isEmpty())
                     Text(
-                        row.name().ifBlank { "Untitled programme" },
-                        style = MaterialTheme.typography.titleLarge,
+                        "No drafts on this page. Create one above; your workout history stays independent."
                     )
-                    Text("Starts ${friendlyDate(row.start())}")
-                    Button(
-                        onClick = {
-                            model.openDraft(row.id()) {
-                                section = "edit"
-                                expandedDay = null
-                            }
-                        },
-                        enabled = enabled,
-                    ) {
-                        Text("Open draft")
-                    }
-                    TextButton(onClick = { delete = row }, enabled = enabled) {
-                        Text("Delete draft")
-                    }
-                }
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (state.page > 0)
-                    TextButton(onClick = { model.page(-1) }, enabled = enabled) {
-                        Text("Previous drafts")
-                    }
-                if (state.moreDrafts)
-                    TextButton(onClick = { model.page(1) }, enabled = enabled) {
-                        Text("More drafts")
-                    }
-            }
-        } else if (section == "preview" && state.preview != null) {
-            ProgrammePreviewContent(state.preview!!.programme)
-            Button(
-                onClick = { confirmActivate = state.preview },
-                enabled = enabled,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("Review activation")
-            }
-            OutlinedButton(
-                onClick = {
-                    model.dismissPreview()
-                    section = "edit"
-                },
-                enabled = enabled,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("Keep editing draft")
-            }
-        } else if (draft != null) {
-            Text(
-                draft.name().ifBlank { "Untitled programme" },
-                style = MaterialTheme.typography.titleLarge,
-            )
-            Text(
-                "${draft.settings().frequency()} sessions/week · starts ${friendlyDate(draft.start())}"
-            )
-            Text(
-                "Applied edits are saved automatically. This draft does not change active workouts or actual sets."
-            )
-            if (onCreateCustom != null)
-                TextButton(onClick = onCreateCustom, enabled = enabled) {
-                    Text("Create custom exercise")
-                }
-            OutlinedButton(onClick = { editHeader = true }, enabled = enabled) {
-                Text("Programme settings")
-            }
-            draft.blocks().forEachIndexed { blockIndex, block ->
-                SemanticCard(Tile.Strength) {
-                    Text(block.name(), style = MaterialTheme.typography.titleLarge)
-                    Text("${block.weeks()} programme weeks · ${programmeLabel(block.phase().name)}")
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(
-                            onClick = { blockForm = block.id() to block },
-                            enabled = enabled,
-                        ) {
-                            Text("Edit block")
-                        }
-                        TextButton(
-                            onClick = { model.duplicateBlock(block.id()) },
-                            enabled = enabled,
-                        ) {
-                            Text("Duplicate block")
-                        }
-                        TextButton(
-                            onClick = { model.moveBlock(block.id(), blockIndex - 1) },
-                            enabled = enabled && blockIndex > 0,
-                        ) {
-                            Text("Earlier block")
-                        }
-                        TextButton(
-                            onClick = { model.moveBlock(block.id(), blockIndex + 1) },
-                            enabled = enabled && blockIndex < draft.blocks().lastIndex,
-                        ) {
-                            Text("Later block")
-                        }
-                        TextButton(onClick = { model.deleteBlock(block.id()) }, enabled = enabled) {
-                            Text("Remove block")
-                        }
-                    }
-                    block.days().forEach { day ->
-                        HorizontalDivider()
-                        TextButton(
+                state.drafts.forEach { row ->
+                    SemanticCard(Tile.Neutral) {
+                        Text(
+                            row.name().ifBlank { "Untitled programme" },
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                        Text("Starts ${friendlyDate(row.start())}")
+                        Button(
                             onClick = {
-                                expandedDay = if (expandedDay == day.id()) null else day.id()
+                                model.openDraft(row.id()) {
+                                    section = "edit"
+                                    expandedDay = null
+                                }
                             },
                             enabled = enabled,
                         ) {
-                            Text(
-                                "${day.weekday().getDisplayName(TextStyle.FULL, Locale.UK)} · ${day.title()} · ${day.slots().size} exercises"
-                            )
+                            Text("Open draft")
                         }
-                        if (expandedDay == day.id()) {
-                            day.notes()?.let { Text(it) }
-                            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                TextButton(
-                                    onClick = { dayForm = block.id() to day },
-                                    enabled = enabled,
-                                ) {
-                                    Text("Edit workout")
-                                }
-                                TextButton(
-                                    onClick = { duplicateDay = block.id() to day },
-                                    enabled = enabled,
-                                ) {
-                                    Text("Duplicate workout")
-                                }
-                                TextButton(
-                                    onClick = { model.deleteDay(block.id(), day.id()) },
-                                    enabled = enabled,
-                                ) {
-                                    Text("Remove workout")
-                                }
-                            }
-                            day.slots().forEachIndexed { index, slot ->
-                                Text(
-                                    "${index + 1}. ${slot.exercise().name()}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                Text(gymTargetDescription(slot))
-                                FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    TextButton(
-                                        onClick = {
-                                            slotForm =
-                                                ProgrammeSlotLocation(block.id(), day.id(), slot)
-                                        },
-                                        enabled = enabled,
-                                    ) {
-                                        Text("Edit exercise")
-                                    }
-                                    TextButton(
-                                        onClick = {
-                                            model.moveSlot(
-                                                block.id(),
-                                                day.id(),
-                                                block.id(),
-                                                day.id(),
-                                                slot.id(),
-                                                index - 1,
-                                            )
-                                        },
-                                        enabled = enabled && index > 0,
-                                    ) {
-                                        Text("Move up")
-                                    }
-                                    TextButton(
-                                        onClick = {
-                                            model.moveSlot(
-                                                block.id(),
-                                                day.id(),
-                                                block.id(),
-                                                day.id(),
-                                                slot.id(),
-                                                index + 1,
-                                            )
-                                        },
-                                        enabled = enabled && index < day.slots().lastIndex,
-                                    ) {
-                                        Text("Move down")
-                                    }
-                                    TextButton(
-                                        onClick = {
-                                            moveSlot =
-                                                ProgrammeSlotLocation(block.id(), day.id(), slot)
-                                        },
-                                        enabled = enabled,
-                                    ) {
-                                        Text("Move to workout")
-                                    }
-                                    TextButton(
-                                        onClick = {
-                                            model.removeSlot(block.id(), day.id(), slot.id())
-                                        },
-                                        enabled = enabled,
-                                    ) {
-                                        Text("Remove exercise")
-                                    }
-                                }
-                            }
-                            OutlinedButton(
-                                onClick = {
-                                    slotForm = ProgrammeSlotLocation(block.id(), day.id(), null)
-                                },
-                                enabled = enabled && day.slots().size < 12,
-                            ) {
-                                Text("Add exercise")
-                            }
+                        TextButton(onClick = { delete = row }, enabled = enabled) {
+                            Text("Delete draft")
                         }
-                    }
-                    OutlinedButton(
-                        onClick = { dayForm = block.id() to null },
-                        enabled = enabled && block.days().size < 6,
-                    ) {
-                        Text("Add workout")
                     }
                 }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (state.page > 0)
+                        TextButton(onClick = { model.page(-1) }, enabled = enabled) {
+                            Text("Previous drafts")
+                        }
+                    if (state.moreDrafts)
+                        TextButton(onClick = { model.page(1) }, enabled = enabled) {
+                            Text("More drafts")
+                        }
+                }
+            } else if (section == "preview" && state.preview != null) {
+                ProgrammePreviewContent(state.preview!!.programme)
+                Button(
+                    onClick = { confirmActivate = state.preview },
+                    enabled = enabled,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Review activation")
+                }
+                OutlinedButton(
+                    onClick = {
+                        model.dismissPreview()
+                        section = "edit"
+                    },
+                    enabled = enabled,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Keep editing draft")
+                }
+            } else if (draft != null) {
+                Text(
+                    draft.name().ifBlank { "Untitled programme" },
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                Text(
+                    "${draft.settings().frequency()} sessions/week · starts ${friendlyDate(draft.start())}"
+                )
+                Text(
+                    "Applied edits are saved automatically. This draft does not change active workouts or actual sets."
+                )
+                if (onCreateCustom != null)
+                    TextButton(onClick = onCreateCustom, enabled = enabled) {
+                        Text("Create custom exercise")
+                    }
+                OutlinedButton(onClick = { editHeader = true }, enabled = enabled) {
+                    Text("Programme settings")
+                }
+                draft.blocks().forEachIndexed { blockIndex, block ->
+                    SemanticCard(Tile.Strength) {
+                        Text(block.name(), style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            "${block.weeks()} programme weeks · ${programmeLabel(block.phase().name)}"
+                        )
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TextButton(
+                                onClick = { blockForm = block.id() to block },
+                                enabled = enabled,
+                            ) {
+                                Text("Edit block")
+                            }
+                            TextButton(
+                                onClick = { model.duplicateBlock(block.id()) },
+                                enabled = enabled,
+                            ) {
+                                Text("Duplicate block")
+                            }
+                            TextButton(
+                                onClick = { model.moveBlock(block.id(), blockIndex - 1) },
+                                enabled = enabled && blockIndex > 0,
+                            ) {
+                                Text("Earlier block")
+                            }
+                            TextButton(
+                                onClick = { model.moveBlock(block.id(), blockIndex + 1) },
+                                enabled = enabled && blockIndex < draft.blocks().lastIndex,
+                            ) {
+                                Text("Later block")
+                            }
+                            TextButton(
+                                onClick = { model.deleteBlock(block.id()) },
+                                enabled = enabled,
+                            ) {
+                                Text("Remove block")
+                            }
+                        }
+                        block.days().forEach { day ->
+                            HorizontalDivider()
+                            TextButton(
+                                onClick = {
+                                    expandedDay = if (expandedDay == day.id()) null else day.id()
+                                },
+                                enabled = enabled,
+                            ) {
+                                Text(
+                                    "${day.weekday().getDisplayName(TextStyle.FULL, Locale.UK)} · ${day.title()} · ${day.slots().size} ${if (day.slots().size == 1) "exercise" else "exercises"}"
+                                )
+                            }
+                            if (expandedDay == day.id()) {
+                                day.notes()?.let { Text(it) }
+                                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    TextButton(
+                                        onClick = { dayForm = block.id() to day },
+                                        enabled = enabled,
+                                    ) {
+                                        Text("Edit workout")
+                                    }
+                                    TextButton(
+                                        onClick = { duplicateDay = block.id() to day },
+                                        enabled = enabled,
+                                    ) {
+                                        Text("Duplicate workout")
+                                    }
+                                    TextButton(
+                                        onClick = { model.deleteDay(block.id(), day.id()) },
+                                        enabled = enabled,
+                                    ) {
+                                        Text("Remove workout")
+                                    }
+                                }
+                                day.slots().forEachIndexed { index, slot ->
+                                    Text(
+                                        "${index + 1}. ${slot.exercise().name()}",
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                    Text(gymTargetDescription(slot))
+                                    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        TextButton(
+                                            onClick = {
+                                                slotForm =
+                                                    ProgrammeSlotLocation(
+                                                        block.id(),
+                                                        day.id(),
+                                                        slot,
+                                                    )
+                                            },
+                                            enabled = enabled,
+                                        ) {
+                                            Text("Edit exercise")
+                                        }
+                                        TextButton(
+                                            onClick = {
+                                                model.moveSlot(
+                                                    block.id(),
+                                                    day.id(),
+                                                    block.id(),
+                                                    day.id(),
+                                                    slot.id(),
+                                                    index - 1,
+                                                )
+                                            },
+                                            enabled = enabled && index > 0,
+                                        ) {
+                                            Text("Move up")
+                                        }
+                                        TextButton(
+                                            onClick = {
+                                                model.moveSlot(
+                                                    block.id(),
+                                                    day.id(),
+                                                    block.id(),
+                                                    day.id(),
+                                                    slot.id(),
+                                                    index + 1,
+                                                )
+                                            },
+                                            enabled = enabled && index < day.slots().lastIndex,
+                                        ) {
+                                            Text("Move down")
+                                        }
+                                        TextButton(
+                                            onClick = {
+                                                moveSlot =
+                                                    ProgrammeSlotLocation(
+                                                        block.id(),
+                                                        day.id(),
+                                                        slot,
+                                                    )
+                                            },
+                                            enabled = enabled,
+                                        ) {
+                                            Text("Move to workout")
+                                        }
+                                        TextButton(
+                                            onClick = {
+                                                model.removeSlot(block.id(), day.id(), slot.id())
+                                            },
+                                            enabled = enabled,
+                                        ) {
+                                            Text("Remove exercise")
+                                        }
+                                    }
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        slotForm = ProgrammeSlotLocation(block.id(), day.id(), null)
+                                    },
+                                    enabled = enabled && day.slots().size < 12,
+                                ) {
+                                    Text("Add exercise")
+                                }
+                            }
+                        }
+                        OutlinedButton(
+                            onClick = { dayForm = block.id() to null },
+                            enabled = enabled && block.days().size < 6,
+                        ) {
+                            Text("Add workout")
+                        }
+                    }
+                }
+                OutlinedButton(
+                    onClick = { blockForm = null to null },
+                    enabled = enabled && draft.blocks().size < 12,
+                ) {
+                    Text("Add training block")
+                }
+                Button(
+                    onClick = { model.preview { section = "preview" } },
+                    enabled = enabled,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Preview programme")
+                }
+                TextButton(
+                    onClick = { model.duplicateDraft { expandedDay = null } },
+                    enabled = enabled,
+                ) {
+                    Text("Duplicate as a new programme draft")
+                }
+                TextButton(onClick = { model.reload() }, enabled = enabled) {
+                    Text("Reload saved draft")
+                }
+            } else {
+                Text("Open a saved draft to continue. Nothing has been activated.")
+                TextButton(onClick = { section = "drafts" }) { Text("View drafts") }
             }
-            OutlinedButton(
-                onClick = { blockForm = null to null },
-                enabled = enabled && draft.blocks().size < 12,
-            ) {
-                Text("Add training block")
-            }
-            Button(
-                onClick = { model.preview { section = "preview" } },
-                enabled = enabled,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("Preview programme")
-            }
-            TextButton(
-                onClick = { model.duplicateDraft { expandedDay = null } },
-                enabled = enabled,
-            ) {
-                Text("Duplicate as a new programme draft")
-            }
-            TextButton(onClick = { model.reload() }, enabled = enabled) {
-                Text("Reload saved draft")
-            }
-        } else {
-            Text("Open a saved draft to continue. Nothing has been activated.")
-            TextButton(onClick = { section = "drafts" }) { Text("View drafts") }
         }
     }
     if (editHeader && draft != null)
@@ -783,16 +806,18 @@ internal fun ProgrammePreviewContent(programme: StrengthProgramme) {
         "${programme.settings().frequency()} sessions/week · ${programme.blocks().sumOf { it.weeks() }} weeks · ${programmeLabel(programme.settings().goal().name)}"
     )
     Text("Not activated. Review targets and trade-offs before choosing to use this programme.")
-    programme.tradeoffs().forEach { Text(it) }
+    if (programme.tradeoffs().isNotEmpty())
+        WhyDetails(programme.tradeoffs().joinToString("\n"), "Programme trade-offs")
     programme.blocks().forEach { block ->
         SemanticCard(Tile.Strength) {
             Text(block.name(), style = MaterialTheme.typography.titleLarge)
             Text("${friendlyDate(block.start())} – ${friendlyDate(block.end())}")
-            Text(block.explanation())
+            WhyDetails(block.explanation(), "Block emphasis")
             // Concrete dated prescriptions are shown as retained, never reconstructed from the
             // first week.
             var limit by remember(block.id()) { mutableIntStateOf(7) }
-            block.workouts().take(limit).forEach { workout ->
+            val chronological = remember(block) { block.workouts().sortedBy { it.date() } }
+            chronological.take(limit).forEach { workout ->
                 Text(
                     "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min",
                     style = MaterialTheme.typography.titleMedium,

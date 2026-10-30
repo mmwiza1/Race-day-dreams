@@ -19,6 +19,8 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Improvements
 
+- Manual programme previews and details present dated workouts in chronological order,
+  with calculation assumptions available through optional evidence disclosures.
 - Authored current programmes now appear in Strength Today, the hybrid Home summary,
   programme/block/workout details and the calendar without converting their optional
   or fractional targets into legacy prescriptions.

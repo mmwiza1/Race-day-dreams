@@ -12,8 +12,14 @@ one write transaction. Legacy and authored planned executions use the same sourc
 and GymExecutionEngine. Logging-name edits keep typed custom metadata and its mirror atomic.
 Backup graph validation precedes transactional replacement; envelopes1–8 remain readable,
 raw2/complete1 unchanged. Reviewed modern spontaneous Count/Keep uses exact authored snapshots and decision payload2,
-with legacy1 readers. Builder/activation and current-programme UI integration remain
-unfinished. Completed history is a terminal projection; unfinished-only clock observations
+with legacy1 readers. Current authored programmes and the manual builder now integrate
+through feature-owned StrengthProgrammeViewModel. Draft IDs alone enter SavedState; edits
+use typed optimistic repository commands on IO. Atomic activateDraft verifies the exact
+reviewed recurring draft, fresh exclusions/custom metadata and current pointer before any
+programme/decision write; lost-ack retries remain idempotent. This is separate from actual
+set execution. Structured custom entry uses typed metadata and its atomic logging mirror;
+metadata-aware browse/detail never fabricates technique or canonical suitability. Generated
+editable preview/future-edit controls remain unfinished. Completed history is a terminal projection; unfinished-only clock observations
 must not replace it with an empty coordinator view.
 See docs/STRENGTH_PROGRAMMING_0_10.md and CONTINUE_CODEX.md for current scope and gates.
 

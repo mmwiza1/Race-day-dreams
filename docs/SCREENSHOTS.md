@@ -271,7 +271,7 @@ test-only retained sets and a generated Strength programme. Do not describe thos
 captures as reviewed until the supported-API workflow produces them. Existing design
 references remain separate from app captures.
 
-## 0.10 programme-authoring capture additions — pending CI/visual review
+## 0.10 programme-authoring captures — first verified source0eb56d6
 
 Seven actual CoachActivity navigation captures cover strength-programme-builder and
 strength-programme-preview (light, dark,200% text), plus strength-custom-exercise. These
@@ -279,5 +279,7 @@ use typed test-only draft data and identical production screens, with no invente
 The strict required set is98captures; all91prior captures remain. The capture harness checks
 real theme/font configuration and verifies that previewing did not activate or log training.
 
-These images are not yet described as generated or visually accepted. Download the current
-successful CI artifact, check source fingerprint, and open them before updating the showcase.
+Workflow41058603236 generated and verified all98captures. The seven additions were opened;
+see VISUAL_REVIEW_0_10_0.md for the four follow-up findings. New preview/scroll refinements
+require another actual-build capture review; these initial images do not certify newer code.
+Canonical bot3deee3e records source0eb56d6 separately from the untouched design references.

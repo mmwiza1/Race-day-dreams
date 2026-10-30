@@ -1329,11 +1329,11 @@ class CoachingScreenshotTest {
                 await("Saved drafts")
                 compose.onNodeWithText("Open draft").performScrollTo().performClick()
                 await("Programme builder")
-                alignHeading("Programme builder")
+                compose.onNodeWithText("Programme builder").assertIsDisplayed()
                 capture("strength-programme-builder$suffix")
                 compose.onNodeWithText("Preview programme").performScrollTo().performClick()
                 await("Review programme")
-                alignHeading("Review programme")
+                compose.onNodeWithText("Review programme").assertIsDisplayed()
                 capture("strength-programme-preview$suffix")
                 if (suffix.isEmpty()) {
                     compose.onNodeWithText("Keep editing draft").performScrollTo().performClick()
@@ -1347,6 +1347,7 @@ class CoachingScreenshotTest {
                         .onNodeWithText("Exercise name")
                         .performScrollTo()
                         .performTextReplacement("Cable row variation")
+                    androidx.test.espresso.Espresso.closeSoftKeyboard()
                     alignHeading("Custom exercise")
                     capture("strength-custom-exercise")
                 }
