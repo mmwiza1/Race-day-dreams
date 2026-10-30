@@ -1,5 +1,18 @@
 # 0.10 development checkpoint — not release acceptance
 
+## Manual-builder Android follow-up and structured custom metadata (30 October 2026)
+
+Source93250d6 workflow41055834777 passed source/build/lint/format/guidance gates. API28/35/36 each completed382tests with one navigation-contract mismatch: the new builder route was absent from the exact
+expected set. The follow-up adds actual routes without relaxing equality. New builder and
+transaction tests showed no failures in those reports; final matrix status must be inspected.
+
+The custom-entry follow-up adds four real UI/VM cases and seven actual-activity captures.
+Production and instrumentation Kotlin/Java compile offline;65Kotlin/107Java format checks
+and9capture-validator tests pass. Execution/images still require CI; no new visual pass is
+claimed. The validator retains all91prior captures and requires98total. No format migration,
+permission/dependency change or physical S24 result.
+
+
 ## 0.10 manual programme builder — recovery checkpoint (30 October 2026)
 
 The pushed parent `1a547c8` passed workflow **40972743492**, including all API28/35/36,

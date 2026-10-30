@@ -11,6 +11,9 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
   verification for this new workflow is pending.
 - Android-independent programme previews and editable draft operations model explicit training blocks,
   immutable revision lineage and preserved exercise/measurement targets.
+- Structured custom-exercise entry now records body area, movement role, equipment,
+  measurement and notes for manual programming and logging. Existing custom identities and
+  history remain readable; no technique guide or estimated strength is invented.
 - Nine original starter structures and goal/experience-specific preview policies
   are under automated development. These are not yet exposed as app controls.
 
@@ -42,9 +45,9 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 ## Known limitations
 
 - Editable template/generated-preview screens, future regeneration,
-  custom-exercise entry, permanent-swap UI and modality-progression controls remain in progress.
+  permanent-swap UI and modality-progression controls remain in progress.
   Their domain and typed persistence foundations are not yet a finished user workflow.
-  The connected manual builder also requires fresh device/API tests and screenshots.
+  The new custom-entry and manual-builder workflows also require their final API/capture verification.
 - Beginner power previews explicitly report the current catalogue's lack of a
   beginner-classified ballistic movement instead of inventing power evidence.
 - This branch is not ready for release or merge. Current-build Android/accessibility

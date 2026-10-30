@@ -31,6 +31,7 @@ data class ProgrammeAuthoringState(
     val moreDrafts: Boolean = false,
     val current: StrengthProgrammingRepository.Reference? = null,
     val exercises: List<StrengthExercise> = emptyList(),
+    val customExercises: Map<String, CustomStrengthExercise> = emptyMap(),
     val favourites: Set<String> = emptySet(),
     val recent: List<String> = emptyList(),
     val archived: Set<String> = emptySet(),
@@ -56,7 +57,7 @@ class StrengthProgrammeViewModel(app: Application, private val retained: SavedSt
     private fun enrich(value: ProgrammeAuthoringState): ProgrammeAuthoringState {
         val rows = repository.drafts(21, value.page * 20)
         val user = choices.choices()
-        val custom = repository.customExercises().map { it.exercise().id() }.toSet()
+        val custom = repository.customExercises().associateBy { it.exercise().id() }
         return value.copy(
             drafts = rows.take(20),
             moreDrafts = rows.size > 20,
@@ -65,6 +66,7 @@ class StrengthProgrammeViewModel(app: Application, private val retained: SavedSt
                 coaching.exercises().filter {
                     ExerciseCatalog.definition(it.id()) != null || it.id() in custom
                 },
+            customExercises = custom,
             favourites =
                 user.filter { it.favourite() && !it.archived() }.map { it.exerciseId() }.toSet(),
             archived = user.filter { it.archived() }.map { it.exerciseId() }.toSet(),
@@ -401,6 +403,63 @@ class StrengthProgrammeViewModel(app: Application, private val retained: SavedSt
                     "Programme activated by your choice. Previous versions and actual sets are preserved.",
             )
         }
+
+    /**
+     * A distinct user-owned identity, mirrored atomically for the existing logging/history paths.
+     */
+    fun createCustom(
+        name: String,
+        area: ExerciseMetadata.BodyArea,
+        role: ExerciseMetadata.Role,
+        measurement: StrengthExercise.MeasurementProfile,
+        weightedBodyweight: Boolean,
+        equipment: Set<ExerciseMetadata.Equipment>,
+        notes: String?,
+        done: (String) -> Unit,
+    ) {
+        val exerciseId = "custom-${id()}"
+        command({ done(exerciseId) }) { current ->
+            require(
+                !weightedBodyweight || measurement == StrengthExercise.MeasurementProfile.LOAD_REPS
+            ) {
+                "Weighted bodyweight uses added load and repetitions."
+            }
+            val region =
+                when (area) {
+                    ExerciseMetadata.BodyArea.QUADS,
+                    ExerciseMetadata.BodyArea.HAMSTRINGS,
+                    ExerciseMetadata.BodyArea.GLUTES,
+                    ExerciseMetadata.BodyArea.CALVES,
+                    ExerciseMetadata.BodyArea.LOWER_LEG,
+                    ExerciseMetadata.BodyArea.HIP_ADDUCTORS,
+                    ExerciseMetadata.BodyArea.HIP_FLEXORS -> StrengthExercise.Region.LOWER
+                    ExerciseMetadata.BodyArea.TRUNK -> StrengthExercise.Region.FULL
+                    else -> StrengthExercise.Region.UPPER
+                }
+            val mode =
+                when {
+                    weightedBodyweight -> StrengthExercise.Mode.WEIGHTED_BODYWEIGHT
+                    measurement.usesLoad() -> StrengthExercise.Mode.WEIGHTED
+                    else -> StrengthExercise.Mode.BODYWEIGHT
+                }
+            val exercise =
+                StrengthExercise(exerciseId, name.trim(), region, mode, false, measurement)
+            repository.saveCustom(
+                CustomStrengthExercise(
+                    exercise,
+                    area,
+                    role,
+                    ExerciseMetadata.EquipmentRequirement(listOf(equipment)),
+                    notes?.trim()?.ifEmpty { null },
+                ),
+                null,
+            )
+            current.copy(
+                notice =
+                    "Custom exercise saved for your logging and manual programming. No technique or automatic load recommendation is inferred."
+            )
+        }
+    }
 
     fun stopCurrent(reviewed: StrengthProgrammingRepository.Reference?, done: () -> Unit = {}) =
         command(done) { current ->

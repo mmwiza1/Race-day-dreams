@@ -146,6 +146,7 @@
     "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymAssociationScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymNowScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/StrengthDraftActivationRepositoryTest.java",
-    "app/src/androidTest/java/org/racedaydreams/coach/StrengthProgrammeBuilderScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/StrengthProgrammeBuilderScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/CustomStrengthExerciseScreenTest.kt"
   ]
 }

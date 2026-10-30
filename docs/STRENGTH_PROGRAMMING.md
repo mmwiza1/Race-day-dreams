@@ -54,3 +54,22 @@ individual technique coaching and does not claim an optimal hypertrophy dose for
 frequency/time budget. Advanced power methods and automatic task-specific time/distance
 progression are not prescribed. All174canonical exercises have original illustrated technique guidance;
 qualified review and physical-device inspection remain necessary.
+
+## 0.10 manual authoring and structured custom exercises — verification in progress
+
+Manual drafts persist through typed optimistic rows. The phone builder edits name, schedule,
+block duration/phase, workout names/notes, exercises/order and precise optional targets.
+Preview expands the exact dated prescriptions; explicit confirmation activates atomically
+against the reviewed draft and programme pointer. This does not record an actual set.
+
+Custom entry records a stable custom- identity, broad area, movement role, measurement,
+complete equipment setup (or explicit equipment-free choice) and optional notes. It uses
+schema14's typed custom repository and atomic logging mirror. Six measurement profiles and
+weighted-bodyweight logging retain actual evidence. Canonical guidance is not imitated for
+custom movements, estimated1RM is disabled, and automatic generated selection remains
+canonical. Older UUID custom logging/history is retained; no renaming or transfer of history
+is inferred from a similar name. Metadata participates in browsing/filtering/detail.
+
+The new UI/device cases and captures must pass before release. Editable generated/template
+previews, future regeneration, permanent swap UI and modality proposal controls remain
+unfinished; domain support is not a claim of finished user workflows.

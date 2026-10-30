@@ -27,6 +27,7 @@ fun StrengthProgrammeBuilderScreen(
     model: StrengthProgrammeViewModel,
     onBack: () -> Unit,
     onActivated: () -> Unit,
+    onCreateCustom: (() -> Unit)? = null,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
     var section by rememberSaveable { mutableStateOf("drafts") }
@@ -99,6 +100,10 @@ fun StrengthProgrammeBuilderScreen(
             ) {
                 Text("Build a programme from scratch")
             }
+            if (onCreateCustom != null)
+                TextButton(onClick = onCreateCustom, enabled = enabled) {
+                    Text("Create custom exercise")
+                }
             if (state.current != null)
                 SemanticCard(Tile.Strength) {
                     Text("Current strength programme", style = MaterialTheme.typography.titleLarge)
@@ -179,6 +184,10 @@ fun StrengthProgrammeBuilderScreen(
             Text(
                 "Applied edits are saved automatically. This draft does not change active workouts or actual sets."
             )
+            if (onCreateCustom != null)
+                TextButton(onClick = onCreateCustom, enabled = enabled) {
+                    Text("Create custom exercise")
+                }
             OutlinedButton(onClick = { editHeader = true }, enabled = enabled) {
                 Text("Programme settings")
             }

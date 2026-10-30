@@ -41,6 +41,7 @@ import org.racedaydreams.coach.CoachUiState
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
 import org.racedaydreams.coach.tileColour
+import org.racedaydreams.domain.strength.CustomStrengthExercise
 import org.racedaydreams.domain.strength.ExerciseMetadata
 import org.racedaydreams.domain.strength.ExerciseMetadataCatalog
 import org.racedaydreams.domain.strength.ExerciseSearch
@@ -53,6 +54,8 @@ fun ExerciseBrowseScreen(
     onCreateCustom: (StrengthExercise) -> Unit,
     open: (String) -> Unit,
     onRestore: ((String) -> Unit)? = null,
+    onCreateClassifiedCustom: (() -> Unit)? = null,
+    customMetadata: Map<String, CustomStrengthExercise> = emptyMap(),
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var shortcut by rememberSaveable { mutableStateOf("For you") }
@@ -94,28 +97,39 @@ fun ExerciseBrowseScreen(
             state.exercises.mapNotNull { ExerciseMetadataCatalog.find(it.id()) }
         }
     val areas =
-        remember(catalogue) {
+        remember(catalogue, customMetadata) {
             ExerciseMetadata.BodyArea.values().filter { candidate ->
-                catalogue.any { candidate in it.primaryAreas() }
+                catalogue.any { candidate in it.primaryAreas() } ||
+                    customMetadata.values.any { it.bodyArea() == candidate }
             }
         }
     val roles =
-        remember(catalogue) {
+        remember(catalogue, customMetadata) {
             ExerciseMetadata.Role.values().filter { candidate ->
-                catalogue.any { candidate in it.roles() }
+                catalogue.any { candidate in it.roles() } ||
+                    customMetadata.values.any { it.role() == candidate }
             }
         }
     val equipmentGroups =
-        remember(catalogue) {
+        remember(catalogue, customMetadata) {
             ExerciseMetadata.EquipmentGroup.values().filter { candidate ->
                 catalogue.any { entry ->
                     entry.equipment().alternatives().any { setup ->
                         setup.any { it.group() == candidate }
                     }
-                }
+                } ||
+                    customMetadata.values.any { entry ->
+                        entry.equipment().alternatives().any { setup ->
+                            setup.any { it.group() == candidate }
+                        }
+                    }
             }
         }
-    val hasBodyweight = remember(catalogue) { catalogue.any { it.equipment().equipmentFree() } }
+    val hasBodyweight =
+        remember(catalogue, customMetadata) {
+            catalogue.any { it.equipment().equipmentFree() } ||
+                customMetadata.values.any { it.equipment().equipmentFree() }
+        }
     val relevant =
         remember(state.exercises, favourites, recent, programmed) {
             val supported = state.exercises.map { it.id() }.toSet()
@@ -148,6 +162,7 @@ fun ExerciseBrowseScreen(
             role,
             equipment,
             relevant,
+            customMetadata,
         ) {
             ExerciseSearch.search(
                     state.exercises,
@@ -170,16 +185,23 @@ fun ExerciseBrowseScreen(
                             else -> true
                         }
                     val metadata = ExerciseMetadataCatalog.find(id)
+                    val custom = customMetadata[id]
+                    val exerciseAreas =
+                        metadata?.primaryAreas()
+                            ?: custom?.let { setOf(it.bodyArea()) }
+                            ?: emptySet()
+                    val exerciseRoles =
+                        metadata?.roles() ?: custom?.let { setOf(it.role()) } ?: emptySet()
+                    val requirements = metadata?.equipment() ?: custom?.equipment()
                     personal &&
-                        (area == null ||
-                            metadata?.primaryAreas()?.any { it.name == area } == true) &&
-                        (role == null || metadata?.roles()?.any { it.name == role } == true) &&
+                        (area == null || exerciseAreas.any { it.name == area }) &&
+                        (role == null || exerciseRoles.any { it.name == role }) &&
                         (equipment == null ||
-                            metadata != null &&
+                            requirements != null &&
                                 when (equipment) {
-                                    "BODYWEIGHT" -> metadata.equipment().equipmentFree()
+                                    "BODYWEIGHT" -> requirements.equipmentFree()
                                     else ->
-                                        metadata.equipment().alternatives().any { setup ->
+                                        requirements.alternatives().any { setup ->
                                             setup.any { it.group().name == equipment }
                                         }
                                 })
@@ -412,7 +434,10 @@ fun ExerciseBrowseScreen(
             item(key = "management") {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TextButton(
-                        onClick = { custom = true },
+                        onClick = {
+                            if (onCreateClassifiedCustom != null) onCreateClassifiedCustom()
+                            else custom = true
+                        },
                         modifier = Modifier.heightIn(min = 48.dp),
                     ) {
                         Text("Add custom exercise")
@@ -487,7 +512,7 @@ fun ExerciseBrowseScreen(
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(exercise.name(), style = MaterialTheme.typography.titleMedium)
                     Text(
-                        exerciseBrowseContext(exercise),
+                        exerciseBrowseContext(exercise, customMetadata[exercise.id()]),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     if (exercise.id() in excluded && onRestore != null)
@@ -539,7 +564,12 @@ fun ExerciseBrowseScreen(
         )
 }
 
-internal fun exerciseBrowseContext(exercise: StrengthExercise): String {
+internal fun exerciseBrowseContext(
+    exercise: StrengthExercise,
+    custom: CustomStrengthExercise? = null,
+): String {
+    if (custom != null)
+        return "${custom.bodyArea().label()} · ${custom.role().label()} · ${customEquipmentDescription(custom)} · User defined"
     val metadata = ExerciseMetadataCatalog.find(exercise.id())
     if (metadata == null) {
         val description =
@@ -656,3 +686,10 @@ private val COMMON_EXERCISES =
         "standing-calf-raise",
         "walking-lunge",
     )
+
+internal fun customEquipmentDescription(custom: CustomStrengthExercise): String =
+    if (custom.equipment().equipmentFree()) "No equipment"
+    else
+        custom.equipment().alternatives().joinToString(" OR ") { setup ->
+            setup.joinToString(" + ") { programmeLabel(it.name) }
+        }
