@@ -2,11 +2,14 @@
 
 Strength Programming 2.0 is in development on a dedicated draft pull request.
 The existing 0.9 execution and history guarantees remain the baseline; the full
-programme builder is not yet connected to the application.
+0.10 workflow is not yet ready for release.
 
 ## What's new
 
-- Android-independent programme previews and editable draft operations now model explicit training blocks,
+- The manual programme builder now connects typed local drafts, settings, blocks, workouts,
+  exercise targets and dated previews. Activation is an explicit choice; Android acceptance
+  verification for this new workflow is pending.
+- Android-independent programme previews and editable draft operations model explicit training blocks,
   immutable revision lineage and preserved exercise/measurement targets.
 - Nine original starter structures and goal/experience-specific preview policies
   are under automated development. These are not yet exposed as app controls.
@@ -38,9 +41,10 @@ programme builder is not yet connected to the application.
 
 ## Known limitations
 
-- Programme builder/template screens, user-facing activation, future regeneration,
+- Editable template/generated-preview screens, future regeneration,
   custom-exercise entry, permanent-swap UI and modality-progression controls remain in progress.
   Their domain and typed persistence foundations are not yet a finished user workflow.
+  The connected manual builder also requires fresh device/API tests and screenshots.
 - Beginner power previews explicitly report the current catalogue's lack of a
   beginner-classified ballistic movement instead of inventing power evidence.
 - This branch is not ready for release or merge. Current-build Android/accessibility

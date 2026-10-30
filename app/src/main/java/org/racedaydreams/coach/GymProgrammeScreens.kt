@@ -12,14 +12,15 @@ import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.coach.strength.AuthoredProgrammeOverview
 import org.racedaydreams.coach.strength.AuthoredProgrammeWorkout
 
-@Composable fun GymProgrammeScreen(state:CoachUiState,model:CoachViewModel,open:(String)->Unit){
-    state.authoredGymProgramme?.let { AuthoredProgrammeOverview(it, open); return }
+@Composable fun GymProgrammeScreen(state:CoachUiState,model:CoachViewModel,author:(()->Unit)?=null,open:(String)->Unit){
+    state.authoredGymProgramme?.let { AuthoredProgrammeOverview(it, open, author); return }
     var setup by rememberSaveable{mutableStateOf(false)};var preview by remember{mutableStateOf<GymProgramme?>(null)};var error by rememberSaveable{mutableStateOf<String?>(null)}
     val current=state.gymProgramme
     val strengthFirst=state.primaryFocus==PrimaryFocus.STRENGTH
     var goal by rememberSaveable{mutableStateOf(current?.settings()?.goal()?.name?:if(strengthFirst)"GENERAL" else "SUPPORT_RUNNING")};var priority by rememberSaveable{mutableStateOf(current?.settings()?.priority()?.name?:if(strengthFirst)"STRENGTH_FIRST" else "RUNNING_FIRST")};var experience by rememberSaveable{mutableStateOf(current?.settings()?.experience()?.name?:"BEGINNER")};var minutes by rememberSaveable{mutableIntStateOf(current?.settings()?.minutes()?:45)};var frequency by rememberSaveable{mutableIntStateOf(current?.settings()?.frequency()?:2)};var effort by rememberSaveable{mutableStateOf(current?.settings()?.effort()?.name?:"RPE")};var days by rememberSaveable{mutableStateOf((current?.settings()?.days()?:state.profile?.preferences()?.gymDays()?:emptySet()).map{it.value})};var equipment by rememberSaveable{mutableStateOf((current?.settings()?.equipment()?:setOf("bodyweight")).toList())}
     CoachPage{
         CoachHeading("Gym programme")
+        if(author!=null)CoachButton("Build or review programmes",author)
         if(current==null&&!setup){Text("No generated gym programme. Manual logging, PBs and running context work independently.");CoachButton("Create a gym programme"){setup=true};TextButton(onClick={model.strength.disableGym()}){Text("I manage my own strength training")}}
         if(!setup&&state.gymVersions.isNotEmpty()){
             var history by rememberSaveable{mutableStateOf(false)};TextButton(onClick={history=!history}){Text(if(history)"Hide preserved versions"else "View preserved versions")}

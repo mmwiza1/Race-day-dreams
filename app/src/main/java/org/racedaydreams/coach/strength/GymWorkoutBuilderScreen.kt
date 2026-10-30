@@ -273,7 +273,7 @@ fun GymWorkoutBuilderScreen(model: GymNowViewModel, onWorkout: () -> Unit, onBac
 }
 
 @Composable
-private fun GymSlotEditor(
+internal fun GymSlotEditor(
     slot: GymWorkoutDefinition.Slot?,
     exercises: List<StrengthExercise>,
     favourites: Set<String>,
@@ -281,6 +281,7 @@ private fun GymSlotEditor(
     archived: Set<String>,
     excluded: Set<String>,
     error: String?,
+    allowOpen: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (StrengthExercise, GymSlotInput) -> Unit,
 ) {
@@ -288,7 +289,8 @@ private fun GymSlotEditor(
     val target = slot?.target()
     var selectedId by rememberSaveable(identity) { mutableStateOf(slot?.exercise()?.id()) }
     var query by rememberSaveable(identity) { mutableStateOf("") }
-    var open by rememberSaveable(identity) { mutableStateOf(slot != null && target == null) }
+    var open by
+        rememberSaveable(identity) { mutableStateOf(allowOpen && slot != null && target == null) }
     var sets by rememberSaveable(identity) { mutableStateOf(target?.sets()?.toString() ?: "3") }
     var minimumReps by
         rememberSaveable(identity) { mutableStateOf(target?.minimumReps()?.toString() ?: "") }
@@ -415,23 +417,25 @@ private fun GymSlotEditor(
                 }
                 if (selected != null) {
                     HorizontalDivider()
-                    Row(Modifier.fillMaxWidth()) {
-                        Checkbox(
-                            checked = open,
-                            onCheckedChange = { open = it },
-                            modifier =
-                                Modifier.semantics {
-                                    contentDescription = "Open exercise without prescribed targets"
-                                },
-                        )
-                        Column(Modifier.weight(1f).padding(top = 12.dp)) {
-                            Text("Open exercise")
-                            Text(
-                                "Choose sets and measurements while training.",
-                                style = MaterialTheme.typography.bodySmall,
+                    if (allowOpen)
+                        Row(Modifier.fillMaxWidth()) {
+                            Checkbox(
+                                checked = open,
+                                onCheckedChange = { open = it },
+                                modifier =
+                                    Modifier.semantics {
+                                        contentDescription =
+                                            "Open exercise without prescribed targets"
+                                    },
                             )
+                            Column(Modifier.weight(1f).padding(top = 12.dp)) {
+                                Text("Open exercise")
+                                Text(
+                                    "Choose sets and measurements while training.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
                         }
-                    }
                     if (!open) {
                         GymBuilderField(sets, { sets = it }, "Working sets", KeyboardType.Number)
                         val measurement = selected.measurement()

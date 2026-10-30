@@ -1,5 +1,20 @@
 # 0.10 development checkpoint — not release acceptance
 
+## 0.10 manual programme builder — recovery checkpoint (30 October 2026)
+
+The pushed parent `1a547c8` passed workflow **40972743492**, including all API28/35/36,
+formatting, guidance and canonical-capture jobs. The working-tree manual builder is newer.
+Offline domain **588,070 checks**, schema **60 tests**, and release-note **9 tests** passed.
+All production and instrumentation sources compiled with cached Kotlin/Java compilers;
+this is source verification, not an APK, lint or device result. Final refinements and new
+six-case UI/six-case repository suites still require Android execution and fresh captures.
+
+The local Gradle attempt failed before compilation because its daemon socket was denied
+by the executor sandbox. Network-access requests stalled; git fetch also cannot reach the
+proxy. No assertions or deadlines were relaxed. GitHub PR15 remains draft. No physical
+Galaxy S24 check has been performed. Schema14/backup9 and all existing archive formats remain.
+
+
 Branch `feature/0.10-strength-programming` / draft PR15, based on mainc6299e2.
 The recovered typed durability phase adds schema14 / JSON9 (read1–8), strengthProgramming1;
 strengthEngine2 / strengthState2 / raw2 / complete1 are unchanged. The full programme

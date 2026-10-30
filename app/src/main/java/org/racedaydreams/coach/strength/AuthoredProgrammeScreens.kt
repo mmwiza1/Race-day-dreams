@@ -7,9 +7,14 @@ import org.racedaydreams.domain.strength.StrengthProgramme
 
 /** Frozen authored prescriptions are never converted to the older integer-RPE model. */
 @Composable
-internal fun AuthoredProgrammeOverview(programme: StrengthProgramme, open: (String) -> Unit) {
+internal fun AuthoredProgrammeOverview(
+    programme: StrengthProgramme,
+    open: (String) -> Unit,
+    author: (() -> Unit)? = null,
+) {
     CoachPage {
         CoachHeading(programme.name())
+        if (author != null) CoachButton("Build or review programmes", author)
         Text("Programme revision ${programme.revision()}")
         WhyDetails(programme.reason(), "Why this revision?")
         if (programme.tradeoffs().isNotEmpty())

@@ -17,7 +17,20 @@ fun NavGraphBuilder.strengthGraph(
     gymModel: () -> GymNowViewModel = {
         error("A gym session owner is required for this destination.")
     },
+    programmeModel: () -> StrengthProgrammeViewModel = {
+        error("A programme authoring owner is required.")
+    },
 ) {
+    composable("gym-programme-builder") {
+        StrengthProgrammeBuilderScreen(
+            programmeModel(),
+            onBack = { nav.popBackStack() },
+            onActivated = {
+                model.refresh()
+                if (!nav.popBackStack("gym", false)) nav.navigate("gym") { launchSingleTop = true }
+            },
+        )
+    }
     composable("gym-now") {
         GymNowScreen(
             gymModel(),
@@ -77,7 +90,9 @@ fun NavGraphBuilder.strengthGraph(
     composable("strength/history") { StrengthScreen(readState(), model, section = "history") }
 
     composable("gym") {
-        GymProgrammeScreen(readState(), model) { nav.navigate("gym/session/${Uri.encode(it)}") }
+        GymProgrammeScreen(readState(), model, author = { nav.navigate("gym-programme-builder") }) {
+            nav.navigate("gym/session/${Uri.encode(it)}")
+        }
     }
 
     composable("gym/session/{id}") { destination ->

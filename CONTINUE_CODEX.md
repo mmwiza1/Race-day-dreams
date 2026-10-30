@@ -11,25 +11,61 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## ACTIVE continuation — builder implementation underway; readiness waiter corrected
+## ACTIVE continuation — recovered manual builder; Android verification pending
 
-- Branch feature/0.10-strength-programming, PR15 still DRAFT. Current parent50a03eb.
-  Latest notes-only workflow40937904521 passed API28/35 but API36 failed ONE of370tests:
-  DreamArtworkReadinessTest54 could see old-city readiness before selected-city composition.
-- Fix waits for ready state AND selected-city heading on the SAME semantic node. All image,
-  landmark, disposal assertions and20sec bound remain. No production artwork change needed.
-  Local domain588,069checks/33suites +60schema passed; full compile/build/lint passed;
-  exact real API28 five-city/three-round test PASSED1/1 in94.419s, readiness-fence-api28.log.
-  This fix is a separate committed checkpoint; inspect actual log/remote/full new CI.
-- New builder work is IN PROGRESS and must be preserved: shared GymTargetInput.kt parser
-  extracted from existing GymNowViewModel, GymSlotEditor reusable with allowOpen=false,
-  new StrengthProgrammeViewModel typed optimistic draft orchestration. These files are
-  NOT yet compiled/tested or exposed through navigation. Complete atomic draft+activation
-  verification in typed repository, full phone builder UI, tests and routing before exposure.
-- Existing authored programme integration and prior verified matrix are intact below.
-  No reset/main merge/0.11 work. New full0.10 builder and remaining scope still required.
+- Continue `feature/0.10-strength-programming`, PR #15 OPEN/DRAFT. Parent is
+  `1a547c89ea92671ba1f4798e7b4bb6c6f62d4696`; preserve all work. Live PR/base were
+  checked through GitHub: main remains c6299e2401525197260f69c6918c89794cfa4c3d.
+  Workflow 40972743492 for that parent PASSED all jobs, including API28/35/36 and
+  canonical captures. This does NOT certify the newer manual-builder work below.
+- Recovery found the previous final tool call had NOT written the UI-test file or run
+  its final build. Reconstructed only those missing tests; did not restart foundations.
+- Manual builder is now wired to the Strength programme screen: feature-owned VM,
+  typed saved drafts, settings/equipment, blocks/workouts/exercise targets, reorder/move,
+  duplicate/delete, exact dated preview, explicit activation/stop, small SavedState IDs.
+  Reuses Gym Now target parser/editor and the SAME native execution model; no actuals
+  are prefilled. New `activateDraft` checks draft + eligibility + current pointer inside
+  one SQL write transaction. Existing activation/retry/rollback contracts retained.
+- New six-case repository suite covers exact reviewed activation/lost acknowledgement,
+  stale draft/current pointer, forged candidate, post-preview exclusion and late rollback.
+  New six-case real VM/UI suite covers explicit acceptance/backup9 round trip, ID-only
+  recreation, stale reviews, duplicate/move/empty validation, dark200% dialogs/scroll and
+  exact fractional/unknown/modality target parsing. Do NOT describe these as device-passed
+  until actually run. Repeated block-copy IDs no longer grow recursively.
+- Local observed: 588,070 domain checks, 60 schema tests, 9 release-note tests passed.
+  Pinned formatting passed before final doc/test changes; run it again at checkpoint.
+  All production Kotlin/Java and all instrumentation Kotlin/Java compiled offline using
+  cached compiler/dependencies (scratch offline-builder outputs). Final production and instrumentation Kotlin/Java source passes also completed after
+  the confirmation/backup-test refinements; both final logs contain no compilation errors.
+  Pinned formatter check: 63 Kotlin/107 Java files passed.
+- Executor networking is currently blocked: default Gradle fails before compilation with
+  SocketException: Operation not permitted (daemon local socket); git fetch cannot reach
+  proxy. Attempts to request additional execution access stalled and were interrupted.
+  GitHub connector reads work. Do NOT rerun a known-failing sandbox build unchanged,
+  weaken tests, bypass restrictions, or call offline source compilation an APK/lint/API pass.
+  Logs: /workspace/scratch/rdd010/manual-builder-{domain,schema,release}.log,
+  manual-builder-offline-{compile,test-compile}[-final].log, manual-builder-final-build.log.
+- Version/code/schema/backup formats remain 0.10.0-test1/13/14/root9/authoring1/raw2/complete1.
+  No new permission/dependency/format; no S24 physical verification. No new builder captures
+  yet. Existing captures certify the prior source only. Full0.10 is NOT complete.
 
-## FINAL VERIFIED LIVE checkpoint — authored read/execution integration complete; builder next
+### Immediate exact tasks
+
+1. Inspect final offline compiler/formatter outputs, fix actual failures, run new 6+6 Android
+   cases and retained repository/backup/Gym Now tests using available Android execution/CI.
+   Then push the coherent manual-builder checkpoint and inspect API28/35/36, build/lint and
+   screenshots. Keep PR15 draft. Do not merge a partial release.
+2. Continue remaining full0.10 in the numbered list below: editable templates/generated
+   concrete previews (NEVER flatten week/date/phase variation), future-only editing and
+   regeneration, modest custom-exercise metadata UI, permanent substitutions, conservative
+   modality proposal controls, quality gaps, authentic new screenshots/full final gate/docs.
+3. New exact files: coach/strength/StrengthProgrammeViewModel.kt,
+   StrengthProgrammeBuilderScreen.kt, GymTargetInput.kt;
+   coach/StrengthProgrammeBuilderScreenTest.kt and data/StrengthDraftActivationRepositoryTest.java.
+   Typed repository interface/implementation already contain atomic activateDraft. Review
+   SQL/retry protection before extending. Deferred0.11 remains excluded.
+
+## Historical checkpoint — authored read/execution integration complete
 
 - Code sourceae92cdf52c47773b8d701890d04b140a39e9cbb6 passed COMPLETE workflow40931917209:
   **370instrumentation tests/API28 +370/API35 +370/API36**, build/lint/domain/schema/release/
@@ -65,7 +101,8 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
 
 1. Inspect actual notes/capture merge HEAD and latest CI. Current app source is verified;
    do not rerun old failed5b80852 or recreate its code. Keep PR15 draft.
-2. Implement feature-owned authoring VM/coordinator and complete phone builder/template/
+2. The manual VM/phone builder is now implemented in the active checkpoint above; finish
+   its Android gate, then complete template/
    generated-preview/draft/activation workflow. Exact next files: new
    coach/strength/StrengthProgrammeViewModel.kt, StrengthProgrammeBuilderScreen.kt,
    template/preview components, strengthGraph wiring; reuse typed repository/domain rules
@@ -148,7 +185,7 @@ historical checkpoint detail; this verified live section overrides pending/sourc
   The user repeated continuation while the final local cases were running; this was
   steering to keep working, NOT permission to discard/restart.
 
-### Immediate next steps (authoritative)
+### Historical next steps at that checkpoint
 
 1. Verify correctionae92cdf and the latest full workflow (initial correction run40931917209)
    (370cases/API expected). Workflow40927512770 is a known370-case/one-failure matrix,
@@ -388,7 +425,8 @@ Failures were investigated and corrected, not hidden:
 1. Current authored display/Gym Now planned start/source context/Today/calendar are integrated
    in the live checkpoint; finish full CI and review typed version/history navigation through activation. Exact explicit authored associations are implemented above. Preserve exact legacy
    versions and existing today-only substitutions; no incompatible target/load transfer.
-2. Feature-scoped authoring coordinator/ViewModel and full phone-usable builder: name,
+2. Manual authoring coordinator/ViewModel and phone builder now implemented, awaiting Android
+   execution and authentic captures: name,
    goal, duration/blocks, frequency/days, equipment, workout names/notes, exercises/order,
    sets/reps or supported task, optional RPE/RIR/rest/reference, moves/duplicates/removal,
    draft save/reload, preview and explicit activation. No timing/business rules in Compose.

@@ -866,49 +866,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
 
     fun builderPutSlot(slotId: String?, exercise: StrengthExercise, input: GymSlotInput): Boolean {
         return try {
-            val target =
-                if (input.open) null
-                else {
-                    val profile = exercise.measurement()
-                    val lower = optionalNumber(input.minimumEffort, "minimum effort")
-                    val upper = optionalNumber(input.maximumEffort, "maximum effort")
-                    require((lower == null) == (upper == null)) {
-                        "Complete both effort bounds, or leave both blank."
-                    }
-                    GymWorkoutDefinition.Target(
-                        whole(input.sets, "working sets"),
-                        if (profile.usesReps()) whole(input.minimumReps, "minimum repetitions")
-                        else null,
-                        if (profile.usesReps()) whole(input.maximumReps, "maximum repetitions")
-                        else null,
-                        if (profile.usesDuration()) wholeLong(input.seconds, "duration in seconds")
-                        else null,
-                        if (profile.usesDistance()) number(input.metres, "distance in metres")
-                        else null,
-                        if (lower == null) null
-                        else
-                            GymWorkoutDefinition.EffortRange(
-                                if (input.rir) GymWorkoutDefinition.EffortScale.RIR
-                                else GymWorkoutDefinition.EffortScale.RPE,
-                                lower,
-                                upper!!,
-                            ),
-                        optionalWhole(input.restSeconds, "rest in seconds"),
-                        if (
-                            profile.usesLoad() &&
-                                exercise.mode() != StrengthExercise.Mode.BODYWEIGHT
-                        )
-                            optionalNumber(input.referenceKilograms, "reference load")
-                        else null,
-                    )
-                }
-            val slot =
-                GymWorkoutDefinition.Slot(
-                    slotId ?: UUID.randomUUID().toString(),
-                    exercise,
-                    target,
-                    null,
-                )
+            val slot = gymSlotFromInput(slotId, exercise, input)
             changeBuilder { draft ->
                 val rows = draft.slots.toMutableList()
                 val at = rows.indexOfFirst { it.id() == slot.id() }

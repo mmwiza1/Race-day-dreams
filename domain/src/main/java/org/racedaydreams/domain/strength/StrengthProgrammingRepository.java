@@ -88,6 +88,13 @@ public interface StrengthProgrammingRepository {
             String decisionId,
             List<StrengthProgrammeEditor.Change> substitutions);
 
+    /** Confirm the exact reviewed draft and programme pointer in the SAME write transaction. */
+    Decision activateDraft(
+            StrengthProgramme proposed,
+            Reference expected,
+            String decisionId,
+            StrengthProgrammeDraft reviewed);
+
     Decision stop(Reference expected, String decisionId);
 
     List<Decision> decisions();

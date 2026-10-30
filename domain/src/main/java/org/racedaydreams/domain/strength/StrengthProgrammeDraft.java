@@ -205,7 +205,7 @@ public record StrengthProgrammeDraft(
         for (var day : original.days())
             days.add(
                     new Day(
-                            newId + "-" + day.id(),
+                            newId + "-day-" + days.size(),
                             day.weekday(),
                             day.title(),
                             day.slots(),

@@ -805,6 +805,18 @@ public final class StrengthProgrammeTestSuite {
                 draft.blocks().size() == 2
                         && draft.preview(NOW, Set.of(), Map.of()).workouts().size() == 12,
                 "duplicate complete block");
+        var repeatedCopies = draft;
+        String previousCopy = "development";
+        for (int copy = 2; copy < 12; copy++) {
+            String nextCopy = "copy-" + copy + "-" + "a".repeat(30);
+            repeatedCopies = repeatedCopies.duplicateBlock(previousCopy, nextCopy);
+            previousCopy = nextCopy;
+        }
+        check(
+                repeatedCopies.blocks().size() == 12
+                        && repeatedCopies.preview(NOW, Set.of(), Map.of()).workouts().size() == 72,
+                "repeated block copies keep bounded independent day identities through"
+                        + " all12blocks");
         draft = draft.reorderBlock("development", 0);
         check(draft.blocks().get(0).id().equals("development"), "reorder blocks");
         final var valid = draft;

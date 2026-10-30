@@ -355,6 +355,25 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
             Reference expected,
             String decisionId,
             List<StrengthProgrammeEditor.Change> substitutions) {
+        return activateInternal(proposed, expected, decisionId, substitutions, null);
+    }
+
+    @Override
+    public Decision activateDraft(
+            StrengthProgramme proposed,
+            Reference expected,
+            String decisionId,
+            StrengthProgrammeDraft reviewed) {
+        Objects.requireNonNull(reviewed, "reviewed draft");
+        return activateInternal(proposed, expected, decisionId, Collections.emptyList(), reviewed);
+    }
+
+    private Decision activateInternal(
+            StrengthProgramme proposed,
+            Reference expected,
+            String decisionId,
+            List<StrengthProgrammeEditor.Change> substitutions,
+            StrengthProgrammeDraft reviewed) {
         Objects.requireNonNull(proposed);
         Objects.requireNonNull(substitutions);
         required(decisionId, "decision");
@@ -371,6 +390,22 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
                         || !retry.substitutions().equals(substitutions)) throw conflict();
                 db.setTransactionSuccessful();
                 return retry;
+            }
+            if (reviewed != null) {
+                if (!reviewed.equals(draft(db, reviewed.id()))) throw conflict();
+                var custom = new HashMap<String, CustomStrengthExercise>();
+                for (var exercise : customs(db)) custom.put(exercise.exercise().id(), exercise);
+                var excluded = new HashSet<String>();
+                for (var e : SqliteExerciseExclusionRepository.rowsForChoices(db))
+                    excluded.add(e.exerciseId());
+                try (var c =
+                        db.rawQuery(
+                                "SELECT exercise_id FROM strength_user_state WHERE archived=1",
+                                null)) {
+                    while (c.moveToNext()) excluded.add(c.getString(0));
+                }
+                if (!proposed.equals(reviewed.preview(proposed.createdAt(), excluded, custom)))
+                    throw invalid("reviewed draft and programme preview differ");
             }
             if (!Objects.equals(current(db), expected)) throw conflict();
             if (legacyId(db, proposed.id())

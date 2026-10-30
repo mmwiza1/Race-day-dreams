@@ -26,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.racedaydreams.coach.navigation.*
 import org.racedaydreams.coach.strength.GymNowViewModel
+import org.racedaydreams.coach.strength.StrengthProgrammeViewModel
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.health.HealthConnectGateway
 
@@ -34,6 +35,9 @@ class CoachActivity : ComponentActivity() {
     private lateinit var model: CoachViewModel
     // All gym destinations share one session coordinator, created only when Strength needs it.
     private val gymModel by lazy { ViewModelProvider(this)[GymNowViewModel::class.java] }
+    private val programmeModel by lazy {
+        ViewModelProvider(this)[StrengthProgrammeViewModel::class.java]
+    }
     private var hasResumed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +65,9 @@ class CoachActivity : ComponentActivity() {
                             onBackground = Color(0xFF14243B),
                         )
             ) {
-                Surface(Modifier.fillMaxSize()) { CoachApp(model) { gymModel } }
+                Surface(Modifier.fillMaxSize()) {
+                    CoachApp(model, { gymModel }, { programmeModel })
+                }
             }
         }
     }
@@ -81,7 +87,11 @@ class CoachActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CoachApp(model: CoachViewModel, gymModel: () -> GymNowViewModel) {
+private fun CoachApp(
+    model: CoachViewModel,
+    gymModel: () -> GymNowViewModel,
+    programmeModel: () -> StrengthProgrammeViewModel,
+) {
     val state by model.state.collectAsStateWithLifecycle()
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
@@ -293,7 +303,7 @@ private fun CoachApp(model: CoachViewModel, gymModel: () -> GymNowViewModel) {
                     connect = connect,
                     providerUpdate = providerUpdate,
                 )
-                strengthGraph({ state }, model, nav, gymModel)
+                strengthGraph({ state }, model, nav, gymModel, programmeModel)
                 progressGraph({ state }, model, nav)
                 settingsGraph(
                     { state },
