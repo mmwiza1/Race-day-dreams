@@ -124,11 +124,12 @@ public final class ExerciseExclusionRepositoryTest extends AndroidTestCase {
         choices.save(new StrengthUserStore.Choice("bench-press", true, true));
         var helper = ProfileDatabase.get(getContext());
         var db = helper.getWritableDatabase();
+        GymSchemaFixture.removeVersionFourteenTables(db);
         db.execSQL("DROP TABLE strength_exclusions");
         db.setVersion(12);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(13, db.getVersion());
+        assertEquals(ProfileDatabase.VERSION, db.getVersion());
         assertTrue(repository.exclusions().isEmpty());
         assertTrue(choices.choices().get(0).archived());
         assertTrue(choices.choices().get(0).favourite());

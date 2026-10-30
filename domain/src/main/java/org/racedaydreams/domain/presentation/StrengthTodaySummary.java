@@ -2,8 +2,10 @@ package org.racedaydreams.domain.presentation;
 
 import org.racedaydreams.domain.strength.GymProgramme;
 import org.racedaydreams.domain.strength.StrengthAnalytics;
+import org.racedaydreams.domain.strength.StrengthProgramme;
 import org.racedaydreams.domain.strength.StrengthProgressionAdvisor;
 import org.racedaydreams.domain.strength.StrengthSession;
+import org.racedaydreams.domain.strength.StrengthTargetProgression;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -28,7 +30,29 @@ public record StrengthTodaySummary(
         int completedThisWeek,
         int actualWorkoutsThisWeek,
         int recentPbExercises,
-        Recommendation recommendation) {
+        Recommendation recommendation,
+        StrengthProgramme.Workout authoredToday) {
+    public StrengthTodaySummary(
+            GymProgramme.Session today,
+            boolean todayCompleted,
+            LocalDate weekStart,
+            int plannedThisWeek,
+            int completedThisWeek,
+            int actualWorkoutsThisWeek,
+            int recentPbExercises,
+            Recommendation recommendation) {
+        this(
+                today,
+                todayCompleted,
+                weekStart,
+                plannedThisWeek,
+                completedThisWeek,
+                actualWorkoutsThisWeek,
+                recentPbExercises,
+                recommendation,
+                null);
+    }
+
     /** An explicit actual/prescription association, including its preserved version identity. */
     public record Association(
             String actualSessionId, String versionKey, String prescribedSessionId) {
@@ -114,16 +138,93 @@ public record StrengthTodaySummary(
                 recommendation(programme, actual, today, asOf));
     }
 
+    /** Frozen authored targets remain distinct from the legacy integer-RPE prescription model. */
+    public static StrengthTodaySummary fromAuthored(
+            StrengthProgramme programme,
+            List<StrengthSession> history,
+            List<Association> associations,
+            LocalDate today,
+            Instant asOf) {
+        Objects.requireNonNull(programme);
+        var actualSummary = from(null, history, Collections.emptyList(), today, asOf);
+        var actualIds =
+                history.stream()
+                        .filter(s -> !s.startedAt().isAfter(asOf))
+                        .map(StrengthSession::id)
+                        .collect(Collectors.toSet());
+        var completed = new HashSet<String>();
+        for (var a : associations) {
+            if (actualIds.contains(a.actualSessionId())
+                    && belongsToProgramme(a.versionKey(), programme.id(), programme.revision()))
+                completed.add(a.prescribedSessionId());
+        }
+        var week =
+                programme.workouts().stream()
+                        .filter(w -> inWeek(w.date(), actualSummary.weekStart()))
+                        .collect(Collectors.toList());
+        var prescribed =
+                programme.workouts().stream()
+                        .filter(w -> w.date().equals(today))
+                        .findFirst()
+                        .orElse(null);
+        var considered = new HashSet<String>();
+        var advice = new ArrayList<Recommendation>();
+        programme.workouts().stream()
+                .filter(w -> !w.date().isBefore(today))
+                .sorted(Comparator.comparing(StrengthProgramme.Workout::date))
+                .forEach(
+                        w -> {
+                            for (var slot : w.definition().slots()) {
+                                if (!considered.add(slot.exercise().id())) continue;
+                                var result = StrengthTargetProgression.review(slot, history, asOf);
+                                if (result.action()
+                                                == StrengthProgressionAdvisor.Action
+                                                        .CONSIDER_INCREASE
+                                        || result.action()
+                                                == StrengthProgressionAdvisor.Action
+                                                        .REDUCE_OR_SIMPLIFY)
+                                    advice.add(
+                                            new Recommendation(
+                                                    slot.exercise().id(),
+                                                    result.action(),
+                                                    result.reason()));
+                            }
+                        });
+        var recommendation =
+                advice.stream()
+                        .filter(
+                                a ->
+                                        a.action()
+                                                == StrengthProgressionAdvisor.Action
+                                                        .REDUCE_OR_SIMPLIFY)
+                        .findFirst()
+                        .orElse(advice.isEmpty() ? null : advice.get(0));
+        return new StrengthTodaySummary(
+                null,
+                prescribed != null && completed.contains(prescribed.id()),
+                actualSummary.weekStart(),
+                week.size(),
+                (int) week.stream().filter(w -> completed.contains(w.id())).count(),
+                actualSummary.actualWorkoutsThisWeek(),
+                actualSummary.recentPbExercises(),
+                recommendation,
+                prescribed);
+    }
+
     private static boolean inWeek(LocalDate date, LocalDate weekStart) {
         return !date.isBefore(weekStart) && date.isBefore(weekStart.plusWeeks(1));
     }
 
     private static boolean belongsToProgramme(String versionKey, GymProgramme programme) {
-        String prefix = programme.id() + ":v";
+        return belongsToProgramme(versionKey, programme.id(), programme.version());
+    }
+
+    private static boolean belongsToProgramme(String versionKey, String id, int revision) {
+        String prefix = id + ":v";
         if (!versionKey.startsWith(prefix)) return false;
         try {
             int version = Integer.parseInt(versionKey.substring(prefix.length()));
-            return version >= 1 && version <= programme.version();
+            return version >= 1 && version <= revision;
         } catch (NumberFormatException ignored) {
             return false;
         }

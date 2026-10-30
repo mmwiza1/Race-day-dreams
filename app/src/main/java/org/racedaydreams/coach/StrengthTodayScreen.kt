@@ -28,20 +28,37 @@ internal fun StrengthTodayScreen(
     // The fallback also supports isolated previews with explicit, in-memory observations.
     val summary =
         state.strengthToday
-            ?: remember(state.gymProgramme, state.strengthSessions, state.gymLinks, today) {
-                StrengthTodaySummary.from(
-                    state.gymProgramme,
-                    state.strengthSessions,
+            ?: remember(
+                state.gymProgramme,
+                state.authoredGymProgramme,
+                state.strengthSessions,
+                state.gymLinks,
+                today,
+            ) {
+                val links =
                     state.gymLinks.values.map {
                         StrengthTodaySummary.Association(
                             it.actualSessionId(),
                             it.versionKey(),
                             it.prescribedSessionId(),
                         )
-                    },
-                    today,
-                    Instant.now(),
-                )
+                    }
+                state.authoredGymProgramme?.let {
+                    StrengthTodaySummary.fromAuthored(
+                        it,
+                        state.strengthSessions,
+                        links,
+                        today,
+                        Instant.now(),
+                    )
+                }
+                    ?: StrengthTodaySummary.from(
+                        state.gymProgramme,
+                        state.strengthSessions,
+                        links,
+                        today,
+                        Instant.now(),
+                    )
             }
     CoachPage {
         CoachHeading("Today")
@@ -49,17 +66,32 @@ internal fun StrengthTodayScreen(
         SemanticCard(Tile.Strength) {
             Text("Your strength training", style = MaterialTheme.typography.titleMedium)
             val session = summary.today()
-            if (session == null) {
+            val authored = summary.authoredToday()
+            val hasProgramme = state.gymProgramme != null || state.authoredGymProgramme != null
+            if (authored != null) {
+                Text(authored.definition().title(), style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    "${authored.definition().slots().size} exercises · about ${authored.expectedMinutes()} min"
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    authored.definition().slots().take(4).forEach { Text(it.exercise().name()) }
+                    if (authored.definition().slots().size > 4)
+                        Text("+ ${authored.definition().slots().size - 4} more")
+                }
+                if (summary.todayCompleted())
+                    Text("Actual workout recorded and explicitly linked to this session.")
+                else if (gymNow != null) CoachButton("Start workout", gymNow)
+                TextButton(onClick = { open("gym/session/${Uri.encode(authored.id())}") }) {
+                    Text("View workout details")
+                }
+            } else if (session == null) {
                 Text("Your day, your choice", style = MaterialTheme.typography.headlineMedium)
                 Text(
-                    if (state.gymProgramme == null)
+                    if (!hasProgramme)
                         "Build a programme or log a workout independently. No race goal is needed."
                     else "No gym session is planned today. Rest or train independently."
                 )
-                CoachButton(
-                    if (state.gymProgramme == null) "Create a gym programme"
-                    else "View gym programme"
-                ) {
+                CoachButton(if (!hasProgramme) "Create a gym programme" else "View gym programme") {
                     open("gym")
                 }
             } else {

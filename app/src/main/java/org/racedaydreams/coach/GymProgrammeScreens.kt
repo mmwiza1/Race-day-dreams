@@ -9,14 +9,18 @@ import androidx.compose.ui.unit.dp
 import java.time.*
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.settings.PrimaryFocus
+import org.racedaydreams.coach.strength.AuthoredProgrammeOverview
+import org.racedaydreams.coach.strength.AuthoredProgrammeWorkout
 
-@Composable fun GymProgrammeScreen(state:CoachUiState,model:CoachViewModel,open:(String)->Unit){
+@Composable fun GymProgrammeScreen(state:CoachUiState,model:CoachViewModel,author:(()->Unit)?=null,open:(String)->Unit){
+    state.authoredGymProgramme?.let { AuthoredProgrammeOverview(it, open, author); return }
     var setup by rememberSaveable{mutableStateOf(false)};var preview by remember{mutableStateOf<GymProgramme?>(null)};var error by rememberSaveable{mutableStateOf<String?>(null)}
     val current=state.gymProgramme
     val strengthFirst=state.primaryFocus==PrimaryFocus.STRENGTH
     var goal by rememberSaveable{mutableStateOf(current?.settings()?.goal()?.name?:if(strengthFirst)"GENERAL" else "SUPPORT_RUNNING")};var priority by rememberSaveable{mutableStateOf(current?.settings()?.priority()?.name?:if(strengthFirst)"STRENGTH_FIRST" else "RUNNING_FIRST")};var experience by rememberSaveable{mutableStateOf(current?.settings()?.experience()?.name?:"BEGINNER")};var minutes by rememberSaveable{mutableIntStateOf(current?.settings()?.minutes()?:45)};var frequency by rememberSaveable{mutableIntStateOf(current?.settings()?.frequency()?:2)};var effort by rememberSaveable{mutableStateOf(current?.settings()?.effort()?.name?:"RPE")};var days by rememberSaveable{mutableStateOf((current?.settings()?.days()?:state.profile?.preferences()?.gymDays()?:emptySet()).map{it.value})};var equipment by rememberSaveable{mutableStateOf((current?.settings()?.equipment()?:setOf("bodyweight")).toList())}
     CoachPage{
         CoachHeading("Gym programme")
+        if(author!=null)CoachButton("Build or review programmes",author)
         if(current==null&&!setup){Text("No generated gym programme. Manual logging, PBs and running context work independently.");CoachButton("Create a gym programme"){setup=true};TextButton(onClick={model.strength.disableGym()}){Text("I manage my own strength training")}}
         if(!setup&&state.gymVersions.isNotEmpty()){
             var history by rememberSaveable{mutableStateOf(false)};TextButton(onClick={history=!history}){Text(if(history)"Hide preserved versions"else "View preserved versions")}
@@ -44,6 +48,7 @@ import org.racedaydreams.domain.settings.PrimaryFocus
 private fun label(value:String)=when(value){"SUPPORT_RUNNING"->"Support my running";"MUSCLE"->"Build muscle";"STRENGTH"->"Get stronger";"GENERAL"->"General strength & fitness";"POWER"->"Power / athletic performance";"RPE","RIR"->value;else->value.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}}
 private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort):String{val measure=if(e.seconds()!=null)"${e.seconds()} sec"else if(e.metres()!=null)"${e.metres()} m"else "${e.minimumReps()}–${e.maximumReps()} reps";val intensity=if(effort==GymProgramme.Effort.RIR&&e.minimumReps()>0)"~${10-e.maximumRpe()}–${10-e.minimumRpe()} RIR"else "RPE ~${e.minimumRpe()}–${e.maximumRpe()}";return "${e.sets()} × $measure · $intensity · ${e.restSeconds()/60.0} min rest"}
 @Composable fun GymSessionScreen(state:CoachUiState,model:CoachViewModel,id:String?,log:(String)->Unit,start:(()->Unit)?=null){
+    state.authoredGymProgramme?.let { AuthoredProgrammeWorkout(it, id, start); return }
     val p=state.gymProgramme?:return;val session=p.sessions().firstOrNull{it.id()==id}?:return
     var progressionPreview by rememberSaveable{mutableStateOf<String?>(null)}
     var swapFor by rememberSaveable{mutableStateOf<String?>(null)};var swapQuery by rememberSaveable{mutableStateOf("")}

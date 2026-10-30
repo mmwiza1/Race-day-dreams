@@ -270,3 +270,17 @@ launches the real CoachActivity with no running profile or race goal and uses ac
 test-only retained sets and a generated Strength programme. Do not describe those new
 captures as reviewed until the supported-API workflow produces them. Existing design
 references remain separate from app captures.
+
+## 0.10 programme-authoring captures — refined source1dc34c2
+
+Seven actual CoachActivity navigation captures cover strength-programme-builder and
+strength-programme-preview (light, dark,200% text), plus strength-custom-exercise. These
+use typed test-only draft data and identical production screens, with no invented actuals.
+The strict required set is98captures; all91prior captures remain. The capture harness checks
+real theme/font configuration and verifies that previewing did not activate or log training.
+
+Workflow41063159777 generated and verified all98captures from source1dc34c2, with388tests
+on each supported API. All seven refined authoring images were opened; the chronology,
+disclosures, scroll entry and keyboard corrections were reviewed. Canonical bot2c7a599
+records that source separately from the untouched design references. See
+VISUAL_REVIEW_0_10_0.md; unfinished template/future-edit screens are not certified.

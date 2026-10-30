@@ -1,3 +1,30 @@
+# 0.10 in-progress programme authoring boundary
+
+New Android-independent StrengthProgramme/Draft models preserve dated blocks, frozen
+GymWorkoutDefinition targets, future-only revision proposals and exact source adaptation
+into the existing GymExecutionEngine. Original generation/templates and task progression
+remain preview policies. StrengthProgrammingJson reuses the strict frozen-workout codec.
+Schema14 / JSON backup9 add a typed authoring repository over the shared helper. Programme
+headers, blocks and bounded session rows are separate; indexed summaries do not hydrate
+session payloads. Normalized detail reads share a transaction snapshot. Draft CAS, explicit
+activation/stop decisions, fresh completed-session protection and immutable versions share
+one write transaction. Legacy and authored planned executions use the same source validator
+and GymExecutionEngine. Logging-name edits keep typed custom metadata and its mirror atomic.
+Backup graph validation precedes transactional replacement; envelopes1–8 remain readable,
+raw2/complete1 unchanged. Reviewed modern spontaneous Count/Keep uses exact authored snapshots and decision payload2,
+with legacy1 readers. Current authored programmes and the manual builder now integrate
+through feature-owned StrengthProgrammeViewModel. Draft IDs alone enter SavedState; edits
+use typed optimistic repository commands on IO. Atomic activateDraft verifies the exact
+reviewed recurring draft, fresh exclusions/custom metadata and current pointer before any
+programme/decision write; lost-ack retries remain idempotent. This is separate from actual
+set execution. Structured custom entry uses typed metadata and its atomic logging mirror;
+metadata-aware browse/detail never fabricates technique or canonical suitability. Generated
+editable preview/future-edit controls remain unfinished. Completed history is a terminal projection; unfinished-only clock observations
+must not replace it with an empty coordinator view.
+See docs/STRENGTH_PROGRAMMING_0_10.md and CONTINUE_CODEX.md for current scope and gates.
+
+The following sections record the preserved completed0.9 architecture.
+
 # Current retained 0.9 application status
 
 Feature-owned orchestration, standalone training focus, Gym Now, typed association and
@@ -389,3 +416,23 @@ reviewed decisions, retries and explicit reload; the feature VM serialises repos
 calls on IO and publishes immutable state. Completed native membership is queried in one
 bounded SQL lookup, not by hydrating every recent execution. Final source/gates are in
 CONTINUE_CODEX.md and VERIFICATION.md; the original larger Strength backlog is deferred.
+
+
+## Authored programme application projection (0.10 in progress)
+
+The composition root injects StrengthProgrammingRepository into CoachSnapshotReader.
+The typed current owner selects either the legacy gym programme or the exact authored
+revision; the two models are not coerced into one another. StrengthTodaySummary has
+an explicit authored projection preserving nullable/fractional targets and using the
+same real actual IDs and retained revision links for adherence. PB/progression analysis
+runs on IO in the snapshot reader. Calendar decoration preserves existing category/state
+semantics and requires explicit valid associations, rather than treating a same-day gym
+visit as programme completion. Mobility remains outside calendar programming.
+
+GymNowViewModel reads the typed owner, compares the displayed revision before planned
+start and adapts that preserved source into the existing GymExecutionEngine. Runtime
+slots, actual sets, pause/recovery and finalisation use the same coordinator/repository.
+Substitution context resolves the started source revision, including precise equipment,
+goal and experience, rather than the latest programme. Programme screens display frozen
+exercise names and exact optional targets. Builder/activation/editing controls are a
+separate unfinished application phase; these read paths do not silently activate or edit.

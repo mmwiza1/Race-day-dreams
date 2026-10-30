@@ -71,7 +71,7 @@ class GymAssociationScreenTest {
             .performScrollTo()
             .performClick()
         Assert.assertTrue(io { DevelopmentStore(app).gymLinks().isEmpty() })
-        compose.onNodeWithTag("gym-association-confirm").performClick()
+        confirmReviewedAssociation()
         await {
             model.state.value.association?.current()?.choice() ==
                 GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
@@ -89,7 +89,7 @@ class GymAssociationScreenTest {
                 GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
         }
         compose.onNodeWithTag("gym-association-unlink").performScrollTo().performClick()
-        compose.onNodeWithTag("gym-association-confirm").performClick()
+        confirmReviewedAssociation()
         await {
             model.state.value.association?.current()?.choice() ==
                 GymWorkoutAssociation.Choice.KEEP_EXTRA
@@ -113,6 +113,22 @@ class GymAssociationScreenTest {
         }
         compose.setContent { MaterialTheme { if (shown.value) GymWorkoutScreen(model) {} } }
         await { true }
+    }
+
+    private fun confirmReviewedAssociation() {
+        // Dialog window registration can follow the initiating click's idle frame.
+        // Require the real, enabled confirmation instead of racing its appearance.
+        compose.waitUntil(20_000) {
+            compose.onAllNodesWithTag("gym-association-confirm").fetchSemanticsNodes().size == 1
+        }
+        // Exercise the real display-ticker path while the review window is open. A reopened
+        // finished workout has a terminal projection, not an active coordinator session.
+        runBlocking(Dispatchers.Main) { model.observeWorkoutTime() }
+        compose
+            .onNodeWithTag("gym-association-confirm")
+            .assertIsDisplayed()
+            .assertIsEnabled()
+            .performClick()
     }
 
     private fun execution() = model.state.value.view?.accepted()?.execution()

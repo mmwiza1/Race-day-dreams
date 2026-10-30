@@ -44,7 +44,7 @@ fun GymAssociationCard(
         if (current != null) {
             Text(
                 if (counted)
-                    "Counted toward ${current.proposal().prescription().title()} · ${associationDate(current.proposal())}"
+                    "Counted toward ${current.proposal().title()} · ${associationDate(current.proposal())}"
                 else "Kept as extra workout",
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -67,11 +67,11 @@ fun GymAssociationCard(
             }
         view.proposals().forEach { proposal ->
             Text(
-                "${proposal.prescription().title()} · ${associationDate(proposal)}",
+                "${proposal.title()} · ${associationDate(proposal)}",
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                "Programme version ${proposal.programmeRevision()} · ${proposal.prescription().exercises().size} prescribed exercises"
+                "Programme version ${proposal.programmeRevision()} · ${proposal.prescribedExerciseCount()} prescribed exercises"
             )
             Button(
                 onClick = {
@@ -81,7 +81,7 @@ fun GymAssociationCard(
                 modifier =
                     Modifier.fillMaxWidth()
                         .heightIn(min = 48.dp)
-                        .testTag("gym-association-count-${proposal.prescription().id()}"),
+                        .testTag("gym-association-count-${proposal.sessionId()}"),
             ) {
                 Text("Review association")
             }
@@ -133,12 +133,18 @@ fun GymAssociationCard(
                     }
                     HorizontalDivider()
                     Text(
-                        "Preserved prescription · ${proposal.prescription().title()} · ${associationDate(proposal)}",
+                        "Preserved prescription · ${proposal.title()} · ${associationDate(proposal)}",
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text("Programme version ${proposal.programmeRevision()}")
-                    proposal.prescription().exercises().forEach { target ->
-                        Text("${target.exerciseId().replace('-',' ')} · ${target.sets()} sets")
+                    if (proposal.authored()) {
+                        proposal.authoredPrescription().definition().slots().forEach { slot ->
+                            Text("${slot.exercise().name()} · ${gymTargetDescription(slot)}")
+                        }
+                    } else {
+                        proposal.prescription().exercises().forEach { target ->
+                            Text("${target.exerciseId().replace('-',' ')} · ${target.sets()} sets")
+                        }
                     }
                     Text(
                         if (choice == GymWorkoutAssociation.Choice.KEEP_EXTRA)
@@ -171,4 +177,4 @@ fun GymAssociationCard(
 private val ASSOCIATION_DAY = DateTimeFormatter.ofPattern("d MMM uuuu", Locale.UK)
 
 private fun associationDate(proposal: GymWorkoutAssociation.Proposal) =
-    proposal.prescription().date().format(ASSOCIATION_DAY)
+    proposal.date().format(ASSOCIATION_DAY)

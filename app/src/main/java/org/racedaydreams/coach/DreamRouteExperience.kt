@@ -37,9 +37,12 @@ import org.racedaydreams.domain.support.DreamRoutes
     val card = if (dark) Color(0xff132635) else Color(0xffFFFFFF)
 
     Surface(Modifier.fillMaxWidth().semantics {
-        stateDescription = if (hero != null && posters.all { it != null }) "Offline Dream artwork ready" else "Loading bundled city artwork"
+        stateDescription = artwork.status
     }, shape = RoundedCornerShape(24.dp), color = card, tonalElevation = 0.dp, shadowElevation = 2.dp) {
         Column {
+            if (!artwork.loading && !artwork.ready) {
+                Text("City illustrations are unavailable. Your route and progress are preserved.", Modifier.padding(16.dp))
+            }
             Box(Modifier.fillMaxWidth().heightIn(min = 176.dp)) {
                 if (hero != null) Image(hero, contentDescription = "Original illustrated ${city.city} skyline. Atmospheric city art, not geographic landmark placement.",
                     modifier = Modifier.matchParentSize(), contentScale = ContentScale.Crop)

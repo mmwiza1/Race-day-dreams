@@ -1,6 +1,8 @@
 package org.racedaydreams.coach.navigation
 
 import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,7 +19,27 @@ fun NavGraphBuilder.strengthGraph(
     gymModel: () -> GymNowViewModel = {
         error("A gym session owner is required for this destination.")
     },
+    programmeModel: () -> StrengthProgrammeViewModel = {
+        error("A programme authoring owner is required.")
+    },
 ) {
+    composable("gym-programme-builder") {
+        StrengthProgrammeBuilderScreen(
+            programmeModel(),
+            onCreateCustom = { nav.navigate("strength-custom-exercise") },
+            onBack = { nav.popBackStack() },
+            onActivated = {
+                model.refresh()
+                if (!nav.popBackStack("gym", false)) nav.navigate("gym") { launchSingleTop = true }
+            },
+        )
+    }
+    composable("strength-custom-exercise") {
+        CustomStrengthExerciseScreen(programmeModel(), onBack = { nav.popBackStack() }) {
+            model.refresh()
+            nav.popBackStack()
+        }
+    }
     composable("gym-now") {
         GymNowScreen(
             gymModel(),
@@ -77,7 +99,9 @@ fun NavGraphBuilder.strengthGraph(
     composable("strength/history") { StrengthScreen(readState(), model, section = "history") }
 
     composable("gym") {
-        GymProgrammeScreen(readState(), model) { nav.navigate("gym/session/${Uri.encode(it)}") }
+        GymProgrammeScreen(readState(), model, author = { nav.navigate("gym-programme-builder") }) {
+            nav.navigate("gym/session/${Uri.encode(it)}")
+        }
     }
 
     composable("gym/session/{id}") { destination ->
@@ -91,11 +115,21 @@ fun NavGraphBuilder.strengthGraph(
     }
 
     composable("exercises") {
-        ExerciseBrowser(readState(), model) { nav.navigate("exercise/${Uri.encode(it)}") }
+        val authoring by programmeModel().state.collectAsStateWithLifecycle()
+        ExerciseBrowser(
+            readState(),
+            model,
+            createClassifiedCustom = { nav.navigate("strength-custom-exercise") },
+            customMetadata = authoring.customExercises,
+        ) {
+            nav.navigate("exercise/${Uri.encode(it)}")
+        }
     }
 
     composable("exercise/{id}") { destination ->
-        ExerciseDetail(readState(), model, destination.arguments?.getString("id")) {
+        val authoring by programmeModel().state.collectAsStateWithLifecycle()
+        val id = destination.arguments?.getString("id")
+        ExerciseDetail(readState(), model, id, customMetadata = authoring.customExercises[id]) {
             nav.navigate("strength/source/${Uri.encode(it)}")
         }
     }

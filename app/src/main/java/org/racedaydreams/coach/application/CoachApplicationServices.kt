@@ -44,6 +44,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             reminders,
             healthGateway,
             savedDraft,
+            org.racedaydreams.data.SqliteStrengthProgrammingRepository(app),
         )
     val operations = CoachOperationRunner(scope, snapshot::read)
     val profile = ProfileOperations(profiles, store.settingsRepository())

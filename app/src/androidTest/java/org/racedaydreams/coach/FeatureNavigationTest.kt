@@ -111,6 +111,8 @@ class FeatureNavigationTest {
                 "gym-now",
                 "gym-workout",
                 "gym-workout-builder",
+                "gym-programme-builder",
+                "strength-custom-exercise",
                 "gym/session/{id}",
                 "exercises",
                 "exercise/{id}",

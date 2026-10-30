@@ -35,6 +35,24 @@ final class GymExportBudget {
         query +=
                 " UNION ALL SELECT TOTAL(length(CAST(payload AS BLOB))) FROM"
                         + " strength_association_decisions";
+        for (String table :
+                new String[] {
+                    "strength_programme_revisions",
+                    "strength_programme_blocks",
+                    "strength_programme_sessions",
+                    "strength_programme_decisions",
+                    "strength_programme_drafts",
+                    "strength_programme_draft_blocks",
+                    "strength_custom_exercises"
+                }) {
+            String field =
+                    table.equals("strength_programme_revisions")
+                                    || table.equals("strength_programme_blocks")
+                                    || table.equals("strength_programme_drafts")
+                            ? "header"
+                            : "payload";
+            query += " UNION ALL SELECT TOTAL(length(CAST(" + field + " AS BLOB))) FROM " + table;
+        }
         long lowerBound = 0;
         try (Cursor cursor = db.rawQuery(query, null)) {
             while (cursor.moveToNext()) {

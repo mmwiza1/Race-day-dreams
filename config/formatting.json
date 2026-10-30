@@ -128,6 +128,25 @@
     "app/src/androidTest/java/org/racedaydreams/data/ExerciseExclusionRepositoryTest.java",
     "app/src/androidTest/java/org/racedaydreams/coach/ExerciseExclusionControlTest.kt",
     "domain/src/main/java/org/racedaydreams/domain/strength/GymAssociationCoordinator.java",
-    "app/src/androidTest/java/org/racedaydreams/coach/GymAssociationScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/GymAssociationScreenTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthProgramme*.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/StrengthProgrammeTestSuite.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/CustomStrengthExercise.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthWorkoutBudget.java",
+    "app/src/main/java/org/racedaydreams/data/StrengthProgrammingJson.java",
+    "app/src/androidTest/java/org/racedaydreams/data/StrengthProgrammingJsonTest.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthTargetProgression.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/StrengthTargetProgressionTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/DreamArtworkPublicationTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthProgrammingRepository.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteStrengthProgrammingRepository.java",
+    "app/src/main/java/org/racedaydreams/data/StrengthProgrammingArchive.java",
+    "app/src/androidTest/java/org/racedaydreams/data/StrengthProgrammingRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/data/AuthoredGymAssociationRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymAssociationScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymNowScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/StrengthDraftActivationRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/StrengthProgrammeBuilderScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/CustomStrengthExerciseScreenTest.kt"
   ]
 }

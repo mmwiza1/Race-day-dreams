@@ -35,6 +35,31 @@ public final class GymWorkoutAdapter {
         return fromProgramme(programme, sessionId, Collections.emptyMap());
     }
 
+    /** New authoring sources still enter the same authoritative execution model and source kind. */
+    public static PreparedWorkout fromAuthoredProgramme(
+            StrengthProgramme programme, String sessionId) {
+        Objects.requireNonNull(programme, "preserved authored programme");
+        var workout =
+                programme.workouts().stream()
+                        .filter(w -> w.id().equals(sessionId))
+                        .findFirst()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "The preserved authored session is missing."));
+        var source =
+                new SourceReference(
+                        SourceKind.PROGRAMME, programme.id(), programme.revision(), workout.id());
+        var definition =
+                new GymWorkoutDefinition(
+                        programmeWorkoutId(source),
+                        programme.revision(),
+                        programme.createdAt(),
+                        workout.definition().title(),
+                        workout.definition().slots());
+        return new PreparedWorkout(definition, source);
+    }
+
     /**
      * Explicit custom definitions are frozen by the caller at start, never resolved again at
      * finish.
