@@ -1,3 +1,17 @@
+# 0.10.1 capture work in progress
+
+The 0.10.1 workflow now requires128 actual-build captures, preserving all125 previous
+scenes and adding expanded progression details in light, dark and200%text. The main
+progression scenes show plain instructions; additional captures prove current/proposed
+technical detail remains accessible. Tests still check the actual82kg suggested reference,
+now by scrolling to About the weight rather than forcing it above the task instructions.
+
+Current committed PNGs below remain the0.10 baseline until replaced by verified0.10.1
+API35 captures. Do not treat them as evidence for new source. Source fingerprint, PNG
+integrity and real visual inspection are separate gates. Compare the actual build with the
+owner's approved task-first hierarchy; retain references separately. No edited/mock UI or
+physical S24 pass is implied.
+
 # Current0.10 actual-build capture checkpoint
 
 Source1a7c683/workflow41912323900 passed426tests each API28/35/36 and125required captures.

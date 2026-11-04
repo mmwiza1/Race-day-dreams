@@ -29,6 +29,7 @@ data class ProgrammeProgressionReview(
     val workoutId: String,
     val slot: GymWorkoutDefinition.Slot,
     val advice: StrengthTargetProgression.Advice,
+    val supportingWorkouts: List<StrengthSession> = emptyList(),
 )
 
 /** Exact concrete generation/preview ownership; durable drafts contain dates, not UI timers. */
@@ -599,6 +600,8 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
             "Earlier, completed and active prescriptions are read only."
         }
         val slot = workout.definition().slots().first { it.id() == slotId }
+        val history = SqliteGymExecutionRepository(getApplication<Application>()).recentActual(20)
+        val advice = StrengthTargetProgression.review(slot, history, Instant.now())
         before.copy(
             progressionReview =
                 ProgrammeProgressionReview(
@@ -606,7 +609,8 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
                     draft.revision(),
                     workoutId,
                     slot,
-                    progressionAdvice(slot),
+                    advice,
+                    history.filter { it.id() in advice.supportingSessionIds() },
                 )
         )
     }

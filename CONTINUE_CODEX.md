@@ -11,13 +11,14 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT — 0.10.1 in progress; GPS diagnosis and corrections
+## CURRENT — 0.10.1 GPS + coaching clarity implemented; full gate pending
 
 Branch: `feature/0.10.1-gps-reliability-coaching-clarity`, from merged main
 `5827d291d94870d16e2398c5173319260a6d7d72` (PR15). Do not restart 0.10 or reset work.
 0.10 main workflow41919350235 passed:426 tests EACH API28/35/36,125 captures.
 The rolling development APK for that completed baseline is available on GitHub Releases.
-Live main/PR/CI must be rechecked before subsequent work. Draft0.10.1 PR will be opened immediately after this checkpoint is pushed; inspect live state.
+Live main/PR/CI must be rechecked before subsequent work. Draft PR16 is open. GPS checkpoint b6322b6 is pushed; its COMPLETE workflow41928404979 passed API28/35/36, formatting, strict guidance
+and125 GPS-checkpoint captures. Canonical bot images are being adopted before this next checkpoint. Inspect actual current PR/head/CI before acting.
 Use actual git log/status for the checkpoint's own SHA and any uncommitted files.
 
 Authoritative scope is the owner's updated 0.10.1 master brief: GPS reliability,
@@ -35,7 +36,7 @@ See docs/GPS_ENGINE_REVIEW_0_10_1.md and docs/GPS_DIAGNOSIS_0_10_1.md.
 OpenTracks archived GitHub, RunnerUp and GPSTest reviewed at pinned revisions;
 current Codeberg inaccessible. No external source copied; RunnerUp GPL behaviour only.
 
-In-progress corrections preserve every accepted original coordinate and historical
+Implemented corrections preserve every accepted original coordinate and historical
 finalised total: native monotonic receipt qualification before auto-pause, gap freshness
 barrier, bounded speed+accuracy-supported stationary distance cluster, first-speed
 validation, continuity-gated auto-pause, concise freshness/recovery states. GPX imports
@@ -43,33 +44,49 @@ remain independent of live receipt age. Coordinate-free rejection events use exi
 raw archive2. Rendering now preserves bends with bounded64-edge simplification at0.0015 normalised tolerance; sharp-turn stride defect reproduced. No schema/backup/dependency/permission changes: schema15/rootJSON9/
 nested authoring2/strengthEngine2/strengthState2/raw2/complete1. App0.10.1/code14.
 
-NEXT EXACT WORK (complete in order, do not stop after one test):
-1. Finish/verify GPS corrections: full domain now passes37suites/640763checks including46295GPS checks
-   and6323render-geometry checks;64schema/9release pass. Actual Gradle Android gate running
-   locally with workspace JDK/SDK/cache and network permission. App+Android tests compile
-   and both APKs assemble; final lint result pending. Inspect /workspace/scratch/rdd0101/android-phase-b.log. Inspect
-   native batch adapter and recording persistence/GPX/raw archive compatibility; add affected
-   Android tests. Check rendering stride corner/gap fidelity separately, fix only demonstrated
-   defects. Finish route/source/pause/split audit and document thresholds/limitations.
-2. Run actual Android build/lint/instrumentation (APIs28/35/36 via CI). Local Gradle may
-   need sandbox network permission; do not label offline compiler as an APK/device result.
-   Open draft PR for0.10.1 when coherent checkpoint is committed/pushed.
-3. Implement approved ProgrammeProgressionSheet: Your workout suggestion / Here's what
-   to do / About the weight / Why are we suggesting this? Plain English generated from
-   real targets for every modality; proposed82kg is NOT history80kg. Functional collapsed
-   Advanced details, accessible expand/collapse, actual current/proposed/evidence distinctions.
-   Save this suggestion for review and Keep my current target; save never activates.
-   Preserve evidence/freshness/CAS/transaction checks; limited related prescription wording.
-4. Domain + UI tests for above, light/dark/200%, authentic screenshots, actual visual review.
-   Current canonical125images still represent0.10 baseline; NOT0.10.1 evidence. Workflow
-   capture allow-branch now targets this feature; regenerate and verify source fingerprint.
-5. Full final-head gate: domain/schema/backups/format/release/guidance/provenance/build/lint,
-   all API28/35/36 tests, canonical captures/integrity and actual visual inspection. Update
-   release notes, verification, S24 acceptance checklist and attribution. Keep PR draft until
-   scope complete; no partial merge or blind reruns. Check blocking reviews/conflicts.
-6. When all agreed gates pass, ready + squash merge per explicit updated brief; verify main
-   SHA/post-merge CI/rolling Latest Development Build APK. Update handoff to completed state
-   (focused follow-up PR if needed), report real results and physical S24 unknowns. Stop0.11.
+GPS checkpoint passed actual local Gradle domain/check, APK build, lint and Android
+instrumentation compilation (79 tasks,7m27s). New programme clarity source also passes
+that actual Gradle gate (79 tasks,3m11s). One compile failure in the new keyboard test
+required the explicit ExperimentalTestApi opt-in; keyboard coverage was retained.
+Current full domain640850checks/38suites; schema64/release9/capture-validator13 pass.
+Pinned formatting76Kotlin/122Java. Final CI and authentic visual review are NOT yet passed.
+
+Coaching clarity now uses pure StrengthPrescriptionText (87 domain checks): real reps/time/
+distance/rest, separate RPE/RIR explanations, and current/proposed optional load references.
+ProgrammeProgressionSheet has task-first cards and a working collapsed Advanced details
+with saved state, button/state semantics and supporting actual working sets from the SAME
+bounded history snapshot as advice. No progression calculation or save/activation/CAS change.
+Save this suggestion for review remains a draft operation; Keep my current target closes it.
+Limited running copy now explains perceived effort without truncating a fractional target.
+New8component UI tests cover keyboard, restore, weight distinctions, RIR, modalities,
+missing evidence and large/dark actions. Existing integration/history safeguards remain.
+Expected canonical set is128 (all125 retained + expanded details light/dark/200%).
+
+NEXT EXACT WORK (do not stop after one passing checkpoint):
+1. GPS checkpoint b6322b6 has COMPLETE green workflow41928404979 on API28/35/36.
+   Confirm/adopt its canonical-only bot commit via normal git fetch/ff preserving local work.
+   Current coaching checkpoint must be committed/pushed after local checks; run final full
+   38suite/domain/schema/format/release/guidance gates and inspect its new CI results.
+2. Full CI on the coaching head: API28/35/36 expected435 tests (427GPS +8new UI), actual
+   totals must be observed. Inspect failures and fix root causes, not blind reruns. No KVM/S24
+   locally. Real local Gradle now WORKS using JAVA_HOME=/workspace/jdk17,
+   GRADLE_USER_HOME=/workspace/gradle-cache, ANDROID_HOME=/workspace/android-sdk,
+   ANDROID_USER_HOME=/workspace/android-user plus sandbox network permission.
+3. Obtain canonical128 actual API35 captures from CI. Workflow bot may commit captures;
+   fetch/adopt normally with git (network permission now works), preserve local work. Verify
+   source fingerprint/PNG integrity, then OPEN images: progression main+expanded light/dark/
+   200%, live coach and post-run route. Actual visual review is separate from consistency.
+   Current committed125PNGs still show0.10, not new source. Do not claim them current.
+4. Correct any layout/interaction problem found. Keep all original evidence/versioning/
+   backup/privacy assertions. Finish docs: README current version/download artifact names,
+   docs/SCREENSHOTS, new visual review, VERIFICATION, release notes and S24 checklist. Remove
+   development-pending wording only after actual gates pass. Schema15/JSON9/raw2 unchanged.
+   Final APK source/artifact size/permissions and backup/migration matrix must be verified.
+5. Keep PR16 draft until complete final-head tests and visual gates pass. Check blocking
+   reviews/conflicts. When all agreed gates pass, ready + squash merge per explicit updated
+   master brief; verify main SHA/post-merge CI/rolling Latest Development Build APK. Update
+   handoff to completed state (focused follow-up PR if needed), report real results and
+   physical S24 unknowns. Stop; do NOT begin0.11 or create a stable production tag.
 
 The historical section below describes the prior pre-merge checkpoint; its old PR/main
 and no-auto-merge instructions are superseded by the current section and latest brief.

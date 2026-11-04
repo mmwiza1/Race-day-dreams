@@ -71,7 +71,12 @@ fun ActiveRunPanel(
                     Text(
                         "Target ${formatPaceSeconds(step.fastPace()*if(imperial)1.609344 else 1.0)}–${formatPaceSeconds(step.slowPace()*if(imperial)1.609344 else 1.0)}/${if(imperial)"mi"else"km"}"
                     )
-                else step.rpe()?.let { Text("Effort approximately ${it.toInt()}/10") }
+                else
+                    step.rpe()?.let {
+                        Text(
+                            "Aim for a perceived effort of ${decimal(it)}/10. Use how hard running feels to guide you."
+                        )
+                    }
             }
             w?.current()?.let { step ->
                 if (step.fastPace() != null && step.slowPace() != null)

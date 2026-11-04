@@ -1,6 +1,20 @@
 ## 4 November 2026 — complete Strength Programming2.0 software gate
 
-## Current release — 0.10.1 GPS diagnosis/corrections in progress (4 November 2026)
+## Current release — 0.10.1 checkpoint verification (4 November 2026)
+
+GPS checkpoint b6322b6 / draft PR16: actual local Gradle domain check, debug APK,
+lint and Android-test compilation PASSED (79 tasks,7m27s). Workflow41928404979 PASSED
+all API28/35/36 jobs, formatting, strict guidance and125 GPS-checkpoint captures.
+This verifies the GPS checkpoint, not the later coaching-source release gate. New coaching source also
+passes the actual local Gradle gate (79 tasks,3m11s), after adding the required explicit
+experimental-test opt-in for keyboard injection. No interaction coverage was removed.
+
+Current offline domain640850checks/38suites (GPS46295/render6323/instructions87),
+schema64/release9/capture-validator13 pass. Formatting checks76Kotlin/122Java. Added8
+production-content UI tests and retained existing two-stage activation/freshness/history
+integration assertions. Current/proposed references and actual recorded loads remain distinct.
+The new128capture set adds expanded progression in3modes while retaining every old scene.
+Actual current-build capture/visual acceptance and final full API matrix are still pending.
 
 0.10 merged as PR15, main `5827d291d94870d16e2398c5173319260a6d7d72`.
 Post-merge workflow41919350235 succeeded with426 cases EACH API28/35/36 and125 captures.

@@ -164,6 +164,9 @@
     "app/src/main/java/org/racedaydreams/coach/ActiveRunPanel.kt",
     "domain/src/main/java/org/racedaydreams/domain/polish/RouteRenderGeometry.java",
     "domain/src/test/java/org/racedaydreams/domain/polish/RouteRenderGeometryTestSuite.java",
-    "app/src/main/java/org/racedaydreams/coach/RouteCard.kt"
+    "app/src/main/java/org/racedaydreams/coach/RouteCard.kt",
+    "domain/src/main/java/org/racedaydreams/domain/presentation/StrengthPrescriptionText.java",
+    "domain/src/test/java/org/racedaydreams/domain/presentation/StrengthPrescriptionTextTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/ProgrammeProgressionClarityTest.kt"
   ]
 }

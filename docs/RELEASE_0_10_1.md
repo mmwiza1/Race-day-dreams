@@ -6,12 +6,19 @@ progress; the final verification and visual acceptance gates have not yet comple
 ## What's new
 
 - Local explanations for weak, lost and recovered GPS evidence during recording.
+- A clearer workout-suggestion screen: what to do, what a weight reference means,
+  why the suggestion exists, and expandable advanced targets and recorded evidence.
 
 ## Improvements
 
 - GPS engine comparison against pinned OpenTracks, RunnerUp and GPSTest sources,
   with documented independent implementation and licence boundaries.
 - Native location receipt qualification happens before optional auto-pause decisions.
+- Instructions follow the actual repetition, time or distance task. Perceived effort
+  and repetitions left before failure are explained separately.
+- Saving a suggestion remains separate from reviewing and activating a programme.
+- Large recorded routes preserve meaningful bends and gaps with bounded rendering-only
+  simplification; the underlying coordinates are unchanged.
 
 ## Fixes
 
@@ -27,7 +34,7 @@ progress; the final verification and visual acceptance gates have not yet comple
   without retained run evidence and physical acceptance checks.
 - Locked-screen, urban multipath, battery saver, long-run and device comparisons
   require real Galaxy S24 testing; emulator results do not establish those passes.
-- Coaching UI refinement and final Android/screenshot release gates are still pending.
+- Final API28/35/36 execution and authentic screenshot/visual gates remain pending.
 
 ## Data, privacy and licensing
 

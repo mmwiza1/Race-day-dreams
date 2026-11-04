@@ -1755,20 +1755,29 @@ class CoachingScreenshotTest {
                         .performScrollTo()
                         .performClick()
                     val heading =
-                        if (kind == "progression") "Optional progression"
+                        if (kind == "progression") "Your workout suggestion"
                         else "Programme replacement"
                     await(heading)
                     compose.onNodeWithText(heading).assertIsDisplayed()
                     if (kind == "progression") {
-                        compose.onNodeWithText("Optional proposal").assertIsDisplayed()
+                        compose.onNodeWithText("Here's what to do").assertIsDisplayed()
+                        compose.onNodeWithText("Keep my current target").assertIsDisplayed()
                         compose
-                            .onNode(hasText("82 kg reference", substring = true))
+                            .onNodeWithTag("progression-review")
+                            .performScrollToNode(
+                                hasText("suggested new weight reference is 82 kg", substring = true)
+                            )
+                        compose
+                            .onNode(
+                                hasText("suggested new weight reference is 82 kg", substring = true)
+                            )
                             .assertIsDisplayed()
-                        compose.onNodeWithText("Keep current target").assertIsDisplayed()
                         compose
                             .onNode(hasScrollToIndexAction())
-                            .performScrollToNode(hasText("Save optional target proposal"))
-                        compose.onNodeWithText("Save optional target proposal").assertIsDisplayed()
+                            .performScrollToNode(hasText("Save this suggestion for review"))
+                        compose
+                            .onNodeWithText("Save this suggestion for review")
+                            .assertIsDisplayed()
                         compose.onNode(hasScrollToIndexAction()).performScrollToIndex(0)
                     }
                 }
@@ -1781,6 +1790,18 @@ class CoachingScreenshotTest {
                             android.content.res.Configuration.UI_MODE_NIGHT_MASK,
                     )
                 capture("strength-programme-$kind$suffix")
+                if (kind == "progression") {
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("Advanced details"))
+                    compose.onNodeWithText("Advanced details").performClick()
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("Proposed target"))
+                    compose.onNodeWithText("Proposed target").assertIsDisplayed()
+                    compose.onNodeWithText("Current target").assertExists()
+                    capture("strength-programme-progression-details$suffix")
+                }
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))
                 Assert.assertEquals(actuals.toSet(), CoachingStore(context).strength().toSet())
