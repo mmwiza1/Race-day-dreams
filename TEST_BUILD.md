@@ -1,16 +1,18 @@
-# 0.10 programming development — not physical acceptance
+# 0.10 software verification / real-device acceptance
 
-Version0.10.0-test1/code13 candidate schema15/JSON9 (nested authoring2, read1–2) retains older backup readers1–8,
-strengthEngine2, strengthState2, raw2 and complete1. Typed authoring durability and legacy /
-authored planned execution are under automated verification. Manual authoring, custom entry, templates and dated previews are connected and have a
-verified413-case/API checkpoint including future revisions/regeneration. Permanent replacement
-controls now require their own419-case/API verification; do not reuse older capture claims. See CONTINUE_CODEX.md for source-bound gates.
+Source1a7c683/workflow41912323900 passed426tests EACH API28/35/36, builds/lint, domain/
+schema/migration/backup/release/format/guidance and125actual captures. New programming,
+replacement, progression and read-only history are connected and scoped light/dark/200%
+visual review passed. Metadata-only following CI is tracked in the PR; it does not change
+this verified app fingerprint. Physical Galaxy S24/human TalkBack checks remain UNPERFORMED.
 
-Before release acceptance, require the API28/35/36 matrix, previous8/current9 backup
-round-trips,13→15 and14→15 migrations, immutable historical/actual-set evidence, authentic new
-builder/template/blocks/custom/permanent-swap captures and light/dark/200% review.
-The S24 checks below remain genuinely unperformed, including future human evaluation
-of building/activating/regenerating a programme and retaining it through complete restore.
+Version0.10.0-test1/code13, schema15/rootJSON9 (authoring2/read1–2), strengthEngine2/
+strengthState2/raw2/complete1 preserve supported old reads. API35 branch APKartifact13363782687
+(run41912323900,51,864,680bytes) is a debug-signed test package. Export a complete backup
+before upgrade; debug keys can differ and must not lead to casual loss of local data.
+
+The following retained baseline and current programme checklists require real human results;
+no unchecked sensor/outdoor/audio item is certified by emulator success.
 
 # Retained 0.9 automated baseline / physical acceptance
 

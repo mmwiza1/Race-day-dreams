@@ -97,3 +97,19 @@ proposal first, optional evidence disclosure and flowing controls. Stronger capt
 show the actual82kg proposal at entry in all modes and exercise real scrolling to the save
 control. That refinement requires fresh build captures and inspection. No bitmap was edited.
 All physical Galaxy S24/human TalkBack checks remain unperformed.
+
+## Refined progression — source1a7c683 accepted in scoped visual review
+
+Workflow41912323900 passed426cases EACH API28/35/36 and125captures. Canonicalacf7a228
+was adopted byteexact with current app hashc93d9cf6a62147599a59ca1e94c23dcd57ead85e8e1e762f30863f4610275514.
+All3refined progression images were opened individually. The optional82kg reference now
+appears immediately in the planned semantic card, ahead of current target and optional
+evidence disclosures. Light/dark contrast is readable. At actual200%text, labels wrap
+naturally, Keep current target remains accessible, and the save control flows in the
+scrolling content instead of sharing a cramped dialog footer. The capture explicitly
+scrolls to/asserts save then returns to the real entry position. No image was edited.
+
+This accepts the scoped refinement that previously failed visual review. Prior unchanged
+replacement/history scenes and future settings were reviewed above. Full0.10software/gate
+work is complete; subsequent metadata-only CI still must be checked before PR readiness.
+Physical Galaxy S24/human TalkBack verification remains unperformed.

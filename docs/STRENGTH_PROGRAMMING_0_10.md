@@ -1,9 +1,9 @@
 # Strength Programming 2.0 — 0.10 implementation and verification boundary
 
-0.10 remains an in-progress draft release. The manual/custom, template and future-review
-checkpoints have passed their source-bound supported Android gates. New permanent swap,
-progression and history UI require their own gate and actual capture review. See
-VERIFICATION.md and CONTINUE_CODEX.md; no physical Galaxy S24 acceptance is implied.
+The0.10software candidate passed the supported426-case/API28/35/36 gate and125actual
+captures, including scoped light/dark/200% review. Source-bound results and following
+metadata CI are in VERIFICATION.md. Physical Galaxy S24/human TalkBack acceptance is
+unperformed; the application remains a test build and recommendations remain optional.
 
 ## One durable prescription model
 

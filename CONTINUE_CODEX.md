@@ -11,108 +11,54 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT — full426gate green; visual refinement requires another gate
+## CURRENT —0.10 software complete; final review/readiness boundary
 
-Branch feature/0.10-strength-programming / PR15 OPEN/DRAFT; mainc6299e2 unchanged.
-Committed source4fb19b81bff49cd19d42e9933cb7d0608c2c006f passed COMPLETE workflow41908273369:
-426tests EACH API28/35/36, all builds/lint/domain/schema/release/format/source/guidance,
-125actual captures. This FIXES both lower-ranked choice tests and API35city-root lifecycle
-failure without weakening assertions or deadlines. APK51,864,680bytes (+180224/+0.35% from
-prior413checkpoint); API35APKartifact13361224243, screenshots13361753732.
+Branch feature/0.10-strength-programming / PR15 targets main. Main remainsc6299e2; inspect
+live state before action. Implementation source1a7c683eeabf349505a0c2f5f19da9323d93812d
+passed COMPLETE workflow41912323900:426tests EACH API28/35/36 (1278emulator cases), all
+builds/lint,588145domain/35suites including2430configurations,64schema,9release, source11/
+artwork14/capture-validator13,72Kotlin/115Java format, strict174canonical/14routine and125
+captures. No known current software test failures. Full agreed0.10 implementation is connected.
 
-Botf79c3c59c72b380f77b4c4ed35ac82264ddf4afd adopted byteexact,125PNG540x1200 verified;
-source fingerprint cbf3a7ecd0837bf72e481ed8fc7d00b9d89e074a9606e40b858a8adc57cc4538
-matches actualsource. All9new replacement/progression/history light/dark/200% images opened.
-Replacement/history readable, natural wrap/scroll; original date now readable dark (dark /
-200%future settings reopened). BUT200%progression AlertDialog has crowded wrapped actions
-and places numeric proposal below long evidence. Do NOT call this visually accepted.
+Canonicalacf7a2285975deaaba9f3652be42615ec49e6a03 adopted by identical verified blobs/tree/
+commit. All125PNG540x1200 validate; app/capture source fingerprint matches
+c93d9cf6a62147599a59ca1e94c23dcd57ead85e8e1e762f30863f4610275514.
+API35APKartifact13363782687 (51,864,680bytes), screenshots13364940712, reports13365125584.
+No new assets/dependencies/permissions. Size is180224bytes/+0.35% above413checkpoint.
 
-Local necessary refinement replaces only ProgrammeProgressionSheet with scrollable full-
-screen review, optional target first, evidence disclosures and normally flowing controls.
-No business/persistence change. Capture assertions now require the real82kg proposal visible
-at entry in EACH mode, both actual controls accessible through normal scroll, then reset
-list via real scroll action for capture. UI save test scrolls to the real control. Expected
-426/API and125captures unchanged. FINAL format/main/instrumentation compile plus full gate
-and fresh capture inspection are REQUIRED for this new source. Do not reuse4fbpass as proof.
+Source4fb19b8/workflow41908273369 also passed426/API and125captures, but200%progression
+AlertDialog failed visual review. Source1a7replaced it with proposal-first full-screen scroll,
+evidence disclosures and flowing controls. Stronger captures prove actual82kg reference
+visible at entry in each mode and exercise real scroll to save. All3refined images opened;
+no overlap/crowded actions, readable light/dark and natural200%wrapping. Prior6replacement/
+history scenes and affected future settings were reviewed as recorded in VISUAL_REVIEW.
+No physical Galaxy S24/human TalkBack results are claimed.
 
-Next exact work: finish final local source/format/release checks; commit/push this visual
-refinement and observed426results/docs; run fullAPI28/35/36 gate. Fix failures, adopt fresh
-125captures and inspect refined progression in all3modes. Finish README/release/handoff/
-verification to actual final state and prepare PR15 only after complete gates/visual review.
-Full0.10 implementation is now connected; do NOT start0.11 or revive old incomplete lists
-below. Only final quality/gates/docs remain. Physical Galaxy S24/TalkBack UNPERFORMED.
+Current following checkpoint is documentation-only: README8-image showcase/release notes/
+architecture/programming docs/verification/test checklist/handoff updated to observed results.
+Use actual git log/status for its own SHA and uncommitted files. It changes no app/capture
+input; source fingerprint must remain the c93... value above. Its own required CI must be
+inspected before PR readiness, not assumed green from the earlier source gate.
 
-The following records preserve architecture/recovery details; their old pending gates are
-historical and superseded by this CURRENT section.
+Next EXACT actions on continuation:
+1. Inspect current branch/status/log/live remote/PR15 and latest required workflow. Preserve
+   all code/images/docs; no reset/rebuild of completed features. If metadata CI is running,
+   wait/inspect. If a real failure occurs, fix its root cause without weakening assertions.
+2. When latest required checks are green and same verified source/visual state is preserved,
+   mark/keep PR15 ready for review. Current user requested prepare0.10PR for review/merge;
+   do not automatically merge or create a stable tag. Check live PR state before changing it.
+3. A notes-only workflow may publish another canonical bot: verify identical source hash and
+   adopt its exact image/tree/commit without resetting app work. Reopen affected representative
+   images as needed; do not chase redundant reruns when unchanged gates have passed.
+4. Report actual source/CI/APK/screenshots/schema versions and physical S24 checks. Stop.
+   Do NOT begin0.11 or revive an old feature backlog. No further0.10feature work remains.
 
-## Actual recovery boundary — 4 November 2026
-
-- Branch feature/0.10-strength-programming; PR15 OPEN/DRAFT. Main remains
-  c6299e2401525197260f69c6918c89794cfa4c3d. Inspect live remote again before acting.
-- Committed/pushed HEAD b148e2aaeadf71b25373ace16a4fb9a5a93f1631 connects reviewed permanent
-  programme replacements. It follows canonical bot8cba4a1bb85be9e4b9dcd1a53da1ba086f8f0ed2.
-- Workflow41905672344 finished419tests EACH API28/35/36. Build/lint/format/guidance passed,
-  but ALL matrices failed2newtests that assumed Dumbbell Bench Press was in the first4
-  choices. It is a valid lower-ranked option behind Show more alternatives. API35 additionally
-  failed an existing Paris Route Story capture wait: reported semantics root was empty during repeated window cycling.
-  APIs28/36 passed that entire route capture case. No canonical bot was published for this
-  red checkpoint. Do NOT rerun unchanged b148 or call it release-green.
-- Local follow-up now makes the tests reveal the actual ranked option through Show more,
-  keeping exact replacement/phase/backup/activation assertions. City capture teardown now
-  waits for departing Compose roots to unregister after ActivityScenario.close before a
-  fresh window is launched. Close/DESTROYED does not acknowledge Compose root unregistration;
-  an empty departing root must not be accepted by the next launch. Existing20sec deadlines,
-  real Route Story/native1801points/durability/source/geometry assertions remain unchanged.
-  If this persists, inspect the added scenario lifecycle diagnostic and actual logs; do not
-  weaken assertions, discard points, increase deadlines or blindly rerun.
-
-## Current local next phase — preserve surviving changes
-
-Optional progression and accepted-history UI are connected locally, with tests/docs/capture
-scenes. Inspect status for whether this has since been committed. Do not duplicate it.
-
-- ProgrammeProgressionReview + ProgrammeProgressionSheet call existing pure
-  StrengthTargetProgression over up to20recent logged sessions, onIO. Two exact recent
-  comparable sessions/actual working sets/intended recorded effort are required. Missing
-  effort stays unknown. Weighted advice reuses safe small-load policy; bodyweight/time/
-  distance/carries keep supported task-specific policies. No custom-only inferred progression.
-- Save is optional/date-only and rechecks reviewed draft/target plus fresh actual evidence.
-  Only unaccepted targets change; actuals/other dates/current owner remain unchanged until
-  explicit activation. Immutable programme reason records proposal explanation/supporting IDs.
-- Read-only ProgrammeHistorySheet uses paged indexed summaries and loads one accepted
-  preserved revision onIO. Shows dated/block targets and explanations. No activate/edit
-  control. List resets scroll on context changes. No raw route samples are read.
-- New5real UI/VM/SQLite cases cover explicit optional load choice/backup, changed evidence,
-  missing effort/large-dark UI, all supported modality proposals and read-only accepted history.
-  Two new capture cases add6production scenes: strength-programme-progression and
-  strength-programme-history in normal/dark/200%. Preserve119previous required scenes:
-  total125. Expected next full matrix426tests/API,72Kotlin/115Java formatted files.
-- Original-start field remains readable/read-only in dark mode; domain original-date guard
-  and no-set-text semantics assertion remain. Active native IDs protect proposals without
-  being called completed evidence. No schema/dependency/permission change.
-
-Next EXACT tasks:
-1. FINAL local format/source compilation PASS at logs progression-*-gate.log under scratch.
-   All main/instrumentation Kotlin+Java compile;72Kotlin/115Java format. Domain588145/35,
-   schema64/release9/source11/artwork14/capture-validator13/strict174+14 pass.
-   These are NOT APK/lint/device passes for the new phase.
-2. Domain588145checks/35suites, schema64, release9, source11/artwork14, capture-validator13
-   and strict174canonical/14routine guidance must pass current source. Review diff for scope,
-   manifest/deps/migration/backup invariants. Update actual observed results in VERIFICATION.
-3. Commit/push coherent optional-progression/history + actual gate fixes. Use expected-head
-   lease, no reset or force; keep PR15DRAFT. Full API28/35/36 gate must run (expected426/API).
-4. Inspect actual failures and fix root cause. Adopt bot125captures only after green gate,
-   verify blobs/tree/commit/source fingerprint and open all9new replacement/progression/
-   history light/dark/200% images. Reopen affected current future dark/date images. No mock
-   screenshots/edited images. Old116images do NOT certify these additions.
-5. Complete final0.10 simulator/quality/doc/privacy/backup/accessibility review. Existing
-  2430configuration simulator covers goals/priority/experience/frequency/time/equipment/
-   days/exclusions/favourites/hybrid constraints. Beginner Power limitation is explicit:
-   no beginner-classified ballistic catalogue movement; do not fake one or relabel strength.
-   Add canonical content only for a genuine gap with full guidance/assets/tests if required.
-6. Refresh README/current artifacts/release notes and PR body to actual final scope/status.
-   Full agreed0.10 remains the scope. Prepare PR only after ALL criteria/gates/captures pass;
-   do not merge a partial green checkpoint. Physical S24 acceptance remains unperformed.
+Schema15/rootJSON9/nested authoring2(read1–2)/strengthEngine2/strengthState2/raw2/complete1
+remain unchanged. Existing old backups/history/actual sets/favourites/exclusions and native
+recording remain supported. Known limits: beginner Power explicitly uses movement practice
+when no beginner-classified ballistic option exists; custom-only tasks get no invented
+technique/progression; bounded20recent-session advice may conservatively gather evidence.
+These are documented/tested safe boundaries, not an unfinished0.11backlog.
 
 ## Completed implementation — preserve, do not rebuild
 
@@ -155,7 +101,7 @@ Raw recording archive2, complete backup package1 unchanged. No destructive migra
 catch-all Release08Store bucket/dependency/permission. Validate entire graph before shared
 transactional restore; corrupt/future backups must not truncate current data.
 
-## Latest FULL GREEN checkpoint (not full0.10 acceptance)
+## Historical 413-case checkpoint — superseded by CURRENT above
 
 - Source8f1d1aad1a95072ea5de08488c72a7acf5d229b5; workflow41899315529 SUCCESS.
   413tests EACH API28/35/36, app/test builds/lint,588145domain/35suites,64schema,9release,

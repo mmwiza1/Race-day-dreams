@@ -1,3 +1,18 @@
+# Current0.10 actual-build capture checkpoint
+
+Source1a7c683/workflow41912323900 passed426tests each API28/35/36 and125required captures.
+Canonicalacf7a2285975deaaba9f3652be42615ec49e6a03 has source fingerprint
+c93d9cf6a62147599a59ca1e94c23dcd57ead85e8e1e762f30863f4610275514.
+All125PNG540x1200 and exact Git blobs/tree/commit were verified. Refined progression
+normal/dark/200% images were opened: optional numeric target visible at entry, readable
+wrapping/contrast, no crowded footer and save reachable by actual scrolling. Earlier
+replacement/history/future/manual/template review findings remain in VISUAL_REVIEW_0_10_0.md.
+Actual capture integrity and human visual inspection are separate gates. References remain
+separate; no bitmap editing/mock UI is used. No physical S24/TalkBack pass is claimed.
+
+The following sections preserve historical capture/design decisions. Their earlier
+pending-work language is superseded by this source-bound current checkpoint.
+
 # 0.9 canonical capture acceptance
 
 **91 authentic current-source API35 captures**, adopted from botb768e0b after successful

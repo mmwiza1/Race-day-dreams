@@ -1,3 +1,35 @@
+## 4 November 2026 — complete Strength Programming2.0 software gate
+
+Source1a7c683eeabf349505a0c2f5f19da9323d93812d passed COMPLETE workflow41912323900: **426instrumentation
+cases EACH API28/35/36** (1278emulator cases), domain/app/test builds and lint,
+588145domain checks/35suites including the2430configuration simulator,64schema/migration
+cases,9release-note cases, source/provenance11, artwork14, capture-validator13,
+72Kotlin/115Java formatting and strict174canonical/14routine guidance.
+
+Canonical botacf7a2285975deaaba9f3652be42615ec49e6a03 was adopted with identical verified blobs/tree/commit.
+All125PNG540x1200 validate. Actual current app/capture-source hash matches:
+c93d9cf6a62147599a59ca1e94c23dcd57ead85e8e1e762f30863f4610275514.
+API35APKartifact13363782687 is51,864,680bytes; screenshots13364940712 and reports13365125584.
+The APK is180224bytes/+0.35% above the prior413-case checkpoint; no artwork was added.
+These are debug-signed branch test artifacts, not a stable or main production release.
+
+The earlier419-case choice-disclosure failures and API35departing-root capture failure
+were fixed without weakening assertions or deadlines. The426-case4fbcheckpoint passed
+software checks but its200%progression AlertDialog failed visual review. This latest source
+uses proposal-first full-screen scroll, evidence disclosures and flowing controls. Stronger
+captures verify the real82kg optional reference visible at entry in every mode and scroll
+to the actual save control. All3refined images were opened: readable light/dark contrast,
+no overlapping actions, natural200%wrap/scroll. Earlier6replacement/history images and
+affected future dark/200%settings were reviewed as recorded in VISUAL_REVIEW_0_10_0.md.
+No screenshot was edited; physical Galaxy S24/human TalkBack acceptance remains UNPERFORMED.
+
+Schema15 / rootJSON9 / nested authoring2(read1–2) / strengthEngine2 / strengthState2 /
+raw2 / complete1 retain supported older reads. Migrations13→14→15, transactional restore,
+current/older backups and actual/history preservation are covered by the supported suite.
+No manifest permission or runtime dependency was added. Main remainsc6299e2 pending review.
+Following documentation-only checkpoints do not change this verified app fingerprint;
+inspect their actual required CI before readiness/merge rather than assuming a future pass.
+
 ## 4 November 2026 — full426checkpoint green; visual refinement pending
 
 Source4fb19b81bff49cd19d42e9933cb7d0608c2c006f passed COMPLETE workflow41908273369:

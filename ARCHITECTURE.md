@@ -1,4 +1,4 @@
-# 0.10 in-progress programme authoring boundary
+# 0.10 programme authoring boundary
 
 New Android-independent StrengthProgramme/Draft models preserve dated blocks, frozen
 GymWorkoutDefinition targets, future-only revision proposals and exact source adaptation
@@ -420,7 +420,7 @@ bounded SQL lookup, not by hydrating every recent execution. Final source/gates 
 CONTINUE_CODEX.md and VERIFICATION.md; the original larger Strength backlog is deferred.
 
 
-## Authored programme application projection (0.10 in progress)
+## Authored programme application projection (0.10)
 
 The composition root injects StrengthProgrammingRepository into CoachSnapshotReader.
 The typed current owner selects either the legacy gym programme or the exact authored
@@ -439,7 +439,7 @@ goal and experience, rather than the latest programme. Programme screens display
 exercise names and exact optional targets. Builder/activation/editing controls explicitly review typed proposals; these read paths
 do not silently activate or edit.
 
-### Concrete strength preview persistence (0.10, in development)
+### Concrete strength preview persistence (0.10)
 
 `ConcreteStrengthProgrammeDraftRepository` separates unaccepted dated proposals from
 activated `StrengthProgrammingRepository` revisions and actual Gym Now sets. SQLite stores

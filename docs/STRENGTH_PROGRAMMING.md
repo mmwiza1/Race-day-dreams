@@ -62,7 +62,7 @@ frequency/time budget. Advanced power methods and automatic task-specific time/d
 progression are not prescribed. All174canonical exercises have original illustrated technique guidance;
 qualified review and physical-device inspection remain necessary.
 
-## 0.10 manual authoring and structured custom exercises — verification in progress
+## 0.10 manual authoring and structured custom exercises
 
 Manual drafts persist through typed optimistic rows. The phone builder edits name, schedule,
 block duration/phase, workout names/notes, exercises/order and precise optional targets.
@@ -77,9 +77,10 @@ custom movements, estimated1RM is disabled, and automatic generated selection re
 canonical. Older UUID custom logging/history is retained; no renaming or transfer of history
 is inferred from a similar name. Metadata participates in browsing/filtering/detail.
 
-The new UI/device cases and captures must pass before release. Editable generated/template
-previews, future regeneration, permanent swap UI and modality proposal controls remain
-unfinished; domain support is not a claim of finished user workflows.
+Editable generated/template previews, future regeneration, permanent replacements,
+modality proposals and read-only revision history are connected. The supported 426-case/API
+software gate and scoped light/dark/200% review passed. Physical S24 acceptance is separate;
+see the current Strength Programming 2.0 document and VERIFICATION.md.
 
 ## Concrete generated previews — durability foundation
 
@@ -103,15 +104,15 @@ priority, duration and real equipment, then review the saved dated blocks. Indiv
 workouts support target/exercise editing, ordering, removal and additions. Generating
 another preview retains the previous saved draft. Accepted previews are read-only.
 The engine considers retained demanding runs/race context for hybrid users; Strength-only
-users need no running profile. UI and new canonical capture verification is in progress.
+users need no running profile. The supported426-case/API gate and scoped capture review passed.
 Future-only editing and regeneration now prepare a saved next revision from the current
 programme. Completed and earlier workouts are read-only; activation independently rechecks
 fresh completions and current ownership. Regeneration can change goal, days, equipment,
 frequency and length while keeping the original start and exact retained prescriptions.
 The original revision and native actuals remain separately readable. Competing unaccepted
 proposals remain saved; after another is accepted they are superseded/read-only, and do not
-replace accepted history during backup restore. Permanent-swap controls remain the next phase.
-Android and visual acceptance for these new future-review controls is pending.
+replace accepted history during backup restore. Permanent-swap controls, optional progression and read-only accepted history are connected.
+The supported426-case/API gate and scoped light/dark/200% visual review passed.
 
 Activation of a forward revision waits while a native workout using that programme is
 active, paused or awaiting recovery. The athlete can finish/discard that workout first;
