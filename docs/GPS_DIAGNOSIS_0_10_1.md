@@ -85,7 +85,7 @@ not imply stillness. This is conservative product qualification, not a claim of 
 or geographic precision. Walk/run traces with genuinely moving speed remain undiminished;
 very slow movement with underreported speed can leave up to the cluster radius uncounted.
 
-After5seconds without a recent accepted point, precise live pace is suppressed and GPS
+After5seconds without a recent usable qualified fix, precise live pace is suppressed and GPS
 is described as weak. After15seconds the continuous segment breaks. Reacquisition reports
 recovery briefly; no distance is added across the missing segment. Existing elapsed/active
 semantics remain unchanged, including elapsed GPS-loss time. Auto-pause requires inter-fix
@@ -98,3 +98,22 @@ distance: GPX exports observations, not a promise that every raw jitter edge cou
 running. Native re-import deduplicates identical retained evidence instead of recalculating
 old totals. Other GPX readers may calculate a different distance. No stored historical
 activity is retroactively refiltered by this update.
+
+## Availability versus audio (additional confirmed regression)
+
+On the initial correction checkpoint, one accuracy60m observation after a good fix
+immediately described an outage. Alternating ready/lost input also selected repeated
+GPS-loss cues without a cooldown, and loss could be announced during pause. Four new
+regression assertions failed before the follow-up correction.
+
+Poor positional accuracy now describes weak GPS immediately while still breaking the
+qualified distance segment. More than15seconds without a usable qualified observation
+is described as temporarily lost, independently of whether the distance anchor was
+already cleared. Availability has a separate monotonic qualified-fix clock: a paused
+fix can establish GPS availability without becoming a distance/activity sample.
+
+Loss audio is suppressed during pause and emitted at most once per60seconds for
+separate episodes, using elapsed monotonic time. Continuous loss is not periodically
+reannounced. This is a notification policy, not a physiological or accuracy threshold.
+Ordinary weak/ready fluctuations stay accessible as text without repeated automatic
+TalkBack speech; the polite live region is reserved for unpaused confirmed loss.

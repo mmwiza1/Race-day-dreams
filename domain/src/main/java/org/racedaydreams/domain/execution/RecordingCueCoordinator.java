@@ -18,6 +18,7 @@ public final class RecordingCueCoordinator {
     private final CoachCues paceCues = new CoachCues();
     private int lastSplit;
     private boolean gpsWasLost;
+    private long lastGpsAnnouncement = -60000;
     private boolean hadHeartRate;
     private boolean raceHalf;
     private boolean raceFive;
@@ -45,9 +46,11 @@ public final class RecordingCueCoordinator {
         var candidates = new ArrayList<CoachCues.Cue>();
         long active = metrics.movingMillis();
         boolean lost =
-                (metrics.gps().contains("interrupted")
-                        || metrics.gps().contains("temporarily lost"));
-        if (lost && !gpsWasLost) {
+                !metrics.paused()
+                        && (metrics.gps().contains("interrupted")
+                                || metrics.gps().contains("temporarily lost"));
+        if (lost && !gpsWasLost && metrics.elapsedMillis() - lastGpsAnnouncement >= 60000) {
+            lastGpsAnnouncement = metrics.elapsedMillis();
             candidates.add(
                     new CoachCues.Cue(
                             "gps-lost",

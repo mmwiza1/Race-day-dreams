@@ -666,7 +666,7 @@ class CoachingScreenshotTest {
                     60000,
                     60000,
                     300.0,
-                    "GPS available",
+                    "GPS ready",
                     false,
                 )
         }

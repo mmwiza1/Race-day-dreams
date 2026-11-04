@@ -84,7 +84,7 @@ public final class RunMetricsEngine {
     private long minimumFixTime;
     private long lastTime, pausedSince = -1, pausedTotal;
     private int segment;
-    private long lastDelivery = -1, recoveredUntil = -1;
+    private long lastDelivery = -1, recoveredUntil = -1, lastUsableFix = -1;
     private String lastRejection;
     private double distance;
     private Fix anchor, distanceAnchor;
@@ -191,9 +191,11 @@ public final class RunMetricsEngine {
                             null,
                             null,
                             null));
+            gps = "GPS signal weak";
             return reject("GPS_FIX_ACCURACY", receivedMillis, receivedWall, false);
         }
         if (implausible(f)) return reject("GPS_FIX_JUMP", receivedMillis, receivedWall, true);
+        lastUsableFix = f.monotonicMillis();
         return true;
     }
 
@@ -220,12 +222,14 @@ public final class RunMetricsEngine {
         lastTime = Math.max(lastTime, f.monotonicMillis());
         if (f.accuracy() != null && f.accuracy() > 35) {
             lost(f);
+            gps = "GPS signal weak";
             return false;
         }
         if (implausible(f)) {
             gps = "GPS signal weak";
             return false;
         }
+        lastUsableFix = Math.max(lastUsableFix, f.monotonicMillis());
         if (pausedSince >= 0) {
             gps = "GPS ready · paused";
             return false;
@@ -354,10 +358,14 @@ public final class RunMetricsEngine {
             if (d >= 10 && dt >= 5000) pace = dt / d;
         }
         String description = gps;
-        if ("GPS ready".equals(gps)
-                && !points.isEmpty()
-                && now - points.get(points.size() - 1).fix().monotonicMillis() > 5000)
-            description = "GPS signal weak";
+        // Availability has its own qualified-fix clock: paused fixes remain useful for GPS
+        // status even though they never become recorded distance or activity samples.
+        if (lastUsableFix >= 0 && now - lastUsableFix > 15000)
+            description =
+                    "GPS temporarily lost"
+                            + (pausedSince >= 0 ? " · paused" : " · distance incomplete");
+        else if (lastUsableFix >= 0 && now - lastUsableFix > 5000 && gps.startsWith("GPS ready"))
+            description = "GPS signal weak" + (pausedSince >= 0 ? " · paused" : "");
         if ("GPS ready".equals(description) && now <= recoveredUntil) description = "GPS recovered";
         if ("GPS signal weak".equals(description) || description.contains("lost")) pace = null;
         return new Status(

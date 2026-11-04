@@ -100,7 +100,9 @@ fun ActiveRunPanel(
                 s.gps(),
                 modifier =
                     Modifier.semantics {
-                        liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+                        // Ordinary quality fluctuations stay readable without repeated speech.
+                        if (!s.paused() && s.gps().contains("temporarily lost"))
+                            liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
                     },
             )
             if (s.gps() == "GPS signal weak")

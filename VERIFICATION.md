@@ -1,5 +1,18 @@
 ## 4 November 2026 — complete Strength Programming2.0 software gate
 
+## GPS availability/audio follow-up — local regressions (4 November2026)
+
+Four additional assertions reproduced isolated poor accuracy being described as an immediate
+outage, repeated loss/recovery selecting repeated audio, and loss interrupting pause. The
+correction separates weak positional evidence from >15seconds without usable fixes, tracks
+usable paused GPS without recording paused movement, suppresses loss audio during pause,
+and bounds distinct announcements to60seconds elapsed. Ordinary quality changes no longer
+trigger a TalkBack live region. Existing actual-coordinate and distance semantics remain.
+
+Full offline suite now passes640866checks/38suites (GPS46311/render6323/instructions87).
+The new source still requires its own complete Android and visual gate. No physical
+reception/audio/TalkBack pass is implied by these deterministic regressions.
+
 ## Coaching gate failure — 4 November2026 23:22UTC
 
 Workflow41931167271 on2c271c6 ran435 tests each on API28/35/36, with one keyboard-fixture

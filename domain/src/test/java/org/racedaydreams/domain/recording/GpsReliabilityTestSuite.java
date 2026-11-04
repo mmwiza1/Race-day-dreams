@@ -229,7 +229,111 @@ public final class GpsReliabilityTestSuite {
                 "Out-of-order observation created stillness window");
     }
 
+    private static void pausedAvailabilityIsNotRecordedMovement() {
+        var engine = new RunMetricsEngine(0, Instant.EPOCH);
+        deliver(engine, fix(0, 0, 3.0, 3.0), 0);
+        engine.pause(1000, Instant.EPOCH.plusSeconds(1));
+        check(
+                !deliver(engine, fix(10000, 100, 3.0, 3.0), 10000),
+                "Paused fix added an activity sample");
+        check(engine.pointCount() == 1, "Paused position retained as running evidence");
+        check(
+                engine.status(10000).gps().equals("GPS ready · paused"),
+                "Fresh paused GPS falsely described as lost");
+        check(
+                engine.status(27000).gps().equals("GPS temporarily lost · paused"),
+                "Paused signal freshness frozen forever");
+        check(engine.status(27000).metres() == 0, "Paused signal changes invented distance");
+        engine.resume(28000, Instant.EPOCH.plusSeconds(28));
+        check(deliver(engine, fix(29000, 200, 3.0, 3.0), 29000), "Fresh resumed anchor rejected");
+        check(deliver(engine, fix(30000, 203, 3.0, 3.0), 30000), "Fresh resumed movement rejected");
+        check(
+                Math.abs(engine.status(30000).metres() - 3) < .01,
+                "Paused movement bridged after GPS recovery");
+    }
+
+    private static void weakStatusAndCueChatter() {
+        var engine = new RunMetricsEngine(0, Instant.EPOCH);
+        deliver(engine, fix(0, 0, 3.0, 3.0), 0);
+        deliver(engine, fix(1000, 3, 3.0, 3.0), 1000);
+        check(
+                !deliver(engine, fix(2000, 6, 60.0, 3.0), 2000),
+                "Weak accuracy retained as movement");
+        check(
+                engine.status(2000).gps().equals("GPS signal weak"),
+                "One weak observation falsely describes an immediate signal outage");
+        engine.missingFix(3000, Instant.EPOCH.plusSeconds(3));
+        check(
+                engine.status(3000).gps().equals("GPS signal weak"),
+                "Short degradation treated as lost signal");
+        engine.missingFix(17000, Instant.EPOCH.plusSeconds(17));
+        check(
+                engine.status(17000).gps().contains("temporarily lost"),
+                "Prolonged absence of usable fixes not reported");
+        var cues = new org.racedaydreams.domain.execution.RecordingCueCoordinator();
+        var lost =
+                new RunMetricsEngine.Status(
+                        100,
+                        10000,
+                        10000,
+                        null,
+                        "GPS temporarily lost · distance incomplete",
+                        false);
+        check(
+                cues.update(lost, null, List.of(), null, false, 45000, false, false).selected()
+                        != null,
+                "First confirmed loss not announced");
+        var ready = new RunMetricsEngine.Status(100, 20000, 20000, null, "GPS ready", false);
+        cues.update(ready, null, List.of(), null, false, 45000, false, false);
+        var again = new RunMetricsEngine.Status(100, 21000, 21000, null, lost.gps(), false);
+        check(
+                cues.update(again, null, List.of(), null, false, 45000, false, false).selected()
+                        == null,
+                "GPS quality flapping repeatedly interrupts audio");
+        cues.update(
+                new RunMetricsEngine.Status(100, 80000, 80000, null, "GPS ready", false),
+                null,
+                List.of(),
+                null,
+                false,
+                45000,
+                false,
+                false);
+        check(
+                cues.update(
+                                        new RunMetricsEngine.Status(
+                                                100, 90000, 90000, null, lost.gps(), false),
+                                        null,
+                                        List.of(),
+                                        null,
+                                        false,
+                                        45000,
+                                        false,
+                                        false)
+                                .selected()
+                        != null,
+                "A later distinct loss is never announced");
+        var pausedCues = new org.racedaydreams.domain.execution.RecordingCueCoordinator();
+        check(
+                pausedCues
+                                .update(
+                                        new RunMetricsEngine.Status(
+                                                100, 10000, 1000, null, lost.gps(), true),
+                                        null,
+                                        List.of(),
+                                        null,
+                                        false,
+                                        45000,
+                                        false,
+                                        false)
+                                .selected()
+                        == null,
+                "GPS loss interrupts a paused workout");
+    }
+
     public static void main(String[] args) {
+        pausedAvailabilityIsNotRecordedMovement();
+        weakStatusAndCueChatter();
         stationary();
         oldFixAfterLoss();
         sparseAutoPause();

@@ -11,83 +11,85 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT — 0.10.1 GPS + coaching clarity implemented; full gate pending
+## CURRENT — 0.10.1 implementation done; final gate and visual review pending
 
-Branch: `feature/0.10.1-gps-reliability-coaching-clarity`, from merged main
-`5827d291d94870d16e2398c5173319260a6d7d72` (PR15). Do not restart 0.10 or reset work.
-0.10 main workflow41919350235 passed:426 tests EACH API28/35/36,125 captures.
-The rolling development APK for that completed baseline is available on GitHub Releases.
-Live main/PR/CI must be rechecked before subsequent work. Draft PR16 is open. GPS checkpoint b6322b6 is pushed; its COMPLETE workflow41928404979 passed API28/35/36, formatting, strict guidance
-and125 GPS-checkpoint captures. Canonical bot images are being adopted before this next checkpoint. Inspect actual current PR/head/CI before acting.
-Use actual git log/status for the checkpoint's own SHA and any uncommitted files.
+Branch `feature/0.10.1-gps-reliability-coaching-clarity`, draft PR16 targets main.
+Baseline main5827d291d94870d16e2398c5173319260a6d7d72 is the completed0.10/PR15 merge.
+Never restart0.10 or reset valid work. Use actual git log/status for this checkpoint's SHA.
+Latest owner master brief explicitly authorises AUTOMATIC squash merge only after complete
+final-source software/visual gates pass. Physical S24 work is post-merge acceptance, never
+claimed from emulator results. Do not start0.11 or create a stable release tag.
 
-Authoritative scope is the owner's updated 0.10.1 master brief: GPS reliability,
-open-source benchmarking and coaching clarity. It explicitly authorises automatic
-merge ONLY after the complete final-head software and visual gates pass. Physical
-S24 tests are documented post-merge acceptance, never claimed from emulator results.
-Do not start 0.11 timers/warm-ups/supersets/analytics/PB redesign/achievements/deload,
-nutrition, retention/storage, broad catalogue or advanced hybrid work.
+Completed implementation:
+- Pinned OpenTracks/RunnerUp/GPSTest comparison before changing GPS; Codeberg inaccessible,
+  archived OpenTracks GitHub snapshot used honestly. No external/GPL source incorporated.
+- Reproduced jitter distance, stale-gap restoration, sparse auto-pause and stride-erased
+  sharp bends. Native monotonic receipt qualification precedes auto-pause; original accepted
+  coordinates remain retained, unsupported gaps never add distance. Stationary qualification
+  uses bounded speed+accuracy evidence; genuine slow movement can leave the cluster.
+- Route simplification is rendering-only, off-main, bounded64-edge chunks/0.0015 normalised
+  tolerance with segment/kilometre boundaries preserved. Historical totals unchanged.
+- Plain task-first ProgrammeProgressionSheet: real reps/time/distance/rest, distinct RPE/RIR,
+  optional current/proposed weight references separate from actual recorded sets; real bounded
+  supporting-workout snapshot. Advanced details collapses/expands/restores, has state/click/
+  keyboard semantics. Save this suggestion for review remains a draft-only operation with
+  unchanged calculation/freshness/CAS/activation/history safeguards. Keep my current target
+  closes without saving. Limited running copy explains perceived effort.
+-8new component tests retain existing integration/activation/backup assertions. Required
+  captures128 = all125 previous scenes + expanded progression details in3modes.
+- Additional cue audit reproduced4 failures: isolated weak accuracy called an outage,
+  repeated loss/recovery announced repeatedly, and loss interrupted pause. Follow-up now
+  separates weak from >15s without usable fixes, tracks paused GPS availability without
+  recording paused movement, bounds distinct loss audio to60s elapsed, suppresses it during
+  pause, and limits automatic TalkBack live region to confirmed unpaused loss.
 
-Baseline rerun before modifications:588145 domain checks/35 suites,64 schema tests,
-9 release-note tests passed. Four reproduced defects (including rendering): stationary ±2 m/second drift
-adds480 m over120 s; old t=2 s fix restores GPS after loss at20 s; auto-pause treats
-observations at0 and60 s as continuous stillness. None proves the owner's S24 cause.
-See docs/GPS_ENGINE_REVIEW_0_10_1.md and docs/GPS_DIAGNOSIS_0_10_1.md.
-OpenTracks archived GitHub, RunnerUp and GPSTest reviewed at pinned revisions;
-current Codeberg inaccessible. No external source copied; RunnerUp GPL behaviour only.
+Observed verification boundaries:
+- Unchanged baseline rerun588145domain/35suites,64schema,9release passed before changes.
+- GPS checkpoint b6322b6 COMPLETE workflow41928404979:427 EACH API28/35/36,125captures,
+  format/strict174canonical+14routine/build/lint. Bot5fa3d0489f8f6443dbc2e1abd4591ee1ae18ab51
+  fast-forward adopted with normal git; route/recorder PNGs opened and reviewed.
+- Coaching2c271c6 workflow41931167271:435 EACH API28/35/36, exactly1 keyboard-fixture
+  RequestFocus failure each, other434passed each. Canonical publication correctly blocked.
+  Compose key injection did not establish platform keyboard mode. Correction dc8d6fc retains
+  all focus/Enter/expand/collapse assertions, explicitly requests/asserts platform Keyboard
+  mode and focused state. Its workflow41933727239 was still executing when checked.
+- Current availability/audio source passes full local640866domain checks/38suites (GPS46311,
+  render6323,instructions87), pinned76Kotlin/122Java formatting, actual Gradle domain/check,
+  APK build/lint/instrumentation compilation (79tasks,3minutes). Schema64/release9/capture
+  validator13/source11/geometry/context/artwork/format-helper and strict174/14 checks pass.
+  No final current-source API/visual pass yet. No S24/human TalkBack/outdoor pass.
 
-Implemented corrections preserve every accepted original coordinate and historical
-finalised total: native monotonic receipt qualification before auto-pause, gap freshness
-barrier, bounded speed+accuracy-supported stationary distance cluster, first-speed
-validation, continuity-gated auto-pause, concise freshness/recovery states. GPX imports
-remain independent of live receipt age. Coordinate-free rejection events use existing
-raw archive2. Rendering now preserves bends with bounded64-edge simplification at0.0015 normalised tolerance; sharp-turn stride defect reproduced. No schema/backup/dependency/permission changes: schema15/rootJSON9/
-nested authoring2/strengthEngine2/strengthState2/raw2/complete1. App0.10.1/code14.
+Version0.10.1-test1/code14. No schema/backup/dependency/permission changes:
+schema15/rootJSON9/nested authoring2/strengthEngine2/strengthState2/raw2/complete1.
+New rejection events fit the existing raw codec; Android recovery/GPX/raw-backup test passed
+in the GPS checkpoint. Existing actuals, prescriptions, exclusions, assignments and PBs stay.
 
-GPS checkpoint passed actual local Gradle domain/check, APK build, lint and Android
-instrumentation compilation (79 tasks,7m27s). New programme clarity source also passes
-that actual Gradle gate (79 tasks,3m11s). One compile failure in the new keyboard test
-required the explicit ExperimentalTestApi opt-in; keyboard coverage was retained.
-Current full domain640850checks/38suites; schema64/release9/capture-validator13 pass.
-Pinned formatting76Kotlin/122Java. Final CI and authentic visual review are NOT yet passed.
+NEXT EXACT ACTIONS (finish in order; no more speculative scope expansion):
+1. Commit/push this availability/audio checkpoint after its local gates (already passed).
+   Inspect live current PR/head/workflow. Preserve any new files. Run FULL API28/35/36 gate
+   on that final source, including the keyboard fixture correction. Check actual errors;
+   never weaken assertions or blindly rerun. Current expected Android count435/API.
+2. Canonical128 API35 captures publish ONLY when all3jobs pass. Fetch/ff bot via normal git
+   while preserving work. Verify source fingerprint/PNG integrity and OPEN actual images:
+   progression main+expanded light/dark/200%, live coach and recorded route. Fix genuine
+   clipping/interaction/contrast issues and rerun affected gates. Current125committed PNGs
+   show b6322b6 BEFORE the coaching redesign and MUST NOT be called final captures.
+3. Finalise README/release notes/SCREENSHOTS/VISUAL_REVIEW_0_10_1/VERIFICATION/handoff from
+   observed results only, removing pending wording only after acceptance. Verify final APK,
+   permission/dependency diff, backup/schema matrix, artifact IDs and actual test totals.
+   S24 acceptance checklist is in TEST_BUILD.md; every physical row remains unverified.
+4. Keep PR16 draft until complete final-head CI and actual visual review pass. Check blocking
+   reviews/conflicts/latest main. Then ready+squash merge per updated master authorisation.
+   Confirm merge SHA, post-merge main CI and rolling Latest Development Build/APK. Update
+   handoff to completed/merged state (focused follow-up docs PR if required). Report exact
+   results and physical S24 uncertainties. No permanent production tag; stop before0.11.
 
-Coaching clarity now uses pure StrengthPrescriptionText (87 domain checks): real reps/time/
-distance/rest, separate RPE/RIR explanations, and current/proposed optional load references.
-ProgrammeProgressionSheet has task-first cards and a working collapsed Advanced details
-with saved state, button/state semantics and supporting actual working sets from the SAME
-bounded history snapshot as advice. No progression calculation or save/activation/CAS change.
-Save this suggestion for review remains a draft operation; Keep my current target closes it.
-Limited running copy now explains perceived effort without truncating a fractional target.
-New8component UI tests cover keyboard, restore, weight distinctions, RIR, modalities,
-missing evidence and large/dark actions. Existing integration/history safeguards remain.
-Expected canonical set is128 (all125 retained + expanded details light/dark/200%).
-
-NEXT EXACT WORK (do not stop after one passing checkpoint):
-1. GPS checkpoint b6322b6 has COMPLETE green workflow41928404979 on API28/35/36.
-   Confirm/adopt its canonical-only bot commit via normal git fetch/ff preserving local work.
-   Coaching checkpoint2c271c6 is committed/pushed; workflow41931167271 is executing all3
-   API device suites (format/guidance/build/lint/compilation passed). Run final full
-   38suite/domain/schema/format/release/guidance gates and inspect its new CI results.
-2. Full CI on the coaching head: API28/35/36 expected435 tests (427GPS +8new UI), actual
-   totals must be observed. Inspect failures and fix root causes, not blind reruns. No KVM/S24
-   locally. Real local Gradle now WORKS using JAVA_HOME=/workspace/jdk17,
-   GRADLE_USER_HOME=/workspace/gradle-cache, ANDROID_HOME=/workspace/android-sdk,
-   ANDROID_USER_HOME=/workspace/android-user plus sandbox network permission.
-3. Obtain canonical128 actual API35 captures from CI. Workflow bot may commit captures;
-   fetch/adopt normally with git (network permission now works), preserve local work. Verify
-   source fingerprint/PNG integrity, then OPEN images: progression main+expanded light/dark/
-   200%, live coach and post-run route. Actual visual review is separate from consistency.
-   Current committed125PNGs still show0.10, not new source. Do not claim them current.
-4. Correct any layout/interaction problem found. Keep all original evidence/versioning/
-   backup/privacy assertions. Finish docs: README current version/download artifact names,
-   docs/SCREENSHOTS, new visual review, VERIFICATION, release notes and S24 checklist. Remove
-   development-pending wording only after actual gates pass. Schema15/JSON9/raw2 unchanged.
-   Final APK source/artifact size/permissions and backup/migration matrix must be verified.
-5. Keep PR16 draft until complete final-head tests and visual gates pass. Check blocking
-   reviews/conflicts. When all agreed gates pass, ready + squash merge per explicit updated
-   master brief; verify main SHA/post-merge CI/rolling Latest Development Build APK. Update
-   handoff to completed state (focused follow-up PR if needed), report real results and
-   physical S24 unknowns. Stop; do NOT begin0.11 or create a stable production tag.
+Environment: actual local Gradle now WORKS with JAVA_HOME=/workspace/jdk17,
+GRADLE_USER_HOME=/workspace/gradle-cache, ANDROID_HOME=/workspace/android-sdk,
+ANDROID_USER_HOME=/workspace/android-user and sandbox network permission. No local KVM/S24.
+Logs are /workspace/scratch/rdd0101 (gps-cue-domain.log, gps-cue-android-local.log and others).
+Normal git fetch/push works with network permission. Artifact Azure redirects were forbidden;
+use the canonical screenshot bot's git files for visual review, not edited images or mock UI.
 
 The historical section below describes the prior pre-merge checkpoint; its old PR/main
 and no-auto-merge instructions are superseded by the current section and latest brief.
@@ -241,32 +243,3 @@ recording/locked screen/GPS split/recovery/Health Connect/BLE/audio/backup and p
 creation/activation/regeneration/substitution/progression/history light/dark/200% tests.
 No merge/tag/production-release claim until the agreed automated acceptance is complete;
 0.10 remains a test build, not a Play Store release.
-
-### Live continuation note — 0.10.1 source2c271c6
-
-Full local final-source Gradle gate PASSED3m8s/79tasks. Source/geometry/artwork/format-helper
-checks also pass. Source tree was clean after pushing2c271c6; subsequent UNCOMMITTED changes
-are documentation only (README, GPS source path clarification, new VISUAL_REVIEW_0_10_1,
-and this handoff). Preserve them. No source redesign remains planned; fix actual test/visual
-failures only. Workflow41931167271 is running435 expected cases/API +128 required captures.
-Inspect its actual result/counts. GPS-checkpoint125images were fast-forward adopted via git
-from5fa3d04; they are not current coaching captures. Old artifacts redirected to Azure were
-forbidden to the CLI; use canonical images via normal git fetch/ff for actual visual review.
-Do not merge PR16 until current-source full gates, visual review and final docs are complete.
-
-### Current gate failure and correction — 23:22 UTC4November
-
-Coaching workflow41931167271 failed API28/35/36 with EXACTLY1 failure each/435 tests:
-ProgrammeProgressionClarityTest.advancedDetailsCollapseAndKeyboardExpandHaveStateSemantics,
-assertTrue(RequestFocus) line115 after injected Tab. All other434cases passed on each. Build/lint/domain/schema/format/guidance pass. No blind
-rerun: Compose performKeyInput bypasses Android's input-mode transition; the fixture still
-cannot obtain non-touch focus. The uncommitted test correction captures LocalInputModeManager,
-explicitly requests Keyboard mode and asserts that state BEFORE focus/Enter; retains and
-strengthens actual focus, expanded/collapsed and keyboard assertions. No production control
-or test assertions were removed. Compile/format and rerun full matrix on the corrected head.
-This extra test correction is alongside the documentation-only changes noted above.
-
-The keyboard correction compiled and passed lint locally (57tasks,1m50s), pinned formatting
-76Kotlin/122Java passes. The same fix retains all435 tests and adds input-mode/focus proof;
-next push must run all3 API gates again. README/visual review remain explicitly pending.
-No production source changed after2c271c6; only the keyboard fixture and documentation.
