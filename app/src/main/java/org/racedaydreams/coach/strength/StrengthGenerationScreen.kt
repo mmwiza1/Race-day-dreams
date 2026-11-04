@@ -85,10 +85,11 @@ fun StrengthGenerationScreen(
             }
             if (section == "library") {
                 Text(
-                    "Start with an original template or generate from your goal. All previews can be edited before activation."
+                    "Choose a template or generate from your preferences. Review before activation."
                 )
                 Button(
                     onClick = {
+                        if (state.draft != null) model.close()
                         templateId = null
                         section = "configure"
                     },
@@ -97,6 +98,24 @@ fun StrengthGenerationScreen(
                 ) {
                     Text("Generate from my preferences")
                 }
+                if (state.current?.owner() == StrengthProgrammingRepository.Owner.AUTHORED)
+                    SemanticCard(Tile.Strength) {
+                        Text("Current programme", style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            "Prepare edits or regenerate future workouts. Nothing changes until a new revision is reviewed and activated."
+                        )
+                        Button(
+                            onClick = {
+                                model.prepareFuture {
+                                    workoutId = null
+                                    section = "preview"
+                                }
+                            },
+                            enabled = enabled,
+                        ) {
+                            Text("Review future programme changes")
+                        }
+                    }
                 Text("Editable starting points", style = MaterialTheme.typography.titleLarge)
                 StrengthProgrammeTemplates.all().forEach { template ->
                     SemanticCard(Tile.Strength) {
@@ -111,6 +130,7 @@ fun StrengthGenerationScreen(
                         )
                         OutlinedButton(
                             onClick = {
+                                if (state.draft != null) model.close()
                                 templateId = template.id()
                                 section = "configure"
                             },
@@ -129,7 +149,10 @@ fun StrengthGenerationScreen(
                     SemanticCard(Tile.Neutral) {
                         Text(row.name(), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "${friendlyDate(row.start())} – ${friendlyDate(row.end())}${if (row.activated()) " · accepted" else " · not active"}"
+                            "Programme revision ${row.programmeRevision()} · draft edit ${row.revision()}"
+                        )
+                        Text(
+                            "${friendlyDate(row.start())} – ${friendlyDate(row.end())}${if (row.revisionExists()) " · revision preserved" else " · not active"}"
                         )
                         TextButton(
                             onClick = {
@@ -167,7 +190,12 @@ fun StrengthGenerationScreen(
                     state.draft?.programme(),
                     state.error,
                 ) { name, start, weeks, settings, recovery ->
-                    model.generate(name, start, weeks, settings, templateId, recovery) {
+                    val compatibleTemplate =
+                        templateId?.takeIf {
+                            StrengthProgrammeTemplates.require(it).frequency() ==
+                                settings.frequency()
+                        }
+                    model.generate(name, start, weeks, settings, compatibleTemplate, recovery) {
                         workoutId = null
                         section = "preview"
                     }
@@ -184,14 +212,20 @@ fun StrengthGenerationScreen(
                         Text(
                             "${friendlyDate(programme.start())} – ${friendlyDate(programme.end())}"
                         )
-                        if (state.accepted)
+                        if (programme.parentRevision() > 0)
+                            Text(
+                                "${if (state.accepted) "Accepted" else if (state.superseded) "Unaccepted" else "Proposed"} revision ${programme.revision()} · changes from ${friendlyDate(programme.effectiveFrom())}. Earlier and completed workouts remain read only."
+                            )
+                        if (state.superseded)
+                            Text(
+                                "Another proposal was accepted for this revision. This unaccepted preview remains read only. Prepare new changes from the current programme."
+                            )
+                        else if (state.accepted)
                             Text(
                                 "Accepted prescription · read only. Removing this preview does not remove history."
                             )
                         else {
-                            Text(
-                                "These are dated intentions. Edit individual workouts below; no actual sets are created."
-                            )
+                            Text("Edit dated workouts below. Activation is your choice.")
                             Button(
                                 onClick = { confirmation = draft to UUID.randomUUID().toString() },
                                 enabled = enabled,
@@ -206,13 +240,20 @@ fun StrengthGenerationScreen(
                                 },
                                 enabled = enabled,
                             ) {
-                                Text("Generate another preview")
+                                Text(
+                                    if (programme.parentRevision() > 0)
+                                        "Regenerate future programme"
+                                    else "Generate another preview"
+                                )
                             }
                         }
                         WhyDetails(programme.tradeoffs().joinToString("\n"), "Why this programme?")
                         programme.blocks().forEach { block ->
                             SemanticCard(Tile.Strength) {
-                                Text(block.name(), style = MaterialTheme.typography.titleLarge)
+                                Text(
+                                    block.name().replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.titleLarge,
+                                )
                                 Text(
                                     "${block.weeks()} weeks · ${friendlyDate(block.start())} – ${friendlyDate(block.end())}"
                                 )
@@ -246,6 +287,16 @@ fun StrengthGenerationScreen(
                         Text(
                             "${friendlyDate(workout.date())} · about ${workout.expectedMinutes()} min"
                         )
+                        val editable =
+                            !state.accepted &&
+                                !state.superseded &&
+                                (programme.parentRevision() == 0 ||
+                                    (!workout.date().isBefore(programme.effectiveFrom()) &&
+                                        workout.id() !in state.protectedWorkoutIds))
+                        if (!editable)
+                            Text(
+                                "Preserved earlier, completed or accepted prescription · read only"
+                            )
                         workout.notes()?.let { WhyDetails(it, "Workout guidance") }
                         workout.definition().slots().forEachIndexed { index, slot ->
                             SemanticCard(Tile.Strength) {
@@ -254,7 +305,7 @@ fun StrengthGenerationScreen(
                                     style = MaterialTheme.typography.titleLarge,
                                 )
                                 Text(gymTargetDescription(slot))
-                                if (!state.accepted) {
+                                if (editable) {
                                     OutlinedButton(
                                         onClick = { slotEdit = workout.id() to slot },
                                         enabled = enabled,
@@ -293,7 +344,7 @@ fun StrengthGenerationScreen(
                                 }
                             }
                         }
-                        if (!state.accepted && workout.definition().slots().size < 12)
+                        if (editable && workout.definition().slots().size < 12)
                             OutlinedButton(
                                 onClick = { slotEdit = workout.id() to null },
                                 enabled = enabled,
@@ -317,6 +368,7 @@ fun StrengthGenerationScreen(
             state.excluded,
             state.error,
             allowOpen = false,
+            allowExerciseChange = state.draft?.programme()?.parentRevision() == 0 || slot == null,
             onDismiss = {
                 if (enabled) {
                     slotEdit = null
@@ -335,7 +387,10 @@ fun StrengthGenerationScreen(
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     Text(
-                        "${reviewed.programme().name()} starts ${friendlyDate(reviewed.programme().start())}. Activation replaces current programming immediately, even if the start date is in the future. Historical versions, entered sets and PBs remain. Nothing is completed automatically."
+                        if (reviewed.programme().parentRevision() > 0)
+                            "${reviewed.programme().name()}: revision ${reviewed.programme().revision()} changes future programming from ${friendlyDate(reviewed.programme().effectiveFrom())}. Earlier and completed prescriptions, actual sets and PB evidence remain. Nothing is completed automatically."
+                        else
+                            "${reviewed.programme().name()} starts ${friendlyDate(reviewed.programme().start())}. Activation replaces current programming immediately, even if the start date is in the future. Historical versions, entered sets and PBs remain. Nothing is completed automatically."
                     )
                     state.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 }
@@ -464,9 +519,16 @@ private fun ColumnScope.GenerationConfiguration(
     var error by rememberSaveable(templateId, initial?.id()) { mutableStateOf<String?>(null) }
     template?.let {
         SemanticCard(Tile.Insight) {
-            Text(it.name(), style = MaterialTheme.typography.titleLarge)
-            Text(it.emphasis())
-            Text(it.tradeoff())
+            if (it.frequency() != frequency) {
+                Text("Customised structure", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    "A new $frequency-day split follows your goal. The previous template remains preserved in the original revision."
+                )
+            } else {
+                Text(it.name(), style = MaterialTheme.typography.titleLarge)
+                Text(it.emphasis())
+                Text(it.tradeoff())
+            }
         }
     }
     error?.let {
@@ -477,7 +539,16 @@ private fun ColumnScope.GenerationConfiguration(
         )
     }
     GenerationField(name, { name = it }, "Programme name", enabled)
-    GenerationField(date, { date = it }, "Start date · dd/mm/yyyy", enabled)
+    GenerationField(
+        date,
+        { date = it },
+        "Start date · dd/mm/yyyy",
+        enabled && (initial?.parentRevision() ?: 0) == 0,
+    )
+    if ((initial?.parentRevision() ?: 0) > 0)
+        Text(
+            "Original start retained. This regeneration proposes future changes only; earlier and completed workouts keep their exact prescriptions."
+        )
     GenerationField(weeks, { weeks = it }, "Programme duration · weeks (1–26)", enabled, true)
     Text("Goal")
     GenerationChoices(GymProgramme.Goal.values().map { it.name }, goal, enabled) { goal = it }
@@ -489,7 +560,7 @@ private fun ColumnScope.GenerationConfiguration(
     GenerationChoices(GymProgramme.Priority.values().map { it.name }, priority, enabled) {
         priority = it
     }
-    if (template == null) {
+    if (template == null || (initial?.parentRevision() ?: 0) > 0) {
         Text("Workouts per programme week")
         GenerationChoices((1..6).map { it.toString() }, frequency.toString(), enabled) {
             frequency = it.toInt()

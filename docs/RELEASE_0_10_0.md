@@ -32,8 +32,11 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 - Reviewed extra-workout associations retain exact authored targets, including optional
   effort/rest and fractional RIR, while reading old legacy decisions.
-- Programme proposals can validate future-only changes without rewriting completed
-  prescriptions. Permanent-substitution proposals reuse existing exclusion,
+- Future-review controls prepare immutable revisions for edits and regeneration of upcoming
+  programming. Completed and earlier prescriptions remain protected, fresh evidence is
+  rechecked on activation, and competing unaccepted drafts remain distinct from history.
+  Android and visual verification for these new controls is pending.
+- Permanent-substitution proposals reuse existing exclusion,
   equipment and intent rules and discard incompatible load references.
 
 ## Fixes
@@ -59,8 +62,7 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Known limitations
 
-- Future regeneration,
-  permanent-swap UI and modality-progression controls remain in progress.
+- Permanent-swap UI and modality-progression controls remain in progress.
   Their domain and typed persistence foundations are not yet a finished user workflow.
   The manual/custom workflows passed the supported automated gate and scoped capture
   review; physical Galaxy S24 acceptance remains unperformed.

@@ -17,6 +17,7 @@ import java.util.*;
 public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
         implements StrengthProgrammingRepository {
     private final Clock clock;
+    private final Context context;
 
     public SqliteStrengthProgrammingRepository(Context context) {
         this(context, Clock.systemDefaultZone());
@@ -25,6 +26,7 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
     public SqliteStrengthProgrammingRepository(Context context, Clock clock) {
         super(context);
         this.clock = Objects.requireNonNull(clock);
+        this.context = context.getApplicationContext();
     }
 
     @Override
@@ -123,6 +125,28 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
                     || result.parentRevision() != c.getInt(4))
                 throw invalid("programme summary index");
             return result;
+        }
+    }
+
+    @Override
+    public RevisionReview reviewRevision(Reference reference) {
+        Objects.requireNonNull(reference);
+        if (reference.owner() != Owner.AUTHORED)
+            throw new IllegalArgumentException("Choose an authored programme revision.");
+        var db = read();
+        db.beginTransactionNonExclusive();
+        try {
+            var programme = load(db, reference.id(), reference.revision());
+            if (programme == null) throw invalid("programme revision unavailable");
+            var completedIds = completed(db, programme.id());
+            var retained = new HashSet<String>();
+            for (var workout : programme.workouts()) retained.add(workout.id());
+            completedIds.retainAll(retained);
+            var review = new RevisionReview(programme, completedIds);
+            db.setTransactionSuccessful();
+            return review;
+        } finally {
+            db.endTransaction();
         }
     }
 
@@ -411,6 +435,21 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
             if (legacyId(db, proposed.id())
                     || proposed.createdAt().isAfter(clock.instant())
                     || proposed.effectiveFrom().isBefore(LocalDate.now(clock))) throw conflict();
+            if (expected != null
+                    && expected.owner() == Owner.AUTHORED
+                    && expected.id().equals(proposed.id())) {
+                var executions = new SqliteGymExecutionRepository(context);
+                for (var summary : executions.unfinished()) {
+                    var source = executions.load(summary.id()).execution().source();
+                    if (source != null
+                            && source.kind() == GymExecution.SourceKind.PROGRAMME
+                            && source.id().equals(proposed.id()))
+                        throw new IllegalArgumentException(
+                                "Finish or discard the current gym workout before activating"
+                                        + " changes to its programme. Its recorded sets and"
+                                        + " prescription remain preserved.");
+                }
+            }
             Set<String> protectedIds = Collections.emptySet();
             StrengthProgramme before = null;
             if (expected != null

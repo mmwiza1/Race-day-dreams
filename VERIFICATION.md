@@ -1,23 +1,29 @@
-## 4 November 2026 — concrete previews and template UI
+## 4 November 2026 — verified templates, future revisions pending
 
-Durability source2abab32ee99152ef217c37226093d5b10b4969c4 /workflow41886288778:
-all three API28/35/36 jobs built/linted and finished399tests. Each had the same ONE existing
-RefinementUiTest failure: substring date4November also selected14/24November. All9new
-concrete SQLite cases passed on all three APIs, including migration, root9/complete backup,
-old authoring1, optimistic acceptance, exclusion/current changes and fault rollback.
-Formatting and strict174canonical/14routine guidance jobs passed. The workflow is FAILED,
-not green; no canonical publication or merge. The root-cause selector correction retains
-all old assertions and additionally checks unique identities for every42visible calendar day.
+Source98366d7c5bddea4e34350ed61810f2a286c447c0 passed COMPLETE workflow41889775036:
+405tests on EACH API28/35/36, app/test builds/lint,588091domain checks/34suites,64schema,
+9release, formatting69Kotlin/114Java, strict174/14guidance and all110canonical captures.
+This fixes the calendar date-substring failure seen at2abab32 (399tests/API with one
+identical failure each). The corrected selector retains accessibility/category/detail
+assertions and checks unique identities for all42visible calendar days.
 
-Template/generated UI source4eec51842097eb95bfd0f80b8b4dbd17ba6997ae is running
-workflow41888859405. A follow-up adds an edited-duration activation regression (5new UI
-cases total) and recalculates the expected workout budget after slot edits. It retains 12new production capture
-scenes (110required total). Local PASS:588,091domain checks/34suites,64schema,9release,
-11provenance and10screenshot-validator tests; all main/instrumentation Kotlin and Java source
-compiles with cached tools. Local Gradle remains blocked before compilation by sandbox
-socket denial; source checks are not APK/lint/device verification. New UI matrix/captures
-and visual review are still pending. No new dependency or INTERNET permission. Schema15,
-JSON9/authoring2(read1–2), raw2/complete1. Physical S24 checks UNPERFORMED. PR15 stays DRAFT.
+Canonical botb98885cced69650bcc6ff919a5b2d160fe183b68 was adopted by identical blob/tree/
+commit hashes;110PNG540x1200 validate and source hash matches immutable983source:
+eb3fd60620da541d0356c7dbbb83f2e355e74a663ceb7430f29521d48551a34e. All12new template scenes
+were opened individually (light/dark/200%); see docs/VISUAL_REVIEW_0_10_0.md. API35 APK
+artifact13353407683, screenshots13353347759; APK51,668,072bytes. These are branch artifacts,
+not a main release. No physical Galaxy S24/TalkBack pass is implied.
+
+The next future-review source adds fresh snapshot reads, immutable future edits/regeneration,
+explicit frequency changes, native-workout activation safety and competing-draft durability.
+Local domain588101/34suites, schema64, release9, source11, capture-validator11 and strict174/14
+checks pass. Final source compilation/formatting and real411-case/API gate with116captures
+must pass before these additions are verified. Structural proposal validation never creates
+completion evidence; actual acceptance always queries fresh retained completed workouts.
+Old source405results do not certify this new phase. Local Gradle still cannot open daemon
+sockets; cached source compilation is not an APK/lint/device gate. PR15 remains DRAFT.
+Schema15 / JSON9 / authoring2(read1–2) / raw2 / complete1, no new runtime dependency or
+INTERNET permission. Full0.10 is unfinished; permanent swaps/progression/final quality remain.
 
 
 ## Latest verified implementation — b38e075 (30 October 2026)

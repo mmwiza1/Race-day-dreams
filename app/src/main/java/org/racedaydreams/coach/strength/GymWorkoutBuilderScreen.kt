@@ -282,6 +282,7 @@ internal fun GymSlotEditor(
     excluded: Set<String>,
     error: String?,
     allowOpen: Boolean = true,
+    allowExerciseChange: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (StrengthExercise, GymSlotInput) -> Unit,
 ) {
@@ -345,26 +346,29 @@ internal fun GymSlotEditor(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.semantics { heading() },
                 )
-                Text("Choose an exercise", style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    label = { Text("Search by name or alias") },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                if (allowExerciseChange || slot == null) {
+                    Text("Choose an exercise", style = MaterialTheme.typography.titleMedium)
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text("Search by name or alias") },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
                 selected?.let {
                     SemanticCard(Tile.Strength) {
                         Text(it.name(), style = MaterialTheme.typography.titleLarge)
                         Text(gymExerciseContext(it))
-                        TextButton(
-                            onClick = {
-                                selectedId = null
-                                query = ""
-                            },
-                            modifier = Modifier.heightIn(min = 48.dp),
-                        ) {
-                            Text("Choose another exercise")
-                        }
+                        if (allowExerciseChange)
+                            TextButton(
+                                onClick = {
+                                    selectedId = null
+                                    query = ""
+                                },
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) {
+                                Text("Choose another exercise")
+                            }
                     }
                 }
                 if (selected == null) {

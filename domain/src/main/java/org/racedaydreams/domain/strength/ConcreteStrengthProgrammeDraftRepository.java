@@ -13,7 +13,7 @@ public interface ConcreteStrengthProgrammeDraftRepository {
             String name,
             LocalDate start,
             LocalDate end,
-            boolean activated) {}
+            boolean revisionExists) {}
 
     ConcreteStrengthProgrammeDraft get(String id);
 

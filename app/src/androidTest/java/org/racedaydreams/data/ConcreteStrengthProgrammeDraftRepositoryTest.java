@@ -94,7 +94,7 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
         rejects(() -> drafts.delete(value.id(), 1));
         var accepted = drafts.activate(edit, "accept");
         assertEquals(edit.programme(), programmes.programme(edit.programme().id(), 1));
-        assertTrue(drafts.list(1, 0).get(0).activated());
+        assertTrue(drafts.list(1, 0).get(0).revisionExists());
         drafts.delete(edit.id(), 2);
         assertEquals(accepted, drafts.activate(edit, "accept"));
         assertNull(drafts.get(edit.id()));
@@ -262,6 +262,118 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
                 .put("before", base);
         rejects(() -> backups.restoreUserData(corrupt, false));
         assertEquals(value, drafts.get(value.id()));
+    }
+
+    public void testCompetingRevisionDraftsRemainIndependentAfterAcceptanceAndBackup() {
+        var original = draft("base").programme();
+        programmes.activate(original, null, "initial", Collections.emptyList());
+        var base = programmes.currentReference();
+        var next =
+                new StrengthProgramme(
+                        original.id(),
+                        2,
+                        1,
+                        NOW,
+                        original.name(),
+                        original.origin(),
+                        original.templateId(),
+                        original.settings(),
+                        original.blocks(),
+                        original.effectiveFrom(),
+                        "Athlete reviewing future work",
+                        original.tradeoffs());
+        var a =
+                new ConcreteStrengthProgrammeDraft(
+                        "candidate-a", 1, base, next, Collections.emptyList());
+        var first = next.workouts().get(0);
+        var changed =
+                new StrengthProgramme.Workout(
+                        first.id(),
+                        first.date(),
+                        first.expectedMinutes(),
+                        first.definition(),
+                        "Reviewed alternative notes");
+        var candidate = ConcreteStrengthProgrammeEditor.replaceWorkout(a, changed).programme();
+        var b =
+                new ConcreteStrengthProgrammeDraft(
+                        "candidate-b", 1, base, candidate, Collections.emptyList());
+        drafts.save(a, 0);
+        drafts.save(b, 0);
+        drafts.activate(b, "accept-b");
+        var backups = new SqliteBackupRepository(getContext());
+        backups.restoreUserData(backups.exportUserData(), false);
+        assertEquals(a, drafts.get(a.id()));
+        assertEquals(b, drafts.get(b.id()));
+        assertEquals(original, programmes.programme(original.id(), 1));
+        assertEquals(candidate, programmes.programme(original.id(), 2));
+        assertTrue(
+                drafts.list(10, 0).stream()
+                        .allMatch(
+                                ConcreteStrengthProgrammeDraftRepository.Summary::revisionExists));
+        rejects(() -> drafts.activate(a, "stale-a"));
+        rejects(() -> drafts.save(a.withProgramme(a.programme(), Collections.emptyList()), 1));
+        assertEquals(candidate, programmes.programme(original.id(), 2));
+    }
+
+    public void testForwardActivationWaitsForTheSameProgrammesNativeWorkout() {
+        var original = draft("live-base").programme();
+        programmes.activate(original, null, "initial-live", Collections.emptyList());
+        var base = programmes.currentReference();
+        var next =
+                new StrengthProgramme(
+                        original.id(),
+                        2,
+                        1,
+                        NOW,
+                        original.name(),
+                        original.origin(),
+                        original.templateId(),
+                        original.settings(),
+                        original.blocks(),
+                        original.effectiveFrom(),
+                        "Reviewed future work",
+                        original.tradeoffs());
+        var value =
+                new ConcreteStrengthProgrammeDraft(
+                        "live-proposal", 1, base, next, Collections.emptyList());
+        drafts.save(value, 0);
+        var workout = original.workouts().get(0);
+        var prepared = GymWorkoutAdapter.fromAuthoredProgramme(original, workout.id());
+        var engine =
+                GymExecutionEngine.start(
+                        "live-preserved",
+                        GymExecution.Origin.PLANNED,
+                        prepared.definition(),
+                        prepared.source(),
+                        ZoneOffset.UTC,
+                        new GymExecution.Tick("boot", 0, NOW));
+        var gym = new SqliteGymExecutionRepository(getContext());
+        var started = gym.start(engine.snapshot());
+        rejects(() -> drafts.activate(value, "blocked-active"));
+        engine.saveSet(
+                workout.definition().slots().get(0).id(),
+                new StrengthSession.SetEntry("live-set", 6, 20.0, 7.0, false),
+                new GymExecution.Tick("boot", 1000, NOW.plusMillis(1000)));
+        engine.pause(new GymExecution.Tick("boot", 2000, NOW.plusMillis(2000)));
+        var paused = gym.save(engine.snapshot(), started.revision());
+        rejects(() -> drafts.activate(value, "blocked-paused"));
+        assertEquals(base, programmes.currentReference());
+        assertEquals(1, programmes.decisions().size());
+        assertEquals(value, drafts.get(value.id()));
+        assertNull(programmes.programme(original.id(), 2));
+        var finished =
+                gym.finish(
+                        engine.finish(
+                                new GymExecution.Tick("boot", 3000, NOW.plusMillis(3000)),
+                                null,
+                                null,
+                                false),
+                        paused.revision());
+        drafts.activate(value, "accepted-after-finish");
+        assertEquals(next, programmes.programme(original.id(), 2));
+        assertEquals(original, programmes.programme(original.id(), 1));
+        assertEquals(finished.execution(), gym.load("live-preserved").execution());
+        assertTrue(programmes.decisions().get(1).protectedWorkoutIds().contains(workout.id()));
     }
 
     private static void rejects(Runnable action) {

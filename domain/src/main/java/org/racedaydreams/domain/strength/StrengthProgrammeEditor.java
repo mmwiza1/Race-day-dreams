@@ -38,6 +38,12 @@ public final class StrengthProgrammeEditor {
                 occupied.add(workout.date());
             }
         }
+        // A user-authored candidate can reuse an arbitrary ID on a different day.
+        // Completed IDs belong to retained evidence; a genuinely new workout needs a new identity.
+        var protectedIds = new HashSet<String>();
+        for (var workout : retained) protectedIds.add(workout.id());
+        var reservedIds = new HashSet<String>(protectedIds);
+        for (var workout : candidate.workouts()) reservedIds.add(workout.id());
         var blocks = new ArrayList<StrengthProgramme.Block>();
         for (var block : candidate.blocks()) {
             var sessions = new ArrayList<StrengthProgramme.Workout>();
@@ -45,15 +51,39 @@ public final class StrengthProgrammeEditor {
                 if (workout.date().isBefore(effectiveFrom) || occupied.contains(workout.date()))
                     continue;
                 var existing = old.get(workout.id());
+                String workoutId = workout.id();
+                boolean newIdentity = protectedIds.contains(workoutId);
+                if (newIdentity) {
+                    int salt = 0;
+                    do {
+                        String seed =
+                                previous.id()
+                                        + "\n"
+                                        + previous.revision()
+                                        + "\n"
+                                        + workout.id()
+                                        + "\n"
+                                        + workout.date()
+                                        + "\n"
+                                        + salt++;
+                        workoutId =
+                                "regenerated-"
+                                        + UUID.nameUUIDFromBytes(
+                                                seed.getBytes(
+                                                        java.nio.charset.StandardCharsets.UTF_8));
+                    } while (!reservedIds.add(workoutId));
+                }
                 var d = workout.definition();
                 sessions.add(
                         new StrengthProgramme.Workout(
-                                workout.id(),
+                                workoutId,
                                 workout.date(),
                                 workout.expectedMinutes(),
                                 new GymWorkoutDefinition(
-                                        d.id(),
-                                        existing == null ? 1 : existing.definition().revision() + 1,
+                                        newIdentity ? workoutId : d.id(),
+                                        newIdentity || existing == null
+                                                ? 1
+                                                : existing.definition().revision() + 1,
                                         at,
                                         d.title(),
                                         d.slots()),

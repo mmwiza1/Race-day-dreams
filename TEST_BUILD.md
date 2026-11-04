@@ -1,13 +1,13 @@
 # 0.10 programming development — not physical acceptance
 
-Version0.10.0-test1/code13 candidate schema14/JSON9 retains older backup readers1–8,
+Version0.10.0-test1/code13 candidate schema15/JSON9 (nested authoring2, read1–2) retains older backup readers1–8,
 strengthEngine2, strengthState2, raw2 and complete1. Typed authoring durability and legacy /
-authored planned execution are under automated verification. The full programme-builder,
-template/activation and modern spontaneous-association UI are unfinished; do not treat
+authored planned execution are under automated verification. Manual authoring, custom entry, templates and dated previews are connected and have a
+verified405-case/API checkpoint. Future revisions/regeneration are under integration; do not treat
 baseline screenshots as those new screens. See CONTINUE_CODEX.md for source-bound gates.
 
 Before release acceptance, require the API28/35/36 matrix, previous8/current9 backup
-round-trips,13→14 migration, immutable historical/actual-set evidence, authentic new
+round-trips,13→15 and14→15 migrations, immutable historical/actual-set evidence, authentic new
 builder/template/blocks/custom/permanent-swap captures and light/dark/200% review.
 The S24 checks below remain genuinely unperformed, including future human evaluation
 of building/activating/regenerating a programme and retaining it through complete restore.
@@ -412,7 +412,7 @@ Record APK/source SHA, Android/One UI version, date and observations. None of th
 is claimed as physically passed. The complete0.10 release remains unfinished; use a named
 feature-branch APK and do not assume the rolling main download contains it.
 
-- [ ] Back up0.9(schema13/JSON8) before installing0.10(schema14/JSON9). Compare retained
+- [ ] Back up0.9(schema13/JSON8) before installing0.10(schema15/JSON9). Compare retained
   programmes, actuals/PBs, exclusions and substitution provenance after upgrade. Test an older
   supported restore on an expendable installation; rejected corrupt/future files must not replace data.
 - [ ] Choose Strength without a running/race profile. Open programme authoring, save an
@@ -434,6 +434,21 @@ feature-branch APK and do not assume the rolling main download contains it.
 - [ ] Verify stale previews after another programme change request review instead of silently
   activating newer programming. Killing/reopening an unaccepted preview never activates it.
 
-Generated/template editing, future regeneration, permanent-swap UI and progression proposal
-controls are not yet a finished workflow; their later acceptance cases must be added when
-implemented. Rest timers/supersets/generated warm-ups and other0.11 features are excluded.
+Template editing has a verified automated checkpoint. Future regeneration is undergoing
+new-source verification. Permanent-swap and progression-proposal controls remain in progress;
+add their physical cases when connected. Rest timers/supersets/generated warm-ups and other0.11 features are excluded.
+
+## 0.10 templates and future revisions — Galaxy S24 UNPERFORMED
+
+- [ ] In Strength-only mode with no running goal, configure a template using real equipment,
+  days and experience; review every block before explicit activation.
+- [ ] Change target sets in one dated workout; verify its duration estimate updates while
+  other dates and actual logs remain unchanged. Close/reopen the saved preview.
+- [ ] Prepare future changes to an active programme; earlier/completed workouts are read-only.
+  Regenerate with changed days/goal/equipment, reject it, then explicitly accept a reviewed
+  revision. Prior prescriptions and actual sets must still be readable.
+- [ ] Attempt activation during a live/paused gym workout: it must preserve the workout and
+  ask you to finish/discard it first. Review fresh completion evidence afterwards.
+- [ ] Keep two competing previews, accept one, then complete backup/restore. The other stays
+  an unaccepted/superseded preview and must never replace accepted history.
+- [ ] Review all controls in light/dark/200%text and with TalkBack. None is marked passed here.

@@ -44,6 +44,26 @@ public record ConcreteStrengthProgrammeDraft(
                             "Review a target for every programme exercise.");
     }
 
+    /**
+     * Structural validation only: unchanged retained rows may predate changed availability. This
+     * never infers completion. Acceptance must independently query fresh actual evidence.
+     */
+    public void validateAgainst(StrengthProgramme preserved) {
+        Objects.requireNonNull(preserved);
+        if (before == null
+                || before.owner() != StrengthProgrammingRepository.Owner.AUTHORED
+                || !before.id().equals(preserved.id())
+                || before.revision() != preserved.revision()
+                || programme.parentRevision() == 0)
+            throw new IllegalArgumentException("Review the preserved base of this revision.");
+        var proposed = new java.util.HashMap<String, StrengthProgramme.Workout>();
+        for (var workout : programme.workouts()) proposed.put(workout.id(), workout);
+        var unchanged = new HashSet<String>();
+        for (var workout : preserved.workouts())
+            if (workout.equals(proposed.get(workout.id()))) unchanged.add(workout.id());
+        new StrengthProgrammeEditor.Proposal(preserved, programme, unchanged, substitutions);
+    }
+
     /** Retain programme lineage while saving a new athlete-edited draft revision. */
     public ConcreteStrengthProgrammeDraft withProgramme(
             StrengthProgramme replacement, List<StrengthProgrammeEditor.Change> changes) {

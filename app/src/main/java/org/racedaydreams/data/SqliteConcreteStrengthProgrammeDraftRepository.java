@@ -233,11 +233,8 @@ public final class SqliteConcreteStrengthProgrammeDraftRepository extends Sqlite
             if (!found) throw invalid("concrete draft base reference");
         }
         if (draft.programme().parentRevision() > 0)
-            new StrengthProgrammeEditor.Proposal(
-                    SqliteStrengthProgrammingRepository.load(db, ref.id(), ref.revision()),
-                    draft.programme(),
-                    Collections.emptySet(),
-                    draft.substitutions());
+            draft.validateAgainst(
+                    SqliteStrengthProgrammingRepository.load(db, ref.id(), ref.revision()));
         for (var w : draft.programme().workouts())
             for (var slot : w.definition().slots())
                 if (ExerciseCatalog.definition(slot.exercise().id()) == null

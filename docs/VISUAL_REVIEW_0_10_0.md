@@ -55,3 +55,19 @@ and200% preview were reopened; the scoped refinements remain readable and chrono
 Two additional real browser cases verify authored inventory ownership/refresh and custom
 metadata filters. These are actual compiled controls, not a rendered mockup. No S24/TalkBack
 physical claim or acceptance of unfinished template/future-edit screens is made.
+
+## Templates and concrete previews — observed source98366d7 (4 November 2026)
+
+Workflow41889775036 passed405tests on each supported API and published110canonical
+captures asb98885cced69650bcc6ff919a5b2d160fe183b68. All12new template/configuration/
+dated-preview/workout images were opened individually in light, dark and actual200%text.
+The semantic sage/cream cards and navy/blue hierarchy are consistent with retained screens.
+No overlapping controls, clipped labels or undersized text were observed in these captures;
+200%content wraps and scrolls naturally. The programme preview's long introductory copy
+pushed blocks below the first viewport at200%; the next source shortens introductory and
+saved notices and capitalises displayed block headings. Those refinements and new future
+controls require fresh captures before visual acceptance. No image was edited.
+
+This is an emulator capture review, not physical Galaxy S24 or human TalkBack testing.
+The full0.10 release remains unfinished (permanent swaps, progression and final quality
+review remain). The six future-preview/settings captures are specified but not yet reviewed.

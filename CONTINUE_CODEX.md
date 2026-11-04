@@ -11,35 +11,49 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## ACTIVE — 4 November: concrete templates/generation verification
+## ACTIVE — 4 November: future revisions / regeneration verification
 
-- Typed durability committed/pushed as2abab32ee99152ef217c37226093d5b10b4969c4.
-  Workflow41886288778 builds/lints successfully and runs399cases/API. API36completed399
-  with ONE existing calendar test date-substring failure (4November matches14/24); API28
-  and35also finished399with the SAME sole failure. All9new concrete cases pass on ALL3APIs.
-  Fix now matches exact full date boundaries and asserts unique identities for ALL42days,
-  preserving category/accessibility/detail assertions. Do not rerun unchanged failing source.
-- Template UI committed/pushed as4eec51842097eb95bfd0f80b8b4dbd17ba6997ae;
-  workflow41888859405 is in progress. Next small follow-up fixes edited duration estimates
-  and adds a fifth real UI case that changes sets and then activates the candidate.
-  All main/instrumentation Kotlin/Java compile for that fix.
-- Implemented template UI: StrengthGenerationViewModel/Screen, new typed concrete editor,
-  route gym-programme-templates and button in manual authoring. Nine templates/preferences
-  configure goal/experience/priority/real equipment/days/duration. Exact dated previews save,
-  recover, edit/reorder/add/remove targets/exercises and activate only after confirmation.
-  Accepted preview is read-only. Existing manual builder/native Gym Now remain unchanged.
-- Five new real UI cases cover form/explicit activation/no race, exact16week recovery and
-  isolated edits, edited-budget activation, dark200%scrolling, fresh exclusion. Twelve new production-navigation scenes
-  expand required captures98→110(light/dark/200%). No new capture is yet visually accepted.
-- Local PASS:588,091domain checks/34suites,64schema,9release,11source/provenance tests,
-  strict174canonical/14routine guides. All main/instrumentation Kotlin+Java compile from
-  cached tools; this is NOT an APK/lint/emulator pass. Screenshot-validator10tests pass.
-  Schema15/rootJSON9/nestedauthoring2(read1–2)/raw2/complete1. No0.11work or permission change.
-- Next exact steps: inspect actual HEAD/remote/CI. Run full API28/35/36 gate including
-  edited-budget activation (405expected tests), fix actual failures,
-  adopt/review new canonical captures. Then continue future-only revisions/regeneration,
-  permanent-vs-today swaps, optional modality progression and remaining quality/history
-  workflow from the FULL0.10 list below. Keep PR15 OPEN/DRAFT; no merge/S24claim.
+- Continue feature/0.10-strength-programming; PR15 OPEN/DRAFT. Mainc6299e2 unchanged.
+- VERIFIED template source98366d7c5bddea4e34350ed61810f2a286c447c0 passed COMPLETE workflow
+  41889775036:405tests/API28 +405/API35 +405/API36; app/test build/lint,588091domain/34suites,
+  64schema/9release, formatting69Kotlin/114Java, strict174canonical/14routine guidance,
+  source/provenance and110canonical captures. Calendar date-selector regression is FIXED;
+  the stronger test checks all42day identities. Edited target duration recalculation and
+  activation regression also PASS. No assertions weakened.
+- Canonical botb98885cced69650bcc6ff919a5b2d160fe183b68 imported byteexact/hash-verified,
+  preserving all uncommitted future work. All112botfiles adopted;110PNG540x1200 verified.
+  Source fingerprint eb3fd60620da541d0356c7dbbb83f2e355e74a663ceb7430f29521d48551a34e
+  matches immutable983source (sort Paths, not raw path strings, when reconstructing hash).
+  All12new template/configuration/preview/workout images opened in light/dark/200%.
+  Natural wrap/scroll, no overlaps observed. Verbose introductory copy subsequently
+  shortened and phase headings capitalised: those refinements need fresh captures.
+  API35 APK artifact13353407683; screenshots13353347759; APK51,668,072bytes.
+- CURRENT next phase (inspect actual HEAD/status for commit): RevisionReview snapshot API,
+  future-only saved revisions and regeneration now connected. Changed frequency can drop
+  an incompatible template and choose a goal-based split. Earlier/completed workouts are
+  read-only; original start retained; fresh activation protects actuals/current owner.
+  Forward activation waits for a native workout using that programme to finish/discard.
+  No current workout is stopped by previewing. Explicit native/paused guard regression added.
+- Competing saved proposals for the same next revision remain separate. Accepted vs
+  superseded is computed from exact contents; superseded previews stay read-only and
+  survive backup without replacing accepted history. Structural draft validation allows
+  unchanged retained rows outside changed availability; ONLY activation infers completion
+  from fresh actual evidence. The generic editor also handles arbitrary custom candidate
+  IDs reused on another day; standard generation already uses date-based IDs.
+- Added3real future UI cases (including native actual preservation, changed goal/days and
+  frequency form),2SQLite cases, existing snapshot assertions and1new capture case.
+  Expect411instrumentation cases/API and116canonical scenes. Six future preview/settings
+  light/dark/200% scenes are pending real capture/review, not visually accepted yet.
+- Local domain PASS588101checks/34suites; schema64/release9/source11/capture-validator11,
+  strict174/14guidance. FINAL main/instrumentation Kotlin+Java source compilation and
+  pinned69Kotlin/114Java formatting checks PASS. Do not call source checks APK/lint/device
+  verification. Local Gradle socket denial remains; CI supplies actual Android gates.
+- Schema15/rootJSON9/nested authoring2(read1–2)/raw2/complete1 unchanged in this phase.
+  No new dependency/permission, no physical S24 checks, no merge/tag. Keep PR15draft.
+
+Next: finish final source compile/format/docs, commit future phase coherently, run full
+API28/35/36 gate, fix actual failures, adopt/review116fresh captures. Then continue the
+remaining FULL0.10 list below; do not restart verified templates/manual/custom foundations.
 
 ## Verified manual/custom/inventory checkpoint — preserve
 
@@ -92,12 +106,13 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
 
 1. Finish Android/visual acceptance of connected template/generated concrete workflow.
    Typed schema15/authoring2, exact dated editor and production UI are now implemented;
-   verify them rather than rebuilding them. Need110current captures and strict actual
+   verify them rather than rebuilding them. Need116current captures and strict actual
    visual review. Preserve every week/phase/target/note/explanation and retained manual
    authoring. No first-week flattening or generic JSON bucket.
-2. Future-only editing/regeneration for schedule/frequency/equipment/goal changes; explicit
-   activation and fresh CAS/completed-source protection preserve old versions and actuals.
-   User-created programmes and templates should share the retained native logging path.
+2. Complete Android/visual acceptance of now-connected future-only edits/regeneration
+   (goal/frequency/days/equipment/time). Current native/paused guard, competing drafts and
+   completion-preservation cases need411-case matrix proof and116current captures. Reuse
+   implemented review/copy/editor/store paths; do not rebuild them.
 3. Permanent-vs-today substitution UI, durable version/decision/provenance, fresh exclusions/
    equipment/intent checks and cleared incompatible load references. Keep concise existing
    equipment-busy/unavailable flows. No automatic programme changes from temporary fatigue.

@@ -186,6 +186,164 @@ class StrengthGenerationScreenTest {
         assertTrue(io { CoachingStore(app).strength().isEmpty() })
     }
 
+    @Test
+    fun futureEditsCreateExplicitRevisionAndRetainOriginalPrescriptions() {
+        install()
+        generate()
+        val original = model.state.value.draft!!
+        compose.runOnIdle { model.activate(original, "initial-future-edit") { activations++ } }
+        await { activations == 1 }
+        click("Review future programme changes")
+        await { model.state.value.draft?.programme()?.parentRevision() == 1 }
+        val future = model.state.value.draft!!
+        assertEquals(original.programme().blocks(), future.programme().blocks())
+        assertEquals(original.programme().id(), future.before()!!.id())
+        assertEquals(1, io { programmes.currentReference()!!.revision() })
+        val workout = future.programme().workouts().last()
+        compose.runOnIdle {
+            model.reorder(workout.id(), workout.definition().slots().first().id(), 1)
+        }
+        await { model.state.value.draft!!.revision() == 2 }
+        val edited = model.state.value.draft!!
+        assertEquals(
+            original.programme(),
+            io { programmes.programme(original.programme().id(), 1) },
+        )
+        click("Review activation")
+        compose.onNodeWithText("Activate programme").performClick()
+        await { activations == 2 }
+        assertEquals(2, io { programmes.currentReference()!!.revision() })
+        assertEquals(edited.programme(), io { programmes.programme(original.programme().id(), 2) })
+        assertEquals(
+            original.programme(),
+            io { programmes.programme(original.programme().id(), 1) },
+        )
+        assertTrue(io { CoachingStore(app).strength().isEmpty() })
+    }
+
+    @Test
+    fun regenerationRetainsNativeCompletedWorkoutAndActualsAcrossChangedGoalAndDays() {
+        install()
+        generate()
+        val original = model.state.value.draft!!
+        compose.runOnIdle { model.activate(original, "initial-regeneration") { activations++ } }
+        await { activations == 1 }
+        val first = original.programme().workouts().first()
+        val actual = io {
+            val prepared = GymWorkoutAdapter.fromAuthoredProgramme(original.programme(), first.id())
+            val now = Instant.now().minusSeconds(10)
+            fun tick(milliseconds: Long) =
+                GymExecution.Tick("test-boot", milliseconds, now.plusMillis(milliseconds))
+            val engine =
+                GymExecutionEngine.start(
+                    "future-retained-actual",
+                    GymExecution.Origin.PLANNED,
+                    prepared.definition(),
+                    prepared.source(),
+                    ZoneOffset.UTC,
+                    tick(0),
+                )
+            val gym = SqliteGymExecutionRepository(app)
+            val started = gym.start(engine.snapshot())
+            engine.saveSet(
+                first.definition().slots().first().id(),
+                StrengthSession.SetEntry("retained-set", 6, 20.0, 7.0, false),
+                tick(1000),
+            )
+            gym.finish(
+                    engine.finish(tick(2000), null, "Retained native actual", false),
+                    started.revision(),
+                )
+                .execution()
+        }
+        click("Review future programme changes")
+        await { model.state.value.draft?.programme()?.parentRevision() == 1 }
+        assertTrue(first.id() in model.state.value.protectedWorkoutIds)
+        val before = model.state.value.draft!!
+        compose.runOnIdle { model.reorder(first.id(), first.definition().slots().first().id(), 1) }
+        compose.waitUntil(20_000) { !model.state.value.busy && model.state.value.error != null }
+        assertEquals(before, model.state.value.draft)
+        compose.runOnIdle {
+            model.clearMessage()
+            model.generate(
+                "Reviewed muscle programme",
+                original.programme().start(),
+                16,
+                StrengthProgramme.Settings(
+                    GymProgramme.Goal.MUSCLE,
+                    GymProgramme.Priority.BALANCED,
+                    GymProgramme.Experience.INTERMEDIATE,
+                    setOf(DayOfWeek.TUESDAY, DayOfWeek.FRIDAY),
+                    2,
+                    60,
+                    ExerciseMetadata.Equipment.values().toSet(),
+                ),
+                null,
+                false,
+                {},
+            )
+        }
+        await { model.state.value.draft!!.id() != before.id() }
+        val regenerated = model.state.value.draft!!
+        assertEquals(2, regenerated.programme().revision())
+        assertEquals(first, regenerated.programme().workouts().first { it.id() == first.id() })
+        assertEquals(1, io { programmes.currentReference()!!.revision() })
+        compose.runOnIdle { model.activate(regenerated, "accept-regeneration") { activations++ } }
+        await { activations == 2 }
+        assertEquals(
+            original.programme(),
+            io { programmes.programme(original.programme().id(), 1) },
+        )
+        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        assertTrue(io { programmes.decisions().last().protectedWorkoutIds().contains(first.id()) })
+        io {
+            val backup = SqliteBackupRepository(app)
+            backup.restoreUserData(backup.exportUserData(), false)
+        }
+        assertEquals(
+            regenerated.programme(),
+            io { programmes.programme(original.programme().id(), 2) },
+        )
+        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        compose.runOnIdle { model.open(before.id()) {} }
+        await { model.state.value.draft?.id() == before.id() }
+        assertTrue(model.state.value.superseded)
+        assertFalse(model.state.value.accepted)
+        assertEquals(
+            regenerated.programme(),
+            io { programmes.programme(original.programme().id(), 2) },
+        )
+    }
+
+    @Test
+    fun futureRegenerationFormCanChangeFrequencyWithoutKeepingAnIncompatibleTemplate() {
+        install()
+        generate()
+        val original = model.state.value.draft!!
+        compose.runOnIdle { model.activate(original, "initial-frequency") { activations++ } }
+        await { activations == 1 }
+        click("Review future programme changes")
+        await { model.state.value.draft?.programme()?.parentRevision() == 1 }
+        val future = model.state.value.draft!!
+        click("Regenerate future programme")
+        compose.onNodeWithText("Start date · dd/mm/yyyy").assertIsNotEnabled()
+        click("2")
+        compose.onNodeWithText("Customised structure").assertExists()
+        click("Generate saved preview")
+        await { model.state.value.draft?.id() != future.id() }
+        val candidate = model.state.value.draft!!.programme()
+        assertEquals(2, candidate.settings().frequency())
+        assertEquals(2, candidate.revision())
+        assertNull(candidate.templateId())
+        assertEquals(original.programme().start(), candidate.start())
+        assertEquals(1, io { programmes.currentReference()!!.revision() })
+        click("Review activation")
+        compose.onNodeWithText("Activate programme").performClick()
+        await { activations == 2 }
+        assertEquals(candidate, io { programmes.programme(candidate.id(), 2) })
+        assertEquals(original.programme(), io { programmes.programme(candidate.id(), 1) })
+    }
+
     private fun generate() {
         compose.runOnIdle {
             model.generate(

@@ -106,14 +106,10 @@ final class StrengthProgrammingArchive {
                 throw invalid("concrete draft identity");
             checkRef(d.before(), programmes, legacyKeys);
             if (d.programme().parentRevision() > 0)
-                new StrengthProgrammeEditor.Proposal(
-                        programmes.get(d.before().key()),
-                        d.programme(),
-                        Collections.emptySet(),
-                        d.substitutions());
-            var accepted = programmes.get(key(d.programme()));
-            if (accepted != null && !accepted.equals(d.programme()))
-                throw invalid("concrete draft differs from preserved programme");
+                d.validateAgainst(programmes.get(d.before().key()));
+            // Independent saved previews may compete for the same next revision. They remain
+            // proposals even after another candidate is accepted; only the programmes/decision
+            // graph above/below owns activated history. Never replace it with a draft payload.
             for (var workout : d.programme().workouts())
                 for (var slot : workout.definition().slots())
                     if (ExerciseCatalog.definition(slot.exercise().id()) == null

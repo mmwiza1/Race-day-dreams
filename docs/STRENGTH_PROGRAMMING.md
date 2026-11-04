@@ -97,4 +97,15 @@ workouts support target/exercise editing, ordering, removal and additions. Gener
 another preview retains the previous saved draft. Accepted previews are read-only.
 The engine considers retained demanding runs/race context for hybrid users; Strength-only
 users need no running profile. UI and new canonical capture verification is in progress.
-Future revisions/regeneration and permanent-swap controls remain the next phase.
+Future-only editing and regeneration now prepare a saved next revision from the current
+programme. Completed and earlier workouts are read-only; activation independently rechecks
+fresh completions and current ownership. Regeneration can change goal, days, equipment,
+frequency and length while keeping the original start and exact retained prescriptions.
+The original revision and native actuals remain separately readable. Competing unaccepted
+proposals remain saved; after another is accepted they are superseded/read-only, and do not
+replace accepted history during backup restore. Permanent-swap controls remain the next phase.
+Android and visual acceptance for these new future-review controls is pending.
+
+Activation of a forward revision waits while a native workout using that programme is
+active, paused or awaiting recovery. The athlete can finish/discard that workout first;
+then activation rechecks fresh completed evidence. Previewing changes never stops a workout.

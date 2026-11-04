@@ -218,6 +218,10 @@ public final class StrengthProgrammingRepositoryTest extends AndroidTestCase {
         var link = new DevelopmentStore(getContext()).gymLinks().get("authored-actual");
         assertEquals("authoring:v1", link.versionKey());
         assertEquals(prescribed.id(), link.prescribedSessionId());
+        var review = repository.reviewRevision(repository.currentReference());
+        assertEquals(programme, review.programme());
+        assertEquals(Collections.singleton(prescribed.id()), review.completedWorkoutIds());
+        assertEquals(repository.currentReference(), review.reference());
         var oldSettings = programme.settings();
         var changedSettings =
                 new StrengthProgramme.Settings(

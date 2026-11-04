@@ -1,13 +1,27 @@
 # Race Day Dreams
 
-A free, open-source, account-free Android running companion.
+A free, open-source, account-free Android running and strength coach.
 
-**The app recommends. The runner decides. The plan adapts.**
+**The app recommends. The athlete decides. The plan adapts.**
 
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.8.2-test1 — Premium Dream Routes
+## 0.10.0-test1 — Strength Programming 2.0 (in development)
+
+The completed0.9 standalone Strength/Gym Now foundation is retained. Manual programmes,
+structured custom exercises, nine editable templates and exact dated block previews now
+share typed local storage and the existing workout engine. Activation requires a reviewed
+choice; prescriptions never become actual logged sets automatically. Future-revision and
+regeneration integration is being verified. Permanent-swap/progression controls and the
+full0.10 release gate remain unfinished; PR15 stays draft.
+
+The verified template checkpoint passed405instrumentation tests on each API28/35/36 and
+published110authentic captures. A [branch test APK](https://github.com/mmwiza1/Race-day-dreams/actions/runs/41889775036/artifacts/13353407683)
+is available; it does not replace the verified-main rolling download. Physical Galaxy S24
+acceptance is unperformed. See [0.10 release notes](docs/RELEASE_0_10_0.md).
+
+## Offline Dream Routes
 
 Dream Routes now pair original illustrated city panoramas with the full geographic
 course, a prominent blue equivalent section, clear progress and illustrated landmark
@@ -30,7 +44,7 @@ distance without invented reps. Every canonical exercise has original illustrate
 instructions, cues, mistakes and accessible descriptions. All174 entries are checked
 by strict catalogue and packaged-resource tests; assets work offline.
 
-Optional original six-week gym blocks support 1–6 days, equipment/time constraints,
+Retained legacy six-week gym blocks support 1–6 days, equipment/time constraints,
 experience, goals and running/strength priority. Versions retain old prescriptions;
 moves, skips and reductions require runner choice. Actual workouts stay separate.
 Progression advice uses actual sets and effort rather than weekly automatic loading.
@@ -65,12 +79,10 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The retained 0.9 source passed **331 instrumentation tests on each
-of API28,35 and36**, with **91 authentic captures**. New exclusions, explicit associations,
-concise busy-equipment choices and representative dark/200% layouts were visually reviewed.
-The rolling main download still follows the last merged release; a
-[verified 0.9 test APK](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40741473316/artifacts/12840411651)
-is available from the feature build. No physical S24 pass is implied.
+data, not UI mockups. The verified template source98366d7 passed **405instrumentation tests
+on each of API28,35 and36**, with **110authentic captures**. New template/configuration/
+preview/workout images were opened in light/dark/200%text. Future-review changes require a
+new gate and fresh captures; no physical S24 pass is implied.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).

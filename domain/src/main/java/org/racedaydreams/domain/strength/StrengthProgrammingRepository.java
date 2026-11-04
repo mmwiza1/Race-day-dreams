@@ -5,6 +5,7 @@ import org.racedaydreams.domain.coaching.Immutable;
 import java.time.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /** Authoring owns prescriptions/choices, never actual sets or a second execution engine. */
 public interface StrengthProgrammingRepository {
@@ -57,6 +58,23 @@ public interface StrengthProgrammingRepository {
         }
     }
 
+    /** One read-transaction snapshot; acceptance must still recheck fresh completions. */
+    record RevisionReview(StrengthProgramme programme, Set<String> completedWorkoutIds) {
+        public RevisionReview {
+            Objects.requireNonNull(programme);
+            completedWorkoutIds = Immutable.copySet(completedWorkoutIds);
+            var known = new java.util.HashSet<String>();
+            for (var workout : programme.workouts()) known.add(workout.id());
+            if (!known.containsAll(completedWorkoutIds))
+                throw new IllegalArgumentException(
+                        "Completed evidence references an unknown workout.");
+        }
+
+        public Reference reference() {
+            return new Reference(Owner.AUTHORED, programme.id(), programme.revision());
+        }
+    }
+
     record Summary(String id, int revision, String name, LocalDate start, LocalDate end) {}
 
     record DraftSummary(String id, int revision, String name, LocalDate start) {}
@@ -64,6 +82,9 @@ public interface StrengthProgrammingRepository {
     Reference currentReference();
 
     StrengthProgramme programme(String id, int revision);
+
+    /** Read an authored revision and its retained completed evidence in one SQLite snapshot. */
+    RevisionReview reviewRevision(Reference reference);
 
     List<Summary> versions(int limit, int offset);
 
