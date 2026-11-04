@@ -39,7 +39,7 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 - Programme replacement review now offers ranked, explained options for one dated workout
   or eligible future occurrences. Each phase retains its own targets, load references clear,
   changed measurement tasks require fresh targets, and activation stays explicit. Current
-  Android/capture verification of these new controls is pending.
+  The426-case/API checkpoint passed; the final large-text review refinement requires its own gate.
 
 - Optional progression review explains exact recent working evidence and offers a small,
   task-specific target proposal. Saving rechecks evidence; activating a programme revision
@@ -76,8 +76,8 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Known limitations
 
-- Programme replacement, optional progression and history controls require their current
-  Android/capture gates and final visual review. They are connected, but not yet release-verified.
+- The426-case/API software checkpoint passed. A proposal-first large-text progression
+  refinement requires a fresh Android/capture gate and visual review before release readiness.
   The manual/custom workflows passed the supported automated gate and scoped capture
   review; physical Galaxy S24 acceptance remains unperformed.
 - Beginner power previews explicitly report the current catalogue's lack of a

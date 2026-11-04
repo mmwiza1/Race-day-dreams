@@ -323,3 +323,11 @@ uses test-only recorded exact working evidence, the production advisor and expli
 controls. History opens an accepted revision through production navigation and asserts
 current ownership/actual evidence are unchanged. No mock UI or edited PNG is permitted.
 These require the current full API gate, source fingerprint verification and visual review.
+
+## Current426checkpoint and visual gate finding
+
+Source4fb19b8/workflow41908273369 passed426tests each API28/35/36 and published125actual
+captures asf79c3c5. All new replacement/progression/history modes were opened. Image integrity
+passed, but200%progression footer/action hierarchy did not pass visual review. A new
+proposal-first scrollable review and stronger entry/control assertions require another full
+gate and fresh125captures; do not treat image existence as visual acceptance.

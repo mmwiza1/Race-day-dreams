@@ -11,6 +11,40 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
+## CURRENT — full426gate green; visual refinement requires another gate
+
+Branch feature/0.10-strength-programming / PR15 OPEN/DRAFT; mainc6299e2 unchanged.
+Committed source4fb19b81bff49cd19d42e9933cb7d0608c2c006f passed COMPLETE workflow41908273369:
+426tests EACH API28/35/36, all builds/lint/domain/schema/release/format/source/guidance,
+125actual captures. This FIXES both lower-ranked choice tests and API35city-root lifecycle
+failure without weakening assertions or deadlines. APK51,864,680bytes (+180224/+0.35% from
+prior413checkpoint); API35APKartifact13361224243, screenshots13361753732.
+
+Botf79c3c59c72b380f77b4c4ed35ac82264ddf4afd adopted byteexact,125PNG540x1200 verified;
+source fingerprint cbf3a7ecd0837bf72e481ed8fc7d00b9d89e074a9606e40b858a8adc57cc4538
+matches actualsource. All9new replacement/progression/history light/dark/200% images opened.
+Replacement/history readable, natural wrap/scroll; original date now readable dark (dark /
+200%future settings reopened). BUT200%progression AlertDialog has crowded wrapped actions
+and places numeric proposal below long evidence. Do NOT call this visually accepted.
+
+Local necessary refinement replaces only ProgrammeProgressionSheet with scrollable full-
+screen review, optional target first, evidence disclosures and normally flowing controls.
+No business/persistence change. Capture assertions now require the real82kg proposal visible
+at entry in EACH mode, both actual controls accessible through normal scroll, then reset
+list via real scroll action for capture. UI save test scrolls to the real control. Expected
+426/API and125captures unchanged. FINAL format/main/instrumentation compile plus full gate
+and fresh capture inspection are REQUIRED for this new source. Do not reuse4fbpass as proof.
+
+Next exact work: finish final local source/format/release checks; commit/push this visual
+refinement and observed426results/docs; run fullAPI28/35/36 gate. Fix failures, adopt fresh
+125captures and inspect refined progression in all3modes. Finish README/release/handoff/
+verification to actual final state and prepare PR15 only after complete gates/visual review.
+Full0.10 implementation is now connected; do NOT start0.11 or revive old incomplete lists
+below. Only final quality/gates/docs remain. Physical Galaxy S24/TalkBack UNPERFORMED.
+
+The following records preserve architecture/recovery details; their old pending gates are
+historical and superseded by this CURRENT section.
+
 ## Actual recovery boundary — 4 November 2026
 
 - Branch feature/0.10-strength-programming; PR15 OPEN/DRAFT. Main remains

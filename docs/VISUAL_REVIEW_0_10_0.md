@@ -81,3 +81,19 @@ text was dim when disabled in dark mode; the next source keeps it read-only and 
 legible, retaining the model guard and a no-edit semantics assertion. Replacement review
 has3new required scenes that must be captured and opened before acceptance. No physical
 S24/TalkBack pass is claimed.
+
+## Replacement, progression and history — source4fb19b8 reviewed
+
+Workflow41908273369 passed426cases per supported API and125captures. Canonicalf79c3c5
+preserves source fingerprint cbf3a7ecd0837bf72e481ed8fc7d00b9d89e074a9606e40b858a8adc57cc4538.
+All9new images were opened individually, plus future-settings dark/200%. Replacement
+choices and read-only history have legible light/dark contrast, natural wrapping and
+scrolling, without overlapping controls. Original-start text is now legible in dark mode.
+
+The progression AlertDialog at200% failed visual review despite green screenshot tests:
+long explanation pushed the numeric optional target below the first viewport and wrapped
+footer actions were too crowded. The next source uses a full-screen scrollable review,
+proposal first, optional evidence disclosure and flowing controls. Stronger captures must
+show the actual82kg proposal at entry in all modes and exercise real scrolling to the save
+control. That refinement requires fresh build captures and inspection. No bitmap was edited.
+All physical Galaxy S24/human TalkBack checks remain unperformed.

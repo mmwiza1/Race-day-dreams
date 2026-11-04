@@ -1759,8 +1759,18 @@ class CoachingScreenshotTest {
                         else "Programme replacement"
                     await(heading)
                     compose.onNodeWithText(heading).assertIsDisplayed()
-                    if (kind == "progression")
+                    if (kind == "progression") {
+                        compose.onNodeWithText("Optional proposal").assertIsDisplayed()
+                        compose
+                            .onNode(hasText("82 kg reference", substring = true))
+                            .assertIsDisplayed()
+                        compose.onNodeWithText("Keep current target").assertIsDisplayed()
+                        compose
+                            .onNode(hasScrollToIndexAction())
+                            .performScrollToNode(hasText("Save optional target proposal"))
                         compose.onNodeWithText("Save optional target proposal").assertIsDisplayed()
+                        compose.onNode(hasScrollToIndexAction()).performScrollToIndex(0)
+                    }
                 }
                 if (suffix == "-large-font")
                     Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)

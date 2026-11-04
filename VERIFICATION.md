@@ -1,3 +1,20 @@
+## 4 November 2026 — full426checkpoint green; visual refinement pending
+
+Source4fb19b81bff49cd19d42e9933cb7d0608c2c006f passed COMPLETE workflow41908273369:
+426instrumentation tests EACH API28/35/36; builds/lint,588145domain/35suites,64schema,
+9release, source11/artwork14/capture-validator13,72Kotlin/115Java format, strict174canonical/
+14routine and125captures. Previous choice-disclosure and API35root-lifecycle failures are
+resolved with assertions/deadlines retained. API35APKartifact13361224243 is51,864,680bytes;
+screenshots13361753732. Botf79c3c59c72b380f77b4c4ed35ac82264ddf4afd adopted byteexact;
+125PNG540x1200 validate and source hash matches cbf3a7ecd0837bf72e481ed8fc7d00b9d89e074a9606e40b858a8adc57cc4538.
+
+All9new replacement/progression/history images were opened in light/dark/200%. Original
+start is legible in dark settings. Progression200% had crowded AlertDialog actions and its
+optional number below long evidence, so visual acceptance was withheld. Current source
+uses a full-screen scrollable proposal-first review and stronger actual-entry/control
+capture assertions. It requires a fresh complete426case/API gate and125captures. PR15 stays
+DRAFT; no S24/TalkBack/physical pass is claimed. No new schema/dependency/permission change.
+
 ## 4 November 2026 — observed permanent replacement gate failures and follow-up
 
 Sourceb148e2aaeadf71b25373ace16a4fb9a5a93f1631/workflow41905672344 finished419tests

@@ -646,7 +646,7 @@ class StrengthGenerationScreenTest {
         assertEquals(draft, model.state.value.draft)
         click("Review progression for ${slot.exercise().name()}")
         await { model.state.value.progressionReview != null }
-        compose.onNodeWithText("Save optional target proposal").performClick()
+        chooseProgrammeAlternative("Save optional target proposal")
         await { model.state.value.draft!!.revision() == draft.revision() + 1 }
         val proposed = model.state.value.draft!!
         assertTrue(proposed.programme().reason().contains("optional target proposal"))
