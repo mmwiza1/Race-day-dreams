@@ -46,3 +46,12 @@ they do not certify unfinished template/generated/future-edit workflows or physi
 Editable templates/generated previews, future regeneration, permanent substitution controls
 and progression proposals are not finished or pictured here. Final0.10 acceptance requires
 those workflows and their actual captures. Galaxy S24/TalkBack/physical use remain unperformed.
+
+## Latest inventory follow-up — b38e075
+
+Workflow41068497047 passed390cases per supported API and98capture integrity checks.
+Canonical a855c08 preserves sourceb38e075. The latest browser, normal programme preview
+and200% preview were reopened; the scoped refinements remain readable and chronological.
+Two additional real browser cases verify authored inventory ownership/refresh and custom
+metadata filters. These are actual compiled controls, not a rendered mockup. No S24/TalkBack
+physical claim or acceptance of unfinished template/future-edit screens is made.

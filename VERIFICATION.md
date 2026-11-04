@@ -1,5 +1,25 @@
 # 0.10 development checkpoint — not release acceptance
 
+## Latest verified implementation — b38e075 (30 October 2026)
+
+Complete workflow **41068497047** is green: **390instrumentation tests each on API28,35,36**
+(1,170 emulator cases), app/test builds and lint;588,070domain checks/33suites;60schema tests;
+9release-note tests; pinned65Kotlin/107Java formatting;174/174canonical and14/14routine
+guidance; source/provenance/capture gates. Canonical bot **a855c08** retains98actual captures
+from that code. Imported blobs/tree/commit were checked; source fingerprint
+0b838419e38a7a048d448b01270459132dfe3cf99c6250a61f6443f4ab7d5c3c matches the working app.
+
+Verified API35 APK artifact12983479610 (51,438,696bytes); screenshots12984377699, both
+run41068497047. Refined manual/custom light/dark200% captures were opened and reviewed;
+latest browser and normal/200% preview were also reopened. The current notes-only update
+changes no app/capture input. A metadata commit's own CI status must be inspected separately.
+
+This is a COMPLETE gate for the IMPLEMENTED checkpoint, not the full0.10 release. Editable
+templates/generated previews, future regeneration, permanent substitutions and progression
+controls remain unfinished in CONTINUE_CODEX.md. PR15 stays DRAFT. Schema14/JSON9/raw2/
+complete1 and prior readers remain. No physical Galaxy S24 checks have been performed.
+
+
 ## Refined manual/custom checkpoint — source1dc34c2
 
 Workflow41063159777 passed **388tests on each API28,35,36** plus all build/lint/domain/

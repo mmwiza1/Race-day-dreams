@@ -11,67 +11,96 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## ACTIVE continuation — manual/custom/visual phase verified; inventory follow-up then templates
+## ACTIVE continuation — verified manual/custom/inventory checkpoint; templates next
 
-- Branch `feature/0.10-strength-programming`, PR15 OPEN/DRAFT; mainc6299e2 unchanged.
-  Source **1dc34c2665ced02a1a8f5e5f33f3b81abe30ec8f** passed COMPLETE workflow41063159777:
-  **388tests/API28 +388/API35 +388/API36**, app/test build, lint,588,070domain checks/33suites,
-  60schema/9release, formatting, strict174canonical/14routine guidance and98captures.
-  API35 APK12982357035 (51,438,696bytes), screenshots12982127632. No physicalS24 results.
-- Canonical bot **2c7a59976634fda88b96e49425da6fc23f2eb9a6** (parent1dc34c2) adopted locally
-  with verified blob/tree/commit SHAs;98PNG540×1200, source fingerprint
-  e6a0a1b0cb613ece151a6006cae97206f42391bf092b42b8daaf19c3afc047a6. All7new manual/
-  preview/custom captures opened; refinements reviewed. Source/VERIFICATION/visual review
-  distinguish earlier0eb387-case and refined388-case results. Keep existing capture lineage.
-- Completed: feature-owned manual builder, typed optimistic drafts, blocks/workouts/order/
-  moves/duplicates, precise optional targets, saved recovery, dated preview and explicit
-  activation/stop. Atomic activateDraft validates reviewed draft/current pointer/fresh
-  eligibility in ONE SQL transaction, with idempotent retries and rollback tests.
-- Structured custom entry from library/builder passed4real UI/VM cases: explicit body area/
-  role/task/equipment/notes;6profiles+weighted bodyweight; legacy UUID/history retained;
-  metadata-aware browse/detail; native Gym Now execution; JSON9round trip preserves actual
-  15kg separately from prescribed20kg. No fake technique/estimated1RM/automatic progression.
-- Visual review fixed chronological display WITHOUT stored rewrites, moved long calculations
-  behind disclosures, reset scroll per editor/preview section (actual production key, not
-  test alignment), contextual navigation, keyboard dismissal and singular exercise label.
-  New chronology/immediate-heading cases passed388matrix. docs/VISUAL_REVIEW_0_10_0.md updated.
-- Final integration inspection found browser “In my programme” still used legacy inventory
-  only. Follow-up now prioritises current authored workouts and remembers both programme
-  families; two new real browser tests cover owner precedence/refresh and user-supplied
-  body-area/role/equipment filters. These files compile with all production/test sources;
-  full Android gate for this latest follow-up is STILL REQUIRED (390cases expected).
-  Test fixture's legacy explanation is non-null; erroneous assertDoesNotExist extension
-  import was corrected (the assertion itself remains). No assertions weakened.
-- Version/code/schema/rootbackup/authoring/raw/complete stay0.10.0-test1/13/14/9/1/2/1.
-  No new dependency/INTERNET permission, no destructive migration, no0.11 work, no merge/tag.
-  PR15 MUST remain draft: full0.10 templates/generated/future editing etc are unfinished.
-- Local sandbox blocks Gradle daemon sockets/git network; permission requests stalled.
-  GitHub connector reads/pushes work. Use expected-head fast-forward + exact blob/tree SHA
-  checks and import IDENTICAL unsigned Git objects; no reset/force. Helpers in
-  /workspace/scratch/rdd010: import-api-commit.py, ingest-git-files.py, offline-compile-*.py.
-  Offline compile is NOT an APK/lint/device pass; the real source-bound CI above supplies it.
+- Continue `feature/0.10-strength-programming`, PR15 OPEN/DRAFT. Main remainsc6299e2.
+  **Implementation sourceb38e075e981d683937239b6ad65c4805d0d73d25** passed COMPLETE
+  workflow **41068497047**: **390tests/API28 +390/API35 +390/API36**, app/test build/lint,
+  588,070domain checks/33suites,60schema/9release tests,65Kotlin/107Java formatting,
+  strict174canonical/14routine guidance and98canonical captures. No current code failures.
+  Do not rerun old known-bad93250d6 or restart completed foundations.
+- Canonical bot **a855c08cd59a4bbc1c99fa25e1d898e441d32d4f** (parentb38e075) adopted
+  locally by identical verified blob/tree/commit hashes. Capture source fingerprint
+  **0b838419e38a7a048d448b01270459132dfe3cf99c6250a61f6443f4ab7d5c3c** matches code.
+  All98PNG540×1200 verify. All7new manual/preview/custom light/dark200% images opened at
+  refined source1dc; latestb38 browser/normal+200% preview also reopened. No image edits.
+  API35 APK artifact **12983479610**, screenshot artifact **12984377699**, run41068497047.
+  APK51,438,696bytes. These are branch test artifacts; no main merge/release/tag.
+- Current metadata/docs update changes no app/capture inputs. Inspect actual HEAD/status/
+  latest remote/CI before resuming; a notes-only CI may be running. Keep PR15 DRAFT because
+  FULL0.10 is NOT complete. Previous canonical parent2c7a599 and source1dc388-case gate
+  remain preserved. No reset, rebase, force push or discarded work.
 
-### Immediate exact tasks
+### Completed — preserve, do not recreate
 
-1. Push/check this browser-inventory follow-up on top of2c7a599, inspect full new CI and
-   require390cases/API28/35/36 +98captures. Fix roots, never weaken or blindly rerun.
-   Inspect actual branch/log/PR before trusting these notes. Update this section/run/SHA.
-2. Continue FULL0.10 with editable templates/generated CONCRETE previews, preserving dated
-   week/phase/hybrid changes and explanations. Existing StrengthProgrammeDraft repeats one
-   Day across a WeekBlock and strict v1 JSON has no generated trade-off field; do NOT
-   flatten the first week or silently discard rationale to claim template editing complete.
-   Choose a typed durable concrete-preview/editing design and test its older/current backup
-   reads before changing formats. Reuse existing generator/templates/repository/native engine.
-3. Complete future-only edits/regeneration, permanent-vs-today substitutions, optional modality
-   progression proposals, goal/experience/time-budget quality gaps, version/history UI,
-   authentic remaining workflow captures and final docs/full release gate. Keep prior actuals/
-   prescriptions immutable and require explicit acceptance. Beginner Power catalogue gap
-   remains honestly documented; do not relabel ordinary strength as ballistic evidence.
-4. Next exact files: StrengthProgrammeViewModel.kt, StrengthProgrammeBuilderScreen.kt,
-   new template/concrete-preview components; StrengthProgrammeEditor/Generator/Draft,
-   StrengthProgrammingJson/Archive and typed repository as necessary. Manual builder and
-   custom metadata are implemented/tested; do not recreate them or restart from main.
-5. No0.11 features. No ready/merge until FULL0.10 complete. PhysicalS24 list is UNPERFORMED.
+- Feature-owned StrengthProgrammeViewModel + phone manual builder: typed optimistic drafts,
+  settings/equipment, blocks/days/workouts/order/moves/duplicates, precise optional targets,
+  saved recovery, dated preview and explicit activation/stop. Parser/editor reused from
+  Gym Now; same native execution engine. SavedState holds IDs/small forms only.
+- Atomic activateDraft validates exact reviewed draft, current pointer and fresh eligibility
+  in ONE SQL transaction; six repository fault/CAS/retry cases pass. Seven real manual UI
+  cases cover confirmation/backup/recreation/stale review/moves/large text/parser/chronology.
+- Structured custom entry from library/builder passed4real UI/VM cases: explicit area/role/
+  task/equipment/notes,6profiles+weighted bodyweight, legacy UUID/history retained, typed
+  logging mirror, native execution, JSON9round trip with actual15kg independent of target20kg.
+  No fake technique, estimated1RM or automatic custom progression.
+- Browser inventory now prioritises current authored workouts, memoises both programme
+  families and refreshes on owner changes. Two real UI cases cover precedence/legacy
+  fallback and user-supplied body-area/role/equipment filters. Normal exclusions, explicit
+  search, reversible management and all actual/PB history remain.
+- Visual review fixed chronological DISPLAY without stored rewrites, long evidence behind
+  disclosures, section-keyed scroll reset/contextual navigation, keyboard dismissal and
+  singular labels. Real captures/heading assertions verify the production behaviour.
+  docs/VISUAL_REVIEW_0_10_0.md contains observed findings; templates are not pictured/shipped.
+- Existing authored Today/calendar/Gym Now/association/source-preservation integration,
+  original domain generation/templates/progression and typed durability foundation remain.
+- Version/code/schema/rootbackup/authoring/raw/complete remain0.10.0-test1/13/14/9/1/2/1.
+  No new dependency/INTERNET permission, no destructive migration, no physicalS24 claim.
+
+### Remaining FULL0.10 — next exact phase, NOT deferred to0.11
+
+1. Editable templates + generated CONCRETE preview/draft/accept workflow. Preserve every
+   dated week/phase/hybrid variation, target, note and explanation. Existing
+   StrengthProgrammeDraft repeats a Day across a WeekBlock; strict v1 draft JSON has no
+   generated trade-off field. Do NOT flatten a first week or silently drop rationale.
+   Choose appropriate typed concrete-preview/editing persistence; test old/current formats
+   and additive migration before exposure. Do not grow Release08Store/FeatureStore buckets.
+2. Future-only editing/regeneration for schedule/frequency/equipment/goal changes; explicit
+   activation and fresh CAS/completed-source protection preserve old versions and actuals.
+   User-created programmes and templates should share the retained native logging path.
+3. Permanent-vs-today substitution UI, durable version/decision/provenance, fresh exclusions/
+   equipment/intent checks and cleared incompatible load references. Keep concise existing
+   equipment-busy/unavailable flows. No automatic programme changes from temporary fatigue.
+4. Optional modality progression proposals connected to the existing conservative domain
+   engine/StartingLoad safeguards, plus necessary version/history navigation. Missing effort
+   is unknown; no change without athlete acceptance. Custom unsupported progression stays off.
+5. Resolve genuine goal/experience/power/support/time-budget quality gaps with the simulator.
+   Beginner Power's lack of an appropriate classified ballistic movement is documented;
+   do not relabel ordinary strength or fake availability/evidence. Catalogue growth only
+   for genuine gaps with complete metadata/guidance/assets/tests.
+6. Authentic new template/generated/blocks/future-edit/permanent-swap/progression captures,
+   light/dark200%/TalkBack semantics, README/release/storage/architecture docs to actual
+   behaviour. Run full supported gate after meaningful phases. Prepare PR15 only after
+   ALL0.10 acceptance criteria are satisfied; physicalS24 checks remain a separate manual gate.
+
+Next files: StrengthProgrammeViewModel.kt / StrengthProgrammeBuilderScreen.kt + new template/
+concrete-preview components/application services; StrengthProgrammeEditor/Generator/Draft,
+StrengthProgrammingJson/Archive and typed repository as required. Reuse completed manual/
+custom implementation. No0.11 timers/warm-up ramps/supersets/nutrition/achievements/advanced
+analytics or hybrid expansion. Do not stop the scope at a single small fix.
+
+### Environment / reliable verification
+
+Local sandbox blocks Gradle daemon sockets/git network; requests for more execution access
+stalled. GitHub connector reads/pushes work and CI supplies REAL Android gates. Do not call
+cached source compilation an APK/lint/device pass. Local source checks compile all main/test
+Kotlin/Java using existing cached tools; logs under /workspace/scratch/rdd010.
+
+For a needed push use connector Git data APIs with blob/tree SHA checks, expected-head
+FAST-FORWARD and identical unsigned Git-object import. Helpers import-api-commit.py and
+ingest-git-files.py reside in /workspace/scratch/rdd010. Preserve remote capture bots/lineage;
+no reset or force. Independent GitHub file reads can be batched; binary captures are copied
+byte-for-byte and checked against Git blob SHA before staging. No image generation/editing.
 
 ## Historical checkpoint — authored read/execution integration complete
 

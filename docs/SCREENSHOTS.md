@@ -284,3 +284,8 @@ on each supported API. All seven refined authoring images were opened; the chron
 disclosures, scroll entry and keyboard corrections were reviewed. Canonical bot2c7a599
 records that source separately from the untouched design references. See
 VISUAL_REVIEW_0_10_0.md; unfinished template/future-edit screens are not certified.
+
+Latest inventory follow-up: sourceb38e075, full workflow41068497047 (390cases/API), canonical
+bot a855c08;98required captures. Latest browser/normal+200% programme preview were reopened.
+Manual/custom screens retain the reviewed refined design. Upcoming0.10 workflows still
+require their own actual-build captures before the release can be accepted.
