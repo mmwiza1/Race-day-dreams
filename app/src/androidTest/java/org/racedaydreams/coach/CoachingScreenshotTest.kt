@@ -1092,6 +1092,14 @@ class CoachingScreenshotTest {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync()
             scenario?.close()
             scenario = null
+            // ActivityScenario.close waits for DESTROYED, not Compose test-root unregister.
+            // Do not let the next launch/query adopt a departing window's empty semantics root.
+            compose.waitUntil(20000) {
+                compose
+                    .onAllNodes(isRoot(), useUnmergedTree = true)
+                    .fetchSemanticsNodes(atLeastOneRootRequired = false)
+                    .isEmpty()
+            }
             val route = org.racedaydreams.domain.support.DreamRoutes.currentGeometry(city)
             val recorded =
                 FeatureStore(context).activitySummaries().single {
@@ -1177,7 +1185,7 @@ class CoachingScreenshotTest {
                 )
                     throw failure
                 throw AssertionError(
-                    "City ${route.id()}, activity ${recorded.id()}, source ${recorded.source()}, retained points ${retainedPoints.size}, expected story $retainedStory. UI: ${compose.onRoot(useUnmergedTree=true).printToString().take(14000)}",
+                    "City ${route.id()}, activity ${recorded.id()}, source ${recorded.source()}, retained points ${retainedPoints.size}, expected story $retainedStory, scenario ${scenario?.state}. UI: ${compose.onRoot(useUnmergedTree=true).printToString().take(14000)}",
                     failure,
                 )
             }
@@ -1213,6 +1221,572 @@ class CoachingScreenshotTest {
             capture("dream-route-large-font")
             alignHeading("Key landmarks on this route")
             capture("dream-route-large-font-landmarks", "Key landmarks on this route")
+        } finally {
+            scenario?.close()
+            scenario = null
+            if (originalFont.matches(Regex("[0-9.]+")))
+                shell("settings put system font_scale $originalFont")
+            else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesTypedProgrammeBuilderPreviewAndCustomEntryThroughProductionNavigation() {
+        EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val today = LocalDate.now()
+        val second = today.plusDays(3).dayOfWeek
+        fun slot(id: String, exercise: String, low: Int, high: Int) =
+            GymWorkoutDefinition.Slot(
+                id,
+                ExerciseCatalog.definition(exercise).exercise(),
+                GymWorkoutDefinition.Target(
+                    3,
+                    low,
+                    high,
+                    null,
+                    null,
+                    GymWorkoutDefinition.EffortRange(
+                        GymWorkoutDefinition.EffortScale.RIR,
+                        2.0,
+                        3.0,
+                    ),
+                    120,
+                    null,
+                ),
+                null,
+            )
+        val draft =
+            StrengthProgrammeDraft(
+                "capture-strength-draft",
+                1,
+                "capture-strength-programme",
+                0,
+                "Strength foundation",
+                StrengthProgramme.Settings(
+                    GymProgramme.Goal.GENERAL,
+                    GymProgramme.Priority.STRENGTH_FIRST,
+                    GymProgramme.Experience.BEGINNER,
+                    setOf(today.dayOfWeek, second),
+                    2,
+                    45,
+                    setOf(
+                        ExerciseMetadata.Equipment.BARBELL,
+                        ExerciseMetadata.Equipment.BENCH,
+                        ExerciseMetadata.Equipment.SQUAT_RACK,
+                        ExerciseMetadata.Equipment.DUMBBELLS,
+                    ),
+                ),
+                today,
+                listOf(
+                    StrengthProgrammeDraft.WeekBlock(
+                        "foundation",
+                        StrengthProgramme.Phase.FOUNDATION,
+                        "Foundation",
+                        4,
+                        listOf(
+                            StrengthProgrammeDraft.Day(
+                                "upper",
+                                today.dayOfWeek,
+                                "Upper-body practice",
+                                listOf(slot("bench", "bench-press", 5, 8)),
+                                null,
+                            ),
+                            StrengthProgrammeDraft.Day(
+                                "lower",
+                                second,
+                                "Lower-body practice",
+                                listOf(slot("lunge", "reverse-lunge", 8, 10)),
+                                null,
+                            ),
+                        ),
+                    )
+                ),
+                StrengthProgramme.Origin.CUSTOM,
+                null,
+            )
+        SqliteStrengthProgrammingRepository(context).saveDraft(draft, 0)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            listOf("" to false, "-dark" to false, "-large-font" to true).forEach { (suffix, large)
+                ->
+                shell("settings put system font_scale ${if (large) "2.0" else "1.0"}")
+                shell("cmd uimode night ${if (suffix == "-dark") "yes" else "no"}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                await("Your strength training")
+                if (large) Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (suffix == "-dark")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                compose.onNodeWithText("Create a gym programme").performScrollTo().performClick()
+                await("Build or review programmes")
+                compose
+                    .onNodeWithText("Build or review programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Saved drafts")
+                compose.onNodeWithText("Open draft").performScrollTo().performClick()
+                await("Programme builder")
+                compose.onNodeWithText("Programme builder").assertIsDisplayed()
+                capture("strength-programme-builder$suffix")
+                compose.onNodeWithText("Preview programme").performScrollTo().performClick()
+                await("Review programme")
+                compose.onNodeWithText("Review programme").assertIsDisplayed()
+                capture("strength-programme-preview$suffix")
+                if (suffix.isEmpty()) {
+                    compose.onNodeWithText("Keep editing draft").performScrollTo().performClick()
+                    await("Programme builder")
+                    compose
+                        .onNodeWithText("Create custom exercise")
+                        .performScrollTo()
+                        .performClick()
+                    await("Custom exercise")
+                    compose
+                        .onNodeWithText("Exercise name")
+                        .performScrollTo()
+                        .performTextReplacement("Cable row variation")
+                    androidx.test.espresso.Espresso.closeSoftKeyboard()
+                    alignHeading("Custom exercise")
+                    capture("strength-custom-exercise")
+                }
+                Assert.assertNull(SqliteStrengthProgrammingRepository(context).currentReference())
+                Assert.assertTrue(CoachingStore(context).strength().isEmpty())
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            if (originalFont.matches(Regex("[0-9.]+")))
+                shell("settings put system font_scale $originalFont")
+            else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesConcreteTemplatesAndEveryPhaseThroughProductionNavigation() {
+        EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val programme =
+            StrengthProgrammeGenerator()
+                .generate(
+                    StrengthProgrammeGenerator.Request(
+                        "capture-dated-development",
+                        Instant.now(),
+                        "Strength development",
+                        StrengthProgramme.Settings(
+                            GymProgramme.Goal.STRENGTH,
+                            GymProgramme.Priority.BALANCED,
+                            GymProgramme.Experience.INTERMEDIATE,
+                            DayOfWeek.values().toSet(),
+                            4,
+                            60,
+                            setOf(
+                                ExerciseMetadata.Equipment.BARBELL,
+                                ExerciseMetadata.Equipment.BENCH,
+                                ExerciseMetadata.Equipment.SQUAT_RACK,
+                                ExerciseMetadata.Equipment.DUMBBELLS,
+                                ExerciseMetadata.Equipment.PULL_UP_BAR,
+                            ),
+                        ),
+                        LocalDate.now(),
+                        12,
+                        "upper-lower-4",
+                        org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH,
+                        emptySet(),
+                        null,
+                        emptySet(),
+                        emptySet(),
+                        false,
+                    )
+                )
+        val draft =
+            ConcreteStrengthProgrammeDraft(
+                "capture-concrete-preview",
+                1,
+                null,
+                programme,
+                emptyList(),
+            )
+        SqliteConcreteStrengthProgrammeDraftRepository(context).save(draft, 0)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            listOf("", "-dark", "-large-font").forEach { suffix ->
+                shell(
+                    "settings put system font_scale ${if (suffix == "-large-font") "2.0" else "1.0"}"
+                )
+                shell("cmd uimode night ${if (suffix == "-dark") "yes" else "no"}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                await("Your strength training")
+                compose.onNodeWithText("Create a gym programme").performScrollTo().performClick()
+                await("Build or review programmes")
+                compose
+                    .onNodeWithText("Build or review programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Saved drafts")
+                compose
+                    .onNodeWithText("Templates & generated programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Templates & generation")
+                if (suffix == "-large-font")
+                    Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (suffix == "-dark")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                compose.onNodeWithText("Templates & generation").assertIsDisplayed()
+                capture("strength-templates$suffix")
+                compose.onNodeWithText("Open Strength development").performScrollTo().performClick()
+                await("Review every block")
+                compose.onNodeWithText("Review every block").assertIsDisplayed()
+                capture("strength-generated-preview$suffix")
+                val workout = programme.workouts().minBy { it.date() }
+                compose
+                    .onNodeWithText(
+                        "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"
+                    )
+                    .performScrollTo()
+                    .performClick()
+                await("Dated workout")
+                compose.onNodeWithText("Dated workout").assertIsDisplayed()
+                capture("strength-generated-workout$suffix")
+                compose.onNodeWithText("Programme preview").performScrollTo().performClick()
+                await("Review every block")
+                compose.onNodeWithText("Generate another preview").performScrollTo().performClick()
+                await("Shape your programme")
+                compose.onNodeWithText("Shape your programme").assertIsDisplayed()
+                capture("strength-template-settings$suffix")
+                Assert.assertNull(SqliteStrengthProgrammingRepository(context).currentReference())
+                Assert.assertTrue(CoachingStore(context).strength().isEmpty())
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            if (originalFont.matches(Regex("[0-9.]+")))
+                shell("settings put system font_scale $originalFont")
+            else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesReviewedFutureRevisionAndRegenerationThroughProductionNavigation() {
+        EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val programme =
+            StrengthProgrammeGenerator()
+                .generate(
+                    StrengthProgrammeGenerator.Request(
+                        "capture-future-source",
+                        Instant.now(),
+                        "Strength development",
+                        StrengthProgramme.Settings(
+                            GymProgramme.Goal.STRENGTH,
+                            GymProgramme.Priority.BALANCED,
+                            GymProgramme.Experience.INTERMEDIATE,
+                            DayOfWeek.values().toSet(),
+                            4,
+                            60,
+                            setOf(
+                                ExerciseMetadata.Equipment.BARBELL,
+                                ExerciseMetadata.Equipment.BENCH,
+                                ExerciseMetadata.Equipment.SQUAT_RACK,
+                                ExerciseMetadata.Equipment.DUMBBELLS,
+                                ExerciseMetadata.Equipment.PULL_UP_BAR,
+                            ),
+                        ),
+                        LocalDate.now(),
+                        12,
+                        "upper-lower-4",
+                        org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH,
+                        emptySet(),
+                        null,
+                        emptySet(),
+                        emptySet(),
+                        false,
+                    )
+                )
+        val repository = SqliteStrengthProgrammingRepository(context)
+        repository.activate(programme, null, "capture-initial-choice", emptyList())
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            listOf("", "-dark", "-large-font").forEach { suffix ->
+                shell(
+                    "settings put system font_scale ${if (suffix == "-large-font") "2.0" else "1.0"}"
+                )
+                shell("cmd uimode night ${if (suffix == "-dark") "yes" else "no"}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                await("Your strength training")
+                // Large-font navigation intentionally replaces wrapped labels with TalkBack names.
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Gym programme")
+                compose.onNodeWithText("Gym programme").performScrollTo().performClick()
+                await("Build or review programmes")
+                compose
+                    .onNodeWithText("Build or review programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Saved drafts")
+                compose
+                    .onNodeWithText("Templates & generated programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Templates & generation")
+                compose
+                    .onNodeWithText("Review future programme changes")
+                    .performScrollTo()
+                    .performClick()
+                await("Review every block")
+                compose.onNodeWithText("Review every block").assertIsDisplayed()
+                compose.onNodeWithText("Proposed revision 2", substring = true).assertExists()
+                if (suffix == "-large-font")
+                    Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (suffix == "-dark")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                capture("strength-future-preview$suffix")
+                compose
+                    .onNodeWithText("Regenerate future programme")
+                    .performScrollTo()
+                    .performClick()
+                await("Shape your programme")
+                compose.onNodeWithText("Shape your programme").assertIsDisplayed()
+                compose.onNodeWithText("Start date · dd/mm/yyyy").assert(hasSetTextAction().not())
+                capture("strength-future-settings$suffix")
+                Assert.assertEquals(1, repository.currentReference()!!.revision())
+                Assert.assertEquals(programme, repository.programme(programme.id(), 1))
+                Assert.assertTrue(CoachingStore(context).strength().isEmpty())
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            if (originalFont.matches(Regex("[0-9.]+")))
+                shell("settings put system font_scale $originalFont")
+            else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesProgrammeReplacementChoicesInLightDarkAndLargeText() =
+        captureAuthoredReviewScenes("alternatives")
+
+    @Test
+    fun capturesOptionalProgressionInLightDarkAndLargeText() =
+        captureAuthoredReviewScenes("progression")
+
+    @Test
+    fun capturesPreservedProgrammeHistoryInLightDarkAndLargeText() =
+        captureAuthoredReviewScenes("history")
+
+    private fun captureAuthoredReviewScenes(kind: String) {
+        EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val programme =
+            StrengthProgrammeGenerator()
+                .generate(
+                    StrengthProgrammeGenerator.Request(
+                        "capture-programme-replacement",
+                        Instant.now(),
+                        "Strength development",
+                        StrengthProgramme.Settings(
+                            GymProgramme.Goal.STRENGTH,
+                            GymProgramme.Priority.BALANCED,
+                            GymProgramme.Experience.INTERMEDIATE,
+                            DayOfWeek.values().toSet(),
+                            4,
+                            60,
+                            setOf(
+                                ExerciseMetadata.Equipment.BARBELL,
+                                ExerciseMetadata.Equipment.BENCH,
+                                ExerciseMetadata.Equipment.SQUAT_RACK,
+                                ExerciseMetadata.Equipment.DUMBBELLS,
+                                ExerciseMetadata.Equipment.PULL_UP_BAR,
+                            ),
+                        ),
+                        LocalDate.now(),
+                        12,
+                        "upper-lower-4",
+                        org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH,
+                        emptySet(),
+                        null,
+                        emptySet(),
+                        emptySet(),
+                        false,
+                    )
+                )
+        val repository = SqliteStrengthProgrammingRepository(context)
+        repository.activate(programme, null, "capture-replacement-base", emptyList())
+        val actuals =
+            if (kind == "progression") {
+                val slot = programme.workouts().first().definition().slots().first()
+                (1..2).map { day ->
+                    StrengthSession(
+                            "capture-progress-$day",
+                            Instant.now().minus(Duration.ofDays(day.toLong())),
+                            ZoneOffset.UTC,
+                            Duration.ofMinutes(30),
+                            null,
+                            "",
+                            listOf(
+                                StrengthSession.ExerciseSets(
+                                    slot.exercise(),
+                                    (1..slot.target().sets()).map { index ->
+                                        StrengthSession.SetEntry(
+                                            "capture-set-$day-$index",
+                                            slot.target().maximumReps(),
+                                            80.0,
+                                            7.0,
+                                            false,
+                                        )
+                                    },
+                                )
+                            ),
+                        )
+                        .also { CoachingStore(context).saveStrength(it) }
+                }
+            } else emptyList()
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            listOf("", "-dark", "-large-font").forEach { suffix ->
+                shell(
+                    "settings put system font_scale ${if (suffix == "-large-font") "2.0" else "1.0"}"
+                )
+                shell("cmd uimode night ${if (suffix == "-dark") "yes" else "no"}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                await("Your strength training")
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Gym programme")
+                compose.onNodeWithText("Gym programme").performScrollTo().performClick()
+                await("Build or review programmes")
+                compose
+                    .onNodeWithText("Build or review programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Saved drafts")
+                compose
+                    .onNodeWithText("Templates & generated programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Templates & generation")
+                if (kind == "history") {
+                    compose
+                        .onNodeWithText("Programme revision history")
+                        .performScrollTo()
+                        .performClick()
+                    await("Review ${programme.name()} revision 1")
+                    compose
+                        .onNode(hasScrollToIndexAction())
+                        .performScrollToNode(hasText("Review ${programme.name()} revision 1"))
+                    compose.onNodeWithText("Review ${programme.name()} revision 1").performClick()
+                    await("${programme.name()} · revision 1")
+                    compose.onNodeWithText("${programme.name()} · revision 1").assertIsDisplayed()
+                } else {
+                    compose
+                        .onNodeWithText("Review future programme changes")
+                        .performScrollTo()
+                        .performClick()
+                    await("Review every block")
+                    val workout = programme.workouts().first()
+                    compose
+                        .onNodeWithText(
+                            "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"
+                        )
+                        .performScrollTo()
+                        .performClick()
+                    await("Dated workout")
+                    compose
+                        .onNodeWithText(
+                            if (kind == "progression")
+                                "Review progression for ${workout.definition().slots().first().exercise().name()}"
+                            else
+                                "Swap ${workout.definition().slots().first().exercise().name()} in programme"
+                        )
+                        .performScrollTo()
+                        .performClick()
+                    val heading =
+                        if (kind == "progression") "Optional progression"
+                        else "Programme replacement"
+                    await(heading)
+                    compose.onNodeWithText(heading).assertIsDisplayed()
+                    if (kind == "progression") {
+                        compose.onNodeWithText("Optional proposal").assertIsDisplayed()
+                        compose
+                            .onNode(hasText("82 kg reference", substring = true))
+                            .assertIsDisplayed()
+                        compose.onNodeWithText("Keep current target").assertIsDisplayed()
+                        compose
+                            .onNode(hasScrollToIndexAction())
+                            .performScrollToNode(hasText("Save optional target proposal"))
+                        compose.onNodeWithText("Save optional target proposal").assertIsDisplayed()
+                        compose.onNode(hasScrollToIndexAction()).performScrollToIndex(0)
+                    }
+                }
+                if (suffix == "-large-font")
+                    Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (suffix == "-dark")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                capture("strength-programme-$kind$suffix")
+                Assert.assertEquals(1, repository.currentReference()!!.revision())
+                Assert.assertEquals(programme, repository.programme(programme.id(), 1))
+                Assert.assertEquals(actuals.toSet(), CoachingStore(context).strength().toSet())
+                scenario?.close()
+                scenario = null
+            }
         } finally {
             scenario?.close()
             scenario = null
@@ -1426,7 +2000,12 @@ class CoachingScreenshotTest {
             )
         }
         val semantics =
-            if (name == "gym-equipment-alternatives") {
+            if (
+                name == "gym-equipment-alternatives" ||
+                    name.startsWith("strength-programme-alternatives") ||
+                    name.startsWith("strength-programme-progression") ||
+                    name.startsWith("strength-programme-history")
+            ) {
                 // The full-screen production dialog and its covered activity are separate roots.
                 compose
                     .onNode(isDialog(), useUnmergedTree = true)

@@ -24,8 +24,18 @@ import org.racedaydreams.domain.presentation.CalendarData
 
 fun calendarEntries(s:CoachUiState,d:LocalDate,today:LocalDate=LocalDate.now()):List<CalendarData.Entry>{
     val base=CalendarData.day(d,today,s.currentPlan,s.currentPlan?.plan()?.workouts()?:s.plannedWorkouts,s.activities,s.strengthSessions,s.strengthPlannedDates,s.workoutDecisions)
-    val entries=CalendarData.withGym(d,today,base,s.gymProgramme,s.gymLinks.values.associate{it.prescribedSessionId() to it.actualSessionId()})
-    return if(s.gymProgramme==null&&s.currentPlan==null&&s.profile?.preferences()?.gymDays()?.contains(d.dayOfWeek)==true&&entries.none{it.category()==CalendarData.Category.STRENGTH}&&s.strengthPlannedDates.values.none{it==d})entries+CalendarData.Entry(CalendarData.Category.STRENGTH,CalendarData.State.PLANNED,"Strength routine",null,null)else entries
+    val authored = s.authoredGymProgramme
+    val entries = if (authored == null) CalendarData.withGym(d,today,base,s.gymProgramme,s.gymLinks.values.associate{it.prescribedSessionId() to it.actualSessionId()})
+    else {
+        val actualIds = s.strengthSessions.map { it.id() }.toSet()
+        val prefix = authored.id() + ":v"
+        val links = s.gymLinks.values.filter { link ->
+            val version = link.versionKey().takeIf { it.startsWith(prefix) }?.removePrefix(prefix)?.toIntOrNull()
+            link.actualSessionId() in actualIds && version != null && version in 1..authored.revision()
+        }.associate { it.prescribedSessionId() to it.actualSessionId() }
+        CalendarData.withAuthoredGym(d, today, base, authored, links)
+    }
+    return if(s.gymProgramme==null&&s.authoredGymProgramme==null&&s.currentPlan==null&&s.profile?.preferences()?.gymDays()?.contains(d.dayOfWeek)==true&&entries.none{it.category()==CalendarData.Category.STRENGTH}&&s.strengthPlannedDates.values.none{it==d})entries+CalendarData.Entry(CalendarData.Category.STRENGTH,CalendarData.State.PLANNED,"Strength routine",null,null)else entries
 }
 private fun markerLetter(c:CalendarData.Category)=when(c){CalendarData.Category.REST->"–";CalendarData.Category.RUN->"U";else->c.name.take(1)}
 private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RUN->"Unclassified run";else->c.name.lowercase().replaceFirstChar{it.uppercase()}}

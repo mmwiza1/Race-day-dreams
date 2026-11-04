@@ -33,7 +33,7 @@ jobs:
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
       - name: Require current canonical screenshots on other branches
-        if: github.head_ref != 'feature/strength-engine-2-architecture-hardening'
+        if: github.head_ref != 'feature/0.10-strength-programming'
         run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
@@ -85,13 +85,13 @@ jobs:
       - name: Prepare named test APK
         run: |
           mkdir -p build/distributions
-          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.9.0-test1-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.10.0-test1-debug.apk
           stat --format='APK_BYTES=%s' app/build/outputs/apk/debug/app-debug.apk
       - name: Upload verified debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: Race-Day-Dreams-0.9.0-test1-debug-api-${{ matrix.api-level }}
-          path: build/distributions/Race-Day-Dreams-0.9.0-test1-debug.apk
+          name: Race-Day-Dreams-0.10.0-test1-debug-api-${{ matrix.api-level }}
+          path: build/distributions/Race-Day-Dreams-0.10.0-test1-debug.apk
       - name: Upload actual-build screenshots
         uses: actions/upload-artifact@v4
         with:
@@ -165,14 +165,14 @@ jobs:
   canonical-screenshots:
     needs: [build, formatting]
     # Capture publication is confined to this same-repository feature branch, never main.
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/strength-engine-2-architecture-hardening' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request' && github.head_ref == 'feature/0.10-strength-programming' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: feature/strength-engine-2-architecture-hardening
+          ref: feature/0.10-strength-programming
           fetch-depth: 1
       - uses: actions/download-artifact@v4
         with:
@@ -195,7 +195,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/screenshots
           git commit -m 'Capture canonical API 35 screenshots from verified test build'
-          git push origin HEAD:feature/strength-engine-2-architecture-hardening
+          git push origin HEAD:feature/0.10-strength-programming
       - name: Reviewable synthetic screenshot bytes
         # Text-only repository connectors can reconstruct these real PNGs for review.
         # Only instrumentation fixture renders are logged; no user data is available.
@@ -230,7 +230,7 @@ jobs:
           python3 scripts/verify-dream-screenshots.py docs/screenshots
       - uses: actions/download-artifact@v4
         with:
-          name: Race-Day-Dreams-0.9.0-test1-debug-api-35
+          name: Race-Day-Dreams-0.10.0-test1-debug-api-35
           path: build/verified-apk
       - name: Publish verified APK and maintained release notes
         env:

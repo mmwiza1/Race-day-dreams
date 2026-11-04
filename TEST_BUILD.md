@@ -1,3 +1,19 @@
+# 0.10 software verification / real-device acceptance
+
+Source1a7c683/workflow41912323900 passed426tests EACH API28/35/36, builds/lint, domain/
+schema/migration/backup/release/format/guidance and125actual captures. New programming,
+replacement, progression and read-only history are connected and scoped light/dark/200%
+visual review passed. Metadata-only following CI is tracked in the PR; it does not change
+this verified app fingerprint. Physical Galaxy S24/human TalkBack checks remain UNPERFORMED.
+
+Version0.10.0-test1/code13, schema15/rootJSON9 (authoring2/read1–2), strengthEngine2/
+strengthState2/raw2/complete1 preserve supported old reads. API35 branch APKartifact13363782687
+(run41912323900,51,864,680bytes) is a debug-signed test package. Export a complete backup
+before upgrade; debug keys can differ and must not lead to casual loss of local data.
+
+The following retained baseline and current programme checklists require real human results;
+no unchecked sensor/outdoor/audio item is certified by emulator success.
+
 # Retained 0.9 automated baseline / physical acceptance
 
 Application/capture sourcef3a988a passed workflow40741473316:331tests on EACHAPI28/35/36,
@@ -391,3 +407,74 @@ TTS/music/calls, battery and other earlier S24 checks remain separately unperfor
 - [ ] Verify this flow in dark mode, 200% text and TalkBack. Continue the existing outdoor
   recording/locked-screen/recovery/HC/BLE/TTS/battery checks above. No physical result is
   inferred from synthetic traces or emulator/API tests.
+
+## 0.10 manual programmes and custom exercises — Galaxy S24 UNPERFORMED
+
+Record APK/source SHA, Android/One UI version, date and observations. None of the following
+is claimed as physically passed. The complete0.10 release remains unfinished; use a named
+feature-branch APK and do not assume the rolling main download contains it.
+
+- [ ] Back up0.9(schema13/JSON8) before installing0.10(schema15/JSON9). Compare retained
+  programmes, actuals/PBs, exclusions and substitution provenance after upgrade. Test an older
+  supported restore on an expendable installation; rejected corrupt/future files must not replace data.
+- [ ] Choose Strength without a running/race profile. Open programme authoring, save an
+  incomplete draft, close/reopen the app and resume it. Existing programming stays active.
+- [ ] Build two workout days with optional fractional RIR/rest/reference targets and notes.
+  Add/reorder/move/remove exercises, duplicate workouts/blocks and review exact dates.
+  At200% text and dark mode, all controls scroll into view and TalkBack labels remain useful.
+- [ ] Cancel activation: no actuals/current programme change. Confirm activation: correct
+  programme becomes current; previous versions/history remain. Review a future start date:
+  confirmation explains that choosing it changes the current programme pointer immediately.
+- [ ] Start the authored workout through Gym Now. Actual fields begin empty. Enter different
+  loads/reps than prescribed, finish and verify retained source version and entered actuals.
+- [ ] Create a custom movement with body area/role/task/equipment/notes. Explicitly choose
+  equipment or no-equipment. Search/filter it and view its metadata. No unrelated technique
+  artwork, estimated1RM or invented progression appears. Existing UUID custom history stays.
+- [ ] Use a custom exercise in a manual programme, enter actuals and inspect valid recorded
+  PB/history. Complete JSON/complete-package backup round trips retain draft, custom metadata,
+  accepted programme, actuals, exclusions/favourites and source/substitution provenance.
+- [ ] Verify stale previews after another programme change request review instead of silently
+  activating newer programming. Killing/reopening an unaccepted preview never activates it.
+
+Template editing has a verified automated checkpoint. Future regeneration is undergoing
+new-source verification. Permanent-swap and progression-proposal controls remain in progress;
+add their physical cases when connected. Rest timers/supersets/generated warm-ups and other0.11 features are excluded.
+
+## 0.10 templates and future revisions — Galaxy S24 UNPERFORMED
+
+- [ ] In Strength-only mode with no running goal, configure a template using real equipment,
+  days and experience; review every block before explicit activation.
+- [ ] Change target sets in one dated workout; verify its duration estimate updates while
+  other dates and actual logs remain unchanged. Close/reopen the saved preview.
+- [ ] Prepare future changes to an active programme; earlier/completed workouts are read-only.
+  Regenerate with changed days/goal/equipment, reject it, then explicitly accept a reviewed
+  revision. Prior prescriptions and actual sets must still be readable.
+- [ ] Attempt activation during a live/paused gym workout: it must preserve the workout and
+  ask you to finish/discard it first. Review fresh completion evidence afterwards.
+- [ ] Keep two competing previews, accept one, then complete backup/restore. The other stays
+  an unaccepted/superseded preview and must never replace accepted history.
+- [ ] Review all controls in light/dark/200%text and with TalkBack. None is marked passed here.
+
+## Permanent programme replacement — Galaxy S24 UNPERFORMED
+
+- [ ] Review a dated future exercise, open ranked alternatives, save one-date proposal and
+  verify accepted programming stays unchanged until explicit activation.
+- [ ] Review all-future scope across different phases; targets remain phase-specific and
+  starting/reference loads clear. Earlier/completed/active prescriptions remain frozen.
+- [ ] Change to a different measurement task with fresh targets, never a copied load.
+- [ ] Exclude an option after opening choices: saving/activation must recheck eligibility.
+- [ ] Exercise today-only Gym Now choices separately; old actual sets/history remain intact.
+- [ ] Check light/dark/200% text and TalkBack on the real replacement review.
+
+## Optional progression and history — Galaxy S24 UNPERFORMED
+
+- [ ] Review a target with no/one/two comparable recent sessions; missing RPE/RIR must not
+  become an increase. Inspect current and optional target/explanation and keep the original.
+- [ ] Save a supported proposal, confirm active programming stays unchanged, then explicitly
+  activate the revision. Old actual sets and historical prescriptions must remain exact.
+- [ ] Edit/delete supporting evidence after review; saving must require fresh review.
+- [ ] Exercise bodyweight, weighted bodyweight, timed and carry/distance proposals where
+  real comparable evidence exists; no unrelated weight transfer or fabricated guidance.
+- [ ] Open earlier programme revisions/dated targets; no reactivation/edit action. Check
+  current owner and actuals remain unchanged, including after complete backup/restore.
+- [ ] Check proposal/history light/dark/200% text, scrolling, keyboard and TalkBack on S24.

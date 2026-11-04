@@ -42,6 +42,19 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
             if (stored == null
                     || stored.execution().status() != GymExecution.Status.FINISHED
                     || linked(db, actualId)) return java.util.Collections.emptyList();
+            var reference = SqliteStrengthProgrammingRepository.current(db);
+            if (reference != null
+                    && reference.owner() == StrengthProgrammingRepository.Owner.AUTHORED) {
+                var authored =
+                        SqliteStrengthProgrammingRepository.load(
+                                db, reference.id(), reference.revision());
+                return GymWorkoutAssociation.authoredProposals(
+                        actual(db, actualId),
+                        stored.execution().origin(),
+                        authored,
+                        occupied(db, reference.key(), actualId),
+                        at);
+            }
             var plan = programmes.current();
             return GymWorkoutAssociation.proposals(
                     actual(db, actualId),
@@ -79,19 +92,21 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
             if (stored == null || stored.execution().status() != GymExecution.Status.FINISHED)
                 throw conflict();
             var p = d.proposal();
-            var review =
-                    new GymWorkoutAssociation.Proposal(
-                            actual(db, actualId),
-                            stored.execution().origin(),
-                            p.programmeId(),
-                            p.programmeRevision(),
-                            p.prescription(),
-                            at);
-            GymWorkoutAssociation.validateRetainedEvidence(
-                    review,
-                    review.actual(),
-                    stored.execution().origin(),
-                    programmes.version(p.programmeId(), p.programmeRevision()));
+            var review = p.reviewed(actual(db, actualId), stored.execution().origin(), at);
+            if (review.authored()) {
+                GymWorkoutAssociation.validateAuthoredRetainedEvidence(
+                        review,
+                        review.actual(),
+                        stored.execution().origin(),
+                        SqliteStrengthProgrammingRepository.load(
+                                db, p.programmeId(), p.programmeRevision()));
+            } else {
+                GymWorkoutAssociation.validateRetainedEvidence(
+                        review,
+                        review.actual(),
+                        stored.execution().origin(),
+                        programmes.version(p.programmeId(), p.programmeRevision()));
+            }
             return review;
         } finally {
             db.endTransaction();
@@ -123,10 +138,6 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
             var stored = executions.load(id);
             if (stored == null || stored.execution().status() != GymExecution.Status.FINISHED)
                 throw conflict();
-            var plan =
-                    decision.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
-                            ? programmes.current()
-                            : programmes.version(p.programmeId(), p.programmeRevision());
             if (decision.decidedAt().isAfter(Instant.now())) throw conflict();
             if (decision.choice() == GymWorkoutAssociation.Choice.KEEP_EXTRA && linked(db, id)) {
                 try (var c =
@@ -136,20 +147,47 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
                                 new String[] {id})) {
                     if (!c.moveToFirst()
                             || !key(p).equals(c.getString(0))
-                            || !p.prescription().id().equals(c.getString(1))) throw conflict();
+                            || !p.sessionId().equals(c.getString(1))) throw conflict();
                 }
             }
-            if (decision.choice() == GymWorkoutAssociation.Choice.KEEP_EXTRA)
-                GymWorkoutAssociation.validateRetainedEvidence(
-                        p, actual(db, id), stored.execution().origin(), plan);
-            else
-                GymWorkoutAssociation.validateForAcceptance(
-                        p,
-                        actual(db, id),
-                        stored.execution().origin(),
-                        plan,
-                        occupied(db, key(p), id),
-                        linked(db, id));
+            if (p.authored()) {
+                if (decision.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION) {
+                    var reference = SqliteStrengthProgrammingRepository.current(db);
+                    if (reference == null
+                            || reference.owner() != StrengthProgrammingRepository.Owner.AUTHORED
+                            || !key(p).equals(reference.key())) throw conflict();
+                }
+                var plan =
+                        SqliteStrengthProgrammingRepository.load(
+                                db, p.programmeId(), p.programmeRevision());
+                if (decision.choice() == GymWorkoutAssociation.Choice.KEEP_EXTRA)
+                    GymWorkoutAssociation.validateAuthoredRetainedEvidence(
+                            p, actual(db, id), stored.execution().origin(), plan);
+                else
+                    GymWorkoutAssociation.validateAuthoredForAcceptance(
+                            p,
+                            actual(db, id),
+                            stored.execution().origin(),
+                            plan,
+                            occupied(db, key(p), id),
+                            linked(db, id));
+            } else {
+                var plan =
+                        decision.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
+                                ? programmes.current()
+                                : programmes.version(p.programmeId(), p.programmeRevision());
+                if (decision.choice() == GymWorkoutAssociation.Choice.KEEP_EXTRA)
+                    GymWorkoutAssociation.validateRetainedEvidence(
+                            p, actual(db, id), stored.execution().origin(), plan);
+                else
+                    GymWorkoutAssociation.validateForAcceptance(
+                            p,
+                            actual(db, id),
+                            stored.execution().origin(),
+                            plan,
+                            occupied(db, key(p), id),
+                            linked(db, id));
+            }
             var row = new ContentValues();
             row.put("id", decision.id());
             row.put("actual_id", id);
@@ -162,11 +200,11 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
                                 "id",
                                 id,
                                 "plannedDate",
-                                p.prescription().date().toString(),
+                                p.date().toString(),
                                 "gymVersion",
                                 key(p),
                                 "gymSession",
-                                p.prescription().id());
+                                p.sessionId());
                 row = new ContentValues();
                 row.put("kind", "STRENGTH_LINK");
                 row.put("id", id);
@@ -242,8 +280,8 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
         row.put("decision_id", d.id());
         if (d.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION) {
             row.put("programme_key", key(p));
-            row.put("session_id", p.prescription().id());
-            row.put("planned_date", p.prescription().date().toString());
+            row.put("session_id", p.sessionId());
+            row.put("planned_date", p.date().toString());
         } else {
             row.putNull("programme_key");
             row.putNull("session_id");
@@ -346,6 +384,16 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
             java.util.Map<String, StrengthSession> actuals,
             java.util.Map<String, GymProgramme> programmes,
             java.util.Map<String, JSONObject> links) {
+        validate(data, executions, actuals, programmes, links, java.util.Collections.emptyMap());
+    }
+
+    static void validate(
+            JSONObject data,
+            java.util.Map<String, GymExecution> executions,
+            java.util.Map<String, StrengthSession> actuals,
+            java.util.Map<String, GymProgramme> programmes,
+            java.util.Map<String, JSONObject> links,
+            java.util.Map<String, StrengthProgramme> authored) {
         fields(data, "version", "decisions", "current");
         version(data, 1);
         var decisions = new java.util.HashMap<String, GymWorkoutAssociation.Decision>();
@@ -358,23 +406,38 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
             var p = d.proposal();
             var execution = executions.get(p.actual().id());
             var plan = programmes.get(key(p));
+            var authoredPlan = authored.get(key(p));
             if (decisions.put(d.id(), d) != null
                     || !actuals.containsKey(p.actual().id())
                     || execution == null
                     || execution.status() != GymExecution.Status.FINISHED
                     || execution.origin() != p.origin()
-                    || plan == null)
+                    || (p.authored() ? authoredPlan == null : plan == null))
                 throw new IllegalArgumentException(
                         "Association history has a missing or inconsistent source.");
-            GymWorkoutAssociation.validateRetainedEvidence(p, p.actual(), execution.origin(), plan);
-            if (d.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
-                    && !GymWorkoutAssociation.proposals(
-                                    p.actual(),
-                                    p.origin(),
-                                    plan,
-                                    java.util.Collections.emptySet(),
-                                    p.reviewedAt())
-                            .contains(p)) throw conflict();
+            if (p.authored()) {
+                GymWorkoutAssociation.validateAuthoredRetainedEvidence(
+                        p, p.actual(), execution.origin(), authoredPlan);
+                if (d.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
+                        && !GymWorkoutAssociation.authoredProposals(
+                                        p.actual(),
+                                        p.origin(),
+                                        authoredPlan,
+                                        java.util.Collections.emptySet(),
+                                        p.reviewedAt())
+                                .contains(p)) throw conflict();
+            } else {
+                GymWorkoutAssociation.validateRetainedEvidence(
+                        p, p.actual(), execution.origin(), plan);
+                if (d.choice() == GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION
+                        && !GymWorkoutAssociation.proposals(
+                                        p.actual(),
+                                        p.origin(),
+                                        plan,
+                                        java.util.Collections.emptySet(),
+                                        p.reviewedAt())
+                                .contains(p)) throw conflict();
+            }
             actualIds.add(p.actual().id());
         }
         var occupied = new HashSet<TargetKey>();
@@ -393,16 +456,13 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
                             "An extra-workout choice cannot claim a programme link.");
             } else {
                 var p = d.proposal();
-                if (!occupied.add(new TargetKey(key(p), p.prescription().id())) || link == null)
+                if (!occupied.add(new TargetKey(key(p), p.sessionId())) || link == null)
                     throw conflict();
                 try {
                     if (!id.equals(FeatureJson.required(link, "id"))
                             || !key(p).equals(FeatureJson.text(link, "gymVersion"))
-                            || !p.prescription().id().equals(FeatureJson.text(link, "gymSession"))
-                            || !p.prescription()
-                                    .date()
-                                    .toString()
-                                    .equals(FeatureJson.text(link, "plannedDate")))
+                            || !p.sessionId().equals(FeatureJson.text(link, "gymSession"))
+                            || !p.date().toString().equals(FeatureJson.text(link, "plannedDate")))
                         throw conflict();
                 } catch (JSONException invalid) {
                     throw FeatureJson.invalid(invalid);

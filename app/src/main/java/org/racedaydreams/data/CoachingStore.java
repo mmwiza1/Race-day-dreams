@@ -113,8 +113,17 @@ public final class CoachingStore implements CoachingRepository {
     }
 
     public void saveExercise(StrengthExercise e) {
-        ContentValues v = payload(e.id(), CoachingJson.exercise(e));
-        upsert(db(), "strength_exercises", "id", e.id(), v);
+        var database = db();
+        database.beginTransaction();
+        try {
+            if (!SqliteStrengthProgrammingRepository.updateLoggingDefinition(database, e)) {
+                ContentValues v = payload(e.id(), CoachingJson.exercise(e));
+                upsert(database, "strength_exercises", "id", e.id(), v);
+            }
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
+        }
     }
 
     public void saveStrength(StrengthSession s) {

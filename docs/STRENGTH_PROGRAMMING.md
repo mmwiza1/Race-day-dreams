@@ -1,3 +1,10 @@
+# Strength programming — retained policy and 0.10 integration
+
+For the current0.10 model, templates, future revisions, permanent substitutions,
+optional progression and history, see [Strength Programming2.0](STRENGTH_PROGRAMMING_0_10.md).
+Historical implementation notes below are preserved; source-bound current verification
+is in VERIFICATION.md and CONTINUE_CODEX.md.
+
 # Original strength programming — 0.5
 
 Race Day Dreams recommends; the runner decides. Programming is optional and local.
@@ -54,3 +61,65 @@ individual technique coaching and does not claim an optimal hypertrophy dose for
 frequency/time budget. Advanced power methods and automatic task-specific time/distance
 progression are not prescribed. All174canonical exercises have original illustrated technique guidance;
 qualified review and physical-device inspection remain necessary.
+
+## 0.10 manual authoring and structured custom exercises
+
+Manual drafts persist through typed optimistic rows. The phone builder edits name, schedule,
+block duration/phase, workout names/notes, exercises/order and precise optional targets.
+Preview expands the exact dated prescriptions; explicit confirmation activates atomically
+against the reviewed draft and programme pointer. This does not record an actual set.
+
+Custom entry records a stable custom- identity, broad area, movement role, measurement,
+complete equipment setup (or explicit equipment-free choice) and optional notes. It uses
+schema14's typed custom repository and atomic logging mirror. Six measurement profiles and
+weighted-bodyweight logging retain actual evidence. Canonical guidance is not imitated for
+custom movements, estimated1RM is disabled, and automatic generated selection remains
+canonical. Older UUID custom logging/history is retained; no renaming or transfer of history
+is inferred from a similar name. Metadata participates in browsing/filtering/detail.
+
+Editable generated/template previews, future regeneration, permanent replacements,
+modality proposals and read-only revision history are connected. The supported 426-case/API
+software gate and scoped light/dark/200% review passed. Physical S24 acceptance is separate;
+see the current Strength Programming 2.0 document and VERIFICATION.md.
+
+## Concrete generated previews — durability foundation
+
+Schema 15 adds separate typed preview header, block and dated-workout tables. A saved
+concrete preview preserves every generated week, target, phase, workout note and trade-off;
+it never becomes a repeated first week and saving it does not activate programming.
+The recurring manual builder remains supported unchanged.
+
+Concrete preview activation verifies the exact reviewed saved revision and the current
+programme in the same SQLite transaction, then uses the existing eligibility/completed-history
+checks. A failed decision or restore rolls back the whole transaction. Deleting a preview
+does not delete an accepted revision or actual evidence. Summary pages read indexed headers
+without hydrating workout payloads.
+
+JSON backup remains envelope 9. The nested strengthProgramming archive writes version 2
+and reads versions 1–2; version 1 contains no concrete previews. New/future or malformed
+sections are rejected before replacement. Raw recording archive 2 and complete package 1
+are unchanged. Templates & generated programmes now opens from the programme builder. Choose one of the
+nine starting structures or generate from preferences. Configure days, goal, experience,
+priority, duration and real equipment, then review the saved dated blocks. Individual
+workouts support target/exercise editing, ordering, removal and additions. Generating
+another preview retains the previous saved draft. Accepted previews are read-only.
+The engine considers retained demanding runs/race context for hybrid users; Strength-only
+users need no running profile. The supported426-case/API gate and scoped capture review passed.
+Future-only editing and regeneration now prepare a saved next revision from the current
+programme. Completed and earlier workouts are read-only; activation independently rechecks
+fresh completions and current ownership. Regeneration can change goal, days, equipment,
+frequency and length while keeping the original start and exact retained prescriptions.
+The original revision and native actuals remain separately readable. Competing unaccepted
+proposals remain saved; after another is accepted they are superseded/read-only, and do not
+replace accepted history during backup restore. Permanent-swap controls, optional progression and read-only accepted history are connected.
+The supported426-case/API gate and scoped light/dark/200% visual review passed.
+
+Activation of a forward revision waits while a native workout using that programme is
+active, paused or awaiting recovery. The athlete can finish/discard that workout first;
+then activation rechecks fresh completed evidence. Previewing changes never stops a workout.
+
+Permanent-substitution domain operations and connected review controls can retain each phase's
+own target across selected future occurrences, clear load references and record final
+accepted-base→replacement provenance. A changed measurement needs an individually reviewed
+target. SQL acceptance independently rechecks original intent, fresh exclusions/archived
+choices and equipment. These operations create no actual sets or completion evidence.

@@ -1,3 +1,18 @@
+# Active0.10 — Strength Programming 2.0
+
+PR15 / feature/0.10-strength-programming implements the agreed full0.10 software scope:
+manual/custom authoring,9editable templates, goal/experience-specific blocks, exact previews,
+future regeneration, permanent replacements, conservative modality proposals and read-only
+revision history. Source1a7c683/workflow41912323900 passed426cases per API28/35/36 and125
+captures. Refined large-text progression passed actual visual review; existing0.9 behaviour,
+typed schema15/rootJSON9 durability and one native gym engine remain preserved.
+Final documentation-only CI must be inspected before PR readiness/merge. Galaxy S24/TalkBack
+physical acceptance is still unperformed. No additional0.10feature backlog remains.
+0.11 nutrition/analytics/PB redesign/achievements/deload/advanced hybrid/rest timers/
+warm-up generation/supersets/catalogue-for-breadth remain explicitly deferred.
+
+The following sections retain earlier release history.
+
 # Completed retained increment — 0.9.0-test1
 
 Architecture Hardening + Standalone Strength + Gym Now + Exercise Discovery, Exclusions

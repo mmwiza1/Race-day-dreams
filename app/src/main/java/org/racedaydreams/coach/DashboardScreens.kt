@@ -38,10 +38,20 @@ fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{
     val recent=state.strengthSessions.sortedByDescending{it.startedAt()}.flatMap{it.exercises().map{it.exercise().id()}}.distinct()
     return ExerciseSearch.search(state.exercises,query,state.exerciseChoices.filter{it.favourite()}.map{it.exerciseId()}.toSet(),recent,state.exerciseChoices.filter{it.archived()}.map{it.exerciseId()}.toSet()).filter{candidate->query.isNotBlank()||state.exerciseExclusions.none{it.exerciseId()==candidate.id()}}
 }
-@Composable fun ExerciseBrowser(state:CoachUiState,model:CoachViewModel,open:(String)->Unit){
-    org.racedaydreams.coach.strength.ExerciseBrowseScreen(state,{model.strength.saveExercise(it)},open,{model.exerciseExclusion(it,null)})
+@Composable
+fun ExerciseBrowser(
+    state: CoachUiState,
+    model: CoachViewModel,
+    createClassifiedCustom: (() -> Unit)? = null,
+    customMetadata: Map<String, org.racedaydreams.domain.strength.CustomStrengthExercise> = emptyMap(),
+    open: (String) -> Unit,
+) {
+    org.racedaydreams.coach.strength.ExerciseBrowseScreen(
+        state, { model.strength.saveExercise(it) }, open,
+        { model.exerciseExclusion(it, null) }, createClassifiedCustom, customMetadata,
+    )
 }
-@Composable fun ExerciseDetail(state:CoachUiState,model:CoachViewModel,id:String?,source:(String)->Unit = {}){
+@Composable fun ExerciseDetail(state:CoachUiState,model:CoachViewModel,id:String?,customMetadata:org.racedaydreams.domain.strength.CustomStrengthExercise?=null,source:(String)->Unit = {}){
     val e=state.exercises.firstOrNull{it.id()==id}?:return
     var section by rememberSaveable(id){mutableStateOf("Overview")};var renamed by rememberSaveable(id){mutableStateOf(e.name())}
     val choice=state.exerciseChoices.firstOrNull{it.exerciseId()==id}
@@ -51,7 +61,7 @@ fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{
         FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){listOf("Overview","How to do it","History","PBs").forEach{tab->FilterChip(selected=section==tab,onClick={section=tab},label={Text(tab)})}}
         if(section=="Overview") org.racedaydreams.coach.strength.ExerciseExclusionControl(e.name(),state.exerciseExclusions.any{it.exerciseId()==e.id()},state.busy){model.exerciseExclusion(e.id(),it)}
         when(section){
-            "Overview"->{CoachCard{Text(ExerciseCatalog.definition(e.id())?.category()?:"Custom exercise");Text("Equipment: ${ExerciseCatalog.definition(e.id())?.equipment()?:"User defined"}");Text("Measurement: ${e.measurement().name.lowercase().replace('_',' ')}")};CoachButton(if(choice?.favourite()==true)"Unfavourite"else "Favourite"){model.strength.exerciseChoice(e.id(),choice?.favourite()!=true,choice?.archived()==true)};TextButton(onClick={model.strength.exerciseChoice(e.id(),choice?.favourite()==true,choice?.archived()!=true)}){Text(if(choice?.archived()==true)"Restore to My Exercises"else if(ExerciseCatalog.definition(e.id())==null)"Archive exercise"else "Hide from My Exercises")};Text("${sessions.size} recorded workouts");if(ExerciseCatalog.definition(e.id())==null){CoachInput("Custom exercise name",renamed,{renamed=it});CoachButton("Save exercise name"){model.strength.saveExercise(StrengthExercise(e.id(),renamed.trim(),e.region(),e.mode(),e.estimateOneRepMax(),e.measurement()))}}}
+            "Overview"->{CoachCard{Text(ExerciseCatalog.definition(e.id())?.category()?:"Custom exercise");Text("Equipment: ${ExerciseCatalog.definition(e.id())?.equipment()?:customMetadata?.let{org.racedaydreams.coach.strength.customEquipmentDescription(it)}?:"User defined"}");Text("Measurement: ${e.measurement().name.lowercase().replace('_',' ')}");customMetadata?.let { org.racedaydreams.coach.strength.CustomExerciseMetadataSummary(it) }};CoachButton(if(choice?.favourite()==true)"Unfavourite"else "Favourite"){model.strength.exerciseChoice(e.id(),choice?.favourite()!=true,choice?.archived()==true)};TextButton(onClick={model.strength.exerciseChoice(e.id(),choice?.favourite()==true,choice?.archived()!=true)}){Text(if(choice?.archived()==true)"Restore to My Exercises"else if(ExerciseCatalog.definition(e.id())==null)"Archive exercise"else "Hide from My Exercises")};Text("${sessions.size} recorded workouts");if(ExerciseCatalog.definition(e.id())==null){CoachInput("Custom exercise name",renamed,{renamed=it});CoachButton("Save exercise name"){model.strength.saveExercise(StrengthExercise(e.id(),renamed.trim(),e.region(),e.mode(),e.estimateOneRepMax(),e.measurement()))}}}
             "How to do it"->TechniqueSection(e.id())
             "History"->{if(sessions.isEmpty())Text("No workouts for this exercise yet. Log a workout to start its history.");var limit by rememberSaveable{mutableIntStateOf(20)};sessions.take(limit).forEach{s->CoachCard{Text(friendlyDate(s.startedAt().atOffset(s.offset()).toLocalDate()));s.exercises().filter{it.exercise().id()==id}.forEach{it.sets().forEach{set->Text(StrengthMeasurements.display(set,state.massUnit,state.profile?.preferences()?.units()?:UnitSystem.METRIC))}}}};if(sessions.size>limit)TextButton(onClick={limit+=20}){Text("Load more")}}
             "PBs"->{val records=remember(state.strengthSessions,state.historicalStrength,id){StrengthProgression.timeline(state.strengthSessions,state.historicalStrength).filter{it.exerciseId()==id}};if(records.isEmpty())Text("No PB evidence yet. Record working sets or add a historical record from PBs & progression.");records.forEach{r->CoachCard{Text(r.category(),style=MaterialTheme.typography.titleMedium);Text(if(r.category().startsWith("Duration"))StrengthMeasurements.duration(r.value().toLong())else if(r.category().startsWith("Distance"))"${decimal(r.value())} m"else if(r.category()=="Estimated 1RM")"Estimated 1RM: ~${kotlin.math.round(state.massUnit.fromKilograms(r.value())).toInt()} ${state.massUnit.name.lowercase()}"else if(r.category()=="Bodyweight reps")"${r.reps()} reps"else "${decimal(state.massUnit.fromKilograms(r.kilograms()))} ${state.massUnit.name.lowercase()} × ${r.reps()}");Text(r.provenance());Text(r.date()?.let{(if(r.precision()==HistoricalStrengthRecord.DatePrecision.APPROXIMATE)"Around "else "")+friendlyDate(it)}?:"Date unknown · outside chronology");if(r.sessionId()!=null)TextButton(onClick={source(r.sessionId())}){Text("Edit source workout")};if(r.sessionId()==null)TextButton(onClick={model.strength.deleteHistorical(r.id())}){Text("Delete historical PB")}}}}

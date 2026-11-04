@@ -71,6 +71,12 @@ public final class GymProgrammeStore {
         var db = db();
         db.beginTransaction();
         try {
+            try (var modern =
+                    db.rawQuery("SELECT 1 FROM strength_programme_current WHERE id=1", null)) {
+                if (modern.moveToFirst())
+                    throw new IllegalArgumentException(
+                            "Review the active authored programme before changing programming.");
+            }
             var current = current();
             if (current != null
                     && (!current.id().equals(plan.id()) || plan.version() != current.version() + 1))
@@ -402,6 +408,14 @@ public final class GymProgrammeStore {
     }
 
     static void validateLinks(JSONObject development, JSONObject coaching, JSONObject gym) {
+        validateLinks(development, coaching, gym, java.util.Collections.emptyMap());
+    }
+
+    static void validateLinks(
+            JSONObject development,
+            JSONObject coaching,
+            JSONObject gym,
+            java.util.Map<String, org.racedaydreams.domain.strength.StrengthProgramme> authored) {
         if (development == null) return;
         try {
             var versions = new HashMap<String, GymProgramme>();
@@ -428,10 +442,22 @@ public final class GymProgrammeStore {
                 var p = versions.get(version);
                 String session = FeatureJson.required(payload, "gymSession");
                 LocalDate planned = LocalDate.parse(FeatureJson.required(payload, "plannedDate"));
-                if (p == null
-                        || !actual.contains(row.getString("id"))
-                        || p.sessions().stream()
-                                .noneMatch(s -> s.id().equals(session) && s.date().equals(planned)))
+                var modern = authored.get(version);
+                boolean matches =
+                        modern != null
+                                ? modern.workouts().stream()
+                                        .anyMatch(
+                                                w ->
+                                                        w.id().equals(session)
+                                                                && w.date().equals(planned))
+                                : p != null
+                                        && p.sessions().stream()
+                                                .anyMatch(
+                                                        w ->
+                                                                w.id().equals(session)
+                                                                        && w.date()
+                                                                                .equals(planned));
+                if (!actual.contains(row.getString("id")) || !matches)
                     throw new IllegalArgumentException(
                             "Gym actual/prescription reference is missing.");
             }

@@ -1,6 +1,6 @@
 package org.racedaydreams.domain.presentation;
 
-import org.racedaydreams.domain.strength.ExerciseCatalog;
+import org.racedaydreams.domain.strength.*;
 import org.racedaydreams.domain.strength.GymProgramme;
 import org.racedaydreams.domain.strength.StrengthProgressionAdvisor;
 import org.racedaydreams.domain.strength.StrengthSession;
@@ -20,6 +20,7 @@ public final class StrengthTodaySummaryTestSuite {
     private static int checks;
 
     public static void main(String[] args) {
+        authoredPrescriptionsAndEvidence();
         standaloneWithoutProgramme();
         actualDoesNotImplyAdherence();
         retainedVersionAssociations();
@@ -27,6 +28,193 @@ public final class StrengthTodaySummaryTestSuite {
         recommendationsNeedRecentComparableEvidence();
         estimatesAreNotRecentActualPbs();
         System.out.println("StrengthTodaySummaryTestSuite: " + checks + " checks passed.");
+    }
+
+    private static void authoredPrescriptionsAndEvidence() {
+        var target =
+                new GymWorkoutDefinition.Target(
+                        2,
+                        6,
+                        8,
+                        null,
+                        null,
+                        new GymWorkoutDefinition.EffortRange(
+                                GymWorkoutDefinition.EffortScale.RIR, 1.5, 3.5),
+                        null,
+                        80.0);
+        var slot =
+                new GymWorkoutDefinition.Slot(
+                        "bench",
+                        ExerciseCatalog.definition("bench-press").exercise(),
+                        target,
+                        null);
+        var workout =
+                new StrengthProgramme.Workout(
+                        "today",
+                        TODAY,
+                        StrengthWorkoutBudget.workoutMinutes(List.of(slot)),
+                        new GymWorkoutDefinition(
+                                "frozen",
+                                1,
+                                NOW.minusSeconds(86400),
+                                "Athlete-authored bench",
+                                List.of(slot)),
+                        null);
+        var programme =
+                new StrengthProgramme(
+                        "authored",
+                        2,
+                        1,
+                        NOW.minusSeconds(86400),
+                        "Athlete plan",
+                        StrengthProgramme.Origin.CUSTOM,
+                        null,
+                        new StrengthProgramme.Settings(
+                                GymProgramme.Goal.STRENGTH,
+                                GymProgramme.Priority.BALANCED,
+                                GymProgramme.Experience.INTERMEDIATE,
+                                Set.of(TODAY.getDayOfWeek()),
+                                1,
+                                45,
+                                Set.of(
+                                        ExerciseMetadata.Equipment.BARBELL,
+                                        ExerciseMetadata.Equipment.BENCH,
+                                        ExerciseMetadata.Equipment.SQUAT_RACK)),
+                        List.of(
+                                new StrengthProgramme.Block(
+                                        "block",
+                                        StrengthProgramme.Phase.FOUNDATION,
+                                        "Foundation",
+                                        TODAY,
+                                        1,
+                                        List.of(workout),
+                                        "Repeat technique")),
+                        TODAY,
+                        "Athlete accepted revision",
+                        List.of());
+        var recent = actual("recent", NOW.minusSeconds(3600), 7.0);
+        var prior = actual("prior", NOW.minus(Duration.ofDays(6)), 7.0);
+        var summary =
+                StrengthTodaySummary.fromAuthored(
+                        programme, List.of(recent, prior), List.of(), TODAY, NOW);
+        ok(
+                summary.today() == null,
+                "Authored prescription is not coerced into integer-RPE legacy targets");
+        ok(summary.authoredToday().equals(workout), "Frozen authored session is projected exactly");
+        ok(
+                summary.authoredToday().definition().slots().get(0).target().effort().minimum()
+                        == 1.5,
+                "Fractional RIR survives Today");
+        ok(
+                summary.authoredToday().definition().slots().get(0).target().restSeconds() == null,
+                "Unspecified rest remains unknown");
+        ok(
+                summary.plannedThisWeek() == 1 && !summary.todayCompleted(),
+                "Actuals never silently complete authored work");
+        ok(
+                summary.recommendation() != null
+                        && summary.recommendation().action()
+                                == StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,
+                "Same conservative exact-task progression can inform authored Today");
+        var base =
+                List.of(
+                        new CalendarData.Entry(
+                                CalendarData.Category.REST,
+                                CalendarData.State.PLANNED,
+                                "Rest",
+                                null,
+                                null),
+                        new CalendarData.Entry(
+                                CalendarData.Category.STRENGTH,
+                                CalendarData.State.PLANNED,
+                                "Strength routine",
+                                null,
+                                null));
+        var calendar =
+                CalendarData.withAuthoredGym(TODAY, TODAY, base, programme, java.util.Map.of());
+        ok(
+                calendar.size() == 1 && calendar.get(0).id().equals("today"),
+                "Authored session replaces generic strength/rest calendar hints");
+        ok(
+                calendar.get(0).state() == CalendarData.State.PLANNED,
+                "Planned authored session does not imply actual evidence");
+        ok(
+                CalendarData.withAuthoredGym(
+                                        TODAY,
+                                        TODAY.plusDays(1),
+                                        base,
+                                        programme,
+                                        java.util.Map.of())
+                                .get(0)
+                                .state()
+                        == CalendarData.State.NOT_COMPLETED,
+                "Past unlinked authored work retains calendar semantics");
+        ok(
+                CalendarData.withAuthoredGym(
+                                TODAY, TODAY, base, programme, java.util.Map.of("today", "actual"))
+                        .isEmpty(),
+                "Explicit linked actual suppresses duplicate planned calendar entry");
+        ok(
+                CalendarData.withAuthoredGym(
+                                TODAY.minusDays(1), TODAY, base, programme, java.util.Map.of())
+                        .equals(base),
+                "Authored calendar does not invent sessions outside programme");
+        var linked =
+                StrengthTodaySummary.fromAuthored(
+                        programme,
+                        List.of(recent),
+                        List.of(link("recent", "authored:v1", "today")),
+                        TODAY,
+                        NOW);
+        ok(
+                linked.todayCompleted() && linked.completedThisWeek() == 1,
+                "Retained explicit prior-revision association counts once");
+        for (String key :
+                List.of(
+                        "authored:v3",
+                        "authored:v0",
+                        "authored:vbad",
+                        "other:v1",
+                        "authored-extra:v1")) {
+            var invalid =
+                    StrengthTodaySummary.fromAuthored(
+                            programme,
+                            List.of(recent),
+                            List.of(link("recent", key, "today")),
+                            TODAY,
+                            NOW);
+            ok(!invalid.todayCompleted(), "Foreign/future/corrupt authored link rejected: " + key);
+        }
+        ok(
+                !StrengthTodaySummary.fromAuthored(
+                                programme,
+                                List.of(),
+                                List.of(link("deleted", "authored:v1", "today")),
+                                TODAY,
+                                NOW)
+                        .todayCompleted(),
+                "Deleted actual cannot complete authored Today");
+        var future = actual("future", NOW.plusSeconds(3600), 7.0);
+        var missing =
+                StrengthTodaySummary.fromAuthored(
+                        programme,
+                        List.of(recent, future),
+                        List.of(link("future", "authored:v1", "today")),
+                        TODAY,
+                        NOW);
+        ok(
+                !missing.todayCompleted() && missing.recommendation() == null,
+                "Future evidence cannot complete or progress authored session");
+        ok(
+                StrengthTodaySummary.fromAuthored(
+                                        programme,
+                                        List.of(recent),
+                                        List.of(),
+                                        TODAY.plusDays(1),
+                                        NOW)
+                                .authoredToday()
+                        == null,
+                "No authored workout tomorrow is not fabricated into a session");
     }
 
     private static void standaloneWithoutProgramme() {

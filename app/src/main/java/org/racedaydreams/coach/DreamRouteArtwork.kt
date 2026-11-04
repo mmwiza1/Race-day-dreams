@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 /** Original bundled artwork. Only the displayed city's four small images are requested. */
 private object DreamArtworkCache {
@@ -19,32 +20,60 @@ private object DreamArtworkCache {
     // Decode away from rendering; synchronise cache misses to avoid duplicate allocations.
     @Synchronized fun load(context: Context, asset: String): ImageBitmap? {
         images.get(asset)?.let { return it }
-        return runCatching {
+        return try {
             context.assets.open("dream-art/$asset.webp").use { input ->
                 BitmapFactory.decodeStream(input)?.asImageBitmap()?.also { images.put(asset, it) }
             }
-        }.getOrNull()
+        } catch (_: IOException) {
+            null
+        } catch (_: IllegalArgumentException) {
+            null
+        }
     }
 }
 
-internal data class DreamCityArtwork(val hero: ImageBitmap?, val posters: List<ImageBitmap?>)
+internal data class DreamCityArtwork(
+    val assets: List<String>,
+    val images: List<ImageBitmap?>,
+    val loading: Boolean,
+) {
+    val hero get() = images.firstOrNull()
+    val posters get() = images.drop(1)
+    val ready get() = !loading && images.size == assets.size && images.all { it != null }
+    val missing get() = assets.filterIndexed { index, _ -> images.getOrNull(index) == null }
+    val status get() = when {
+        loading -> "Loading bundled city artwork"
+        ready -> "Offline Dream artwork ready"
+        else -> "Bundled Dream artwork unavailable: ${missing.joinToString()}"
+    }
+}
 
 /** Publish one coherent city snapshot; readiness and visible images observe the same state. */
 @Composable internal fun rememberDreamCityArtwork(city: DreamCityPresentation): State<DreamCityArtwork> {
     val context = LocalContext.current.applicationContext
     val assets = listOf(city.hero) + city.landmarks.map { it.asset }
-    // Reset only the snapshot/effect on a city change. A movable keyed composition group
-    // is unnecessary here and complicates disposal during rapid navigation on older runtimes.
-    val snapshot = remember(assets) {
-        mutableStateOf(DreamCityArtwork(null, List(city.landmarks.size) { null }))
+    val loader: suspend (String) -> ImageBitmap? = remember(context) {
+        { asset -> DreamArtworkCache.load(context, asset) }
     }
-    LaunchedEffect(assets) {
-        snapshot.value = withContext(Dispatchers.IO) {
-            val loaded = assets.map { DreamArtworkCache.load(context, it) }
-            DreamCityArtwork(loaded.first(), loaded.drop(1))
-        }
+    return rememberDreamArtwork(assets, loader)
+}
+
+/** One producer-owned state object survives key changes; an old city can never report readiness. */
+@Composable
+internal fun rememberDreamArtwork(
+    assets: List<String>,
+    load: suspend (String) -> ImageBitmap?,
+): State<DreamCityArtwork> {
+    val pending = remember(assets) { DreamCityArtwork(assets, List(assets.size) { null }, true) }
+    val loader by rememberUpdatedState(load)
+    val snapshot = produceState(pending, assets) {
+        value = pending
+        val images = withContext(Dispatchers.IO) { assets.map { loader(it) } }
+        value = DreamCityArtwork(assets, images, false)
     }
-    return snapshot
+    return remember(assets) {
+        derivedStateOf { snapshot.value.takeIf { it.assets == assets } ?: pending }
+    }
 }
 
 internal data class DreamLandmarkPoster(val label: String, val asset: String)

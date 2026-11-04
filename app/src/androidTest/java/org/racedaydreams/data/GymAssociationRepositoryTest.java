@@ -160,6 +160,7 @@ public final class GymAssociationRepositoryTest extends AndroidTestCase {
         legacy.linkGym("actual", DAY, "programme:v1", "session");
         var helper = ProfileDatabase.get(getContext());
         var db = helper.getWritableDatabase();
+        GymSchemaFixture.removeVersionFourteenTables(db);
         db.execSQL("DROP TABLE strength_exclusions");
         db.execSQL("DROP TABLE strength_association_targets");
         db.execSQL("DROP TABLE strength_association_decisions");
@@ -191,7 +192,7 @@ public final class GymAssociationRepositoryTest extends AndroidTestCase {
         settings.putSetting("sentinel", "original");
         byte[] bytes = export();
         var envelope = new JSONObject(new String(bytes, StandardCharsets.UTF_8));
-        assertEquals(8, envelope.getInt("version"));
+        assertEquals(9, envelope.getInt("version"));
         assertEquals(
                 2,
                 envelope.getJSONObject("data").getJSONObject("strengthEngine").getInt("version"));

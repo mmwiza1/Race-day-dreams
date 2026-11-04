@@ -91,6 +91,99 @@ public final class GymAssociationJsonTest extends AndroidTestCase {
         reject(json.toString());
     }
 
+    public void testAuthoredBothChoicesRetainNullableFractionalRirAndActualEvidence()
+            throws Exception {
+        for (var choice : GymWorkoutAssociation.Choice.values()) {
+            var d = authoredDecision(choice);
+            var payload = GymAssociationJson.write(d);
+            assertEquals(2, new JSONObject(payload).getInt("version"));
+            var decoded = GymAssociationJson.read(payload);
+            assertEquals(d, decoded);
+            assertTrue(decoded.proposal().authored());
+            assertNull(decoded.proposal().prescription());
+            var slot = decoded.proposal().authoredPrescription().definition().slots().get(0);
+            assertEquals("Historical bench", slot.exercise().name());
+            assertEquals(GymWorkoutDefinition.EffortScale.RIR, slot.target().effort().scale());
+            assertEquals(1.5, slot.target().effort().minimum(), 0.0);
+            assertNull(slot.target().restSeconds());
+            assertEquals(
+                    60.0,
+                    decoded.proposal().actual().exercises().get(0).sets().get(0).kilograms(),
+                    0.0);
+            assertEquals(80.0, slot.target().referenceLoadKg(), 0.0);
+        }
+    }
+
+    public void testAuthoredFutureUnknownMissingAndCrossFamilyCannotBeDecoded() throws Exception {
+        var payload =
+                GymAssociationJson.write(
+                        authoredDecision(GymWorkoutAssociation.Choice.COUNT_TOWARD_SESSION));
+        var json = new JSONObject(payload);
+        json.put("version", 3);
+        reject(json.toString());
+        json = new JSONObject(payload);
+        json.put("version", 1);
+        reject(json.toString());
+        json = new JSONObject(payload);
+        json.getJSONObject("proposal").getJSONObject("prescription").remove("definition");
+        reject(json.toString());
+        json = new JSONObject(payload);
+        json.getJSONObject("proposal").getJSONObject("prescription").put("unknown", true);
+        reject(json.toString());
+        json = new JSONObject(payload);
+        json.getJSONObject("proposal")
+                .getJSONObject("prescription")
+                .getJSONObject("definition")
+                .getJSONArray("slots")
+                .getJSONObject(0)
+                .getJSONObject("target")
+                .put("sets", "3");
+        reject(json.toString());
+    }
+
+    private static GymWorkoutAssociation.Decision authoredDecision(
+            GymWorkoutAssociation.Choice choice) {
+        var legacy = decision(choice);
+        var slot =
+                new GymWorkoutDefinition.Slot(
+                        "slot",
+                        legacy.proposal().actual().exercises().get(0).exercise(),
+                        new GymWorkoutDefinition.Target(
+                                3,
+                                5,
+                                8,
+                                null,
+                                null,
+                                new GymWorkoutDefinition.EffortRange(
+                                        GymWorkoutDefinition.EffortScale.RIR, 1.5, 3.5),
+                                null,
+                                80.0),
+                        null);
+        var workout =
+                new StrengthProgramme.Workout(
+                        "session",
+                        LocalDate.of(2026, 10, 28),
+                        20,
+                        new GymWorkoutDefinition(
+                                "workout",
+                                1,
+                                NOW.minusSeconds(86400),
+                                "Authored workout",
+                                Collections.singletonList(slot)),
+                        null);
+        return new GymWorkoutAssociation.Decision(
+                "authored-choice",
+                GymWorkoutAssociation.Proposal.authored(
+                        legacy.proposal().actual(),
+                        legacy.proposal().origin(),
+                        "authored",
+                        1,
+                        workout,
+                        NOW),
+                choice,
+                NOW);
+    }
+
     private static GymWorkoutAssociation.Decision decision(GymWorkoutAssociation.Choice choice) {
         var exercise =
                 new StrengthExercise(

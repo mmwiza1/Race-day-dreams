@@ -1,3 +1,359 @@
+## 4 November 2026 — complete Strength Programming2.0 software gate
+
+Source1a7c683eeabf349505a0c2f5f19da9323d93812d passed COMPLETE workflow41912323900: **426instrumentation
+cases EACH API28/35/36** (1278emulator cases), domain/app/test builds and lint,
+588145domain checks/35suites including the2430configuration simulator,64schema/migration
+cases,9release-note cases, source/provenance11, artwork14, capture-validator13,
+72Kotlin/115Java formatting and strict174canonical/14routine guidance.
+
+Canonical botacf7a2285975deaaba9f3652be42615ec49e6a03 was adopted with identical verified blobs/tree/commit.
+All125PNG540x1200 validate. Actual current app/capture-source hash matches:
+c93d9cf6a62147599a59ca1e94c23dcd57ead85e8e1e762f30863f4610275514.
+API35APKartifact13363782687 is51,864,680bytes; screenshots13364940712 and reports13365125584.
+The APK is180224bytes/+0.35% above the prior413-case checkpoint; no artwork was added.
+These are debug-signed branch test artifacts, not a stable or main production release.
+
+The earlier419-case choice-disclosure failures and API35departing-root capture failure
+were fixed without weakening assertions or deadlines. The426-case4fbcheckpoint passed
+software checks but its200%progression AlertDialog failed visual review. This latest source
+uses proposal-first full-screen scroll, evidence disclosures and flowing controls. Stronger
+captures verify the real82kg optional reference visible at entry in every mode and scroll
+to the actual save control. All3refined images were opened: readable light/dark contrast,
+no overlapping actions, natural200%wrap/scroll. Earlier6replacement/history images and
+affected future dark/200%settings were reviewed as recorded in VISUAL_REVIEW_0_10_0.md.
+No screenshot was edited; physical Galaxy S24/human TalkBack acceptance remains UNPERFORMED.
+
+Schema15 / rootJSON9 / nested authoring2(read1–2) / strengthEngine2 / strengthState2 /
+raw2 / complete1 retain supported older reads. Migrations13→14→15, transactional restore,
+current/older backups and actual/history preservation are covered by the supported suite.
+No manifest permission or runtime dependency was added. Main remainsc6299e2 pending review.
+Following documentation-only checkpoints do not change this verified app fingerprint;
+inspect their actual required CI before readiness/merge rather than assuming a future pass.
+
+## 4 November 2026 — full426checkpoint green; visual refinement pending
+
+Source4fb19b81bff49cd19d42e9933cb7d0608c2c006f passed COMPLETE workflow41908273369:
+426instrumentation tests EACH API28/35/36; builds/lint,588145domain/35suites,64schema,
+9release, source11/artwork14/capture-validator13,72Kotlin/115Java format, strict174canonical/
+14routine and125captures. Previous choice-disclosure and API35root-lifecycle failures are
+resolved with assertions/deadlines retained. API35APKartifact13361224243 is51,864,680bytes;
+screenshots13361753732. Botf79c3c59c72b380f77b4c4ed35ac82264ddf4afd adopted byteexact;
+125PNG540x1200 validate and source hash matches cbf3a7ecd0837bf72e481ed8fc7d00b9d89e074a9606e40b858a8adc57cc4538.
+
+All9new replacement/progression/history images were opened in light/dark/200%. Original
+start is legible in dark settings. Progression200% had crowded AlertDialog actions and its
+optional number below long evidence, so visual acceptance was withheld. Current source
+uses a full-screen scrollable proposal-first review and stronger actual-entry/control
+capture assertions. It requires a fresh complete426case/API gate and125captures. PR15 stays
+DRAFT; no S24/TalkBack/physical pass is claimed. No new schema/dependency/permission change.
+
+## 4 November 2026 — observed permanent replacement gate failures and follow-up
+
+Sourceb148e2aaeadf71b25373ace16a4fb9a5a93f1631/workflow41905672344 finished419tests
+EACH API28/35/36. Build/lint/format/guidance passed. All3APIs failed2newUItests that
+selected an option behind Show more alternatives without revealing it. API35 also failed
+an existing Paris Route Story wait with an empty semantics root during repeated window cycling; APIs28/36 passed
+that capture case. No canonical images were published for this red checkpoint.
+
+The follow-up traverses real ranked disclosure and waits for destroyed-window Compose root
+unregistration before launching the next city. Existing20sec deadlines and all real sample/
+source/story/durability assertions remain unchanged. Current source also connects optional
+modality progression/history with5UIcases/2capturecases: next expected426/API and125images.
+Local domain588145/35suites, schema64/release9 and capture-validator13 pass. All main/instrumentation Kotlin+Java source compilation and72Kotlin/115Java formatting
+pass after the final fixes. A fresh complete Android gate is still required. These changes
+are not yet release-verified. PR15 remains DRAFT. No physical Galaxy S24 checks are claimed.
+
+## 4 November 2026 — verified future checkpoint; permanent UI pending
+
+Source8f1d1aad1a95072ea5de08488c72a7acf5d229b5 passed COMPLETE workflow41899315529:
+413instrumentation tests EACH API28/35/36, app/test builds/lint,588145domain checks/
+35suites,64schema tests,9release tests,69Kotlin/115Java format, strict174canonical/
+14routine guidance and116canonical images. Bot8cba4a1bb85be9e4b9dcd1a53da1ba086f8f0ed2
+was adopted with exact blob/tree/commit verification. Frozen-source capture validation
+passes116. API35 APKartifact13359155684 is51,684,456bytes; screenshots13359005792.
+All6future preview/settings captures were opened in light/dark/200%; no overlapping
+controls observed. This resolves the prior411-case large-font selector failure.
+
+Current source adds connected permanent-programme replacement review and5UI regressions,
+plus one3-scene capture test. Expected419/API and119captures are NOT observed passes yet.
+Active native workout prescriptions are protected in bulk proposals; original start is
+read-only with legible dark text. Domain588145/35suites, schema64 and capture-validator12
+pass locally. Real Android verification remains required for the new UI. PR15 stays DRAFT;
+full0.10 progression/history/final quality remain. No physical Galaxy S24 pass is claimed.
+
+## Current follow-up — future capture accessibility and substitution boundary
+
+Sourceed0bd3/workflow41896504156: API28/35/36 each finished411tests with the same sole
+200%navigation capture failure (test searched text although production supplies a TalkBack
+name at large font). All new future/native/backup cases passed on all three APIs. The selector now supports the actual accessibility layout with exact node
+uniqueness; no assertion or timeout is weakened.
+
+New permanent-substitution domain foundation passes44checks, including bulk per-phase
+preservation, protected completion, load clearing, undo and changed measurement targets.
+Fresh SQL intent/archive-choice checks have two new Android cases. Final local total588145/
+35suites and all main/instrumentation Kotlin/Java source compile; formatting69Kotlin/115Java
+passes. Expected next matrix413/API and116captures. These are NOT yet observed Android
+passes. Permanent-swap UI remains disconnected and full0.10 stays incomplete/PR15draft.
+
+## 4 November 2026 — verified templates, future revisions pending
+
+Source98366d7c5bddea4e34350ed61810f2a286c447c0 passed COMPLETE workflow41889775036:
+405tests on EACH API28/35/36, app/test builds/lint,588091domain checks/34suites,64schema,
+9release, formatting69Kotlin/114Java, strict174/14guidance and all110canonical captures.
+This fixes the calendar date-substring failure seen at2abab32 (399tests/API with one
+identical failure each). The corrected selector retains accessibility/category/detail
+assertions and checks unique identities for all42visible calendar days.
+
+Canonical botb98885cced69650bcc6ff919a5b2d160fe183b68 was adopted by identical blob/tree/
+commit hashes;110PNG540x1200 validate and source hash matches immutable983source:
+eb3fd60620da541d0356c7dbbb83f2e355e74a663ceb7430f29521d48551a34e. All12new template scenes
+were opened individually (light/dark/200%); see docs/VISUAL_REVIEW_0_10_0.md. API35 APK
+artifact13353407683, screenshots13353347759; APK51,668,072bytes. These are branch artifacts,
+not a main release. No physical Galaxy S24/TalkBack pass is implied.
+
+The next future-review source adds fresh snapshot reads, immutable future edits/regeneration,
+explicit frequency changes, native-workout activation safety and competing-draft durability.
+Local domain588101/34suites, schema64, release9, source11, capture-validator11 and strict174/14
+checks pass. Final source compilation/formatting and real411-case/API gate with116captures
+must pass before these additions are verified. Structural proposal validation never creates
+completion evidence; actual acceptance always queries fresh retained completed workouts.
+Old source405results do not certify this new phase. Local Gradle still cannot open daemon
+sockets; cached source compilation is not an APK/lint/device gate. PR15 remains DRAFT.
+Schema15 / JSON9 / authoring2(read1–2) / raw2 / complete1, no new runtime dependency or
+INTERNET permission. Full0.10 is unfinished; permanent swaps/progression/final quality remain.
+
+
+## Latest verified implementation — b38e075 (30 October 2026)
+
+Complete workflow **41068497047** is green: **390instrumentation tests each on API28,35,36**
+(1,170 emulator cases), app/test builds and lint;588,070domain checks/33suites;60schema tests;
+9release-note tests; pinned65Kotlin/107Java formatting;174/174canonical and14/14routine
+guidance; source/provenance/capture gates. Canonical bot **a855c08** retains98actual captures
+from that code. Imported blobs/tree/commit were checked; source fingerprint
+0b838419e38a7a048d448b01270459132dfe3cf99c6250a61f6443f4ab7d5c3c matches the working app.
+
+Verified API35 APK artifact12983479610 (51,438,696bytes); screenshots12984377699, both
+run41068497047. Refined manual/custom light/dark200% captures were opened and reviewed;
+latest browser and normal/200% preview were also reopened. The current notes-only update
+changes no app/capture input. A metadata commit's own CI status must be inspected separately.
+
+This is a COMPLETE gate for the IMPLEMENTED checkpoint, not the full0.10 release. Editable
+templates/generated previews, future regeneration, permanent substitutions and progression
+controls remain unfinished in CONTINUE_CODEX.md. PR15 stays DRAFT. Schema14/JSON9/raw2/
+complete1 and prior readers remain. No physical Galaxy S24 checks have been performed.
+
+
+## Refined manual/custom checkpoint — source1dc34c2
+
+Workflow41063159777 passed **388tests on each API28,35,36** plus all build/lint/domain/
+schema/release/format/guidance/canonical jobs. Actual job logs confirm the counts. API35
+APK artifact12982357035 is51,438,696bytes; screenshots12982127632. Canonical bot2c7a599
+was imported with identical verified blobs/tree/commit, preserving all98captures.
+Seven refined captures were opened; see docs/VISUAL_REVIEW_0_10_0.md for observed results.
+
+A subsequent small browser-inventory fix prioritises authored programmes and adds two
+real browser regressions for precedence/refresh and classified custom filters. Production
+and all instrumentation sources compile offline; Android execution for that newer fix
+is still required (390cases expected). No schema/backup/permission change or S24 result.
+
+
+## Verified manual authoring and custom metadata — source0eb56d6
+
+Workflow41058603236 passed all required jobs: **387tests each on API28,35,36**,
+app/test build, lint, domain588,070checks/33suites,60schema,9release-note, formatting,
+strict174canonical/14routine guidance and98required captures. API35 APK12978054237
+is51,422,312bytes; screenshot artifact12978786813. Canonical bot3deee3e preserves
+those actual images. Its own follow-on run41060421446 needs action; it is not a green
+source result. The verified code run above remains the source-bound evidence.
+
+All seven new authoring captures were opened. Review found excessive explanations,
+weekday-grouped display, carried scroll position and the custom capture's keyboard.
+The new follow-up addresses these and adds a chronological-order regression (388expected
+cases). Cached compiler/source and formatter checks pass; another full Android/capture
+run is required for that newer code. See docs/VISUAL_REVIEW_0_10_0.md. No S24 check passed.
+
+
+## Manual-builder Android follow-up and structured custom metadata (30 October 2026)
+
+Source93250d6 workflow41055834777 passed source/build/lint/format/guidance gates. API28/35/36 each completed382tests with one navigation-contract mismatch: the new builder route was absent from the exact
+expected set. The follow-up adds actual routes without relaxing equality. New builder and
+transaction tests showed no failures in those reports; final matrix status must be inspected.
+
+The custom-entry follow-up adds four real UI/VM cases and seven actual-activity captures.
+Production and instrumentation Kotlin/Java compile offline;65Kotlin/107Java format checks
+and9capture-validator tests pass. Execution/images still require CI; no new visual pass is
+claimed. The validator retains all91prior captures and requires98total. No format migration,
+permission/dependency change or physical S24 result.
+
+
+## 0.10 manual programme builder — recovery checkpoint (30 October 2026)
+
+The pushed parent `1a547c8` passed workflow **40972743492**, including all API28/35/36,
+formatting, guidance and canonical-capture jobs. The working-tree manual builder is newer.
+Offline domain **588,070 checks**, schema **60 tests**, and release-note **9 tests** passed.
+All production and instrumentation sources compiled with cached Kotlin/Java compilers;
+this is source verification, not an APK, lint or device result. Final refinements and new
+six-case UI/six-case repository suites still require Android execution and fresh captures.
+
+The local Gradle attempt failed before compilation because its daemon socket was denied
+by the executor sandbox. Network-access requests stalled; git fetch also cannot reach the
+proxy. No assertions or deadlines were relaxed. GitHub PR15 remains draft. No physical
+Galaxy S24 check has been performed. Schema14/backup9 and all existing archive formats remain.
+
+
+Branch `feature/0.10-strength-programming` / draft PR15, based on mainc6299e2.
+The recovered typed durability phase adds schema14 / JSON9 (read1–8), strengthProgramming1;
+strengthEngine2 / strengthState2 / raw2 / complete1 are unchanged. The full programme
+builder, template/activation/regeneration and authoring controls remain unfinished.
+Current-programme read/execution paths are integrated in the later checkpoint below. Passing this checkpoint is not0.10 release acceptance.
+
+Verified implementation source: `974a349d79dc0b5bf0f2929812fa4f3a6641facb`.
+
+## Later notes-only gate: selected-city readiness synchronization
+
+Workflow40937904521 passed API28/35 with370cases each, but API36 failed one readiness
+assertion. The generic waiter could match the previous city's ready container before the
+newly selected city rendered. Its waiter now requires ready state and the selected city's
+heading within the same semantic subtree. Hero/landmark/disposal assertions and20sec
+bound remain unchanged. Full app/test compilation and lint passed; the real local API28
+five-city, three-round case passed1/1 in94.419s. No production artwork/geometry changes.
+The source-bound new full matrix remains required. Separate builder edits are in progress
+and are not certified by that readiness test.
+
+## Verified authored integration checkpoint —ae92cdf
+
+[Workflow40931917209](https://github.com/mmwiza1/Race-day-dreams/actions/runs/40931917209)
+PASSED: **370tests on EACH API28/35/36**, formatting, guidance, domain/schema/release,
+app/test build, lint and canonical screenshot publication. Actual completed counts were
+read from all three job logs. This is the source-bound integration checkpoint, not complete
+0.10 product acceptance. PR15 stays draft; builder/activation/edit/regeneration/custom/
+permanent-swap/progression UI and their authentic captures remain unfinished.
+
+Capture bot087cf7f adopted91actual screenshots fromae92cdf; a normal merge preserved the
+local notes commit as well. Screenshot source fingerprint matches current app code.
+Gym Now, dark workout and200%Strength Today actual images opened: readable controls,
+content scrolls below the viewport normally. This does not replace new authored/builder
+visual acceptance. API35 APK artifact12924280621 and screenshot artifact12923732253 are
+available in that workflow. No stable tag or main merge; no physical S24 claims.
+
+The earlier5b80852 matrix completed370tests/API but failed ONE test assumption on each
+API. The explicit compatible+incompatible substitution correctionae92cdf passed the
+complete matrix above. Historical local software SYSTEM aborts remain recorded below;
+no partial local selection was relabelled a full pass and no assertion was weakened.
+
+## Association/ticker full matrix — verified after the earlier failures
+
+Source52e2f9b passed workflow40865813724, including **364 instrumentation tests on each
+of API28, API35 and API36**, formatting, guidance and canonical screenshots. The previous
+terminal-review race and stale backup8 assertion are fixed in production/tests. Bot65340a8
+adopted91authentic captures without discarding local feature work. PR15 remains draft.
+These results certify the association/durability source, not the later integration below.
+
+## Authored current-programme integration — final build passed; local Android system abort documented
+
+Source5b80852d8c1f98de99f514c13552b9c5cea4250e connects typed authored programmes to Gym Now, Today/hybrid Home,
+programme/block/workout details and calendar entries. Exact nullable/fractional targets
+stay distinct from legacy prescriptions. Planned start rejects a changed displayed revision;
+substitutions use the started source's preserved settings. No actuals are prefilled.
+
+The final combined :domain:check / :app:assembleDebug / :app:assembleDebugAndroidTest /
+:app:lintDebug gate PASSED in6m55s. **588,069domain assertions/33suites**,60schema,
+9release-note,11Dream source,14artwork,14formatter-harness and8capture-validator cases
+pass. Pinned formatting59Kotlin/106Java passes; strict174canonical/14routine guide audit
+passes,177bundled original assets intact. No schema/envelope/archive/dependency/permission
+change in this phase. Built APK0.10.0-test1/code13 is53,635,997bytes, SHA256
+cc3ea418011088b52809c408a96530b418dfbb33b7870d726ceb2a10ee2ac843; binary manifest inspected,
+no INTERNET permission.
+
+Focused13-case API28 integration selection completed **11passes**: all6new authored UI
+cases,2retainedToday and3retainedGymNow. Android's SYSTEM then aborted in the existing
+openWorkoutSavesOnlyEnteredActualsAndPauseRequiresExplicitResume case; final2cases are
+incomplete. This is NOT13/13. Log authored-current-api28.log. The frozen prior-source
+long103selection also aborted after101passes. The direct software renderer had passed
+an isolated5case class but did not establish long-suite stability. Host OOM counters0.
+After the first crash package service was absent; emulator was restarted and boot/package
+readiness verified before the13case selection. No deadline/assertion/watchdog changed.
+Workflow40927512770 completed370tests on EACH of API28/35/36. Each API had ONE test
+error at AuthoredGymNowScreenTest129: the test selected the first ranked alternative and
+assumed its task remained non-null. A changed measurement correctly clears the task.
+All other369cases/API passed; formatting/guidance/build/lint passed and canonical capture
+publication was correctly skipped.
+
+The follow-up test explicitly exercises both contracts: Dumbbell Bench Press preserves
+its complete task except the load reference; Push-Up has a different measurement and
+must clear the whole task. Non-null/equality/cleared-reference and source/actual/history
+assertions remain or are strengthened. No deadline/assertion/watchdog was weakened.
+The correction's complete domain/app/test APK/lint gate passed in2m21s, pinned formatting
+passed, and the corrected real API28 case passed1/1 in53.513s. App APK hash/size is unchanged.
+Correction sourceae92cdf52c47773b8d701890d04b140a39e9cbb6 is committed/pushed.
+New workflow40931917209 is running; inspect the actual latest head/workflow after notes-only
+commits. No complete new API28/35/36 result or fresh canonical capture is claimed yet.
+An executor restart interrupted a later notes update; subsequent status/log inspection
+confirmed the committed source and persistent verification logs survived unchanged.
+
+## Historical association/ticker local checkpoint — superseded by full matrix above
+
+Source95cefc0 fixes a production terminal-display race: a clock tick could replace a
+reopened finished workout with an empty coordinator projection, removing its review.
+The existing UI test now invokes that real tick while the confirmation is open, retaining
+all original assertions/deadlines. PrimaryFocus backup assertion now correctly requires9.
+Source9c6d241 adds exact authored Count/Keep and decision2/read1 with strict frozen sources,
+transactional acceptance/reversal and backup validation; no schema/root-envelope bump.
+
+588,049domain assertions/33suites,60schema, pinned formatting57Kotlin/106Java,9release-note,
+app/test builds and lint pass. Local API28 selection reached101passing cases, including
+all new repo/JSON and light/dark200% authored reviews and the strengthened original
+association test. Android's system process then aborted during the final2GymNow UI cases:
+SurfaceControl.finalize timed out10seconds in nativeRelease (FinalizerWatchdogDaemon).
+The issue reproduced in an isolated class after aligning with CI's pinned37.2.12 emulator;
+that rerun passed3of5before the same system abort. No complete103/103pass or new full matrix
+pass is claimed. Host OOM counters remain0; root renderer/TCG cause beyond the native
+system stack is not established. Watchdogs/tests remain enabled. Persistent logs under
+/workspace/scratch/rdd010 record both runs and the crash evidence.
+
+The previous915f8b7 full workflow40856845725 failed only the stale PrimaryFocus8-vs9
+assertion on APIs28/36, plus the terminal-review race on35. Those failures were inspected;
+the new source needs its own accelerated28/35/36 matrix. PR15 stays draft, builder and
+current-programme UI integration remain incomplete. No physical S24 claims.
+
+## Observed local final-source gate — 29 October2026
+
+- **587,615 domain assertions /33 suites**, including2,430programme configurations.
+- **60schema/migration tests**, supported1–13→14, real13upgrade fixture, old history /
+  favourites / exclusions preserved, late-DDL rollback, FK/unique-date/UTF8/index checks.
+- **79/79 real Android API28 instrumentation tests**,315.144seconds on software emulator.
+  Fifteen new repository cases cover optimistic drafts/retries, activation/stop, exact
+  legacy/modern sources, paused execution recovery, actuals, fresh completed protection,
+  similarly named programme IDs, normalized156-workout storage, scalar summaries, custom
+  metadata/logging agreement, old8/current9 restore, corrupt graph rejection and SQL rollback.
+  Sixty-four retained codec/execution/association/exclusion/backup/CoachingStore cases pass,
+  including large histories above8MiB and rejection before oversized export hydration.
+- `:domain:check`, `:app:assembleDebug`, `:app:assembleDebugAndroidTest`, `:app:lintDebug`
+  passed after final source edits. Pinned formatting passes (56Kotlin /105Java files).
+-9release-note,14formatter-harness,11Dream source,14artwork-integrity,8capture-validator
+  cases pass. Strict174/174canonical +14/14routine guidance unchanged;177packaged assets.
+- No new runtime dependency, account/backend or Internet permission. No physical S24 checks.
+
+The fixture/task mismatch, one stale backup-version assertion and two lint indentation
+errors found during recovery were corrected; no assertion was removed or weakened.
+Metadata/name edits now update the typed/logging mirror atomically without renaming old
+prescriptions. Normalized reads use one transaction snapshot and completed-session lookup
+uses exact programme keys. Final persistent local evidence: `/workspace/scratch/rdd010`.
+APK SHA256: `0abaf5cb47c22851eeaf8442bad50940d02fe3c945884a7d22fb38d508b5d631`.
+
+## Source-bound remote gate / screenshots
+
+Source0483c96 passed full workflow40786866429: API28/35/36, build/lint/domain/schema/
+format/guidance and canonical screenshots. It verifies the association dialog fix57c46ec:
+wait for the real displayed/enabled confirmation using the same20sec bound, retaining
+all explicit Count/Keep and immutable actual/history assertions. Botdf4d9ff adopted91
+actual API35 captures. Earlier55af2aa andc4b2664 full matrices also passed339tests each API.
+The new durability checkpoint requires its own full current-head matrix/captures after
+push; prior green sources must not be substituted for those gates. No new builder UI or
+new builder screenshots are claimed. See CONTINUE_CODEX.md for the exact active boundary.
+
+The following sections are historical completed0.9 evidence, not proof of0.10 completion.
+
 # Verification — retained 0.9.0-test1 acceptance
 
 The scope-controlled application and capture source **f3a988a68f3d1b6dbb618422a80612b90cf4d92e** passed

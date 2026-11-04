@@ -3,6 +3,7 @@ package org.racedaydreams.coach
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
@@ -29,9 +30,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.racedaydreams.coach.strength.ExerciseBrowseScreen
 import org.racedaydreams.data.StrengthUserStore
+import org.racedaydreams.domain.strength.CustomStrengthExercise
 import org.racedaydreams.domain.strength.ExerciseCatalog
+import org.racedaydreams.domain.strength.ExerciseMetadata
 import org.racedaydreams.domain.strength.GymProgramme
+import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.StrengthExercise
+import org.racedaydreams.domain.strength.StrengthProgramme
+import org.racedaydreams.domain.strength.StrengthProgrammeDraft
 import org.racedaydreams.domain.strength.StrengthSession
 
 /** Production metadata and search rules, real selectable rows, with no invented custom taxonomy. */
@@ -251,6 +257,194 @@ class ExerciseBrowseScreenTest {
             assertEquals(StrengthExercise.Mode.WEIGHTED, created!!.mode())
             assertFalse(created!!.estimateOneRepMax())
         }
+    }
+
+    @Test
+    fun authoredInventoryTakesPrecedenceAndRefreshesWithoutChangingLegacyHistory() {
+        val custom = classifiedCustom()
+        val date = LocalDate.of(2026, 10, 26)
+        val legacy =
+            GymProgramme(
+                "legacy-inventory",
+                1,
+                Instant.parse("2026-10-25T10:00:00Z"),
+                "Preserved legacy",
+                GymProgramme.Settings(
+                    GymProgramme.Goal.GENERAL,
+                    GymProgramme.Priority.STRENGTH_FIRST,
+                    GymProgramme.Experience.BEGINNER,
+                    setOf(DayOfWeek.MONDAY),
+                    1,
+                    setOf("bodyweight"),
+                    30,
+                    GymProgramme.Effort.RPE,
+                ),
+                date,
+                date.plusDays(6),
+                listOf(
+                    GymProgramme.Session(
+                        "legacy-day",
+                        date,
+                        "Core",
+                        listOf(
+                            GymProgramme.Prescription(
+                                "plank",
+                                2,
+                                0,
+                                0,
+                                30,
+                                null,
+                                5,
+                                7,
+                                60,
+                                "Controlled",
+                            )
+                        ),
+                        "Preserved legacy context",
+                    )
+                ),
+                emptyList(),
+            )
+        val authored = authoredInventory(custom)
+        val shown =
+            mutableStateOf(
+                CoachUiState(
+                    loading = false,
+                    exercises = listOf(custom.exercise(), exercise("plank")),
+                    gymProgramme = legacy,
+                    authoredGymProgramme = authored,
+                )
+            )
+        var opened: String? = null
+        compose.setContent {
+            MaterialTheme {
+                ExerciseBrowseScreen(
+                    shown.value,
+                    {},
+                    { opened = it },
+                    customMetadata = mapOf(custom.exercise().id() to custom),
+                )
+            }
+        }
+        clickTag("exercise-shortcut-In my programme")
+        summary("1 matching exercise")
+        row(custom.exercise().id()).performClick()
+        compose.runOnIdle { assertEquals(custom.exercise().id(), opened) }
+        compose.onNodeWithTag("exercise-row-plank").assertDoesNotExist()
+        // A new snapshot with only a legacy current owner must rebuild the inventory too.
+        compose.runOnIdle { shown.value = shown.value.copy(authoredGymProgramme = null) }
+        summary("1 matching exercise")
+        row("plank").performClick()
+        compose.runOnIdle { assertEquals("plank", opened) }
+        assertEquals("plank", legacy.sessions().single().exercises().single().exerciseId())
+        assertEquals(
+            custom.exercise(),
+            authored.workouts().single().definition().slots().single().exercise(),
+        )
+    }
+
+    @Test
+    fun userClassifiedAreasRolesAndEquipmentParticipateInRealBrowserFilters() {
+        val custom = classifiedCustom()
+        var opened: String? = null
+        compose.setContent {
+            MaterialTheme {
+                ExerciseBrowseScreen(
+                    CoachUiState(
+                        loading = false,
+                        exercises = listOf(custom.exercise(), exercise("goblet-squat")),
+                    ),
+                    {},
+                    { opened = it },
+                    customMetadata = mapOf(custom.exercise().id() to custom),
+                )
+            }
+        }
+        // Chest/horizontal push exist only in this user's metadata, not the supplied canonical row.
+        clickTag("exercise-browse-Body area")
+        clickTag("exercise-area-CHEST")
+        summary("1 matching exercise")
+        clickTag("exercise-browse-Movement")
+        clickTag("exercise-role-HORIZONTAL_PUSH")
+        summary("1 matching exercise")
+        clickTag("exercise-browse-Equipment")
+        clickTag("exercise-equipment-DUMBBELLS")
+        summary("1 matching exercise")
+        row(custom.exercise().id()).performClick()
+        compose.runOnIdle { assertEquals(custom.exercise().id(), opened) }
+        compose
+            .onNodeWithText("Chest · Horizontal push · Dumbbells · User defined")
+            .assertIsDisplayed()
+    }
+
+    private fun classifiedCustom() =
+        CustomStrengthExercise(
+            StrengthExercise(
+                "custom-classified-press",
+                "My press",
+                StrengthExercise.Region.UPPER,
+                StrengthExercise.Mode.WEIGHTED,
+                false,
+                StrengthExercise.MeasurementProfile.LOAD_REPS,
+            ),
+            ExerciseMetadata.BodyArea.CHEST,
+            ExerciseMetadata.Role.HORIZONTAL_PUSH,
+            ExerciseMetadata.EquipmentRequirement(
+                listOf(setOf(ExerciseMetadata.Equipment.DUMBBELLS))
+            ),
+            null,
+        )
+
+    private fun authoredInventory(custom: CustomStrengthExercise): StrengthProgramme {
+        val date = LocalDate.of(2026, 10, 26)
+        val slot =
+            GymWorkoutDefinition.Slot(
+                "press",
+                custom.exercise(),
+                GymWorkoutDefinition.Target(3, 6, 10, null, null, null, null, null),
+                null,
+            )
+        return StrengthProgrammeDraft(
+                "inventory-draft",
+                1,
+                "inventory-programme",
+                0,
+                "My authored programme",
+                StrengthProgramme.Settings(
+                    GymProgramme.Goal.GENERAL,
+                    GymProgramme.Priority.STRENGTH_FIRST,
+                    GymProgramme.Experience.BEGINNER,
+                    setOf(DayOfWeek.MONDAY),
+                    1,
+                    45,
+                    setOf(ExerciseMetadata.Equipment.DUMBBELLS),
+                ),
+                date,
+                listOf(
+                    StrengthProgrammeDraft.WeekBlock(
+                        "week",
+                        StrengthProgramme.Phase.FOUNDATION,
+                        "Foundation",
+                        1,
+                        listOf(
+                            StrengthProgrammeDraft.Day(
+                                "day",
+                                DayOfWeek.MONDAY,
+                                "Press",
+                                listOf(slot),
+                                null,
+                            )
+                        ),
+                    )
+                ),
+                StrengthProgramme.Origin.CUSTOM,
+                null,
+            )
+            .preview(
+                Instant.parse("2026-10-25T10:00:00Z"),
+                emptySet(),
+                mapOf(custom.exercise().id() to custom),
+            )
     }
 
     private fun exercise(id: String) = ExerciseCatalog.definition(id).exercise()

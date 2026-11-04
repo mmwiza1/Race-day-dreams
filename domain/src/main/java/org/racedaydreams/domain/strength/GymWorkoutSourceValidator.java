@@ -11,6 +11,29 @@ import org.racedaydreams.domain.strength.GymExecution.SourceReference;
 public final class GymWorkoutSourceValidator {
     private GymWorkoutSourceValidator() {}
 
+    /** Frozen custom/null/RIR targets are compared in full, without catalogue reconstruction. */
+    public static StrengthProgramme.Workout authoredProgramme(
+            GymWorkoutDefinition workout, SourceReference source, StrengthProgramme retained) {
+        require(
+                workout != null && retained != null,
+                "The retained authored programme is required.");
+        sourceKind(source, SourceKind.PROGRAMME);
+        require(
+                retained.id().equals(source.id()) && retained.revision() == source.revision(),
+                "The exact authored programme revision is required.");
+        var expected = GymWorkoutAdapter.fromAuthoredProgramme(retained, source.sessionId());
+        require(
+                source.equals(expected.source()) && workout.equals(expected.definition()),
+                "The preserved workout differs from its authored programme source.");
+        return retained.workouts().stream()
+                .filter(w -> w.id().equals(source.sessionId()))
+                .findFirst()
+                .orElseThrow(
+                        () ->
+                                new IllegalArgumentException(
+                                        "The authored programme session is missing."));
+    }
+
     /**
      * Returns the exact retained session, including its original date for an explicit association.
      * Legacy programmes retained exercise IDs and targets, not exercise names/definitions. This

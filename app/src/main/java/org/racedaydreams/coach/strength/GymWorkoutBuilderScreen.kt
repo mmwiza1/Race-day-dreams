@@ -273,7 +273,7 @@ fun GymWorkoutBuilderScreen(model: GymNowViewModel, onWorkout: () -> Unit, onBac
 }
 
 @Composable
-private fun GymSlotEditor(
+internal fun GymSlotEditor(
     slot: GymWorkoutDefinition.Slot?,
     exercises: List<StrengthExercise>,
     favourites: Set<String>,
@@ -281,6 +281,9 @@ private fun GymSlotEditor(
     archived: Set<String>,
     excluded: Set<String>,
     error: String?,
+    allowOpen: Boolean = true,
+    allowExerciseChange: Boolean = true,
+    allowReferenceLoad: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (StrengthExercise, GymSlotInput) -> Unit,
 ) {
@@ -288,7 +291,8 @@ private fun GymSlotEditor(
     val target = slot?.target()
     var selectedId by rememberSaveable(identity) { mutableStateOf(slot?.exercise()?.id()) }
     var query by rememberSaveable(identity) { mutableStateOf("") }
-    var open by rememberSaveable(identity) { mutableStateOf(slot != null && target == null) }
+    var open by
+        rememberSaveable(identity) { mutableStateOf(allowOpen && slot != null && target == null) }
     var sets by rememberSaveable(identity) { mutableStateOf(target?.sets()?.toString() ?: "3") }
     var minimumReps by
         rememberSaveable(identity) { mutableStateOf(target?.minimumReps()?.toString() ?: "") }
@@ -343,26 +347,29 @@ private fun GymSlotEditor(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.semantics { heading() },
                 )
-                Text("Choose an exercise", style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    label = { Text("Search by name or alias") },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                if (allowExerciseChange || slot == null) {
+                    Text("Choose an exercise", style = MaterialTheme.typography.titleMedium)
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text("Search by name or alias") },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
                 selected?.let {
                     SemanticCard(Tile.Strength) {
                         Text(it.name(), style = MaterialTheme.typography.titleLarge)
                         Text(gymExerciseContext(it))
-                        TextButton(
-                            onClick = {
-                                selectedId = null
-                                query = ""
-                            },
-                            modifier = Modifier.heightIn(min = 48.dp),
-                        ) {
-                            Text("Choose another exercise")
-                        }
+                        if (allowExerciseChange)
+                            TextButton(
+                                onClick = {
+                                    selectedId = null
+                                    query = ""
+                                },
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) {
+                                Text("Choose another exercise")
+                            }
                     }
                 }
                 if (selected == null) {
@@ -415,23 +422,25 @@ private fun GymSlotEditor(
                 }
                 if (selected != null) {
                     HorizontalDivider()
-                    Row(Modifier.fillMaxWidth()) {
-                        Checkbox(
-                            checked = open,
-                            onCheckedChange = { open = it },
-                            modifier =
-                                Modifier.semantics {
-                                    contentDescription = "Open exercise without prescribed targets"
-                                },
-                        )
-                        Column(Modifier.weight(1f).padding(top = 12.dp)) {
-                            Text("Open exercise")
-                            Text(
-                                "Choose sets and measurements while training.",
-                                style = MaterialTheme.typography.bodySmall,
+                    if (allowOpen)
+                        Row(Modifier.fillMaxWidth()) {
+                            Checkbox(
+                                checked = open,
+                                onCheckedChange = { open = it },
+                                modifier =
+                                    Modifier.semantics {
+                                        contentDescription =
+                                            "Open exercise without prescribed targets"
+                                    },
                             )
+                            Column(Modifier.weight(1f).padding(top = 12.dp)) {
+                                Text("Open exercise")
+                                Text(
+                                    "Choose sets and measurements while training.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
                         }
-                    }
                     if (!open) {
                         GymBuilderField(sets, { sets = it }, "Working sets", KeyboardType.Number)
                         val measurement = selected.measurement()
@@ -512,7 +521,8 @@ private fun GymSlotEditor(
                             KeyboardType.Number,
                         )
                         if (
-                            measurement.usesLoad() &&
+                            allowReferenceLoad &&
+                                measurement.usesLoad() &&
                                 selected.mode() != StrengthExercise.Mode.BODYWEIGHT
                         ) {
                             GymBuilderField(
