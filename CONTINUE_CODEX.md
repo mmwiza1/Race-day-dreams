@@ -65,7 +65,8 @@ Expected canonical set is128 (all125 retained + expanded details light/dark/200%
 NEXT EXACT WORK (do not stop after one passing checkpoint):
 1. GPS checkpoint b6322b6 has COMPLETE green workflow41928404979 on API28/35/36.
    Confirm/adopt its canonical-only bot commit via normal git fetch/ff preserving local work.
-   Current coaching checkpoint must be committed/pushed after local checks; run final full
+   Coaching checkpoint2c271c6 is committed/pushed; workflow41931167271 is executing all3
+   API device suites (format/guidance/build/lint/compilation passed). Run final full
    38suite/domain/schema/format/release/guidance gates and inspect its new CI results.
 2. Full CI on the coaching head: API28/35/36 expected435 tests (427GPS +8new UI), actual
    totals must be observed. Inspect failures and fix root causes, not blind reruns. No KVM/S24
@@ -240,3 +241,32 @@ recording/locked screen/GPS split/recovery/Health Connect/BLE/audio/backup and p
 creation/activation/regeneration/substitution/progression/history light/dark/200% tests.
 No merge/tag/production-release claim until the agreed automated acceptance is complete;
 0.10 remains a test build, not a Play Store release.
+
+### Live continuation note — 0.10.1 source2c271c6
+
+Full local final-source Gradle gate PASSED3m8s/79tasks. Source/geometry/artwork/format-helper
+checks also pass. Source tree was clean after pushing2c271c6; subsequent UNCOMMITTED changes
+are documentation only (README, GPS source path clarification, new VISUAL_REVIEW_0_10_1,
+and this handoff). Preserve them. No source redesign remains planned; fix actual test/visual
+failures only. Workflow41931167271 is running435 expected cases/API +128 required captures.
+Inspect its actual result/counts. GPS-checkpoint125images were fast-forward adopted via git
+from5fa3d04; they are not current coaching captures. Old artifacts redirected to Azure were
+forbidden to the CLI; use canonical images via normal git fetch/ff for actual visual review.
+Do not merge PR16 until current-source full gates, visual review and final docs are complete.
+
+### Current gate failure and correction — 23:22 UTC4November
+
+Coaching workflow41931167271 failed API28/35/36 with EXACTLY1 failure each/435 tests:
+ProgrammeProgressionClarityTest.advancedDetailsCollapseAndKeyboardExpandHaveStateSemantics,
+assertTrue(RequestFocus) line115 after injected Tab. All other434cases passed on each. Build/lint/domain/schema/format/guidance pass. No blind
+rerun: Compose performKeyInput bypasses Android's input-mode transition; the fixture still
+cannot obtain non-touch focus. The uncommitted test correction captures LocalInputModeManager,
+explicitly requests Keyboard mode and asserts that state BEFORE focus/Enter; retains and
+strengthens actual focus, expanded/collapsed and keyboard assertions. No production control
+or test assertions were removed. Compile/format and rerun full matrix on the corrected head.
+This extra test correction is alongside the documentation-only changes noted above.
+
+The keyboard correction compiled and passed lint locally (57tasks,1m50s), pinned formatting
+76Kotlin/122Java passes. The same fix retains all435 tests and adds input-mode/focus proof;
+next push must run all3 API gates again. README/visual review remain explicitly pending.
+No production source changed after2c271c6; only the keyboard fixture and documentation.

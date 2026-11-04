@@ -7,20 +7,26 @@ A free, open-source, account-free Android running and strength coach.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.10.0-test1 — Strength Programming 2.0
+## 0.10.1-test1 — GPS Reliability & Coaching Clarity
 
-Build a programme from scratch or start with nine editable templates. Goals, experience,
-availability, equipment and optional running context shape explainable training blocks.
-Review every dated workout, save drafts, regenerate future work or choose permanent
-exercise replacements. Existing prescriptions and entered sets remain separate and preserved.
-Optional task-specific progression needs recent comparable working evidence and recorded
-effort. Accepted revisions have read-only history; every activation is an explicit choice.
+Native recording now rejects stale delivery before auto-pause, preserves honest GPS gaps,
+and avoids summing a bounded stationary jitter cluster as running distance. Large route
+renders preserve meaningful bends without altering stored observations. See the
+[GPS diagnosis](docs/GPS_DIAGNOSIS_0_10_1.md) and
+[open-source comparison](docs/GPS_ENGINE_REVIEW_0_10_1.md) for demonstrated fixes and limits.
 
-The supported software gate passed **426tests each on API28,35 and36**, with125authentic
-captures. A [0.10 branch test APK](https://github.com/mmwiza1/Race-day-dreams/actions/runs/41912323900/artifacts/13363782687)
-is available. It does not replace the verified-main rolling download until review/merge.
-Physical Galaxy S24 acceptance remains unperformed. See [release notes](docs/RELEASE_0_10_0.md)
-and [source-bound verification](VERIFICATION.md). This is a test candidate, not a store release.
+Workout suggestions explain the task first, then optional weight references and the reason.
+Advanced details expands to show separate current/proposed targets and actual supporting
+workouts. Saving a suggestion remains separate from programme activation.
+
+This candidate is undergoing its final Android and visual gate; see [verification](VERIFICATION.md)
+and [release notes](docs/RELEASE_0_10_1.md). The rolling download below always identifies its
+own verified-main version. No physical Galaxy S24 acceptance is claimed.
+
+The merged0.10 Strength Programming foundation remains available: manual programmes,
+nine editable templates, goal/experience-aware blocks, future revisions and conservative
+progression. Historical prescriptions and actual sets stay separate. See
+[0.10 release notes](docs/RELEASE_0_10_0.md). This remains a test build, not a store release.
 
 ## Offline Dream Routes
 
@@ -69,8 +75,8 @@ API-35 package. Publication waits for the full API 28/35/36 matrix and canonical
 No permanent stable release is created by merging this test update.
 
 These are **debug-signed test APKs**, not Play Store production packages. Actions
-artifacts for the0.10candidate are named `Race-Day-Dreams-0.10.0-test1-debug-api-35`
-and contain `Race-Day-Dreams-0.10.0-test1-debug.apk`. The rolling download follows the
+artifacts for the0.10.1candidate are named `Race-Day-Dreams-0.10.1-test1-debug-api-35`
+and contain `Race-Day-Dreams-0.10.1-test1-debug.apk`. The rolling download follows the
 latest verified main and identifies its own version/commit; a branch candidate is not
 silently published as main. Check [VERIFICATION.md](VERIFICATION.md) and export a complete
 local backup before upgrading.
@@ -80,9 +86,9 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. Verified source1a7c683 passed426instrumentation tests per supported
-API and125authentic captures. New programming/replacement/progression/history screens were
-reviewed in light/dark/200% text; no physical S24/TalkBack pass is implied.
+data, not UI mockups. The GPS checkpoint b6322b6 passed427instrumentation tests per
+supported API and125authentic captures. Updated coaching captures and their final visual
+review are pending; these source-bound results do not imply physical S24/TalkBack acceptance.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
@@ -91,9 +97,9 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 | --- | --- | --- | --- |
 | ![Today](docs/screenshots/home.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
 
-| Strength Today | Programme templates | Dated programme preview | Optional progression |
+| Strength Today | Programme templates | Dated programme preview | Workout suggestion |
 | --- | --- | --- | --- |
-| ![Strength Today](docs/screenshots/strength-home.png) | ![Programme templates](docs/screenshots/strength-templates.png) | ![Programme preview](docs/screenshots/strength-generated-preview.png) | ![Optional progression](docs/screenshots/strength-programme-progression.png) |
+| ![Strength Today](docs/screenshots/strength-home.png) | ![Programme templates](docs/screenshots/strength-templates.png) | ![Programme preview](docs/screenshots/strength-generated-preview.png) | ![Workout suggestion](docs/screenshots/strength-programme-progression.png) |
 
 Gym Now, exercise guidance, race preparation and accessibility captures remain in the
 [full actual-build gallery](docs/screenshots).

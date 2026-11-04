@@ -2,8 +2,11 @@ package org.racedaydreams.coach
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.input.InputMode
+import androidx.compose.ui.input.InputModeManager
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
@@ -23,6 +26,7 @@ import org.racedaydreams.domain.strength.*
 @RunWith(AndroidJUnit4::class)
 class ProgrammeProgressionClarityTest {
     @get:Rule val compose = createComposeRule()
+    private lateinit var inputModeManager: InputModeManager
 
     private fun review(
         id: String = "bench-press",
@@ -82,6 +86,7 @@ class ProgrammeProgressionClarityTest {
         save: () -> Unit = {},
     ) {
         compose.setContent {
+            inputModeManager = LocalInputModeManager.current
             val density = LocalDensity.current
             CompositionLocalProvider(
                 LocalDensity provides Density(density.density, if (largeDark) 2f else 1f)
@@ -110,9 +115,20 @@ class ProgrammeProgressionClarityTest {
         disclosure
             .assertHasClickAction()
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed"))
-        // Enter keyboard input mode through a real key event before requesting focus.
-        compose.onRoot().performKeyInput { pressKey(Key.Tab) }
-        disclosure.performSemanticsAction(SemanticsActions.RequestFocus) { assertTrue(it()) }
+        // Compose key injection bypasses Android's touch-mode transition. Establish the
+        // platform keyboard mode first; real keyboard use does this before requesting focus.
+        compose.runOnIdle {
+            assertTrue(
+                "Platform must enter keyboard mode",
+                inputModeManager.requestInputMode(InputMode.Keyboard),
+            )
+        }
+        compose.waitForIdle()
+        compose.runOnIdle { assertEquals(InputMode.Keyboard, inputModeManager.inputMode) }
+        disclosure.performSemanticsAction(SemanticsActions.RequestFocus) {
+            assertTrue("Disclosure must receive keyboard focus", it())
+        }
+        disclosure.assertIsFocused()
         disclosure.performKeyInput { pressKey(Key.Enter) }
         disclosure.assert(
             SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded")

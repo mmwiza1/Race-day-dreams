@@ -1,5 +1,17 @@
 ## 4 November 2026 — complete Strength Programming2.0 software gate
 
+## Coaching gate failure — 4 November2026 23:22UTC
+
+Workflow41931167271 on2c271c6 ran435 tests each on API28/35/36, with one keyboard-fixture
+failure each: RequestFocus returned false after Compose-injected Tab. Other434cases passed
+on each. Builds/lint/domain/schema/format/guidance passed. All three jobs confirmed the same single focus failure. This is not a complete release pass; canonical publication is blocked.
+
+The fixture correction explicitly establishes the platform Keyboard input mode before
+requesting disclosure focus, because Compose key injection does not perform Android's
+normal touch-mode transition. Focus, real Enter-to-expand and collapse assertions remain;
+input-mode and focused-state assertions are added. The corrected head requires a fresh
+full gate and actual visual review; no blind rerun or test weakening is accepted.
+
 ## Current release — 0.10.1 checkpoint verification (4 November 2026)
 
 GPS checkpoint b6322b6 / draft PR16: actual local Gradle domain check, debug APK,
