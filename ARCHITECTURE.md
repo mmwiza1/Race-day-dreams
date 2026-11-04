@@ -4,7 +4,7 @@ New Android-independent StrengthProgramme/Draft models preserve dated blocks, fr
 GymWorkoutDefinition targets, future-only revision proposals and exact source adaptation
 into the existing GymExecutionEngine. Original generation/templates and task progression
 remain preview policies. StrengthProgrammingJson reuses the strict frozen-workout codec.
-Schema14 / JSON backup9 add a typed authoring repository over the shared helper. Programme
+Schema14–15 / JSON backup9 add typed authoring repositories over the shared helper. Programme
 headers, blocks and bounded session rows are separate; indexed summaries do not hydrate
 session payloads. Normalized detail reads share a transaction snapshot. Draft CAS, explicit
 activation/stop decisions, fresh completed-session protection and immutable versions share
@@ -18,8 +18,10 @@ use typed optimistic repository commands on IO. Atomic activateDraft verifies th
 reviewed recurring draft, fresh exclusions/custom metadata and current pointer before any
 programme/decision write; lost-ack retries remain idempotent. This is separate from actual
 set execution. Structured custom entry uses typed metadata and its atomic logging mirror;
-metadata-aware browse/detail never fabricates technique or canonical suitability. Generated
-editable preview/future-edit controls remain unfinished. Completed history is a terminal projection; unfinished-only clock observations
+metadata-aware browse/detail never fabricates technique or canonical suitability. Generated concrete previews and future-edit/regeneration controls use feature-owned
+StrengthGenerationViewModel with typed optimistic storage. Permanent replacement review,
+optional conservative target proposals and read-only paged revision history share this boundary;
+none owns actual set execution. Their source-bound Android/visual status is in CONTINUE_CODEX.md. Completed history is a terminal projection; unfinished-only clock observations
 must not replace it with an empty coordinator view.
 See docs/STRENGTH_PROGRAMMING_0_10.md and CONTINUE_CODEX.md for current scope and gates.
 
@@ -434,8 +436,8 @@ start and adapts that preserved source into the existing GymExecutionEngine. Run
 slots, actual sets, pause/recovery and finalisation use the same coordinator/repository.
 Substitution context resolves the started source revision, including precise equipment,
 goal and experience, rather than the latest programme. Programme screens display frozen
-exercise names and exact optional targets. Builder/activation/editing controls are a
-separate unfinished application phase; these read paths do not silently activate or edit.
+exercise names and exact optional targets. Builder/activation/editing controls explicitly review typed proposals; these read paths
+do not silently activate or edit.
 
 ### Concrete strength preview persistence (0.10, in development)
 

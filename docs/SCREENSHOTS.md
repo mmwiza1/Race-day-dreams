@@ -314,3 +314,12 @@ actual-build images from8f1d1aa. All6future scenes were visually reviewed in lig
 scenes (strength-programme-alternatives, -dark, -large-font), bringing required total119.
 These new scenes are pending current-source API gates and actual visual review; no image
 is replaced by a mockup and no previous scene/assertion is removed.
+
+## Optional target and history captures — pending current-source gate
+
+Three actual production scenes each for strength-programme-progression and
+strength-programme-history (normal, dark,200%) add6images,125required total. Progression
+uses test-only recorded exact working evidence, the production advisor and explicit-choice
+controls. History opens an accepted revision through production navigation and asserts
+current ownership/actual evidence are unchanged. No mock UI or edited PNG is permitted.
+These require the current full API gate, source fingerprint verification and visual review.

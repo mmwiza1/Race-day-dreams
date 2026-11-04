@@ -1,149 +1,157 @@
-# Strength Programming 2.0 — implementation checkpoint
+# Strength Programming 2.0 — 0.10 implementation and verification boundary
 
-This is an in-progress 0.10 programming/durability checkpoint, **not** a completed
-programme-builder release. Existing 0.9 behaviour and historical prescriptions remain
-supported; schema/backup additions are described below.
+0.10 remains an in-progress draft release. The manual/custom, template and future-review
+checkpoints have passed their source-bound supported Android gates. New permanent swap,
+progression and history UI require their own gate and actual capture review. See
+VERIFICATION.md and CONTINUE_CODEX.md; no physical Galaxy S24 acceptance is implied.
 
-## Programme authoring and proposals
+## One durable prescription model
 
-`StrengthProgramme` describes concrete dated blocks, exact frozen workout definitions,
-explicit revision lineage, effective date, origin/template identity and explanations.
-Blocks are contiguous programme weeks anchored to their actual start, including a
-mid-week start. Supported authoring bounds are 52 weeks, 12 blocks and 12 exercises per
-session. A generated preview is bounded to 26 weeks. These are product/resource bounds.
+`StrengthProgramme` preserves dated blocks, exact frozen `GymWorkoutDefinition` targets,
+revision lineage, effective date, origin/template identity, notes and explanations.
+Programme weeks anchor to the actual start, including mid-week starts. Manual authoring
+supports up to52weeks/12blocks/12exercises per session; generation supports26weeks. These
+are product/resource bounds, not physiological advice.
 
-`StrengthProgrammeDraft` permits incomplete authoring without inventing completed work.
-It supports replacement/deletion/duplication of workouts and blocks, block ordering,
-exercise ordering and moves between days. A complete preview validates available days,
-frequency, targets, equipment and exclusions. Custom exercise definitions have explicit
-body-area/movement/equipment/task metadata, but no invented technique or automatic
-progression eligibility. Canonical guidance remains unchanged.
+The phone manual builder saves typed optimistic drafts, including incomplete drafts. Users
+configure name, goal, days/frequency, equipment, duration, blocks/phases, workout names and
+notes, exercise order, sets, rep/time/distance targets, optional fractional RPE/RIR and rest.
+It supports adding/removing/replacing/moving exercises, duplicating workouts/blocks, ordering
+blocks, saved recovery, preview and explicit activation. Targets are never actual entered sets.
 
-`StrengthProgrammeEditor` returns proposals only. It protects every historical and
-completed session, including actual-linked future prescriptions when availability changes.
-Regeneration cannot shorten a programme past retained history. Substitution proposals
-reuse the existing intent/equipment/experience/exclusion ranker; incompatible measurements
-require a reviewed new target and every replacement clears load references.
+Structured custom entry uses stable identities, broad area/role, explicit equipment,
+measurement and notes. Supported logging profiles remain load+reps, reps, time, load+time,
+distance and load+distance, including weighted-bodyweight where applicable. Old UUID/custom
+history remains readable. No technique guide, estimated1RM or automatic progression is
+invented for custom tasks; canonical generation uses the retained174exercise catalogue.
+
+## Nine editable starting structures
+
+Full Body2/3, Upper/Lower4, Push/Pull/Legs3/6, Strength3, Muscle4 and Running Support2/3 are
+original Race Day Dreams templates. Each explains intended users, time and trade-offs.
+Configure or generate a concrete saved preview, inspect every dated block/workout and edit
+before acceptance. Saved concrete previews preserve all generated weeks, targets, notes,
+phases and trade-offs; the first week is never flattened into a repeated substitute.
+Another generated preview preserves earlier saved drafts. Accepted prescriptions are read-only.
 
 ## Original programming policy
 
-Nine starter structures cover Full Body 2/3, Upper/Lower 4, Push/Pull/Legs 3/6,
-Strength 3, Muscle 4, and Running Support 2/3. They are editable starting structures,
-not branded programmes or individually assessed recommendations.
+Strength prioritises repeatable main compounds, lower reps and longer rest, with different
+secondary/accessory prescriptions. Muscle uses greater working exposure and accessories;
+power uses lower-fatigue quality work and greater rest where a suitable exercise exists.
+Running support deliberately covers squat/hinge, unilateral, calf/lower-leg, trunk and useful
+upper-body maintenance. General remains balanced. These are transparent original product
+heuristics, not individually validated physiological prescriptions.
 
-Generation distinguishes primary strength prescriptions, muscle volume, controlled
-power/support volume, unilateral/lower-leg/trunk running support, experience suitability,
-and optional Foundation/Development/Intensification/Recovery-Assessment phases. The
-optional assessment does not prescribe maximal testing. Longer beginner programmes use
-more practice and do not force general-purpose intensification; Running First support
-also avoids a compulsory intensification block. Power specificity uses fewer quality
-repetitions/sets and recovery retains the lower-effort range. Power work stops when speed
-or control deteriorates. Beginner power currently has an explicit catalogue limitation:
-no existing POWER-primary exercise is classified beginner-friendly. The preview describes
-movement practice honestly; it does not relabel another movement as ballistic exposure.
+Beginner choices use simpler stable movements, fewer exercises, lower volume and more
+reserve. Intermediate/experienced choices allow suitable specificity and volume. Longer
+programmes use meaningful Foundation/Development/Intensification phases when appropriate;
+optional Recovery/Assessment uses less work and more reserve without forced maximal testing.
+Not every goal/experience needs every phase. Experienced power has genuine classified power
+exposure. The catalogue has no beginner-friendly POWER-primary movement; beginner power
+previews explicitly explain movement practice rather than falsely claiming ballistic work.
+No Olympic derivative is automatically assigned to beginners.
 
-Exact equipment capabilities and exclusions are hard candidate filters. Infeasible setups
-fail explicitly, while missing exposures and constrained time/scheduling are explained.
-Hybrid placement uses bounded subset search over available days and soft directional
-penalties for demanding runs. No running plan is changed. Date-specific conflicts remain
-in workout notes even when a long programme needs a compact top-level summary.
+Exact equipment/exclusions are hard candidate filters. Infeasible configurations fail with
+an explanation. A short session cannot honestly fit every possible exposure. Work/rest/
+transition time is an approximate planning budget, not measured speed. Generation invents
+no load. Exercise roles bound primary/accessory balance, overlap and duplication.
 
-Time budgeting is an openly documented planning estimate using prescribed work/rest and
-transitions. It is not observed exercise speed or physiological precision. Loads are never
-generated without real exact-exercise evidence.
+Hybrid placement considers demanding run dates and race-week context using soft penalties
+and explained trade-offs. It never rewrites running plans. Strength-only users need no race
+or running setup. Date-specific conflicts remain in workout notes even when the top-level
+trade-off summary is bounded.
 
-## Execution and progression boundary
+## Future changes are proposals
 
-`GymWorkoutAdapter.fromAuthoredProgramme` and
-`GymWorkoutSourceValidator.authoredProgramme` pass exact frozen targets into the existing
-`GymExecutionEngine`. No second execution engine or source kind is introduced. Domain
-tests verify that starting an authored prescription creates no actual sets.
+Prepare a next revision from accepted authored programming, edit dated future targets or
+regenerate using changed goal, frequency, days, equipment, priority, length or time budget.
+The original start and exact earlier/completed prescriptions remain. A frequency change
+can drop an incompatible template identity and explain the new goal-based split. Completed
+future-dated actual-linked workouts are protected too; they are not inferred from dates.
 
-The Android repository now resolves exact legacy and authored PROGRAMME sources through
-the same execution engine, preserving frozen targets and finalisation links. Reviewed spontaneous Count/Keep now accepts exact authored workouts through the existing
-association coordinator/projection. New decision payload2 retains the frozen definition,
-nullable/fractional RIR and optional rest; legacy decision1 remains readable. Current
-programme display and activation/start UI still need integration before the builder is
-exposed. No legacy RPE approximation is used.
-In particular, do not coerce optional/null/fractional effort into fake legacy RPE values.
+A forward revision cannot activate while a native workout from that programme is unfinished,
+paused or awaiting recovery. Finish/discard it explicitly first. Current active prescriptions
+are protected during proposal edits and bulk replacements without calling them completed.
+Previewing changes never stops a workout. Activation rechecks actual-linked completions,
+current ownership and fresh eligibility in one transaction. Competing proposals remain
+separate; accepted contents become read-only and superseded alternatives never replace them.
 
-`StrengthTargetProgression` supplies optional domain proposals. It requires two distinct,
-recent exact-exercise sessions with enough actual working sets, matching task/loading and
-recorded intended effort. Warm-ups, stale/future evidence and unknown effort do not drive
-increases. Weighted advice delegates to the established conservative load rule; other
-supported tasks can suggest a small rep/time/distance increase at the same proven loading.
-Custom-only tasks receive no invented progression. This policy is not yet connected to
-new programme-edit controls; the existing 0.9 advice remains unchanged.
+## Permanent and today-only replacements
 
-## Durability — next integration phase
+Gym Now retains its concise equipment-busy/unavailable today-only flow and frozen source.
+Programme review separately offers ranked, explained options using the reviewed goal,
+experience, equipment and fresh exclusions/archive preferences. A saved proposal changes one
+dated exercise or eligible future occurrences. Each phase keeps its own rep/effort/rest
+prescription; every replacement clears load references. A different measurement requires a
+fresh target for that dated workout. Custom/unsupported tasks get no invented automatic match.
 
-`StrengthProgrammingJson` uses independently versioned programme/draft/custom payloads,
-the existing strict bounded gym parser and frozen-workout codec. It rejects unknown/future
-fields, duplicate/coerced fields and invalid nested structures. Android codec tests are
-required on all supported APIs. This is a serialization boundary, not a SQL repository.
+Pure substitution rules preserve accepted-base→final provenance, undo and protected history.
+SQL activation revalidates the original role/measurement intent and fresh candidate eligibility.
+Only explicit activation accepts the immutable new programme revision. Nothing rewrites actuals.
 
-Schema 14 adds typed revision/header, block, per-session, current-pointer, decision,
-draft/header, draft-block and custom-metadata tables over the shared database. Summaries
-query scalar columns with a history index; detail loads bounded session rows. Draft saves
-use optimistic revisions. Activation compares the current pointer, verifies fresh
-actual-linked protected sessions inside the transaction, appends an immutable revision and
-records the athlete's decision atomically. Stopping removes the pointer and retains history.
-Custom metadata mirrors the logging definition without inventing technique or progression.
+## Conservative optional progression
 
-JSON envelope 9 requires the version-one strengthProgramming section and retains readers
-for envelopes 1–8. Restore checks references, lineage, ordered decisions, custom/logging
-agreement and row-size limits before replacing anything; all reconstruction uses the shared
-restore transaction. strengthEngine 2, strengthState 2, raw archive 2 and complete package 1
-are unchanged. Current source-bound test results belong in VERIFICATION.md; no UI completion
-or physical acceptance follows merely from this persistence boundary.
+The preview's progression review calls the existing pure `StrengthTargetProgression` over up
+to20recent logged sessions. It requires two distinct recent exact-exercise sessions with
+enough comparable working sets, same proven load and intended recorded effort. Warm-ups,
+stale/future evidence, missing effort and insufficient work do not support an increase.
+A bounded recent query can conservatively miss older evidence; it never invents it.
 
-## Verification boundary
+Weighted rep tasks reuse the established small optional load rule. Bodyweight can propose
+reps, time tasks a small duration increase, and carries/distance a small distance increase
+at proven loading. Weighted bodyweight uses its supported exact task; no unrelated exercise
+load transfer or estimated1RM is invented. Unsupported custom tasks remain without automatic
+progression. The existing StartingLoad safeguards remain unchanged.
 
-Current local checks: 587,615 domain assertions across 33 suites; 60 schema cases;
-9 release-note cases; strict 174/174 canonical and 14/14 routine guidance. The new
-2,430-configuration simulator checks actual catalogue metadata, equipment, exclusions,
-duration, primary balance, controlled power volume, support roles, determinism and
-weekday boundaries. See VERIFICATION.md and CONTINUE_CODEX.md for exact CI state.
-No physical Galaxy S24 acceptance is claimed.
+Review shows current/optional target and explanation. Keep the target or explicitly save a
+proposal for that date. Save rechecks exact reviewed draft/target and fresh actual evidence;
+changed evidence requires review again. The immutable revision reason retains the chosen
+proposal explanation/supporting session IDs. Actual sets, other dates and active programming
+remain separate until explicit activation. This is not an automatic progression programme.
 
-## Association and terminal display hardening
+## Read-only accepted history
 
-The association proposal carries exactly one preserved family (legacy Session or authored
-Workout). Discovery requires a nearby date and an exact working measurement task in common;
-it never implies that every prescribed set was completed. Current-version and occupied-target
-checks happen inside the acceptance transaction. Keeping extra can retain or reverse an old
-review without rewriting actuals or prescriptions. Backup validation checks each family
-against its exact retained version, including the original snapshot after later actual edits.
+Programme revision history pages bounded indexed SQLite summaries. Opening a revision loads
+its preserved blocks/dated targets on IO. Inspecting it cannot reactivate or edit it. The
+list distinguishes prescriptions from actuals; workout actual/history remains in Gym Now.
+No raw recording samples are read for these views.
 
-Completed-workout history is a terminal projection, independent of an active execution
-coordinator. Display-clock observations now run only for unfinished displayed sessions;
-reopening a finished workout must not let a later empty coordinator tick remove its review.
-The original UI test forces that real tick while the confirmation is open. This production
-fix addresses the reappearing API35 failure after the earlier appearance-wait-only repair.
+## One execution and transaction boundary
 
-## Authored current-programme integration
+`GymWorkoutAdapter.fromAuthoredProgramme` and the existing source validator pass exact
+frozen targets to the original `GymExecutionEngine`. No second engine/source kind is added.
+Strength Today, hybrid Home, programme details, calendar and planned Gym Now starts read
+the typed current owner. Optional/null/fractional targets are never coerced to legacy RPE.
+Spontaneous Count/Keep is an explicit reviewed association, not assumed completion.
 
-The current typed revision now projects into Strength Today, the hybrid Home summary,
-programme/block/workout details, calendar entries and Gym Now's planned-session list.
-Optional rest and fractional RIR are displayed directly from frozen slots. Dates use the
-existing UK presentation. The calendar suppresses a duplicate planned entry only after
-an explicit valid actual/prescription link; a spontaneous gym visit is not completion.
+Schema14 added typed accepted revision/header/block/session/current/decision/manual draft/
+custom metadata storage. Schema15 adds separate concrete preview header/block/workout tables.
+Summaries avoid payload hydration; detail reads and activation use shared SQL transactions.
+Exact reviewed draft/current-pointer CAS and fresh protection precede acceptance. Lost-ack
+retries remain idempotent; failures roll back. Historical actuals and custom logging mirrors
+remain separate and intact.
 
-Planned start compares the displayed programme identity/revision with the typed current
-pointer and refreshes a stale selection rather than silently changing targets. Execution,
-actual entry, pause/recovery and finalisation still use the original Gym Now coordinator.
-Equipment-busy alternatives resolve the started authored version's goal, experience and
-specific equipment capabilities. Today-only swaps clear incompatible reference loads and
-preserve the original prescription/source. The manual builder now saves and previews typed recurring blocks and explicitly activates
-reviewed drafts. Editable generated/template previews and future-edit controls remain the
-next phase. Structured custom metadata entry reuses the typed custom repository/logging
-mirror, supports all existing measurement tasks, retains older UUID history and keeps
-custom movements out of automatic generated selection. No fake guide or estimated1RM is
-attached. Current source-specific Android/capture status is recorded in CONTINUE_CODEX.md.
+JSON envelope9 writes nested strengthProgramming2 and reads1–2; older supported root1–8
+backups remain supported. Strict validation checks fields, references, lineage, decisions,
+custom/logging agreement and size bounds before transactional replacement. Corrupt/future
+archives must not replace local data. strengthEngine2, strengthState2, raw2 and complete1
+remain unchanged. No new catch-all JSON bucket, runtime dependency or permission is added.
 
-## Current programme inventory
+## Verification
 
-The exercise browser reads authored prescriptions before legacy programme inventory and
-refreshes when the current family changes. This is a read-only projection; historical
-programme rows and actual sets are unchanged. Typed custom metadata supplies body-area,
-movement and equipment filters without inferring classification from an exercise name.
+The deterministic2430configuration simulator exercises goals, priority, experience, frequency,
+time, available weekdays, three equipment setups, exclusions/favourites and hybrid context.
+Invariants cover valid equipment/tasks, excluded choices, unique dates/exercises, duration,
+primary balance, controlled power volume, runner-support exposure and beginner suitability.
+Explicit constrained failure is preferable to an invented eligible exercise. The domain
+progression suite covers supported modalities, stale/missing/high effort and duplicate identity.
+
+Android cases cover typed restore/migration, exact reviewed acceptance, native actual preservation,
+competing drafts, active interruption, late exclusions, fresh measurement swaps, optional targets
+and read-only history. New real production captures include templates, blocks, future review,
+replacement choices, progression and history in light/dark/200% text. Passing source compilation
+is not APK/lint/device verification; use source-bound matrix results in VERIFICATION.md.
+
+0.11 nutrition, analytics, PB redesign, achievements, deload intelligence, advanced hybrid,
+rest timer, generated warm-ups, supersets and catalogue-for-breadth remain out of scope.

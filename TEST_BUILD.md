@@ -463,3 +463,16 @@ add their physical cases when connected. Rest timers/supersets/generated warm-up
 - [ ] Exclude an option after opening choices: saving/activation must recheck eligibility.
 - [ ] Exercise today-only Gym Now choices separately; old actual sets/history remain intact.
 - [ ] Check light/dark/200% text and TalkBack on the real replacement review.
+
+## Optional progression and history — Galaxy S24 UNPERFORMED
+
+- [ ] Review a target with no/one/two comparable recent sessions; missing RPE/RIR must not
+  become an increase. Inspect current and optional target/explanation and keep the original.
+- [ ] Save a supported proposal, confirm active programming stays unchanged, then explicitly
+  activate the revision. Old actual sets and historical prescriptions must remain exact.
+- [ ] Edit/delete supporting evidence after review; saving must require fresh review.
+- [ ] Exercise bodyweight, weighted bodyweight, timed and carry/distance proposals where
+  real comparable evidence exists; no unrelated weight transfer or fabricated guidance.
+- [ ] Open earlier programme revisions/dated targets; no reactivation/edit action. Check
+  current owner and actuals remain unchanged, including after complete backup/restore.
+- [ ] Check proposal/history light/dark/200% text, scrolling, keyboard and TalkBack on S24.

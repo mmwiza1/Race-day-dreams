@@ -98,6 +98,9 @@ fun StrengthGenerationScreen(
                 ) {
                     Text("Generate from my preferences")
                 }
+                OutlinedButton(onClick = model::openHistory, enabled = enabled) {
+                    Text("Programme revision history")
+                }
                 if (state.current?.owner() == StrengthProgrammingRepository.Owner.AUTHORED)
                     SemanticCard(Tile.Strength) {
                         Text("Current programme", style = MaterialTheme.typography.titleLarge)
@@ -324,6 +327,14 @@ fun StrengthGenerationScreen(
                                         ) {
                                             Text("Swap ${slot.exercise().name()} in programme")
                                         }
+                                    TextButton(
+                                        onClick = {
+                                            model.reviewProgression(workout.id(), slot.id())
+                                        },
+                                        enabled = enabled,
+                                    ) {
+                                        Text("Review progression for ${slot.exercise().name()}")
+                                    }
                                     OutlinedButton(
                                         onClick = { slotEdit = workout.id() to slot },
                                         enabled = enabled,
@@ -377,6 +388,8 @@ fun StrengthGenerationScreen(
         }
     }
     ProgrammeSwapSheet(model)
+    ProgrammeProgressionSheet(model)
+    ProgrammeHistorySheet(model)
     slotEdit?.let { (workout, slot) ->
         GymSlotEditor(
             slot,

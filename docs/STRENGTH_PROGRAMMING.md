@@ -1,3 +1,10 @@
+# Strength programming — retained policy and 0.10 integration
+
+For the current0.10 model, templates, future revisions, permanent substitutions,
+optional progression and history, see [Strength Programming2.0](STRENGTH_PROGRAMMING_0_10.md).
+Historical implementation notes below are preserved; source-bound current verification
+is in VERIFICATION.md and CONTINUE_CODEX.md.
+
 # Original strength programming — 0.5
 
 Race Day Dreams recommends; the runner decides. Programming is optional and local.
@@ -110,7 +117,7 @@ Activation of a forward revision waits while a native workout using that program
 active, paused or awaiting recovery. The athlete can finish/discard that workout first;
 then activation rechecks fresh completed evidence. Previewing changes never stops a workout.
 
-Permanent-substitution domain operations (not yet connected to UI) can retain each phase's
+Permanent-substitution domain operations and connected review controls can retain each phase's
 own target across selected future occurrences, clear load references and record final
 accepted-base→replacement provenance. A changed measurement needs an individually reviewed
 target. SQL acceptance independently rechecks original intent, fresh exclusions/archived

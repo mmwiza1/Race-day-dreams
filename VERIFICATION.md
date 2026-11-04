@@ -1,3 +1,19 @@
+## 4 November 2026 — observed permanent replacement gate failures and follow-up
+
+Sourceb148e2aaeadf71b25373ace16a4fb9a5a93f1631/workflow41905672344 finished419tests
+EACH API28/35/36. Build/lint/format/guidance passed. All3APIs failed2newUItests that
+selected an option behind Show more alternatives without revealing it. API35 also failed
+an existing Paris Route Story wait with an empty semantics root during repeated window cycling; APIs28/36 passed
+that capture case. No canonical images were published for this red checkpoint.
+
+The follow-up traverses real ranked disclosure and waits for destroyed-window Compose root
+unregistration before launching the next city. Existing20sec deadlines and all real sample/
+source/story/durability assertions remain unchanged. Current source also connects optional
+modality progression/history with5UIcases/2capturecases: next expected426/API and125images.
+Local domain588145/35suites, schema64/release9 and capture-validator13 pass. All main/instrumentation Kotlin+Java source compilation and72Kotlin/115Java formatting
+pass after the final fixes. A fresh complete Android gate is still required. These changes
+are not yet release-verified. PR15 remains DRAFT. No physical Galaxy S24 checks are claimed.
+
 ## 4 November 2026 — verified future checkpoint; permanent UI pending
 
 Source8f1d1aad1a95072ea5de08488c72a7acf5d229b5 passed COMPLETE workflow41899315529:

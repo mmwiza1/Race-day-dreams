@@ -1,11 +1,13 @@
 # Active0.10 — Strength Programming 2.0
 
-Draft PR15 / feature/0.10-strength-programming starts from merged0.9. Domain authoring,
-block/template previews, future-only proposals, exact execution-source adaptation,
-strict codecs and conservative modality progression are implemented. Recovered schema14 /
-backup9 typed persistence, protected activation and exact planned-execution integration are
-in verification. App builder/activation and modern association integration remain unfinished. CONTINUE_CODEX.md is the exact ordered
-remaining-work list. Do not merge a green foundation checkpoint as a complete release.
+Draft PR15 / feature/0.10-strength-programming continues merged0.9. Typed manual/custom
+and concrete generated/template programming, future edits/regeneration, original block/goal/
+experience policy and exact native execution/association integration are implemented. The
+413-case/API checkpoint passed the supported gate. Connected permanent replacement controls
+are in their next419-case gate. Optional modality proposals and read-only revision history
+are now connected locally and require their current426-case/API gate and125actual captures.
+CONTINUE_CODEX.md owns the exact remaining work; do not merge a green partial checkpoint.
+Schema15/rootJSON9/authoring2(read1–2)/raw2/complete1 retain supported older readers.
 0.11 nutrition/analytics/PB redesign/achievements/deload/advanced hybrid/rest timer/
 warm-up generation/supersets and catalogue-for-breadth remain explicitly deferred.
 

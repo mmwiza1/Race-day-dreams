@@ -23,6 +23,14 @@ data class ProgrammeSwapReview(
     val suggestions: List<ExerciseSubstitutionEngine.Suggestion> = emptyList(),
 )
 
+data class ProgrammeProgressionReview(
+    val draftId: String,
+    val draftRevision: Int,
+    val workoutId: String,
+    val slot: GymWorkoutDefinition.Slot,
+    val advice: StrengthTargetProgression.Advice,
+)
+
 /** Exact concrete generation/preview ownership; durable drafts contain dates, not UI timers. */
 data class StrengthGenerationState(
     val busy: Boolean = false,
@@ -34,11 +42,17 @@ data class StrengthGenerationState(
     val superseded: Boolean = false,
     val baseProgramme: StrengthProgramme? = null,
     val swapReview: ProgrammeSwapReview? = null,
+    val progressionReview: ProgrammeProgressionReview? = null,
     val protectedWorkoutIds: Set<String> = emptySet(),
     val saved: List<ConcreteStrengthProgrammeDraftRepository.Summary> = emptyList(),
     val page: Int = 0,
     val more: Boolean = false,
     val current: StrengthProgrammingRepository.Reference? = null,
+    val historyOpen: Boolean = false,
+    val historyPage: Int = 0,
+    val history: List<StrengthProgrammingRepository.Summary> = emptyList(),
+    val historyMore: Boolean = false,
+    val historicalProgramme: StrengthProgramme? = null,
     val exercises: List<StrengthExercise> = emptyList(),
     val favourites: Set<String> = emptySet(),
     val excluded: Set<String> = emptySet(),
@@ -71,7 +85,11 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
                 ?.takeIf { it.programme().parentRevision() > 0 }
                 ?.before()
                 ?.let { programmes.reviewRevision(it) }
+        val history =
+            if (value.historyOpen) programmes.versions(21, value.historyPage * 20) else emptyList()
         return value.copy(
+            history = history.take(20),
+            historyMore = history.size > 20,
             saved = rows.take(20),
             more = rows.size > 20,
             current = programmes.currentReference(),
@@ -120,7 +138,11 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
 
     fun reload() = command { before ->
         val selected = before.draft?.id() ?: retained.get<String>("strength.concrete.draft")
-        before.copy(draft = selected?.let { repository.get(it) }, swapReview = null)
+        before.copy(
+            draft = selected?.let { repository.get(it) },
+            swapReview = null,
+            progressionReview = null,
+        )
     }
 
     fun page(delta: Int) = command { it.copy(page = (it.page + delta).coerceAtLeast(0)) }
@@ -132,7 +154,7 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
             )
         }
 
-    fun close() = command { it.copy(draft = null, swapReview = null) }
+    fun close() = command { it.copy(draft = null, swapReview = null, progressionReview = null) }
 
     fun delete(draftId: String, revision: Int) = command {
         repository.delete(draftId, revision)
@@ -304,6 +326,7 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
     private fun edit(
         workoutId: String,
         done: () -> Unit = {},
+        decisionReason: String? = null,
         change: (StrengthProgramme.Workout) -> StrengthProgramme.Workout,
     ) =
         command(done) { before ->
@@ -321,9 +344,38 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
                     "Earlier, completed and active prescriptions are read only. Choose another future workout."
                 }
             }
-            val next = ConcreteStrengthProgrammeEditor.replaceWorkout(old, change(workout))
+            val edited = ConcreteStrengthProgrammeEditor.replaceWorkout(old, change(workout))
+            val next =
+                if (decisionReason == null) edited
+                else {
+                    val p = edited.programme()
+                    ConcreteStrengthProgrammeDraft(
+                        edited.id(),
+                        edited.revision(),
+                        edited.before(),
+                        StrengthProgramme(
+                            p.id(),
+                            p.revision(),
+                            p.parentRevision(),
+                            p.createdAt(),
+                            p.name(),
+                            p.origin(),
+                            p.templateId(),
+                            p.settings(),
+                            p.blocks(),
+                            p.effectiveFrom(),
+                            decisionReason,
+                            p.tradeoffs(),
+                        ),
+                        edited.substitutions(),
+                    )
+                }
             repository.save(next, old.revision())
-            before.copy(draft = next, notice = "Saved this dated workout.")
+            before.copy(
+                draft = next,
+                progressionReview = null,
+                notice = "Saved this dated workout.",
+            )
         }
 
     private fun withSlots(
@@ -528,6 +580,104 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
                 notice = "Replacement proposal saved. Review and activate when ready.",
             )
         }
+
+    private fun progressionAdvice(slot: GymWorkoutDefinition.Slot) =
+        StrengthTargetProgression.review(
+            slot,
+            SqliteGymExecutionRepository(getApplication<Application>()).recentActual(20),
+            Instant.now(),
+        )
+
+    fun reviewProgression(workoutId: String, slotId: String) = command { before ->
+        require(!before.accepted && !before.superseded) { "Prepare a future revision first." }
+        val draft = before.draft ?: error("Open a saved preview first.")
+        val workout = draft.programme().workouts().first { it.id() == workoutId }
+        require(
+            !workout.date().isBefore(draft.programme().effectiveFrom()) &&
+                workoutId !in before.protectedWorkoutIds
+        ) {
+            "Earlier, completed and active prescriptions are read only."
+        }
+        val slot = workout.definition().slots().first { it.id() == slotId }
+        before.copy(
+            progressionReview =
+                ProgrammeProgressionReview(
+                    draft.id(),
+                    draft.revision(),
+                    workoutId,
+                    slot,
+                    progressionAdvice(slot),
+                )
+        )
+    }
+
+    fun closeProgression() {
+        if (!mutable.value.busy) mutable.update { it.copy(progressionReview = null, error = null) }
+    }
+
+    /** A reviewed optional reference/task is written only to this unaccepted dated proposal. */
+    fun saveProgressionProposal() {
+        val reviewed = mutable.value.progressionReview ?: return
+        edit(
+            reviewed.workoutId,
+            decisionReason =
+                "Athlete saved an optional target proposal for ${reviewed.slot.exercise().name()}. ${reviewed.advice.reason()} Supporting logged sessions: ${reviewed.advice.supportingSessionIds().joinToString(", ")}. Other dates and entered sets remain unchanged.",
+        ) { workout ->
+            val current = mutable.value.draft ?: error("Open this preview again.")
+            require(
+                current.id() == reviewed.draftId && current.revision() == reviewed.draftRevision
+            ) {
+                "The preview changed. Review progression again."
+            }
+            val slot = workout.definition().slots().first { it.id() == reviewed.slot.id() }
+            require(slot == reviewed.slot) { "The target changed. Review progression again." }
+            val fresh = progressionAdvice(slot)
+            require(fresh == reviewed.advice && fresh.proposedTarget() != null) {
+                "Supporting evidence changed or is insufficient. Review progression again."
+            }
+            withSlots(
+                workout,
+                workout.definition().slots().map {
+                    if (it.id() == slot.id())
+                        GymWorkoutDefinition.Slot(
+                            it.id(),
+                            it.exercise(),
+                            fresh.proposedTarget(),
+                            it.supersetGroup(),
+                        )
+                    else it
+                },
+            )
+        }
+    }
+
+    fun openHistory() = command {
+        it.copy(historyOpen = true, historyPage = 0, historicalProgramme = null)
+    }
+
+    fun historyPage(delta: Int) = command {
+        it.copy(historyPage = (it.historyPage + delta).coerceAtLeast(0), historicalProgramme = null)
+    }
+
+    fun reviewHistorical(id: String, revision: Int) = command {
+        it.copy(
+            historicalProgramme =
+                programmes.programme(id, revision)
+                    ?: error("This preserved revision is unavailable.")
+        )
+    }
+
+    fun historicalList() {
+        if (!mutable.value.busy)
+            mutable.update { it.copy(historicalProgramme = null, error = null) }
+    }
+
+    fun closeHistory() {
+        if (!mutable.value.busy)
+            mutable.update {
+                it.copy(historyOpen = false, historicalProgramme = null, error = null)
+            }
+    }
 
     fun activate(reviewed: ConcreteStrengthProgrammeDraft, decisionId: String, done: () -> Unit) =
         command(done) { before ->

@@ -41,6 +41,13 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
   changed measurement tasks require fresh targets, and activation stays explicit. Current
   Android/capture verification of these new controls is pending.
 
+- Optional progression review explains exact recent working evidence and offers a small,
+  task-specific target proposal. Saving rechecks evidence; activating a programme revision
+  remains a separate explicit decision. Missing effort/custom unsupported tasks never
+  become invented numeric advice.
+- Read-only programme revision history pages accepted prescriptions and dated targets,
+  keeping historical programming separate from actual sets and current activation.
+
 ## Fixes
 
 - Current preview acceptance rechecks archived exercise preferences as well as exclusions.
@@ -69,8 +76,8 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Known limitations
 
-- Programme replacement controls require their current Android/capture gate.
-  Modality-progression controls and final programme-history navigation remain in progress.
+- Programme replacement, optional progression and history controls require their current
+  Android/capture gates and final visual review. They are connected, but not yet release-verified.
   The manual/custom workflows passed the supported automated gate and scoped capture
   review; physical Galaxy S24 acceptance remains unperformed.
 - Beginner power previews explicitly report the current catalogue's lack of a

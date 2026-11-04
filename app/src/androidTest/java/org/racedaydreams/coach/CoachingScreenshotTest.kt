@@ -1092,6 +1092,14 @@ class CoachingScreenshotTest {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync()
             scenario?.close()
             scenario = null
+            // ActivityScenario.close waits for DESTROYED, not Compose test-root unregister.
+            // Do not let the next launch/query adopt a departing window's empty semantics root.
+            compose.waitUntil(20000) {
+                compose
+                    .onAllNodes(isRoot(), useUnmergedTree = true)
+                    .fetchSemanticsNodes(atLeastOneRootRequired = false)
+                    .isEmpty()
+            }
             val route = org.racedaydreams.domain.support.DreamRoutes.currentGeometry(city)
             val recorded =
                 FeatureStore(context).activitySummaries().single {
@@ -1177,7 +1185,7 @@ class CoachingScreenshotTest {
                 )
                     throw failure
                 throw AssertionError(
-                    "City ${route.id()}, activity ${recorded.id()}, source ${recorded.source()}, retained points ${retainedPoints.size}, expected story $retainedStory. UI: ${compose.onRoot(useUnmergedTree=true).printToString().take(14000)}",
+                    "City ${route.id()}, activity ${recorded.id()}, source ${recorded.source()}, retained points ${retainedPoints.size}, expected story $retainedStory, scenario ${scenario?.state}. UI: ${compose.onRoot(useUnmergedTree=true).printToString().take(14000)}",
                     failure,
                 )
             }
@@ -1599,7 +1607,18 @@ class CoachingScreenshotTest {
     }
 
     @Test
-    fun capturesProgrammeReplacementChoicesInLightDarkAndLargeText() {
+    fun capturesProgrammeReplacementChoicesInLightDarkAndLargeText() =
+        captureAuthoredReviewScenes("alternatives")
+
+    @Test
+    fun capturesOptionalProgressionInLightDarkAndLargeText() =
+        captureAuthoredReviewScenes("progression")
+
+    @Test
+    fun capturesPreservedProgrammeHistoryInLightDarkAndLargeText() =
+        captureAuthoredReviewScenes("history")
+
+    private fun captureAuthoredReviewScenes(kind: String) {
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
         SqlitePrimaryFocusRepository(context)
@@ -1639,6 +1658,35 @@ class CoachingScreenshotTest {
                 )
         val repository = SqliteStrengthProgrammingRepository(context)
         repository.activate(programme, null, "capture-replacement-base", emptyList())
+        val actuals =
+            if (kind == "progression") {
+                val slot = programme.workouts().first().definition().slots().first()
+                (1..2).map { day ->
+                    StrengthSession(
+                            "capture-progress-$day",
+                            Instant.now().minus(Duration.ofDays(day.toLong())),
+                            ZoneOffset.UTC,
+                            Duration.ofMinutes(30),
+                            null,
+                            "",
+                            listOf(
+                                StrengthSession.ExerciseSets(
+                                    slot.exercise(),
+                                    (1..slot.target().sets()).map { index ->
+                                        StrengthSession.SetEntry(
+                                            "capture-set-$day-$index",
+                                            slot.target().maximumReps(),
+                                            80.0,
+                                            7.0,
+                                            false,
+                                        )
+                                    },
+                                )
+                            ),
+                        )
+                        .also { CoachingStore(context).saveStrength(it) }
+                }
+            } else emptyList()
         val originalFont = shell("settings get system font_scale").trim()
         val originalNight =
             shell("cmd uimode night").let {
@@ -1671,27 +1719,49 @@ class CoachingScreenshotTest {
                     .performScrollTo()
                     .performClick()
                 await("Templates & generation")
-                compose
-                    .onNodeWithText("Review future programme changes")
-                    .performScrollTo()
-                    .performClick()
-                await("Review every block")
-                val workout = programme.workouts().first()
-                compose
-                    .onNodeWithText(
-                        "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"
-                    )
-                    .performScrollTo()
-                    .performClick()
-                await("Dated workout")
-                compose
-                    .onNodeWithText(
-                        "Swap ${workout.definition().slots().first().exercise().name()} in programme"
-                    )
-                    .performScrollTo()
-                    .performClick()
-                await("Programme replacement")
-                compose.onNodeWithText("Programme replacement").assertIsDisplayed()
+                if (kind == "history") {
+                    compose
+                        .onNodeWithText("Programme revision history")
+                        .performScrollTo()
+                        .performClick()
+                    await("Review ${programme.name()} revision 1")
+                    compose
+                        .onNode(hasScrollToIndexAction())
+                        .performScrollToNode(hasText("Review ${programme.name()} revision 1"))
+                    compose.onNodeWithText("Review ${programme.name()} revision 1").performClick()
+                    await("${programme.name()} · revision 1")
+                    compose.onNodeWithText("${programme.name()} · revision 1").assertIsDisplayed()
+                } else {
+                    compose
+                        .onNodeWithText("Review future programme changes")
+                        .performScrollTo()
+                        .performClick()
+                    await("Review every block")
+                    val workout = programme.workouts().first()
+                    compose
+                        .onNodeWithText(
+                            "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"
+                        )
+                        .performScrollTo()
+                        .performClick()
+                    await("Dated workout")
+                    compose
+                        .onNodeWithText(
+                            if (kind == "progression")
+                                "Review progression for ${workout.definition().slots().first().exercise().name()}"
+                            else
+                                "Swap ${workout.definition().slots().first().exercise().name()} in programme"
+                        )
+                        .performScrollTo()
+                        .performClick()
+                    val heading =
+                        if (kind == "progression") "Optional progression"
+                        else "Programme replacement"
+                    await(heading)
+                    compose.onNodeWithText(heading).assertIsDisplayed()
+                    if (kind == "progression")
+                        compose.onNodeWithText("Save optional target proposal").assertIsDisplayed()
+                }
                 if (suffix == "-large-font")
                     Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
                 if (suffix == "-dark")
@@ -1700,10 +1770,10 @@ class CoachingScreenshotTest {
                         context.resources.configuration.uiMode and
                             android.content.res.Configuration.UI_MODE_NIGHT_MASK,
                     )
-                capture("strength-programme-alternatives$suffix")
+                capture("strength-programme-$kind$suffix")
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))
-                Assert.assertTrue(CoachingStore(context).strength().isEmpty())
+                Assert.assertEquals(actuals.toSet(), CoachingStore(context).strength().toSet())
                 scenario?.close()
                 scenario = null
             }
@@ -1922,7 +1992,9 @@ class CoachingScreenshotTest {
         val semantics =
             if (
                 name == "gym-equipment-alternatives" ||
-                    name.startsWith("strength-programme-alternatives")
+                    name.startsWith("strength-programme-alternatives") ||
+                    name.startsWith("strength-programme-progression") ||
+                    name.startsWith("strength-programme-history")
             ) {
                 // The full-screen production dialog and its covered activity are separate roots.
                 compose

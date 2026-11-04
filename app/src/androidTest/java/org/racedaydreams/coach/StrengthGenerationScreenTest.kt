@@ -357,6 +357,7 @@ class StrengthGenerationScreenTest {
         click("Swap ${slot.exercise().name()} in programme")
         await { model.state.value.swapReview != null }
         compose.onNodeWithText("Programme replacement").assertIsDisplayed()
+        revealProgrammeAlternative("dumbbell-bench-press")
         chooseProgrammeAlternative("Choose Dumbbell Bench Press")
         chooseProgrammeAlternative("Save programme replacement proposal")
         await { model.state.value.draft!!.revision() == draft.revision() + 1 }
@@ -492,6 +493,7 @@ class StrengthGenerationScreenTest {
         val slot = workout.definition().slots().first()
         compose.runOnIdle { model.openProgrammeSwap(workout.id(), slot.id()) }
         await { model.state.value.swapReview != null }
+        revealProgrammeAlternative("dumbbell-bench-press")
         chooseProgrammeAlternative("Choose Dumbbell Bench Press")
         chooseProgrammeAlternative(
             "Apply to all eligible future occurrences of ${slot.exercise().name()}"
@@ -619,6 +621,267 @@ class StrengthGenerationScreenTest {
         )
     }
 
+    @Test
+    fun optionalLoadProposalRequiresEvidenceAndExplicitSaveThenActivation() {
+        install()
+        val original = prepareSwapProgramme()
+        val draft = model.state.value.draft!!
+        val workout = draft.programme().workouts().first()
+        val slot = workout.definition().slots().first()
+        val evidence = seedProgressionEvidence(slot)
+        click(
+            "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"
+        )
+        click("Review progression for ${slot.exercise().name()}")
+        await { model.state.value.progressionReview != null }
+        compose.onNodeWithText("Optional progression").assertIsDisplayed()
+        val advice = model.state.value.progressionReview!!.advice
+        assertEquals(2, advice.supportingSessionIds().size)
+        assertEquals(82.0, advice.proposedTarget().referenceLoadKg()!!, 0.0)
+        assertEquals(
+            draft,
+            io { SqliteConcreteStrengthProgrammeDraftRepository(app).get(draft.id()) },
+        )
+        compose.onNodeWithText("Keep current target").performClick()
+        assertEquals(draft, model.state.value.draft)
+        click("Review progression for ${slot.exercise().name()}")
+        await { model.state.value.progressionReview != null }
+        compose.onNodeWithText("Save optional target proposal").performClick()
+        await { model.state.value.draft!!.revision() == draft.revision() + 1 }
+        val proposed = model.state.value.draft!!
+        assertTrue(proposed.programme().reason().contains("optional target proposal"))
+        advice.supportingSessionIds().forEach {
+            assertTrue(proposed.programme().reason().contains(it))
+        }
+        assertEquals(
+            advice.proposedTarget(),
+            proposed.programme().workouts().first().definition().slots().first().target(),
+        )
+        assertEquals(draft.programme().workouts().drop(1), proposed.programme().workouts().drop(1))
+        assertEquals(
+            original.programme(),
+            io { programmes.programme(original.programme().id(), 1) },
+        )
+        assertEquals(evidence.toSet(), io { CoachingStore(app).strength().toSet() })
+        compose.runOnIdle { model.activate(proposed, "accept-optional-target") { activations++ } }
+        await { activations == 2 }
+        assertEquals(
+            proposed.programme(),
+            io { programmes.programme(original.programme().id(), 2) },
+        )
+        io {
+            val backup = SqliteBackupRepository(app)
+            backup.restoreUserData(backup.exportUserData(), false)
+        }
+        assertEquals(evidence.toSet(), io { CoachingStore(app).strength().toSet() })
+    }
+
+    @Test
+    fun progressionRechecksChangedActualEvidenceBeforeSaving() {
+        install()
+        prepareSwapProgramme()
+        val draft = model.state.value.draft!!
+        val workout = draft.programme().workouts().first()
+        val slot = workout.definition().slots().first()
+        val evidence = seedProgressionEvidence(slot)
+        compose.runOnIdle { model.reviewProgression(workout.id(), slot.id()) }
+        await { model.state.value.progressionReview?.advice?.proposedTarget() != null }
+        io { CoachingStore(app).deleteStrength(evidence.first().id()) }
+        compose.runOnIdle { model.saveProgressionProposal() }
+        compose.waitUntil(20_000) { !model.state.value.busy && model.state.value.error != null }
+        assertEquals(draft, model.state.value.draft)
+        assertEquals(
+            draft,
+            io { SqliteConcreteStrengthProgrammeDraftRepository(app).get(draft.id()) },
+        )
+        assertEquals(1, io { programmes.currentReference()!!.revision() })
+        assertEquals(setOf(evidence.last()), io { CoachingStore(app).strength().toSet() })
+    }
+
+    @Test
+    fun missingEffortHasNoNumericProgressionAndLargeDarkReviewRemainsUsable() {
+        install(largeDark = true)
+        prepareSwapProgramme()
+        val draft = model.state.value.draft!!
+        val workout = draft.programme().workouts().first()
+        val slot = workout.definition().slots().first()
+        val evidence = seedProgressionEvidence(slot, effort = null)
+        compose.runOnIdle { model.reviewProgression(workout.id(), slot.id()) }
+        await { model.state.value.progressionReview != null }
+        assertNull(model.state.value.progressionReview!!.advice.proposedTarget())
+        compose.onNodeWithText("Save optional target proposal").assertDoesNotExist()
+        compose.onNodeWithText("Keep current target").assertIsDisplayed().performClick()
+        assertEquals(draft, model.state.value.draft)
+        assertEquals(evidence.toSet(), io { CoachingStore(app).strength().toSet() })
+    }
+
+    @Test
+    fun acceptedRevisionHistoryIsReadOnlyAndPreservesTargetsActualsAndCurrentPointer() {
+        install()
+        val original = prepareSwapProgramme()
+        val draft = model.state.value.draft!!
+        val workout = draft.programme().workouts().first()
+        val slot = workout.definition().slots().first()
+        val evidence = seedProgressionEvidence(slot)
+        compose.runOnIdle { model.openProgrammeSwap(workout.id(), slot.id()) }
+        await { model.state.value.swapReview != null }
+        compose.runOnIdle { model.useProgrammeSwap("dumbbell-bench-press", null, false) }
+        await { model.state.value.draft!!.revision() == draft.revision() + 1 }
+        val revision2 = model.state.value.draft!!.programme()
+        compose.runOnIdle {
+            model.activate(model.state.value.draft!!, "history-second-revision") { activations++ }
+        }
+        await { activations == 2 }
+        click("Programme revision history")
+        await { model.state.value.history.size == 2 }
+        compose
+            .onNode(hasScrollToIndexAction())
+            .performScrollToNode(hasText("Review ${original.programme().name()} revision 1"))
+        compose.onNodeWithText("Review ${original.programme().name()} revision 1").performClick()
+        await { model.state.value.historicalProgramme != null }
+        assertEquals(original.programme(), model.state.value.historicalProgramme)
+        compose.onNodeWithText("${original.programme().name()} · revision 1").assertIsDisplayed()
+        compose.onNodeWithText("Activate programme").assertDoesNotExist()
+        assertEquals(revision2, io { programmes.programme(original.programme().id(), 2) })
+        assertEquals(2, io { programmes.currentReference()!!.revision() })
+        assertEquals(evidence.toSet(), io { CoachingStore(app).strength().toSet() })
+        compose.onNodeWithText("Back to programme library").performClick()
+        assertFalse(model.state.value.historyOpen)
+    }
+
+    @Test
+    fun supportedModalitiesSaveOptionalTasksWithoutInventingLoadOrActualSets() {
+        install()
+        generate()
+        val initialWorkout = model.state.value.draft!!.programme().workouts().first()
+        initialWorkout.definition().slots().drop(1).forEach { other ->
+            val revision = model.state.value.draft!!.revision()
+            compose.runOnIdle { model.removeSlot(initialWorkout.id(), other.id()) }
+            await { model.state.value.draft!!.revision() == revision + 1 }
+        }
+        for (exerciseId in
+            listOf("push-up", "weighted-pull-up", "plank", "weighted-plank", "farmers-carry")) {
+            val exercise = ExerciseCatalog.definition(exerciseId).exercise()
+            val before = model.state.value.draft!!
+            val workout = before.programme().workouts().first()
+            val slot = workout.definition().slots().first()
+            val profile = exercise.measurement()
+            val input =
+                GymSlotInput(
+                    sets = "2",
+                    minimumReps = if (profile.usesReps()) "5" else "",
+                    maximumReps = if (profile.usesReps()) "8" else "",
+                    seconds = if (profile.usesDuration()) "30" else "",
+                    metres = if (profile.usesDistance()) "20" else "",
+                    minimumEffort = "6",
+                    maximumEffort = "8",
+                    restSeconds = "90",
+                )
+            compose.runOnIdle { model.putSlot(workout.id(), slot.id(), exercise, input, {}) }
+            await { model.state.value.draft!!.revision() == before.revision() + 1 }
+            val edited = model.state.value.draft!!
+            val newSlot = edited.programme().workouts().first().definition().slots().first()
+            val load = if (profile.usesLoad()) 40.0 else 0.0
+            io {
+                for (day in 1..2) CoachingStore(app)
+                    .saveStrength(
+                        StrengthSession(
+                            "$exerciseId-evidence-$day",
+                            Instant.now().minus(Duration.ofDays(day.toLong())),
+                            ZoneOffset.UTC,
+                            Duration.ofMinutes(20),
+                            null,
+                            "",
+                            listOf(
+                                StrengthSession.ExerciseSets(
+                                    exercise,
+                                    (1..2).map { set ->
+                                        StrengthSession.SetEntry(
+                                            "$exerciseId-$day-$set",
+                                            if (profile.usesReps()) 8 else 0,
+                                            load,
+                                            7.0,
+                                            false,
+                                            if (profile.usesDuration()) 30L else null,
+                                            if (profile.usesDistance()) 20.0 else null,
+                                        )
+                                    },
+                                )
+                            ),
+                        )
+                    )
+            }
+            val actuals = io { CoachingStore(app).strength().toSet() }
+            compose.runOnIdle { model.reviewProgression(workout.id(), newSlot.id()) }
+            await { model.state.value.progressionReview != null }
+            val advice = model.state.value.progressionReview!!.advice
+            assertNotNull(exerciseId, advice.proposedTarget())
+            if (profile.usesDuration())
+                assertEquals(35L, advice.proposedTarget().seconds()!!.toLong())
+            if (profile.usesDistance()) assertEquals(25.0, advice.proposedTarget().metres()!!, 0.0)
+            if (profile.usesReps())
+                assertEquals(
+                    if (profile.usesLoad()) 8 else 9,
+                    advice.proposedTarget().maximumReps(),
+                )
+            if (profile.usesLoad())
+                assertEquals(
+                    if (profile.usesReps()) 41.0 else load,
+                    advice.proposedTarget().referenceLoadKg()!!,
+                    0.0,
+                )
+            else assertNull(advice.proposedTarget().referenceLoadKg())
+            compose.runOnIdle { model.saveProgressionProposal() }
+            await { model.state.value.draft!!.revision() == edited.revision() + 1 }
+            assertEquals(
+                advice.proposedTarget(),
+                model.state.value.draft!!
+                    .programme()
+                    .workouts()
+                    .first()
+                    .definition()
+                    .slots()
+                    .first()
+                    .target(),
+            )
+            assertEquals(actuals, io { CoachingStore(app).strength().toSet() })
+            assertNull(io { programmes.currentReference() })
+        }
+    }
+
+    private fun seedProgressionEvidence(
+        slot: GymWorkoutDefinition.Slot,
+        effort: Double? = 7.0,
+    ): List<StrengthSession> = io {
+        (1..2).map { day ->
+            val session =
+                StrengthSession(
+                    "optional-evidence-$day",
+                    Instant.now().minus(Duration.ofDays(day.toLong())),
+                    ZoneOffset.UTC,
+                    Duration.ofMinutes(30),
+                    null,
+                    "Actuals entered independently",
+                    listOf(
+                        StrengthSession.ExerciseSets(
+                            slot.exercise(),
+                            (1..slot.target().sets()).map { set ->
+                                StrengthSession.SetEntry(
+                                    "evidence-$day-$set",
+                                    slot.target().maximumReps(),
+                                    80.0,
+                                    effort,
+                                    false,
+                                )
+                            },
+                        )
+                    ),
+                )
+            CoachingStore(app).saveStrength(session)
+            session
+        }
+    }
+
     private fun prepareSwapProgramme(): ConcreteStrengthProgrammeDraft {
         generate()
         val initial = model.state.value.draft!!
@@ -650,6 +913,15 @@ class StrengthGenerationScreenTest {
         click("Review future programme changes")
         await { model.state.value.draft?.programme()?.parentRevision() == 1 }
         return original
+    }
+
+    private fun revealProgrammeAlternative(exerciseId: String) {
+        val index =
+            model.state.value.swapReview!!.suggestions.indexOfFirst {
+                it.exercise().id() == exerciseId
+            }
+        assertTrue("Expected a comparable ranked alternative: $exerciseId", index >= 0)
+        repeat(index / 4) { chooseProgrammeAlternative("Show more alternatives") }
     }
 
     private fun chooseProgrammeAlternative(text: String) {
