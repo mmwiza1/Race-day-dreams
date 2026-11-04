@@ -295,7 +295,7 @@ fun StrengthGenerationScreen(
                                         workout.id() !in state.protectedWorkoutIds))
                         if (!editable)
                             Text(
-                                "Preserved earlier, completed or accepted prescription · read only"
+                                "Preserved earlier, completed, active or accepted prescription · read only"
                             )
                         workout.notes()?.let { WhyDetails(it, "Workout guidance") }
                         workout.definition().slots().forEachIndexed { index, slot ->
@@ -306,6 +306,24 @@ fun StrengthGenerationScreen(
                                 )
                                 Text(gymTargetDescription(slot))
                                 if (editable) {
+                                    val retained =
+                                        state.baseProgramme?.let {
+                                            ConcreteStrengthProgrammeEditor.retainedIntent(
+                                                draft,
+                                                it,
+                                                workout.id(),
+                                                slot.id(),
+                                            )
+                                        } == true
+                                    if (programme.parentRevision() > 0 && retained)
+                                        OutlinedButton(
+                                            onClick = {
+                                                model.openProgrammeSwap(workout.id(), slot.id())
+                                            },
+                                            enabled = enabled,
+                                        ) {
+                                            Text("Swap ${slot.exercise().name()} in programme")
+                                        }
                                     OutlinedButton(
                                         onClick = { slotEdit = workout.id() to slot },
                                         enabled = enabled,
@@ -358,6 +376,7 @@ fun StrengthGenerationScreen(
                 }
         }
     }
+    ProgrammeSwapSheet(model)
     slotEdit?.let { (workout, slot) ->
         GymSlotEditor(
             slot,
@@ -368,7 +387,17 @@ fun StrengthGenerationScreen(
             state.excluded,
             state.error,
             allowOpen = false,
-            allowExerciseChange = state.draft?.programme()?.parentRevision() == 0 || slot == null,
+            allowExerciseChange =
+                state.draft?.programme()?.parentRevision() == 0 ||
+                    slot == null ||
+                    state.baseProgramme?.let {
+                        ConcreteStrengthProgrammeEditor.retainedIntent(
+                            state.draft!!,
+                            it,
+                            workout,
+                            slot.id(),
+                        )
+                    } != true,
             onDismiss = {
                 if (enabled) {
                     slotEdit = null
@@ -543,7 +572,8 @@ private fun ColumnScope.GenerationConfiguration(
         date,
         { date = it },
         "Start date · dd/mm/yyyy",
-        enabled && (initial?.parentRevision() ?: 0) == 0,
+        enabled,
+        readOnly = (initial?.parentRevision() ?: 0) > 0,
     )
     if ((initial?.parentRevision() ?: 0) > 0)
         Text(
@@ -665,12 +695,14 @@ private fun GenerationField(
     label: String,
     enabled: Boolean,
     number: Boolean = false,
+    readOnly: Boolean = false,
 ) {
     OutlinedTextField(
         value,
         change,
         label = { Text(label) },
         enabled = enabled,
+        readOnly = readOnly,
         singleLine = true,
         keyboardOptions =
             KeyboardOptions(keyboardType = if (number) KeyboardType.Number else KeyboardType.Text),

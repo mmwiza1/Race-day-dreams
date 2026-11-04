@@ -11,35 +11,36 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT checkpoint — 4 November: future capture fix + substitution foundation
+## CURRENT — programme replacement UI checkpoint (4 November 2026)
 
-- Future phase ed0bd3648e454022a546327dbef953084634f5c0 /workflow41896504156 builds/lints;
-  ALL API28/35/36 finished411tests with ONE sole new screenshot-harness failure each at200%
-  navigation. Production correctly exposes an accessible description instead of wrapped
-  tab text. Harness now selects exact Text OR ContentDescription plus click action;
-  it retains all font/night/heading/date/read-only/actual-preservation assertions.
-  API35confirmed the same failure; use the corrected next gate, not unchanged ed0bd3.
-- Permanent substitution FOUNDATION now implemented (UI NOT connected): pure
-  ConcreteStrengthProgrammeEditor.substitute supports one dated/all future retained
-  occurrences, each phase's own targets, cleared loads, base→final provenance, undo,
-  fresh measurement target review and protected history.44domain checks pass.
-  SQL activation independently rechecks comparable original intent, equipment/exclusions
-  and newly archived choices. Two Android regressions cover unrelated/archived rejection.
-- Local FINAL source PASS:588145domain checks/35suites; all main and instrumentation
-  Kotlin/Java compile; formatting69Kotlin/115Java. Schema15/rootJSON9/authoring2(read1–2)/
-  raw2/complete1 unchanged. No new runtime dependency or permission. Expect413tests/API,
-  116canonical scenes. Real Android gate/capture review pending, not a green-release claim.
-- Existing405/API green source98366d7 and110canonical captures remain verified below.
-  Current branch feature/0.10-strength-programming, PR15OPEN/DRAFT, mainc6299e2 unchanged.
-  Keep all work; no reset/force/merge. Physical S24 checks remain UNPERFORMED.
+Branch feature/0.10-strength-programming; PR15 OPEN/DRAFT; mainc6299e2 unchanged.
+HEAD before this checkpoint8cba4a1bb85be9e4b9dcd1a53da1ba086f8f0ed2 is the adopted
+canonical bot for source8f1d1aad1a95072ea5de08488c72a7acf5d229b5. Workflow41899315529
+passed COMPLETE gate:413tests EACH API28/35/36,588145domain checks/35suites,64schema,
+9release, strict174canonical/14routine,69Kotlin/115Java format and116canonical captures.
+APK51,684,456bytes; API35APKartifact13359155684, screenshots13359005792. All6future
+preview/settings light/dark/200% images were opened; no overlap, natural wrap/scroll.
+Disabled original-start text was dim in dark mode: current UI uses readable read-only
+text, with domain start-date guard and no-edit semantics assertion retained.
 
-Next exact work after the413gate/captures: connect a programme-swap review/dialog to
-StrengthGenerationViewModel/Screen using this tested domain helper and typed draft store;
-reuse ExerciseSubstitutionEngine ranking, preserve concise native today-only choices and
-explicitly distinguish dated/all-future scope. Fresh targets required for changed profiles.
-Do not expose unsupported custom inference. Then connect optional modality progression,
-version/history navigation and finish simulator/quality/release review. All remain FULL0.10,
-NOT0.11; no timers/supersets/warm-ups/analytics expansion. See remaining list below.
+Current source connects permanent-swap review to the concrete preview using existing typed
+storage and tested domain rules. One dated/all eligible future scope, each phase's own
+targets, cleared loads, ranked/explained fresh choices, exclusions/archived/equipment
+recheck, new measurement target review, explicit activation. Active native prescriptions
+join protected IDs without being called completed evidence. No native workout is stopped.
+New5real UI/VM/SQLite regressions include active-workout bulk protection, late exclusion,
+changed task, saved proposal backup and explicit activation. One capture case adds3real
+light/dark/200% scenes: strength-programme-alternatives;119required total. Expected419
+instrumentation cases/API. Source compilation and full Android gate must be checked for
+THIS checkpoint; the previous413pass does not certify it. Formatting70Kotlin/115Java.
+Schema15/rootJSON9/nested authoring2(read1–2)/raw2/complete1 unchanged; no dependency or
+permission change. Physical Galaxy S24/TalkBack checks remain UNPERFORMED.
+
+Next exact work: finish final local compilation/release/source checks, commit/push this
+checkpoint, inspect fullAPI28/35/36CI, fix actual failures, adopt/review119fresh captures.
+Then connect conservative optional modality progression and programme version/history
+navigation; finish simulator/quality/release review and final full gate. Do NOT start0.11.
+Keep PR15DRAFT until ALL0.10 criteria pass; no merge/tag at this checkpoint.
 
 ## ACTIVE — 4 November: future revisions / regeneration verification
 

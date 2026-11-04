@@ -305,3 +305,12 @@ Future-review capture coverage adds strength-future-preview and strength-future-
 in light/dark/200% (116required total). These navigate from the real Strength dashboard,
 prepare a next revision, assert a locked original start, and verify revision1/actual history
 remain unchanged. Capture generation and actual visual acceptance are still pending.
+
+## Verified future capture checkpoint and permanent choices
+
+Workflow41899315529 passed413cases on each supported API. Canonical8cba4a1 contains116
+actual-build images from8f1d1aa. All6future scenes were visually reviewed in light/dark/
+200%; findings are in VISUAL_REVIEW_0_10_0.md. New programme alternatives add3production
+scenes (strength-programme-alternatives, -dark, -large-font), bringing required total119.
+These new scenes are pending current-source API gates and actual visual review; no image
+is replaced by a mockup and no previous scene/assertion is removed.

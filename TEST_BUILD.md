@@ -3,8 +3,8 @@
 Version0.10.0-test1/code13 candidate schema15/JSON9 (nested authoring2, read1–2) retains older backup readers1–8,
 strengthEngine2, strengthState2, raw2 and complete1. Typed authoring durability and legacy /
 authored planned execution are under automated verification. Manual authoring, custom entry, templates and dated previews are connected and have a
-verified405-case/API checkpoint. Future revisions/regeneration are under integration; do not treat
-baseline screenshots as those new screens. See CONTINUE_CODEX.md for source-bound gates.
+verified413-case/API checkpoint including future revisions/regeneration. Permanent replacement
+controls now require their own419-case/API verification; do not reuse older capture claims. See CONTINUE_CODEX.md for source-bound gates.
 
 Before release acceptance, require the API28/35/36 matrix, previous8/current9 backup
 round-trips,13→15 and14→15 migrations, immutable historical/actual-set evidence, authentic new
@@ -452,3 +452,14 @@ add their physical cases when connected. Rest timers/supersets/generated warm-up
 - [ ] Keep two competing previews, accept one, then complete backup/restore. The other stays
   an unaccepted/superseded preview and must never replace accepted history.
 - [ ] Review all controls in light/dark/200%text and with TalkBack. None is marked passed here.
+
+## Permanent programme replacement — Galaxy S24 UNPERFORMED
+
+- [ ] Review a dated future exercise, open ranked alternatives, save one-date proposal and
+  verify accepted programming stays unchanged until explicit activation.
+- [ ] Review all-future scope across different phases; targets remain phase-specific and
+  starting/reference loads clear. Earlier/completed/active prescriptions remain frozen.
+- [ ] Change to a different measurement task with fresh targets, never a copied load.
+- [ ] Exclude an option after opening choices: saving/activation must recheck eligibility.
+- [ ] Exercise today-only Gym Now choices separately; old actual sets/history remain intact.
+- [ ] Check light/dark/200% text and TalkBack on the real replacement review.

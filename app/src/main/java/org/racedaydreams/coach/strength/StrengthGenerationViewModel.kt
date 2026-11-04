@@ -13,6 +13,16 @@ import org.racedaydreams.domain.WorkoutCategory
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.*
 
+data class ProgrammeSwapReview(
+    val draftId: String,
+    val draftRevision: Int,
+    val workoutId: String,
+    val slotId: String,
+    val original: StrengthExercise,
+    val reason: ExerciseSubstitutionEngine.Reason,
+    val suggestions: List<ExerciseSubstitutionEngine.Suggestion> = emptyList(),
+)
+
 /** Exact concrete generation/preview ownership; durable drafts contain dates, not UI timers. */
 data class StrengthGenerationState(
     val busy: Boolean = false,
@@ -22,6 +32,8 @@ data class StrengthGenerationState(
     val draft: ConcreteStrengthProgrammeDraft? = null,
     val accepted: Boolean = false,
     val superseded: Boolean = false,
+    val baseProgramme: StrengthProgramme? = null,
+    val swapReview: ProgrammeSwapReview? = null,
     val protectedWorkoutIds: Set<String> = emptySet(),
     val saved: List<ConcreteStrengthProgrammeDraftRepository.Summary> = emptyList(),
     val page: Int = 0,
@@ -54,15 +66,17 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
         val custom = programmes.customExercises().map { it.exercise().id() }.toSet()
         val preserved =
             value.draft?.programme()?.let { programmes.programme(it.id(), it.revision()) }
+        val baseReview =
+            value.draft
+                ?.takeIf { it.programme().parentRevision() > 0 }
+                ?.before()
+                ?.let { programmes.reviewRevision(it) }
         return value.copy(
             saved = rows.take(20),
             more = rows.size > 20,
             current = programmes.currentReference(),
-            protectedWorkoutIds =
-                value.draft
-                    ?.takeIf { it.programme().parentRevision() > 0 }
-                    ?.before()
-                    ?.let { programmes.reviewRevision(it).completedWorkoutIds() } ?: emptySet(),
+            protectedWorkoutIds = baseReview?.let { programmeProtectedIds(it) } ?: emptySet(),
+            baseProgramme = baseReview?.programme(),
             accepted = preserved != null && preserved == value.draft?.programme(),
             superseded = preserved != null && preserved != value.draft?.programme(),
             exercises =
@@ -106,7 +120,7 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
 
     fun reload() = command { before ->
         val selected = before.draft?.id() ?: retained.get<String>("strength.concrete.draft")
-        before.copy(draft = selected?.let { repository.get(it) })
+        before.copy(draft = selected?.let { repository.get(it) }, swapReview = null)
     }
 
     fun page(delta: Int) = command { it.copy(page = (it.page + delta).coerceAtLeast(0)) }
@@ -118,7 +132,7 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
             )
         }
 
-    fun close() = command { it.copy(draft = null) }
+    fun close() = command { it.copy(draft = null, swapReview = null) }
 
     fun delete(draftId: String, revision: Int) = command {
         repository.delete(draftId, revision)
@@ -127,6 +141,25 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
 
     fun clearMessage() {
         mutable.update { it.copy(error = null, notice = null) }
+    }
+
+    /** Started prescriptions are frozen too; these IDs are protection, not completion claims. */
+    private fun programmeProtectedIds(
+        review: StrengthProgrammingRepository.RevisionReview
+    ): Set<String> {
+        val ids = review.completedWorkoutIds().toMutableSet()
+        val known = review.programme().workouts().map { it.id() }.toSet()
+        val gym = SqliteGymExecutionRepository(getApplication<Application>())
+        gym.unfinished().forEach { row ->
+            val source = gym.load(row.id()).execution().source()
+            if (
+                source?.kind() == GymExecution.SourceKind.PROGRAMME &&
+                    source.id() == review.programme().id() &&
+                    source.sessionId() in known
+            )
+                ids.add(source.sessionId())
+        }
+        return ids.toSet()
     }
 
     /** A copy for review only. No accepted prescription changes until activate. */
@@ -252,7 +285,7 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
                             it.programme().start(),
                         ),
                         Instant.now(),
-                        it.completedWorkoutIds(),
+                        programmeProtectedIds(it),
                         "Athlete reviewed regenerated future programming; completed and earlier workouts retain their exact prescriptions.",
                     )
                 }
@@ -283,9 +316,9 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
                 val review = programmes.reviewRevision(old.before()!!)
                 require(
                     !workout.date().isBefore(old.programme().effectiveFrom()) &&
-                        workout.id() !in review.completedWorkoutIds()
+                        workout.id() !in programmeProtectedIds(review)
                 ) {
-                    "Earlier and completed prescriptions are read only. Choose an uncompleted future workout."
+                    "Earlier, completed and active prescriptions are read only. Choose another future workout."
                 }
             }
             val next = ConcreteStrengthProgrammeEditor.replaceWorkout(old, change(workout))
@@ -331,7 +364,17 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
             require(!input.open) { "Review a target for every programme exercise." }
             val rows = workout.definition().slots().toMutableList()
             if (slotId != null && state.value.draft!!.programme().parentRevision() > 0) {
-                require(rows.first { it.id() == slotId }.exercise().id() == exercise.id()) {
+                val preserved =
+                    programmes.reviewRevision(state.value.draft!!.before()!!).programme()
+                require(
+                    rows.first { it.id() == slotId }.exercise().id() == exercise.id() ||
+                        !ConcreteStrengthProgrammeEditor.retainedIntent(
+                            state.value.draft!!,
+                            preserved,
+                            workoutId,
+                            slotId,
+                        )
+                ) {
                     "Use a reviewed programme substitution to change this exercise."
                 }
             }
@@ -360,6 +403,130 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
             val slot = rows.removeAt(index)
             rows.add(index + delta, slot)
             withSlots(workout, rows)
+        }
+
+    private fun programmeSwapContext(
+        current: StrengthGenerationState,
+        review: ProgrammeSwapReview,
+    ): ExerciseSubstitutionEngine.Context {
+        val draft = current.draft ?: error("Open a saved future revision first.")
+        require(
+            !current.accepted &&
+                !current.superseded &&
+                draft.id() == review.draftId &&
+                draft.revision() == review.draftRevision
+        ) {
+            "This preview changed. Reopen its replacement choices."
+        }
+        require(programmes.currentReference() == draft.before()) {
+            "Current programming changed. Prepare a fresh revision."
+        }
+        val settings = draft.programme().settings()
+        val choices = user.choices()
+        val recent =
+            SqliteGymExecutionRepository(getApplication<Application>())
+                .recentActual(10)
+                .flatMap { it.exercises().map { block -> block.exercise().id() } }
+                .toSet()
+        return ExerciseSubstitutionEngine.Context(
+            review.original,
+            settings.goal(),
+            settings.experience(),
+            settings.equipment(),
+            user.exclusions().map { it.exerciseId() }.toSet() +
+                choices.filter { it.archived() }.map { it.exerciseId() },
+            choices.filter { it.favourite() && !it.archived() }.map { it.exerciseId() }.toSet(),
+            recent,
+            review.reason,
+        )
+    }
+
+    fun openProgrammeSwap(workoutId: String, slotId: String) = command { before ->
+        val draft = before.draft ?: error("Open a future programme revision first.")
+        require(draft.programme().parentRevision() > 0) {
+            "Edit unaccepted template exercises in the target editor."
+        }
+        val preserved = programmes.reviewRevision(draft.before()!!)
+        val workout = draft.programme().workouts().first { it.id() == workoutId }
+        require(
+            !workout.date().isBefore(draft.programme().effectiveFrom()) &&
+                workoutId !in programmeProtectedIds(preserved)
+        ) {
+            "Earlier and completed workouts are read only."
+        }
+        require(
+            ConcreteStrengthProgrammeEditor.retainedIntent(
+                draft,
+                preserved.programme(),
+                workoutId,
+                slotId,
+            )
+        ) {
+            "This newly drafted intent can be edited before activation."
+        }
+        val slot = workout.definition().slots().first { it.id() == slotId }
+        val review =
+            ProgrammeSwapReview(
+                draft.id(),
+                draft.revision(),
+                workoutId,
+                slotId,
+                slot.exercise(),
+                ExerciseSubstitutionEngine.Reason.EQUIPMENT_BUSY,
+            )
+        val context = programmeSwapContext(before, review)
+        before.copy(
+            swapReview = review.copy(suggestions = ExerciseSubstitutionEngine.rank(context, 50))
+        )
+    }
+
+    fun programmeSwapReason(reason: ExerciseSubstitutionEngine.Reason) = command { before ->
+        val review =
+            (before.swapReview ?: error("Open replacement choices first.")).copy(reason = reason)
+        before.copy(
+            swapReview =
+                review.copy(
+                    suggestions =
+                        ExerciseSubstitutionEngine.rank(programmeSwapContext(before, review), 50)
+                )
+        )
+    }
+
+    fun closeProgrammeSwap() {
+        if (!mutable.value.busy) mutable.update { it.copy(swapReview = null, error = null) }
+    }
+
+    fun useProgrammeSwap(replacementId: String, target: GymSlotInput?, allFuture: Boolean) =
+        command { before ->
+            val review = before.swapReview ?: error("Review replacement choices first.")
+            val context = programmeSwapContext(before, review)
+            val suggestion =
+                ExerciseSubstitutionEngine.rank(context, 50).firstOrNull {
+                    it.exercise().id() == replacementId
+                } ?: error("This replacement is unavailable or excluded. Review the choices again.")
+            val draft = before.draft!!
+            val preserved = programmes.reviewRevision(draft.before()!!)
+            val changedTarget =
+                target?.let { gymSlotFromInput(review.slotId, suggestion.exercise(), it).target() }
+            val next =
+                ConcreteStrengthProgrammeEditor.substitute(
+                    draft,
+                    preserved.programme(),
+                    review.workoutId,
+                    review.slotId,
+                    context,
+                    replacementId,
+                    changedTarget,
+                    programmeProtectedIds(preserved),
+                    allFuture,
+                    Instant.now(),
+                )
+            repository.save(next, draft.revision())
+            before.copy(
+                draft = next,
+                swapReview = null,
+                notice = "Replacement proposal saved. Review and activate when ready.",
+            )
         }
 
     fun activate(reviewed: ConcreteStrengthProgrammeDraft, decisionId: String, done: () -> Unit) =

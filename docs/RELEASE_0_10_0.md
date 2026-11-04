@@ -16,8 +16,8 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
   history remain readable; no technique guide or estimated strength is invented.
 - Nine original starter templates and goal/experience-specific generation now connect to
   equipment/day/goal configuration, saved concrete previews, distinct training blocks and
-  dated-workout editing. Review and activation remain explicit. Current Android and visual
-  verification for these new screens is in progress.
+  dated-workout editing. Review and activation remain explicit. The template and future-review checkpoint passed the supported Android matrix and
+  scoped light/dark/200% capture review.
 
 ## Improvements
 
@@ -35,9 +35,11 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 - Future-review controls prepare immutable revisions for edits and regeneration of upcoming
   programming. Completed and earlier prescriptions remain protected, fresh evidence is
   rechecked on activation, and competing unaccepted drafts remain distinct from history.
-  Android and visual verification for these new controls is pending.
-- Permanent-substitution proposals reuse existing exclusion,
-  equipment and intent rules and discard incompatible load references.
+  The future-review checkpoint passed the supported Android matrix.
+- Programme replacement review now offers ranked, explained options for one dated workout
+  or eligible future occurrences. Each phase retains its own targets, load references clear,
+  changed measurement tasks require fresh targets, and activation stays explicit. Current
+  Android/capture verification of these new controls is pending.
 
 ## Fixes
 
@@ -67,8 +69,8 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Known limitations
 
-- Permanent-swap UI and modality-progression controls remain in progress.
-  Their domain and typed persistence foundations are not yet a finished user workflow.
+- Programme replacement controls require their current Android/capture gate.
+  Modality-progression controls and final programme-history navigation remain in progress.
   The manual/custom workflows passed the supported automated gate and scoped capture
   review; physical Galaxy S24 acceptance remains unperformed.
 - Beginner power previews explicitly report the current catalogue's lack of a

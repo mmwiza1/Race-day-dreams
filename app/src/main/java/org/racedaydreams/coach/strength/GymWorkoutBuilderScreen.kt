@@ -283,6 +283,7 @@ internal fun GymSlotEditor(
     error: String?,
     allowOpen: Boolean = true,
     allowExerciseChange: Boolean = true,
+    allowReferenceLoad: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (StrengthExercise, GymSlotInput) -> Unit,
 ) {
@@ -520,7 +521,8 @@ internal fun GymSlotEditor(
                             KeyboardType.Number,
                         )
                         if (
-                            measurement.usesLoad() &&
+                            allowReferenceLoad &&
+                                measurement.usesLoad() &&
                                 selected.mode() != StrengthExercise.Mode.BODYWEIGHT
                         ) {
                             GymBuilderField(

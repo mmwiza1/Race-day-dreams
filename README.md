@@ -79,10 +79,10 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The verified template source98366d7 passed **405instrumentation tests
-on each of API28,35 and36**, with **110authentic captures**. New template/configuration/
-preview/workout images were opened in light/dark/200%text. Future-review changes require a
-new gate and fresh captures; no physical S24 pass is implied.
+data, not UI mockups. Verified source8f1d1aa passed **413instrumentation tests on each
+of API28,35 and36**, with **116authentic captures**, including future programme review in
+light/dark/200% text. New permanent-substitution screens require their own gate and fresh
+captures; no physical S24 pass is implied.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).

@@ -1,3 +1,21 @@
+## 4 November 2026 — verified future checkpoint; permanent UI pending
+
+Source8f1d1aad1a95072ea5de08488c72a7acf5d229b5 passed COMPLETE workflow41899315529:
+413instrumentation tests EACH API28/35/36, app/test builds/lint,588145domain checks/
+35suites,64schema tests,9release tests,69Kotlin/115Java format, strict174canonical/
+14routine guidance and116canonical images. Bot8cba4a1bb85be9e4b9dcd1a53da1ba086f8f0ed2
+was adopted with exact blob/tree/commit verification. Frozen-source capture validation
+passes116. API35 APKartifact13359155684 is51,684,456bytes; screenshots13359005792.
+All6future preview/settings captures were opened in light/dark/200%; no overlapping
+controls observed. This resolves the prior411-case large-font selector failure.
+
+Current source adds connected permanent-programme replacement review and5UI regressions,
+plus one3-scene capture test. Expected419/API and119captures are NOT observed passes yet.
+Active native workout prescriptions are protected in bulk proposals; original start is
+read-only with legible dark text. Domain588145/35suites, schema64 and capture-validator12
+pass locally. Real Android verification remains required for the new UI. PR15 stays DRAFT;
+full0.10 progression/history/final quality remain. No physical Galaxy S24 pass is claimed.
+
 ## Current follow-up — future capture accessibility and substitution boundary
 
 Sourceed0bd3/workflow41896504156: API28/35/36 each finished411tests with the same sole
