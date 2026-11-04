@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 14;
+    static final int VERSION = 15;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -55,6 +55,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateElevenToTwelve(db);
         migrateTwelveToThirteen(db);
         migrateThirteenToFourteen(db);
+        migrateFourteenToFifteen(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -435,10 +436,38 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V14_SCHEMA_END
     }
 
+    private static void migrateFourteenToFifteen(SQLiteDatabase db) {
+        // V15_SCHEMA_BEGIN - concrete previews are separate from activated history and actual sets.
+        db.execSQL(
+                "CREATE TABLE strength_concrete_drafts (id TEXT PRIMARY KEY NOT NULL, revision"
+                    + " INTEGER NOT NULL CHECK(revision>0), programme_id TEXT NOT NULL,"
+                    + " programme_revision INTEGER NOT NULL CHECK(programme_revision>0), name TEXT"
+                    + " NOT NULL, start_date TEXT NOT NULL, end_date TEXT NOT NULL, header TEXT NOT"
+                    + " NULL CHECK(length(CAST(header AS BLOB)) <= 262144))");
+        db.execSQL(
+                "CREATE INDEX strength_concrete_draft_order ON strength_concrete_drafts(start_date"
+                        + " DESC,id)");
+        db.execSQL(
+                "CREATE TABLE strength_concrete_draft_blocks (draft_id TEXT NOT NULL REFERENCES"
+                    + " strength_concrete_drafts(id) ON DELETE CASCADE, block_id TEXT NOT NULL,"
+                    + " position INTEGER NOT NULL CHECK(position BETWEEN 0 AND 11), header TEXT NOT"
+                    + " NULL CHECK(length(CAST(header AS BLOB)) <= 262144), PRIMARY"
+                    + " KEY(draft_id,block_id), UNIQUE(draft_id,position))");
+        db.execSQL(
+                "CREATE TABLE strength_concrete_draft_workouts (draft_id TEXT NOT NULL, block_id"
+                    + " TEXT NOT NULL, position INTEGER NOT NULL CHECK(position BETWEEN 0 AND 155),"
+                    + " workout_id TEXT NOT NULL, workout_date TEXT NOT NULL, payload TEXT NOT NULL"
+                    + " CHECK(length(CAST(payload AS BLOB)) <= 262144), PRIMARY"
+                    + " KEY(draft_id,workout_id), UNIQUE(draft_id,block_id,position),"
+                    + " UNIQUE(draft_id,workout_date), FOREIGN KEY(draft_id,block_id) REFERENCES"
+                    + " strength_concrete_draft_blocks(draft_id,block_id) ON DELETE CASCADE)");
+        // V15_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 13)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 14)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -458,6 +487,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 10) migrateTenToEleven(db);
         if (oldVersion <= 11) migrateElevenToTwelve(db);
         if (oldVersion <= 12) migrateTwelveToThirteen(db);
-        migrateThirteenToFourteen(db);
+        if (oldVersion <= 13) migrateThirteenToFourteen(db);
+        migrateFourteenToFifteen(db);
     }
 }

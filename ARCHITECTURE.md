@@ -436,3 +436,13 @@ Substitution context resolves the started source revision, including precise equ
 goal and experience, rather than the latest programme. Programme screens display frozen
 exercise names and exact optional targets. Builder/activation/editing controls are a
 separate unfinished application phase; these read paths do not silently activate or edit.
+
+### Concrete strength preview persistence (0.10, in development)
+
+`ConcreteStrengthProgrammeDraftRepository` separates unaccepted dated proposals from
+activated `StrengthProgrammingRepository` revisions and actual Gym Now sets. SQLite stores
+headers/blocks/workouts in three additive schema-15 tables on the shared database.
+Bounded summary queries never hydrate workouts. Activation checks the saved review and
+current ownership inside the existing transaction; no second execution engine is introduced.
+The nested authoring archive is independently versioned (write 2, read 1–2); JSON envelope 9,
+raw archive 2 and complete package 1 stay unchanged.

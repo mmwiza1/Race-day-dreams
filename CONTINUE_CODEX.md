@@ -11,7 +11,29 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## ACTIVE continuation — verified manual/custom/inventory checkpoint; templates next
+## ACTIVE next phase — 4 November: concrete template draft durability
+
+- Recovered and pushed staged notes as91e0c780. PR15 OPEN/DRAFT, mainc6299e2.
+- ConcreteStrengthProgrammeDraft and its typed SQLite repository preserve exact dated
+  generated/template candidates, all targets/phases/notes/trade-offs and explicit base.
+  Saved drafts never activate or create actuals. Atomic reviewed activation delegates to
+  the existing current-owner/eligibility/history transaction; retry/rollback are tested.
+- Schema15 adds3normalised preview tables over14; rootJSON9 unchanged. Nested authoring
+  archive writes2/reads1–2, validates the whole graph before replacement. Raw2/complete1
+  unchanged. Old14 fixtures now remove15tables too before authentic downgrade construction.
+- Local PASS:588,085domain checks/34suites,64schema,9release,11source/provenance tests,
+  strict174canonical/14routine guides; all main Kotlin/Java and instrumentation Kotlin/Java
+  source compile using cached tools. Formatting65Kotlin/113Java. No new UI exposed yet.
+  Gradle blocked before compilation by sandbox daemon-socket denial. SOURCE compilation
+  is not APK/lint/device verification.9new Android repository cases await actual CI execution.
+- Next: inspect current commit/remote/CI, fix any new repository/backup/migration failures.
+  Then connect template/generated configuration + editable concrete preview/recovery +
+  explicit activation using this store, preserving every dated variation. Existing manual
+  authoring stays intact. Remaining full0.10 list below remains authoritative. Do not stop
+  at durability or mark release complete. Keep PR15draft and S24 checks UNPERFORMED.
+
+## Verified manual/custom/inventory checkpoint — preserve
+
 
 - Continue `feature/0.10-strength-programming`, PR15 OPEN/DRAFT. Main remainsc6299e2.
   **Implementation sourceb38e075e981d683937239b6ad65c4805d0d73d25** passed COMPLETE

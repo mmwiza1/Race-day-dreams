@@ -147,6 +147,11 @@
     "app/src/androidTest/java/org/racedaydreams/coach/AuthoredGymNowScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/StrengthDraftActivationRepositoryTest.java",
     "app/src/androidTest/java/org/racedaydreams/coach/StrengthProgrammeBuilderScreenTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/CustomStrengthExerciseScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/CustomStrengthExerciseScreenTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/strength/ConcreteStrengthProgrammeDraft*.java",
+    "app/src/main/java/org/racedaydreams/data/ConcreteStrengthProgramme*.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteConcreteStrengthProgrammeDraftRepository.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/ConcreteStrengthProgrammeDraftTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/data/ConcreteStrengthProgrammeDraftRepositoryTest.java"
   ]
 }

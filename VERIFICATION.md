@@ -1,3 +1,15 @@
+## 4 November 2026 — concrete preview durability in progress
+
+Recovered the prior notes-only checkpoint as91e0c780. PR15 remains draft; main has not
+advanced. Schema15/authoring2 concrete preview work is under verification, not a release.
+Local domain checks (including15new concrete-draft checks),64schema tests and9release-note
+tests pass. Main Kotlin source compilation passes. Local Gradle cannot open its daemon
+socket (`Operation not permitted`); cached source compilation is not an APK/lint/emulator pass.
+New real SQLite tests cover exact dated reload, summary paging, optimistic/stale acceptance,
+rollback, old authoring1, current JSON9 and complete backup, future/corrupt rejection and14→15.
+Their Android execution must pass before this phase is considered verified. Previous390/API
+results below apply to the preserved earlier source only. Physical S24 checks are unperformed.
+
 # 0.10 development checkpoint — not release acceptance
 
 ## Latest verified implementation — b38e075 (30 October 2026)

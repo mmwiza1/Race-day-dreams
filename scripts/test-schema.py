@@ -82,8 +82,8 @@ def create_schema(connection, version=14, frozen=False):
 def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if old not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13) or target != 14:
-        raise ValueError("Only explicit schemas 1–13 to schema 14 paths are supported")
+    if target not in (14, 15) or old < 1 or old >= target:
+        raise ValueError("Only explicit upgrades to historical 14 or current 15 are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -463,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,15), (2,15), (14,14)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,16), (2,16), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -989,6 +989,62 @@ class StrengthProgrammingMigrationTest(unittest.TestCase):
         plan = ' '.join(str(row) for row in db.execute('EXPLAIN QUERY PLAN ' + query))
         self.assertIn('strength_programme_history', plan)
         self.assertNotIn('strength_programme_sessions', plan)
+        self.assertNotIn('TEMP B-TREE', plan)
+
+class ConcreteDraftMigrationTest(unittest.TestCase):
+    def database(self, version=14):
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        create_schema(db, version)
+        return db
+
+    def test_every_supported_schema_upgrades_to_fifteen(self):
+        for version in range(1, 15):
+            with self.subTest(version=version):
+                db = self.database(version)
+                db.execute("INSERT INTO settings VALUES('retained','yes')") if version >= 2 else None
+                db.commit()
+                before = AnnotationMigrationSchemaTest.snapshot(db)
+                migrate_to_latest(db, 15)
+                after = AnnotationMigrationSchemaTest.snapshot(db)
+                self.assertEqual(before, {key: after[key] for key in before})
+                self.assertEqual(15, db.execute('PRAGMA user_version').fetchone()[0])
+                self.assertEqual([], db.execute('PRAGMA foreign_key_check').fetchall())
+
+    def test_late_fifteen_collision_rolls_back_fourteen_as_well(self):
+        db = self.database(13)
+        db.execute('CREATE TABLE strength_concrete_draft_workouts(collision TEXT)')
+        db.commit()
+        before = AnnotationMigrationSchemaTest.snapshot(db)
+        with self.assertRaises(sqlite3.OperationalError):
+            migrate_to_latest(db, 15)
+        self.assertEqual(before, AnnotationMigrationSchemaTest.snapshot(db))
+        self.assertEqual(13, db.execute('PRAGMA user_version').fetchone()[0])
+
+    def test_concrete_child_bounds_uniqueness_and_delete_preserve_actuals(self):
+        db = self.database(15)
+        db.execute("INSERT INTO strength_sessions VALUES('actual','2026-11-04','actual evidence')")
+        db.execute("INSERT INTO strength_concrete_drafts VALUES('d',1,'p',1,'Draft','2026-11-04','2026-12-15','{}')")
+        db.execute("INSERT INTO strength_concrete_draft_blocks VALUES('d','b',0,'{}')")
+        db.execute("INSERT INTO strength_concrete_draft_workouts VALUES('d','b',0,'w','2026-11-04','{}')")
+        for sql in ["INSERT INTO strength_concrete_draft_blocks VALUES('d','c',0,'{}')",
+                    "INSERT INTO strength_concrete_draft_workouts VALUES('d','b',1,'w2','2026-11-04','{}')",
+                    "INSERT INTO strength_concrete_draft_workouts VALUES('d','missing',1,'w2','2026-11-05','{}')",
+                    "UPDATE strength_concrete_draft_blocks SET position=12"]:
+            with self.subTest(sql=sql), self.assertRaises(sqlite3.IntegrityError):
+                db.execute(sql)
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE strength_concrete_draft_workouts SET payload=?", ('é' * 131073,))
+        db.execute("DELETE FROM strength_concrete_drafts")
+        self.assertEqual(0, db.execute('SELECT COUNT(*) FROM strength_concrete_draft_workouts').fetchone()[0])
+        self.assertEqual(0, db.execute('SELECT COUNT(*) FROM strength_concrete_draft_blocks').fetchone()[0])
+        self.assertEqual('actual evidence', db.execute('SELECT payload FROM strength_sessions').fetchone()[0])
+
+    def test_summary_index_avoids_workout_hydration(self):
+        db = self.database(15)
+        plan = ' '.join(str(row) for row in db.execute('EXPLAIN QUERY PLAN SELECT id,name FROM strength_concrete_drafts ORDER BY start_date DESC,id LIMIT 20'))
+        self.assertIn('strength_concrete_draft_order', plan)
+        self.assertNotIn('strength_concrete_draft_workouts', plan)
         self.assertNotIn('TEMP B-TREE', plan)
 
 if __name__ == "__main__":

@@ -62,8 +62,9 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Data, privacy and licensing
 
-- Schema 14 / JSON backup 9 add typed authored programmes, drafts, decisions and custom
-  metadata. Supported older backup readers remain. Raw archive 2 and complete package 1
+- Schema 15 / JSON backup 9 retain typed authored programmes, drafts, decisions and custom
+  metadata, adding concrete dated preview storage. The nested authoring section writes 2 and
+  reads 1–2; supported older root backups remain readable. Raw archive 2 and complete package 1
   are unchanged. The original 174 exercise guides
   and 14 routine visuals remain unchanged. No Internet permission, backend,
   account, advertising, analytics or runtime LLM is introduced.

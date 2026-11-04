@@ -15,13 +15,33 @@ final class StrengthProgrammingArchive {
     record Snapshot(
             Map<String, StrengthProgramme> programmes,
             List<StrengthProgrammeDraft> drafts,
+            List<ConcreteStrengthProgrammeDraft> concreteDrafts,
             List<CustomStrengthExercise> custom,
             List<Decision> decisions,
             Reference current) {}
 
     static Snapshot validate(JSONObject json, JSONObject legacy) {
-        fields(json, "version", "programmes", "drafts", "customExercises", "decisions", "current");
-        version(json, 1);
+        int archiveVersion = integer(json, "version");
+        if (archiveVersion == 1)
+            fields(
+                    json,
+                    "version",
+                    "programmes",
+                    "drafts",
+                    "customExercises",
+                    "decisions",
+                    "current");
+        else if (archiveVersion == 2)
+            fields(
+                    json,
+                    "version",
+                    "programmes",
+                    "drafts",
+                    "concreteDrafts",
+                    "customExercises",
+                    "decisions",
+                    "current");
+        else throw invalid("unsupported strength programming archive version");
         var programmes = new LinkedHashMap<String, StrengthProgramme>();
         var legacyIds = new HashSet<String>();
         var legacyKeys = new HashSet<String>();
@@ -76,6 +96,31 @@ final class StrengthProgrammingArchive {
                             throw invalid("draft custom metadata reference");
             drafts.add(d);
         }
+        var concreteDrafts = new ArrayList<ConcreteStrengthProgrammeDraft>();
+        var concreteIds = new HashSet<String>();
+        rows = archiveVersion == 1 ? new JSONArray() : array(json, "concreteDrafts", 1000);
+        for (int i = 0; i < rows.length(); i++) {
+            var d = ConcreteStrengthProgrammeJson.decode(row(rows, i));
+            SqliteConcreteStrengthProgrammeDraftRepository.validateRows(d);
+            if (!concreteIds.add(d.id()) || legacyIds.contains(d.programme().id()))
+                throw invalid("concrete draft identity");
+            checkRef(d.before(), programmes, legacyKeys);
+            if (d.programme().parentRevision() > 0)
+                new StrengthProgrammeEditor.Proposal(
+                        programmes.get(d.before().key()),
+                        d.programme(),
+                        Collections.emptySet(),
+                        d.substitutions());
+            var accepted = programmes.get(key(d.programme()));
+            if (accepted != null && !accepted.equals(d.programme()))
+                throw invalid("concrete draft differs from preserved programme");
+            for (var workout : d.programme().workouts())
+                for (var slot : workout.definition().slots())
+                    if (ExerciseCatalog.definition(slot.exercise().id()) == null
+                            && !customIds.contains(slot.exercise().id()))
+                        throw invalid("concrete draft custom metadata reference");
+            concreteDrafts.add(d);
+        }
         var decisions = new ArrayList<Decision>();
         var decisionIds = new HashSet<String>();
         var activated = new HashSet<String>();
@@ -122,6 +167,7 @@ final class StrengthProgrammingArchive {
         return new Snapshot(
                 Collections.unmodifiableMap(programmes),
                 Collections.unmodifiableList(drafts),
+                Collections.unmodifiableList(concreteDrafts),
                 Collections.unmodifiableList(custom),
                 Collections.unmodifiableList(decisions),
                 current);

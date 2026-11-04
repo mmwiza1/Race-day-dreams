@@ -73,3 +73,21 @@ is inferred from a similar name. Metadata participates in browsing/filtering/det
 The new UI/device cases and captures must pass before release. Editable generated/template
 previews, future regeneration, permanent swap UI and modality proposal controls remain
 unfinished; domain support is not a claim of finished user workflows.
+
+## Concrete generated previews — durability foundation
+
+Schema 15 adds separate typed preview header, block and dated-workout tables. A saved
+concrete preview preserves every generated week, target, phase, workout note and trade-off;
+it never becomes a repeated first week and saving it does not activate programming.
+The recurring manual builder remains supported unchanged.
+
+Concrete preview activation verifies the exact reviewed saved revision and the current
+programme in the same SQLite transaction, then uses the existing eligibility/completed-history
+checks. A failed decision or restore rolls back the whole transaction. Deleting a preview
+does not delete an accepted revision or actual evidence. Summary pages read indexed headers
+without hydrating workout payloads.
+
+JSON backup remains envelope 9. The nested strengthProgramming archive writes version 2
+and reads versions 1–2; version 1 contains no concrete previews. New/future or malformed
+sections are rejected before replacement. Raw recording archive 2 and complete package 1
+are unchanged. These are persistence foundations; template/generated UI remains in progress.

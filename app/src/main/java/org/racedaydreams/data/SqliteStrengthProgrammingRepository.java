@@ -263,7 +263,7 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
         return custom(read(), required(id, "custom exercise"));
     }
 
-    private static CustomStrengthExercise custom(SQLiteDatabase db, String id) {
+    static CustomStrengthExercise custom(SQLiteDatabase db, String id) {
         try (var c =
                 db.rawQuery(
                         "SELECT payload FROM strength_custom_exercises WHERE id=?",
@@ -542,7 +542,7 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
         return ids;
     }
 
-    private static boolean legacyId(SQLiteDatabase db, String id) {
+    static boolean legacyId(SQLiteDatabase db, String id) {
         try (var c =
                 db.rawQuery(
                         "SELECT 1 FROM gym_plan_versions WHERE plan_id=? LIMIT 1",
@@ -569,7 +569,7 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
         return Collections.unmodifiableList(result);
     }
 
-    private static Decision decision(SQLiteDatabase db, String id) {
+    static Decision decision(SQLiteDatabase db, String id) {
         try (var c =
                 db.rawQuery(
                         "SELECT payload FROM strength_programme_decisions WHERE id=?",
@@ -694,11 +694,13 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
         var current = current(db);
         return object(
                 "version",
-                1,
+                2,
                 "programmes",
                 programmes,
                 "drafts",
                 drafts,
+                "concreteDrafts",
+                SqliteConcreteStrengthProgrammeDraftRepository.exportData(db),
                 "customExercises",
                 custom,
                 "decisions",
@@ -710,6 +712,7 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
     }
 
     static void clear(SQLiteDatabase db) {
+        SqliteConcreteStrengthProgrammeDraftRepository.clear(db);
         for (String table :
                 new String[] {
                     "strength_programme_current",
@@ -732,6 +735,9 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
         }
         for (var draft : graph.drafts()) {
             writeDraft(db, draft);
+        }
+        for (var draft : graph.concreteDrafts()) {
+            SqliteConcreteStrengthProgrammeDraftRepository.writeDraft(db, draft);
         }
         for (var d : graph.decisions()) {
             writeDecision(db, d);
