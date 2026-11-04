@@ -1,16 +1,22 @@
-## 4 November 2026 — concrete preview durability in progress
+## 4 November 2026 — concrete previews and template UI
 
-Recovered the prior notes-only checkpoint as91e0c780. PR15 remains draft; main has not
-advanced. Schema15/authoring2 concrete preview work is under verification, not a release.
-Local domain checks (including15new concrete-draft checks),64schema tests and9release-note
-tests pass. Main Kotlin source compilation passes. Local Gradle cannot open its daemon
-socket (`Operation not permitted`); cached source compilation is not an APK/lint/emulator pass.
-New real SQLite tests cover exact dated reload, summary paging, optimistic/stale acceptance,
-rollback, old authoring1, current JSON9 and complete backup, future/corrupt rejection and14→15.
-Their Android execution must pass before this phase is considered verified. Previous390/API
-results below apply to the preserved earlier source only. Physical S24 checks are unperformed.
+Durability source2abab32ee99152ef217c37226093d5b10b4969c4 /workflow41886288778:
+all three API28/35/36 jobs built/linted and finished399tests. Each had the same ONE existing
+RefinementUiTest failure: substring date4November also selected14/24November. All9new
+concrete SQLite cases passed on all three APIs, including migration, root9/complete backup,
+old authoring1, optimistic acceptance, exclusion/current changes and fault rollback.
+Formatting and strict174canonical/14routine guidance jobs passed. The workflow is FAILED,
+not green; no canonical publication or merge. The root-cause selector correction retains
+all old assertions and additionally checks unique identities for every42visible calendar day.
 
-# 0.10 development checkpoint — not release acceptance
+The next template/generated UI checkpoint adds4real UI cases and12new production capture
+scenes (110required total). Local PASS:588,091domain checks/34suites,64schema,9release,
+11provenance and10screenshot-validator tests; all main/instrumentation Kotlin and Java source
+compiles with cached tools. Local Gradle remains blocked before compilation by sandbox
+socket denial; source checks are not APK/lint/device verification. New UI matrix/captures
+and visual review are still pending. No new dependency or INTERNET permission. Schema15,
+JSON9/authoring2(read1–2), raw2/complete1. Physical S24 checks UNPERFORMED. PR15 stays DRAFT.
+
 
 ## Latest verified implementation — b38e075 (30 October 2026)
 

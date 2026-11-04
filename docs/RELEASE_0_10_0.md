@@ -7,15 +7,17 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 ## What's new
 
 - The manual programme builder now connects typed local drafts, settings, blocks, workouts,
-  exercise targets and dated previews. Activation is an explicit choice; Android acceptance
-  verification for this new workflow is pending.
+  exercise targets and dated previews. Activation is an explicit choice; the retained manual workflow passed the previous
+  supported Android gate. New integration changes require their own verification.
 - Android-independent programme previews and editable draft operations model explicit training blocks,
   immutable revision lineage and preserved exercise/measurement targets.
 - Structured custom-exercise entry now records body area, movement role, equipment,
   measurement and notes for manual programming and logging. Existing custom identities and
   history remain readable; no technique guide or estimated strength is invented.
-- Nine original starter structures and goal/experience-specific preview policies
-  are under automated development. These are not yet exposed as app controls.
+- Nine original starter templates and goal/experience-specific generation now connect to
+  equipment/day/goal configuration, saved concrete previews, distinct training blocks and
+  dated-workout editing. Review and activation remain explicit. Current Android and visual
+  verification for these new screens is in progress.
 
 ## Improvements
 
@@ -36,6 +38,10 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Fixes
 
+- Calendar day selection in the UI test now matches an exact complete date rather than a
+  substring that conflated the 4th with the 14th/24th. The test checks all42visible day
+  identities while retaining category, accessibility and workout-detail assertions.
+
 - Exercise discovery uses the current authored programme for its programme inventory,
   with legacy inventory retained when appropriate. Custom area/role/equipment filters
   use the metadata the athlete actually supplied.
@@ -50,7 +56,7 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Known limitations
 
-- Editable template/generated-preview screens, future regeneration,
+- Future regeneration,
   permanent-swap UI and modality-progression controls remain in progress.
   Their domain and typed persistence foundations are not yet a finished user workflow.
   The manual/custom workflows passed the supported automated gate and scoped capture

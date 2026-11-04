@@ -90,4 +90,11 @@ without hydrating workout payloads.
 JSON backup remains envelope 9. The nested strengthProgramming archive writes version 2
 and reads versions 1–2; version 1 contains no concrete previews. New/future or malformed
 sections are rejected before replacement. Raw recording archive 2 and complete package 1
-are unchanged. These are persistence foundations; template/generated UI remains in progress.
+are unchanged. Templates & generated programmes now opens from the programme builder. Choose one of the
+nine starting structures or generate from preferences. Configure days, goal, experience,
+priority, duration and real equipment, then review the saved dated blocks. Individual
+workouts support target/exercise editing, ordering, removal and additions. Generating
+another preview retains the previous saved draft. Accepted previews are read-only.
+The engine considers retained demanding runs/race context for hybrid users; Strength-only
+users need no running profile. UI and new canonical capture verification is in progress.
+Future revisions/regeneration and permanent-swap controls remain the next phase.

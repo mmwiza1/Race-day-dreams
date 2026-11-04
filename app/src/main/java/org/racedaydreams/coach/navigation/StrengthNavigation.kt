@@ -26,10 +26,24 @@ fun NavGraphBuilder.strengthGraph(
     composable("gym-programme-builder") {
         StrengthProgrammeBuilderScreen(
             programmeModel(),
+            onTemplates = { nav.navigate("gym-programme-templates") },
             onCreateCustom = { nav.navigate("strength-custom-exercise") },
             onBack = { nav.popBackStack() },
             onActivated = {
                 model.refresh()
+                if (!nav.popBackStack("gym", false)) nav.navigate("gym") { launchSingleTop = true }
+            },
+        )
+    }
+    composable("gym-programme-templates") {
+        val generationModel: StrengthGenerationViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel()
+        StrengthGenerationScreen(
+            generationModel,
+            onBack = { nav.popBackStack() },
+            onActivated = {
+                model.refresh()
+                programmeModel().reload()
                 if (!nav.popBackStack("gym", false)) nav.navigate("gym") { launchSingleTop = true }
             },
         )

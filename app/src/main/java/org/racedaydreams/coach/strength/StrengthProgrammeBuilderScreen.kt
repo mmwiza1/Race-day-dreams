@@ -28,6 +28,7 @@ fun StrengthProgrammeBuilderScreen(
     onBack: () -> Unit,
     onActivated: () -> Unit,
     onCreateCustom: (() -> Unit)? = null,
+    onTemplates: (() -> Unit)? = null,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
     var section by rememberSaveable { mutableStateOf("drafts") }
@@ -106,6 +107,14 @@ fun StrengthProgrammeBuilderScreen(
                 ) {
                     Text("Build a programme from scratch")
                 }
+                if (onTemplates != null)
+                    OutlinedButton(
+                        onClick = onTemplates,
+                        enabled = enabled,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("Templates & generated programmes")
+                    }
                 if (onCreateCustom != null)
                     TextButton(onClick = onCreateCustom, enabled = enabled) {
                         Text("Create custom exercise")

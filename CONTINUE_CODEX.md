@@ -11,26 +11,31 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## ACTIVE next phase — 4 November: concrete template draft durability
+## ACTIVE — 4 November: concrete templates/generation UI in progress
 
-- Recovered and pushed staged notes as91e0c780. PR15 OPEN/DRAFT, mainc6299e2.
-- ConcreteStrengthProgrammeDraft and its typed SQLite repository preserve exact dated
-  generated/template candidates, all targets/phases/notes/trade-offs and explicit base.
-  Saved drafts never activate or create actuals. Atomic reviewed activation delegates to
-  the existing current-owner/eligibility/history transaction; retry/rollback are tested.
-- Schema15 adds3normalised preview tables over14; rootJSON9 unchanged. Nested authoring
-  archive writes2/reads1–2, validates the whole graph before replacement. Raw2/complete1
-  unchanged. Old14 fixtures now remove15tables too before authentic downgrade construction.
-- Local PASS:588,085domain checks/34suites,64schema,9release,11source/provenance tests,
-  strict174canonical/14routine guides; all main Kotlin/Java and instrumentation Kotlin/Java
-  source compile using cached tools. Formatting65Kotlin/113Java. No new UI exposed yet.
-  Gradle blocked before compilation by sandbox daemon-socket denial. SOURCE compilation
-  is not APK/lint/device verification.9new Android repository cases await actual CI execution.
-- Next: inspect current commit/remote/CI, fix any new repository/backup/migration failures.
-  Then connect template/generated configuration + editable concrete preview/recovery +
-  explicit activation using this store, preserving every dated variation. Existing manual
-  authoring stays intact. Remaining full0.10 list below remains authoritative. Do not stop
-  at durability or mark release complete. Keep PR15draft and S24 checks UNPERFORMED.
+- Typed durability committed/pushed as2abab32ee99152ef217c37226093d5b10b4969c4.
+  Workflow41886288778 builds/lints successfully and runs399cases/API. API36completed399
+  with ONE existing calendar test date-substring failure (4November matches14/24); API28
+  and35also finished399with the SAME sole failure. All9new concrete cases pass on ALL3APIs.
+  Fix now matches exact full date boundaries and asserts unique identities for ALL42days,
+  preserving category/accessibility/detail assertions. Do not rerun unchanged failing source.
+- Next UI checkpoint (inspect actual HEAD/status for commit): StrengthGenerationViewModel/Screen, new typed concrete editor,
+  route gym-programme-templates and button in manual authoring. Nine templates/preferences
+  configure goal/experience/priority/real equipment/days/duration. Exact dated previews save,
+  recover, edit/reorder/add/remove targets/exercises and activate only after confirmation.
+  Accepted preview is read-only. Existing manual builder/native Gym Now remain unchanged.
+- Four new real UI cases cover form/explicit activation/no race, exact16week recovery and
+  isolated edits, dark200%scrolling, fresh exclusion. Twelve new production-navigation scenes
+  expand required captures98→110(light/dark/200%). No new capture is yet visually accepted.
+- Local PASS:588,091domain checks/34suites,64schema,9release,11source/provenance tests,
+  strict174canonical/14routine guides. All main/instrumentation Kotlin+Java compile from
+  cached tools; this is NOT an APK/lint/emulator pass. Screenshot-validator10tests pass.
+  Schema15/rootJSON9/nestedauthoring2(read1–2)/raw2/complete1. No0.11work or permission change.
+- Next exact steps: finish formatting/docs/tests/source review, commit this UI+calendar fix
+  after verifying actual outstanding CI results; run full API28/35/36 gate, fix failures,
+  adopt/review new canonical captures. Then continue future-only revisions/regeneration,
+  permanent-vs-today swaps, optional modality progression and remaining quality/history
+  workflow from the FULL0.10 list below. Keep PR15 OPEN/DRAFT; no merge/S24claim.
 
 ## Verified manual/custom/inventory checkpoint — preserve
 
@@ -81,12 +86,11 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
 
 ### Remaining FULL0.10 — next exact phase, NOT deferred to0.11
 
-1. Editable templates + generated CONCRETE preview/draft/accept workflow. Preserve every
-   dated week/phase/hybrid variation, target, note and explanation. Existing
-   StrengthProgrammeDraft repeats a Day across a WeekBlock; strict v1 draft JSON has no
-   generated trade-off field. Do NOT flatten a first week or silently drop rationale.
-   Choose appropriate typed concrete-preview/editing persistence; test old/current formats
-   and additive migration before exposure. Do not grow Release08Store/FeatureStore buckets.
+1. Finish Android/visual acceptance of connected template/generated concrete workflow.
+   Typed schema15/authoring2, exact dated editor and production UI are now implemented;
+   verify them rather than rebuilding them. Need110current captures and strict actual
+   visual review. Preserve every week/phase/target/note/explanation and retained manual
+   authoring. No first-week flattening or generic JSON bucket.
 2. Future-only editing/regeneration for schedule/frequency/equipment/goal changes; explicit
    activation and fresh CAS/completed-source protection preserve old versions and actuals.
    User-created programmes and templates should share the retained native logging path.

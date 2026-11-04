@@ -1366,6 +1366,124 @@ class CoachingScreenshotTest {
         }
     }
 
+    @Test
+    fun capturesConcreteTemplatesAndEveryPhaseThroughProductionNavigation() {
+        EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val programme =
+            StrengthProgrammeGenerator()
+                .generate(
+                    StrengthProgrammeGenerator.Request(
+                        "capture-dated-development",
+                        Instant.now(),
+                        "Strength development",
+                        StrengthProgramme.Settings(
+                            GymProgramme.Goal.STRENGTH,
+                            GymProgramme.Priority.BALANCED,
+                            GymProgramme.Experience.INTERMEDIATE,
+                            DayOfWeek.values().toSet(),
+                            4,
+                            60,
+                            setOf(
+                                ExerciseMetadata.Equipment.BARBELL,
+                                ExerciseMetadata.Equipment.BENCH,
+                                ExerciseMetadata.Equipment.SQUAT_RACK,
+                                ExerciseMetadata.Equipment.DUMBBELLS,
+                                ExerciseMetadata.Equipment.PULL_UP_BAR,
+                            ),
+                        ),
+                        LocalDate.now(),
+                        12,
+                        "upper-lower-4",
+                        org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH,
+                        emptySet(),
+                        null,
+                        emptySet(),
+                        emptySet(),
+                        false,
+                    )
+                )
+        val draft =
+            ConcreteStrengthProgrammeDraft(
+                "capture-concrete-preview",
+                1,
+                null,
+                programme,
+                emptyList(),
+            )
+        SqliteConcreteStrengthProgrammeDraftRepository(context).save(draft, 0)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            listOf("", "-dark", "-large-font").forEach { suffix ->
+                shell(
+                    "settings put system font_scale ${if (suffix == "-large-font") "2.0" else "1.0"}"
+                )
+                shell("cmd uimode night ${if (suffix == "-dark") "yes" else "no"}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                await("Your strength training")
+                compose.onNodeWithText("Create a gym programme").performScrollTo().performClick()
+                await("Build or review programmes")
+                compose
+                    .onNodeWithText("Build or review programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Saved drafts")
+                compose
+                    .onNodeWithText("Templates & generated programmes")
+                    .performScrollTo()
+                    .performClick()
+                await("Templates & generation")
+                if (suffix == "-large-font")
+                    Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (suffix == "-dark")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                compose.onNodeWithText("Templates & generation").assertIsDisplayed()
+                capture("strength-templates$suffix")
+                compose.onNodeWithText("Open Strength development").performScrollTo().performClick()
+                await("Review every block")
+                compose.onNodeWithText("Review every block").assertIsDisplayed()
+                capture("strength-generated-preview$suffix")
+                val workout = programme.workouts().minBy { it.date() }
+                compose
+                    .onNodeWithText(
+                        "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"
+                    )
+                    .performScrollTo()
+                    .performClick()
+                await("Dated workout")
+                compose.onNodeWithText("Dated workout").assertIsDisplayed()
+                capture("strength-generated-workout$suffix")
+                compose.onNodeWithText("Programme preview").performScrollTo().performClick()
+                await("Review every block")
+                compose.onNodeWithText("Generate another preview").performScrollTo().performClick()
+                await("Shape your programme")
+                compose.onNodeWithText("Shape your programme").assertIsDisplayed()
+                capture("strength-template-settings$suffix")
+                Assert.assertNull(SqliteStrengthProgrammingRepository(context).currentReference())
+                Assert.assertTrue(CoachingStore(context).strength().isEmpty())
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            if (originalFont.matches(Regex("[0-9.]+")))
+                shell("settings put system font_scale $originalFont")
+            else shell("settings delete system font_scale")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
     private fun gymNowModel(): GymNowViewModel {
         lateinit var result: GymNowViewModel
         scenario?.onActivity { activity ->

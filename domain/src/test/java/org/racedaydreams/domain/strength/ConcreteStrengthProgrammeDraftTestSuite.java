@@ -82,6 +82,42 @@ public final class ConcreteStrengthProgrammeDraftTestSuite {
                         == 2,
                 "IDs containing delimiters are not conflated");
         rejects(() -> new ConcreteStrengthProgrammeDraft("future", 1, base, next, List.of(c, c)));
+        var workout = p.workouts().get(0);
+        var editedWorkout =
+                new StrengthProgramme.Workout(
+                        workout.id(),
+                        workout.date(),
+                        workout.expectedMinutes(),
+                        workout.definition(),
+                        "Athlete's own reviewed guidance");
+        var editedDraft = ConcreteStrengthProgrammeEditor.replaceWorkout(draft, editedWorkout);
+        check(editedDraft.revision() == 2, "Dated edit advances only draft revision");
+        check(
+                editedDraft.programme().workouts().stream()
+                        .filter(w -> w.id().equals(workout.id()))
+                        .findFirst()
+                        .orElseThrow()
+                        .equals(editedWorkout),
+                "Edited workout retained");
+        check(
+                editedDraft.programme().workouts().stream()
+                        .filter(w -> !w.id().equals(workout.id()))
+                        .allMatch(p.workouts()::contains),
+                "Every other dated prescription exact");
+        check(
+                editedDraft.programme().tradeoffs().equals(p.tradeoffs()),
+                "Generation explanation not dropped by editing");
+        check(draft.programme().equals(p), "Original candidate remains immutable");
+        rejects(
+                () ->
+                        ConcreteStrengthProgrammeEditor.replaceWorkout(
+                                draft,
+                                new StrengthProgramme.Workout(
+                                        workout.id(),
+                                        workout.date().plusDays(1),
+                                        workout.expectedMinutes(),
+                                        workout.definition(),
+                                        workout.notes())));
         System.out.println(
                 "ConcreteStrengthProgrammeDraftTestSuite: " + checks + " checks passed.");
     }

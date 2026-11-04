@@ -26,7 +26,7 @@ class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(98, len(captures.REQUIRED))
+        self.assertEqual(110, len(captures.REQUIRED))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):
@@ -55,6 +55,12 @@ class CaptureValidationTest(unittest.TestCase):
         }, set(captures.PROGRAMMING_REQUIRED))
         for name in captures.PROGRAMMING_REQUIRED:
             self.assertIn(name, captures.REQUIRED)
+
+    def test_templates_require_real_configuration_dated_previews_and_accessibility(self):
+        self.assertEqual(12, len(captures.TEMPLATE_REQUIRED))
+        for scene in ("strength-templates", "strength-generated-preview", "strength-generated-workout", "strength-template-settings"):
+            for suffix in ("", "-dark", "-large-font"):
+                self.assertIn(f"{scene}{suffix}.png", captures.REQUIRED)
 
     def test_complete_capture_set_validates_without_requiring_equal_api_hashes(self):
         with tempfile.TemporaryDirectory() as temp:

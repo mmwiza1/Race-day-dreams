@@ -112,6 +112,7 @@ class FeatureNavigationTest {
                 "gym-workout",
                 "gym-workout-builder",
                 "gym-programme-builder",
+                "gym-programme-templates",
                 "strength-custom-exercise",
                 "gym/session/{id}",
                 "exercises",

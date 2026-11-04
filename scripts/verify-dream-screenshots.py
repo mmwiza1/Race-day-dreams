@@ -101,7 +101,10 @@ PROGRAMMING_REQUIRED = (
     'strength-programme-preview-large-font.png',
     'strength-custom-exercise.png',
 )
-REQUIRED = tuple(sorted(OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED + GYM_REQUIRED + PROGRAMMING_REQUIRED))
+TEMPLATE_REQUIRED = tuple(f"{scene}{suffix}.png"
+    for scene in ("strength-templates", "strength-generated-preview", "strength-generated-workout", "strength-template-settings")
+    for suffix in ("", "-dark", "-large-font"))
+REQUIRED = tuple(sorted(TEMPLATE_REQUIRED + OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED + GYM_REQUIRED + PROGRAMMING_REQUIRED))
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_FILE_BYTES = 16 * 1024 * 1024
 MAX_DECODED_BYTES = 42 * 1024 * 1024
