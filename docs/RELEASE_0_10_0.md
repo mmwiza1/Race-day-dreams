@@ -41,6 +41,11 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Fixes
 
+- Current preview acceptance rechecks archived exercise preferences as well as exclusions.
+  Programme substitutions are checked against their original training intent at acceptance.
+- Future-review screenshot navigation uses the actual large-font accessibility description
+  while retaining all production-screen, font and evidence assertions.
+
 - Editing sets, adding or removing exercises in an unaccepted concrete preview recalculates
   the workout-duration estimate before activation. Other dated workouts are unchanged.
 

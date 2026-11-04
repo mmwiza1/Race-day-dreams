@@ -155,6 +155,7 @@
     "app/src/androidTest/java/org/racedaydreams/data/ConcreteStrengthProgrammeDraftRepositoryTest.java",
     "domain/src/main/java/org/racedaydreams/domain/strength/ConcreteStrengthProgrammeEditor.java",
     "app/src/androidTest/java/org/racedaydreams/coach/StrengthGenerationScreenTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/RefinementUiTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/RefinementUiTest.kt",
+    "domain/src/test/java/org/racedaydreams/domain/strength/ConcreteStrengthProgrammeSubstitutionTestSuite.java"
   ]
 }

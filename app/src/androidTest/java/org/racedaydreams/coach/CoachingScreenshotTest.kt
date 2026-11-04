@@ -1538,7 +1538,13 @@ class CoachingScreenshotTest {
                 shell("cmd uimode night ${if (suffix == "-dark") "yes" else "no"}")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 await("Your strength training")
-                compose.onNodeWithText("Strength").performClick()
+                // Large-font navigation intentionally replaces wrapped labels with TalkBack names.
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
                 await("Gym programme")
                 compose.onNodeWithText("Gym programme").performScrollTo().performClick()
                 await("Build or review programmes")

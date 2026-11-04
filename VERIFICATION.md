@@ -1,3 +1,17 @@
+## Current follow-up — future capture accessibility and substitution boundary
+
+Sourceed0bd3/workflow41896504156: API28/35/36 each finished411tests with the same sole
+200%navigation capture failure (test searched text although production supplies a TalkBack
+name at large font). All new future/native/backup cases passed on all three APIs. The selector now supports the actual accessibility layout with exact node
+uniqueness; no assertion or timeout is weakened.
+
+New permanent-substitution domain foundation passes44checks, including bulk per-phase
+preservation, protected completion, load clearing, undo and changed measurement targets.
+Fresh SQL intent/archive-choice checks have two new Android cases. Final local total588145/
+35suites and all main/instrumentation Kotlin/Java source compile; formatting69Kotlin/115Java
+passes. Expected next matrix413/API and116captures. These are NOT yet observed Android
+passes. Permanent-swap UI remains disconnected and full0.10 stays incomplete/PR15draft.
+
 ## 4 November 2026 — verified templates, future revisions pending
 
 Source98366d7c5bddea4e34350ed61810f2a286c447c0 passed COMPLETE workflow41889775036:

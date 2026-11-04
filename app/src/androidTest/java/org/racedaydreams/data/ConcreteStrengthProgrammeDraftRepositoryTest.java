@@ -376,6 +376,79 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
         assertTrue(programmes.decisions().get(1).protectedWorkoutIds().contains(workout.id()));
     }
 
+    public void testArchivedAfterPreviewCannotBeNewlyActivated() {
+        var value = draft("fresh-archive");
+        drafts.save(value, 0);
+        var exercise =
+                value.programme().workouts().get(0).definition().slots().get(0).exercise().id();
+        ProfileDatabase.get(getContext())
+                .getWritableDatabase()
+                .execSQL("INSERT INTO strength_user_state VALUES(?,0,1)", new Object[] {exercise});
+        rejects(() -> drafts.activate(value, "archived-after-review"));
+        assertNull(programmes.currentReference());
+        assertTrue(programmes.decisions().isEmpty());
+        assertEquals(value, drafts.get(value.id()));
+    }
+
+    public void testUnrelatedReplacementCannotBypassFreshIntentValidation() {
+        var original = draft("intent-base").programme();
+        programmes.activate(original, null, "initial-intent", Collections.emptyList());
+        var base = programmes.currentReference();
+        var workout = original.workouts().get(0);
+        var originalSlot = workout.definition().slots().get(0);
+        var replacement = ExerciseCatalog.definition("seated-leg-curl").exercise();
+        var slots = new ArrayList<>(workout.definition().slots());
+        slots.set(
+                0,
+                new GymWorkoutDefinition.Slot(
+                        originalSlot.id(),
+                        replacement,
+                        originalSlot.target().withoutLoadReference(),
+                        null));
+        var d = workout.definition();
+        var changed =
+                new StrengthProgramme.Workout(
+                        workout.id(),
+                        workout.date(),
+                        StrengthWorkoutBudget.workoutMinutes(slots),
+                        new GymWorkoutDefinition(d.id(), d.revision() + 1, NOW, d.title(), slots),
+                        workout.notes());
+        var next =
+                new StrengthProgramme(
+                        original.id(),
+                        2,
+                        1,
+                        NOW,
+                        original.name(),
+                        original.origin(),
+                        original.templateId(),
+                        original.settings(),
+                        original.blocks(),
+                        original.effectiveFrom(),
+                        "Reviewed replacement",
+                        original.tradeoffs());
+        var pending =
+                new ConcreteStrengthProgrammeDraft(
+                        "intent-review", 1, base, next, Collections.emptyList());
+        var altered = ConcreteStrengthProgrammeEditor.replaceWorkout(pending, changed).programme();
+        var mapping =
+                new StrengthProgrammeEditor.Change(
+                        workout.id(),
+                        originalSlot.id(),
+                        originalSlot.exercise().id(),
+                        replacement.id(),
+                        "Unrelated replacement must be rejected");
+        var value =
+                new ConcreteStrengthProgrammeDraft(
+                        "intent-bypass", 1, base, altered, Collections.singletonList(mapping));
+        drafts.save(value, 0);
+        rejects(() -> drafts.activate(value, "reject-unrelated-intent"));
+        assertEquals(base, programmes.currentReference());
+        assertNull(programmes.programme(original.id(), 2));
+        assertEquals(value, drafts.get(value.id()));
+        assertEquals(1, programmes.decisions().size());
+    }
+
     private static void rejects(Runnable action) {
         try {
             action.run();

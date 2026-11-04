@@ -463,7 +463,7 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
                 new StrengthProgrammeEditor.Proposal(before, proposed, protectedIds, substitutions);
             } else if (proposed.revision() != 1 || !substitutions.isEmpty()) throw conflict();
             if (load(db, proposed.id(), proposed.revision()) != null) throw conflict();
-            eligible(db, proposed, before, protectedIds);
+            eligible(db, proposed, before, protectedIds, substitutions);
             var protectedList = new ArrayList<>(protectedIds);
             Collections.sort(protectedList);
             var accepted =
@@ -530,12 +530,40 @@ public final class SqliteStrengthProgrammingRepository extends SqliteStoreAccess
             SQLiteDatabase db,
             StrengthProgramme p,
             StrengthProgramme previous,
-            Set<String> protectedIds) {
+            Set<String> protectedIds,
+            List<StrengthProgrammeEditor.Change> substitutions) {
         var old = new HashMap<String, StrengthProgramme.Workout>();
         if (previous != null) for (var w : previous.workouts()) old.put(w.id(), w);
         var excluded = new HashSet<String>();
         for (var e : SqliteExerciseExclusionRepository.rowsForChoices(db))
             excluded.add(e.exerciseId());
+        try (var c =
+                db.rawQuery("SELECT exercise_id FROM strength_user_state WHERE archived=1", null)) {
+            while (c.moveToNext()) excluded.add(c.getString(0));
+        }
+        for (var change : substitutions) {
+            var previousWorkout = old.get(change.workoutId());
+            var original =
+                    previousWorkout.definition().slots().stream()
+                            .filter(s -> s.id().equals(change.slotId()))
+                            .findFirst()
+                            .orElseThrow();
+            var context =
+                    new ExerciseSubstitutionEngine.Context(
+                            original.exercise(),
+                            p.settings().goal(),
+                            p.settings().experience(),
+                            p.settings().equipment(),
+                            excluded,
+                            Collections.emptySet(),
+                            Collections.emptySet(),
+                            ExerciseSubstitutionEngine.Reason.ALTERNATIVES);
+            if (ExerciseSubstitutionEngine.rank(context, 50).stream()
+                    .noneMatch(s -> s.exercise().id().equals(change.toExerciseId())))
+                throw invalid(
+                        "replacement must retain the original programme intent and remain"
+                                + " available");
+        }
         for (var w : p.workouts()) {
             if (w.date().isBefore(p.effectiveFrom())
                     || protectedIds.contains(w.id())

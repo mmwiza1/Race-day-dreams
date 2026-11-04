@@ -109,3 +109,9 @@ Android and visual acceptance for these new future-review controls is pending.
 Activation of a forward revision waits while a native workout using that programme is
 active, paused or awaiting recovery. The athlete can finish/discard that workout first;
 then activation rechecks fresh completed evidence. Previewing changes never stops a workout.
+
+Permanent-substitution domain operations (not yet connected to UI) can retain each phase's
+own target across selected future occurrences, clear load references and record final
+accepted-base→replacement provenance. A changed measurement needs an individually reviewed
+target. SQL acceptance independently rechecks original intent, fresh exclusions/archived
+choices and equipment. These operations create no actual sets or completion evidence.
