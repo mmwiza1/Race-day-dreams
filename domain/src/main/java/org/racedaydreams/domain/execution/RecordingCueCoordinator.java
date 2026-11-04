@@ -44,7 +44,9 @@ public final class RecordingCueCoordinator {
             boolean announceSplits) {
         var candidates = new ArrayList<CoachCues.Cue>();
         long active = metrics.movingMillis();
-        boolean lost = metrics.gps().contains("interrupted");
+        boolean lost =
+                (metrics.gps().contains("interrupted")
+                        || metrics.gps().contains("temporarily lost"));
         if (lost && !gpsWasLost) {
             candidates.add(
                     new CoachCues.Cue(

@@ -251,6 +251,13 @@ class RunRecordingService : Service() {
     private fun startLocation() {
         location.start { fix ->
             try {
+                val currentEngine = engine ?: return@start
+                val receivedMillis = SystemClock.elapsedRealtime()
+                val receivedWall = Instant.now()
+                if (!currentEngine.qualifyDelivery(fix, receivedMillis, receivedWall)) {
+                    publish()
+                    return@start
+                }
                 if (
                     !manualPause &&
                         getSharedPreferences("run-sensors", MODE_PRIVATE)
@@ -258,9 +265,9 @@ class RunRecordingService : Service() {
                 ) {
                     when (autoPause.observe(fix)) {
                         AutoPausePolicy.Decision.PAUSE ->
-                            engine?.pause(fix.monotonicMillis(), fix.timestamp(), true)
+                            currentEngine.pause(receivedMillis, receivedWall, true)
                         AutoPausePolicy.Decision.RESUME ->
-                            engine?.resume(fix.monotonicMillis(), fix.timestamp(), true)
+                            currentEngine.resume(receivedMillis, receivedWall, true)
                         else -> Unit
                     }
                 }

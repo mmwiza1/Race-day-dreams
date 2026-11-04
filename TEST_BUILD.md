@@ -1,5 +1,31 @@
 # 0.10 software verification / real-device acceptance
 
+## 0.10.1 Galaxy S24 GPS acceptance — not performed by Codex
+
+Use the verified development APK for the final merged0.10.1 commit, once available.
+Keep a record of version, date, phone power settings, location permission and conditions.
+All rows below require a human observation; leave untested rows explicitly unverified.
+
+| Test | What to record | Status |
+| --- | --- | --- |
+| Clear-sky known-distance outdoor route | GPS wait/ready, actual distance, route shape, elapsed/active time, average pace, genuine1km splits | Unverified |
+| Walking and slow running, then stillness | Whether movement counts and stationary drift inflates distance; optional auto-pause behaviour | Unverified |
+| Urban buildings, bridge/tunnel or brief interruption where practical | Weak/lost/recovered status, honest gap, no invented straight-line distance | Unverified |
+| Screen locked for a substantial portion; switch apps/background | Foreground notification, retained route, continued timing and battery use | Unverified |
+| Pause, move while paused, resume | Paused movement does not add distance; no resume jump | Unverified |
+| Meaningful longer outdoor run, plus2–4h when practical | Retention, battery/heat, pace/split stability and notifications | Unverified |
+| Battery saver and permission revocation | Understandable interruption, cleanup and recoverable retained evidence | Unverified |
+| Unexpected process closure, then reopen | Explicit unfinished-run recovery; no invented downtime or duplicate evidence | Unverified |
+| Samsung Health / Galaxy Watch7 on same route | Observed distance/time/pace/split/shape differences; neither comparator is automatically ground truth | Unverified |
+| Saved activity, GPX export and raw backup/restore | Original coordinates, gaps, pauses, summaries and route agree within documented rendering limits | Unverified |
+| Progression screen with light/dark/200% font and TalkBack | Plain instructions, weight meaning, expanded/collapsed details and separate save/activate choices | Unverified |
+
+Prefer a measured segment when practical. Record differences rather than asserting a universal
+accuracy percentage. Do not add direct Samsung integration: Health Connect remains the
+supported interoperability layer. Emulator tests cover deterministic software behaviour;
+they cannot establish outdoor reception, locked-screen power policy or human audio usability.
+
+
 Source1a7c683/workflow41912323900 passed426tests EACH API28/35/36, builds/lint, domain/
 schema/migration/backup/release/format/guidance and125actual captures. New programming,
 replacement, progression and read-only history are connected and scoped light/dark/200%

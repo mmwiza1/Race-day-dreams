@@ -1,4 +1,4 @@
-# Continue Codex — 0.10.0-test1 Strength Programming 2.0
+# Continue Codex — 0.10.1-test1 GPS Reliability & Coaching Clarity
 
 ## Permanent recovery rules
 
@@ -11,7 +11,70 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT —0.10 software complete; final review/readiness boundary
+## CURRENT — 0.10.1 in progress; GPS diagnosis and corrections
+
+Branch: `feature/0.10.1-gps-reliability-coaching-clarity`, from merged main
+`5827d291d94870d16e2398c5173319260a6d7d72` (PR15). Do not restart 0.10 or reset work.
+0.10 main workflow41919350235 passed:426 tests EACH API28/35/36,125 captures.
+The rolling development APK for that completed baseline is available on GitHub Releases.
+Live main/PR/CI must be rechecked before subsequent work. Draft0.10.1 PR will be opened immediately after this checkpoint is pushed; inspect live state.
+Use actual git log/status for the checkpoint's own SHA and any uncommitted files.
+
+Authoritative scope is the owner's updated 0.10.1 master brief: GPS reliability,
+open-source benchmarking and coaching clarity. It explicitly authorises automatic
+merge ONLY after the complete final-head software and visual gates pass. Physical
+S24 tests are documented post-merge acceptance, never claimed from emulator results.
+Do not start 0.11 timers/warm-ups/supersets/analytics/PB redesign/achievements/deload,
+nutrition, retention/storage, broad catalogue or advanced hybrid work.
+
+Baseline rerun before modifications:588145 domain checks/35 suites,64 schema tests,
+9 release-note tests passed. Four reproduced defects (including rendering): stationary ±2 m/second drift
+adds480 m over120 s; old t=2 s fix restores GPS after loss at20 s; auto-pause treats
+observations at0 and60 s as continuous stillness. None proves the owner's S24 cause.
+See docs/GPS_ENGINE_REVIEW_0_10_1.md and docs/GPS_DIAGNOSIS_0_10_1.md.
+OpenTracks archived GitHub, RunnerUp and GPSTest reviewed at pinned revisions;
+current Codeberg inaccessible. No external source copied; RunnerUp GPL behaviour only.
+
+In-progress corrections preserve every accepted original coordinate and historical
+finalised total: native monotonic receipt qualification before auto-pause, gap freshness
+barrier, bounded speed+accuracy-supported stationary distance cluster, first-speed
+validation, continuity-gated auto-pause, concise freshness/recovery states. GPX imports
+remain independent of live receipt age. Coordinate-free rejection events use existing
+raw archive2. Rendering now preserves bends with bounded64-edge simplification at0.0015 normalised tolerance; sharp-turn stride defect reproduced. No schema/backup/dependency/permission changes: schema15/rootJSON9/
+nested authoring2/strengthEngine2/strengthState2/raw2/complete1. App0.10.1/code14.
+
+NEXT EXACT WORK (complete in order, do not stop after one test):
+1. Finish/verify GPS corrections: full domain now passes37suites/640763checks including46295GPS checks
+   and6323render-geometry checks;64schema/9release pass. Actual Gradle Android gate running
+   locally with workspace JDK/SDK/cache and network permission. App+Android tests compile
+   and both APKs assemble; final lint result pending. Inspect /workspace/scratch/rdd0101/android-phase-b.log. Inspect
+   native batch adapter and recording persistence/GPX/raw archive compatibility; add affected
+   Android tests. Check rendering stride corner/gap fidelity separately, fix only demonstrated
+   defects. Finish route/source/pause/split audit and document thresholds/limitations.
+2. Run actual Android build/lint/instrumentation (APIs28/35/36 via CI). Local Gradle may
+   need sandbox network permission; do not label offline compiler as an APK/device result.
+   Open draft PR for0.10.1 when coherent checkpoint is committed/pushed.
+3. Implement approved ProgrammeProgressionSheet: Your workout suggestion / Here's what
+   to do / About the weight / Why are we suggesting this? Plain English generated from
+   real targets for every modality; proposed82kg is NOT history80kg. Functional collapsed
+   Advanced details, accessible expand/collapse, actual current/proposed/evidence distinctions.
+   Save this suggestion for review and Keep my current target; save never activates.
+   Preserve evidence/freshness/CAS/transaction checks; limited related prescription wording.
+4. Domain + UI tests for above, light/dark/200%, authentic screenshots, actual visual review.
+   Current canonical125images still represent0.10 baseline; NOT0.10.1 evidence. Workflow
+   capture allow-branch now targets this feature; regenerate and verify source fingerprint.
+5. Full final-head gate: domain/schema/backups/format/release/guidance/provenance/build/lint,
+   all API28/35/36 tests, canonical captures/integrity and actual visual inspection. Update
+   release notes, verification, S24 acceptance checklist and attribution. Keep PR draft until
+   scope complete; no partial merge or blind reruns. Check blocking reviews/conflicts.
+6. When all agreed gates pass, ready + squash merge per explicit updated brief; verify main
+   SHA/post-merge CI/rolling Latest Development Build APK. Update handoff to completed state
+   (focused follow-up PR if needed), report real results and physical S24 unknowns. Stop0.11.
+
+The historical section below describes the prior pre-merge checkpoint; its old PR/main
+and no-auto-merge instructions are superseded by the current section and latest brief.
+
+## Historical 0.10 pre-merge handoff (superseded by live merged state)
 
 Branch feature/0.10-strength-programming / PR15 targets main. Main remainsc6299e2; inspect
 live state before action. Implementation source1a7c683eeabf349505a0c2f5f19da9323d93812d

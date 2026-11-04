@@ -1,5 +1,28 @@
 ## 4 November 2026 — complete Strength Programming2.0 software gate
 
+## Current release — 0.10.1 GPS diagnosis/corrections in progress (4 November 2026)
+
+0.10 merged as PR15, main `5827d291d94870d16e2398c5173319260a6d7d72`.
+Post-merge workflow41919350235 succeeded with426 cases EACH API28/35/36 and125 captures.
+Older entries below are historical checkpoints, including statements that PR15 was pending.
+
+Before changing architecture/recording, reran the unchanged baseline:588145 domain checks,
+64 schema and9 release-note tests passed. New regression traces demonstrated jitter distance,
+stale-fix recovery and sparse auto-pause failures on the baseline; the first permanent suite
+failed five assertions before fixes. A separate6000-point trace reproduces index-thinning
+losing a sharp route bend. See docs/GPS_DIAGNOSIS_0_10_1.md for exact evidence/thresholds.
+
+The corrected local domain gate passes37 suites including46295 GPS and new rendering checks;
+schema64 and release9 pass. Formatting applies pinned tools to touched recording/presentation
+surfaces. Actual Android build/lint/instrumentation compilation is being run; its final result
+and the API28/35/36 release gate remain pending. Current canonical captures still represent
+0.10, not this changed source. No S24, human TalkBack or outdoor accuracy pass is claimed.
+
+No schema/backup/raw archive format, runtime dependency or manifest permission change.
+Native accepted-coordinate GPX/raw-archive recovery regression was added for Android execution.
+OpenTracks/RunnerUp/GPSTest comparison is documented with pinned revisions and no code reuse.
+
+
 Source1a7c683eeabf349505a0c2f5f19da9323d93812d passed COMPLETE workflow41912323900: **426instrumentation
 cases EACH API28/35/36** (1278emulator cases), domain/app/test builds and lint,
 588145domain checks/35suites including the2430configuration simulator,64schema/migration
