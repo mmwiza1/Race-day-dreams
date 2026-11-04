@@ -11,7 +11,7 @@ remain distinct. Reuse Gym Now's one execution engine. No Internet permission, a
 backend, ads, analytics, subscriptions or runtime LLM. No physical-device claims without
 actual human results. The app recommends. The athlete decides. The plan adapts.
 
-## ACTIVE — 4 November: concrete templates/generation UI in progress
+## ACTIVE — 4 November: concrete templates/generation verification
 
 - Typed durability committed/pushed as2abab32ee99152ef217c37226093d5b10b4969c4.
   Workflow41886288778 builds/lints successfully and runs399cases/API. API36completed399
@@ -19,20 +19,24 @@ actual human results. The app recommends. The athlete decides. The plan adapts.
   and35also finished399with the SAME sole failure. All9new concrete cases pass on ALL3APIs.
   Fix now matches exact full date boundaries and asserts unique identities for ALL42days,
   preserving category/accessibility/detail assertions. Do not rerun unchanged failing source.
-- Next UI checkpoint (inspect actual HEAD/status for commit): StrengthGenerationViewModel/Screen, new typed concrete editor,
+- Template UI committed/pushed as4eec51842097eb95bfd0f80b8b4dbd17ba6997ae;
+  workflow41888859405 is in progress. Next small follow-up fixes edited duration estimates
+  and adds a fifth real UI case that changes sets and then activates the candidate.
+  All main/instrumentation Kotlin/Java compile for that fix.
+- Implemented template UI: StrengthGenerationViewModel/Screen, new typed concrete editor,
   route gym-programme-templates and button in manual authoring. Nine templates/preferences
   configure goal/experience/priority/real equipment/days/duration. Exact dated previews save,
   recover, edit/reorder/add/remove targets/exercises and activate only after confirmation.
   Accepted preview is read-only. Existing manual builder/native Gym Now remain unchanged.
-- Four new real UI cases cover form/explicit activation/no race, exact16week recovery and
-  isolated edits, dark200%scrolling, fresh exclusion. Twelve new production-navigation scenes
+- Five new real UI cases cover form/explicit activation/no race, exact16week recovery and
+  isolated edits, edited-budget activation, dark200%scrolling, fresh exclusion. Twelve new production-navigation scenes
   expand required captures98→110(light/dark/200%). No new capture is yet visually accepted.
 - Local PASS:588,091domain checks/34suites,64schema,9release,11source/provenance tests,
   strict174canonical/14routine guides. All main/instrumentation Kotlin+Java compile from
   cached tools; this is NOT an APK/lint/emulator pass. Screenshot-validator10tests pass.
   Schema15/rootJSON9/nestedauthoring2(read1–2)/raw2/complete1. No0.11work or permission change.
-- Next exact steps: finish formatting/docs/tests/source review, commit this UI+calendar fix
-  after verifying actual outstanding CI results; run full API28/35/36 gate, fix failures,
+- Next exact steps: inspect actual HEAD/remote/CI. Run full API28/35/36 gate including
+  edited-budget activation (405expected tests), fix actual failures,
   adopt/review new canonical captures. Then continue future-only revisions/regeneration,
   permanent-vs-today swaps, optional modality progression and remaining quality/history
   workflow from the FULL0.10 list below. Keep PR15 OPEN/DRAFT; no merge/S24claim.

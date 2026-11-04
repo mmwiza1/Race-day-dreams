@@ -38,6 +38,9 @@ The existing 0.9 execution and history guarantees remain the baseline; the full
 
 ## Fixes
 
+- Editing sets, adding or removing exercises in an unaccepted concrete preview recalculates
+  the workout-duration estimate before activation. Other dated workouts are unchanged.
+
 - Calendar day selection in the UI test now matches an exact complete date rather than a
   substring that conflated the 4th with the 14th/24th. The test checks all42visible day
   identities while retaining category, accessibility and workout-detail assertions.

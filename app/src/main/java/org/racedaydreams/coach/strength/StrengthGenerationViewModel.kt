@@ -213,7 +213,7 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
         return StrengthProgramme.Workout(
             workout.id(),
             workout.date(),
-            workout.expectedMinutes(),
+            StrengthWorkoutBudget.workoutMinutes(slots),
             GymWorkoutDefinition(
                 old.id(),
                 Math.addExact(old.revision(), 1),

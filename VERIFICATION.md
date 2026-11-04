@@ -9,7 +9,9 @@ Formatting and strict174canonical/14routine guidance jobs passed. The workflow i
 not green; no canonical publication or merge. The root-cause selector correction retains
 all old assertions and additionally checks unique identities for every42visible calendar day.
 
-The next template/generated UI checkpoint adds4real UI cases and12new production capture
+Template/generated UI source4eec51842097eb95bfd0f80b8b4dbd17ba6997ae is running
+workflow41888859405. A follow-up adds an edited-duration activation regression (5new UI
+cases total) and recalculates the expected workout budget after slot edits. It retains 12new production capture
 scenes (110required total). Local PASS:588,091domain checks/34suites,64schema,9release,
 11provenance and10screenshot-validator tests; all main/instrumentation Kotlin and Java source
 compiles with cached tools. Local Gradle remains blocked before compilation by sandbox

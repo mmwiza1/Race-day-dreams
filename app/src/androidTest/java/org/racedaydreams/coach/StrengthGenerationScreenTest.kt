@@ -146,6 +146,46 @@ class StrengthGenerationScreenTest {
         )
     }
 
+    @Test
+    fun changedWorkingSetsRecalculateBudgetBeforeExplicitActivation() {
+        install()
+        generate()
+        val initial = model.state.value.draft!!
+        val workout = initial.programme().workouts().first()
+        val slot = workout.definition().slots().first()
+        val target = slot.target()!!
+        compose.runOnIdle {
+            model.putSlot(
+                workout.id(),
+                slot.id(),
+                slot.exercise(),
+                GymSlotInput(
+                    sets = "1",
+                    minimumReps = target.minimumReps()?.toString() ?: "",
+                    maximumReps = target.maximumReps()?.toString() ?: "",
+                    seconds = target.seconds()?.toString() ?: "",
+                    metres = target.metres()?.toString() ?: "",
+                    restSeconds = target.restSeconds()?.toString() ?: "",
+                ),
+                {},
+            )
+        }
+        await { model.state.value.draft!!.revision() == 2 }
+        val edited = model.state.value.draft!!
+        val changed = edited.programme().workouts().first()
+        assertEquals(1, changed.definition().slots().first().target().sets())
+        assertEquals(
+            StrengthWorkoutBudget.workoutMinutes(changed.definition().slots()),
+            changed.expectedMinutes(),
+        )
+        assertTrue(changed.expectedMinutes() < workout.expectedMinutes())
+        assertEquals(initial.programme().workouts().drop(1), edited.programme().workouts().drop(1))
+        compose.runOnIdle { model.activate(edited, "edited-duration") { activations++ } }
+        await { activations == 1 }
+        assertEquals(edited.programme(), io { programmes.programme(edited.programme().id(), 1) })
+        assertTrue(io { CoachingStore(app).strength().isEmpty() })
+    }
+
     private fun generate() {
         compose.runOnIdle {
             model.generate(
