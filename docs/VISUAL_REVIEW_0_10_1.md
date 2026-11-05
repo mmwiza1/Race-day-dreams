@@ -1,3 +1,18 @@
+# Reopened expanded200%footer —5November2026
+
+The older all-footer sign-off below was too broad. Directly reopening
+`strength-programme-progression-evidence-actions-large-font.png` shows lower safeguards,
+but no activation warning or Save button. Normal/dark footer images visibly show both.
+Do not count semantic assertions as visual proof of that missing200%footer. This is a
+capture-verification gap; no production layout/engine change is warranted by it.
+
+The local fixture now uses measured scrolling to the activation-warning node, retains
+original display assertions and additionally requires the FULL warning and Save bounds
+inside the viewport. It compiles/passes pinned formatting (full local Gradle gate79tasks/38sec). It still needs the complete
+corrected matrix and fresh source-bound captures, with direct footer inspection in all
+three modes. PR17 remains draft. The33-frame historical set is retained, not edited or
+presented as fresh-source evidence. Physical S24/human TalkBack remains unperformed.
+
 # Final-source0.10.1 progression visual review —5November2026
 
 Source1dffb7dcf7607c237f257004f4b322aade097ce6 passed COMPLETE workflow42012242544:

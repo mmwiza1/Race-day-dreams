@@ -13,97 +13,76 @@ The app recommends. The athlete decides. The plan adapts.
 
 ## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
-LATEST LIVE CHECKPOINT —5November2026,12:37UTC:
-Focused correction244e0b0a3a45ee82c5f96801b547c4cfd18a3c94 is committed/pushed; local and
-remote tree/unsigned commit identities match. DRAFT PR17 targets main from branch
-fix/0.10.1-screenshot-test-dispatcher. Do not duplicate source changes or recreate PR17.
-Source fingerprint0dce7147d3137aa752ca8b81b0923f339be84b221e008d5a6939fe68cd055fbd.
-Full follow-up workflow42023014049 is running438cases/API and155captures.
-At12:34UTC all3Android jobs still execute (about33minutes in instrumentation versus
-9–11minutes in final pre-merge42015943868). No completed result/artifact or exported job
-log is available yet (GitHub log export404 until finish). Do not infer pass/fail, relax
-timeouts/assertions or blindly rerun. Inspect actual outcome/stack before further changes.
-A follow-up CI-only30minute instrumentation-step bound is being added (normal9–11min);
-no assertions, cases or deadlines inside tests are weakened. Pushing it will cancel the
-unbounded run via existing PR concurrency. Inspect its retained progress/failure logs,
-then the bounded run, before changing the fixture or claiming any root cause.
-NEXT inspect that actual workflow, then canonical155adoption/visual confirmation,
-final docs/head CI, authorised follow-up merge and actual main/development verification.
-Older commit/push instructions below describe the pre-commit checkpoint. Preserve this
-live metadata if uncommitted. PR16 is already merged and cannot remain draft.
+LATEST CHECKPOINT —5 November2026,13:26UTC
 
+Branch: fix/0.10.1-screenshot-test-dispatcher. PR17 remains DRAFT.
+Main remains6f73afe3ff3b20a13c73f5af4792247f68883659; PR16 already merged75ab7c5.
+Do not reset/reopen/reimplement PR16 or GPS/coaching. No0.11/stable tag scope.
+Inspect actual HEAD/remote/CI: the production-window/footer correction below may already
+be committed/pushed. Do not duplicate it. Prior pushed HEAD7604dd4 FAILED; do not rerun it.
 
-UPDATE —5November2026,12:40UTC:
-CI-bound commitbe0a306a574c9c955c260ad10392e48d4a09c511 is pushed and identical locally;
-its bounded workflow42028621679 supersedes244e0b0. Exported cancelled42023014049 logs
-NOW confirm all3APIs stopped at34/438 completed, no assertion failure, as screenshot tests
-begin. This is an actual stall, not merely a slow completed pass; no Android report existed.
-A focused fixture startup correction is being prepared: advance the UI test clock once
-in@Before before any ActivityScenario launch, so the StandardTestDispatcher recomposer
-queued by the empty rule starts before production content/lifecycle. Add runner-supported
-600000ms per-method timeout (normal methods finish well under10min) to expose a blocked
-stack if it persists, alongside the30min step bound. No content/readiness assertion or
-case is removed. This is a diagnosis-driven attempted correction, NOT a demonstrated pass.
-Local pinned formatting/release9 and real offline Gradle domain/check/debug/lint/test-APK
-compile PASS79tasks/31sec. Commit/push and inspect the replacement full gate before claiming fixed.
+CONFIRMED DELIVERY BLOCKERS
+-Post-merge main42018800515 API35 screenshot draw crossed worker85/main2 under the
+ default unconfined empty Compose rule. Other437/API35 and438/API28/36 passed.
+-Queued StandardTestDispatcher attempt244e0b0 stalled34/438 on all APIs. Cancelled by
+ normal PR concurrency after logs became needed; retained logs inspected.
+-Startup-clock attempt7604dd4 workflow42029328929 FAILED ALL3APIs at30min. All3logs
+ inspected:34passed, first GymNow capture timed out600000ms atObject.wait, later
+ progression/replacement/template/revision scenes missed expected UI state, city capture
+ timed out too. No full report or capture artifact. Main/development publication skipped.
+-Rolling development remains0.10.0 until a corrected main gate passes. Never claim published.
+-Old155canonical captures are retained atd853921/source1dffb7d. Reopening its200%expanded
+ footer found warning/Save NOT visible despite old semantic assertions/sign-off. Normal/
+ dark footers do show both. Earlier all-footer visual wording was too strong; new proof needed.
 
+CURRENT FOCUSED CORRECTION (test/docs only)
+-Outer empty Compose rule still checks roots/semantics/layout. INNER scoped
+ WindowRecomposerPolicy.withFactory covers@Before/test/@After and restores production
+ WindowRecomposerFactory.LifecycleAware for real ActivityScenario hosts. Assert creation
+ on Android main. Avoid unconfined draw races and queued-clock lifecycle/AndroidView stalls.
+ Remove failed startup kick. Isolated artwork component tests KEEP accepted Standard clock.
+-All existing async application/readiness/content/identity/capture assertions remain.
+-Expanded footer now uses measured scroll to the actual activation warning, retaining
+ original display assertions AND requiring full warning/Save bounds inside viewport.
+-No production UI/recorder/engine/data/dependency/permission change; no recommendation,
+ load evidence, historical prescription or save/activation change.
+-Existing30min instrumentation-step bound and runner600000ms per-method deadline remain;
+ all438cases/API and155captures remain required. Matrix API28/35/36 unchanged.
+-Local pinned format + real offline Gradle domain/check/debug/lint/test-APK compile PASS:
+ 79tasks/38sec. Previous footer-only compile48tasks/5sec. Domain640893checks/38suites.
+-The four existing same-repository capture-branch restrictions target this follow-up so
+ successful full CI can generate fresh155source-bound canonical images.
+-Local software emulator diagnosis unavailable: noKVM/read-only default ADB home; stopped
+ only isolated diagnostic PID55593. No local instrumentation/physical pass is claimed.
 
-PR16 is MERGED, not draft/open: squash75ab7c546570ffa460295bd45e1ee0f9fa7e5c48.
-Main checkpoint6f73afe3ff3b20a13c73f5af4792247f68883659 adds only post-merge documentation.
-Do not reset/reopen/reimplement PR16, GPS/coaching work or0.10. No0.11 features authorised.
-All33progression views were reviewed; source640893/38suites and full438/API155capture
-pre-merge gates42012242544 and42015943868 passed. Those remain valid observed boundaries.
+NEXT EXACT TASKS
+1. Verify whether production-window/footer checkpoint is already pushed. If not, commit
+   these4files: CoachingScreenshotTest.kt, CONTINUE_CODEX.md, VERIFICATION.md,
+   docs/VISUAL_REVIEW_0_10_1.md. Connected GitHub API with expected-head lease is required;
+   CLI auth unavailable. Verify identical blobs/tree/commit; no reset/force/discard.
+2. Inspect NEW complete matrix. Fix actual roots, not assertions or blind reruns. Hold PR17
+   draft while pending/red. If green, verify ZIP digest and155PNG+2metadata Git blob/tree/
+   commit/source identities before adopting bot canonical images. Scratch verification helper:
+   /workspace/scratch/rdd0101/verify-next-captures.py (verification only, does not change Git).
+3. Open all33fresh progression views including ACTUAL200%expanded warning+Save, plus Dream
+   representatives. If visual gate fails, fix capture/layout appropriately; no edited mockups.
+   References remain separate. No false pixel-match claim with unavailable progression bitmap.
+4. Update observed docs; require final exact-head full CI green. Then authorised focused
+   follow-up ready/squash merge, verify live main and actual post-merge full gate/rolling
+   development APK/checksum. No merge pending/red, no stable release tag.
 
-POST-MERGE DELIVERY BLOCKER (not a new application regression): main42018800515 passed
-438 EACH API28/36. API35 ran438 with one CoachingScreenshotTest.capturesSourcedCityRoutesWithDarkAndLargeText
-failure, other437passed. Stack: SnapshotStateObserver previousThreadId85 versus main2,
-measure/layout/draw crossing threads while the test's unconfined frame resumed background
-artwork work. Publication correctly skipped. Rolling development is STILL0.10.0 until a
-new main gate passes; do not report0.10.1APK published. Never rerun unchanged to chase green.
+Previous valid application gates42012242544 and42015943868 passed438 EACH API/155captures;
+640893checks/38suites,174canonical/14routine guidance. These are historical observed
+boundaries, not proof of this follow-up. Schema15/rootJSON9/authoring2/strength2/raw2/
+complete1 unchanged. No INTERNET/BACKGROUND_LOCATION, backend/account/analytics/LLM.
+Physical S24 GPS/urban/measured-route/lock/background/battery/long-run/recovery/GPX,
+Health Connect/audio/BLE/human TalkBack remain UNPERFORMED; TEST_BUILD.md is checklist.
 
-ACTIVE branch `fix/0.10.1-screenshot-test-dispatcher`, created from live6f73afe.
-Remote branch created at same parent. Current local follow-up:
--CoachingScreenshotTest uses createEmptyComposeRule(effectContext=StandardTestDispatcher()),
- exactly as the already-corrected two async artwork fixtures. Pinned Compose1.8.3 source
- confirms empty-rule default is unconfined too. Queue composition for its main test clock;
- retain EVERY readiness/loading/identity/content/capture assertion and all deadlines.
--No app/UI/engine/recorder/Dream production code, dependencies, data or permissions changed.
--Android workflow's four existing capture-branch literals retarget only this same-repository
- follow-up branch, so it can regenerate155source-bound actual images. Matrix28/35/36,
- canonical publication prerequisites and main release requirements remain intact.
--Local pinned format and real Gradle domain/check/debug/lint/test compile PASS79tasks/36sec.
- Domain640893/38suites, schema15/rootJSON9/raw2/complete1 unchanged. No Internet.
-
-NEXT EXACT TASKS:
-1. DONE: focused correction244e0b0 is committed/pushed and DRAFT PR17 is open. Do not
-   duplicate it. Current full gate42023014049 is unusually slow; inspect its actual outcome
-   and exported logs before further correction. Never merge pending/red or rerun blindly.
-   CLI auth is unavailable; use connected GitHub API expected-head leases, then import
-   identical verified objects without reset/force/discard. Preserve local handoff metadata.
-2. Complete full438/API155capture gate. Fix actual roots, not assertions/timeouts. Regenerate
-   canonical images under the follow-up branch, verify ZIP/blob/tree/commit/fingerprint,
-   inspect final progression/Dream representatives (no design changes intended).
-3. Final observed docs/head CI; after green/visual checks, ready/merge the follow-up under
-   master's explicit post-merge-failure recovery authority. No stable tag/0.11 scope.
-4. Verify resulting actual main CI and rolling development APK/checksum match latest main.
-   Record actual follow-up merge SHA and artifact links. Do not stop at a partial pass.
-
-Physical S24 GPS/outdoor/urban/measured-route/locked-screen/background/battery/long-run,
-interruption/recovery/GPX comparison, real Health Connect, TTS/music/calls, BLE and human
-TalkBack remain UNPERFORMED. TEST_BUILD.md is the human checklist; emulator passes never
-certify physical results. Original application scope is complete; only this proven test
-harness/delivery blocker remains. Preserve all already-merged code and reviewed155captures.
-
-Existing canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3 covers app/capture source1dffb7d,
-fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600. New fixture/
-workflow source intentionally needs its own fingerprint/captures; do not replace references
-with screenshots. All prior APKs are debug-signed test/development, no permanent stable tag.
-
-Tool recovery: connected GitHub create_blob/tree/commit/update_ref with expected-head lease,
-verify local Git blob/tree then raw unsigned commit via scratch/rdd0101/import-exact-commit.py
-(pass the new tracking ref as second argument). Binary github_download_workflow_artifact
-returns file URI; download signed URL promptly, refresh normally if expired, verify ZIP/Git
-hashes. Never UTF8-fetch PNGs, dump huge canonical logs, reset or rewrite accepted history.
+Tool recovery: create_blob/tree/commit/update_ref with expected-head lease; verify local
+Git objects then import exact unsigned commit with scratch/rdd0101/import-exact-commit.py
+and explicit refs/remotes/origin/fix/0.10.1-screenshot-test-dispatcher argument. Binary
+artifact tool returns FileService signed URL (not Sediment): download promptly, verify ZIP/
+Git identities. Never UTF8-fetch PNG, dump huge base64 canonical logs, reset or force-push.
 
 ## Historical0.10.1 implementation and verification
 

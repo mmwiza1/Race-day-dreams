@@ -1,3 +1,28 @@
+## Queued-clock integration failure and production-window correction —5November2026
+
+Actual bounded42029328929 API28 log confirms the startup kick did not fix the stall:
+first screenshot method timed out after600000ms atObject.wait; subsequent progression,
+replacement/template/revision scenes missed expected UI state and city capture timed out.
+The step failed at30minutes. No full pass or capture artifact is claimed.
+
+The integration fixture now locally uses the real Android main-thread/lifecycle window
+recomposer under the outer Compose rule, scoped through setup/test/cleanup and with a
+main-thread factory assertion. Existing explicit readiness/root/content/capture assertions
+remain. The isolated artwork component fixtures retain their accepted controlled clocks.
+This avoids changing production code or asking a queued unit-test scheduler to drive real
+Activity lifecycle/AndroidView startup. Pinned format and actual offline Gradle domain/check/debug/lint/test-APK compile PASS
+79tasks/38sec. The corrected full matrix/captures remain required. All3failed prior
+API logs were inspected; they share the first-method timeout/missing Strength-state pattern.
+
+## Expanded200%footer visual check correction —5November2026
+
+Directly reopening old canonical progression-evidence-actions-large-font shows only the
+lower safeguards, not the activation warning/Save. Earlier full-footer wording was too
+strong; normal/dark footer captures do show both. Retain the UI and strengthen the fixture:
+measured scroll to the activation warning, original visibility assertions, plus full warning
+and Save bounds within the viewport. This is a capture-verification correction, not an
+application redesign. Fresh authentic captures and the full matrix remain required.
+
 ## Screenshot fixture startup diagnosis —5November2026
 
 After cancellation,42023014049 logs show API28/35/36 each completed34/438cases with
