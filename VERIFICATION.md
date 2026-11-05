@@ -1,3 +1,38 @@
+# Current follow-up software and visual verification —5 November2026
+
+Source `a75b9a5dc870e01598d7229c195d528a84405e57` passed the COMPLETE [workflow42035888968](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42035888968):
+438 cases EACH API28/35/36,155 authentic captures/API, domain640893checks/38suites,
+64 schema/migration,9 release-note,13 capture-validator, source/provenance11, artwork14,
+pinned formatting, strict174canonical/14routine guidance, debug build/lint/test compilation.
+All three successful Android logs and actual full run conclusion were inspected.
+Canonical `ab95c7f78dc35fe0d51f1d1c06e83be525c0bcbe` matches API35artifact13420260240 byte-for-byte.
+ZIP SHA256 `960a325fae98448912186499a61053ecd787cad09e0cf573c4fe4af704a67346`; fingerprint `5c31aeca91fddbf8a570d173369df3c533bc2d0c7d75855eba48b1652e42bd0e`.
+All155PNG+2metadata Git blobs, bot parent/tree/commit/source identities were independently
+verified before adoption, preserving the uncommitted live handoff. No image edits/mock UI.
+
+Opened all33fresh progression views directly:11scroll/disclosure positions in each
+light/dark/200%mode. Task-first card, genuine current/suggested differences, compact unchanged
+facts, short reason and separately collapsed workout evidence are readable. At200%facts
+stack naturally and scroll without horizontal overflow. The formerly incomplete expanded
+footer NOW visibly shows the complete activation warning AND Save button in all3modes.
+The82kg value is an optional suggested reference, not recorded/mandatory; supporting actuals
+show80kg. Keep-current and separate save/review/activation semantics remain unchanged.
+London/Paris/dark Dream representatives were reopened: bundled artwork/geography/progress
+remain readable. Compared with the owner's explicit approved hierarchy/refinement directions;
+no unavailable progression-bitmap pixel-match is claimed. References remain separate.
+
+Production app/GPS/coaching code is unchanged by PR17. Integration captures use production
+Android main/lifecycle window recomposition under the Compose test rule, with the existing
+readiness/content assertions retained. Isolated artwork component clocks stay controlled.
+Measured footer scrolling and full bounds checks strengthen capture verification. Earlier
+queued-clock failures below were fixed, not counted as passes. No assertion was removed.
+Schema15/rootJSON9/authoring2/strength2/raw2/complete1 unchanged. CI APK51,979,576bytes;
++114,896bytes(+0.22%)versus0.10 baseline. No new dependency/permission/backend/account.
+Physical S24/human TalkBack remains unperformed. Final documentation-head CI, follow-up
+merge and actual post-merge main/development publication remain pending at this boundary.
+
+# Historical failure and verification boundaries (superseded by the source above)
+
 ## Queued-clock integration failure and production-window correction —5November2026
 
 Actual bounded42029328929 API28 log confirms the startup kick did not fix the stall:

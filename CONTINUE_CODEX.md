@@ -13,76 +13,57 @@ The app recommends. The athlete decides. The plan adapts.
 
 ## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
-LATEST CHECKPOINT —5 November2026,13:26UTC
+LATEST CHECKPOINT —5 November2026,14:15UTC
 
-Branch: fix/0.10.1-screenshot-test-dispatcher. PR17 remains DRAFT.
-Main remains6f73afe3ff3b20a13c73f5af4792247f68883659; PR16 already merged75ab7c5.
-Do not reset/reopen/reimplement PR16 or GPS/coaching. No0.11/stable tag scope.
-Inspect actual HEAD/remote/CI: the production-window/footer correction below may already
-be committed/pushed. Do not duplicate it. Prior pushed HEAD7604dd4 FAILED; do not rerun it.
+Branchfix/0.10.1-screenshot-test-dispatcher; PR17 DRAFT; canonical HEAD `ab95c7f78dc35fe0d51f1d1c06e83be525c0bcbe`.
+Source `a75b9a5dc870e01598d7229c195d528a84405e57` complete gate42035888968 is GREEN:438cases EACH API28/35/36 and155captures
+EACH, format/guidance/domain/schema/release/build/lint all pass. All3Android logs inspected.
+Domain640893checks/38suites; schema64/release9/capture-validator13;174canonical/14routine.
+Fingerprint `5c31aeca91fddbf8a570d173369df3c533bc2d0c7d75855eba48b1652e42bd0e`.
+API35screens13420260240 ZIP SHA256 `960a325fae98448912186499a61053ecd787cad09e0cf573c4fe4af704a67346`.
+All155PNG+2metadata blobs and exact bot parent/tree/unsigned commit verified and adopted.
+Current main6f73afe; PR16 merged75ab7c5. Do not reset/reopen/reimplement accepted app work.
 
-CONFIRMED DELIVERY BLOCKERS
--Post-merge main42018800515 API35 screenshot draw crossed worker85/main2 under the
- default unconfined empty Compose rule. Other437/API35 and438/API28/36 passed.
--Queued StandardTestDispatcher attempt244e0b0 stalled34/438 on all APIs. Cancelled by
- normal PR concurrency after logs became needed; retained logs inspected.
--Startup-clock attempt7604dd4 workflow42029328929 FAILED ALL3APIs at30min. All3logs
- inspected:34passed, first GymNow capture timed out600000ms atObject.wait, later
- progression/replacement/template/revision scenes missed expected UI state, city capture
- timed out too. No full report or capture artifact. Main/development publication skipped.
--Rolling development remains0.10.0 until a corrected main gate passes. Never claim published.
--Old155canonical captures are retained atd853921/source1dffb7d. Reopening its200%expanded
- footer found warning/Save NOT visible despite old semantic assertions/sign-off. Normal/
- dark footers do show both. Earlier all-footer visual wording was too strong; new proof needed.
+ALL33fresh progression captures opened directly,11states×light/dark/200%. Full200%expanded
+footer now visibly shows warning+Save; old missing-footer sign-off was corrected, not hidden.
+Task-first card, changed/unchanged targets, separate collapsed history, optional82kg reference
+and actual80kg evidence are clear. London/Paris/dark Dream representatives also reviewed.
+No bitmap pixel-match claim with an unavailable progression reference. Physical unperformed.
 
-CURRENT FOCUSED CORRECTION (test/docs only)
--Outer empty Compose rule still checks roots/semantics/layout. INNER scoped
- WindowRecomposerPolicy.withFactory covers@Before/test/@After and restores production
- WindowRecomposerFactory.LifecycleAware for real ActivityScenario hosts. Assert creation
- on Android main. Avoid unconfined draw races and queued-clock lifecycle/AndroidView stalls.
- Remove failed startup kick. Isolated artwork component tests KEEP accepted Standard clock.
--All existing async application/readiness/content/identity/capture assertions remain.
--Expanded footer now uses measured scroll to the actual activation warning, retaining
- original display assertions AND requiring full warning/Save bounds inside viewport.
--No production UI/recorder/engine/data/dependency/permission change; no recommendation,
- load evidence, historical prescription or save/activation change.
--Existing30min instrumentation-step bound and runner600000ms per-method deadline remain;
- all438cases/API and155captures remain required. Matrix API28/35/36 unchanged.
--Local pinned format + real offline Gradle domain/check/debug/lint/test-APK compile PASS:
- 79tasks/38sec. Previous footer-only compile48tasks/5sec. Domain640893checks/38suites.
--The four existing same-repository capture-branch restrictions target this follow-up so
- successful full CI can generate fresh155source-bound canonical images.
--Local software emulator diagnosis unavailable: noKVM/read-only default ADB home; stopped
- only isolated diagnostic PID55593. No local instrumentation/physical pass is claimed.
+PR17 is ONLY fixture/workflow/docs/canonical assets: production Android main/lifecycle window
+recomposer scoped through@Before/test/@After under outer Compose rule; main creation asserted.
+All original async readiness/content guards retained. Isolated artwork component clocks KEEP
+StandardTestDispatcher. Expanded footer uses measured warning scroll plus full warning/Save
+bounds. Prior queued-clock attempts244e0b0/7604dd4 FAILED/stalled, not counted as green.
+30min step/600000ms per-method bounds remain; no weakened assertions/cases/capture gate.
+No app/recorder/engine/data/dependency/permission change. Schema15/rootJSON9/authoring2/
+strength2/raw2/complete1 unchanged. No INTERNET/BACKGROUND_LOCATION/backend/account/analytics.
+CI APK51,979,576bytes(+114,896/+0.22%versus0.10). No0.11/stable tag scope.
+
+CURRENT ACTION: final observed docs are being committed. They may already be pushed;
+inspect actual HEAD/status/PR/latest CI rather than duplicating. Source fingerprint stays
+unchanged by docs, so canonical publication should be a verified no-op on final-head CI.
 
 NEXT EXACT TASKS
-1. Verify whether production-window/footer checkpoint is already pushed. If not, commit
-   these4files: CoachingScreenshotTest.kt, CONTINUE_CODEX.md, VERIFICATION.md,
-   docs/VISUAL_REVIEW_0_10_1.md. Connected GitHub API with expected-head lease is required;
-   CLI auth unavailable. Verify identical blobs/tree/commit; no reset/force/discard.
-2. Inspect NEW complete matrix. Fix actual roots, not assertions or blind reruns. Hold PR17
-   draft while pending/red. If green, verify ZIP digest and155PNG+2metadata Git blob/tree/
-   commit/source identities before adopting bot canonical images. Scratch verification helper:
-   /workspace/scratch/rdd0101/verify-next-captures.py (verification only, does not change Git).
-3. Open all33fresh progression views including ACTUAL200%expanded warning+Save, plus Dream
-   representatives. If visual gate fails, fix capture/layout appropriately; no edited mockups.
-   References remain separate. No false pixel-match claim with unavailable progression bitmap.
-4. Update observed docs; require final exact-head full CI green. Then authorised focused
-   follow-up ready/squash merge, verify live main and actual post-merge full gate/rolling
-   development APK/checksum. No merge pending/red, no stable release tag.
+1. Commit/push final docs if still local (CONTINUE,VERIFICATION,SCREENSHOTS,visual review,
+   release0.10.1); release9/metadata checks first. Use connected GitHub expected-head lease;
+   CLI auth unavailable. Exact blob/tree/commit import, no reset/force/discard.
+2. Require COMPLETE final exact-head API28/35/36 gate green; do not merge pending/red.
+   Then ready/squash merge PR17 under master's explicit post-merge-failure recovery authority.
+3. Verify actual resulting main and post-merge workflow. Make authorised handoff-only
+   post-merge metadata update if required, then verify latest main full gate and rolling
+   development APK/checksum match that actual main. Rolling release STILL0.10.0 at this
+   pre-merge boundary; do not claim0.10.1 published until verified.
+4. Stop after verified0.10.1software release checkpoint. S24 GPS/outdoor/urban/known-route/
+   lock/background/battery/long-run/recovery/GPX/HC/audio/BLE/human TalkBack UNPERFORMED;
+   TEST_BUILD.md is human checklist. No physical claim, no stable production tag.
 
-Previous valid application gates42012242544 and42015943868 passed438 EACH API/155captures;
-640893checks/38suites,174canonical/14routine guidance. These are historical observed
-boundaries, not proof of this follow-up. Schema15/rootJSON9/authoring2/strength2/raw2/
-complete1 unchanged. No INTERNET/BACKGROUND_LOCATION, backend/account/analytics/LLM.
-Physical S24 GPS/urban/measured-route/lock/background/battery/long-run/recovery/GPX,
-Health Connect/audio/BLE/human TalkBack remain UNPERFORMED; TEST_BUILD.md is checklist.
-
-Tool recovery: create_blob/tree/commit/update_ref with expected-head lease; verify local
-Git objects then import exact unsigned commit with scratch/rdd0101/import-exact-commit.py
-and explicit refs/remotes/origin/fix/0.10.1-screenshot-test-dispatcher argument. Binary
-artifact tool returns FileService signed URL (not Sediment): download promptly, verify ZIP/
-Git identities. Never UTF8-fetch PNG, dump huge base64 canonical logs, reset or force-push.
+Binary artifact: FileService signed URL expires quickly, not Sediment. First URL expired
+and returned explicit AzureAuthenticationFailed; ordinary refreshed tool URL succeeded.
+ZIP/raw PNGs are in scratch/rdd0101/window-api35.zip and window-api35; verified157files
+in window-verified. Never UTF8-fetch PNG/dump huge canonical base64 logs. Signed main merge
+may need exact signature import; unsigned checkpoints use import-exact-commit.py with
+explicit refs/remotes/origin/fix/0.10.1-screenshot-test-dispatcher. Preserve valid local work.
 
 ## Historical0.10.1 implementation and verification
 
