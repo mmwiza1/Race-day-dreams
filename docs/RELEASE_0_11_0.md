@@ -85,3 +85,8 @@ behaviour only; the complete agreed release is not yet ready for review.
   production domain calculations (662836total/46suites). They validate unknown evidence,
   conservative advice, user choice and history/retention semantics, not physiological outcomes.
   See ATHLETE_SIMULATIONS_0_11.md; final catalogue and Android/visual release gates remain pending.
+
+- Retention workflow42125758697 executed506tests/API with three test-contract/capture failures
+  each; all11new repository and4storage component cases passed. Corrected source preserves strict
+  navigation/version/data assertions and uses the real Settings action. Full corrected Android/
+  215capture acceptance remains pending; catalogue expansion is still unfinished.

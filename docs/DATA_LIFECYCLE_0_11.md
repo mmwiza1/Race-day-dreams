@@ -15,7 +15,7 @@ start at 24 months. Upgrades start at Keep forever / existing unreviewed, protec
 route until the athlete acknowledges the consequences. An older backup without this feature also
 restores protected defaults. Saving a policy never starts deletion.
 
-Cleanup is foreground, explicit and advisory: save an informed choice, review eligible counts,
+Cleanup is user-initiated and in-process: save an informed choice, review eligible counts,
 then use the separate confirmation. There is no scheduled/background expiry worker. The page
 explains loss of routes and precise sample-based detail and recommends complete backup first.
 A missing backup cannot be reconstructed from totals.
@@ -36,7 +36,8 @@ Each batch rechecks one indexed recording/count proof; it does not hydrate whole
 the entire history. SHA-256 fingerprints cover original ordered sequence/payload rows. A normalized
 receipt and deletion of that session's recording_points/recording_events commit together. A failed
 SQL statement/process interruption rolls the whole session back; earlier committed sessions stay
-removed. Identical retries are idempotent. Leaving the page stops between batches; refresh/review
+removed. Identical retries are idempotent. Cleanup may continue while its screen is retained in
+the navigation stack; popping it or process termination stops subsequent batches. Refresh/review
 remaining candidates after interruption. The pending preview is never automatically restored.
 
 No summary, activity annotation, lap, actual strength set or PB row is modified during cleanup.

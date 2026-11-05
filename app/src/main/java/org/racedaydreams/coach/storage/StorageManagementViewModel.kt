@@ -84,7 +84,7 @@ class StorageManagementViewModel(app: Application) : AndroidViewModel(app) {
             mutable.update {
                 it.copy(
                     notice =
-                        "Removed raw detail from $batches recordings so far. Summaries and PBs remain. Leaving this page stops between batches."
+                        "Removed raw detail from $batches recordings so far. Summaries and PBs remain. Each completed recording is saved."
                 )
             }
             yield() // Cancellation between atomic whole-session batches retains committed progress.

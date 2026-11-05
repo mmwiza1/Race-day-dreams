@@ -1054,13 +1054,15 @@ class CoachingScreenshotTest {
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
-                compose.onNodeWithText("Settings").performClick()
+                click("⚙ Settings")
                 await("Storage & recording detail")
                 compose
                     .onNodeWithText("Storage & recording detail")
                     .performScrollTo()
                     .performClick()
                 await("Your history stays")
+                // Require the feature-owned snapshot, not only its static initial heading.
+                await("Saved choice: 24 months")
                 alignHeading("Storage & recording detail")
                 capture("storage-management$suffix")
                 alignHeading("Detailed recording retention")

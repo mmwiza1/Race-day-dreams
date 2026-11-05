@@ -494,7 +494,7 @@ class RunRecordingStoreTest : AndroidTestCase() {
         RecordingStore(context).finish(session, 100000)
         val raw = ByteArrayOutputStream()
         RecordingArchive(context).exportTo(raw)
-        for (version in listOf<Any>(3, 1.5, "1")) {
+        for (version in listOf<Any>(4, 1.5, "1")) {
             val changed = ByteArrayOutputStream()
             val target = java.util.zip.ZipOutputStream(changed)
             java.util.zip.ZipInputStream(ByteArrayInputStream(raw.toByteArray())).use { source ->

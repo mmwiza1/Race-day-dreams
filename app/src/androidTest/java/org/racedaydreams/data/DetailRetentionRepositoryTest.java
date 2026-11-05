@@ -179,7 +179,7 @@ public final class DetailRetentionRepositoryTest extends AndroidTestCase {
         assertEquals(2001L, count("recording_points"));
     }
 
-    public void testRawArchiveTwoAndThreeRestoreExactRemovedEvidenceWithoutDuplicateActuals()
+    public void testRawArchiveOneTwoAndThreeRestoreExactRemovedEvidenceWithoutDuplicateActuals()
             throws Exception {
         var id = record("restore");
         byte[] full = rawBackup();
@@ -191,10 +191,13 @@ public final class DetailRetentionRepositoryTest extends AndroidTestCase {
                         NOW));
         byte[] pruned = rawBackup();
         assertNotNull(repo.removal("restore"));
-        new RecordingArchive(getContext())
-                .restoreFrom(new ByteArrayInputStream(asVersion(full, 2, false)));
-        assertNull(repo.removal("restore"));
-        assertEquals(2001L, count("recording_points"));
+        for (int version : new int[] {1, 2}) {
+            new RecordingArchive(getContext())
+                    .restoreFrom(new ByteArrayInputStream(asVersion(full, version, false)));
+            assertNull(repo.removal("restore"));
+            assertEquals(2001L, count("recording_points"));
+            if (version == 1) assertTrue(repo.cleanOne(approval(), "restore", NOW));
+        }
         assertEquals(summary, scalar("SELECT payload FROM activities WHERE id='" + id + "'"));
         new RecordingArchive(getContext()).restoreFrom(new ByteArrayInputStream(full));
         assertEquals(2001L, count("recording_points"));

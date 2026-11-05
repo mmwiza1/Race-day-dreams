@@ -157,6 +157,17 @@ fun StorageManagementContent(
         state.preview?.let { preview ->
             SemanticCard(Tile.Progress) {
                 Text("Cleanup preview", style = MaterialTheme.typography.titleLarge)
+                preview.policy().cutoff(preview.inspectedAt())?.let { cutoff ->
+                    Text(
+                        "Eligibility cutoff: " +
+                            java.time.format.DateTimeFormatter.ofPattern(
+                                    "d MMMM uuuu 'at' HH:mm 'UTC'",
+                                    Locale.UK,
+                                )
+                                .withZone(java.time.ZoneOffset.UTC)
+                                .format(cutoff)
+                    )
+                }
                 Text(
                     "${preview.recordings().size} finished ${if (preview.recordings().size == 1) "recording" else "recordings"} · ${preview.points()} GPS/sensor points · ${preview.events()} recording events"
                 )
@@ -201,7 +212,7 @@ fun StorageManagementContent(
                         Modifier.heightIn(max = 360.dp).verticalScroll(scroll)
                     ) {
                         Text(
-                            "Remove detailed evidence from ${state.preview.recordings().size} finished ${if (state.preview.recordings().size == 1) "recording" else "recordings"}? Your recorded summaries, PBs and training history stay. Maps and precise sample-based detail will no longer be available without a suitable earlier raw backup. This cannot be undone by the app alone."
+                            "Remove detailed evidence from ${state.preview.recordings().size} finished ${if (state.preview.recordings().size == 1) "recording" else "recordings"}? Your recorded summaries, PBs and training history stay. Maps and precise sample-based detail will no longer be available without a suitable earlier raw backup. This cannot be undone by the app alone. Cleanup may continue while the app is running. If interrupted, refresh to review remaining detail."
                         )
                     }
                 }

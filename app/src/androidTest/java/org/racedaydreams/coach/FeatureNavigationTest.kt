@@ -129,6 +129,7 @@ class FeatureNavigationTest {
                 "progress/weight",
                 "shoes",
                 "settings",
+                "settings/storage",
                 "health-intelligence",
             )
         InstrumentationRegistry.getInstrumentation().runOnMainSync {

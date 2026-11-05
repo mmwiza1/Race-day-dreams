@@ -1,3 +1,27 @@
+# Current corrected M5 + simulation checkpoint — full release still incomplete
+
+M5d5f4651 /42125758697 ran506tests EACH API28/35/36 with the SAME3failures each: storage capture
+used Settings instead of the actual ⚙ Settings toolbar text; exact route contract omitted the new
+settings/storage destination; unsupported archive test still rejected now-supported numeric3.
+503other cases passed each, including ALL11new retention repository and4storage component cases.
+No215capture artifact/canonical publication was produced. Three actual logs and API36full HTML
+report inspected; verified ZIP hash is in CONTINUE_CODEX.md.
+
+Following source corrects those exact contracts without removing/loosening assertions or adding
+sleeps. Capture also awaits the feature snapshot; positive raw restore exercises1/2/3. Eligibility
+cutoff uses readable UK/UTC text, and lifecycle wording accurately describes in-process cleanup.
+Current source includes the locally verified4226check six-month athlete suite (662836total/46).
+Actual latest Gradle domain/debug/lint/test compile PASS79tasks/26sec;75schema/9release/
+16capture-validator and97Kotlin/156Java formatting pass. Logs retention-fixed-ready-* and
+retention-fixed-final-*. New full506/API/215capture execution is REQUIRED before acceptance.
+
+Workspace briefly restarted; wait returned READY and all committed/uncommitted source/logs were
+verified intact. Current schema19/rootJSON13/retention1/raw3/complete1. Catalogue remains174/14;
+selective growth and final-source delivery remain unfinished. Owner authorised automatic merge
+ONLY after complete scope/green gates, then verify main CI/development APK. No S24 checks passed.
+
+Earlier source-specific checkpoints follow; do not treat pending historical wording as current.
+
 # Six-month simulation checkpoint — local pure-domain verification
 
 Production-domain scenario suite passes4226assertions across three calendar-six-month histories.

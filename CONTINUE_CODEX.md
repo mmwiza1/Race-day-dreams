@@ -35,6 +35,41 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, pending its own full matrix.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
+### LATEST gate correction / restart recovery — continue from this source
+
+M5 d5f4651 /42125758697 FAILED with the SAME3failures on EACH API28/35/36. All506methods
+executed,503passed each; all11new retention repository and4storage component methods passed.
+No215capture artifact/canonical publication occurred. Actual three logs inspected; API36HTML
+report ZIP13461068065 SHA256de1dedc83c1cff85ccd99773ea3d3b91dff79b018b9f2a8d2b611d48f04a7125
+is retained as scratch/rdd011/retention-reports36.zip. Do not blindly rerun d5 or claim full green.
+
+Root-specific corrections, retaining all assertions/timeouts:
+- New storage capture clicked exact Settings but production toolbar is ⚙ Settings. It now reuses
+  existing click("⚙ Settings") and additionally awaits the feature-owned Saved choice:24months
+  snapshot before capturing, rather than a static heading during IO loading.
+- Exact feature navigation contract now includes the intentionally added flat settings/storage
+  route. Existing route equality/no-nested-stack checks remain strict.
+- Unsupported raw-version test now rejects future4 (writer/reader3 is intentionally supported),
+  retaining fractional/string version rejection and original-point preservation assertions.
+- Existing positive raw restore method now explicitly exercises numeric1,2,3; current cleanup
+  receipt/summary/coordinate conflict safeguards remain. Same11methods/506total Android cases.
+- Preview exposes a human-readable UK/UTC eligibility cutoff, tested at200%text. Confirmation/
+  progress wording honestly says cleanup can continue while the app is running/navigation entry
+  remains; it does not falsely promise that every navigation action cancels the operation.
+
+Simulation checkpointbe2074b is committed locally and will be pushed with this following fix.
+Actual latest frozen-source Gradle domain/debug/lint/test compile PASS79tasks/26sec in
+retention-fixed-ready-android.log.662836domain/46suites,75schema/9release/16capture-validator,
+97Kotlin/156Java formatting passed on the corresponding corrected source; final read-only checks
+rerun before commit. A brief executor restart returned READY; git/source/logs rechecked and ALL
+local corrections/simulation files survived. No reconstruction/reset is needed.
+
+NEXT: inspect actual following HEAD/PR18/workflow after push; run full506/API/215capture gate,
+fix actual remaining failures and inspect all12new storage frames before M5 acceptance. Then
+finish M6 catalogue growth (still174/14; no new art/catalogue entries yet), final whole-source
+verification/screenshots/docs/APK/size review, authorised automatic merge and post-merge main/
+rolling development publication. Do not stop merely at owner-review readiness. No0.12/stable tag.
+
 ### M5 implementation checkpoint — d5f4651 pushed; runtime/visual gate pending
 
 Owner's latest instruction authorises automatic merge AFTER full0.11 acceptance, post-merge CI
@@ -98,9 +133,9 @@ Local sh scripts/test-domain.sh + actual Gradle :domain:check PASS5tasks/32sec, 
 following checkpoint; inspect actual status/HEAD. Logs athlete-six-month-* retain initial compile
 fixes (Double prescription distance and Proposal.proposed accessor), not production-rule changes.
 
-M5 source d5f4651 was committed/pushed. Complete runtime workflow42125758697 is RUNNING,
-expected506/API28/35/36 and215captures; format/guidance passed, all3Android cases executing when
-last checked. Do NOT call cleanup runtime/visual gate green until actual conclusion/reports.
+M5 source d5f4651 was committed/pushed. Runtime42125758697 completed506/API with3contract/
+capture failures each; corrections and exact observed results are at LATEST above. No full green
+or215frame sign-off yet. Preserve the simulation source while adopting any future canonical bot.
 After it completes, adopt any canonical bot safely and inspect all12new storage/confirmation
 frames. Preserve this simulation source while adopting bot. Avoid cancelling an active matrix
 with gratuitous documentation pushes; a new-source regression legitimately needs its own gate.
