@@ -17,6 +17,7 @@ progress; the final verification and visual acceptance gates have not yet comple
 - Instructions follow the actual repetition, time or distance task. Perceived effort
   and repetitions left before failure are explained separately.
 - Saving a suggestion remains separate from reviewing and activating a programme.
+- An unchanged optional reference is described as unchanged when only time/distance grows.
 - Advanced review highlights genuine target changes, lists unchanged targets once and
   keeps full recorded evidence behind a second disclosure. Large text stacks naturally.
 - Large recorded routes preserve meaningful bends and gaps with bounded rendering-only

@@ -13,6 +13,39 @@ The app recommends. The athlete decides. The plan adapts.
 
 ## CURRENT — 0.10.1 progression visual refinement requested; PR16 stays draft
 
+LATEST RECOVERY BOUNDARY —5November2026,10:35UTC (supersedes older pending notes below):
+Committed/local/remote head48661f92f8e8bf49497f7a0ae752f8e6fea2215b; PR16 DRAFT.
+Workflow42008939238 passed438 EACH API28/35 and155captures. API36 ran438 with one
+DreamArtworkReadinessTest CalledFromWrongThreadException; other437passed, progression
+included. Publication correctly blocked. Downloaded API35artifact13407215552 and verified
+ZIP SHA256cc33d79ff5edd2ad055fcd0f865efc43c504130295805347f58b1a9fe723b5e9. All6new
+safeguards/actions frames opened in light/dark/200%; together with27earlier views,33views
+cover the complete page. Actual80kg records, full safeguards and separate-save actions are
+readable.155images stay in scratch/capture155-api35, NOT canonical docs while API36 is red.
+
+LOCAL VERIFIED CORRECTIONS, preserve and COMMIT/PUSH NEXT:
+- StrengthPrescriptionText.java + suite: unchanged reference during longer carry/time task
+  was called new/0kgmore. Regression reproduced failure at instructioncheck72. Formatter now
+  says unchanged;5new checks and the existing modality UI test cover45m at same80kg reference.
+  No progression/activation/evidence calculation changed.640893checks/38suites, instructions114.
+- DreamArtworkReadinessTest + DreamArtworkPublicationTest: pinned Compose1.8.3 test sources
+  confirm default UnconfinedTestDispatcher; completion can resume test frame/apply on worker.
+  Use StandardTestDispatcher for these async fixtures, with explicit main-Looper SideEffect
+  assertion in readiness test. All city/asset/cache/cancellation/missing checks and deadlines
+  preserved. No production Dream/data/geometry change, no new dependency.
+- ProgrammeProgressionClarityTest.kt retains all original checks and adds unchanged-reference
+  carry assertions. CONTINUE and verification/release/visual notes need this checkpoint.
+Local full domain/check/debug/lint/test compilation PASS79tasks/38seconds after scheduler
+fix (formatter correction also passed79tasks/1m22s), pinned format and release/validator tests.
+
+NEXT: final diff, update docs, commit through GitHub API with expected-head lease (CLI auth
+still absent), import identical staged tree/unsigned commit with scratch/rdd0101/import-exact-commit.py.
+Then full438/API155capture gate, inspect roots of failures, canonical adoption and final-source
+visual confirmation, final docs/head CI and authorised merge/main verification. Keep DRAFT
+until all software/visual gates pass. S24 physical checks UNPERFORMED. No0.11/stable tag.
+Previous149canonical0d84c21 remains checked in; do not label it final-source155captures.
+
+
 Branch `feature/0.10.1-gps-reliability-coaching-clarity`, draft PR16 targets main.
 Baseline main5827d291d94870d16e2398c5173319260a6d7d72 is the completed0.10/PR15 merge.
 Never restart0.10 or reset valid work. Use actual git log/status for this checkpoint's SHA.
@@ -54,7 +87,10 @@ left its earlier heading above the viewport (same line1898 on all3). The correct
 the last actual set using measured content/viewport coordinates and then asserts the set,
 heading AND final safeguard paragraph visible before capture. No assertions removed, no app
 code changed. Local format and Android-test compilation PASS (48tasks/4seconds).
-Commit/push this measured-anchor correction and obtain a fresh155-capture full matrix. Keep PR16 DRAFT until complete. No false final visual acceptance.
+Measured-anchor48661f92f8e8bf49497f7a0ae752f8e6fea2215b is now committed/pushed
+through the connected GitHub API, with identical local tree/commit and preserved history.
+Full workflow42008939238 is in progress for438cases/API and155captures.
+Fingerprint1f1d0c3438bf21a46858430889ad0b6c0bcc7d6038787bf7d188c37360bb7601. Keep PR16 DRAFT until complete. No false final visual acceptance.
 
 Git CLI authentication stopped working after the green run. Connected GitHub tools work.
 Downloaded API35artifact via github_download_workflow_artifact (not CLI), verified ZIP
@@ -64,10 +100,20 @@ Imported identical Git objects/ref fast-forward without reset/discard; local han
 Use normal Git only if auth returns; otherwise typed GitHub blob/tree/commit/update_ref with
 expected-head lease, then import identical verified commit locally. Never force/rewrite.
 
+Additional directly related copy defect confirmed while waiting: a carry/time progression
+can preserve its optional load reference, but weight() called it new and said0kgmore.
+New pure-domain regression FAILED at instructioncheck72 on unchanged implementation.
+Focused formatter correction now says the reference is unchanged; five new domain checks
+and the existing modality UI test cover a longer carry at the same80kg reference. No engine,
+evidence or activation calculation changed. Local format/full domain/Android gate is running
+in /workspace/scratch/rdd0101/unchanged-reference-{domain,android}.log. Preserve these local
+StrengthPrescriptionText.java, its suite and ProgrammeProgressionClarityTest.kt changes.
+They need a coherent commit/push after verification; do not overwrite them adopting bot captures.
+
 NEXT CURRENT ACTIONS:
-1. Commit/push the measured lower-evidence anchor correction through GitHub API with lease.
-  09360a2 is already committed; do not duplicate it. No reset/source loss.
-   Then inspect the new workflow;42006209330 is a diagnosed failed boundary, not acceptance.
+1. Inspect workflow42008939238 on48661f9. Do not duplicate committed09360a2/48661f9.
+  42006209330 is a diagnosed failed boundary, not acceptance. Local status may include this
+   current handoff update; preserve it. No reset/source loss.
 2. Inspect fresh438-case/API155-capture gate; fix genuine failures without weakening checks.
 3. Adopt canonical155images with matching fingerprint. OPEN6new safeguards/actions frames,
    recheck representative progression states, then finalise visual/verification/release docs.

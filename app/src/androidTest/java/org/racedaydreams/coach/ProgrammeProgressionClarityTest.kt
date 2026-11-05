@@ -258,6 +258,29 @@ class ProgrammeProgressionClarityTest {
         compose.runOnIdle { current = review("farmers-carry") }
         compose.onNodeWithTag("progression-review").performScrollToIndex(0)
         compose.onNodeWithText("Complete 2 sets of 40 metres.").assertIsDisplayed()
+        val carry = review("farmers-carry")
+        val target = carry.slot.target()
+        val longerCarry =
+            GymWorkoutDefinition.Target(2, null, null, null, 45.0, target.effort(), 180, 80.0)
+        compose.runOnIdle {
+            current =
+                carry.copy(
+                    advice =
+                        StrengthTargetProgression.Advice(
+                            StrengthProgressionAdvisor.Action.CONSIDER_INCREASE,
+                            "A small distance increase at the same proven load is optional.",
+                            longerCarry,
+                            listOf("one", "two"),
+                        )
+                )
+        }
+        compose.onNodeWithTag("progression-review").performScrollToIndex(0)
+        compose.onNodeWithText("Complete 2 sets of 45 metres.").assertIsDisplayed()
+        scroll("Your weight reference is unchanged in this suggestion.")
+        compose
+            .onNodeWithText("Your weight reference is unchanged in this suggestion.")
+            .assertIsDisplayed()
+        compose.onAllNodes(hasText("0 kg more", substring = true)).assertCountEquals(0)
         compose.runOnIdle { current = review("push-up", currentLoad = null) }
         compose.onNodeWithTag("progression-review").performScrollToIndex(0)
         compose.onNodeWithText("Complete 2 sets of 4–6 repetitions.").assertIsDisplayed()

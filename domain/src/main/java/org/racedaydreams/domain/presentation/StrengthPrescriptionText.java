@@ -85,7 +85,9 @@ public final class StrengthPrescriptionText {
                 current == null
                         ? "Your current target has no " + label + "."
                         : "Your current " + label + " is " + number(current) + " kg.");
-        if (next != null) {
+        if (next != null && current != null && number(next).equals(number(current))) {
+            lines.add("Your " + label + " is unchanged in this suggestion.");
+        } else if (next != null) {
             lines.add(
                     "The suggested new "
                             + label

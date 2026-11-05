@@ -1,3 +1,21 @@
+## 5 November2026 —155-frame visual review; async test scheduler correction
+
+48661f9/workflow42008939238 passed438 EACH API28/35 and155captures. API36 ran438 with one
+DreamArtworkReadinessTest wrong-thread failure; other437passed including progression.
+Canonical publication blocked. API35artifact13407215552 digest verified; all6lower frames
+opened in light/dark/200%. Together with27earlier views,33views cover the full page.
+
+The stack resumes the test Recomposer through ApplyingContinuationInterceptor and
+TestMonotonicFrameClock on Default-worker3. Pinned Compose1.8.3 sources confirm its default
+UnconfinedTestDispatcher. Two async artwork fixtures now use StandardTestDispatcher; the
+readiness test additionally asserts Android main Looper in SideEffect. All asset/cache/
+cancellation/missing-file assertions/deadlines retained. No production Dream changes.
+
+A carry/time progression keeping the same optional reference reproduced new/0kgmore copy.
+Focused formatter fix +5checks and modality UI coverage preserve the actual engine. Full
+640893domain/38suites (instructions114), format, real Gradle domain/debug/lint/test compilation
+PASS79tasks/38seconds. Fresh full matrix required; no complete release pass/S24 claim.
+
 ## 5 November2026 — lower-evidence capture anchor corrected
 
 Source09360a2 workflow42006209330 ran438 EACH API28/35/36. Exactly one new capture failed

@@ -1,3 +1,15 @@
+## Complete-page follow-up observed —5November2026
+
+Source48661f9 API35 passed438cases/155captures in workflow42008939238; artifact13407215552
+ZIP SHA256cc33d79ff5edd2ad055fcd0f865efc43c504130295805347f58b1a9fe723b5e9 verified.
+Opened all6safeguards/expanded-actions frames directly across light/dark/200%. Lower actual
+sets, full explanation/safeguards and separate activation warning/save button are readable.
+Combined with27earlier frames,33views cover the complete page; natural viewport cuts scroll.
+Software release remains blocked: API36 had one unrelated test-recomposer wrong-thread
+failure; other437passed. No canonical155publication yet. Test-dispatcher correction and
+unchanged-reference copy fix require a fresh full gate. Older pending notes below describe
+prior boundaries and do not mean these six images were unperformed.
+
 # 0.10.1 progression visual review —5November2026
 
 The owner rejected the earlier dense Advanced presentation. That earlier legibility review

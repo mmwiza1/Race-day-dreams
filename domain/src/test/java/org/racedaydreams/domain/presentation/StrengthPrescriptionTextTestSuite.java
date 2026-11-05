@@ -69,6 +69,17 @@ public final class StrengthPrescriptionTextTestSuite {
         check(weight.contains("2 kg more"));
         check(weight.contains("not a weight you must lift or a recorded result"));
         check(!weight.contains("Lift 82") && !weight.contains("completed 82"));
+        // A genuine carry/time progression may preserve its proven optional load reference.
+        var carry = slot(StrengthExercise.MeasurementProfile.LOAD_DISTANCE, rpe);
+        var longerCarry =
+                new GymWorkoutDefinition.Target(2, null, null, null, 45.0, rpe, 180, 80.0);
+        String unchangedWeight =
+                String.join(" ", StrengthPrescriptionText.weight(carry, longerCarry));
+        check(unchangedWeight.contains("weight reference is unchanged"));
+        check(!unchangedWeight.contains("suggested new"));
+        check(!unchangedWeight.contains("0 kg more"));
+        check(unchangedWeight.contains("current weight reference is 80 kg"));
+        check(unchangedWeight.contains("not a weight you must lift or a recorded result"));
         var decimalSlot =
                 new GymWorkoutDefinition.Slot(
                         "decimal",

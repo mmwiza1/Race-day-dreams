@@ -153,3 +153,7 @@ original effort evidence, the full calculation reason and safeguards. At large f
 comparison values and unchanged labels stack naturally. Both disclosures retain accessible
 state and support keyboard/touch. Calculation, freshness checks and separate activation
 remain unchanged. Final source-bound captures and visual acceptance are recorded separately.
+
+When only time/distance grows, an unchanged optional weight reference is described as
+unchanged rather than a new0kgload increase. This is presentation only; progression
+calculations, actual logged weights and separate activation are unchanged.
