@@ -9,12 +9,20 @@ rules remain Android-independent; typed repositories share one SQLite database/r
 transaction. Prescriptions, immutable historical versions, actual sets and athlete choices
 remain distinct. Reuse one Gym Now execution engine. No Internet permission, account,
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
+For owner-authorised feature releases, finish all scope and mandatory software/visual gates,
+then automatically merge the existing PR, verify merged main/post-merge CI and the corresponding
+rolling development APK/version/commit/checksum. A later explicit manual-review instruction
+wins. No incomplete/red/pending/forced merge, branch-protection bypass or stable tag without
+specific authorisation. Real hardware checks remain honest limitations, never fabricated passes.
 The app recommends. The athlete decides. The plan adapts.
 
 ## CURRENT — 0.11.0-test1 Gym, Health & Recovery Intelligence
 
-Continue ALL six agreed milestones. No automatic merge or stable tag. PR18 stays draft until
-complete software/visual acceptance, then owner review. Do not restart or discard completed work.
+Continue ALL six agreed milestones. Owner explicitly AUTHORISES AUTOMATIC MERGE of PR18 once
+ALL software/visual acceptance is complete and exact-head required checks are green; then verify
+post-merge main and publish/verify the rolling development APK. Do not stop merely at review-ready.
+Keep PR18 draft while incomplete. No stable tag. Do not restart or discard completed work.
+This instruction supersedes all historical no-auto-merge wording below.
 
 - Branch: `feature/0.11-gym-health-recovery-intelligence`
 - PR: https://github.com/mmwiza1/Race-day-dreams/pull/18 (draft/open)
@@ -23,8 +31,56 @@ complete software/visual acceptance, then owner review. Do not restart or discar
 - Canonical bot: `6a3eb10`, adopted with normal fast-forward while preserving new inventory files.
 - Inventory checkpoint: `0d633f9`; following expiry/PB-proof checkpoint: `1606ade`.
 - Following documentation checkpoint: inspect actual HEAD/log/status for its own SHA.
-- App0.11.0-test1/code15; schema18/rootJSON12/bodyMeasurements1/raw2/complete1.
-  Earlier committed16/17/18 migrations are immutable; future changes must be additive.
+- Last full-gate baseline90ec691: app0.11.0-test1/code15, schema18/rootJSON12/raw2/complete1.
+  Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, pending its own full matrix.
+  Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
+
+### IN-PROGRESS M5 recovery boundary — preserve all uncommitted files
+
+Owner's latest instruction authorises automatic merge AFTER full0.11 acceptance, post-merge CI
+and verified development APK publication. AGENTS.md/permanent guidance updated; older no-auto-
+merge wording below is superseded. PR18 must remain draft while incomplete.
+
+Current staged/working M5 source advances schema19/rootJSON13/retention child1/raw archive3,
+complete package1 unchanged. These versions are in local source, NOT yet a verified shipped gate.
+Earlier18/12/2 remain supported readers/migrations. DO NOT discard these files on continuation.
+- SqliteDetailRetentionRepository: typed fresh/protected/acknowledged choices; dataset epoch,
+  preview/approval, one-session cleanup with source/count/context checks, exact SHA256 receipts,
+  transactional raw-only deletion; no putActivity during pruning. cleanOne uses indexed per-session
+  inventory proof, not a full-history raw recount per batch. Eleven new repository methods cover
+  upgrade consent, PB byte preservation, delete rollback, every unfinished state, stale previews,
+  replacement epochs, exact archive2/3 restore, coordinate conflict rollback and complete/older
+  JSON compatibility. Current root/schema literals updated; historical tests remain explicit.
+- RemovedRecordingDetail is the pure validated exact-evidence receipt. Additive schema19 includes
+  prefs/state/normalized removals; new DB24months, upgradeEXISTING_UNREVIEWED/forever.
+- JSON13 requires detailRetention, supported older roots use protected defaults. Raw3 writes
+  receipts and reads1–3; compatible old archives may restore proven original data, never replace
+  conflicting summary/coordinates. Raw3 caps100000session headers/500000points/session/512MiB,
+  errors explicitly without truncating; older1–2 bounds remain1000/100000. These larger limits
+  still need realistic large-history test. Complete1 shares existing outer SQLite transaction.
+- StorageManagementViewModel/Screen + Settings link, selection does not delete, informed Save
+  separate from preview separate from confirmation. Existing users/unfinished runs protected;
+  precise loss/backup/SQLite logical-versus-file-size explanation, natural vertical layouts.
+  Four Compose cases and one production capture method (12new frames;215total) added.
+- RouteCard shows removed-detail explanation without fabricated map/splits; original totals stay.
+- CURRENT frozen-source actual Gradle domain/debug/lint/test compile PASS79tasks/1m13sec.
+  Domain658610checks/45suites (retention7505),75schema,9release,16capture-validator, formatting
+  97Kotlin/155Java, source11/artwork14 and strict174/14guidance PASS. Logs retention-checkpoint-*.
+  One real fixture compile error (wrong4argument FeatureStore adapter) was fixed by using the
+  typed SqliteActivityRepository owner, preserving the test. No runtime deletion/UI pass yet.
+  Eleven repo +four UI +one real capture methods imply506/API/215captures on next full matrix.
+  Long-history complete-backup fixture contains1100summaries, not fabricated sample/PB data.
+- The final pre-M5 workflow42120919432 is now SUCCESS on90ec691:490cases EACH API28/35/36,
+  203captures/API; canonicalad2654a safely fast-forwarded WITHOUT losing any local M5 files.
+  All three successful Android logs inspected. New inventory/consent proof cases run, not skipped.
+  This does NOT verify new M5 writes/cleanup/UI. Inspect actual git/PR/workflows before relying.
+
+Exact next: inspect the following M5 checkpoint push/current full matrix. Current source now has
+receipt-domain validation,1100summary complete-backup, independent resumable batch and zero-byte
+GPX-refusal assertions, storage docs/privacy/S24 list. Required next: full506/API28/35/36/215capture gate, fix roots
+and directly inspect actual new storage/confirmation frames. No destructive public/main delivery
+until safety gate passes. Then M6 catalogue quality + three six-month simulations + final release,
+all remaining full gates and authorised merge/post-merge publication. Do not stop at review-ready.
 
 ### Completed implementation and current verification
 
@@ -69,7 +125,7 @@ FULL workflow https://github.com/mmwiza1/Race-day-dreams/actions/runs/4211568837
 - API35 debug APK artifact13457712005 belongs to7dc green source, not final0.11 delivery.
   Download and independently inspect/hash if not yet recorded below.
 
-### M5 — policy + read-only inventory; destructive cleanup NOT implemented
+### Pre-M5 baseline — policy and read-only inventory (superseded by current M5 source above)
 
 DetailRetention pure policy7492checks: true UTCcalendar24mo/5yr/forever cutoffs, protected existing
 users versus fresh-install default, explicit fresh approval, dataset/choice identity, ownership,
@@ -164,7 +220,9 @@ THIRD_PARTY.md must byte-match app/src/main/assets/third_party.md. Source freeze
 build. Do not overlap formatter mutations with compilation.
 
 All physical Galaxy S24 acceptance remains UNPERFORMED, including0.10.1 outdoor GPS. PR18 remains
-draft; no merge/tag. Before stopping, update this exact boundary with actual results/uncommitted files.
+draft WHILE INCOMPLETE. After full scope/green gates, follow the owner's authorised automatic
+merge, post-merge CI and development-publication instructions. No stable tag. Update the boundary
+before stopping, including actual results/HEAD/uncommitted files.
 
 ## Archived 0.11 checkpoint history — superseded by CURRENT above
 

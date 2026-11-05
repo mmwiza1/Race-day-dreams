@@ -244,6 +244,128 @@ public final class DetailRetentionTestSuite {
             eq(value.recordings().size() * 3600L, value.points());
             eq(value.recordings().size() * 120L, value.events());
         }
+        var fingerprint = "a".repeat(64);
+        var proof =
+                new RemovedRecordingDetail(
+                        "s",
+                        "a",
+                        "rdd",
+                        "s",
+                        NOW.minusSeconds(100),
+                        NOW,
+                        Policy.LAST_24_MONTHS,
+                        NOW.minusSeconds(200),
+                        0,
+                        100000,
+                        100,
+                        2,
+                        fingerprint,
+                        fingerprint);
+        eq(100L, proof.points());
+        eq(2L, proof.events());
+        eq("s", proof.recordId());
+        rejects(
+                () ->
+                        new RemovedRecordingDetail(
+                                "s",
+                                "a",
+                                "health-connect",
+                                "s",
+                                NOW.minusSeconds(100),
+                                NOW,
+                                Policy.LAST_24_MONTHS,
+                                NOW.minusSeconds(200),
+                                0,
+                                100000,
+                                100,
+                                2,
+                                fingerprint,
+                                fingerprint));
+        rejects(
+                () ->
+                        new RemovedRecordingDetail(
+                                "s",
+                                "a",
+                                "rdd",
+                                "other",
+                                NOW.minusSeconds(100),
+                                NOW,
+                                Policy.LAST_24_MONTHS,
+                                NOW.minusSeconds(200),
+                                0,
+                                100000,
+                                100,
+                                2,
+                                fingerprint,
+                                fingerprint));
+        rejects(
+                () ->
+                        new RemovedRecordingDetail(
+                                "s",
+                                "a",
+                                "rdd",
+                                "s",
+                                NOW.minusSeconds(100),
+                                NOW,
+                                Policy.KEEP_FOREVER,
+                                NOW.minusSeconds(200),
+                                0,
+                                100000,
+                                100,
+                                2,
+                                fingerprint,
+                                fingerprint));
+        rejects(
+                () ->
+                        new RemovedRecordingDetail(
+                                "s",
+                                "a",
+                                "rdd",
+                                "s",
+                                NOW.plusSeconds(1),
+                                NOW,
+                                Policy.LAST_24_MONTHS,
+                                NOW.minusSeconds(200),
+                                0,
+                                100000,
+                                100,
+                                2,
+                                fingerprint,
+                                fingerprint));
+        rejects(
+                () ->
+                        new RemovedRecordingDetail(
+                                "s",
+                                "a",
+                                "rdd",
+                                "s",
+                                NOW.minusSeconds(100),
+                                NOW,
+                                Policy.LAST_24_MONTHS,
+                                NOW.minusSeconds(200),
+                                0,
+                                100000,
+                                0,
+                                0,
+                                fingerprint,
+                                fingerprint));
+        rejects(
+                () ->
+                        new RemovedRecordingDetail(
+                                "s",
+                                "a",
+                                "rdd",
+                                "s",
+                                NOW.minusSeconds(100),
+                                NOW,
+                                Policy.LAST_24_MONTHS,
+                                NOW.minusSeconds(200),
+                                0,
+                                100000,
+                                100,
+                                2,
+                                "unknown",
+                                fingerprint));
         System.out.println("DetailRetentionTestSuite: " + checks + " checks passed.");
     }
 

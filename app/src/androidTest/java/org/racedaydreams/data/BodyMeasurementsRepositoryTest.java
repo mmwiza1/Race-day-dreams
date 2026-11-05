@@ -149,7 +149,7 @@ public final class BodyMeasurementsRepositoryTest extends AndroidTestCase {
         var output = new java.io.ByteArrayOutputStream();
         manager.exportTo(output);
         var envelope = new JSONObject(output.toString("UTF-8"));
-        assertEquals(12, envelope.getInt("version"));
+        assertEquals(13, envelope.getInt("version"));
         manager.restoreFrom(new java.io.ByteArrayInputStream(output.toByteArray()));
         assertEquals(before, body.heights(20, 0));
         assertEquals(preferences, body.preferences());
@@ -170,7 +170,7 @@ public final class BodyMeasurementsRepositoryTest extends AndroidTestCase {
         assertTrue(body.heights(20, 0).isEmpty());
         assertEquals(BodyMeasurementsRepository.Preferences.defaults(), body.preferences());
         assertEquals(Immutable.list(w), body.weights());
-        var future = new JSONObject(envelope.toString()).put("version", 13);
+        var future = new JSONObject(envelope.toString()).put("version", 14);
         try {
             manager.restoreFrom(
                     new java.io.ByteArrayInputStream(
@@ -224,7 +224,7 @@ public final class BodyMeasurementsRepositoryTest extends AndroidTestCase {
         db.setVersion(17);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(18, db.getVersion());
+        assertEquals(19, db.getVersion());
         assertEquals(Immutable.list(w), body.weights());
         assertTrue(new SqliteAchievementsRepository(getContext()).celebrations());
         assertFalse(body.preferences().proteinEnabled());

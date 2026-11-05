@@ -55,7 +55,7 @@ public final class AchievementsRepositoryTest extends AndroidTestCase {
         var output = new java.io.ByteArrayOutputStream();
         backup.exportTo(output);
         var envelope = new JSONObject(output.toString("UTF-8"));
-        assertEquals(12, envelope.getInt("version"));
+        assertEquals(13, envelope.getInt("version"));
         new SqliteUserPreferencesRepository(getContext()).clear();
         backup.restoreFrom(new java.io.ByteArrayInputStream(output.toByteArray()));
         assertEquals(before, repository.awards());
@@ -148,7 +148,7 @@ public final class AchievementsRepositoryTest extends AndroidTestCase {
         db.setVersion(16);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(18, db.getVersion());
+        assertEquals(19, db.getVersion());
         assertEquals("yes", new SqliteSettingsRepository(getContext()).getSetting("previous"));
         assertTrue(repository.awards().isEmpty());
         assertFalse(repository.celebrations());

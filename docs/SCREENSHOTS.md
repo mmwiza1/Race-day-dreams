@@ -436,3 +436,12 @@ captures asf79c3c5. All new replacement/progression/history modes were opened. I
 passed, but200%progression footer/action hierarchy did not pass visual review. A new
 proposal-first scrollable review and stronger entry/control assertions require another full
 gate and fresh125captures; do not treat image existence as visual acceptance.
+
+## 0.11 storage source — pending runtime capture/review
+
+The next required source set is215actual production PNGs: prior203plus storage-management,
+storage-retention, storage-preview and storage-confirmation in light/dark/200%text. The fixture
+navigates Home→Settings→Storage, reviews actual old raw evidence and cancels the real confirmation;
+it asserts original points/absence of a removal receipt across all modes. Source fingerprints and
+PNG integrity remain mandatory. No M5 visual sign-off until the actual new frames are captured and
+opened; existing203canonical frames belong to the pre-M5 source90ec691/ad2654a. No mock screens.

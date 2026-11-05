@@ -143,7 +143,7 @@ public final class AuthoredGymAssociationRepositoryTest extends AndroidTestCase 
         var settings = new SqliteSettingsRepository(getContext());
         settings.putSetting("sentinel", "preserved");
         var envelope = envelope();
-        assertEquals(12, envelope.getInt("version"));
+        assertEquals(13, envelope.getInt("version"));
         var row =
                 envelope.getJSONObject("data")
                         .getJSONObject("strengthEngine")

@@ -87,7 +87,7 @@ class StrengthProgrammeBuilderScreenTest {
                 org.racedaydreams.portability.BackupManager(app, SqliteBackupRepository(app))
             val output = java.io.ByteArrayOutputStream()
             manager.exportTo(output)
-            assertEquals(12, org.json.JSONObject(output.toString("UTF-8")).getInt("version"))
+            assertEquals(13, org.json.JSONObject(output.toString("UTF-8")).getInt("version"))
             SqliteUserPreferencesRepository(app).clear()
             manager.restoreFrom(java.io.ByteArrayInputStream(output.toByteArray()))
         }

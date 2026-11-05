@@ -478,3 +478,14 @@ source references and a celebration preference. Its feature ViewModel reads acti
 never raw GPS for counts. Missing source references are labelled, not reconstructed. Schema17 and
 root JSON11 are additive over16/10; old supported backup readers remain, with strict new-section
 validation before the shared replacement transaction. See docs/STRENGTH_ANALYTICS_0_11.md.
+
+## 0.11 typed recording-detail lifecycle
+
+SqliteDetailRetentionRepository shares ProfileDatabase transactions with backups and the recorder;
+DetailRetention and RemovedRecordingDetail are Android-independent rules/proofs. Schema19 adds
+normalized preferences/epoch/removal receipts; rootJSON13/retention1 and raw3 keep older readers.
+StorageManagementViewModel owns only explicit foreground review/cleanup. Each atomic batch uses
+an indexed per-session proof and removes raw rows only, preserving canonical history/PBs. No new
+service, worker, database, permission or runtime dependency. CompleteBackup1 keeps its existing
+outer shared transaction. See docs/DATA_LIFECYCLE_0_11.md for consent, restore, bounds and failure
+semantics. Existing GPS recording/execution engine behaviour is unchanged.

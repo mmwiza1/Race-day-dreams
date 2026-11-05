@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable: Boolean,
                    connect: (Boolean, Boolean) -> Unit, providerUpdate: () -> Unit, providerSettings: () -> Unit,
                    editGoals: () -> Unit, reviewBaseline: () -> Unit, shoes: () -> Unit,
-                   export: () -> Unit, restore: () -> Unit, reset: () -> Unit, weightPermissions: () -> Unit = {}, healthContext: () -> Unit = {}) = CoachPage {
+                   export: () -> Unit, restore: () -> Unit, reset: () -> Unit, weightPermissions: () -> Unit = {}, healthContext: () -> Unit = {}, storage: (() -> Unit)? = null) = CoachPage {
     SchedulePreferences()
     DreamPreferences()
     DiagnosticExport(state)
@@ -38,6 +38,7 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
     var showLicence by rememberSaveable { mutableStateOf(false) }
     var noticeAsset by rememberSaveable { mutableStateOf<String?>(null) }
     CoachHeading("Settings")
+    storage?.let { OutlinedButton(it, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Storage & recording detail") } }
     PrimaryFocusSettings(state, model)
     CoachButton("Personal health context",healthContext)
     CoachButton("Edit race goal and availability", editGoals)
@@ -51,7 +52,7 @@ fun SettingsScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
         Text("Health Connect")
         Text("Optional health access. Manual entry works independently.")
         TextButton(onClick=weightPermissions,enabled=state.healthAvailability==org.racedaydreams.health.HealthAvailability.AVAILABLE){Text("Allow optional Health Connect weight")}
-        Text("Weight is used only for your personal trend. No weight-based coaching judgement.")
+        Text("Optional weight observations support your personal trend and any general protein guidance you choose to enable. Body measurements are not required for training.")
     }
     ReminderSettings(state, model)
     CoachCard {

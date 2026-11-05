@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 18;
+    static final int VERSION = 19;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -59,6 +59,14 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateFifteenToSixteen(db);
         migrateSixteenToSeventeen(db);
         migrateSeventeenToEighteen(db);
+        migrateEighteenToNineteen(db);
+        // Only truly new databases receive the new-install default. Upgrades stay protected.
+        db.execSQL(
+                "UPDATE detail_retention_preferences SET policy='LAST_24_MONTHS',"
+                        + " choice='NEW_INSTALL_DEFAULT',chosen_at=?,choice_id=? WHERE id=1",
+                new Object[] {
+                    java.time.Instant.now().toString(), java.util.UUID.randomUUID().toString()
+                });
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -533,10 +541,44 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V18_SCHEMA_END
     }
 
+    private static void migrateEighteenToNineteen(SQLiteDatabase db) {
+        // V19_SCHEMA_BEGIN - consent and current raw-detail availability, never workout history.
+        db.execSQL(
+                "CREATE TABLE detail_retention_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                    + " policy TEXT NOT NULL CHECK(policy IN"
+                    + " ('LAST_24_MONTHS','LAST_5_YEARS','KEEP_FOREVER')), choice TEXT NOT NULL"
+                    + " CHECK(choice IN"
+                    + " ('NEW_INSTALL_DEFAULT','EXISTING_UNREVIEWED','ACKNOWLEDGED')), chosen_at"
+                    + " TEXT,choice_id TEXT, CHECK((choice='EXISTING_UNREVIEWED' AND"
+                    + " policy='KEEP_FOREVER' AND chosen_at IS NULL AND choice_id IS NULL) OR"
+                    + " (choice!='EXISTING_UNREVIEWED' AND chosen_at IS NOT NULL AND choice_id IS"
+                    + " NOT NULL)))");
+        db.execSQL(
+                "INSERT INTO detail_retention_preferences"
+                        + " VALUES(1,'KEEP_FOREVER','EXISTING_UNREVIEWED',NULL,NULL)");
+        db.execSQL(
+                "CREATE TABLE detail_retention_state (id INTEGER PRIMARY KEY CHECK(id=1),epoch TEXT"
+                        + " NOT NULL)");
+        db.execSQL("INSERT INTO detail_retention_state VALUES(1,lower(hex(randomblob(16))))");
+        db.execSQL(
+                "CREATE TABLE recording_detail_removals (session_id TEXT PRIMARY KEY NOT NULL,"
+                    + " activity_id TEXT NOT NULL UNIQUE REFERENCES activities(id) ON DELETE"
+                    + " CASCADE, provider TEXT NOT NULL CHECK(provider IN ('rdd','gpx')),record_id"
+                    + " TEXT NOT NULL, ended_at TEXT NOT NULL,removed_at TEXT NOT NULL,policy TEXT"
+                    + " NOT NULL CHECK(policy IN ('LAST_24_MONTHS','LAST_5_YEARS')), started_at"
+                    + " TEXT NOT NULL,started_mono INTEGER NOT NULL"
+                    + " CHECK(started_mono>=0),last_mono INTEGER NOT NULL"
+                    + " CHECK(last_mono>=started_mono), point_count INTEGER NOT NULL"
+                    + " CHECK(point_count>=0),event_count INTEGER NOT NULL CHECK(event_count>=0),"
+                    + " points_hash TEXT NOT NULL,events_hash TEXT NOT"
+                    + " NULL,CHECK(session_id=record_id),CHECK(point_count>0 OR event_count>0))");
+        // V19_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 17)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 18)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -560,6 +602,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 14) migrateFourteenToFifteen(db);
         if (oldVersion <= 15) migrateFifteenToSixteen(db);
         if (oldVersion <= 16) migrateSixteenToSeventeen(db);
-        migrateSeventeenToEighteen(db);
+        if (oldVersion <= 17) migrateSeventeenToEighteen(db);
+        migrateEighteenToNineteen(db);
     }
 }

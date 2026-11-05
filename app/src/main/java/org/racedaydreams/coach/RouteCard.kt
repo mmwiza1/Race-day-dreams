@@ -26,6 +26,7 @@ private data class RecordedRouteProjection(
     val kilometres: List<RoutePresentation.Section>,
     val pauses: List<RecordingStore.Pause>,
     val story: List<String>,
+    val removed: org.racedaydreams.domain.storage.RemovedRecordingDetail?,
 )
 
 @Composable
@@ -36,11 +37,15 @@ fun RecordedRouteCard(activity: ActivityRecord) {
     // independently of the asynchronously fetched accepted points.
     val projection by
         produceState<RecordedRouteProjection?>(null, activity.id(), activity.source()) {
-            val (points, pauses) =
+            val (points, pauses, removed) =
                 withContext(Dispatchers.IO) {
                     val store = RecordingStore(context)
-                    store.points(activity.source().recordId()) to
-                        store.pauses(activity.source().recordId())
+                    val id = activity.source().recordId()
+                    Triple(
+                        store.points(id),
+                        store.pauses(id),
+                        org.racedaydreams.data.SqliteDetailRetentionRepository(context).removal(id),
+                    )
                 }
             value =
                 withContext(Dispatchers.Default) {
@@ -52,6 +57,7 @@ fun RecordedRouteCard(activity: ActivityRecord) {
                         RoutePresentation.kilometres(points),
                         pauses,
                         RoutePresentation.story(points),
+                        removed,
                     )
                 }
         }
@@ -59,7 +65,18 @@ fun RecordedRouteCard(activity: ActivityRecord) {
     val points = prepared.points
     val xy = prepared.xy
     val km = prepared.kilometres
-    if (xy.size < 2) return
+    if (xy.size < 2) {
+        prepared.removed?.let {
+            SemanticCard(Tile.Planned) {
+                Text("Detailed recording removed", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    "You removed this run's raw GPS and sensor detail through storage cleanup. Your original distance, timing, summary and PB evidence are retained. No map or sample-based splits have been recreated."
+                )
+                Text("Only a compatible backup containing the original detail can restore it.")
+            }
+        }
+        return
+    }
     val pauses = prepared.pauses
     val story = prepared.story
     val primary = MaterialTheme.colorScheme.primary

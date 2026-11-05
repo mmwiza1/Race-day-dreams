@@ -100,6 +100,31 @@ public final class SqliteRecordingInventoryRepository extends SqliteStoreAccess 
         }
     }
 
+    /** Indexed one-session proof for a cleanup batch; no whole-history recount or payload read. */
+    static DetailRetention.Recording recording(SQLiteDatabase db, String id) {
+        try (var c =
+                db.rawQuery(
+                        "SELECT s.id,s.state,s.activity_id,a.provider,a.record_id,a.end_millis,"
+                            + " (SELECT COUNT(*) FROM recording_points p WHERE p.session_id=s.id),"
+                            + " (SELECT COUNT(*) FROM recording_events e WHERE e.session_id=s.id)"
+                            + " FROM recording_sessions s LEFT JOIN activities a ON"
+                            + " a.id=s.activity_id WHERE s.id=?",
+                        new String[] {id})) {
+            if (!c.moveToFirst()) return null;
+            var provider = c.isNull(3) ? "" : c.getString(3);
+            return new DetailRetention.Recording(
+                    c.getString(0),
+                    c.isNull(2) ? null : c.getString(2),
+                    provider,
+                    c.isNull(4) ? "" : c.getString(4),
+                    c.isNull(5) ? null : Instant.ofEpochMilli(c.getLong(5)).plusMillis(1),
+                    c.getString(1).equals("FINISHED"),
+                    c.getLong(6),
+                    c.getLong(7),
+                    provider.equals("rdd") || provider.equals("gpx") ? 0L : null);
+        }
+    }
+
     private static long[] counts(SQLiteDatabase db, String table) {
         // Table names are private constants at call sites, never user input.
         try (var c =

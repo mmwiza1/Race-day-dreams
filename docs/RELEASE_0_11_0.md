@@ -24,6 +24,11 @@ behaviour only; the complete agreed release is not yet ready for review.
   and independent Health Connect access. General adult protein guidance is off by default and
   requires an explicitly chosen, recent weight; imported measurements never silently replace it.
 
+- Explicit recording-detail retention choices, protected existing-user defaults, preview and
+  separate cleanup confirmation. Permanent workout/PB/programme history stays. Storage estimates
+  distinguish raw payload bytes from physical database files; compatible raw backups can restore
+  proven original detail.
+
 ## Improvements
 
 - The accepted0.10.1 GPS, coaching clarity and screenshot lifecycle foundations are retained.
@@ -36,9 +41,9 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 ## Known limitations
 
-- This is an incomplete development checkpoint. Retention cleanup/storage and catalogue/final-
-  simulation milestones remain to implement; cleanup controls are not shipped. The read-only
-  storage inventory never deletes data. This is not a software-complete0.11 release.
+- This is an incomplete development checkpoint. New retention cleanup/restore/UI require their
+  current-source Android and visual gate. Catalogue and final athlete simulations remain to finish.
+  This is not a software-complete0.11 release.
 - Android may delay optional rest notifications during sleep/battery saving. A reboot or
   cross-device restore interrupts timer continuity and requires explicit review.
 - Physical Galaxy S24 acceptance remains unperformed, including0.10.1 outdoor GPS checks.
@@ -48,8 +53,9 @@ behaviour only; the complete agreed release is not yet ready for review.
 - Local-first, account-free operation remains. No Internet permission or backend is added.
 - Additive schema16 stores typed rest preferences/countdowns; schema17 adds normalized local
   milestone recognition and sources. Schema18 adds typed height observations and optional guidance
-  preferences. Root JSON12 retains older supported readers through11.
-  Raw archive2 and complete package1 remain unchanged.
+  preferences. Schema19 adds typed retention consent and removal receipts. Root JSON13 retains
+  supported older readers through12; raw archive3 reads1–3. Complete package1 is unchanged.
+  See DATA_LIFECYCLE_0_11.md for explicit bounds and raw-versus-summary backup semantics.
 - Timer and warm-up suggestions never become recorded training automatically.
 - Optional READ_HEIGHT is the only new body-feature permission. No background health access or
   runtime dependency is introduced. General protein ranges are not medical prescriptions.
@@ -69,3 +75,8 @@ behaviour only; the complete agreed release is not yet ready for review.
   It is52,618,954bytes (+1.230% versus0.10.1), with SHA256
   `8fd6c063f413e851d0f7c79380141f35ae390acc4538ed71cb5409dcd7815388`.
   This is not the final0.11 delivery. No physical-device acceptance is claimed.
+
+- Pre-retention workflow42120919432 passed490tests/API28/35/36 and203captures/API. Following
+  retention source passes local658610domain checks,75schema,9release,16capture-validator,
+  formatting and actual debug build/lint/test compilation. Its506test/215capture Android matrix
+  is still required; no cleanup runtime or visual acceptance is implied by compilation.

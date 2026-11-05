@@ -26,7 +26,14 @@ final class GymSchemaFixture {
         }
     }
 
+    static void removeVersionNineteenTables(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE recording_detail_removals");
+        db.execSQL("DROP TABLE detail_retention_preferences");
+        db.execSQL("DROP TABLE detail_retention_state");
+    }
+
     static void removeVersionEighteenTables(SQLiteDatabase db) {
+        removeVersionNineteenTables(db);
         db.execSQL("DROP TABLE body_heights");
         db.execSQL("DROP TABLE body_guidance_preferences");
     }

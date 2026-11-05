@@ -151,3 +151,16 @@ user backups. The optional Health Connect READ_HEIGHT grant supports this featur
 entry remains available. Protein guidance is off by default and requires an explicitly chosen
 weight. Imported values do not become automatically authoritative. No body values are added
 to diagnostics, analytics, remote APIs or background uploads. See docs/BODY_GUIDANCE_0_11.md.
+
+## Explicit recording-detail cleanup
+
+Settings → Storage & recording detail saves a typed24month/5year/forever preference. Existing
+installations and older backups remain protected until informed acknowledgement. Saving a choice
+never deletes data. A fresh preview and separate confirmation are required for foreground cleanup;
+there is no automatic expiry worker. Only eligible finished app-owned dense GPS/sensor/event rows
+are removed. Workout summaries, actual gym sets, PBs, programmes, awards and coaching history stay.
+Health Connect provider records and ordinary body measurements are untouched. Local receipts and
+fingerprints document removed detail and allow compatible original archives to be restored without
+guessing. No data is uploaded. JSON13 preserves preferences/receipts; raw3 and complete1 preserve
+available detail with explicit limits. See docs/DATA_LIFECYCLE_0_11.md. SQLite deletion does not
+promise immediate device-space reclamation. Physical S24 cleanup/restore tests remain unperformed.

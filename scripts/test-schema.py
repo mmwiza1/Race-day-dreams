@@ -82,8 +82,8 @@ def create_schema(connection, version=14, frozen=False):
 def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if target not in (14, 15, 16, 17, 18) or old < 1 or old >= target:
-        raise ValueError("Only explicit upgrades to historical 14–17 or current 18 are supported")
+    if target not in (14, 15, 16, 17, 18, 19) or old < 1 or old >= target:
+        raise ValueError("Only explicit upgrades to historical 14–18 or current 19 are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -463,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,19), (2,19), (14,14)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,20), (2,20), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -1125,6 +1125,30 @@ class BodySchemaTest(unittest.TestCase):
             db.execute("INSERT INTO body_guidance_preferences VALUES(1,1,'CENTIMETRES','missing',NULL,80)")
         db.execute("INSERT INTO body_guidance_preferences VALUES(1,0,'INCHES',NULL,NULL,NULL)")
         self.assertEqual(1,db.execute('SELECT COUNT(*) FROM body_heights').fetchone()[0])
+        db.close()
+
+class DetailRetentionSchemaTest(unittest.TestCase):
+    def test_all_supported_upgrades_protect_existing_detail(self):
+        for old in range(1,19):
+            with self.subTest(old=old):
+                db=sqlite3.connect(':memory:');create_schema(db,old)
+                if old>=2:db.execute("INSERT INTO settings VALUES('keep','yes')");db.commit()
+                migrate_to_latest(db,19)
+                self.assertEqual(('KEEP_FOREVER','EXISTING_UNREVIEWED',None,None),db.execute('SELECT policy,choice,chosen_at,choice_id FROM detail_retention_preferences').fetchone())
+                self.assertEqual([],db.execute('PRAGMA foreign_key_check').fetchall())
+                if old>=2:self.assertEqual('yes',db.execute("SELECT setting_value FROM settings WHERE setting_key='keep'").fetchone()[0])
+                db.close()
+    def test_unacknowledged_shorter_retention_is_invalid(self):
+        db=sqlite3.connect(':memory:');create_schema(db,19)
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("UPDATE detail_retention_preferences SET policy='LAST_24_MONTHS'")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("UPDATE detail_retention_preferences SET choice='ACKNOWLEDGED'")
+        db.close()
+    def test_failed_migration_keeps_old_database(self):
+        db=sqlite3.connect(':memory:');create_schema(db,18)
+        db.execute('CREATE TABLE detail_retention_state (conflict TEXT)');db.commit()
+        with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db,19)
+        self.assertEqual(18,db.execute('PRAGMA user_version').fetchone()[0])
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='detail_retention_preferences'").fetchone())
         db.close()
 
 if __name__ == "__main__":

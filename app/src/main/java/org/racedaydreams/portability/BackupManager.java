@@ -35,7 +35,7 @@ public final class BackupManager {
     // v9 requires typed authored programmes, drafts, custom metadata and explicit activation
     // history.
     // Readers for envelopes1–8 remain supported; older apps reject9 before losing authoring data.
-    public static final int VERSION = 12;
+    public static final int VERSION = 13;
     // Gym execution retains both staged and completed actual evidence. Keep allocation bounded
     // while allowing multi-year strength history beyond the previous8MiB/200k-token ceiling.
     public static final int MAX_BYTES = 32 * 1024 * 1024;
@@ -184,6 +184,9 @@ public final class BackupManager {
             if (((Integer) version) >= 8 && !envelope.getJSONObject("data").has("strengthEngine"))
                 throw new IOException(
                         "Version-eight backup is missing its gym execution evidence.");
+            if (((Integer) version) >= 13 && !envelope.getJSONObject("data").has("detailRetention"))
+                throw new IOException(
+                        "This backup is missing detail-retention preferences and provenance.");
             if (((Integer) version) >= 12
                     && !envelope.getJSONObject("data").has("bodyMeasurements"))
                 throw new IOException(

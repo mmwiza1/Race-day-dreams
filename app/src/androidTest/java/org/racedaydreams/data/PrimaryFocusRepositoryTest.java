@@ -87,7 +87,7 @@ public final class PrimaryFocusRepositoryTest extends AndroidTestCase {
         manager.exportTo(output);
         byte[] snapshot = output.toByteArray();
         JSONObject envelope = new JSONObject(new String(snapshot, StandardCharsets.UTF_8));
-        assertEquals(12, envelope.getInt("version"));
+        assertEquals(13, envelope.getInt("version"));
         assertEquals(
                 "strength",
                 envelope.getJSONObject("data")

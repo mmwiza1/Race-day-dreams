@@ -1006,6 +1006,90 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesStoragePolicyPreviewAndExplicitConfirmationFromProductionNavigation() {
+        val old = Instant.parse("2020-01-01T00:00:00Z")
+        val engine = org.racedaydreams.domain.recording.RunMetricsEngine(0, old)
+        for (i in 0..100) engine.accept(
+            org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
+                old.plusSeconds(i.toLong()),
+                i * 1000L,
+                0.0,
+                i * .00003,
+                3.0,
+                null,
+                null,
+                3.0,
+            )
+        )
+        val store = RecordingStore(context)
+        store.start("retention-capture", old, 0)
+        store.appendBatch(
+            "retention-capture",
+            engine.points(),
+            engine.events(),
+            0,
+            0,
+            100000,
+            "ACTIVE",
+        )
+        store.finish(store.unfinished()!!, null, "rdd", false)
+        val retention = SqliteDetailRetentionRepository(context)
+        retention.acknowledge(
+            org.racedaydreams.domain.storage.DetailRetention.Policy.LAST_24_MONTHS,
+            Instant.now(),
+        )
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose.onNodeWithText("Settings").performClick()
+                await("Storage & recording detail")
+                compose
+                    .onNodeWithText("Storage & recording detail")
+                    .performScrollTo()
+                    .performClick()
+                await("Your history stays")
+                alignHeading("Storage & recording detail")
+                capture("storage-management$suffix")
+                alignHeading("Detailed recording retention")
+                capture("storage-retention$suffix")
+                compose.onNodeWithText("Review eligible detail").performScrollTo().performClick()
+                await("Cleanup preview")
+                alignHeading("Cleanup preview")
+                capture("storage-preview$suffix")
+                compose
+                    .onNodeWithText("Review cleanup confirmation")
+                    .performScrollTo()
+                    .performClick()
+                await("Remove this raw detail?")
+                capture("storage-confirmation$suffix")
+                compose.onNodeWithText("Keep my recording detail").performClick()
+                Assert.assertEquals(engine.points(), store.points("retention-capture"))
+                Assert.assertNull(retention.removal("retention-capture"))
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            shell("settings put system font_scale $originalFont")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesOptionalBodyGuidanceAndSourceHistory() {
         val body = org.racedaydreams.data.SqliteBodyMeasurementsRepository(context)
         val now = Instant.now()

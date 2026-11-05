@@ -534,8 +534,14 @@ Record observations and build commit for each check; nothing below is a claimed 
   cm/inch/kg/pound fallbacks, inspect source/timestamp and explicitly choose a weight for optional
   protein guidance. Verify a newer import cannot silently replace that choice, and stale/missing/
   changed/future weight gets no numerical range. These real-provider checks remain unperformed.
-- When available: review retention acknowledgement/preview, back up first, execute bounded
-  detail cleanup and confirm summaries, PBs, programmes and meaningful history still open.
+- Review Settings → Storage & recording detail on an upgraded installation: existing detail
+  must remain protected. Save each retention option without deletion; review counts and cancel
+  confirmation first. Back up, then confirm a bounded cleanup on a COPY of real history. Navigate
+  away/reopen between batches; summaries, PBs, programmes, milestones and actual sets must remain.
+- Verify an active/paused/recoverable run blocks cleanup. Inspect the removed-detail message and
+  GPX refusal, then restore a suitable original raw backup and inspect the original route. Try a
+  conflicting file and verify no partial replacement. Observe actual file sizes without assuming
+  SQLite deletes immediately reclaim space. These tests require real hardware and remain unperformed.
 - Complete JSON and complete-package backup/restore checks on a copy of genuine long-term data.
 - Inspect light/dark/200% text, human TalkBack order, keyboard entry and touch targets.
 - Repeat the outstanding 0.10.1 outdoor/urban/known-distance GPS, locked-screen/background,

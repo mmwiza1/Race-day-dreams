@@ -204,6 +204,11 @@
     "domain/src/main/java/org/racedaydreams/domain/storage/*.java",
     "domain/src/test/java/org/racedaydreams/domain/storage/*.java",
     "app/src/main/java/org/racedaydreams/data/SqliteRecordingInventoryRepository.java",
-    "app/src/androidTest/java/org/racedaydreams/data/RecordingInventoryRepositoryTest.java"
+    "app/src/androidTest/java/org/racedaydreams/data/RecordingInventoryRepositoryTest.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteDetailRetentionRepository.java",
+    "app/src/androidTest/java/org/racedaydreams/data/DetailRetentionRepositoryTest.java",
+    "app/src/main/java/org/racedaydreams/data/RecordingArchive.kt",
+    "app/src/main/java/org/racedaydreams/coach/storage/*.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/StorageManagementScreenTest.kt"
   ]
 }

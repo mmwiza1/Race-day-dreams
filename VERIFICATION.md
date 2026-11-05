@@ -1,3 +1,29 @@
+# Current M5 retention checkpoint — local gates pass, full release incomplete
+
+Pre-M5 source90ec691 COMPLETE workflow42120919432 SUCCESS:490tests EACH API28/35/36,
+203captures/API. All three Android logs and workflow conclusion inspected. Canonicalad2654a
+adopted with normal fast-forward, preserving every uncommitted M5 source/test/document change.
+
+Current additive M5 schema19/rootJSON13/retention1/raw3/complete1 source passes actual local
+Gradle domain/debug/lint/instrumentation compilation79tasks/1m13sec;658610domain checks/45suites
+(retention7505),75schema/migration,9release-note,16capture-validator,97Kotlin/155Java formatting,
+source11/artwork14 and strict174canonical/14routine guidance. Notices byte comparison passes.
+Logs: scratch/rdd011/retention-checkpoint-*; backend/UI earlier failures/logs retained.
+
+New eleven repository tests include protected upgrades, explicit choices, real PB byte preservation,
+transaction failure rollback, all unfinished states, expired/changed/replaced approval, matching
+archive2/3 restoration, coordinate conflict rejection, current/older/future JSON and complete
+backup, independent idempotent session batches and1100summary complete backup. Four UI cases and
+one production capture method add12frames. EXPECTED next matrix506tests/API and215captures;
+compilation is NOT an Android runtime pass. No current M5 screenshot/physical acceptance claimed.
+
+M5 source is implemented for testing, not ready to merge. M6 catalogue/six-month athlete simulations
+and final release remain unfinished. Owner authorises automatic merge AFTER every software gate
+and full scope, then post-merge main/rolling APK verification. No stable tag. All S24 checks remain
+UNPERFORMED, including0.10.1 outdoor GPS. The complete active boundary is in CONTINUE_CODEX.md.
+
+Earlier checkpoints below retain their original source-specific evidence.
+
 # Current 0.11 checkpoint — recovery/body matrix green, full release still incomplete
 
 Source7dc0b56 passed COMPLETE [workflow42115688372](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42115688372).
