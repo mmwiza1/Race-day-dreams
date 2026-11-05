@@ -21,7 +21,8 @@ complete software/visual acceptance, then owner review. Do not restart or discar
 - Live main inspected/fetched: `8796bc5d38360dcd83f5b6fa725cd0c03f4ad605` (unchanged).
 - Latest FULL green implementation: `7dc0b56f097c944ba38c0cf33800c81a7beb53a3`.
 - Canonical bot: `6a3eb10`, adopted with normal fast-forward while preserving new inventory files.
-- Following read-only inventory checkpoint: inspect actual HEAD/log/status for its commit SHA.
+- Inventory checkpoint: `0d633f9`; following expiry/PB-proof checkpoint: `1606ade`.
+- Following documentation checkpoint: inspect actual HEAD/log/status for its own SHA.
 - App0.11.0-test1/code15; schema18/rootJSON12/bodyMeasurements1/raw2/complete1.
   Earlier committed16/17/18 migrations are immutable; future changes must be additive.
 
@@ -102,6 +103,10 @@ instrumented methods, so total490/API remains. Local frozen-source domain658601/
 DetailRetention7496, Android domain/debug/lint/test compile PASS79tasks/1m10sec;72schema/9release/
 format93Kotlin/152Java pass. Logs retention-proof-* and InventoryEvidenceFixture.java under scratch.
 Its own final source still requires full Android execution; previous486green is source7dc only.
+The following documentation checkpoint is pushed with1606ade. Its new current-source matrix
+may supersede42119859259 because source changed; inspect actual PR18 workflows, not a blind rerun.
+Final extra local capture-validator15/source11/artwork14 and strict174/14guidance PASS.
+Working tree was clean after checkpoint commits; verify actual status before continuing.
 
 Verified green7dc APK artifact13457712005:52,618,954bytes, SHA256
 8fd6c063f413e851d0f7c79380141f35ae390acc4538ed71cb5409dcd7815388.

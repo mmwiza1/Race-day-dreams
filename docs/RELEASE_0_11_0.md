@@ -56,25 +56,16 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 ## Verification
 
-- Unchanged baseline8796bc5 passed640893domain checks,64schema tests,9release tests,
-  formatting and local Android build/lint/test compilation before implementation.
-- Baseline main42046671050 passed438instrumentation cases and155captures per API28/35/36.
-- Local current implementation:658597domain checks/45suites,72schema tests,9release-note
-  tests and15capture-validator tests; Android debug build/lint/instrumentation compilation pass.
-- Gym-only matrix runs exposed unsupported Java collection calls and new fixture entry/reset
-  errors; corrections preserve assertions. Complete final-source automated/visual acceptance
-  remains pending. Baseline/source results are distinguished in VERIFICATION.md.
-
-- Verified M2 workflow42100006847 passed465tests and188authentic captures per API28/35/36.
-  The following recovery/UI-refinement checkpoint still requires its own emulator and visual gate.
-
-- M3 workflow42103872457 ran472cases per API, with two actual failures each: the new capture
-  awaited the wrong focus mode, and a reduced-set proposal retained its old time estimate.
-  Both are corrected on the following body checkpoint; existing assertions/safeguards remain.
-  Its complete486case/203capture matrix must pass before any final-source acceptance claim.
-
-- Recovery/body source7dc0b56 passed complete workflow42115688372:486tests and203authentic
-  captures EACH API28/35/36. All203API35rawPNG identities verified against canonical6a3eb10;
-  recovery/body and refreshed recorded-results/milestones reviewed in light/dark/200%.
-- Following read-only inventory implementation compiles and passes lint locally; its four new
-  database tests need the next full Android matrix. No retention deletion is enabled.
+- The unchanged0.10.1 baseline was tested before implementation and its history is preserved.
+- Recovery/body source7dc0b56 passed [complete Android verification](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42115688372):486tests and203authentic captures EACH API28/35/36.
+  All203API35original PNG identities match canonical6a3eb10. Recovery/body and refreshed
+  records/milestones were directly reviewed in light/dark/200% text.
+- Following read-only inventory and consent-expiry safeguards pass658601domain checks across
+  45suites,72schema/migration tests,9release-note,15capture-validator,11route-source and14artwork
+  tests, pinned formatting and strict174exercise/14routine guidance checks. Actual Android debug
+  build, lint and instrumentation compilation pass locally. The four new database tests require
+  the following full490/API runtime gate before their acceptance.
+- The verified intermediate API35 debug APK is available in [workflow artifacts](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42115688372/artifacts/13457712005).
+  It is52,618,954bytes (+1.230% versus0.10.1), with SHA256
+  `8fd6c063f413e851d0f7c79380141f35ae390acc4538ed71cb5409dcd7815388`.
+  This is not the final0.11 delivery. No physical-device acceptance is claimed.
