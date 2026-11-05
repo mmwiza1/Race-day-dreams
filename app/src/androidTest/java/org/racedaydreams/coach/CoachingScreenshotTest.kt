@@ -1763,6 +1763,24 @@ class CoachingScreenshotTest {
                     if (kind == "progression") {
                         compose.onNodeWithText("Here's what to do").assertIsDisplayed()
                         compose.onNodeWithText("Keep my current target").assertIsDisplayed()
+                        // At 200% the entry viewport cannot contain every instruction. Capture
+                        // the full task and weight cards at their real scroll positions as well.
+                        compose
+                            .onNodeWithTag("progression-review")
+                            .performScrollToNode(
+                                hasText(
+                                    "Aim for moderate to challenging perceived effort.",
+                                    substring = true,
+                                )
+                            )
+                        compose.onNodeWithText("Here's what to do").assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Complete 2 sets of 4–6 repetitions.")
+                            .assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Rest for 3 minutes between sets.")
+                            .assertIsDisplayed()
+                        capture("strength-programme-progression-instructions$suffix")
                         compose
                             .onNodeWithTag("progression-review")
                             .performScrollToNode(
@@ -1773,6 +1791,24 @@ class CoachingScreenshotTest {
                                 hasText("suggested new weight reference is 82 kg", substring = true)
                             )
                             .assertIsDisplayed()
+                        compose
+                            .onNodeWithTag("progression-review")
+                            .performScrollToNode(
+                                hasText(
+                                    "not a weight you must lift or a recorded result",
+                                    substring = true,
+                                )
+                            )
+                        compose.onNodeWithText("About the weight").assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Your current target has no weight reference.")
+                            .assertIsDisplayed()
+                        compose
+                            .onNode(
+                                hasText("suggested new weight reference is 82 kg", substring = true)
+                            )
+                            .assertIsDisplayed()
+                        capture("strength-programme-progression-weight$suffix")
                         compose
                             .onNode(hasScrollToIndexAction())
                             .performScrollToNode(hasText("Save this suggestion for review"))

@@ -31,7 +31,13 @@ vector icons, rounded panels, restrained colours. Normal values compare side-by-
 font>=150% uses a vertical stack and unchanged facts become full-width rows. No horizontal
 scroll. Recommendation/evidence/freshness/save/activation calculations are untouched.
 
-Current git head b3a4195 is the canonical-only bot after08cf375. FULL workflow41939512123
+Current visual checkpoint3f2aef17576ee7b784e8f626c81b6a46bad6c2c3 is committed and pushed.
+Full workflow41999140735 is running the438-case/API and137-capture gate.
+A capture-only follow-up adds scrolled instruction and weight cards in all3modes, for143
+required captures. Follow-up instrumentation compilation PASSED (48tasks,8seconds),
+13capture-validator and9release tests pass; a fresh source-bound full matrix is needed. PR16 remains
+draft; its description now reflects this refinement. No uncommitted implementation was lost.
+Prior canonical-only bot b3a4195 follows08cf375. FULL workflow41939512123
 PASSED435 EACH API28/35/36,128captures, all build/lint/format/guidance gates. This validates
 all GPS/clarity/acknowledgement-race software BEFORE the requested visual refinement, not
 its appearance. Valid images/history were adopted by safe git ff; none were discarded.
@@ -43,14 +49,15 @@ validators. Full local refined gate PASSED:640888domain/38suites (instructions10
 9release,13capture-validator,76Kotlin/122Java format; actual Gradle domain/check, debug APK,
 lint and Android-test compilation final run1m34s/79tasks (initial refined run4m47s also green).
 Three new UI tests strengthen genuine-only highlights,200%stacking/keyboard and nested
-state restoration; expected438 cases/API. Capture set now137: preserve128, add collapsed
-controls, expanded lower context and actual evidence in light/dark/200% (15progression frames
-across5states x3modes). None of the137new-source images has yet been captured/reviewed.
+state restoration; expected438 cases/API. Capture set now143: preserve128, add collapsed
+controls, expanded lower context, actual evidence and scrolled instruction/weight cards
+in light/dark/200% (21progression frames
+across7states x3modes). None of the143new-source images has yet been captured/reviewed.
 
 NEXT CURRENT ACTIONS:
-1. Commit/push this refined UI checkpoint after checking diff/status; PR16 stays draft.
+1. Check workflow41999140735 for pushed3f2aef1; PR16 stays draft. Do not duplicate the commit.
 2. Inspect real438-case API28/35/36 gate, fix actual failures without weakening assertions.
-3. Adopt canonical137images from verified API35 source. OPEN all15progression frames and
+3. Adopt canonical143images from verified API35 source. OPEN all21progression frames and
    final live-coach/route representatives; compare with the owner's precise5November visual
    requirements. Do not reuse the old dense Advanced screenshots as visual acceptance.
 4. Finalise accurate README/release/SCREENSHOTS/VISUAL_REVIEW/VERIFICATION/handoff, then

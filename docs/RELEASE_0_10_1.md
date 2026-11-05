@@ -40,7 +40,7 @@ progress; the final verification and visual acceptance gates have not yet comple
   without retained run evidence and physical acceptance checks.
 - Locked-screen, urban multipath, battery saver, long-run and device comparisons
   require real Galaxy S24 testing; emulator results do not establish those passes.
-- The refined API28/35/36 gate and137 current-source screenshots/visual review remain pending.
+- The refined API28/35/36 gate and143 current-source screenshots/visual review remain pending.
 
 ## Data, privacy and licensing
 

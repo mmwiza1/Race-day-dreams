@@ -1,13 +1,14 @@
 # Current0.10.1 visual-refinement gate
 
 The5November owner review supersedes the prior dense Advanced design. New canonical capture
-requirements total137, retaining all128 previous scenes and adding collapsed progression
-controls, expanded lower context and supporting records in all3modes. Combined with primary
-and comparison captures, review15actual progression frames across the whole page and both
+requirements total143, retaining all128 previous scenes and adding collapsed progression
+controls, expanded lower context, supporting records and scrolled instruction/weight cards
+in all3modes. Combined with primary
+and comparison captures, review21actual progression frames across the whole page and both
 nested disclosure states. No old screenshot or consistency-only check proves fidelity.
 
 The pre-refinement08cf375 workflow41939512123 passed435 EACH API28/35/36 and128captures;
-botb3a4195 was safely adopted. Refined438-case matrix and137 current-source images remain
+botb3a4195 was safely adopted. Refined438-case matrix and143 current-source images remain
 pending. References stay separate; never replace them with generated captures or mock UI.
 
 # 0.10.1 capture checkpoints

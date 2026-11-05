@@ -11,7 +11,7 @@ workouts control. Current and suggested planning references are distinct from ac
 weights. Original vector symbols/rounded cards use the existing restrained palette. At200%
 comparison values and unchanged facts stack vertically without a horizontal scroller.
 
-Required current-build set:137images, including15progression frames (primary, collapsed
+Required current-build set:143images, including21progression frames (primary, scrolled instructions/weight, collapsed
 controls, expanded comparison, unchanged/context, supporting records x light/dark/200%).
 Open every progression frame, inspect the complete page and both disclosure states, then
 record the actual capture/source/CI identities. These revised captures remain pending.
