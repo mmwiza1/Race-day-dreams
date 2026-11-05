@@ -1,3 +1,16 @@
+# Six-month simulation checkpoint — local pure-domain verification
+
+Production-domain scenario suite passes4226assertions across three calendar-six-month histories.
+Observed76runs/25gym (100kg beginner),102/77 (87kg hybrid),102/51 (70kg experienced), each27weekly
+windows with one explicit recorded-data gap. Actual Gradle :domain:check PASS5tasks/32sec;
+662836total checks/46suites;97Kotlin/156Java formatting passes. This does not claim physiological
+outcomes, actual database pruning, physical GPS accuracy or S24 acceptance. See ATHLETE_SIMULATIONS_0_11.md.
+
+M5 d5f4651 runtime workflow42125758697 is still pending when recorded. Expected506cases and
+215captures/API. Preserve its actual results separately from pre-M5 full green490/API. Catalogue
+expansion/final-source software acceptance remains incomplete; no merge/publication claim yet.
+Owner-authorised automatic merge/post-merge verification applies AFTER full scope/green gates.
+
 # Current M5 retention checkpoint — local gates pass, full release incomplete
 
 Pre-M5 source90ec691 COMPLETE workflow42120919432 SUCCESS:490tests EACH API28/35/36,

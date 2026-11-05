@@ -209,6 +209,7 @@
     "app/src/androidTest/java/org/racedaydreams/data/DetailRetentionRepositoryTest.java",
     "app/src/main/java/org/racedaydreams/data/RecordingArchive.kt",
     "app/src/main/java/org/racedaydreams/coach/storage/*.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/StorageManagementScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/StorageManagementScreenTest.kt",
+    "domain/src/test/java/org/racedaydreams/domain/simulation/*.java"
   ]
 }

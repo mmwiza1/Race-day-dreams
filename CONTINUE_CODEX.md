@@ -35,7 +35,7 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, pending its own full matrix.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
-### IN-PROGRESS M5 recovery boundary — preserve all uncommitted files
+### M5 implementation checkpoint — d5f4651 pushed; runtime/visual gate pending
 
 Owner's latest instruction authorises automatic merge AFTER full0.11 acceptance, post-merge CI
 and verified development APK publication. AGENTS.md/permanent guidance updated; older no-auto-
@@ -81,6 +81,34 @@ GPX-refusal assertions, storage docs/privacy/S24 list. Required next: full506/AP
 and directly inspect actual new storage/confirmation frames. No destructive public/main delivery
 until safety gate passes. Then M6 catalogue quality + three six-month simulations + final release,
 all remaining full gates and authorised merge/post-merge publication. Do not stop at review-ready.
+
+### M6 simulations — implemented local checkpoint, catalogue still untouched
+
+SixMonthAthleteTestSuite adds4226assertions over5May–5November2026, all185days reviewed with
+real accepted synthetic GPS sample construction, actual working/warm-up logs, missing evidence,
+monthly explicitly selected manual weights, measured records, exact-task references, hybrid
+future programme previews/conflicts, optional lighter-week proposal and retention consent.
+Histories: beginner100kg76runs/25gym; hybrid87kg102runs/77gym; experienced70kg102runs/51gym;
+each27weekly windows, one explicit missing-evidence week. No physiological outcome/device claim.
+A separate older backlog tests eligibility; beginner's old1.5km is NOT a previous5K completion.
+See docs/ATHLETE_SIMULATIONS_0_11.md for exact integration/limitations.
+
+Local sh scripts/test-domain.sh + actual Gradle :domain:check PASS5tasks/32sec, current total
+662836checks/46suites;97Kotlin/156Java formatting passes. Current sim source/config/docs are a
+following checkpoint; inspect actual status/HEAD. Logs athlete-six-month-* retain initial compile
+fixes (Double prescription distance and Proposal.proposed accessor), not production-rule changes.
+
+M5 source d5f4651 was committed/pushed. Complete runtime workflow42125758697 is RUNNING,
+expected506/API28/35/36 and215captures; format/guidance passed, all3Android cases executing when
+last checked. Do NOT call cleanup runtime/visual gate green until actual conclusion/reports.
+After it completes, adopt any canonical bot safely and inspect all12new storage/confirmation
+frames. Preserve this simulation source while adopting bot. Avoid cancelling an active matrix
+with gratuitous documentation pushes; a new-source regression legitimately needs its own gate.
+
+M6 catalogue growth is STILL NOT IMPLEMENTED (174canonical/14routine). No new illustration asset
+or catalogue metadata was added in the simulation checkpoint. Remaining scope is NOT reduced:
+quality-complete selective growth toward220–250, full final source gates/screenshots/APK/docs,
+then owner-authorised automatic merge/post-merge main/rolling development publication. No0.12.
 
 ### Completed implementation and current verification
 

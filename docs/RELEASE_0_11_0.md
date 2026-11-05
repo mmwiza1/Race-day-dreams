@@ -80,3 +80,8 @@ behaviour only; the complete agreed release is not yet ready for review.
   retention source passes local658610domain checks,75schema,9release,16capture-validator,
   formatting and actual debug build/lint/test compilation. Its506test/215capture Android matrix
   is still required; no cleanup runtime or visual acceptance is implied by compilation.
+
+- Three deterministic six-month athlete histories now pass4226integration assertions using
+  production domain calculations (662836total/46suites). They validate unknown evidence,
+  conservative advice, user choice and history/retention semantics, not physiological outcomes.
+  See ATHLETE_SIMULATIONS_0_11.md; final catalogue and Android/visual release gates remain pending.
