@@ -13,57 +13,73 @@ The app recommends. The athlete decides. The plan adapts.
 
 ## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
-LATEST CHECKPOINT —5 November2026,14:15UTC
+LATEST MERGED CHECKPOINT —5 November2026
 
-Branchfix/0.10.1-screenshot-test-dispatcher; PR17 DRAFT; canonical HEAD `ab95c7f78dc35fe0d51f1d1c06e83be525c0bcbe`.
-Source `a75b9a5dc870e01598d7229c195d528a84405e57` complete gate42035888968 is GREEN:438cases EACH API28/35/36 and155captures
-EACH, format/guidance/domain/schema/release/build/lint all pass. All3Android logs inspected.
-Domain640893checks/38suites; schema64/release9/capture-validator13;174canonical/14routine.
-Fingerprint `5c31aeca91fddbf8a570d173369df3c533bc2d0c7d75855eba48b1652e42bd0e`.
-API35screens13420260240 ZIP SHA256 `960a325fae98448912186499a61053ecd787cad09e0cf573c4fe4af704a67346`.
-All155PNG+2metadata blobs and exact bot parent/tree/unsigned commit verified and adopted.
-Current main6f73afe; PR16 merged75ab7c5. Do not reset/reopen/reimplement accepted app work.
+PR16 is merged75ab7c5; focused follow-up PR17 is MERGED `239d246bfd115ee6c255a4501a41bdc517f1636e`.
+GitHub merged flag/main ref and exact signed merge object/parent/tree verified. Main now
+contains all0.10.1 implementation and the corrected production-window/footer fixture.
+No app implementation remains. Do not reopen PR16/17, reset history or start0.11.
+This authorised post-merge update touches ONLY CONTINUE_CODEX.md and VERIFICATION.md;
+its documentation-only main tip may be beyond the squash merge. Always inspect live Git.
 
-ALL33fresh progression captures opened directly,11states×light/dark/200%. Full200%expanded
-footer now visibly shows warning+Save; old missing-footer sign-off was corrected, not hidden.
-Task-first card, changed/unchanged targets, separate collapsed history, optional82kg reference
-and actual80kg evidence are clear. London/Paris/dark Dream representatives also reviewed.
-No bitmap pixel-match claim with an unavailable progression reference. Physical unperformed.
+VERIFIED SOFTWARE/VISUAL BOUNDARIES
+-Final PR17 head0f30828e245a20e62c9ac171ee083de1bead2dd1 passed COMPLETE workflow42043160883:
+ 438cases EACH API28/35/36,155captures/API, domain/schema/backup/build/lint/format/release/
+ guidance all green. All3successful Android logs inspected. No review comments/conflicts.
+-Earlier sourcea75b9a5 passed COMPLETE42035888968 with the same438/API155capture gate.
+ Domain640893checks/38suites; schema64/release9/capture-validator13;174exercise/14routine.
+-Canonicalab95c7f78dc35fe0d51f1d1c06e83be525c0bcbe contains exact155API35 original PNGs.
+ Sourcea75b9a5dc870e01598d7229c195d528a84405e57; fingerprint
+ 5c31aeca91fddbf8a570d173369df3c533bc2d0c7d75855eba48b1652e42bd0e.
+ Artifact13420260240 ZIP SHA256960a325fae98448912186499a61053ecd787cad09e0cf573c4fe4af704a67346.
+ All155PNG+2metadata Git identities, parent/tree/unsigned bot commit independently verified.
+ Final docs/canonical publication was a verified no-op on the unchanged source fingerprint.
+-All33fresh progression views opened directly:11states×light/dark/200%. Full expanded
+ activation warning AND Save visibly fit at200%; the older missing-footer sign-off was
+ corrected. Changed/unchanged targets and nested actual evidence are clear. Suggested82kg
+ reference is optional, separate from logged80kg. London/Paris/dark Dream views checked.
+ No unavailable reference-bitmap pixel-match claim; no edited screenshots/mock UI.
+-Production Android main/lifecycle windows in the integration fixture fixed the unconfined
+ draw race and failed queued-clock workaround. Main creation asserted; all original readiness/
+ content guards retained. Isolated artwork component clocks unchanged. Full footer bounds
+ strengthened. Prior failed244e/7604 runs are history, not passes.30min step/10min method
+ bounds remain. No production engine/data/dependency/permission change in the follow-up.
+-Version0.10.1-test1/code14. Schema15/rootJSON9/authoring2/strength2/raw2/complete1 unchanged.
+ CI APK51,979,576bytes(+114,896/+0.22%versus0.10). No INTERNET/BACKGROUND_LOCATION,
+ backend/account/analytics/LLM dependency. No stable production tag.
 
-PR17 is ONLY fixture/workflow/docs/canonical assets: production Android main/lifecycle window
-recomposer scoped through@Before/test/@After under outer Compose rule; main creation asserted.
-All original async readiness/content guards retained. Isolated artwork component clocks KEEP
-StandardTestDispatcher. Expanded footer uses measured warning scroll plus full warning/Save
-bounds. Prior queued-clock attempts244e0b0/7604dd4 FAILED/stalled, not counted as green.
-30min step/600000ms per-method bounds remain; no weakened assertions/cases/capture gate.
-No app/recorder/engine/data/dependency/permission change. Schema15/rootJSON9/authoring2/
-strength2/raw2/complete1 unchanged. No INTERNET/BACKGROUND_LOCATION/backend/account/analytics.
-CI APK51,979,576bytes(+114,896/+0.22%versus0.10). No0.11/stable tag scope.
+DELIVERY VERIFICATION / SAFE CONTINUATION
+The post-merge main workflow and rolling development release MUST be inspected live.
+This handoff records the confirmed merge and successful final-source gates; it does not
+invent a post-merge result not yet observed when the metadata was written. Use latest
+main Actions run and release Build information as authoritative for its exact tested tip.
+If latest main/publisher is pending, finish that verification. If red, inspect actual logs
+and use a focused follow-up PR, never rewrite main or bypass gates. If green and rolling
+APK/checksum match actual main, software delivery is complete and ONLY physical checks
+below remain. Do not restart completed implementation or generate another doc-only commit
+just to encode its own SHA. No0.11 features authorised.
 
-CURRENT ACTION: final observed docs are being committed. They may already be pushed;
-inspect actual HEAD/status/PR/latest CI rather than duplicating. Source fingerprint stays
-unchanged by docs, so canonical publication should be a verified no-op on final-head CI.
+Expected rolling download after successful main publication:
+https://github.com/mmwiza1/Race-day-dreams/releases/tag/development
+Race-Day-Dreams-0.10.1-test1.apk plus its.sha256; debug-signed TEST build, not stable/store.
+Do not claim publication until assets/body commit/latest successful main workflow agree.
+No permanent semantic-version tag is required or authorised by this merge.
 
-NEXT EXACT TASKS
-1. Commit/push final docs if still local (CONTINUE,VERIFICATION,SCREENSHOTS,visual review,
-   release0.10.1); release9/metadata checks first. Use connected GitHub expected-head lease;
-   CLI auth unavailable. Exact blob/tree/commit import, no reset/force/discard.
-2. Require COMPLETE final exact-head API28/35/36 gate green; do not merge pending/red.
-   Then ready/squash merge PR17 under master's explicit post-merge-failure recovery authority.
-3. Verify actual resulting main and post-merge workflow. Make authorised handoff-only
-   post-merge metadata update if required, then verify latest main full gate and rolling
-   development APK/checksum match that actual main. Rolling release STILL0.10.0 at this
-   pre-merge boundary; do not claim0.10.1 published until verified.
-4. Stop after verified0.10.1software release checkpoint. S24 GPS/outdoor/urban/known-route/
-   lock/background/battery/long-run/recovery/GPX/HC/audio/BLE/human TalkBack UNPERFORMED;
-   TEST_BUILD.md is human checklist. No physical claim, no stable production tag.
+PHYSICAL GALAXY S24 —ALL UNPERFORMED
+Outdoor/urban/known-distance GPS, locked-screen/background/battery/pause/long-run,
+interruption/recovery, GPX comparison, real Health Connect, audio/music/calls/BLE and human
+TalkBack. TEST_BUILD.md has the practical checklist. Synthetic/emulator passes do not
+prove outdoor accuracy or the owner's particular S24 cause. Physical acceptance follows
+software merge; never fabricate it. After verified delivery, stop at this release.
 
-Binary artifact: FileService signed URL expires quickly, not Sediment. First URL expired
-and returned explicit AzureAuthenticationFailed; ordinary refreshed tool URL succeeded.
-ZIP/raw PNGs are in scratch/rdd0101/window-api35.zip and window-api35; verified157files
-in window-verified. Never UTF8-fetch PNG/dump huge canonical base64 logs. Signed main merge
-may need exact signature import; unsigned checkpoints use import-exact-commit.py with
-explicit refs/remotes/origin/fix/0.10.1-screenshot-test-dispatcher. Preserve valid local work.
+Recovery tools: CLI Git auth unavailable; connected GitHub APIs with expected-head leases
+and exact Git object imports preserve work. Signed merge retains final signature continuation
+newline; verify object SHA before refs. Unsigned import-exact-commit.py takes explicit tracking
+ref. Binary artifact tool yields short-lived FileService signed URL, not Sediment. Refresh
+normally after explicit expiry; verify ZIP/Git identities. Original ZIP/155PNGs retained in
+scratch/rdd0101/window-api35.zip and window-api35. Never dump huge canonical base64 logs,
+UTF8-fetch PNG, reset/force/discard valid work. Local software emulator had no usable ADB
+home/KVM and was stopped; no local instrumentation pass was claimed.
 
 ## Historical0.10.1 implementation and verification
 
