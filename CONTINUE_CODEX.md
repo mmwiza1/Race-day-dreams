@@ -46,8 +46,15 @@ No clipping/overlap inside layout; normal viewport cuts are reachable through sc
 VISUAL FOLLOW-UP IN PROGRESS: at200% the open-evidence viewport ends before the lower
 safeguards and save action. Add6real captures (safeguards + expanded actions, all3modes),
 for155required images/33progression frames. Application/recommendation code unchanged.
-Current local follow-up needs commit/push, fresh438-case/API155-capture gate and review of
-those6new frames. Keep PR16 DRAFT until complete. No false final visual acceptance.
+Follow-up09360a2c167e35c53430ccfc0ddf26ed496d714b is committed/pushed through the
+connected GitHub API with expected-head lease and an identical staged tree/commit locally.
+Workflow42006209330 ran438 EACH API28/35/36: exactly1new lower-capture failure each,
+other437passed; canonical publication blocked. Scrolling to the final safeguards paragraph
+left its earlier heading above the viewport (same line1898 on all3). The correction aligns
+the last actual set using measured content/viewport coordinates and then asserts the set,
+heading AND final safeguard paragraph visible before capture. No assertions removed, no app
+code changed. Local format and Android-test compilation PASS (48tasks/4seconds).
+Commit/push this measured-anchor correction and obtain a fresh155-capture full matrix. Keep PR16 DRAFT until complete. No false final visual acceptance.
 
 Git CLI authentication stopped working after the green run. Connected GitHub tools work.
 Downloaded API35artifact via github_download_workflow_artifact (not CLI), verified ZIP
@@ -58,8 +65,9 @@ Use normal Git only if auth returns; otherwise typed GitHub blob/tree/commit/upd
 expected-head lease, then import identical verified commit locally. Never force/rewrite.
 
 NEXT CURRENT ACTIONS:
-1. Finish format/Android-test compile and validator/release checks for6extra footer captures;
-   commit via connected GitHub tools if CLI remains unavailable. Preserve all completed work.
+1. Commit/push the measured lower-evidence anchor correction through GitHub API with lease.
+  09360a2 is already committed; do not duplicate it. No reset/source loss.
+   Then inspect the new workflow;42006209330 is a diagnosed failed boundary, not acceptance.
 2. Inspect fresh438-case/API155-capture gate; fix genuine failures without weakening checks.
 3. Adopt canonical155images with matching fingerprint. OPEN6new safeguards/actions frames,
    recheck representative progression states, then finalise visual/verification/release docs.

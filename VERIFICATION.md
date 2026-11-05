@@ -1,3 +1,12 @@
+## 5 November2026 — lower-evidence capture anchor corrected
+
+Source09360a2 workflow42006209330 ran438 EACH API28/35/36. Exactly one new capture failed
+on each; other437passed each. All stack traces identify Calculation & safeguards visibility
+after scrolling to its final paragraph. The correction uses the last actual set's measured
+position relative to the viewport, then checks the set, heading and final paragraph together.
+It does not shrink UI or remove assertions. Format and actual Android-test compilation pass
+(48tasks/4seconds); fresh full matrix/155captures still required. No application code changed.
+
 ## 5 November2026 — refined149-capture software and visual gate passed
 
 Source9180b34676ccf86299dddd99ff9690dc06c47bf4 passed COMPLETE workflow42002407269:

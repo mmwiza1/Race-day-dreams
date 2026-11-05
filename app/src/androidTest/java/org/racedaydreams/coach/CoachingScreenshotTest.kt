@@ -2,6 +2,7 @@ package org.racedaydreams.coach
 
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -1890,12 +1891,22 @@ class CoachingScreenshotTest {
                         .assertIsDisplayed()
                     compose.onNodeWithText("82 kg recorded · 6 repetitions").assertDoesNotExist()
                     capture("strength-programme-progression-evidence$suffix")
+                    // The evidence is one tall lazy item. Align its last actual set using
+                    // measured content coordinates: scrolling to its final paragraph can
+                    // legitimately leave the preceding heading above the viewport.
+                    alignProgressionCapture(
+                        compose.onAllNodesWithText("80 kg recorded · 6 repetitions").onLast()
+                    )
                     compose
-                        .onNodeWithTag("progression-review")
-                        .performScrollToNode(
+                        .onAllNodesWithText("80 kg recorded · 6 repetitions")
+                        .onLast()
+                        .assertIsDisplayed()
+                    compose.onNodeWithText("Calculation & safeguards").assertIsDisplayed()
+                    compose
+                        .onNode(
                             hasText("Only recent exact-exercise working sets", substring = true)
                         )
-                    compose.onNodeWithText("Calculation & safeguards").assertIsDisplayed()
+                        .assertIsDisplayed()
                     capture("strength-programme-progression-safeguards$suffix")
                     compose
                         .onNodeWithTag("progression-review")
@@ -2051,6 +2062,18 @@ class CoachingScreenshotTest {
             "Capture heading is not in the upper viewport: $text at $top",
             top in 100f..300f,
         )
+    }
+
+    private fun alignProgressionCapture(node: SemanticsNodeInteraction) {
+        node.performScrollTo()
+        compose.waitForIdle()
+        val viewport = compose.onNodeWithTag("progression-review")
+        val delta =
+            node.fetchSemanticsNode().positionInRoot.y -
+                viewport.fetchSemanticsNode().positionInRoot.y -
+                16f * context.resources.displayMetrics.density
+        viewport.performSemanticsAction(SemanticsActions.ScrollBy) { scroll -> scroll(0f, delta) }
+        compose.waitForIdle()
     }
 
     private fun capture(name: String, anchor: String? = null) {
