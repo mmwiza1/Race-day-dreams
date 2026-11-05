@@ -1092,6 +1092,42 @@ class CoachingScreenshotTest {
         val today = LocalDate.now()
         SqlitePrimaryFocusRepository(context)
             .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        // Today's authored session makes the Strength Home action an actual Start workout.
+        val programmes = SqliteStrengthProgrammingRepository(context)
+        val programme =
+            StrengthProgrammeGenerator()
+                .generate(
+                    StrengthProgrammeGenerator.Request(
+                        "recovery-capture",
+                        Instant.now(),
+                        "Strength foundation",
+                        StrengthProgramme.Settings(
+                            GymProgramme.Goal.STRENGTH,
+                            GymProgramme.Priority.STRENGTH_FIRST,
+                            GymProgramme.Experience.INTERMEDIATE,
+                            DayOfWeek.values().toSet(),
+                            3,
+                            60,
+                            ExerciseMetadata.Equipment.values().toSet(),
+                        ),
+                        today,
+                        6,
+                        "full-body-3",
+                        org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH,
+                        emptySet(),
+                        null,
+                        emptySet(),
+                        emptySet(),
+                        false,
+                    )
+                )
+        Assert.assertTrue(programme.workouts().any { it.date() == today })
+        programmes.activate(
+            programme,
+            programmes.currentReference(),
+            "recovery-capture-accept",
+            emptyList(),
+        )
         val bench = ExerciseCatalog.definition("bench-press").exercise()
         for (days in listOf(1L, 5L, 8L)) CoachingStore(context)
             .saveStrength(
@@ -1129,7 +1165,7 @@ class CoachingScreenshotTest {
                 shell("settings put system font_scale $scale")
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
-                awaitHomeReady(true)
+                awaitHomeReady(true, "Start workout")
                 compose
                     .onNode(
                         (hasText("Strength") or hasContentDescription("Strength")) and
@@ -2617,7 +2653,10 @@ class CoachingScreenshotTest {
             }
     }
 
-    private fun awaitHomeReady(strength: Boolean) {
+    private fun awaitHomeReady(
+        strength: Boolean,
+        expectedAction: String = if (strength) "Log today's workout" else "Run now",
+    ) {
         compose.waitUntil(20000) {
             // Use this scenario's model as well as semantics: a retiring activity's
             // Today node must not satisfy readiness while the new activity is loading.
@@ -2643,10 +2682,7 @@ class CoachingScreenshotTest {
                     .fetchSemanticsNodes()
                     .isNotEmpty() &&
                 compose
-                    .onAllNodes(
-                        hasText(if (strength) "Log today's workout" else "Run now") and
-                            hasClickAction()
-                    )
+                    .onAllNodes(hasText(expectedAction) and hasClickAction())
                     .fetchSemanticsNodes()
                     .isNotEmpty()
         }

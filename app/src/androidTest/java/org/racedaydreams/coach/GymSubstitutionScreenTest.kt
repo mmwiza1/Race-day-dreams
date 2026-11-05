@@ -148,6 +148,8 @@ class GymSubstitutionScreenTest {
         assertTrue(io { CoachingStore(application).strength().isEmpty() })
         enter("Actual load · kg", "30")
         enter("Actual repetitions", "8")
+        // Stabilize the real IME viewport before saving and checking the updated counter.
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithText("Save actual set").performScrollTo().performClick()
         await { execution().actualSets().size == 2 }
         val entered = execution().actualSets().last()

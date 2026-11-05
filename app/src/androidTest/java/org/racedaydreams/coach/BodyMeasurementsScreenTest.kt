@@ -108,6 +108,12 @@ class BodyMeasurementsScreenTest {
             Assert.assertEquals("87", weightEntry)
         }
         compose.onNodeWithText("Chosen for general guidance").performScrollTo().assertIsDisplayed()
+        Assert.assertFalse(
+            "Body evidence dates must use the existing UK presentation",
+            Regex("Text = .*\\b[0-9]{4}-[0-9]{2}-[0-9]{2}")
+                .containsMatchIn(compose.onRoot(useUnmergedTree = true).printToString()),
+        )
+
         compose
             .onNodeWithText(
                 "Health Connect is unavailable here. Manual measurements and training remain available."

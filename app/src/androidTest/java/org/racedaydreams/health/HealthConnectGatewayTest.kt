@@ -133,8 +133,7 @@ class HealthConnectGatewayTest : AndroidTestCase() {
         }
     }
 
-    @org.junit.Test
-    fun heightAndWeightRemainExplicitIndependentReadPermissions() {
+    fun testHeightAndWeightRemainExplicitIndependentReadPermissions() {
         org.junit.Assert.assertEquals(
             "android.permission.health.READ_HEIGHT",
             HealthConnectGateway.HEIGHT_PERMISSION,

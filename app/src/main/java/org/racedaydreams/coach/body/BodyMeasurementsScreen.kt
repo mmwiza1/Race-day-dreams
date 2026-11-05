@@ -13,6 +13,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.time.*
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.body.*
 import org.racedaydreams.health.HealthConnectGateway
@@ -241,7 +243,7 @@ fun BodyMeasurementsContent(
                     )
                     Text(bodySource(row.provider(), row.origin()))
                     Text(
-                        "Recorded ${row.at()} · stored offset ${row.offset()}",
+                        "Recorded ${bodyEvidenceTime.format(row.at())} · stored offset ${row.offset()}",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     if (
@@ -271,8 +273,8 @@ fun BodyMeasurementsContent(
                     )
                     Text(bodySource(row.provider(), row.origin()))
                     Text(
-                        "Recorded ${row.at()}" +
-                            (row.importedAt()?.let { " · imported $it" }
+                        "Recorded ${bodyEvidenceTime.format(row.at())}" +
+                            (row.importedAt()?.let { " · imported ${bodyEvidenceTime.format(it)}" }
                                 ?: if (row.provider() == "manual") " · manually entered"
                                 else " · import time unavailable"),
                         style = MaterialTheme.typography.bodySmall,
@@ -320,5 +322,10 @@ private fun bodySource(provider: String, origin: String?): String =
     else "Source: $provider" + (origin?.takeIf { it.isNotBlank() }?.let { " · $it" } ?: "")
 
 private fun bodyHeightDate(row: BodyHeight): String =
-    if (row.offset() == null) "${row.at()} · original time zone unavailable"
+    if (row.offset() == null)
+        "${bodyEvidenceTime.format(row.at())} · original time zone unavailable"
     else friendlyDate(row.at().atOffset(row.offset()).toLocalDate())
+
+private val bodyEvidenceTime =
+    DateTimeFormatter.ofPattern("d MMMM uuuu 'at' HH:mm:ss 'UTC'", Locale.UK)
+        .withZone(ZoneOffset.UTC)
