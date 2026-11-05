@@ -1,5 +1,22 @@
 ## 4 November 2026 — complete Strength Programming2.0 software gate
 
+## Requested visual refinement — local gate5November2026
+
+Owner review rejected the repetitive Advanced presentation; earlier visual notes are not final
+acceptance. Compact genuine differences, unchanged facts, short reason and a second evidence
+disclosure are now implemented without changing calculations or activation/evidence safeguards.
+Normal and large-text layouts use appropriate compare/stack arrangements. New domain tests
+cover genuine-only differences, missing versus zero, non-repetition tasks and separate RPE/RIR.
+
+Full local refined source PASSES640888domain/38suites,64schema,9release,13capture-validator,
+pinned76Kotlin/122Java formatting and actual Gradle domain/check, debug APK, lint and Android
+test compilation (final79tasks,1m34s). Expected new matrix438cases/API and137captures must
+still execute. Actual complete-page light/dark/200% visual review remains mandatory.
+
+The prior reliability source08cf375 has COMPLETE green workflow41939512123:435 EACH
+API28/35/36,128captures and strict guidance. This confirms the idle-before-form-clear fix;
+it does not accept the newly requested visual design. Canonicalb3a4195 safely adopted.
+
 ## Final-source API28 failure — 5 November2026
 
 Workflow41936237874 on46ecbd3 passed435 EACH API35/36. API28 ran435 with one failure:

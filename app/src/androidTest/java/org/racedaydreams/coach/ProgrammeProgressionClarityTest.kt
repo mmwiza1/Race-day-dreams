@@ -109,7 +109,7 @@ class ProgrammeProgressionClarityTest {
         install(review())
         compose.onNodeWithText("Your workout suggestion").assertIsDisplayed()
         compose.onNodeWithText("Here's what to do").assertIsDisplayed()
-        compose.onNodeWithText("Current target").assertDoesNotExist()
+        compose.onNodeWithText("What's changing?").assertDoesNotExist()
         scroll("Advanced details")
         val disclosure = compose.onNodeWithText("Advanced details")
         disclosure
@@ -133,14 +133,14 @@ class ProgrammeProgressionClarityTest {
         disclosure.assert(
             SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded")
         )
-        scroll("Current target")
-        compose.onNodeWithText("Current target").assertIsDisplayed()
+        scroll("What's changing?")
+        compose.onNodeWithText("What's changing?").assertIsDisplayed()
         scroll("Advanced details")
         disclosure.performClick()
         disclosure.assert(
             SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed")
         )
-        compose.onNodeWithText("Current target").assertDoesNotExist()
+        compose.onNodeWithText("What's changing?").assertDoesNotExist()
     }
 
     @Test
@@ -185,6 +185,12 @@ class ProgrammeProgressionClarityTest {
             .assertExists()
         scroll("Advanced details")
         compose.onNodeWithText("Advanced details").performClick()
+        scroll("View supporting workouts")
+        compose
+            .onNodeWithText("View supporting workouts")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed"))
+        compose.onNodeWithText("80 kg recorded · 6 repetitions").assertDoesNotExist()
+        compose.onNodeWithText("View supporting workouts").performClick()
         scroll("Supporting workouts")
         compose.onAllNodesWithText("80 kg recorded · 6 repetitions").assertCountEquals(2)
         compose.onNodeWithText("82 kg recorded · 6 repetitions").assertDoesNotExist()
@@ -234,11 +240,11 @@ class ProgrammeProgressionClarityTest {
     fun missingEffortOffersNoSaveOrInventedEffortAtLargeDarkText() {
         install(review(effort = false), largeDark = true)
         compose.onNodeWithText("Save this suggestion for review").assertDoesNotExist()
-        scroll("Why are we suggesting this?")
+        scroll("Why this suggestion?")
         compose.onNodeWithText("Missing effort remains unknown.").assertExists()
         scroll("Advanced details")
         compose.onNodeWithText("Advanced details").performClick()
-        scroll("Current target")
+        scroll("What's staying the same?")
         compose.onNodeWithText("No effort target is specified.").assertExists()
     }
 
@@ -293,11 +299,10 @@ class ProgrammeProgressionClarityTest {
             .assertIsDisplayed()
         scroll("Advanced details")
         compose.onNodeWithText("Advanced details").performClick()
-        scroll("Current target")
-        compose
-            .onAllNodes(hasText("RIR (repetitions in reserve): 2–3", substring = true))
-            .assertCountEquals(2)
-        compose.onAllNodes(hasText("RPE (rating", substring = true)).assertCountEquals(0)
+        scroll("What's staying the same?")
+        compose.onAllNodesWithText("RIR 2–3").assertCountEquals(1)
+        compose.onNodeWithText("RIR = repetitions left before failure.").assertExists()
+        compose.onAllNodes(hasText("RPE ", substring = true)).assertCountEquals(0)
     }
 
     @Test
@@ -314,7 +319,85 @@ class ProgrammeProgressionClarityTest {
         compose
             .onNodeWithText("Advanced details")
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded"))
-        scroll("Current target")
-        compose.onNodeWithText("Current target").assertIsDisplayed()
+        scroll("What's changing?")
+        compose.onNodeWithText("What's changing?").assertIsDisplayed()
+    }
+
+    @Test
+    fun onlyGenuineChangesAreHighlightedAndUnchangedTargetsAppearOnce() {
+        install(review())
+        scroll("Advanced details")
+        compose.onNodeWithText("Advanced details").performClick()
+        scroll("What's changing?")
+        compose.onNodeWithTag("change-weight-reference").assertExists()
+        compose.onNodeWithTag("change-sets").assertDoesNotExist()
+        compose.onNodeWithTag("change-effort").assertDoesNotExist()
+        compose.onNodeWithTag("unchanged-sets").assertExists()
+        compose.onNodeWithTag("unchanged-repetitions").assertExists()
+        compose.onNodeWithTag("unchanged-effort").assertExists()
+        compose.onNodeWithTag("unchanged-rest").assertExists()
+        compose.onAllNodesWithText("RPE 5–7/10").assertCountEquals(1)
+        compose.onNodeWithText("Current target").assertDoesNotExist()
+        compose.onNodeWithText("Proposed target").assertDoesNotExist()
+        scroll("View supporting workouts")
+        compose.onNodeWithText("Actual logged working sets").assertDoesNotExist()
+    }
+
+    @Test
+    fun largeTextStacksComparisonAndSupportingDisclosureAcceptsKeyboard() {
+        install(review(), largeDark = true)
+        scroll("Advanced details")
+        compose.onNodeWithText("Advanced details").performClick()
+        scroll("What's changing?")
+        val before =
+            compose.onNodeWithTag("change-weight-reference-current").getUnclippedBoundsInRoot()
+        val after =
+            compose.onNodeWithTag("change-weight-reference-suggested").getUnclippedBoundsInRoot()
+        assertTrue("200% values must stack vertically", after.top >= before.bottom)
+        scroll("View supporting workouts")
+        compose.runOnIdle { assertTrue(inputModeManager.requestInputMode(InputMode.Keyboard)) }
+        compose.waitForIdle()
+        val supporting = compose.onNodeWithText("View supporting workouts")
+        supporting.performSemanticsAction(SemanticsActions.RequestFocus) { assertTrue(it()) }
+        supporting.assertIsFocused().performKeyInput { pressKey(Key.Enter) }
+        supporting.assert(
+            SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded")
+        )
+        scroll("Supporting workouts")
+        compose.onNodeWithText("Actual logged working sets").assertExists()
+        scroll("View supporting workouts")
+        supporting.performClick()
+        supporting.assert(
+            SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed")
+        )
+        compose.onNodeWithText("Actual logged working sets").assertDoesNotExist()
+    }
+
+    @Test
+    fun nestedDisclosureRestoresAndClosesWhenAdvancedIsCollapsed() {
+        val restoration = StateRestorationTester(compose)
+        val review = review()
+        restoration.setContent {
+            MaterialTheme { ProgrammeProgressionContent(review, false, null, {}, {}) }
+        }
+        scroll("Advanced details")
+        compose.onNodeWithText("Advanced details").performClick()
+        scroll("View supporting workouts")
+        compose.onNodeWithText("View supporting workouts").performClick()
+        restoration.emulateSavedInstanceStateRestore()
+        scroll("View supporting workouts")
+        compose
+            .onNodeWithText("View supporting workouts")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded"))
+        scroll("Advanced details")
+        compose.onNodeWithText("Advanced details").performClick()
+        compose.onNodeWithText("View supporting workouts").assertDoesNotExist()
+        scroll("Advanced details")
+        compose.onNodeWithText("Advanced details").performClick()
+        scroll("View supporting workouts")
+        compose
+            .onNodeWithText("View supporting workouts")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed"))
+        compose.onNodeWithText("Actual logged working sets").assertDoesNotExist()
     }
 }

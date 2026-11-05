@@ -142,3 +142,14 @@ checks remain intact; activation still requires a separate athlete choice. Keep 
 target dismisses the review without saving. The underlying conservative calculations, retained
 history and backup formats are unchanged. See VERIFICATION.md for the current gate status;
 physical Galaxy S24 accessibility acceptance remains unperformed.
+
+### Compact progression review (5November refinement)
+
+Advanced now highlights only genuine target differences and lists unchanged sets, task,
+effort and rest once. These are read-only comparisons of the preserved target and the
+existing optional proposal, never values inferred from historical weights. A second
+collapsed View supporting workouts control contains retained exact-exercise working sets,
+original effort evidence, the full calculation reason and safeguards. At large font sizes,
+comparison values and unchanged labels stack naturally. Both disclosures retain accessible
+state and support keyboard/touch. Calculation, freshness checks and separate activation
+remain unchanged. Final source-bound captures and visual acceptance are recorded separately.

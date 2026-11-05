@@ -105,10 +105,99 @@ public final class StrengthPrescriptionText {
                                     : ""));
         }
         lines.add(
-                "A reference is an optional planning guide, not a weight you must lift or a"
-                        + " recorded result. Choose a manageable weight for the intended task and"
-                        + " effort; record what you actually do.");
+                "A reference is optional, not a weight you must lift or a recorded result."
+                        + " Choose a manageable weight and record what you actually do.");
         return List.copyOf(lines);
+    }
+
+    /** A display comparison, never a recommendation or an inference from logged weights. */
+    public record TargetComparison(
+            String key, String label, String currentValue, String proposedValue, boolean changed) {}
+
+    public static List<TargetComparison> comparisons(
+            GymWorkoutDefinition.Slot slot, GymWorkoutDefinition.Target proposed) {
+        var current = slot.target();
+        var next = proposed == null ? current : proposed;
+        if (current == null && next == null) return List.of();
+        var rows = new ArrayList<TargetComparison>();
+        row(
+                rows,
+                "sets",
+                "Sets",
+                current == null ? null : number(current.sets()),
+                next == null ? null : number(next.sets()));
+        if (current != null && current.minimumReps() != null
+                || next != null && next.minimumReps() != null)
+            row(rows, "repetitions", "Repetitions", reps(current), reps(next));
+        if (current != null && current.seconds() != null || next != null && next.seconds() != null)
+            row(
+                    rows,
+                    "duration",
+                    "Time per set",
+                    current == null || current.seconds() == null
+                            ? null
+                            : duration(current.seconds()),
+                    next == null || next.seconds() == null ? null : duration(next.seconds()));
+        if (current != null && current.metres() != null || next != null && next.metres() != null)
+            row(
+                    rows,
+                    "distance",
+                    "Distance per set",
+                    current == null || current.metres() == null
+                            ? null
+                            : number(current.metres()) + " metres",
+                    next == null || next.metres() == null
+                            ? null
+                            : number(next.metres()) + " metres");
+        row(
+                rows,
+                "effort",
+                "Effort",
+                compactEffort(current == null ? null : current.effort()),
+                compactEffort(next == null ? null : next.effort()));
+        row(
+                rows,
+                "rest",
+                "Rest",
+                current == null || current.restSeconds() == null
+                        ? null
+                        : duration(current.restSeconds()),
+                next == null || next.restSeconds() == null ? null : duration(next.restSeconds()));
+        if (current != null && current.referenceLoadKg() != null
+                || next != null && next.referenceLoadKg() != null)
+            row(
+                    rows,
+                    "weight-reference",
+                    slot.exercise().mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT
+                            ? "Added weight reference"
+                            : "Weight reference",
+                    current == null || current.referenceLoadKg() == null
+                            ? null
+                            : number(current.referenceLoadKg()) + " kg",
+                    next == null || next.referenceLoadKg() == null
+                            ? null
+                            : number(next.referenceLoadKg()) + " kg");
+        return List.copyOf(rows);
+    }
+
+    private static void row(
+            List<TargetComparison> rows, String key, String label, String current, String next) {
+        String before = current == null ? "Not set" : current;
+        String after = next == null ? "Not set" : next;
+        rows.add(new TargetComparison(key, label, before, after, !before.equals(after)));
+    }
+
+    private static String reps(GymWorkoutDefinition.Target target) {
+        return target == null || target.minimumReps() == null
+                ? null
+                : range(target.minimumReps(), target.maximumReps());
+    }
+
+    public static String compactEffort(GymWorkoutDefinition.EffortRange effort) {
+        if (effort == null) return null;
+        return effort.scale() == GymWorkoutDefinition.EffortScale.RPE
+                ? "RPE " + range(effort.minimum(), effort.maximum()) + "/10"
+                : "RIR " + range(effort.minimum(), effort.maximum());
     }
 
     public static String duration(long seconds) {

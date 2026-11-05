@@ -1,4 +1,22 @@
-# 0.10.1 visual acceptance
+# Revised visual acceptance — pending5November2026 captures
+
+The owner rejected the earlier dense Advanced presentation after reviewing it. The historical
+observations below establish rendered legibility only; they do NOT establish design fidelity
+or final acceptance. Do not merge on those images.
+
+The refined implementation preserves the primary task card and collapsed Advanced default.
+Inside Advanced: genuine differences only in What's changing?, unchanged compact labels in
+What's staying the same?, short Why this suggestion?, and a separate collapsed View supporting
+workouts control. Current and suggested planning references are distinct from actual logged
+weights. Original vector symbols/rounded cards use the existing restrained palette. At200%
+comparison values and unchanged facts stack vertically without a horizontal scroller.
+
+Required current-build set:137images, including15progression frames (primary, collapsed
+controls, expanded comparison, unchanged/context, supporting records x light/dark/200%).
+Open every progression frame, inspect the complete page and both disclosure states, then
+record the actual capture/source/CI identities. These revised captures remain pending.
+
+# Historical0.10.1 observations
 
 ## Observed coaching review — 4 November2026
 

@@ -16,8 +16,8 @@ renders preserve meaningful bends without altering stored observations. See the
 [open-source comparison](docs/GPS_ENGINE_REVIEW_0_10_1.md) for demonstrated fixes and limits.
 
 Workout suggestions explain the task first, then optional weight references and the reason.
-Advanced details expands to show separate current/proposed targets and actual supporting
-workouts. Saving a suggestion remains separate from programme activation.
+Advanced details compares only changed targets and groups unchanged facts. Full actual
+workout evidence has a separate disclosure. Saving a suggestion remains separate from programme activation.
 
 This candidate is undergoing its final Android and visual gate; see [verification](VERIFICATION.md)
 and [release notes](docs/RELEASE_0_10_1.md). The rolling download below always identifies its
@@ -86,9 +86,9 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The coaching checkpoint dc8d6fc passed435instrumentation tests per
-supported API and128authentic captures. Progression main/expanded images were reviewed
-in light/dark/200%text. The final availability/audio source is still in its full gate; these source-bound results do not imply physical S24/TalkBack acceptance.
+data, not UI mockups. The reliability checkpoint08cf375 passed435instrumentation tests per
+supported API and128authentic captures. The owner requested a compact visual refinement;
+its438-case gate and137 refreshed captures are pending final review; these source-bound results do not imply physical S24/TalkBack acceptance.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).

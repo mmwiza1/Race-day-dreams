@@ -2,6 +2,7 @@ package org.racedaydreams.coach
 
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.lifecycle.ViewModelProvider
@@ -1778,6 +1779,16 @@ class CoachingScreenshotTest {
                         compose
                             .onNodeWithText("Save this suggestion for review")
                             .assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Advanced details")
+                            .assertIsDisplayed()
+                            .assert(
+                                SemanticsMatcher.expectValue(
+                                    SemanticsProperties.StateDescription,
+                                    "Collapsed",
+                                )
+                            )
+                        capture("strength-programme-progression-controls$suffix")
                         compose.onNode(hasScrollToIndexAction()).performScrollToIndex(0)
                     }
                 }
@@ -1797,10 +1808,37 @@ class CoachingScreenshotTest {
                     compose.onNodeWithText("Advanced details").performClick()
                     compose
                         .onNodeWithTag("progression-review")
-                        .performScrollToNode(hasText("Proposed target"))
-                    compose.onNodeWithText("Proposed target").assertIsDisplayed()
-                    compose.onNodeWithText("Current target").assertExists()
+                        .performScrollToNode(hasText("What's changing?"))
+                    compose.onNodeWithText("What's changing?").assertIsDisplayed()
+                    compose.onNodeWithTag("change-weight-reference").assertExists()
                     capture("strength-programme-progression-details$suffix")
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("View supporting workouts"))
+                    compose
+                        .onNodeWithText("View supporting workouts")
+                        .assertIsDisplayed()
+                        .assert(
+                            SemanticsMatcher.expectValue(
+                                SemanticsProperties.StateDescription,
+                                "Collapsed",
+                            )
+                        )
+                    compose.onNodeWithTag("unchanged-rest").assertIsDisplayed()
+                    compose.onNodeWithTag("unchanged-effort").assertIsDisplayed()
+                    compose.onNodeWithText("Actual logged working sets").assertDoesNotExist()
+                    capture("strength-programme-progression-context$suffix")
+                    compose.onNodeWithText("View supporting workouts").performClick()
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("Supporting workouts"))
+                    compose
+                        .onAllNodesWithText("80 kg recorded · 6 repetitions")
+                        .onFirst()
+                        .performScrollTo()
+                        .assertIsDisplayed()
+                    compose.onNodeWithText("82 kg recorded · 6 repetitions").assertDoesNotExist()
+                    capture("strength-programme-progression-evidence$suffix")
                 }
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))

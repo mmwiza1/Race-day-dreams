@@ -17,6 +17,8 @@ progress; the final verification and visual acceptance gates have not yet comple
 - Instructions follow the actual repetition, time or distance task. Perceived effort
   and repetitions left before failure are explained separately.
 - Saving a suggestion remains separate from reviewing and activating a programme.
+- Advanced review highlights genuine target changes, lists unchanged targets once and
+  keeps full recorded evidence behind a second disclosure. Large text stacks naturally.
 - Large recorded routes preserve meaningful bends and gaps with bounded rendering-only
   simplification; the underlying coordinates are unchanged.
 
@@ -38,7 +40,7 @@ progress; the final verification and visual acceptance gates have not yet comple
   without retained run evidence and physical acceptance checks.
 - Locked-screen, urban multipath, battery saver, long-run and device comparisons
   require real Galaxy S24 testing; emulator results do not establish those passes.
-- Final API28/35/36 execution and authentic screenshot/visual gates remain pending.
+- The refined API28/35/36 gate and137 current-source screenshots/visual review remain pending.
 
 ## Data, privacy and licensing
 

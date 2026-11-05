@@ -1,14 +1,26 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package org.racedaydreams.coach.strength
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -45,10 +57,23 @@ internal fun ProgrammeProgressionContent(
     saveSuggestion: () -> Unit,
 ) {
     var advanced by
-        rememberSaveable(review.draftId, review.draftRevision, review.slot.id()) {
+        rememberSaveable(review.draftId, review.draftRevision, review.workoutId, review.slot.id()) {
+            mutableStateOf(false)
+        }
+    var supporting by
+        rememberSaveable(review.draftId, review.draftRevision, review.workoutId, review.slot.id()) {
             mutableStateOf(false)
         }
     val target = review.advice.proposedTarget()
+    val comparisons =
+        remember(review.slot, target) { StrengthPrescriptionText.comparisons(review.slot, target) }
+    val changed = comparisons.filter { it.changed() }
+    val unchanged = comparisons.filterNot { it.changed() }
+    val why =
+        if (target != null) {
+            val count = review.advice.supportingSessionIds().size
+            "Based on $count comparable recorded ${if (count == 1) "workout" else "workouts"} and their recorded effort."
+        } else review.advice.reason()
     val suggestedSlot =
         if (target == null) review.slot
         else
@@ -90,11 +115,7 @@ internal fun ProgrammeProgressionContent(
             }
             item {
                 SemanticCard(Tile.Planned) {
-                    Text(
-                        "Here's what to do",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.semantics { heading() },
-                    )
+                    ProgressionHeading("Here's what to do", ProgressionSymbol.TASK)
                     if (
                         review.advice.action() ==
                             org.racedaydreams.domain.strength.StrengthProgressionAdvisor.Action
@@ -113,140 +134,162 @@ internal fun ProgrammeProgressionContent(
             }
             item {
                 SemanticCard(Tile.Progress) {
-                    Text(
-                        "About the weight",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.semantics { heading() },
-                    )
+                    ProgressionHeading("About the weight", ProgressionSymbol.WEIGHT)
                     StrengthPrescriptionText.weight(review.slot, target).forEach { Text(it) }
                 }
             }
-            item {
-                SemanticCard(Tile.Insight) {
-                    Text(
-                        "Why are we suggesting this?",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.semantics { heading() },
-                    )
-                    if (target != null) {
-                        val count = review.advice.supportingSessionIds().size
-                        Text(
-                            "We've reviewed $count comparable ${review.slot.exercise().name()} workouts you've recorded. Your recorded working sets and effort support this optional change."
-                        )
-                    } else {
-                        Text("Your recent workouts do not yet support an increase for this target.")
-                        Text(review.advice.reason())
-                    }
-                }
-            }
-            item {
-                Surface(
-                    shape = MaterialTheme.shapes.large,
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+            if (!advanced) item(key = "summary-reason") { ProgressionReason(why) }
+            item(key = "advanced-control") {
+                ProgressionDisclosure(
+                    "Advanced details",
+                    "Training targets and supporting evidence",
+                    advanced,
+                    ProgressionSymbol.DETAILS,
                 ) {
-                    Row(
-                        Modifier.fillMaxWidth()
-                            .heightIn(min = 64.dp)
-                            .clickable(
-                                role = Role.Button,
-                                onClickLabel =
-                                    if (advanced) "Collapse advanced details"
-                                    else "Expand advanced details",
-                            ) {
-                                advanced = !advanced
-                            }
-                            .semantics {
-                                stateDescription = if (advanced) "Expanded" else "Collapsed"
-                            }
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text("Advanced details", style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                "Training targets and supporting evidence",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                        Text(
-                            if (advanced) "⌃" else "⌄",
-                            modifier = Modifier.clearAndSetSemantics {},
-                        )
-                    }
+                    advanced = !advanced
+                    if (!advanced) supporting = false
                 }
             }
             if (advanced) {
-                item {
-                    SemanticCard(Tile.Neutral) {
-                        Text("Current target", style = MaterialTheme.typography.titleMedium)
-                        ProgressionTargetDetails(review.slot.target())
-                        if (target != null) {
-                            Text("Proposed target", style = MaterialTheme.typography.titleMedium)
-                            ProgressionTargetDetails(target)
-                        }
-                        Text(
-                            "How this suggestion was calculated",
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Text(review.advice.reason())
+                item(key = "target-changes") {
+                    ProgressionPanel {
+                        ProgressionHeading("What's changing?", ProgressionSymbol.CHANGE)
+                        if (changed.isEmpty())
+                            Text(
+                                "No target changes to review.",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        changed.forEach { change -> ProgressionChange(change) }
                     }
                 }
-                item {
-                    SemanticCard(Tile.Neutral) {
-                        Text("Supporting workouts", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "${review.advice.supportingSessionIds().size} comparable recorded workouts considered."
-                        )
-                        review.supportingWorkouts.forEach { workout ->
+                item(key = "unchanged-targets") {
+                    ProgressionPanel {
+                        ProgressionHeading("What's staying the same?", ProgressionSymbol.KEEP)
+                        if (unchanged.isEmpty()) Text("No unchanged targets are specified.")
+                        val large = LocalDensity.current.fontScale >= 1.5f
+                        if (large)
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                unchanged.forEach {
+                                    ProgressionUnchanged(it, Modifier.fillMaxWidth())
+                                }
+                            }
+                        else
+                            FlowRow(
+                                maxItemsInEachRow = 2,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                            ) {
+                                unchanged.forEach { ProgressionUnchanged(it, Modifier.weight(1f)) }
+                            }
+                        val scales =
+                            listOfNotNull(
+                                    review.slot.target()?.effort()?.scale(),
+                                    target?.effort()?.scale(),
+                                )
+                                .distinct()
+                        if (scales.isEmpty())
                             Text(
-                                friendlyDate(
-                                    workout.startedAt().atOffset(workout.offset()).toLocalDate()
-                                ),
+                                "No effort target is specified.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        scales.forEach { scale ->
+                            Text(
+                                if (scale == GymWorkoutDefinition.EffortScale.RPE)
+                                    "RPE = perceived effort (0–10)."
+                                else "RIR = repetitions left before failure.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+                item(key = "advanced-reason") { ProgressionReason(why) }
+                item(key = "supporting-control") {
+                    val count = review.advice.supportingSessionIds().size
+                    ProgressionDisclosure(
+                        "View supporting workouts",
+                        "$count comparable recorded ${if (count == 1) "workout" else "workouts"}",
+                        supporting,
+                        ProgressionSymbol.EVIDENCE,
+                    ) {
+                        supporting = !supporting
+                    }
+                }
+                if (supporting) {
+                    item(key = "supporting-records") {
+                        ProgressionPanel {
+                            ProgressionHeading("Supporting workouts", ProgressionSymbol.EVIDENCE)
+                            Text(
+                                "Actual logged working sets",
                                 style = MaterialTheme.typography.titleSmall,
                             )
-                            workout
-                                .exercises()
-                                .filter { block ->
-                                    block.exercise().id() == review.slot.exercise().id() &&
-                                        block.exercise().mode() == review.slot.exercise().mode() &&
-                                        block.exercise().measurement() ==
-                                            review.slot.exercise().measurement()
-                                }
-                                .forEach { block ->
-                                    block
-                                        .sets()
-                                        .filterNot { it.warmUp() }
-                                        .forEach { set ->
-                                            val task =
-                                                when {
-                                                    set.durationSeconds() != null ->
-                                                        StrengthPrescriptionText.duration(
-                                                            set.durationSeconds()
-                                                        )
-                                                    set.distanceMetres() != null ->
-                                                        "${StrengthPrescriptionText.number(set.distanceMetres())} metres"
-                                                    else -> "${set.reps()} repetitions"
-                                                }
-                                            val load =
-                                                if (block.exercise().measurement().usesLoad())
-                                                    "${StrengthPrescriptionText.number(set.kilograms())} kg recorded · "
-                                                else ""
-                                            Text(load + task)
-                                            Text(
-                                                when {
-                                                    set.rpe() != null ->
-                                                        "Recorded perceived effort (RPE): ${StrengthPrescriptionText.number(set.rpe())}/10"
-                                                    set.repetitionsInReserve() != null ->
-                                                        "Recorded repetitions left before failure (RIR): ${StrengthPrescriptionText.number(set.repetitionsInReserve())}"
-                                                    else -> "Effort was not recorded."
-                                                }
-                                            )
-                                        }
-                                }
+                            if (review.supportingWorkouts.isEmpty())
+                                Text("No comparable workout records are available in this review.")
+                            review.supportingWorkouts.forEach { workout ->
+                                Text(
+                                    friendlyDate(
+                                        workout.startedAt().atOffset(workout.offset()).toLocalDate()
+                                    ),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier.padding(top = 8.dp),
+                                )
+                                workout
+                                    .exercises()
+                                    .filter { block ->
+                                        block.exercise().id() == review.slot.exercise().id() &&
+                                            block.exercise().mode() ==
+                                                review.slot.exercise().mode() &&
+                                            block.exercise().measurement() ==
+                                                review.slot.exercise().measurement()
+                                    }
+                                    .forEach { block ->
+                                        block
+                                            .sets()
+                                            .filterNot { it.warmUp() }
+                                            .forEach { set ->
+                                                val task =
+                                                    when {
+                                                        set.durationSeconds() != null ->
+                                                            StrengthPrescriptionText.duration(
+                                                                set.durationSeconds()
+                                                            )
+                                                        set.distanceMetres() != null ->
+                                                            "${StrengthPrescriptionText.number(set.distanceMetres())} metres"
+                                                        else -> "${set.reps()} repetitions"
+                                                    }
+                                                val load =
+                                                    if (block.exercise().measurement().usesLoad())
+                                                        "${StrengthPrescriptionText.number(set.kilograms())} kg recorded · "
+                                                    else ""
+                                                Text(load + task)
+                                                Text(
+                                                    when {
+                                                        set.rpe() != null ->
+                                                            "Recorded perceived effort (RPE): ${StrengthPrescriptionText.number(set.rpe())}/10"
+                                                        set.repetitionsInReserve() != null ->
+                                                            "Recorded repetitions left before failure (RIR): ${StrengthPrescriptionText.number(set.repetitionsInReserve())}"
+                                                        else -> "Effort was not recorded."
+                                                    },
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color =
+                                                        MaterialTheme.colorScheme.onSurfaceVariant,
+                                                )
+                                            }
+                                    }
+                            }
+                            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                            Text(
+                                "Calculation & safeguards",
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(review.advice.reason())
+                            Text(
+                                "Only recent exact-exercise working sets support an increase. Warm-ups do not count; missing effort stays unknown. Saving rechecks the evidence.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
-                        Text(
-                            "Only recent working sets for this exact exercise and a comparable task can support an increase. Warm-up sets do not count. Missing effort remains unknown. Saving checks the evidence again; a stale suggestion cannot be saved."
-                        )
                     }
                 }
             }
@@ -278,26 +321,249 @@ internal fun ProgrammeProgressionContent(
     }
 }
 
+private enum class ProgressionSymbol {
+    TASK,
+    WEIGHT,
+    DETAILS,
+    CHANGE,
+    KEEP,
+    EVIDENCE,
+    INFO,
+    DOWN,
+    UP,
+}
+
+/** Original decorative vector symbols; labels and values carry the accessible information. */
 @Composable
-private fun ProgressionTargetDetails(target: GymWorkoutDefinition.Target?) {
-    if (target == null) {
-        Text("No structured target is specified.")
-        return
+private fun ProgressionGlyph(symbol: ProgressionSymbol, modifier: Modifier = Modifier) {
+    val ink = MaterialTheme.colorScheme.primary
+    Canvas(modifier.size(28.dp).clearAndSetSemantics {}) {
+        val w = size.width
+        val h = size.height
+        val stroke = 1.8.dp.toPx()
+        fun line(x: Float, y: Float, xx: Float, yy: Float) =
+            drawLine(ink, Offset(w * x, h * y), Offset(w * xx, h * yy), stroke, StrokeCap.Round)
+        when (symbol) {
+            ProgressionSymbol.TASK,
+            ProgressionSymbol.KEEP -> {
+                drawCircle(ink, w * .4f, style = Stroke(stroke))
+                line(.28f, .5f, .43f, .65f)
+                line(.43f, .65f, .73f, .34f)
+            }
+            ProgressionSymbol.WEIGHT -> {
+                line(.25f, .5f, .75f, .5f)
+                line(.2f, .32f, .2f, .68f)
+                line(.33f, .2f, .33f, .8f)
+                line(.67f, .2f, .67f, .8f)
+                line(.8f, .32f, .8f, .68f)
+            }
+            ProgressionSymbol.CHANGE -> {
+                line(.18f, .68f, .82f, .32f)
+                line(.59f, .28f, .82f, .32f)
+                line(.82f, .32f, .78f, .56f)
+            }
+            ProgressionSymbol.DETAILS,
+            ProgressionSymbol.EVIDENCE -> {
+                for (y in listOf(.28f, .5f, .72f)) {
+                    drawCircle(ink, stroke * .6f, Offset(w * .2f, h * y))
+                    line(.37f, y, .82f, y)
+                }
+            }
+            ProgressionSymbol.INFO -> {
+                drawCircle(ink, w * .4f, style = Stroke(stroke))
+                drawCircle(ink, stroke * .6f, Offset(w * .5f, h * .3f))
+                line(.5f, .46f, .5f, .72f)
+            }
+            ProgressionSymbol.DOWN -> {
+                line(.25f, .4f, .5f, .65f)
+                line(.5f, .65f, .75f, .4f)
+            }
+            ProgressionSymbol.UP -> {
+                line(.25f, .6f, .5f, .35f)
+                line(.5f, .35f, .75f, .6f)
+            }
+        }
     }
-    Text("Sets: ${target.sets()}")
-    target.minimumReps()?.let { minimum ->
-        val repetitions =
-            if (minimum == target.maximumReps()) "$minimum" else "$minimum–${target.maximumReps()}"
-        Text("Repetitions: $repetitions")
-    }
-    target.seconds()?.let { Text("Time per set: ${StrengthPrescriptionText.duration(it)}") }
-    target.metres()?.let { Text("Distance per set: ${StrengthPrescriptionText.number(it)} metres") }
-    Text(StrengthPrescriptionText.effortDetails(target.effort()))
-    target.restSeconds()?.let { Text("Rest: ${StrengthPrescriptionText.duration(it.toLong())}") }
-        ?: Text("Rest is not specified.")
-    target.referenceLoadKg()?.let {
+}
+
+@Composable
+private fun ProgressionHeading(title: String, symbol: ProgressionSymbol) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        ProgressionGlyph(symbol)
         Text(
-            "Optional weight reference: ${StrengthPrescriptionText.number(it)} kg; this is not an actual logged weight."
+            title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f).semantics { heading() },
         )
-    } ?: Text("No weight reference is specified.")
+    }
+}
+
+@Composable
+private fun ProgressionPanel(content: @Composable ColumnScope.() -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Column(
+            Modifier.fillMaxWidth().padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun ProgressionReason(why: String) {
+    ProgressionPanel {
+        ProgressionHeading("Why this suggestion?", ProgressionSymbol.INFO)
+        Text(why, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+private fun ProgressionDisclosure(
+    title: String,
+    subtitle: String,
+    expanded: Boolean,
+    symbol: ProgressionSymbol,
+    toggle: () -> Unit,
+) {
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
+        Row(
+            Modifier.fillMaxWidth()
+                .heightIn(min = 72.dp)
+                .clickable(
+                    role = Role.Button,
+                    onClickLabel = if (expanded) "Collapse $title" else "Expand $title",
+                    onClick = toggle,
+                )
+                .semantics { stateDescription = if (expanded) "Expanded" else "Collapsed" }
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ProgressionGlyph(symbol)
+            Column(Modifier.weight(1f)) {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            ProgressionGlyph(
+                if (expanded) ProgressionSymbol.UP else ProgressionSymbol.DOWN,
+                Modifier.size(20.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProgressionChange(change: StrengthPrescriptionText.TargetComparison) {
+    Column(
+        Modifier.fillMaxWidth().testTag("change-${change.key()}"),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text(change.label(), style = MaterialTheme.typography.titleSmall)
+        BoxWithConstraints {
+            val stack = LocalDensity.current.fontScale >= 1.5f || maxWidth < 280.dp
+            if (stack)
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ProgressionValue(change, suggested = false, Modifier.fillMaxWidth())
+                    ProgressionValue(change, suggested = true, Modifier.fillMaxWidth())
+                }
+            else
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    ProgressionValue(change, suggested = false, Modifier.weight(1f))
+                    Text(
+                        "→",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.clearAndSetSemantics {},
+                    )
+                    ProgressionValue(change, suggested = true, Modifier.weight(1f))
+                }
+        }
+        if (change.key() == "weight-reference")
+            Text(
+                "Optional planning reference · not a logged weight",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+    }
+}
+
+@Composable
+private fun ProgressionValue(
+    change: StrengthPrescriptionText.TargetComparison,
+    suggested: Boolean,
+    modifier: Modifier,
+) {
+    Column(
+        modifier
+            .background(
+                if (suggested) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceContainerLow,
+                RoundedCornerShape(14.dp),
+            )
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        val reference = change.key() == "weight-reference"
+        Text(
+            if (suggested) (if (reference) "Suggested reference" else "Suggested")
+            else (if (reference) "Current reference" else "Current"),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            if (suggested) change.proposedValue() else change.currentValue(),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            color =
+                if (suggested) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurface,
+            modifier =
+                Modifier.testTag(
+                    "change-${change.key()}-${if (suggested) "suggested" else "current"}"
+                ),
+        )
+    }
+}
+
+@Composable
+private fun ProgressionUnchanged(
+    detail: StrengthPrescriptionText.TargetComparison,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier
+            .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp)
+            .testTag("unchanged-${detail.key()}"),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            detail.label(),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(detail.currentValue(), style = MaterialTheme.typography.titleMedium)
+    }
 }

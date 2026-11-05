@@ -11,7 +11,7 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT — 0.10.1 implementation done; final gate and visual review pending
+## CURRENT — 0.10.1 progression visual refinement requested; PR16 stays draft
 
 Branch `feature/0.10.1-gps-reliability-coaching-clarity`, draft PR16 targets main.
 Baseline main5827d291d94870d16e2398c5173319260a6d7d72 is the completed0.10/PR15 merge.
@@ -19,6 +19,45 @@ Never restart0.10 or reset valid work. Use actual git log/status for this checkp
 Latest owner master brief explicitly authorises AUTOMATIC squash merge only after complete
 final-source software/visual gates pass. Physical S24 work is post-merge acceptance, never
 claimed from emulator results. Do not start0.11 or create a stable release tag.
+
+LATEST USER STEERING —5November2026 (authoritative visual acceptance):
+The owner reviewed the progression screenshot and rejected the long repetitive Advanced
+presentation. Earlier provisional visual acceptance is superseded. Local refinement is
+implemented: primary plain-English Here's what to do retained; Advanced initially collapsed;
+What's changing? shows ONLY real current/suggested differences; What's staying the same?
+shows unchanged fields once; short Why this suggestion?; SECOND collapsed View supporting
+workouts reveals full retained comparable working-set evidence and safeguards. Original
+vector icons, rounded panels, restrained colours. Normal values compare side-by-side;
+font>=150% uses a vertical stack and unchanged facts become full-width rows. No horizontal
+scroll. Recommendation/evidence/freshness/save/activation calculations are untouched.
+
+Current git head b3a4195 is the canonical-only bot after08cf375. FULL workflow41939512123
+PASSED435 EACH API28/35/36,128captures, all build/lint/format/guidance gates. This validates
+all GPS/clarity/acknowledgement-race software BEFORE the requested visual refinement, not
+its appearance. Valid images/history were adopted by safe git ff; none were discarded.
+
+Refinement files: ProgrammeProgressionSheet.kt (compact comparison + two functional
+saved-state disclosures), StrengthPrescriptionText.java (pure comparison view data), its
+domain tests, ProgrammeProgressionClarityTest.kt, CoachingScreenshotTest.kt and capture
+validators. Full local refined gate PASSED:640888domain/38suites (instructions109),64schema,
+9release,13capture-validator,76Kotlin/122Java format; actual Gradle domain/check, debug APK,
+lint and Android-test compilation final run1m34s/79tasks (initial refined run4m47s also green).
+Three new UI tests strengthen genuine-only highlights,200%stacking/keyboard and nested
+state restoration; expected438 cases/API. Capture set now137: preserve128, add collapsed
+controls, expanded lower context and actual evidence in light/dark/200% (15progression frames
+across5states x3modes). None of the137new-source images has yet been captured/reviewed.
+
+NEXT CURRENT ACTIONS:
+1. Commit/push this refined UI checkpoint after checking diff/status; PR16 stays draft.
+2. Inspect real438-case API28/35/36 gate, fix actual failures without weakening assertions.
+3. Adopt canonical137images from verified API35 source. OPEN all15progression frames and
+   final live-coach/route representatives; compare with the owner's precise5November visual
+   requirements. Do not reuse the old dense Advanced screenshots as visual acceptance.
+4. Finalise accurate README/release/SCREENSHOTS/VISUAL_REVIEW/VERIFICATION/handoff, then
+   obtain final-head green CI, check latest main/reviews/conflicts. Only after ALL software
+   and revised visual gates pass may PR16 become ready/merge per existing master authorisation.
+   Confirm post-merge main CI/rolling development APK, record final SHA and physical S24
+   unknowns. No stable tag or0.11 work. Preserve all GPS and completed strength code.
 
 Completed implementation:
 - Pinned OpenTracks/RunnerUp/GPSTest comparison before changing GPS; Codeberg inaccessible,
@@ -76,7 +115,7 @@ in the current checkpoint alongside observed visual/README documentation. Actual
 Gradle full gate passes2m47s/79tasks; formatting76Kotlin/122Java passes. Push and rerun
 the complete matrix. Do not blindly rerun46ecbd3 or weaken blank-form assertions.
 
-NEXT EXACT ACTIONS (finish in order; no more speculative scope expansion):
+Earlier checkpoint actions (superseded by NEXT CURRENT ACTIONS above):
 1. Inspect whether the current reliability checkpoint has been pushed; source46ecbd3
    was not final because of the API28 acknowledgement race above. Push any unpushed
    checkpoint only after its local gates (already passed).
