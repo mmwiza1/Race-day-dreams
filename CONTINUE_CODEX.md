@@ -1,4 +1,4 @@
-# Continue Codex — 0.10.1-test1 GPS Reliability & Coaching Clarity
+# Continue Codex — 0.11.0-test1 Gym, Health & Recovery Intelligence
 
 ## Permanent recovery rules
 
@@ -10,6 +10,54 @@ transaction. Prescriptions, immutable historical versions, actual sets and athle
 remain distinct. Reuse one Gym Now execution engine. No Internet permission, account,
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
+
+## CURRENT —0.11.0-test1 Gym, Health & Recovery Intelligence
+
+Authoritative scope: the owner's0.11 master prompt supersedes all historical “do not start
+0.11” and automatic-merge instructions below. DO NOT MERGE AUTOMATICALLY. Keep one draft
+PR until all six milestones and API28/35/36/visual gates pass; prepare for owner review.
+Branch feature/0.11-gym-health-recovery-intelligence, based on live main8796bc5d38360dcd83f5b6fa725cd0c03f4ad605.
+Baseline fetched/pulled, clean, no open PR. Main42046671050 green438/API155captures.
+Local unchanged baseline PASS:640893domain checks/38suites,64schema,9release, formatting,
+actual Gradle domain/check/debug/lint/test-APK compile79tasks/17sec. Logs scratch/rdd011.
+Version0.11.0-test1/code15. Schema15/JSON9/raw2/complete1 currently unchanged.
+
+Milestones (all required; not optional backlog):
+1. Gym: optional monotonic durable rest timer; conservative warm-up suggestions; genuine
+   superset rounds/order/skip/break/substitution within existing GymExecutionEngine.
+2. Strength intelligence: recorded working-set muscle attribution/trends; actual vs estimated
+   PB/history; durable idempotent evidence-backed achievements, optional celebrations.
+3. Conservative recovery/deload and hybrid scheduling using existing reviewed-proposal/
+   decision history; no readiness score, isolated-health diagnosis or silent plan activation.
+4. Optional HC height/weight provenance/manual/units/permissions; documented general protein
+   range from valid weight, no fabricated values/medical prescription/diet tracker.
+5. Retention24months/5years/forever; existing-user explicit acknowledgement; preview,
+   bounded safe detail pruning; permanent summaries/PBs/actuals/decisions retained; storage
+   honesty, backup coordination and additive typed migrations/backward restore.
+6. Selective quality catalogue additions; three6month athlete simulations; full regression,
+   authentic new-screen light/dark/200%captures; docs and verified test APK. No stable tag.
+
+Current phase: baseline complete; development setup checkpoint. Inspect actual Git/PR before
+creating duplicates. Workflow filenames and same-repository capture branch conditions now
+point to0.11 while retaining source fingerprint,155existing captures and full matrix gates.
+Next: typed gym-tools boundary/domain timer and conservative warm-up policies; persistence
+and backup integration; GymNow live UI; superset engine + builder controls and tests.
+Do not invent a second execution/recording engine or expand generic JSON stores.
+
+New durable data should use typed repositories over shared ProfileDatabase transactions.
+Plan one clean additive schema16 and root backup10 when needed, preserving readers1–9;
+raw2/complete1 should remain unless a concrete requirement proves otherwise. Do not ship
+unbacked durable preferences or mutate frozen prescriptions/actuals. Keep previous migrations
+unchanged. New-install retention default differs from acknowledged existing-user policy.
+No new runtime dependency has been added. GPS0.10.1and screenshot production-window fixture
+are accepted; do not repeat/rewrite their completed repairs. All physical S24 checks remain
+UNPERFORMED; expanded checklist is required before final acceptance.
+
+Recovery: continue the next incomplete milestone rather than stopping after one checkpoint.
+After each: relevant tests/build/schema/instrumentation, coherent commit/push, update handoff.
+Record actual failures and exact next files. Do not claim unrun tests or mock screenshots.
+
+## Historical0.10.1 checkpoint —completed, not active work
 
 ## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
