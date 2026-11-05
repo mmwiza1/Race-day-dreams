@@ -26,6 +26,8 @@ progress; the final verification and visual acceptance gates have not yet comple
   running distance; accepted original coordinates remain retained.
 - An old observation cannot reopen a previously declared GPS gap.
 - Auto-pause requires continuity instead of inferring stillness across missing fixes.
+- Busy-equipment replacement keeps input disabled until the previous exercise's
+  unsubmitted form is cleared, preserving the original prescription and entered sets.
 - Brief GPS quality degradation is described as weak signal. Confirmed-loss audio is
   restrained, avoids repeated interruptions and is suppressed while paused.
 

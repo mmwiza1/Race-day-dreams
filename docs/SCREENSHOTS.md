@@ -1,18 +1,20 @@
-# 0.10.1 capture work in progress
+# 0.10.1 capture checkpoints
 
-The 0.10.1 workflow now requires128 actual-build captures, preserving all125 previous
-scenes and adding expanded progression details in light, dark and200%text. The main
-progression scenes show plain instructions; additional captures prove current/proposed
-technical detail remains accessible. Tests still check the actual82kg suggested reference,
-now by scrolling to About the weight rather than forcing it above the task instructions.
+Coaching source dc8d6fc / workflow41933727239 passed435 cases EACH API28/35/36 and all128
+required captures. Canonical198cd7c contains128 actual API35 PNGs at540x1200, fingerprint
+688e8ad3cf4b13d2e526edc046e94abe2daa5572b7eb64cf598c864178977a7c. All6 progression
+main/expanded light/dark/200%images were opened and reviewed against the approved task-first
+hierarchy; see VISUAL_REVIEW_0_10_1.md. Every previous125 scene remains required.
 
-Current committed PNGs below remain the0.10 baseline until replaced by verified0.10.1
-API35 captures. Do not treat them as evidence for new source. Source fingerprint, PNG
-integrity and real visual inspection are separate gates. Compare the actual build with the
-owner's approved task-first hierarchy; retain references separately. No edited/mock UI or
-physical S24 pass is implied.
+The subsequent availability/audio source46ecbd3 is in its final full gate41936237874.
+Its fingerprint differs, so final source-bound captures must be adopted before acceptance.
+Do not confuse a passing earlier scene review with a final-source verification pass.
 
-# Current0.10 actual-build capture checkpoint
+Capture integrity, source binding and actual visual review are separate gates. References
+remain separate. No mock UI, image editing, physical S24 or human TalkBack pass is implied.
+
+## Historical0.10 capture checkpoint
+
 
 Source1a7c683/workflow41912323900 passed426tests each API28/35/36 and125required captures.
 Canonicalacf7a2285975deaaba9f3652be42615ec49e6a03 has source fingerprint

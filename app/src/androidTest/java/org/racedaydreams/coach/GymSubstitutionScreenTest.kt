@@ -23,7 +23,12 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.Instant
 import java.time.LocalDate
+import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -99,8 +104,31 @@ class GymSubstitutionScreenTest {
         assertEquals("80", model.state.value.form.kilograms)
         assertEquals(frozen, execution().prescription())
         assertEquals(original, io { GymProgrammeStore(application).current() })
-        compose.onNodeWithText("Use just for today").performClick()
-        await { execution().slots().single().exercise().id() == "dumbbell-bench-press" }
+        val prematureIdle = AtomicInteger()
+        // Observe every synchronous state emission, not only a lucky final frame. An idle
+        // replacement must never expose the old exercise's unsubmitted load/form identity.
+        val observer =
+            CoroutineScope(Dispatchers.Unconfined).launch(start = CoroutineStart.UNDISPATCHED) {
+                model.state.collect { state ->
+                    val replaced =
+                        state.view
+                            ?.accepted()
+                            ?.execution()
+                            ?.slots()
+                            ?.singleOrNull()
+                            ?.exercise()
+                            ?.id() == "dumbbell-bench-press"
+                    if (!state.busy && replaced && state.form.id == unsubmittedId)
+                        prematureIdle.incrementAndGet()
+                }
+            }
+        try {
+            compose.onNodeWithText("Use just for today").performClick()
+            await { execution().slots().single().exercise().id() == "dumbbell-bench-press" }
+            assertEquals("Idle must follow replacement form cleanup", 0, prematureIdle.get())
+        } finally {
+            observer.cancel()
+        }
 
         val replaced = execution().slots().single()
         assertEquals(slotId, replaced.id())

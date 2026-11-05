@@ -86,9 +86,9 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The GPS checkpoint b6322b6 passed427instrumentation tests per
-supported API and125authentic captures. Updated coaching captures and their final visual
-review are pending; these source-bound results do not imply physical S24/TalkBack acceptance.
+data, not UI mockups. The coaching checkpoint dc8d6fc passed435instrumentation tests per
+supported API and128authentic captures. Progression main/expanded images were reviewed
+in light/dark/200%text. The final availability/audio source is still in its full gate; these source-bound results do not imply physical S24/TalkBack acceptance.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).

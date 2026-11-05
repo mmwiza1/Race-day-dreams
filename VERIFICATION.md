@@ -1,5 +1,19 @@
 ## 4 November 2026 — complete Strength Programming2.0 software gate
 
+## Final-source API28 failure — 5 November2026
+
+Workflow41936237874 on46ecbd3 passed435 EACH API35/36. API28 ran435 with one failure:
+GymSubstitutionScreenTest busy-equipment case saw the old80kg form after the acknowledged
+replacement while expecting a cleared input. Other434passed. Builds/lint/format/guidance
+passed; canonical publication correctly blocked. This is NOT a complete release pass.
+
+Source inspection confirms command published idle before form-cleanup acknowledgement.
+The correction keeps busy until sync/onSuccess completes, then finally publishes idle.
+Existing reference/actual/history assertions remain; the test additionally observes every
+idle replacement emission to prevent a timing-dependent pass. Corrected local Gradle
+domain/check, APK build, lint and instrumentation compilation pass (79tasks,2m47s);
+full corrected API28/35/36 and final-source captures remain pending.
+
 ## GPS availability/audio follow-up — local regressions (4 November2026)
 
 Four additional assertions reproduced isolated poor accuracy being described as an immediate

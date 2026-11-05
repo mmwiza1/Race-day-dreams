@@ -64,8 +64,22 @@ schema15/rootJSON9/nested authoring2/strengthEngine2/strengthState2/raw2/complet
 New rejection events fit the existing raw codec; Android recovery/GPX/raw-backup test passed
 in the GPS checkpoint. Existing actuals, prescriptions, exclusions, assignments and PBs stay.
 
+Latest integrated source46ecbd3 / workflow41936237874: API35/36 pass435each; API28
+has EXACTLY1 failure/435, old GymSubstitutionScreenTest busy-equipment case expected empty
+new form but observed80kg (line112). All other434/API28 cases pass; canonical publication
+correctly blocked. Root: GymNowViewModel.command published busy=false with the replacement
+view BEFORE onSuccess cleared the old form. Local correction keeps busy=true through
+sync/ack callbacks; finally alone publishes idle. Original load-clearing/history assertions
+remain, strengthened with an Unconfined state collector asserting no premature idle emission.
+This is a minimal reliability fix, not a strength-programming redesign. It is included
+in the current checkpoint alongside observed visual/README documentation. Actual local
+Gradle full gate passes2m47s/79tasks; formatting76Kotlin/122Java passes. Push and rerun
+the complete matrix. Do not blindly rerun46ecbd3 or weaken blank-form assertions.
+
 NEXT EXACT ACTIONS (finish in order; no more speculative scope expansion):
-1. Commit/push this availability/audio checkpoint after its local gates (already passed).
+1. Inspect whether the current reliability checkpoint has been pushed; source46ecbd3
+   was not final because of the API28 acknowledgement race above. Push any unpushed
+   checkpoint only after its local gates (already passed).
    Inspect live current PR/head/workflow. Preserve any new files. Run FULL API28/35/36 gate
    on that final source, including the keyboard fixture correction. Check actual errors;
    never weaken assertions or blindly rerun. Current expected Android count435/API.
