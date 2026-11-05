@@ -13,6 +13,26 @@ The app recommends. The athlete decides. The plan adapts.
 
 ## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
+LATEST LIVE CHECKPOINT —5November2026,12:37UTC:
+Focused correction244e0b0a3a45ee82c5f96801b547c4cfd18a3c94 is committed/pushed; local and
+remote tree/unsigned commit identities match. DRAFT PR17 targets main from branch
+fix/0.10.1-screenshot-test-dispatcher. Do not duplicate source changes or recreate PR17.
+Source fingerprint0dce7147d3137aa752ca8b81b0923f339be84b221e008d5a6939fe68cd055fbd.
+Full follow-up workflow42023014049 is running438cases/API and155captures.
+At12:34UTC all3Android jobs still execute (about33minutes in instrumentation versus
+9–11minutes in final pre-merge42015943868). No completed result/artifact or exported job
+log is available yet (GitHub log export404 until finish). Do not infer pass/fail, relax
+timeouts/assertions or blindly rerun. Inspect actual outcome/stack before further changes.
+A follow-up CI-only30minute instrumentation-step bound is being added (normal9–11min);
+no assertions, cases or deadlines inside tests are weakened. Pushing it will cancel the
+unbounded run via existing PR concurrency. Inspect its retained progress/failure logs,
+then the bounded run, before changing the fixture or claiming any root cause.
+NEXT inspect that actual workflow, then canonical155adoption/visual confirmation,
+final docs/head CI, authorised follow-up merge and actual main/development verification.
+Older commit/push instructions below describe the pre-commit checkpoint. Preserve this
+live metadata if uncommitted. PR16 is already merged and cannot remain draft.
+
+
 PR16 is MERGED, not draft/open: squash75ab7c546570ffa460295bd45e1ee0f9fa7e5c48.
 Main checkpoint6f73afe3ff3b20a13c73f5af4792247f68883659 adds only post-merge documentation.
 Do not reset/reopen/reimplement PR16, GPS/coaching work or0.10. No0.11 features authorised.
@@ -40,11 +60,12 @@ Remote branch created at same parent. Current local follow-up:
  Domain640893/38suites, schema15/rootJSON9/raw2/complete1 unchanged. No Internet.
 
 NEXT EXACT TASKS:
-1. Commit/push the focused fixture/workflow correction and these observed failure notes.
-   Open focused DRAFT follow-up PR into main (expected17, inspect actual number). Do not
-   develop on main or pretend PR16 is still open. Use connected GitHub API expected-head leases;
-   CLI auth is unavailable. Import identical verified objects without reset/force/discard.
-2. Run full438/API155capture gate. Fix actual roots, not assertions/timeouts. Regenerate
+1. DONE: focused correction244e0b0 is committed/pushed and DRAFT PR17 is open. Do not
+   duplicate it. Current full gate42023014049 is unusually slow; inspect its actual outcome
+   and exported logs before further correction. Never merge pending/red or rerun blindly.
+   CLI auth is unavailable; use connected GitHub API expected-head leases, then import
+   identical verified objects without reset/force/discard. Preserve local handoff metadata.
+2. Complete full438/API155capture gate. Fix actual roots, not assertions/timeouts. Regenerate
    canonical images under the follow-up branch, verify ZIP/blob/tree/commit/fingerprint,
    inspect final progression/Dream representatives (no design changes intended).
 3. Final observed docs/head CI; after green/visual checks, ready/merge the follow-up under

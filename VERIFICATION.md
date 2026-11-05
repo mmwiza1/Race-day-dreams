@@ -1,3 +1,13 @@
+## Follow-up instrumentation gate bound —5November2026
+
+Follow-up42023014049 at244e0b0 passed build/lint/format/guidance but all3API
+instrumentation steps remained in progress beyond30minutes (last green matrix42015943868
+used9–11minutes). No failure/root cause is inferred without completed logs. A30minute
+step timeout now bounds future stalls; it preserves all438cases,155capture requirements,
+readiness assertions and individual test deadlines. Existing PR concurrency will cancel
+the unbounded run when this correction is pushed; inspect retained progress logs and the
+new bounded run before further diagnosis. No application or data change is involved.
+
 # Post-merge delivery failure —5November2026 (latest boundary)
 
 Main6f73afe/workflow42018800515 passed438 EACH API28/36. API35 ran438 with one failure,
