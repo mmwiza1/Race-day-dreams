@@ -20,7 +20,7 @@ Branch feature/0.11-gym-health-recovery-intelligence, based on live main8796bc5d
 Baseline fetched/pulled, clean, no open PR. Main42046671050 green438/API155captures.
 Local unchanged baseline PASS:640893domain checks/38suites,64schema,9release, formatting,
 actual Gradle domain/check/debug/lint/test-APK compile79tasks/17sec. Logs scratch/rdd011.
-Version0.11.0-test1/code15. Local implementation now schema16/rootJSON10/raw2/complete1.
+Version0.11.0-test1/code15. Local working implementation now schema17/rootJSON11/raw2/complete1; latest pushed gym checkpoint remains16/10.
 Draft PR18: https://github.com/mmwiza1/Race-day-dreams/pull/18 . Do not create a duplicate.
 Setup source19c74c2 passed full workflow42054247383. Remote bot commit e0a46f1 contains
 its canonical captures and MUST be preserved. Its bot-triggered follow-up42057028606
@@ -80,27 +80,45 @@ one staged paused workout via accepted recovery helpers and never deletes under 
 All assertions retained, no sleeps/retry weakening. Compatibility fix committed ea6f48b.
 
 
-Next exact tasks: commit/push compatibility correction; verify current source gate on28/35/36,
-inspect all new repository/UI failures and9raw production captures. Format check passed on gym
-checkpoint before this compatible-collections correction. Local build/debug/lint/test compilation
-on pre-correction gym source passed79tasks and final cleanup75tasks/54sec. No new visual signoff.
+Latest gym-only workflow42067939767 on bbb458b ran448tests EACH API28/35/36; ONLY failure
+on each was new grouped programme fixture still creating a draft via model.newDraft instead of
+real UI entry, leaving section="drafts" and no Preview button. Fixed test now clicks Build a
+programme from scratch AND Preview programme before activation. Original assertions retained.
+All other gym tests, new timer/warmup/superset capture methods, formatting and guidance passed;
+full workflow was RED, so canonical screenshots/APK were NOT published. Do not call this green.
+Java collection/runtime and SQLite fixture deletion failures from42062688210 are resolved in
+this second run. Need push this exact remaining fixture correction and rerun full matrix once.
 
-Milestone2 IN-PROGRESS UNCOMMITTED work must be preserved: StrengthVolume and
-StrengthVolumeTestSuite(547assertions) project actual working sets only, equal primary set-shares,
-separate secondary exposures, custom anatomy unknown, per-exercise modalities/load-reps separate.
-StrengthAnalyticsScreen +4UI tests, dashboard/navigation link. StrengthRecords +31domain checks
-separate measured/exact-rep/at-load/bodyweight/timed/distance and bounded2–10rep Epley estimates;
-StrengthRecordsScreen and navigation to legacy historical PB editing. These are not yet a completed
-milestone: new PB UI needs tests, expanded history, authentic3mode screenshots/validator updates;
-FeatureNavigation/RefinementUi/WeeklyUx tests must follow extra history-link navigation while
-retaining original assertions. Analytics test compile found20/60 Int→Double literals, corrected;
-latest combined source needs full compilation. Updated canonical fixture adds light strength-records
-capture but required-manifest/all modes not yet finished. No achievements implementation yet.
-Do not commit partially tested M2 into the compatibility-only correction by accident.
+MILESTONE2 VALID LOCAL WORK —PRESERVE ALL UNCOMMITTED FILES:
+- StrengthVolume +547assertions: actual working sets, primary set shares/secondary exposure,
+  per-exercise modality/frequency, custom anatomy unknown; 8/26/52week UI +4Compose tests.
+- StrengthRecords +31assertions: measured/exact-rep/at-load/bodyweight/timed/distance sources,
+  separate bounded2–10rep Epley estimates, original source local dates. New records UI +3tests;
+  legacy historical PB editing retained behind link; original navigation tests adjusted, no
+  original assertions removed. New actual production captures across3modes.
+- TrainingMilestones +33assertions: seven restrained count/distance/distinct-week awards, no
+  warmup-only/future/missing-distance/unknown-zone week inference, deterministic historic eligibility.
+  Typed SqliteAchievementsRepository normalized awards/proofs/preference with stable recognition,
+  optional in-app celebrations OFF by default (no system achievement notifications). ViewModel/UI,
+  5repository tests and3realUI tests; backup root11/schema17 additive over committed16/root10.
+- Current combined source local Gradle :domain:check/debug/lint/test-APK compile PASS79tasks/1m20sec;
+  schema70 PASS, formatting applied85Kotlin/136Java. Pure domain total currently649405/42suites.
+  Capture requirements now182=155baseline+9gym+18analytics/records/milestones. New18M2 scenes
+  are definitions only: no actual captures or visual acceptance yet. Canonical directory remains
+  prior setup155source. Complete/raw backup package versions remain1/2.
+- New docs STRENGTH_ANALYTICS_0_11.md, privacy/test-build notes. No new dependency/permission.
 
-M2–6 remain FULLY REQUIRED. No implementation yet for achievements/recovery/body/nutrition/
-retention/catalogue additions/full three athlete simulations. Analytics-only6month counting tests
-are not full athlete simulation acceptance. Continue after gym gate, do not silently defer scope.
+NEXT: stage only gym fixture correction (preserve M2 root-version assertions) and run exact-source
+full gym gate; inspect current run, artifacts and9real screenshots. Then finish M2 verification:
+run format check/release9/capture-validator15/schema70/current-source domain and compile again
+if source changes; review new repo/backup tests (including explicit11missing-achievements and
+previous10 restore), run all182captures/API matrix and inspect light/dark/200%. Update docs and
+commit/push M2 coherently after relevant verification. Do not duplicate PR18 or auto-merge.
+
+M3–6 remain FULLY REQUIRED and NOT IMPLEMENTED: conservative recovery/deload/hybrid proposals,
+optional HC height/body/protein, explicit safe retention/storage/pruning, complete catalogue
+additions, full three6month athlete simulations, final visual/regression/APK/docs. Analytics-only
+six-month counting checks are not full athlete simulations. Continue rather than silently defer.
 
 New durable data continues typed repositories over shared ProfileDatabase transactions.
 Future migrations must be additive beyond16, keeping supported upgrades; do not rewrite committed

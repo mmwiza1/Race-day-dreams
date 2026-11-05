@@ -99,7 +99,7 @@ class StrengthProgrammeBuilderScreenTest {
     @Test
     fun groupedProgrammeDraftSurvivesPreviewActivationAndBackupWithoutActualSets() {
         install()
-        compose.runOnIdle { model.newDraft() }
+        click("Build a programme from scratch")
         await { model.state.value.draft != null }
         completeOneDayDraft()
         val block = model.state.value.draft!!.blocks().single()
