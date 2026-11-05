@@ -193,6 +193,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             out.put("strengthProgramming", SqliteStrengthProgrammingRepository.exportData(db));
             out.put("gymTools", SqliteGymToolsRepository.exportData(db));
             out.put("achievements", SqliteAchievementsRepository.exportData(db));
+            out.put("bodyMeasurements", SqliteBodyMeasurementsRepository.exportData(db));
             db.setTransactionSuccessful();
             return out;
         } catch (JSONException e) {
@@ -244,6 +245,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             StrengthProgrammingArchive.Snapshot strengthProgramming,
             SqliteGymToolsRepository.Snapshot gymTools,
             SqliteAchievementsRepository.Snapshot achievements,
+            SqliteBodyMeasurementsRepository.Snapshot bodyMeasurements,
             JSONObject support) {}
 
     private record SourceKey(String provider, String recordId) {}
@@ -457,6 +459,10 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                             strengthEngine),
                     SqliteAchievementsRepository.validate(
                             data.has("achievements") ? data.getJSONObject("achievements") : null),
+                    SqliteBodyMeasurementsRepository.validate(
+                            data.has("bodyMeasurements")
+                                    ? data.getJSONObject("bodyMeasurements")
+                                    : null),
                     data.optJSONObject("support"));
         } catch (JSONException | java.time.DateTimeException e) {
             throw FeatureJson.invalid(e);
@@ -607,6 +613,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                 SqliteGymExecutionRepository.restore(db, snapshot.strengthEngine());
             SqliteGymToolsRepository.restore(db, snapshot.gymTools());
             SqliteAchievementsRepository.restore(db, snapshot.achievements());
+            SqliteBodyMeasurementsRepository.restore(db, snapshot.bodyMeasurements());
             SupportStore.restore(db, snapshot.support());
             Release08Store.restore(db, data.optJSONObject("release08"));
             RecordingStore.restoreRetainedSamples(db);

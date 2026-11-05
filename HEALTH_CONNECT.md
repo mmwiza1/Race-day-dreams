@@ -141,3 +141,12 @@ controls remain. There is no new Health Connect permission in this increment.
 Permissions, provider reconciliation and write-back remain unchanged. Recorder-only
 onboarding and Run Now do not require Health Connect. Spontaneous origins and explicit
 plan associations are app-owned annotations; they never replace provider evidence.
+
+## Optional height and body guidance (0.11 development)
+
+The body screen requests READ_HEIGHT and READ_WEIGHT only on explicit choice, independently
+of exercise permission. The existing SDK1.1.0 HeightRecord is used; there is no new dependency,
+background read permission or direct provider SDK. Partial grants, staged atomic window updates,
+source identities, retained imports after revocation and manual fallback are described in
+[Body guidance](docs/BODY_GUIDANCE_0_11.md). Protein requires explicit selection of a recorded
+weight and never uses height as its basis. See VERIFICATION.md for actual gate results.

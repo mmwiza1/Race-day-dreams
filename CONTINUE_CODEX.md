@@ -20,13 +20,15 @@ software scope and all automated/visual gates are complete; then prepare for own
 
 Branch: feature/0.11-gym-health-recovery-intelligence
 Draft PR: https://github.com/mmwiza1/Race-day-dreams/pull/18
-Latest verified implementation:5f79cfc (M2), canonical124e036; current following M3 checkpoint adds recovery/hybrid previews and observed visual refinements. Use git log for this checkpoint SHA.
+Latest full-matrix green implementation:5f79cfc (M2), canonical124e036. M3 implementation889ecff
+is preserved; the following body checkpoint includes its two observed gate corrections. Use actual
+git log/HEAD for this body checkpoint SHA; its local gates pass, full matrix/visual gate pending.
 This handoff is a following documentation-only checkpoint; inspect actual git status/log/remote
 before continuing. No valid local work may be reset/discarded. Main baseline8796bc5 is unchanged
 unless a fresh fetch proves advancement. No new runtime dependency or Internet permission.
-Version0.11.0-test1/code15; CURRENT schema17/rootJSON11/raw archive2/complete package1.
+Version0.11.0-test1/code15; CURRENT local body checkpoint schema18/rootJSON12/raw archive2/complete1.
 Authoring/strength backup subformats remain supported. Future changes must migrate ADDITIVELY
-beyond17 and reject incompatible future backup formats; do not rewrite distributed16/17 DDL.
+beyond18 and reject incompatible future backup formats; do not rewrite older16/17/18 DDL.
 
 COMPLETED BASELINE / SETUP
 - Live main8796bc5 (0.10.1/code14/schema15/JSON9) fetched/pulled clean; baseline640893domain/
@@ -137,7 +139,7 @@ IMMEDIATE NEXT TASKS (continue automatically, do not stop after one fix)
 3. M2 gates are green. Finish current M3 full matrix/visual review, then continue M4–6 BELOW.
  Keep the PR draft; not full release-complete. M3 adds no schema/backup/permission/dependency.
 
-M3 —IMPLEMENTED / LOCAL GATES PASS; EMULATOR AND VISUAL GATE PENDING: conservative recovery/deload and hybrid scheduling
+M3 —IMPLEMENTED;2MATRIX FAILURES CORRECTED ON CURRENT BODY CHECKPOINT; RERUN PENDING: conservative recovery/deload and hybrid scheduling
 - Surviving untracked TrainingRecovery.java preserved and audited. Added RecoveryProgrammeProposal,
   TrainingRecoveryViewModel/Screen and existing typed preview navigation; no new persistence format.
   315 pure-domain assertions pass. Added4Compose cases,1existing-review route UI case,1repository backup/activation case
@@ -157,13 +159,61 @@ M3 —IMPLEMENTED / LOCAL GATES PASS; EMULATOR AND VISUAL GATE PENDING: conserva
  explicit approval, no silent future revisions. Respect priority/demanding runs/race context without
  rewriting running plans or introducing a competing execution/planning engine.
 
-M4 —NOT IMPLEMENTED: optional height/weight/protein
+M3 MATRIX FAILURE FOUND AND FIXED LOCALLY (NOT YET RERUN/PASSED)
+-889ecff /42103872457 ALL API28/35/36 completed472cases with2failures each: recovery
+ capture awaited Running home(false) despite explicitly choosingStrength. Exact report confirms
+ awaitHomeReady. It now requiresStrength(true), retaining all readiness assertions/timeouts.
+-Real lighter-week activation failed existing repository budget safeguard. Production proposal
+ now recomputes StrengthWorkoutBudget.workoutMinutes for changed sets; added domain assertion.
+ No safeguard weakened. Move proposals still preserve frozen targets. Report ZIP13451117969
+ hashbdf93812470ebf7e7724cd9a52d0c363594f653f2fa76df25c5ad2960164454a preserved in scratch.
+
+M4 —IMPLEMENTED / CURRENT LOCAL GATES PASS; FULL ANDROID/VISUAL GATE PENDING
+- M3 implementation889ecff pushed; full workflow42103872457 finished with2failures EACH API28/35/36; exact roots/fixes above.
+- New BodyHeight/HeightUnit/ProteinGuidance/BodyMeasurementsRepository + BodyGuidanceTestSuite:
+ 1368new domain assertions (including unknown-focus handling) pass; current total651105/44suites. Explicit weight selection, source/date/kg snapshot, optionaloff,
+ stale/future/changed/missing basis gets no numbers; documented general adult range only, no height
+ inference. Original freshness/applicability/rounding choices need docs.
+- SqliteBodyMeasurementsRepository + additive schema18/root12 bodyMeasurements v1
+ wiring started. Current body checkpoint advances17/11 to18/12. PRESERVE every typed record/migration/test on interruption.
+ New normalized heights/preferences share restore transaction; legacy weight owner preserved.
+ -Typed body repo/backup/schema wiring, SDK-verified optional HeightRecord adapter, Body ViewModel/
+ screen/manual cm/in+kg/lb entry and explicit selection are now implemented locally. Seven repo
+ tests and five UI methods +1SDK permission contract +nine production capture definitions added (486cases/203captures
+ expected once built). Supported1..17→18 smoke tests and current constraints PASS72tests.
+ Current frozen-source actual Gradle PASS79tasks/1m22sec;651105domain/44suites (body1368/recovery321),
+ 72schema,9release,15capture validator,93Kotlin/148Java formatting, strict174/14guidance and
+ route source11/artwork14 checks passed. Latest exact logs scratch/rdd011/body-checkpoint-final-* (previous body-frozen-* retained).
+ Root current assertions updated12 while explicit older-format contracts retained; frozen older
+ schema fixtures remove new18tables before constructing previous schemas. Future schema guard
+ test now checks19 (18 is supported), not a weakened migration assertion.
+-Latest final-source local debug/lint/domain/test compilation PASS1m22sec/79tasks, including both
+ M3 corrections, body source/permissions and new UI/capture cases. No emulator/visual pass yet.
+ Docs BODY_GUIDANCE_0_11.md/HEALTH_CONNECT/PRIVACY/attribution updated; release/handoff still need
+ the next full matrix result and coherent checkpoint push. Preserve ALL valid work.
+-Exact next tasks: local compile/domain/schema/release/format/guidance pass. M3 all-API failures inspected and
+ corrected; push coherent M3 fixes+M4 checkpoint; run full matrix and
+ inspect203rawcaptures. Then M5 retention/storage and M6 remain fully required.
+
 - Inspect actual HC SDK1.1.0 HeightRecord/READ_HEIGHT and current gateway/body/weight provenance.
  Typed measurements, manual/unit fallback, duplicates/staleness/revocation/partial permissions.
  No body data required for programming. Document general adult sports protein range from valid
  weight/focus; height is NOT its primary basis; no unsupported numeric advice/medical claims.
 
 M5 —NOT IMPLEMENTED: safe retention/storage
+- Read-only audit begun: RecordingStore.kt finalization creates dense DistanceSamples in canonical
+ activity payload as well as recording_points coordinates/sensors; cleanup must address both,
+ preserving immutable totals, qualified PBs/laps/aggregates first. withRetainedSamples and
+ restoreRetainedSamples can repopulate evidence from retained rows: missing-detail metadata and
+ truthful route/GPX/backup handling must prevent fabricated reconstruction.
+- RecordingArchive.kt currently writer2/read1–2, contiguous sequence validation, explicit1000session/
+ 100000point/512MiB caps (ERRORS, not silent truncation). CompleteBackup1 already holds a shared
+ SQLite transaction over JSON+raw exports and rejects unfinished recording. Preserve that useful
+ transaction boundary; do not add speculative background services/locks without need.
+- Design default24months only for true new installs; upgrade users require explicit grandfathered
+ acknowledgement. Preview + confirmed bounded whole-session transactions, idempotence/rollback,
+ no active/recoverable recorder cleanup, no deletion of ordinary workouts/sets/PBs/versions/awards.
+
 -24months new-install default /5years/forever; existing users grandfathered until informed explicit
  acknowledgement. Preview and separate bounded/idempotent transactional cleanup with operation
  coordination. NEVER delete ordinary summaries/actuals/PBs/versions/decisions/awards/shoe totals.
@@ -493,3 +543,12 @@ recording/locked screen/GPS split/recovery/Health Connect/BLE/audio/backup and p
 creation/activation/regeneration/substitution/progression/history light/dark/200% tests.
 No merge/tag/production-release claim until the agreed automated acceptance is complete;
 0.10 remains a test build, not a Play Store release.
+
+## Latest workspace recovery note (0.11 body checkpoint)
+
+The selected executor briefly entered starting; wait_for_environment returned ready and git/status/
+log plus final gate logs were rechecked. ALL M4 files survived unchanged. Do not reconstruct or
+reset them. Current source passes body-checkpoint-final-gate.log (1m22sec/79tasks), final formatting
+93Kotlin/148Java,72schema/9release/15capture-validator, strict174/14guidance, source11/artwork14.
+Next complete matrix must test486cases and203captures per API28/35/36. No current-body screenshots
+are published yet; existing188canonical images remain M2 source5f79cfc. Do not merge PR18.

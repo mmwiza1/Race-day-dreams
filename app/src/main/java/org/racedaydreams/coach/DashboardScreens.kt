@@ -36,6 +36,7 @@ import org.racedaydreams.domain.UnitSystem
     DestinationCard("Recorded milestones","Running and strength evidence, with optional in-app celebrations"){open("achievements")}
     DestinationCard("Body weight","Recorded measurements, without judgement"){open("progress/weight")}
     DestinationCard("Weekly coaching review","Evidence, recommendations and your decisions"){open("weekly")}
+    DestinationCard("Body & protein guidance","Optional source-labelled measurements and general adult nutrition guidance"){open("progress/body")}
     state.weights.maxByOrNull{it.at()}?.let{CoachCard{Text("Latest weight",style=MaterialTheme.typography.titleSmall);Text("${decimal(state.massUnit.fromKilograms(it.kilograms()))} ${state.massUnit.name.lowercase()}")}}
 }
 fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{

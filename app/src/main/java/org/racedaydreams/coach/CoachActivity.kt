@@ -304,7 +304,14 @@ private fun CoachApp(
                     providerUpdate = providerUpdate,
                 )
                 strengthGraph({ state }, model, nav, gymModel, programmeModel)
-                progressGraph({ state }, model, nav)
+                progressGraph(
+                    { state },
+                    model,
+                    nav,
+                    requestBodyPermissions = {
+                        permissions.launch(HealthConnectGateway.BODY_PERMISSIONS)
+                    },
+                )
                 settingsGraph(
                     { state },
                     model,

@@ -1006,6 +1006,88 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesOptionalBodyGuidanceAndSourceHistory() {
+        val body = org.racedaydreams.data.SqliteBodyMeasurementsRepository(context)
+        val now = Instant.now()
+        val weight =
+            org.racedaydreams.domain.body.BodyWeight(
+                "body-guidance-fixture",
+                87.0,
+                now.minusSeconds(86400),
+                ZoneOffset.UTC,
+                "manual",
+                "body-guidance-fixture",
+                null,
+            )
+        body.saveWeight(weight)
+        body.saveHeight(
+            org.racedaydreams.domain.body.BodyHeight(
+                "body-height-fixture",
+                1.78,
+                now.minusSeconds(86400),
+                ZoneOffset.UTC,
+                "manual",
+                "body-height-fixture",
+                null,
+                null,
+            )
+        )
+        body.preferences(
+            org.racedaydreams.domain.body.BodyMeasurementsRepository.Preferences(
+                true,
+                org.racedaydreams.domain.body.HeightUnit.CENTIMETRES,
+                org.racedaydreams.domain.body.ProteinGuidance.Basis.from(weight),
+            )
+        )
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.HYBRID)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose
+                    .onNode(
+                        (hasText("Progress") or hasContentDescription("Progress")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Body & protein guidance")
+                compose.onNodeWithText("Body & protein guidance").performScrollTo().performClick()
+                await("A general daily range is about 120–175 grams of protein.")
+                alignHeading("Body & protein guidance")
+                capture("body-protein$suffix")
+                compose.onNodeWithText("Calculation & sources ▾").performScrollTo().performClick()
+                alignHeading("Calculation & sources ▴")
+                capture("body-protein-details$suffix")
+                compose.onNodeWithText("Choose or record a weight").performScrollTo().performClick()
+                alignHeading("Record a measurement")
+                capture("body-measurements$suffix")
+                Assert.assertEquals(weight, body.weights().first { it.id() == weight.id() })
+                Assert.assertTrue(body.preferences().basis().matches(weight))
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            shell("settings put system font_scale $originalFont")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesRecoveryGuidanceFromActualRecordedEvidence() {
         val today = LocalDate.now()
         SqlitePrimaryFocusRepository(context)
@@ -1047,7 +1129,7 @@ class CoachingScreenshotTest {
                 shell("settings put system font_scale $scale")
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
-                awaitHomeReady(false)
+                awaitHomeReady(true)
                 compose
                     .onNode(
                         (hasText("Strength") or hasContentDescription("Strength")) and

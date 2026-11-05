@@ -192,6 +192,14 @@
     "app/src/androidTest/java/org/racedaydreams/coach/AchievementsScreenTest.kt",
     "domain/src/main/java/org/racedaydreams/domain/recovery/*.java",
     "domain/src/test/java/org/racedaydreams/domain/recovery/*.java",
-    "app/src/androidTest/java/org/racedaydreams/coach/TrainingRecoveryScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/TrainingRecoveryScreenTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/body/*.java",
+    "domain/src/test/java/org/racedaydreams/domain/body/*.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteBodyMeasurementsRepository.java",
+    "app/src/main/java/org/racedaydreams/coach/body/**/*.kt",
+    "app/src/main/java/org/racedaydreams/health/HealthConnectGateway.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/BodyMeasurementsScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/BodyMeasurementsRepositoryTest.java",
+    "app/src/androidTest/java/org/racedaydreams/health/HealthConnectGatewayTest.kt"
   ]
 }

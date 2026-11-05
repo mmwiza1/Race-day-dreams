@@ -61,7 +61,7 @@ public final class GymExecutionBackupTest extends AndroidTestCase {
         settings.putSetting("retained", "before export");
         byte[] bytes = export();
         JSONObject envelope = object(bytes);
-        assertEquals(11, envelope.getInt("version"));
+        assertEquals(12, envelope.getInt("version"));
         assertEquals(
                 2,
                 envelope.getJSONObject("data").getJSONObject("strengthEngine").getInt("version"));

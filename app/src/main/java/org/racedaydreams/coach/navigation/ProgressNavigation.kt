@@ -11,7 +11,17 @@ fun NavGraphBuilder.progressGraph(
     readState: () -> CoachUiState,
     model: CoachViewModel,
     nav: NavHostController,
+    requestBodyPermissions: () -> Unit = {},
 ) {
+    composable("progress/body") {
+        val body: org.racedaydreams.coach.body.BodyMeasurementsViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel()
+        org.racedaydreams.coach.body.BodyMeasurementsScreen(
+            body,
+            onBack = { nav.popBackStack() },
+            onPermissions = requestBodyPermissions,
+        )
+    }
     composable("achievements") {
         val milestones: org.racedaydreams.coach.strength.AchievementsViewModel =
             androidx.lifecycle.viewmodel.compose.viewModel()

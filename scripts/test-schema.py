@@ -82,8 +82,8 @@ def create_schema(connection, version=14, frozen=False):
 def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if target not in (14, 15, 16, 17) or old < 1 or old >= target:
-        raise ValueError("Only explicit upgrades to historical 14–16 or current 17 are supported")
+    if target not in (14, 15, 16, 17, 18) or old < 1 or old >= target:
+        raise ValueError("Only explicit upgrades to historical 14–17 or current 18 are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -463,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,18), (2,18), (14,14)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,19), (2,19), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -1102,6 +1102,30 @@ class AchievementsSchemaTest(unittest.TestCase):
         self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],15)
         self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='gym_rest_timers'").fetchone())
         self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='training_milestones'").fetchone())
+
+
+class BodySchemaTest(unittest.TestCase):
+    def test_all_supported_upgrades_to_eighteen_preserve_existing_settings(self):
+        for version in range(1,18):
+            with self.subTest(version=version):
+                db=sqlite3.connect(':memory:');create_schema(db,version)
+                if version >= 2: db.execute("INSERT INTO settings VALUES('old','retained')");db.commit()
+                migrate_to_latest(db,18)
+                self.assertEqual(18,db.execute('PRAGMA user_version').fetchone()[0])
+                if version >= 2:self.assertEqual('retained',db.execute("SELECT setting_value FROM settings WHERE setting_key='old'").fetchone()[0])
+                self.assertEqual(0,db.execute('SELECT COUNT(*) FROM body_heights').fetchone()[0])
+                db.close()
+
+    def test_height_source_identity_and_atomic_basis_constraints(self):
+        db=sqlite3.connect(':memory:');create_schema(db,18)
+        db.execute("INSERT INTO body_heights VALUES('h',1.78,'2026-11-05T12:00:00Z',1793880000,0,NULL,'manual','h',NULL,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO body_heights VALUES('other',1.79,'2026-11-05T12:00:00Z',1793880000,0,NULL,'manual','h',NULL,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO body_guidance_preferences VALUES(1,1,'CENTIMETRES','missing',NULL,80)")
+        db.execute("INSERT INTO body_guidance_preferences VALUES(1,0,'INCHES',NULL,NULL,NULL)")
+        self.assertEqual(1,db.execute('SELECT COUNT(*) FROM body_heights').fetchone()[0])
+        db.close()
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

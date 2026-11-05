@@ -530,8 +530,10 @@ Record observations and build commit for each check; nothing below is a claimed 
   preview a lighter week and review its exact changed/unchanged targets before separate activation.
   Verify completed/started sessions and later weeks remain exact. For Hybrid, review lower-conflict
   dates, keep either schedule, and confirm no running plan moves. All require physical verification.
-- When available: grant/deny/revoke Health Connect height/weight separately, use real providers
-  and manual/unit fallbacks, inspect source/timestamp and conservative general protein guidance.
+- Grant/deny/revoke Health Connect height/weight separately, use real providers and manual
+  cm/inch/kg/pound fallbacks, inspect source/timestamp and explicitly choose a weight for optional
+  protein guidance. Verify a newer import cannot silently replace that choice, and stale/missing/
+  changed/future weight gets no numerical range. These real-provider checks remain unperformed.
 - When available: review retention acknowledgement/preview, back up first, execute bounded
   detail cleanup and confirm summaries, PBs, programmes and meaningful history still open.
 - Complete JSON and complete-package backup/restore checks on a copy of genuine long-term data.

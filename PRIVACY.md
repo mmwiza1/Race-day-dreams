@@ -143,3 +143,11 @@ references/times and relevant recorded distance in typed local tables and explic
 It does not hydrate GPS routes for achievement counts. Optional celebrations stay in-app; there are
 no achievement uploads, system streak notifications or telemetry. Diagnostic allow-lists remain
 separate from these private records.
+
+### Optional body guidance (0.11 development)
+
+Height observations and nutrition preferences stay in the local typed database and explicit
+user backups. The optional Health Connect READ_HEIGHT grant supports this feature only; manual
+entry remains available. Protein guidance is off by default and requires an explicitly chosen
+weight. Imported values do not become automatically authoritative. No body values are added
+to diagnostics, analytics, remote APIs or background uploads. See docs/BODY_GUIDANCE_0_11.md.

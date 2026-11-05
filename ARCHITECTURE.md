@@ -1,3 +1,17 @@
+# 0.11 body/recovery feature boundaries
+
+TrainingRecoveryViewModel builds evidence-backed options off-main; preview-only domain proposals
+save through existing concrete strength drafts and reviewed activation. No new planner or workout
+executor is introduced. Completed/started prescriptions, immutable versions and actuals stay distinct.
+
+BodyMeasurementsViewModel owns optional observation/guidance state separately from CoachViewModel.
+SqliteBodyMeasurementsRepository implements a typed boundary over normalized schema18 height and
+preference tables and the existing weight owner. Optional provider pages stage before one shared
+transaction; denied metrics/manual observations are not replaced. Root JSON12 adds strict body v1
+with older supported readers. No height/body preference is stored in a generic payload table.
+Protein needs an explicit identity/time/mass snapshot and never derives from height. See
+ docs/BODY_GUIDANCE_0_11.md and VERIFICATION.md for original heuristics and observed gates.
+
 # 0.10 programme authoring boundary
 
 New Android-independent StrengthProgramme/Draft models preserve dated blocks, frozen

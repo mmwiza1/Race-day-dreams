@@ -1351,3 +1351,33 @@ assertions. Formatting88Kotlin/139Java, schema70/release9/capture-validator15 pa
 instrumentation methods are compiled, not yet claimed executed (expected472/API,194captures).
 Verified M2 API35 debug APK52,323,751bytes; SHA256a788880f0f642e527ba4238ef9a4460d35049650bd8e14bfa0f0cd220a77094e;
 artifact13450302836 from42100006847. Increase versus0.10.1:344,175bytes/+0.662%; no new artwork.
+
+## 0.11 M3 corrections + body milestone — current local checkpoint
+
+M3 source889ecff /42103872457 completed472tests EACH API28/35/36, with the same2failures
+per API (other470passed). Full reports confirm recovery capture failed in awaitHomeReady: it
+selected Strength but awaited Running. It now asserts Strength readiness with the same timeout.
+Lighter-week activation hit the existing changed-workout time-budget guard; the pure proposal
+now recomputes the existing StrengthWorkoutBudget estimate, with additional domain assertions.
+Neither failure was rerun blindly or worked around by weakening a safeguard. No194images were
+published from that failed run.
+
+Current frozen-source local Gradle gate PASS79tasks/1m17sec: domain/check, debug APK, lint and
+instrumentation APK.651105domain checks/44suites (BodyGuidance1368; TrainingRecovery321),72schema
+tests,9release tests,15capture-validator tests,93Kotlin/148Java format checks, strict174canonical/
+14routine guidance,11route-source and14artwork checks pass. Exact logs scratch/rdd011/body-frozen-*.
+The earlier lint failure from nested unbraced import validation was fixed with explicit braces;
+no lint baseline/suppression was added. SDK1.1.0 HeightRecord/READ_HEIGHT and Kotlin inMeters
+compile against the actual dependency. Only optional READ_HEIGHT was added; no Internet,
+background-health permission or runtime dependency change.
+
+Schema18/rootJSON12/bodyMeasurements1/raw2/complete1. Old roots1–11 and schemas1–17 remain
+supported; old body sections restore empty/off. Seven new body repository tests, five body UI
+methods and an SDK permission-contract method are COMPILED, not yet claimed run. Full expected
+current-source gate486cases/API and203authentic captures is pending. Existing canonical188images
+remain source5f79cfc; no recovery/body visual sign-off or Galaxy S24 pass is claimed.
+
+The final frozen body-source gate, including history-permission recheck and honest unknown import
+time, passed79tasks/1m22sec. Logs body-checkpoint-final-gate/format/schema/release/validator; exact
+counts remain651105/44domain,93Kotlin/148Java,72schema,9release,15capture-validator. The executor
+restart preserved all files and these results. Full486case/203capture matrix is still pending.

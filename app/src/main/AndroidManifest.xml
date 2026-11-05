@@ -3,6 +3,7 @@
     <!-- Health access is optional. No network or broad-storage permission. Location is only used during explicit recording. -->
     <uses-permission android:name="android.permission.health.READ_EXERCISE" />
     <uses-permission android:name="android.permission.health.READ_WEIGHT" />
+    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
     <uses-permission android:name="android.permission.health.READ_DISTANCE" />
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY" />

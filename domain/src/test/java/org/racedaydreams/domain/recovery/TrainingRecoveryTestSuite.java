@@ -168,7 +168,12 @@ public final class TrainingRecoveryTestSuite {
                         || old.date().isAfter(TODAY.plusDays(6))
                         || protectedIds.contains(old.id()))
                     check(old.equals(next), "Past/protected/later weeks exact");
-                else
+                else {
+                    check(
+                            next.expectedMinutes()
+                                    == StrengthWorkoutBudget.workoutMinutes(
+                                            next.definition().slots()),
+                            "Changed sets have a freshly reviewable time estimate");
                     for (int i = 0; i < old.definition().slots().size(); i++) {
                         var a = old.definition().slots().get(i);
                         var b = next.definition().slots().get(i);
@@ -193,6 +198,7 @@ public final class TrainingRecoveryTestSuite {
                                     "Only working-set count changes; no invented load");
                         }
                     }
+                }
             }
             rejects(
                     () ->

@@ -122,6 +122,7 @@ class FeatureNavigationTest {
                 "exercises",
                 "exercise/{id}",
                 "progress",
+                "progress/body",
                 "achievements",
                 "progress/pbs",
                 "progress/trends",

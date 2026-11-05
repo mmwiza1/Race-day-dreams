@@ -170,3 +170,7 @@ The [0.10.1 comparison](docs/GPS_ENGINE_REVIEW_0_10_1.md) records pinned OpenTra
 RunnerUp and GPSTest sources and licences. This was source/behavioural research, not
 incorporation. In particular, no GPL RunnerUp implementation was copied or translated.
 No additional runtime library, artwork or geographic data was introduced.
+
+The optional0.11 general protein range uses original MIT app code and explanatory wording.
+Sports-nutrition factual references are documented in docs/BODY_GUIDANCE_0_11.md; no source
+article text, images, commercial nutrition database or official branding is redistributed.

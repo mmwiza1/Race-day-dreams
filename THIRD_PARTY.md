@@ -282,3 +282,10 @@ GPSTest (Apache-2.0) were inspected as engineering references only. No source wa
 copied or incorporated, no runtime dependency was added and this does not relicense
 Race Day Dreams. Pinned revisions, file paths, decisions and the inaccessible current
 Codeberg limitation are recorded in [the review](docs/GPS_ENGINE_REVIEW_0_10_1.md).
+
+### General protein guidance references (0.11)
+
+Original calculations/wording draw on Thomas/Erdman/Burke2016 (ACSM joint position statement,
+DOI10.1249/MSS.0000000000000852) and Jäger et al.2017 (ISSN protein/exercise position stand,
+DOI10.1186/s12970-017-0177-8). These factual references do not introduce bundled third-party
+content, an app dependency, runtime download or a licence change. See docs/BODY_GUIDANCE_0_11.md.

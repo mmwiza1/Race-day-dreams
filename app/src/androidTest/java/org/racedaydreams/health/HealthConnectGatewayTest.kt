@@ -1,10 +1,10 @@
 package org.racedaydreams.health
 
 import android.test.AndroidTestCase
+import java.time.Instant
 import kotlinx.coroutines.runBlocking
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.health.HealthImportRepository
-import java.time.Instant
 
 /** Actual SDK availability/denied-access checks; no provider writes or fabricated records. */
 @Suppress("DEPRECATION")
@@ -25,8 +25,14 @@ class HealthConnectGatewayTest : AndroidTestCase() {
         if (HealthConnectGateway.EXERCISE_PERMISSION !in grants) {
             val store = RejectingStore()
             val result = gateway.sync(store)
-            assertTrue(result.status in setOf(HealthSyncStatus.UNAVAILABLE,
-                HealthSyncStatus.UPDATE_REQUIRED, HealthSyncStatus.PERMISSION_REQUIRED))
+            assertTrue(
+                result.status in
+                    setOf(
+                        HealthSyncStatus.UNAVAILABLE,
+                        HealthSyncStatus.UPDATE_REQUIRED,
+                        HealthSyncStatus.PERMISSION_REQUIRED,
+                    )
+            )
             assertEquals(0, result.importedCount)
             assertNull(result.windowStart)
             assertNull(result.windowEnd)
@@ -35,42 +41,117 @@ class HealthConnectGatewayTest : AndroidTestCase() {
     }
 
     fun testRequestedRecordsMatchImplementedReadOnlyFeatures() {
-        assertEquals(setOf("android.permission.health.READ_EXERCISE",
-            "android.permission.health.READ_DISTANCE"), HealthConnectGateway.BASELINE_PERMISSIONS)
-        assertEquals(setOf("android.permission.health.READ_HEART_RATE"), HealthConnectGateway.OPTIONAL_PERMISSIONS)
-        assertEquals("android.permission.health.READ_HEALTH_DATA_HISTORY", HealthConnectGateway.HISTORY_PERMISSION)
-        assertTrue(HealthConnectGateway.ALL_PERMISSIONS.none { it.contains("WRITE_") || it.contains("BACKGROUND") })
+        assertEquals(
+            setOf(
+                "android.permission.health.READ_EXERCISE",
+                "android.permission.health.READ_DISTANCE",
+            ),
+            HealthConnectGateway.BASELINE_PERMISSIONS,
+        )
+        assertEquals(
+            setOf("android.permission.health.READ_HEART_RATE"),
+            HealthConnectGateway.OPTIONAL_PERMISSIONS,
+        )
+        assertEquals(
+            "android.permission.health.READ_HEALTH_DATA_HISTORY",
+            HealthConnectGateway.HISTORY_PERMISSION,
+        )
+        assertTrue(
+            HealthConnectGateway.ALL_PERMISSIONS.none {
+                it.contains("WRITE_") || it.contains("BACKGROUND")
+            }
+        )
     }
 
     fun testCoverageCanBeRestoredWithoutReadingHealthRecords() {
-        val checkpoint = """{"version":1,"token":"opaque-test-token","permissions":[],"windowStart":"2030-01-01T00:00:00Z","windowEnd":"2030-01-30T00:00:00Z"}"""
+        val checkpoint =
+            """{"version":1,"token":"opaque-test-token","permissions":[],"windowStart":"2030-01-01T00:00:00Z","windowEnd":"2030-01-30T00:00:00Z"}"""
         val window = HealthConnectGateway.importWindow(checkpoint)
         assertEquals(Instant.parse("2030-01-01T00:00:00Z"), window?.first)
         assertEquals(Instant.parse("2030-01-30T00:00:00Z"), window?.second)
         assertNull(HealthConnectGateway.importWindow(null))
         assertNull(HealthConnectGateway.importWindow("not JSON"))
-        assertNull(HealthConnectGateway.importWindow(checkpoint.replace("\"version\":1", "\"version\":99")))
+        assertNull(
+            HealthConnectGateway.importWindow(checkpoint.replace("\"version\":1", "\"version\":99"))
+        )
     }
 
     fun testMalformedCheckpointCannotAdvertiseFalseCoverage() {
-        val checkpoint = """{"version":1,"token":"opaque-test-token","permissions":[],"windowStart":"2030-01-01T00:00:00Z","windowEnd":"2030-01-30T00:00:00Z"}"""
+        val checkpoint =
+            """{"version":1,"token":"opaque-test-token","permissions":[],"windowStart":"2030-01-01T00:00:00Z","windowEnd":"2030-01-30T00:00:00Z"}"""
         assertNull(HealthConnectGateway.importWindow(checkpoint.replace("opaque-test-token", "")))
-        assertNull(HealthConnectGateway.importWindow(checkpoint.replace("2030-01-30T00:00:00Z", "2029-01-01T00:00:00Z")))
-        assertNull(HealthConnectGateway.importWindow(checkpoint.replace("\"version\":1", "\"version\":1.5")))
-        assertNull(HealthConnectGateway.importWindow("""{"version":1,"token":"opaque-test-token","permissions":[]}"""))
+        assertNull(
+            HealthConnectGateway.importWindow(
+                checkpoint.replace("2030-01-30T00:00:00Z", "2029-01-01T00:00:00Z")
+            )
+        )
+        assertNull(
+            HealthConnectGateway.importWindow(
+                checkpoint.replace("\"version\":1", "\"version\":1.5")
+            )
+        )
+        assertNull(
+            HealthConnectGateway.importWindow(
+                """{"version":1,"token":"opaque-test-token","permissions":[]}"""
+            )
+        )
     }
 
     fun testWeightPermissionIsSeparate() {
-        assertEquals("android.permission.health.READ_WEIGHT",HealthConnectGateway.WEIGHT_PERMISSION)
-        assertFalse(HealthConnectGateway.BASELINE_PERMISSIONS.contains(HealthConnectGateway.WEIGHT_PERMISSION))
+        assertEquals(
+            "android.permission.health.READ_WEIGHT",
+            HealthConnectGateway.WEIGHT_PERMISSION,
+        )
+        assertFalse(
+            HealthConnectGateway.BASELINE_PERMISSIONS.contains(
+                HealthConnectGateway.WEIGHT_PERMISSION
+            )
+        )
     }
 
     private class RejectingStore : HealthImportRepository {
         var calls = 0
-        override fun activities(): List<ActivityRecord> { calls++; error("An unauthorized import touched storage") }
-        override fun importToken(provider: String): String? { calls++; error("An unauthorized import touched storage") }
-        override fun applyImport(provider: String, upserts: List<ActivityRecord>, deletedRecordIds: List<String>, nextToken: String?) {
-            calls++; error("An unauthorized import committed data")
+
+        override fun activities(): List<ActivityRecord> {
+            calls++
+            error("An unauthorized import touched storage")
         }
+
+        override fun importToken(provider: String): String? {
+            calls++
+            error("An unauthorized import touched storage")
+        }
+
+        override fun applyImport(
+            provider: String,
+            upserts: List<ActivityRecord>,
+            deletedRecordIds: List<String>,
+            nextToken: String?,
+        ) {
+            calls++
+            error("An unauthorized import committed data")
+        }
+    }
+
+    @org.junit.Test
+    fun heightAndWeightRemainExplicitIndependentReadPermissions() {
+        org.junit.Assert.assertEquals(
+            "android.permission.health.READ_HEIGHT",
+            HealthConnectGateway.HEIGHT_PERMISSION,
+        )
+        org.junit.Assert.assertEquals(
+            setOf(HealthConnectGateway.HEIGHT_PERMISSION, HealthConnectGateway.WEIGHT_PERMISSION),
+            HealthConnectGateway.BODY_PERMISSIONS,
+        )
+        org.junit.Assert.assertFalse(
+            HealthConnectGateway.BASELINE_PERMISSIONS.any {
+                it in HealthConnectGateway.BODY_PERMISSIONS
+            }
+        )
+        org.junit.Assert.assertTrue(
+            HealthConnectGateway.BODY_PERMISSIONS.none {
+                it.contains("WRITE_") || it.contains("BACKGROUND")
+            }
+        )
     }
 }

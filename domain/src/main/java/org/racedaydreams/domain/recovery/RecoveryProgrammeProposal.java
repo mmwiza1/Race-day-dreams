@@ -62,7 +62,7 @@ public final class RecoveryProgrammeProposal {
                         new StrengthProgramme.Workout(
                                 w.id(),
                                 w.date(),
-                                w.expectedMinutes(),
+                                StrengthWorkoutBudget.workoutMinutes(slots),
                                 new GymWorkoutDefinition(
                                         w.definition().id(),
                                         Math.addExact(w.definition().revision(), 1),

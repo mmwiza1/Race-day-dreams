@@ -77,6 +77,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             store.activityRepository(),
             store.settingsRepository(),
             development,
+            org.racedaydreams.data.SqliteBodyMeasurementsRepository(app),
         )
     val settings =
         SettingsCoordinator(

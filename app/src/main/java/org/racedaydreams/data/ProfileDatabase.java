@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 17;
+    static final int VERSION = 18;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -58,6 +58,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateFourteenToFifteen(db);
         migrateFifteenToSixteen(db);
         migrateSixteenToSeventeen(db);
+        migrateSeventeenToEighteen(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -509,10 +510,33 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V17_SCHEMA_END
     }
 
+    private static void migrateSeventeenToEighteen(SQLiteDatabase db) {
+        // V18_SCHEMA_BEGIN - optional observations and explicitly selected nutrition basis.
+        db.execSQL(
+                "CREATE TABLE body_heights (id TEXT PRIMARY KEY NOT NULL, metres REAL NOT NULL"
+                    + " CHECK(metres>0 AND metres<=3), observed_at TEXT NOT NULL, observed_seconds"
+                    + " INTEGER NOT NULL, observed_nanos INTEGER NOT NULL CHECK(observed_nanos"
+                    + " BETWEEN 0 AND 999999999), offset_seconds INTEGER CHECK(offset_seconds"
+                    + " BETWEEN -64800 AND 64800), provider TEXT NOT NULL, source_id TEXT NOT NULL,"
+                    + " origin TEXT, imported_at TEXT, UNIQUE(provider,source_id))");
+        db.execSQL(
+                "CREATE INDEX body_heights_by_time ON body_heights(observed_seconds"
+                        + " DESC,observed_nanos DESC,id)");
+        db.execSQL(
+                "CREATE TABLE body_guidance_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                    + " protein_enabled INTEGER NOT NULL CHECK(protein_enabled IN (0,1)),"
+                    + " height_unit TEXT NOT NULL CHECK(height_unit IN ('CENTIMETRES','INCHES')),"
+                    + " basis_id TEXT, basis_at TEXT, basis_kg REAL CHECK(basis_kg>0 AND"
+                    + " basis_kg<=1000), CHECK((basis_id IS NULL AND basis_at IS NULL AND basis_kg"
+                    + " IS NULL) OR (basis_id IS NOT NULL AND basis_at IS NOT NULL AND basis_kg IS"
+                    + " NOT NULL)))");
+        // V18_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 16)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 17)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -535,6 +559,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 13) migrateThirteenToFourteen(db);
         if (oldVersion <= 14) migrateFourteenToFifteen(db);
         if (oldVersion <= 15) migrateFifteenToSixteen(db);
-        migrateSixteenToSeventeen(db);
+        if (oldVersion <= 16) migrateSixteenToSeventeen(db);
+        migrateSeventeenToEighteen(db);
     }
 }

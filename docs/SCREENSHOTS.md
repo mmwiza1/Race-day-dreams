@@ -5,11 +5,13 @@ Canonical8a86d56 preserves the API35 originals. The capture ZIP hash and all164P
 were checked; all9new gym light/dark/200%images opened directly. See VISUAL_REVIEW_0_11.md for
 observed issues and subsequent refinements. No edited screenshot or mock UI is used.
 
-The next final-source checkpoint requires194images:155baseline +6recovery +15gym settings/preparation/
+The next final-source checkpoint requires203images:155baseline +9body/protein +6recovery +15gym settings/preparation/
 evidence +18analytics/records/milestones. Those additional/revised current-source images are NOT
 yet captured or visually accepted. Full release acceptance also requires the remaining milestone
 screens, meaningful disclosure/scroll states, light/dark/200%review and exact source fingerprints.
-Reference images remain separate. The older verification below records its historical source.
+Reference images remain separate. Latest verified M2 source5f79cfc/workflow42100006847 passed465cases/API and188captures/API;
+canonical124e036 matches all raw artifact PNGs. The older verification below records its own
+historical source. Recovery/body203frame captures still require their actual gate.
 
 # Archived0.10.1 authentic screenshots —155 source-verified images
 

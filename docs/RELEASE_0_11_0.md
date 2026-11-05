@@ -17,9 +17,12 @@ behaviour only; the complete agreed release is not yet ready for review.
   estimates. Historical/manual PB entry and the original progression history remain available.
 - A restrained set of local training milestones, backed by retained source references.
   Optional in-app celebrations are off by default; there are no streak penalties.
-
 - Optional recovery guidance from recorded effort and fresh comparable supporting evidence.
   Lighter-week and lower-conflict gym-date previews reuse separate review and activation.
+
+- Optional height and weight history with source labels, manual cm/inch and kg/pound entry,
+  and independent Health Connect access. General adult protein guidance is off by default and
+  requires an explicitly chosen, recent weight; imported measurements never silently replace it.
 
 ## Improvements
 
@@ -35,8 +38,9 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 - This is an incomplete development checkpoint. New gym and strength-intelligence screens
   still require their complete final-source API28/35/36 and authentic visual review.
-- Recovery/hybrid proposals still need their Android and visual gate; body/protein guidance, retention/storage and the
-  catalogue/final-simulation milestones remain to implement. They are not shipped controls.
+- Recovery/hybrid and body/protein screens require their current-source Android and visual gate.
+  Retention/storage and catalogue/final-simulation milestones remain to implement; those controls
+  are not shipped. This is not a software-complete0.11 release.
 - Android may delay optional rest notifications during sleep/battery saving. A reboot or
   cross-device restore interrupts timer continuity and requires explicit review.
 - Physical Galaxy S24 acceptance remains unperformed, including0.10.1 outdoor GPS checks.
@@ -45,16 +49,19 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 - Local-first, account-free operation remains. No Internet permission or backend is added.
 - Additive schema16 stores typed rest preferences/countdowns; schema17 adds normalized local
-  milestone recognition and sources. Root JSON11 retains older supported readers through10.
+  milestone recognition and sources. Schema18 adds typed height observations and optional guidance
+  preferences. Root JSON12 retains older supported readers through11.
   Raw archive2 and complete package1 remain unchanged.
 - Timer and warm-up suggestions never become recorded training automatically.
+- Optional READ_HEIGHT is the only new body-feature permission. No background health access or
+  runtime dependency is introduced. General protein ranges are not medical prescriptions.
 
 ## Verification
 
 - Unchanged baseline8796bc5 passed640893domain checks,64schema tests,9release tests,
   formatting and local Android build/lint/test compilation before implementation.
 - Baseline main42046671050 passed438instrumentation cases and155captures per API28/35/36.
-- Local current implementation:649731domain checks/43suites,70schema tests,9release-note
+- Local current implementation:651105domain checks/44suites,72schema tests,9release-note
   tests and15capture-validator tests; Android debug build/lint/instrumentation compilation pass.
 - Gym-only matrix runs exposed unsupported Java collection calls and new fixture entry/reset
   errors; corrections preserve assertions. Complete final-source automated/visual acceptance
@@ -62,3 +69,8 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 - Verified M2 workflow42100006847 passed465tests and188authentic captures per API28/35/36.
   The following recovery/UI-refinement checkpoint still requires its own emulator and visual gate.
+
+- M3 workflow42103872457 ran472cases per API, with two actual failures each: the new capture
+  awaited the wrong focus mode, and a reduced-set proposal retained its old time estimate.
+  Both are corrected on the following body checkpoint; existing assertions/safeguards remain.
+  Its complete486case/203capture matrix must pass before any final-source acceptance claim.
