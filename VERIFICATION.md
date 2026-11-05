@@ -1,3 +1,48 @@
+# Current0.10.1 software and visual verification —5November2026
+
+Verified source `1dffb7dcf7607c237f257004f4b322aade097ce6` passed COMPLETE
+[workflow42012242544](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42012242544).
+All required jobs green:438 instrumentation cases EACH API28/35/36 (1314total),155authentic
+captures/API, domain640893checks/38suites (GPS46311, render6323, instructions114),64schema/
+migration,9release,13capture-validator, source/provenance11, artwork14, pinned76Kotlin/122Java
+formatting, strict174canonical/14routine guidance, actual domain/check/debug build/lint/test
+compilation and resolved runtime inventory. No test/assertion/deadline was removed to pass.
+
+Canonical `d8539219c135766eae6979f9bcf8eb82b2fd65f3` contains155API35 PNG540x1200.
+ZIP artifact13407438794 digestc0434c6cd1eb1e6b602db5871260e7e0e06892e54b8d2826dd2c70d747ca4389,
+all157Git blob hashes, tree and exact unsigned bot commit/parent verified before adoption.
+App/capture fingerprint:
+`8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600`.
+API35APK13407813241 is51,979,576bytes (+114896/+0.22% versus0.10's51,864,680bytes).
+No new bundled artwork or runtime dependency. Temporary signed download URL expired once;
+refreshed through the authorised artifact tool, not a network-policy bypass or altered image.
+
+All33final-source progression frames opened directly across light/dark/200% and both
+disclosures, including the entire evidence/safeguards/action page via real scroll positions.
+Task first, genuine-only change comparison, unchanged facts once, short reason and separate
+actual80kg evidence/optional82kg reference confirmed. Cards grow and values stack; no internal
+clipping/overlap or horizontal scroll. See docs/VISUAL_REVIEW_0_10_1.md for observed details.
+Saving remains draft-only, with separate activation/freshness/version/CAS/history checks.
+Current/older backup reads, round trips, corrupt/future rejection, transaction rollback and
+actual/history preservation passed in the supported suites. Schema15/rootJSON9/raw2/complete1
+unchanged. Manifest/dependencies unchanged; built APK permissions have no Internet or
+background-location permission. No account/backend/analytics/ads/LLM introduced.
+
+The unchanged-reference copy regression first failed at instructioncheck72, then passed5new
+checks and modality UI coverage. The API36 worker-view exception was traced to Compose1.8.3's
+unconfined test frame dispatcher; queued StandardTestDispatcher plus explicit main-Looper
+assertion passes. No production Dream geometry, assignment, artwork or renderer changed.
+Earlier fixture scroll failures were corrected using real measured scroll positions while
+retaining all assertions. All earlier failed/pending notes below are historical boundaries.
+
+Galaxy S24 outdoor/urban/locked-screen/background/long-run/GPS comparison, audio/music/calls,
+BLE and human TalkBack remain UNPERFORMED. Synthetic/emulator results are not physical
+acceptance or a universal accuracy percentage. TEST_BUILD.md retains the human checklist.
+Final documentation-only head must pass its own full CI before PR16 leaves draft/merges;
+post-merge main and rolling development verification follow through GitHub's actual state.
+
+# Historical verification checkpoints
+
 ## 5 November2026 —155-frame visual review; async test scheduler correction
 
 48661f9/workflow42008939238 passed438 EACH API28/35 and155captures. API36 ran438 with one

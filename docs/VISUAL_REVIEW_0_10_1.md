@@ -1,3 +1,45 @@
+# Final-source0.10.1 progression visual review —5November2026
+
+Source1dffb7dcf7607c237f257004f4b322aade097ce6 passed COMPLETE workflow42012242544:
+438cases EACH API28/35/36 and155captures each. Canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3
+matches API35artifact13407438794 byte-for-byte. ZIP SHA256:
+`c0434c6cd1eb1e6b602db5871260e7e0e06892e54b8d2826dd2c70d747ca4389`.
+Source fingerprint:
+`8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600`.
+
+Opened all33final-source progression frames directly, not just accessibility assertions:
+eleven real scroll/disclosure positions in each light/dark/200% mode. This includes the
+complete actual-evidence section, lower safeguards and separate-save actions. Some normal
+frames are identical because their sections already fit together; large text scrolls naturally.
+
+| Owner requirement | Observed final-source result |
+| --- | --- |
+| Primary task | Mint rounded Here's what to do card, blue symbol and clear heading lead with actual2sets/4–6repetitions/3minutes/plain perceived-effort guidance. |
+| Genuine changes | Current reference Not set → Suggested reference82kg. Only the changed suggestion is highlighted; optional planning reference, not logged weight, is explicit. |
+| Unchanged facts | Sets, repetitions, effort and rest appear once as compact labelled tiles, not duplicate current/proposed paragraphs. |
+| Reason | A short separate Why this suggestion? panel. No repeated reason above and below Advanced. |
+| Historical evidence | Second View supporting workouts starts collapsed; actual80kg sets, recorded effort and UK dates appear only when chosen.82kg is never called recorded or compulsory. |
+| Cards/hierarchy | Rounded panels, generous spacing, restrained mint/lavender/neutral surfaces, original blue vector symbols and clear heading/value hierarchy. |
+| Disclosure states | Both chevrons show state. Touch/keyboard, expanded/collapsed semantics and saved-state restoration pass; full workout records are not on the default page. |
+|200% | Current/suggested values and unchanged facts stack full-width. Text/cards/buttons wrap and grow. No cramped grid, horizontal scroll, ellipsis or internal overlap. Viewport cuts remain reachable through normal scrolling. |
+| Dark | Genuine darker green/lavender/navy surfaces, pale text and readable blue accents; reference and unchanged labels remain distinct. |
+| Actions | Save this suggestion for review remains a separate draft step. Warning and full button are visible after scrolling, with unchanged engine/freshness/version/transaction safeguards. |
+
+Compared with the owner's explicit approved hierarchy and5November refinement instructions.
+No separate0.10.1 progression reference bitmap exists in docs/design-reference; no invented
+pixel comparison is claimed. Original older references remain separate from actual-build
+captures. These are production screens with instrumentation-only retained demo evidence,
+not concept art or edited screenshots. The previously rejected dense layout is superseded.
+
+The carry/time reference wording also now says unchanged when its actual reference does
+not change; pure-domain/UI regressions pass without changing progression calculations.
+The final main-thread readiness assertion passes on all3APIs after the test-only queued
+dispatcher correction. No production Dream visuals/data changed. All required software
+and final-source visual checks above are observed passes. Physical S24/TalkBack remains
+unperformed; software verification is not a claim of outdoor GPS accuracy.
+
+# Historical visual review boundaries (superseded)
+
 ## Complete-page follow-up observed —5November2026
 
 Source48661f9 API35 passed438cases/155captures in workflow42008939238; artifact13407215552

@@ -11,122 +11,71 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT — 0.10.1 progression visual refinement requested; PR16 stays draft
+## CURRENT —0.10.1 software and visual work complete; PR16 release integration
 
-LATEST RECOVERY BOUNDARY —5November2026,10:35UTC (supersedes older pending notes below):
-Committed/local/remote head48661f92f8e8bf49497f7a0ae752f8e6fea2215b; PR16 DRAFT.
-Workflow42008939238 passed438 EACH API28/35 and155captures. API36 ran438 with one
-DreamArtworkReadinessTest CalledFromWrongThreadException; other437passed, progression
-included. Publication correctly blocked. Downloaded API35artifact13407215552 and verified
-ZIP SHA256cc33d79ff5edd2ad055fcd0f865efc43c504130295805347f58b1a9fe723b5e9. All6new
-safeguards/actions frames opened in light/dark/200%; together with27earlier views,33views
-cover the complete page. Actual80kg records, full safeguards and separate-save actions are
-readable.155images stay in scratch/capture155-api35, NOT canonical docs while API36 is red.
+Branch `feature/0.10.1-gps-reliability-coaching-clarity`, PR16 targets main. Version0.10.1-test1/code14.
+All agreed implementation is complete. Do not restart, redesign or begin0.11. Generic
+recovery rules above remain permanent. Inspect live PR/main/CI before following next steps.
 
-LOCAL VERIFIED CORRECTIONS, preserve and COMMIT/PUSH NEXT:
-- StrengthPrescriptionText.java + suite: unchanged reference during longer carry/time task
-  was called new/0kgmore. Regression reproduced failure at instructioncheck72. Formatter now
-  says unchanged;5new checks and the existing modality UI test cover45m at same80kg reference.
-  No progression/activation/evidence calculation changed.640893checks/38suites, instructions114.
-- DreamArtworkReadinessTest + DreamArtworkPublicationTest: pinned Compose1.8.3 test sources
-  confirm default UnconfinedTestDispatcher; completion can resume test frame/apply on worker.
-  Use StandardTestDispatcher for these async fixtures, with explicit main-Looper SideEffect
-  assertion in readiness test. All city/asset/cache/cancellation/missing checks and deadlines
-  preserved. No production Dream/data/geometry change, no new dependency.
-- ProgrammeProgressionClarityTest.kt retains all original checks and adds unchanged-reference
-  carry assertions. CONTINUE and verification/release/visual notes need this checkpoint.
-Local full domain/check/debug/lint/test compilation PASS79tasks/38seconds after scheduler
-fix (formatter correction also passed79tasks/1m22s), pinned format and release/validator tests.
+Verified source1dffb7dcf7607c237f257004f4b322aade097ce6 passed COMPLETE workflow42012242544:
+-438 instrumentation cases EACH API28/35/36 (1314emulator cases),155captures/API.
+-640893domain checks/38suites,64schema/migration,9release,13capture-validator,
+  source/provenance11, artwork14, pinned76Kotlin/122Java format and strict174canonical/14routine.
+-Actual domain/check, debug APK, lint and instrumentation build; current/older backup restore,
+  transactional rejection/rollback, actual/history and progression activation safeguards.
+Canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3 was adopted with all157blob identities,
+complete tree and exact unsigned commit/parent verified. Local handoff changes preserved.
+Fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600 matches app/capture source.
+API35APK13407813241 is51,979,576bytes; screenshots13407438794; all155PNG540x1200validate.
+Source ZIP SHA256c0434c6cd1eb1e6b602db5871260e7e0e06892e54b8d2826dd2c70d747ca4389.
 
-NEXT: final diff, update docs, commit through GitHub API with expected-head lease (CLI auth
-still absent), import identical staged tree/unsigned commit with scratch/rdd0101/import-exact-commit.py.
-Then full438/API155capture gate, inspect roots of failures, canonical adoption and final-source
-visual confirmation, final docs/head CI and authorised merge/main verification. Keep DRAFT
-until all software/visual gates pass. S24 physical checks UNPERFORMED. No0.11/stable tag.
-Previous149canonical0d84c21 remains checked in; do not label it final-source155captures.
+All33final-source progression frames opened directly: entry, full task, weight, collapsed
+Advanced/actions, genuine changes, upper/lower unchanged facts, short why/secondary-closed,
+secondary-open actual records, lower safeguards and expanded actions, each light/dark/200%.
+Rounded restrained cards/icons, genuine-only difference emphasis, compact unchanged facts,
+readable dark adaptation, natural200%stack/wrap/scroll and separate-save wording confirmed.
+No fixed-height clipping/overlap/horizontal scroll. Viewport edge cuts are reachable by scroll.
+A fixture has no current reference, optional82kg suggestion and actual80kg sets; never conflated.
+No separate0.10.1 reference bitmap exists in docs/design-reference: reviewed against the
+owner's explicit approved hierarchy/refinement instructions, not an invented pixel match.
 
+Confirmed fixes/documentation:
+- Native GPS stationary jitter, stale gap restoration, sparse auto-pause continuity and
+  stride-lost route bends have regressions; weak/lost/recovered and bounded cues remain honest.
+- Progression calculation/evidence/freshness/immutable revisions/save-vs-activation unchanged.
+  Genuine changes/unchanged facts, short reason, nested actual evidence; unchanged load
+  reference explicitly says unchanged during time/distance progression (regression reproduced).
+- Async artwork UI fixtures use queued StandardTestDispatcher and readiness asserts main
+  Looper, fixing a demonstrated test-recomposer worker resume. No production Dream changes.
+- No schema15/rootJSON9/raw2/complete1 change, no runtime dependency or permission change.
+  No Internet/background-location permission, backend/account/analytics/ads/LLM introduced.
 
-Branch `feature/0.10.1-gps-reliability-coaching-clarity`, draft PR16 targets main.
-Baseline main5827d291d94870d16e2398c5173319260a6d7d72 is the completed0.10/PR15 merge.
-Never restart0.10 or reset valid work. Use actual git log/status for this checkpoint's SHA.
-Latest owner master brief explicitly authorises AUTOMATIC squash merge only after complete
-final-source software/visual gates pass. Physical S24 work is post-merge acceptance, never
-claimed from emulator results. Do not start0.11 or create a stable release tag.
+NEXT RELEASE-INTEGRATION ACTIONS (no implementation backlog):
+1. Commit/push final documentation on this feature branch. Source fingerprint must remain
+   identical. Keep PR16 draft while that final-head full gate is pending/red.
+2. Inspect final-head full CI. After all green and no newer main/review/conflict issue, mark
+   PR16 ready and squash-merge under the owner's explicit master-prompt authorisation.
+   Do not merge pending/red, create stable tags, or begin0.11. If PR16 is already merged,
+   do not duplicate it; verify actual main and post-merge workflow instead.
+3. Verify main CI and rolling Latest Development Build match the resulting main commit.
+   Record actual merge/main identities and artifact links. Physical S24 acceptance below
+   is explicitly post-merge, not an automated merge blocker per owner's master brief.
 
-LATEST USER STEERING —5November2026 (authoritative visual acceptance):
-The owner reviewed the progression screenshot and rejected the long repetitive Advanced
-presentation. Earlier provisional visual acceptance is superseded. Local refinement is
-implemented: primary plain-English Here's what to do retained; Advanced initially collapsed;
-What's changing? shows ONLY real current/suggested differences; What's staying the same?
-shows unchanged fields once; short Why this suggestion?; SECOND collapsed View supporting
-workouts reveals full retained comparable working-set evidence and safeguards. Original
-vector icons, rounded panels, restrained colours. Normal values compare side-by-side;
-font>=150% uses a vertical stack and unchanged facts become full-width rows. No horizontal
-scroll. Recommendation/evidence/freshness/save/activation calculations are untouched.
+PHYSICAL CHECKS — UNPERFORMED: S24 clear-sky/urban/measured-route GPS, walking/stillness,
+locked screen/background/battery saver, pause/resume, longer run, interruption/recovery,
+GPX/raw-backup coordinate comparison, Galaxy Watch7/Samsung Health comparison (not automatic
+truth), real Health Connect paths/denial, TTS/music/calls, BLE connect/reconnect, human TalkBack.
+Use TEST_BUILD.md; record human observations, never certify from emulator results.
 
-Current canonical0d84c2147552fabdf12505aa44bc74b1dca20776 matches GitHub byte-for-byte.
-Verified source9180b34676ccf86299dddd99ff9690dc06c47bf4 passed COMPLETE workflow42002407269:
-438 EACH API28/35/36 (1314cases),149captures/API, domain640888/38suites,64schema,9release,
-13capture-validator, source/provenance/artwork, pinned76Kotlin/122Java format, strict174/14,
-debug builds/lint. API35APK13404027367 is51,979,576bytes; screenshots13404665849.
-Fingerprint0d807e39fff63e482a3b4221110628723e5f988008e5d90d65f38c40de694148.
-All27progression frames were opened directly in light/dark/200%, including both disclosures.
-The genuine reference difference is distinct, unchanged facts are compact once, dark surfaces
-are legible,200% stacks and scrolls. Entry/task/weight/controls/changes/upper+lower unchanged/
-why+secondary-closed/actual80kg records inspected. Live Coach/route/recorder also reopened.
-No clipping/overlap inside layout; normal viewport cuts are reachable through scrolling.
+Tool recovery: CLI Git auth stopped, connected GitHub tools remain available. Use typed
+create_blob/tree/commit/update_ref with expected-head lease; verify local blobs/tree and
+import identical raw unsigned commit via scratch/rdd0101/import-exact-commit.py. No reset,
+force or discarded work. Binary artifacts use github_download_workflow_artifact + signed
+URL, verify ZIP digest and Git blob hashes. Refresh expired signed URLs normally; never
+UTF8-fetch PNG blobs or dump huge canonical logs. All source is safely committed; inspect
+actual local status for final metadata edits. Earlier checkpoints below are HISTORICAL.
 
-VISUAL FOLLOW-UP IN PROGRESS: at200% the open-evidence viewport ends before the lower
-safeguards and save action. Add6real captures (safeguards + expanded actions, all3modes),
-for155required images/33progression frames. Application/recommendation code unchanged.
-Follow-up09360a2c167e35c53430ccfc0ddf26ed496d714b is committed/pushed through the
-connected GitHub API with expected-head lease and an identical staged tree/commit locally.
-Workflow42006209330 ran438 EACH API28/35/36: exactly1new lower-capture failure each,
-other437passed; canonical publication blocked. Scrolling to the final safeguards paragraph
-left its earlier heading above the viewport (same line1898 on all3). The correction aligns
-the last actual set using measured content/viewport coordinates and then asserts the set,
-heading AND final safeguard paragraph visible before capture. No assertions removed, no app
-code changed. Local format and Android-test compilation PASS (48tasks/4seconds).
-Measured-anchor48661f92f8e8bf49497f7a0ae752f8e6fea2215b is now committed/pushed
-through the connected GitHub API, with identical local tree/commit and preserved history.
-Full workflow42008939238 is in progress for438cases/API and155captures.
-Fingerprint1f1d0c3438bf21a46858430889ad0b6c0bcc7d6038787bf7d188c37360bb7601. Keep PR16 DRAFT until complete. No false final visual acceptance.
-
-Git CLI authentication stopped working after the green run. Connected GitHub tools work.
-Downloaded API35artifact via github_download_workflow_artifact (not CLI), verified ZIP
-SHA25693080db48076c2d908f9aec7239b8254b72d4f54bb386739f7f2abafc3207778, all151Git blob
-identities, tree49ac89fd0c93ebfc025ecc122eda3b565f71cb56 and exact unsigned bot commit/parent.
-Imported identical Git objects/ref fast-forward without reset/discard; local handoff preserved.
-Use normal Git only if auth returns; otherwise typed GitHub blob/tree/commit/update_ref with
-expected-head lease, then import identical verified commit locally. Never force/rewrite.
-
-Additional directly related copy defect confirmed while waiting: a carry/time progression
-can preserve its optional load reference, but weight() called it new and said0kgmore.
-New pure-domain regression FAILED at instructioncheck72 on unchanged implementation.
-Focused formatter correction now says the reference is unchanged; five new domain checks
-and the existing modality UI test cover a longer carry at the same80kg reference. No engine,
-evidence or activation calculation changed. Local format/full domain/Android gate is running
-in /workspace/scratch/rdd0101/unchanged-reference-{domain,android}.log. Preserve these local
-StrengthPrescriptionText.java, its suite and ProgrammeProgressionClarityTest.kt changes.
-They need a coherent commit/push after verification; do not overwrite them adopting bot captures.
-
-NEXT CURRENT ACTIONS:
-1. Inspect workflow42008939238 on48661f9. Do not duplicate committed09360a2/48661f9.
-  42006209330 is a diagnosed failed boundary, not acceptance. Local status may include this
-   current handoff update; preserve it. No reset/source loss.
-2. Inspect fresh438-case/API155-capture gate; fix genuine failures without weakening checks.
-3. Adopt canonical155images with matching fingerprint. OPEN6new safeguards/actions frames,
-   recheck representative progression states, then finalise visual/verification/release docs.
-4. Obtain final-head green CI, check latest main/reviews/conflicts. Only after ALL software
-   and revised visual gates pass may PR16 become ready/merge per existing master authorisation.
-   Confirm post-merge main CI/rolling development APK, record final SHA and unperformed S24
-   checks. No stable tag or0.11. No schema/backup/archive/dependency/permission change.
-
-Historical visual-fixture failure:3f2aef1/41999140735 ran438 EACH with exactly2failures each,
-other436passed. Corrected9180b34 brings the lazy unchanged card into view before querying
-and inspects upper/lower facts separately from lower controls. All assertions retained.
-96e19a8 adds full instruction/weight frames. Both corrections are already committed/pushed;
-do not duplicate or rerun the unchanged failed source. No application code changed in them.
+## Historical0.10.1 implementation and verification
 
 Completed implementation:
 - Pinned OpenTracks/RunnerUp/GPSTest comparison before changing GPS; Codeberg inaccessible,

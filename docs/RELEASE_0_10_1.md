@@ -1,7 +1,7 @@
 # Race Day Dreams 0.10.1-test1
 
-A focused GPS reliability and coaching-clarity test update. This branch is in
-progress; the final verification and visual acceptance gates have not yet completed.
+A focused GPS reliability and coaching-clarity test update with a task-first
+progression review, clearer evidence and targeted recording corrections.
 
 ## What's new
 
@@ -41,7 +41,6 @@ progress; the final verification and visual acceptance gates have not yet comple
   without retained run evidence and physical acceptance checks.
 - Locked-screen, urban multipath, battery saver, long-run and device comparisons
   require real Galaxy S24 testing; emulator results do not establish those passes.
-- The refined API28/35/36 gate and155 current-source screenshots/visual review remain pending.
 
 ## Data, privacy and licensing
 
@@ -53,5 +52,10 @@ progress; the final verification and visual acceptance gates have not yet comple
 ## Verification
 
 - The unchanged 0.10 baseline passed 588145 domain checks, 64 schema tests and 9
-  release-note tests before implementation. Current final-release evidence is pending.
+  release-note tests before implementation.
+- Source1dffb7d passed complete workflow42012242544:640893domain checks/38suites,64schema,
+  9release, build/lint/format, strict174canonical/14routine guidance,438cases EACH API28/35/36
+  and155actual captures/API. All33progression frames were opened across light/dark/200%.
+- Canonical capturesd853921 match the verified source fingerprint. This does not establish
+  outdoor GPS accuracy, physical S24 behaviour or human TalkBack acceptance.
 - See the GPS diagnosis and engine review for reproduced defects and research limits.

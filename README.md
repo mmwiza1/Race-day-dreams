@@ -19,7 +19,8 @@ Workout suggestions explain the task first, then optional weight references and 
 Advanced details compares only changed targets and groups unchanged facts. Full actual
 workout evidence has a separate disclosure. Saving a suggestion remains separate from programme activation.
 
-This candidate is undergoing its final Android and visual gate; see [verification](VERIFICATION.md)
+The software and visual gate passed on API28/35/36, with155authentic captures including
+33progression views. See [verification](VERIFICATION.md), [the visual review](docs/VISUAL_REVIEW_0_10_1.md)
 and [release notes](docs/RELEASE_0_10_1.md). The rolling download below always identifies its
 own verified-main version. No physical Galaxy S24 acceptance is claimed.
 

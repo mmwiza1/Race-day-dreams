@@ -1,4 +1,11 @@
-# 0.10 software verification / real-device acceptance
+# 0.10.1 software verification / real-device acceptance
+
+## Verified0.10.1 software build
+
+Source1dffb7d/workflow42012242544 passed438cases EACH API28/35/36 and155actual captures;
+33progression views were opened in light/dark/200%, including the complete evidence page.
+API35APK13407813241 is51,979,576bytes, debug-signed/test only. No schema15/rootJSON9/raw2/
+complete1 change. These software results do not mark any physical row below passed.
 
 ## 0.10.1 Galaxy S24 GPS acceptance — not performed by Codex
 

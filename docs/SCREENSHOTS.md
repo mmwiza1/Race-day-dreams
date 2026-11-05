@@ -1,3 +1,24 @@
+# Current0.10.1 authentic capture set —155verified images
+
+Source1dffb7dcf7607c237f257004f4b322aade097ce6 passed complete workflow42012242544 on
+API28/35/36,438cases and155captures each. Canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3
+retains exact API35artifact13407438794 bytes. All157blob identities/tree/commit checked.
+Fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600 matches app/capture code.
+
+All33progression captures were opened directly: eleven states in light/dark/200% — entry,
+full instructions, weight meaning, collapsed Advanced/actions, genuine target changes,
+upper/lower unchanged facts, short why/secondary-closed, actual evidence, lower safeguards,
+and expanded actions. Real scrolling covers the whole page; no mock UI/image editing.
+The owner's earlier dense-Advanced rejection is resolved by compact comparison/unchanged
+panels and a second evidence disclosure. See VISUAL_REVIEW_0_10_1.md for observed review.
+
+References remain separate in docs/design-reference. No separate0.10.1 progression bitmap
+is available, so review follows the owner's explicit accepted hierarchy and refinement
+requirements without a false pixel-match claim. Screenshots do not certify S24/TalkBack.
+Earlier pending/count notes below are historical and superseded by this verified set.
+
+# Historical capture checkpoints
+
 # Current0.10.1 visual-refinement gate
 
 The5November owner review supersedes the prior dense Advanced design. New canonical capture
