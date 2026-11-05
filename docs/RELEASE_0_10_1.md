@@ -53,9 +53,12 @@ progression review, clearer evidence and targeted recording corrections.
 
 - The unchanged 0.10 baseline passed 588145 domain checks, 64 schema tests and 9
   release-note tests before implementation.
-- Source1dffb7d passed complete workflow42012242544:640893domain checks/38suites,64schema,
+- Sourcea75b9a5 passed complete workflow42035888968:640893domain checks/38suites,64schema,
   9release, build/lint/format, strict174canonical/14routine guidance,438cases EACH API28/35/36
-  and155actual captures/API. All33progression frames were opened across light/dark/200%.
-- Canonical capturesd853921 match the verified source fingerprint. This does not establish
-  outdoor GPS accuracy, physical S24 behaviour or human TalkBack acceptance.
+  and155actual captures/API. All33fresh progression views were opened across light/dark/200%,
+  including the complete expanded activation warning and Save button at200%.
+- Canonicalab95c7f matches API35artifact13420260240 and the verified source fingerprint.
+  Screenshot integration uses the production Android window lifecycle/main dispatcher;
+  all readiness/content assertions remain. This does not establish outdoor GPS accuracy,
+  physical S24 behaviour or human TalkBack acceptance.
 - See the GPS diagnosis and engine review for reproduced defects and research limits.

@@ -33,7 +33,7 @@ jobs:
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
       - name: Require current canonical screenshots on other branches
-        if: github.head_ref != 'feature/0.10.1-gps-reliability-coaching-clarity'
+        if: github.head_ref != 'fix/0.10.1-screenshot-test-dispatcher'
         run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
@@ -64,6 +64,9 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Run Android persistence and draft tests
+        # Normal full matrix instrumentation takes9–11minutes. Bound a stalled emulator/test
+        # so failure logs remain actionable rather than waiting for the six-hour job limit.
+        timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
           #37.2.12.0 passed all supported APIs; avoid a moving latest binary.
@@ -75,7 +78,9 @@ jobs:
           script: |
             adb shell wm size 540x1200
             adb shell wm density 210
-            ./gradlew :app:connectedDebugAndroidTest
+            # Bound each complete test method; normal capture methods finish well under10min.
+            # AndroidJUnitRunner reports the blocked test stack rather than hanging indefinitely.
+            ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000
             # Only the named instrumentation fixture reports bounded resource measurements.
             # Do not dump application/device logs, health values or route evidence.
             adb logcat -d -s GymBackupFixture:I '*:S'
@@ -165,14 +170,14 @@ jobs:
   canonical-screenshots:
     needs: [build, formatting]
     # Capture publication is confined to this same-repository feature branch, never main.
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/0.10.1-gps-reliability-coaching-clarity' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request' && github.head_ref == 'fix/0.10.1-screenshot-test-dispatcher' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: feature/0.10.1-gps-reliability-coaching-clarity
+          ref: fix/0.10.1-screenshot-test-dispatcher
           fetch-depth: 1
       - uses: actions/download-artifact@v4
         with:
@@ -195,7 +200,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/screenshots
           git commit -m 'Capture canonical API 35 screenshots from verified test build'
-          git push origin HEAD:feature/0.10.1-gps-reliability-coaching-clarity
+          git push origin HEAD:fix/0.10.1-screenshot-test-dispatcher
       - name: Reviewable synthetic screenshot bytes
         # Text-only repository connectors can reconstruct these real PNGs for review.
         # Only instrumentation fixture renders are logged; no user data is available.

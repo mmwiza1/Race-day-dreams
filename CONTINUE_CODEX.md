@@ -11,63 +11,59 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT —0.10.1-test1 MERGED; software complete, physical acceptance remains
+## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
-PR16 was squash-merged into main on5November2026:
-`75ab7c546570ffa460295bd45e1ee0f9fa7e5c48`.
-GitHub confirmed merged=true and main pointed to that signed merge result. Its complete
-signed Git object/tree was verified before fast-forwarding local main without reset/loss.
-This post-merge handoff/verification update is release bookkeeping only; no app/test code
-changed. Inspect actual live main/log before assuming any checkpoint SHA is still latest.
+LATEST CHECKPOINT —5 November2026,14:15UTC
 
-There is NO unfinished0.10.1 implementation backlog. Do not restart or begin0.11 without
-new user instructions. The earlier notes below are historical failed/pending checkpoints,
-not active work. The release remains0.10.1-test1/code14, debug-signed/test/development.
-No permanent production/stable tag was created.
+Branchfix/0.10.1-screenshot-test-dispatcher; PR17 DRAFT; canonical HEAD `ab95c7f78dc35fe0d51f1d1c06e83be525c0bcbe`.
+Source `a75b9a5dc870e01598d7229c195d528a84405e57` complete gate42035888968 is GREEN:438cases EACH API28/35/36 and155captures
+EACH, format/guidance/domain/schema/release/build/lint all pass. All3Android logs inspected.
+Domain640893checks/38suites; schema64/release9/capture-validator13;174canonical/14routine.
+Fingerprint `5c31aeca91fddbf8a570d173369df3c533bc2d0c7d75855eba48b1652e42bd0e`.
+API35screens13420260240 ZIP SHA256 `960a325fae98448912186499a61053ecd787cad09e0cf573c4fe4af704a67346`.
+All155PNG+2metadata blobs and exact bot parent/tree/unsigned commit verified and adopted.
+Current main6f73afe; PR16 merged75ab7c5. Do not reset/reopen/reimplement accepted app work.
 
-Verification:
--Verified application source1dffb7dcf7607c237f257004f4b322aade097ce6 passed full42012242544.
--Final PR headb12e11d550af4f8cf28eacf793c44a9568dbfb74 passed COMPLETE42015943868 before
- ready/merge:438cases EACH API28/35/36 (1314total),155captures/API, domain640893/38suites,
- 64schema/migration,9release,13capture-validator, source/provenance/artwork, build/lint,
- pinned76Kotlin/122Java format and strict174canonical/14routine guidance.
--Canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3 matches original verified API35artifact
- 13407438794, all157blob identities/tree/commit.155PNG540x1200 validate. All33final-source
- progression views opened directly across light/dark/200%, both disclosures and full lower
- evidence/safeguards/actions. No internal clipping/overlap/horizontal scroll; values stack.
--Fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600 matches source.
- Branch API35APK13407813241 is51,979,576bytes; main delivery uses its own verified artifact.
--Schema15/rootJSON9/raw2/complete1 and supported older reads unchanged; current/old backups,
- corrupt/future rejection, transactional rollback and actual/history preservation pass.
--No runtime dependency or permission change. No Internet/background-location permission,
- backend/account/analytics/ads/LLM. Accepted GPS coordinates/historical totals retained.
--Task-first suggestions, genuine-only changes/unchanged facts, short reason, nested actual
- evidence, clear current/suggested/actual loads, unchanged-reference wording, separate-save/
- activation safeguards complete. Conservative progression/starting-load engine unchanged.
--Confirmed GPS jitter/stale-gap/auto-pause/render-bend defects have regressions. Physical
- owner-specific S24 accuracy remains unverified; no universal accuracy claim.
+ALL33fresh progression captures opened directly,11states×light/dark/200%. Full200%expanded
+footer now visibly shows warning+Save; old missing-footer sign-off was corrected, not hidden.
+Task-first card, changed/unchanged targets, separate collapsed history, optional82kg reference
+and actual80kg evidence are clear. London/Paris/dark Dream representatives also reviewed.
+No bitmap pixel-match claim with an unavailable progression reference. Physical unperformed.
 
-Release integration is automatically tracked by the Android workflow for live main:
-https://github.com/mmwiza1/Race-day-dreams/actions/workflows/android.yml?query=branch%3Amain
-The workflow publishes the rolling Latest Development Build only after all supported API,
-guidance/format/source gates pass and its built SHA is still the main tip. Use release Build
-information to verify actual main/CI identity and APK/checksum; never assume an old asset is
-current. If resuming before post-merge automation finishes, verify it; fix real failures via
-focused branch/PR rather than rewriting main. Do not create a stable tag or expand scope.
+PR17 is ONLY fixture/workflow/docs/canonical assets: production Android main/lifecycle window
+recomposer scoped through@Before/test/@After under outer Compose rule; main creation asserted.
+All original async readiness/content guards retained. Isolated artwork component clocks KEEP
+StandardTestDispatcher. Expanded footer uses measured warning scroll plus full warning/Save
+bounds. Prior queued-clock attempts244e0b0/7604dd4 FAILED/stalled, not counted as green.
+30min step/600000ms per-method bounds remain; no weakened assertions/cases/capture gate.
+No app/recorder/engine/data/dependency/permission change. Schema15/rootJSON9/authoring2/
+strength2/raw2/complete1 unchanged. No INTERNET/BACKGROUND_LOCATION/backend/account/analytics.
+CI APK51,979,576bytes(+114,896/+0.22%versus0.10). No0.11/stable tag scope.
 
-PHYSICAL ACCEPTANCE — ALL UNPERFORMED until a human records results in TEST_BUILD.md:
-S24 measured-route clear-sky/urban GPS, walking/stationary drift, bridges/tunnels or brief
-loss, locked screen/background/battery saver, pause/resume, meaningful longer run, process
-interruption/recovery, GPX/raw backup consistency, Watch7/Samsung Health comparison (neither
-is automatically ground truth), real Health Connect permission/data paths, TTS/music/calls,
-BLE connect/reconnect and human TalkBack/large text. Software/emulator passes do not certify
-these. This is the only remaining product acceptance; no0.11 work is authorised.
+CURRENT ACTION: final observed docs are being committed. They may already be pushed;
+inspect actual HEAD/status/PR/latest CI rather than duplicating. Source fingerprint stays
+unchanged by docs, so canonical publication should be a verified no-op on final-head CI.
 
-Tool recovery: CLI Git auth stopped; connected GitHub tools work. Source commits were
-pushed with expected-head leases and identical verified local tree/unsigned commits. Binary
-artifacts use github_download_workflow_artifact then signed URL with ZIP/Git hash checks;
-refresh expired URLs normally. Do not UTF8-fetch PNGs or dump giant canonical logs. Preserve
-all work, inspect current state, and follow the permanent recovery rules above.
+NEXT EXACT TASKS
+1. Commit/push final docs if still local (CONTINUE,VERIFICATION,SCREENSHOTS,visual review,
+   release0.10.1); release9/metadata checks first. Use connected GitHub expected-head lease;
+   CLI auth unavailable. Exact blob/tree/commit import, no reset/force/discard.
+2. Require COMPLETE final exact-head API28/35/36 gate green; do not merge pending/red.
+   Then ready/squash merge PR17 under master's explicit post-merge-failure recovery authority.
+3. Verify actual resulting main and post-merge workflow. Make authorised handoff-only
+   post-merge metadata update if required, then verify latest main full gate and rolling
+   development APK/checksum match that actual main. Rolling release STILL0.10.0 at this
+   pre-merge boundary; do not claim0.10.1 published until verified.
+4. Stop after verified0.10.1software release checkpoint. S24 GPS/outdoor/urban/known-route/
+   lock/background/battery/long-run/recovery/GPX/HC/audio/BLE/human TalkBack UNPERFORMED;
+   TEST_BUILD.md is human checklist. No physical claim, no stable production tag.
+
+Binary artifact: FileService signed URL expires quickly, not Sediment. First URL expired
+and returned explicit AzureAuthenticationFailed; ordinary refreshed tool URL succeeded.
+ZIP/raw PNGs are in scratch/rdd0101/window-api35.zip and window-api35; verified157files
+in window-verified. Never UTF8-fetch PNG/dump huge canonical base64 logs. Signed main merge
+may need exact signature import; unsigned checkpoints use import-exact-commit.py with
+explicit refs/remotes/origin/fix/0.10.1-screenshot-test-dispatcher. Preserve valid local work.
 
 ## Historical0.10.1 implementation and verification
 

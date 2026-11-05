@@ -1,3 +1,101 @@
+# Current follow-up software and visual verification —5 November2026
+
+Source `a75b9a5dc870e01598d7229c195d528a84405e57` passed the COMPLETE [workflow42035888968](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42035888968):
+438 cases EACH API28/35/36,155 authentic captures/API, domain640893checks/38suites,
+64 schema/migration,9 release-note,13 capture-validator, source/provenance11, artwork14,
+pinned formatting, strict174canonical/14routine guidance, debug build/lint/test compilation.
+All three successful Android logs and actual full run conclusion were inspected.
+Canonical `ab95c7f78dc35fe0d51f1d1c06e83be525c0bcbe` matches API35artifact13420260240 byte-for-byte.
+ZIP SHA256 `960a325fae98448912186499a61053ecd787cad09e0cf573c4fe4af704a67346`; fingerprint `5c31aeca91fddbf8a570d173369df3c533bc2d0c7d75855eba48b1652e42bd0e`.
+All155PNG+2metadata Git blobs, bot parent/tree/commit/source identities were independently
+verified before adoption, preserving the uncommitted live handoff. No image edits/mock UI.
+
+Opened all33fresh progression views directly:11scroll/disclosure positions in each
+light/dark/200%mode. Task-first card, genuine current/suggested differences, compact unchanged
+facts, short reason and separately collapsed workout evidence are readable. At200%facts
+stack naturally and scroll without horizontal overflow. The formerly incomplete expanded
+footer NOW visibly shows the complete activation warning AND Save button in all3modes.
+The82kg value is an optional suggested reference, not recorded/mandatory; supporting actuals
+show80kg. Keep-current and separate save/review/activation semantics remain unchanged.
+London/Paris/dark Dream representatives were reopened: bundled artwork/geography/progress
+remain readable. Compared with the owner's explicit approved hierarchy/refinement directions;
+no unavailable progression-bitmap pixel-match is claimed. References remain separate.
+
+Production app/GPS/coaching code is unchanged by PR17. Integration captures use production
+Android main/lifecycle window recomposition under the Compose test rule, with the existing
+readiness/content assertions retained. Isolated artwork component clocks stay controlled.
+Measured footer scrolling and full bounds checks strengthen capture verification. Earlier
+queued-clock failures below were fixed, not counted as passes. No assertion was removed.
+Schema15/rootJSON9/authoring2/strength2/raw2/complete1 unchanged. CI APK51,979,576bytes;
++114,896bytes(+0.22%)versus0.10 baseline. No new dependency/permission/backend/account.
+Physical S24/human TalkBack remains unperformed. Final documentation-head CI, follow-up
+merge and actual post-merge main/development publication remain pending at this boundary.
+
+# Historical failure and verification boundaries (superseded by the source above)
+
+## Queued-clock integration failure and production-window correction —5November2026
+
+Actual bounded42029328929 API28 log confirms the startup kick did not fix the stall:
+first screenshot method timed out after600000ms atObject.wait; subsequent progression,
+replacement/template/revision scenes missed expected UI state and city capture timed out.
+The step failed at30minutes. No full pass or capture artifact is claimed.
+
+The integration fixture now locally uses the real Android main-thread/lifecycle window
+recomposer under the outer Compose rule, scoped through setup/test/cleanup and with a
+main-thread factory assertion. Existing explicit readiness/root/content/capture assertions
+remain. The isolated artwork component fixtures retain their accepted controlled clocks.
+This avoids changing production code or asking a queued unit-test scheduler to drive real
+Activity lifecycle/AndroidView startup. Pinned format and actual offline Gradle domain/check/debug/lint/test-APK compile PASS
+79tasks/38sec. The corrected full matrix/captures remain required. All3failed prior
+API logs were inspected; they share the first-method timeout/missing Strength-state pattern.
+
+## Expanded200%footer visual check correction —5November2026
+
+Directly reopening old canonical progression-evidence-actions-large-font shows only the
+lower safeguards, not the activation warning/Save. Earlier full-footer wording was too
+strong; normal/dark footer captures do show both. Retain the UI and strengthen the fixture:
+measured scroll to the activation warning, original visibility assertions, plus full warning
+and Save bounds within the viewport. This is a capture-verification correction, not an
+application redesign. Fresh authentic captures and the full matrix remain required.
+
+## Screenshot fixture startup diagnosis —5November2026
+
+After cancellation,42023014049 logs show API28/35/36 each completed34/438cases with
+zero failures, then no progress for over30minutes. No test report was generated. The
+empty-rule StandardTestDispatcher queues recomposer startup before any host exists;
+explicitly advance the main test clock before ActivityScenario launches content. This
+attempted startup correction retains all assertions. A runner-supported600000ms per-method
+deadline will expose a blocked method/stack if it persists; it does not replace the full
+438case or155capture requirements. Local pinned formatting,release9 and real offline Gradle domain/check/debug/lint/test-APK
+compile PASS79tasks/31sec. Success remains pending the corrected full matrix.
+
+## Follow-up instrumentation gate bound —5November2026
+
+Follow-up42023014049 at244e0b0 passed build/lint/format/guidance but all3API
+instrumentation steps remained in progress beyond30minutes (last green matrix42015943868
+used9–11minutes). No failure/root cause is inferred without completed logs. A30minute
+step timeout now bounds future stalls; it preserves all438cases,155capture requirements,
+readiness assertions and individual test deadlines. Existing PR concurrency will cancel
+the unbounded run when this correction is pushed; inspect retained progress logs and the
+new bounded run before further diagnosis. No application or data change is involved.
+
+# Post-merge delivery failure —5November2026 (latest boundary)
+
+Main6f73afe/workflow42018800515 passed438 EACH API28/36. API35 ran438 with one failure,
+other437passed: CoachingScreenshotTest.capturesSourcedCityRoutesWithDarkAndLargeText.
+SnapshotStateObserver reported worker thread85 followed by main thread2 during layout/draw.
+The snapshot/graphics stack plus pinned Compose1.8.3 empty-rule factory confirms the same
+unconfined test frame problem already fixed in two async artwork component fixtures.
+Publication was correctly skipped: rolling development remains0.10.0, not0.10.1 yet.
+
+Focused follow-up from live main uses a queued StandardTestDispatcher in the screenshot
+fixture. Every assertion/readiness/identity/loading guard and deadline remains. The existing
+four branch restrictions are retargeted to that same-repository follow-up only, allowing
+fresh155source-bound captures under the unchanged full API28/35/36 gate. No production
+app/recorder/UI/Dream/data/dependency/permission change. Local pinned format and actual
+Gradle domain/check/debug/lint/test compilation PASS79tasks/36seconds. Follow-up full gate
+is required; older pre-merge green rows below do not claim this post-main run passed.
+
 # Merged0.10.1 checkpoint —5November2026
 
 PR16 final head `b12e11d550af4f8cf28eacf793c44a9568dbfb74` passed COMPLETE

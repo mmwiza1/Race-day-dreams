@@ -2,6 +2,10 @@ package org.racedaydreams.coach
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Looper
+import androidx.compose.ui.InternalComposeUiApi
+import androidx.compose.ui.platform.WindowRecomposerFactory
+import androidx.compose.ui.platform.WindowRecomposerPolicy
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
@@ -16,7 +20,10 @@ import java.io.File
 import java.time.*
 import java.util.EnumSet
 import org.junit.*
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.junit.runners.model.Statement
 import org.racedaydreams.coach.strength.GymNowState
 import org.racedaydreams.coach.strength.GymNowViewModel
 import org.racedaydreams.coach.strength.GymSlotInput
@@ -30,8 +37,31 @@ import org.racedaydreams.reminders.EveningReminders
 
 /** Fixtures are compiled only into the instrumentation APK, never the installable app. */
 @RunWith(AndroidJUnit4::class)
+@OptIn(InternalComposeUiApi::class)
 class CoachingScreenshotTest {
-    @get:Rule val compose = createEmptyComposeRule()
+    private val compose = createEmptyComposeRule()
+
+    // These captures launch real production Activities, including lifecycle/AndroidView work.
+    // Keep their normal Android UI dispatcher and Choreographer instead of an unconfined
+    // test recomposer (worker-thread draw race) or a queued test clock (host startup stall).
+    // The outer Compose rule still checks roots, semantics and layout; explicit application
+    // readiness/content assertions below remain authoritative for async work.
+    @get:Rule
+    val androidWindows: TestRule =
+        RuleChain.outerRule(compose)
+            .around(
+                TestRule { base, _ ->
+                    object : Statement() {
+                        override fun evaluate() {
+                            val mainWindows = WindowRecomposerFactory { view ->
+                                Assert.assertSame(Looper.getMainLooper(), Looper.myLooper())
+                                WindowRecomposerFactory.LifecycleAware.createRecomposer(view)
+                            }
+                            WindowRecomposerPolicy.withFactory(mainWindows) { base.evaluate() }
+                        }
+                    }
+                }
+            )
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()
 
@@ -1908,15 +1938,16 @@ class CoachingScreenshotTest {
                         )
                         .assertIsDisplayed()
                     capture("strength-programme-progression-safeguards$suffix")
-                    compose
-                        .onNodeWithTag("progression-review")
-                        .performScrollToNode(hasText("Save this suggestion for review"))
-                    compose.onNodeWithText("Save this suggestion for review").assertIsDisplayed()
-                    compose
-                        .onNodeWithText(
+                    val activationWarning =
+                        compose.onNodeWithText(
                             "Saving this suggestion won't change your active programme. You can review and activate it separately."
                         )
-                        .assertIsDisplayed()
+                    alignProgressionCapture(activationWarning)
+                    val saveAction = compose.onNodeWithText("Save this suggestion for review")
+                    saveAction.assertIsDisplayed()
+                    activationWarning.assertIsDisplayed()
+                    assertProgressionFullyVisible(activationWarning)
+                    assertProgressionFullyVisible(saveAction)
                     capture("strength-programme-progression-evidence-actions$suffix")
                 }
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
@@ -2074,6 +2105,18 @@ class CoachingScreenshotTest {
                 16f * context.resources.displayMetrics.density
         viewport.performSemanticsAction(SemanticsActions.ScrollBy) { scroll -> scroll(0f, delta) }
         compose.waitForIdle()
+    }
+
+    private fun assertProgressionFullyVisible(node: SemanticsNodeInteraction) {
+        val viewport = compose.onNodeWithTag("progression-review").fetchSemanticsNode()
+        val target = node.fetchSemanticsNode()
+        val top = target.positionInRoot.y
+        val bottom = top + target.size.height
+        Assert.assertTrue(
+            "The complete footer must fit, not merely a clipped sliver: $top..$bottom",
+            top >= viewport.positionInRoot.y - 1f &&
+                bottom <= viewport.positionInRoot.y + viewport.size.height + 1f,
+        )
     }
 
     private fun capture(name: String, anchor: String? = null) {
