@@ -1381,3 +1381,9 @@ The final frozen body-source gate, including history-permission recheck and hone
 time, passed79tasks/1m22sec. Logs body-checkpoint-final-gate/format/schema/release/validator; exact
 counts remain651105/44domain,93Kotlin/148Java,72schema,9release,15capture-validator. The executor
 restart preserved all files and these results. Full486case/203capture matrix is still pending.
+
+Body publicationb4b2141 /42109324867 failed pre-build cmp on all APIs because the updated
+THIRD_PARTY.md was not yet copied into its bundled offline asset. Domain/schema passed, but
+Android tests never ran. The asset is synchronized; all15additional exact workflow pre-build
+checks pass, and local Android gate passes79tasks/48sec. No assertion, cmp or quality gate removed.
+Current complete486case/203capture matrix is required.

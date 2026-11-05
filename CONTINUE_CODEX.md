@@ -552,3 +552,15 @@ reset them. Current source passes body-checkpoint-final-gate.log (1m22sec/79task
 93Kotlin/148Java,72schema/9release/15capture-validator, strict174/14guidance, source11/artwork14.
 Next complete matrix must test486cases and203captures per API28/35/36. No current-body screenshots
 are published yet; existing188canonical images remain M2 source5f79cfc. Do not merge PR18.
+
+## Latest body publication gate correction
+
+Body implementationb4b2141371567cfbe962d1ff4963d318722819a0 was pushed. Its workflow42109324867
+stopped BEFORE Android build/instrumentation on all APIs: domain/schema passed, then the existing
+THIRD_PARTY.md/bundled third_party.md cmp failed. The new nutrition reference was missing from
+the offline asset. Corrected by syncing the asset, retaining the cmp gate. All15remaining exact
+workflow pre-build commands now pass (geometry/context/basemap checks, notices, source/guidance/
+artwork/capture validators and guidance report), plus standalone full domain/schema. Actual local
+Gradle domain/debug/lint/test compilation then PASS79tasks/48sec. Log body-notice-final-android.log
+and body-notice-exact-prebuild.log. Current source has no new known local failures; full486case/
+203capture matrix must now run. No body/recovery emulator or visual pass is claimed from421093.
