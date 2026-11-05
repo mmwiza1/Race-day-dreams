@@ -13,128 +13,141 @@ The app recommends. The athlete decides. The plan adapts.
 
 ## CURRENT —0.11.0-test1 Gym, Health & Recovery Intelligence
 
-Authoritative scope: the owner's0.11 master prompt supersedes all historical “do not start
-0.11” and automatic-merge instructions below. DO NOT MERGE AUTOMATICALLY. Keep one draft
-PR until all six milestones and API28/35/36/visual gates pass; prepare for owner review.
-Branch feature/0.11-gym-health-recovery-intelligence, based on live main8796bc5d38360dcd83f5b6fa725cd0c03f4ad605.
-Baseline fetched/pulled, clean, no open PR. Main42046671050 green438/API155captures.
-Local unchanged baseline PASS:640893domain checks/38suites,64schema,9release, formatting,
-actual Gradle domain/check/debug/lint/test-APK compile79tasks/17sec. Logs scratch/rdd011.
-Version0.11.0-test1/code15. Local working implementation now schema17/rootJSON11/raw2/complete1; latest pushed gym checkpoint remains16/10.
-Draft PR18: https://github.com/mmwiza1/Race-day-dreams/pull/18 . Do not create a duplicate.
-Setup source19c74c2 passed full workflow42054247383. Remote bot commit e0a46f1 contains
-its canonical captures and MUST be preserved. Its bot-triggered follow-up42057028606
-is action_required, not a new source pass. New gym source still needs full Android matrix.
+The owner's0.11 master prompt is the authoritative scope. All6milestones remain required.
+Do NOT revive older “do not start0.11”/automatic-merge instructions in historical notes below.
+DO NOT MERGE AUTOMATICALLY or create a stable tag. Keep draft PR18 until the whole agreed
+software scope and all automated/visual gates are complete; then prepare for owner review.
 
-Milestones (all required; not optional backlog):
-1. Gym: optional monotonic durable rest timer; conservative warm-up suggestions; genuine
-   superset rounds/order/skip/break/substitution within existing GymExecutionEngine.
-2. Strength intelligence: recorded working-set muscle attribution/trends; actual vs estimated
-   PB/history; durable idempotent evidence-backed achievements, optional celebrations.
-3. Conservative recovery/deload and hybrid scheduling using existing reviewed-proposal/
-   decision history; no readiness score, isolated-health diagnosis or silent plan activation.
-4. Optional HC height/weight provenance/manual/units/permissions; documented general protein
-   range from valid weight, no fabricated values/medical prescription/diet tracker.
-5. Retention24months/5years/forever; existing-user explicit acknowledgement; preview,
-   bounded safe detail pruning; permanent summaries/PBs/actuals/decisions retained; storage
-   honesty, backup coordination and additive typed migrations/backward restore.
-6. Selective quality catalogue additions; three6month athlete simulations; full regression,
-   authentic new-screen light/dark/200%captures; docs and verified test APK. No stable tag.
+Branch: feature/0.11-gym-health-recovery-intelligence
+Draft PR: https://github.com/mmwiza1/Race-day-dreams/pull/18
+Latest implementation: c96bbd311d2db592813182d70caddf336e822466 (M2 + observed gym visual refinements).
+This handoff is a following documentation-only checkpoint; inspect actual git status/log/remote
+before continuing. No valid local work may be reset/discarded. Main baseline8796bc5 is unchanged
+unless a fresh fetch proves advancement. No new runtime dependency or Internet permission.
+Version0.11.0-test1/code15; CURRENT schema17/rootJSON11/raw archive2/complete package1.
+Authoring/strength backup subformats remain supported. Future changes must migrate ADDITIVELY
+beyond17 and reject incompatible future backup formats; do not rewrite distributed16/17 DDL.
 
-Current phase: Milestone1 implementation/hardening, not release-complete.
-Implemented domain GymRestTimer monotonic state machine (explicit reboot/interruption),
-GymWarmup exact recent effort-backed light examples or general no-kg preparation, GymSupersets
-ordering/unequal rounds/skip/break. Existing GymExecutionEngine/coordinator remains authoritative.
-Typed SqliteGymToolsRepository shares database/restore transaction; additive16 two normalized
-rest tables, rootJSON10 requires gymTools and retains supported1–9 readers. raw2/complete1 unchanged.
-One optional inexact Android alarm, no new service/exact-alarm permission; private non-backed-up
-clock epoch prevents cross-device/reboot continuity claims. Alerts are optional and quiet during
-recording. Timer suggestions do not save actuals. Warm-up buttons only fill editable actual form.
-Live UI and scratch/programme draft group controls added; frozen prescriptions/actuals retained.
-Programme grouping uses existing slot group field; previously deferred programme guard removed.
-No automatic supersets or demanding-compound grouping imposed. Existing per-exercise optional
-rest targets/manual timer can be used between movements or rounds; no forced countdown blocking.
+COMPLETED BASELINE / SETUP
+- Live main8796bc5 (0.10.1/code14/schema15/JSON9) fetched/pulled clean; baseline640893domain/
+ 38suites,64schema,9release, formatting and actual Android debug/lint/test compilation passed.
+- Main42046671050 and setup19c74c2 workflow42054247383 passed438tests/API155captures.
+- One feature branch/PR18 created; workflow filenames/capture branch conditions updated to0.11,
+ preserving source fingerprints, screenshot integrity and API28/35/36. Do not reopen PR16/17 repairs.
 
-Observed local checks on this gym source:648794domain checks/39suites (GymTools7901),
-schema67 (all historical1..15→16), release9, capture-validator14. Actual offline Gradle
-:domain:check/:app:assembleDebug/:app:lintDebug/:app:assembleDebugAndroidTest PASS79tasks;
-final alarm-cleanup/repository-validation edit PASS75tasks/54sec. Format applied, check pending.
-New repository tests cover clock/recreation/alarms/graph validation/old9/current10/upgrade/rollback;
-new Compose tests cover optional preparation, actual independence, timer navigation and dark200%;
-new programme test covers grouped preview/activation/backup. Added9 genuine production-screen
-capture definitions (rest/warmup/superset ×light/dark/200%), raising mandatory captures155→164.
-Capture validator14 tests pass; NO new screenshots visually signed off yet. Do not claim emulator
-or S24 passes until observed. No usable local KVM; GitHub matrix is execution boundary.
+M1 GYM IMPLEMENTED —AUTOMATED CHECKPOINT GREEN; FRESH REFINEMENTS NEED CURRENT CAPTURES
+- Existing single GymExecutionEngine/coordinator retained. Pure GymRestTimer with monotonic
+ anchors, explicit interruption/reboot handling, pause/resume/reset/adjust/skip. Typed advisory
+ SqliteGymToolsRepository (schema16/root10) shares restore transactions; it never writes actuals.
+ Private install-identity FILE is not restored; timer backups contain opaque epoch anchors for
+ comparison only. Different installs/boots cannot adopt that clock identity. Optional inexact
+ alarms/alerts, no new service/exact-alarm permission; quiet during native recording.
+- GymWarmup uses recent exact working-set/effort evidence for light editable examples, otherwise
+ general preparation without invented kilograms. Choosing guidance fills a form, never saves sets.
+ Warm-ups stay out of working-set volume, PBs and progression. Existing load safeguards unchanged.
+- GymSupersets groups adjacent2+draft exercises, suggests rounds/order, supports skips/breaks/
+ substitutions without changing frozen prescriptions or actuals. Programme drafts use real
+ preview/explicit activation. Unequal counts and skipped last movements retain round rest.
+- Fixed demonstrated API28 Java9/16 collection-method runtime failures with existing Immutable/
+ Collectors helpers; fixed new fixtures to use actual builder entry/preview and reuse one staged
+ workout across3modes instead of deleting SQLite under live owners. No assertions removed/sleeps.
+- Exact sourcea26150d full workflow42073702201 SUCCESS:448tests EACH API28/35/36;164actual
+ captures/API; domain/schema/format/guidance/build/lint gates green. Earlier42062688210/42067939767
+ failures are historical, NOT passes. Canonical8a86d56 was safely fast-forwarded while preserving M2.
+- Capture artifact13439525824 ZIP SHA256f4f7ca650996ec6034db35099eb6e3e118a85f442c4274ac3c19eb0845a4a8a5
+ verified; ALL164PNG Git identities matched. All9new gym images opened light/dark/200%.
+- Visual review prompted c96bbd3 refinements: hide duplicate Start during running/paused rest;
+ add vertical spacing; compact warm-up with real Why disclosure; list superset order; navigate
+ only to a different next movement; never call fully skipped targets recorded/completed.
+ Timer adjustment now changes remaining AND full period consistently for Reset (domain tests).
+ New timer-settings/warm-up-evidence frames bring gym subset15images; need regenerated review.
+- Verified M1 CI APK52,127,084bytes (+147,508/+0.284%versus0.10.1CI), SHA256
+ 18dee819bce01a3e3fb157eea5a7021bb22c801e8c6bdefbbc839fadf576f1a5. TEST/debug, not full0.11 delivery.
+ Artifact: https://github.com/mmwiza1/Race-day-dreams/actions/runs/42073702201/artifacts/13437468771
+ Local copies/review data under /workspace/scratch/rdd011. No new artwork bundled yet.
 
-Latest checkpoint: ece3354 gym implementation; ordinary merge1e2b74c preserves canonical
-bot e0a46f1. Full source workflow42062688210 started after a close/reopen of the SAME draftPR18:
-Git push had updated branch ref while PR head/synchronize remained stale. PR is open/draft again.
-Formatting/guidance green. API28 FAILED with NoSuchMethodError Stream.toList in GymWarmup;
-this is a demonstrated new compatibility defect, not a flaky timing assertion. Root correction
-replaces new Java9/16 List/Set/Stream runtime methods with existing Immutable helpers and
-Collectors.toList in GymWarmup/GymSupersets/SqliteGymToolsRepository. Domain gym tests remain7901.
-APIs35/36 also completed with fixture failures: grouped programme test calculated a preview
-without navigating to it; correction uses the real Preview programme control before activation.
-The new three-mode capture deleted the SQLite file between Activity owners; correction reuses
-one staged paused workout via accepted recovery helpers and never deletes under a live owner.
-All assertions retained, no sleeps/retry weakening. Compatibility fix committed ea6f48b.
+M2 IMPLEMENTED / LOCAL GATES PASS —NEEDS FULL ANDROID + VISUAL VERIFICATION
+- StrengthVolume: actual working sets; equal shares among primary canonical areas; secondary
+ exposures separate (not extra full sets); custom/changed anatomy unknown. Warm-ups excluded;
+ empty weeks mean no RECORDED working sets, current week explicitly incomplete. Per-exercise
+ frequencies/rep/time/distance/load×rep tasks remain separate. Pure projection prepared off-main.
+ 8/26/52week UI, no plan mutation.547domain assertions,4Compose cases.
+- StrengthRecords: measured heaviest/exact-rep/at-load/bodyweight/time/distance records with
+ source set/workout/local date. Separate bounded2–10rep Epley estimate; display rounded/About,
+ not a recorded lift or suggested training weight. Legacy PB calculation now also keeps singles
+ measured-only, removing a duplicate estimated category WITHOUT deleting underlying evidence.
+ Historical/manual editing/history retained via link. Existing navigation tests preserve assertions.
+ New measured history expands/paginates, source buttons work;34domain assertions,3Compose cases.
+- TrainingMilestones: seven restrained first/five/fifty gym, first/ten run, recorded5km and twelve
+ distinct-week recognitions. No warmup-only/future/missing-distance/unknown-zone week inference.
+ No forced streaks, diagnosis or penalty.33domain assertions. Typed SqliteAchievementsRepository
+ schema17/root11 stores bounded normalized awards/proofs/preferences; existing recognition never
+ duplicates/redates after restore/imports. Missing source labelled honestly; available sources open.
+ Optional in-app celebrations OFF by default; no achievement system notifications.6repo +3UI cases.
+- RootJSON11 strictly requires achievement section, reads supported1–10, validates before shared
+ transaction replacement. Tests add old10/default, malformed/future, rollback and16→17 migration.
+ Original rest/root10 requirement remains explicitly tested. New raw/complete formats unchanged.
+- Current-source actual local Gradle PASS :domain:check/:app:assembleDebug/:app:lintDebug/
+ :app:assembleDebugAndroidTest79tasks/1m2sec.649416domain checks/42suites (GymTools7909),
+ schema70, release9, capture-validator15 PASS. Formatting final full check PASS85Kotlin/136Java on this committed code.
+ Logs /workspace/scratch/rdd011/milestone2-final-*; prior logs retained for actual failure evidence.
+- Required captures NOW188:155baseline +15gym controls/settings/evidence +18analytics/records/
+ milestones across light/dark/200%. Definitions are production screens, NOT yet fresh reviewed PNGs.
+ Canonical directory currently164sourcea26150d. Do not claim new current-source screenshot acceptance.
+- Docs: STRENGTH_ANALYTICS_0_11.md, VISUAL_REVIEW_0_11.md, release, architecture, privacy,
+ screenshot boundaries, owner TEST_BUILD checklist. No unperformed S24 pass claimed.
 
+IMMEDIATE NEXT TASKS (continue automatically, do not stop after one fix)
+1. Inspect status/log/remote/PR18. M2 code + handoff is pushed (or finish the recorded pending push), maintaining draft.
+ Run full API28/35/36 on current source; inspect actual failures, fix roots, retain assertions.
+ Git pushes previously advanced refs without refreshing PR/synchronize; a close/reopen of SAME
+ draft PR18 through gh api refreshed it and started CI. Do not create duplicate PRs or rerun blindly.
+ If a workflow exists already, use it; preserve any canonical bot commit on this branch.
+2. Inspect instrumented repo/UI/backup cases and all188source-verified actual captures. Download
+ artifacts with GitHub connector then promptly fetch its File Service download_url (NOT Sediment).
+ Direct Azure redirect via gh can403; do not dump signed URLs/base64. ZIP/PNG hashes must match.
+ Raw M1 captures/ZIPs available in scratch/rdd011; new M2 images still need download and direct review.
+ Review light/dark/200%, controls, source links, old historical PB navigation and workout invariants.
+3. Once M2 gates are green, continue M3–6 BELOW. Keep the PR draft; not full release-complete yet.
 
-Latest gym-only workflow42067939767 on bbb458b ran448tests EACH API28/35/36; ONLY failure
-on each was new grouped programme fixture still creating a draft via model.newDraft instead of
-real UI entry, leaving section="drafts" and no Preview button. Fixed test now clicks Build a
-programme from scratch AND Preview programme before activation. Original assertions retained.
-All other gym tests, new timer/warmup/superset capture methods, formatting and guidance passed;
-full workflow was RED, so canonical screenshots/APK were NOT published. Do not call this green.
-Java collection/runtime and SQLite fixture deletion failures from42062688210 are resolved in
-this second run. Need push this exact remaining fixture correction and rerun full matrix once.
+M3 —NOT IMPLEMENTED: conservative recovery/deload and hybrid scheduling
+- Reuse existing RecoveryCoaching, reviewed concrete programme drafts/editors/activation, and
+ coherent decision history. Inspect StrengthProgrammeEditor/ConcreteStrengthProgrammeEditor,
+ ConcreteStrengthProgrammeDraft/Repository, SqliteStrengthProgrammingRepository and
+ StrengthGenerationViewModel save/review/freshness workflow before extending them.
+- Fresh actual effort/volume/history; unknown stays unknown, no readiness score/isolated HRV
+ diagnosis. Optional today-only reductions versus reviewed short lighter-week drafts, KEEP option,
+ explicit approval, no silent future revisions. Respect priority/demanding runs/race context without
+ rewriting running plans or introducing a competing execution/planning engine.
 
-MILESTONE2 VALID LOCAL WORK —PRESERVE ALL UNCOMMITTED FILES:
-- StrengthVolume +547assertions: actual working sets, primary set shares/secondary exposure,
-  per-exercise modality/frequency, custom anatomy unknown; 8/26/52week UI +4Compose tests.
-- StrengthRecords +31assertions: measured/exact-rep/at-load/bodyweight/timed/distance sources,
-  separate bounded2–10rep Epley estimates, original source local dates. New records UI +3tests;
-  legacy historical PB editing retained behind link; original navigation tests adjusted, no
-  original assertions removed. New actual production captures across3modes.
-- TrainingMilestones +33assertions: seven restrained count/distance/distinct-week awards, no
-  warmup-only/future/missing-distance/unknown-zone week inference, deterministic historic eligibility.
-  Typed SqliteAchievementsRepository normalized awards/proofs/preference with stable recognition,
-  optional in-app celebrations OFF by default (no system achievement notifications). ViewModel/UI,
-  5repository tests and3realUI tests; backup root11/schema17 additive over committed16/root10.
-- Current combined source local Gradle :domain:check/debug/lint/test-APK compile PASS79tasks/1m20sec;
-  schema70 PASS, formatting applied85Kotlin/136Java. Pure domain total currently649405/42suites.
-  Capture requirements now182=155baseline+9gym+18analytics/records/milestones. New18M2 scenes
-  are definitions only: no actual captures or visual acceptance yet. Canonical directory remains
-  prior setup155source. Complete/raw backup package versions remain1/2.
-- New docs STRENGTH_ANALYTICS_0_11.md, privacy/test-build notes. No new dependency/permission.
+M4 —NOT IMPLEMENTED: optional height/weight/protein
+- Inspect actual HC SDK1.1.0 HeightRecord/READ_HEIGHT and current gateway/body/weight provenance.
+ Typed measurements, manual/unit fallback, duplicates/staleness/revocation/partial permissions.
+ No body data required for programming. Document general adult sports protein range from valid
+ weight/focus; height is NOT its primary basis; no unsupported numeric advice/medical claims.
 
-NEXT: stage only gym fixture correction (preserve M2 root-version assertions) and run exact-source
-full gym gate; inspect current run, artifacts and9real screenshots. Then finish M2 verification:
-run format check/release9/capture-validator15/schema70/current-source domain and compile again
-if source changes; review new repo/backup tests (including explicit11missing-achievements and
-previous10 restore), run all182captures/API matrix and inspect light/dark/200%. Update docs and
-commit/push M2 coherently after relevant verification. Do not duplicate PR18 or auto-merge.
+M5 —NOT IMPLEMENTED: safe retention/storage
+-24months new-install default /5years/forever; existing users grandfathered until informed explicit
+ acknowledgement. Preview and separate bounded/idempotent transactional cleanup with operation
+ coordination. NEVER delete ordinary summaries/actuals/PBs/versions/decisions/awards/shoe totals.
+- Inspect RecordingStore/raw archive2/complete package1 and route/GPX dependencies BEFORE pruning.
+ Preserve truthful missing-detail flags and summaries, never invented route/splits. If archive needs
+ new metadata, version safely with older reads, never export a misleading archive. SQLite deletes
+ do not automatically shrink file size; report logical removals versus actual physical bytes honestly.
+ Root JSON has existing explicit32MiB limit; do not silently truncate long histories or exports.
 
-M3–6 remain FULLY REQUIRED and NOT IMPLEMENTED: conservative recovery/deload/hybrid proposals,
-optional HC height/body/protein, explicit safe retention/storage/pruning, complete catalogue
-additions, full three6month athlete simulations, final visual/regression/APK/docs. Analytics-only
-six-month counting checks are not full athlete simulations. Continue rather than silently defer.
-
-New durable data continues typed repositories over shared ProfileDatabase transactions.
-Future migrations must be additive beyond16, keeping supported upgrades; do not rewrite committed
-schema16 once distributed. Backup additions need strict validation and version rejection; do not
-silently export unvalidated new fields. Existing-user retention needs explicit acknowledgement.
-No new runtime dependency has been added. GPS0.10.1and screenshot production-window fixture
-are accepted; do not repeat/rewrite their completed repairs. All physical S24 checks remain
-UNPERFORMED; expanded checklist is required before final acceptance.
-
-Recovery: continue the next incomplete milestone rather than stopping after one checkpoint.
-After each: relevant tests/build/schema/instrumentation, coherent commit/push, update handoff.
-Record actual failures and exact next files. Do not claim unrun tests or mock screenshots.
+M6 —NOT IMPLEMENTED: selective catalogue + final hardening
+-174canonical/14routine guidance currently preserved. Grow toward220–250 only for genuine gaps
+ with complete metadata/instructions/owned guidance and strict integrity checks. No placeholders.
+- Full three6month simulations: inactive100kg first5K beginner,87kg hybrid3gym/half-marathon,
+ experienced70kg marathon +strength. Existing M2 counting-history tests are NOT full acceptance.
+- Full domain/schema/backup/format/lint/release/guidance/provenance and API28/35/36, final-source
+ authentic captures/visual review, README authentic preview, APK/size, docs, physical checklist.
+ All S24 physical checks remain UNPERFORMED, including0.10.1outdoor GPS. No merge/stable tag.
 
 ## Historical0.10.1 checkpoint —completed, not active work
 
-## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
+## Archived —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
 LATEST MERGED CHECKPOINT —5 November2026
 
