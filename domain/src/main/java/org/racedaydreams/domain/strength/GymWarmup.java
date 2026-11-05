@@ -14,7 +14,7 @@ public final class GymWarmup {
 
     public record Suggestion(String instruction, String why, List<Ramp> ramps) {
         public Suggestion {
-            ramps = List.copyOf(ramps);
+            ramps = org.racedaydreams.domain.coaching.Immutable.copyList(ramps);
         }
     }
 
@@ -33,7 +33,7 @@ public final class GymWarmup {
                     "You have already recorded working sets for this exercise. Prepare again only"
                             + " if useful.",
                     "No additional ramp is suggested after working sets.",
-                    List.of());
+                    org.racedaydreams.domain.coaching.Immutable.list());
         var metadata = ExerciseMetadataCatalog.find(slot.exercise().id());
         if (metadata != null
                 && today.stream()
@@ -45,14 +45,14 @@ public final class GymWarmup {
                     "You have practised a related movement. Start with light, controlled"
                             + " preparation if needed.",
                     "Related recorded work reduces the need for another numerical ramp.",
-                    List.of());
+                    org.racedaydreams.domain.coaching.Immutable.list());
         var fallback =
                 new Suggestion(
                         "Practise the movement gently before working sets. Choose a light load or"
                                 + " an easier version; stop if uncomfortable.",
                         "No trustworthy recent exact-exercise working-load evidence is available."
                                 + " No kilograms are invented.",
-                        List.of());
+                        org.racedaydreams.domain.coaching.Immutable.list());
         if (metadata == null
                 || !metadata.roles().contains(ExerciseMetadata.Role.PRIMARY_STRENGTH)
                 || !slot.exercise().measurement().usesReps()
@@ -68,7 +68,7 @@ public final class GymWarmup {
                         .sorted(
                                 java.util.Comparator.comparing(StrengthSession::startedAt)
                                         .reversed())
-                        .toList()) {
+                        .collect(java.util.stream.Collectors.toList())) {
             var eligible = new ArrayList<StrengthSession.SetEntry>();
             for (var exercise : session.exercises())
                 if (exercise.exercise().equals(slot.exercise()))
@@ -92,7 +92,7 @@ public final class GymWarmup {
             // Main strength movements only: two low-fatigue practice sets, not a universal1RM
             // recipe.
             var ramps =
-                    List.of(
+                    org.racedaydreams.domain.coaching.Immutable.list(
                             new Ramp(Math.floor(working * .4 * 2) / 2, 6),
                             new Ramp(
                                     Math.floor(working * .65 * 2) / 2,

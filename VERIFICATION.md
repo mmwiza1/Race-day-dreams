@@ -1,5 +1,10 @@
 ## 0.11 development checkpoint — not release acceptance
 
+Current gym workflow42062688210 exposed API28 NoSuchMethodError from new Stream.toList calls.
+Compatible Immutable/Collectors correction is in progress; no Android pass is claimed for that
+source until the complete matrix reruns successfully. M2 projections/UI are uncommitted and
+not part of the earlier gym-only verification.
+
 Baseline main8796bc5 and setup19c74c2 full workflow42054247383 passed. New gym implementation
 has648794local domain checks/39suites (GymTools7901), schema67 tests including historical
 1–15→16, release9/capture-validator14, and actual Android debug/lint/test compilation passes.

@@ -66,12 +66,36 @@ capture definitions (rest/warmup/superset ×light/dark/200%), raising mandatory 
 Capture validator14 tests pass; NO new screenshots visually signed off yet. Do not claim emulator
 or S24 passes until observed. No usable local KVM; GitHub matrix is execution boundary.
 
-Next exact tasks: finish format/build/domain/release checks; inspect latest build logs in
-scratch/rdd011; fix compilation/test roots. Commit coherent gym checkpoint, preserve remote
-canonical bot e0a46f1 via ordinary merge, push PR18 and run APIs28/35/36. Inspect failing logs,
-download raw screenshot artifacts and review all9 new scenes. Keep handoff accurate. Then M2–6
-remain FULLY REQUIRED: do not stop at M1 or silently defer user scope. No implementation yet for
-analytics/PBs/achievements/recovery/body/nutrition/retention/catalogue additions/6month simulations.
+Latest checkpoint: ece3354 gym implementation; ordinary merge1e2b74c preserves canonical
+bot e0a46f1. Full source workflow42062688210 started after a close/reopen of the SAME draftPR18:
+Git push had updated branch ref while PR head/synchronize remained stale. PR is open/draft again.
+Formatting/guidance green. API28 FAILED with NoSuchMethodError Stream.toList in GymWarmup;
+this is a demonstrated new compatibility defect, not a flaky timing assertion. Root correction
+replaces new Java9/16 List/Set/Stream runtime methods with existing Immutable helpers and
+Collectors.toList in GymWarmup/GymSupersets/SqliteGymToolsRepository. Domain gym tests remain7901.
+APIs35/36 still pending at this write; inspect their actual logs/results before claiming a pass.
+
+Next exact tasks: commit/push compatibility correction; verify current source gate on28/35/36,
+inspect all new repository/UI failures and9raw production captures. Format check passed on gym
+checkpoint before this compatible-collections correction. Local build/debug/lint/test compilation
+on pre-correction gym source passed79tasks and final cleanup75tasks/54sec. No new visual signoff.
+
+Milestone2 IN-PROGRESS UNCOMMITTED work must be preserved: StrengthVolume and
+StrengthVolumeTestSuite(547assertions) project actual working sets only, equal primary set-shares,
+separate secondary exposures, custom anatomy unknown, per-exercise modalities/load-reps separate.
+StrengthAnalyticsScreen +4UI tests, dashboard/navigation link. StrengthRecords +31domain checks
+separate measured/exact-rep/at-load/bodyweight/timed/distance and bounded2–10rep Epley estimates;
+StrengthRecordsScreen and navigation to legacy historical PB editing. These are not yet a completed
+milestone: new PB UI needs tests, expanded history, authentic3mode screenshots/validator updates;
+FeatureNavigation/RefinementUi/WeeklyUx tests must follow extra history-link navigation while
+retaining original assertions. Analytics test compile found20/60 Int→Double literals, corrected;
+latest combined source needs full compilation. Updated canonical fixture adds light strength-records
+capture but required-manifest/all modes not yet finished. No achievements implementation yet.
+Do not commit partially tested M2 into the compatibility-only correction by accident.
+
+M2–6 remain FULLY REQUIRED. No implementation yet for achievements/recovery/body/nutrition/
+retention/catalogue additions/full three athlete simulations. Analytics-only6month counting tests
+are not full athlete simulation acceptance. Continue after gym gate, do not silently defer scope.
 
 New durable data continues typed repositories over shared ProfileDatabase transactions.
 Future migrations must be additive beyond16, keeping supported upgrades; do not rewrite committed

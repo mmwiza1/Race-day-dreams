@@ -87,7 +87,8 @@ public final class SqliteGymToolsRepository extends SqliteStoreAccess {
                             "SELECT state FROM strength_executions WHERE id=?",
                             new String[] {execution})) {
                 if (!c.moveToFirst()
-                        || !Set.of("ACTIVE", "PAUSED", "RECOVERY_REQUIRED")
+                        || !org.racedaydreams.domain.coaching.Immutable.set(
+                                        "ACTIVE", "PAUSED", "RECOVERY_REQUIRED")
                                 .contains(c.getString(0)))
                     throw new IllegalArgumentException("Rest belongs to an unfinished workout.");
             }
@@ -119,7 +120,8 @@ public final class SqliteGymToolsRepository extends SqliteStoreAccess {
                             "SELECT state FROM strength_executions WHERE id=?",
                             new String[] {execution})) {
                 if (!c.moveToFirst()
-                        || !Set.of("ACTIVE", "PAUSED", "RECOVERY_REQUIRED")
+                        || !org.racedaydreams.domain.coaching.Immutable.set(
+                                        "ACTIVE", "PAUSED", "RECOVERY_REQUIRED")
                                 .contains(c.getString(0))) return false;
             }
             var observed = saved.observe(now);
@@ -202,7 +204,10 @@ public final class SqliteGymToolsRepository extends SqliteStoreAccess {
     public record Snapshot(GymRestTimer.Preferences preferences, List<GymRestTimer> timers) {}
 
     public static Snapshot validate(JSONObject data, JSONObject engine) {
-        if (data == null) return new Snapshot(GymRestTimer.Preferences.defaults(), List.of());
+        if (data == null)
+            return new Snapshot(
+                    GymRestTimer.Preferences.defaults(),
+                    org.racedaydreams.domain.coaching.Immutable.list());
         fields(data, "version", "preferences", "timers");
         if (integer(data, "version") != 1) throw invalid("unsupported gym tools version");
         var p = child(data, "preferences");
@@ -247,7 +252,8 @@ public final class SqliteGymToolsRepository extends SqliteStoreAccess {
                 throw invalid("orphan or duplicate rest timer");
             result.add(t);
         }
-        return new Snapshot(preferences, List.copyOf(result));
+        return new Snapshot(
+                preferences, org.racedaydreams.domain.coaching.Immutable.copyList(result));
     }
 
     public static void restore(SQLiteDatabase db, Snapshot snapshot) {

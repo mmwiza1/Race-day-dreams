@@ -25,7 +25,7 @@ public final class GymSupersets {
             result.set(i, new GymWorkoutDefinition.Slot(s.id(), s.exercise(), s.target(), groupId));
         }
         GymWorkoutDefinition.validateSlots(result, false);
-        return List.copyOf(result);
+        return org.racedaydreams.domain.coaching.Immutable.copyList(result);
     }
 
     public static List<GymWorkoutDefinition.Slot> ungroup(
@@ -38,9 +38,9 @@ public final class GymSupersets {
                                                 ? new GymWorkoutDefinition.Slot(
                                                         s.id(), s.exercise(), s.target(), null)
                                                 : s)
-                        .toList();
+                        .collect(java.util.stream.Collectors.toList());
         GymWorkoutDefinition.validateSlots(result, false);
-        return result;
+        return org.racedaydreams.domain.coaching.Immutable.copyList(result);
     }
 
     public static Next next(GymExecution execution) {
@@ -61,7 +61,7 @@ public final class GymSupersets {
                                 s ->
                                         current.supersetGroup().equals(s.supersetGroup())
                                                 && !skipped.contains(s.id()))
-                        .toList();
+                        .collect(java.util.stream.Collectors.toList());
         GymWorkoutDefinition.Slot chosen = null;
         int round = Integer.MAX_VALUE;
         for (var s : group) {
