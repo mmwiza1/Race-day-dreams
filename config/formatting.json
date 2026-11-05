@@ -156,6 +156,17 @@
     "domain/src/main/java/org/racedaydreams/domain/strength/ConcreteStrengthProgrammeEditor.java",
     "app/src/androidTest/java/org/racedaydreams/coach/StrengthGenerationScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/RefinementUiTest.kt",
-    "domain/src/test/java/org/racedaydreams/domain/strength/ConcreteStrengthProgrammeSubstitutionTestSuite.java"
+    "domain/src/test/java/org/racedaydreams/domain/strength/ConcreteStrengthProgrammeSubstitutionTestSuite.java",
+    "domain/src/main/java/org/racedaydreams/domain/recording/RunMetricsEngine.java",
+    "domain/src/main/java/org/racedaydreams/domain/recording/AutoPausePolicy.java",
+    "domain/src/test/java/org/racedaydreams/domain/recording/GpsReliabilityTestSuite.java",
+    "app/src/main/java/org/racedaydreams/recording/LocationSource.kt",
+    "app/src/main/java/org/racedaydreams/coach/ActiveRunPanel.kt",
+    "domain/src/main/java/org/racedaydreams/domain/polish/RouteRenderGeometry.java",
+    "domain/src/test/java/org/racedaydreams/domain/polish/RouteRenderGeometryTestSuite.java",
+    "app/src/main/java/org/racedaydreams/coach/RouteCard.kt",
+    "domain/src/main/java/org/racedaydreams/domain/presentation/StrengthPrescriptionText.java",
+    "domain/src/test/java/org/racedaydreams/domain/presentation/StrengthPrescriptionTextTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/ProgrammeProgressionClarityTest.kt"
   ]
 }

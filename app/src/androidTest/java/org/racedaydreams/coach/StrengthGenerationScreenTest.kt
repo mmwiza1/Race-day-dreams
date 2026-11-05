@@ -634,7 +634,7 @@ class StrengthGenerationScreenTest {
         )
         click("Review progression for ${slot.exercise().name()}")
         await { model.state.value.progressionReview != null }
-        compose.onNodeWithText("Optional progression").assertIsDisplayed()
+        compose.onNodeWithText("Your workout suggestion").assertIsDisplayed()
         val advice = model.state.value.progressionReview!!.advice
         assertEquals(2, advice.supportingSessionIds().size)
         assertEquals(82.0, advice.proposedTarget().referenceLoadKg()!!, 0.0)
@@ -642,11 +642,11 @@ class StrengthGenerationScreenTest {
             draft,
             io { SqliteConcreteStrengthProgrammeDraftRepository(app).get(draft.id()) },
         )
-        compose.onNodeWithText("Keep current target").performClick()
+        compose.onNodeWithText("Keep my current target").performClick()
         assertEquals(draft, model.state.value.draft)
         click("Review progression for ${slot.exercise().name()}")
         await { model.state.value.progressionReview != null }
-        chooseProgrammeAlternative("Save optional target proposal")
+        chooseProgrammeAlternative("Save this suggestion for review")
         await { model.state.value.draft!!.revision() == draft.revision() + 1 }
         val proposed = model.state.value.draft!!
         assertTrue(proposed.programme().reason().contains("optional target proposal"))
@@ -709,8 +709,8 @@ class StrengthGenerationScreenTest {
         compose.runOnIdle { model.reviewProgression(workout.id(), slot.id()) }
         await { model.state.value.progressionReview != null }
         assertNull(model.state.value.progressionReview!!.advice.proposedTarget())
-        compose.onNodeWithText("Save optional target proposal").assertDoesNotExist()
-        compose.onNodeWithText("Keep current target").assertIsDisplayed().performClick()
+        compose.onNodeWithText("Save this suggestion for review").assertDoesNotExist()
+        compose.onNodeWithText("Keep my current target").assertIsDisplayed().performClick()
         assertEquals(draft, model.state.value.draft)
         assertEquals(evidence.toSet(), io { CoachingStore(app).strength().toSet() })
     }

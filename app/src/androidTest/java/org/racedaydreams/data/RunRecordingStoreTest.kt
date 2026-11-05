@@ -44,6 +44,83 @@ class RunRecordingStoreTest : AndroidTestCase() {
         return store.unfinished()!!
     }
 
+    fun testQualifiedGpsEvidenceAndReasonsSurviveRecoveryGpxAndRawBackup() {
+        val engine = RunMetricsEngine(0, Instant.EPOCH)
+        fun fix(time: Long, metres: Double, speed: Double = 3.0) =
+            RunMetricsEngine.Fix(
+                Instant.EPOCH.plusMillis(time),
+                time,
+                0.0,
+                metres / 111194.9266,
+                3.0,
+                null,
+                null,
+                speed,
+            )
+        fun deliver(
+            point: RunMetricsEngine.Fix,
+            received: Long = point.monotonicMillis(),
+        ): Boolean =
+            engine.qualifyDelivery(point, received, Instant.EPOCH.plusMillis(received)) &&
+                engine.accept(point)
+        for (i in 0..60) assertTrue(deliver(fix(i * 1000L, if (i % 2 == 0) 2.0 else -2.0, 0.0)))
+        assertEquals(0.0, engine.status(60000).metres(), 0.001)
+        for (i in 61..70) assertTrue(deliver(fix(i * 1000L, 2.0 + (i - 60) * 3.0)))
+        val qualifiedDistance = engine.status(70000).metres()
+        engine.missingFix(100000, Instant.EPOCH.plusSeconds(100))
+        assertFalse(deliver(fix(71000, 35.0), 100000))
+        assertTrue(deliver(fix(101000, 1000.0)))
+        assertTrue(deliver(fix(102000, 1003.0)))
+        assertEquals(qualifiedDistance + 3, engine.status(102000).metres(), 0.001)
+        val expected = engine.points()
+        val store = RecordingStore(context)
+        store.start("qualified", Instant.EPOCH, 0)
+        store.flush("qualified", expected, engine.events(), 0, 0, 102000, "ACTIVE")
+        store.recoverable()
+        val recovered = RecordingStore(context).unfinished()!!
+        assertEquals(expected, RecordingStore(context).points("qualified"))
+        val activityId = RecordingStore(context).finish(recovered, null)
+        val activity = FeatureStore(context).activities().first { it.id() == activityId }
+        assertEquals(qualifiedDistance + 3, activity.distanceMetres()!!, 0.001)
+        assertEquals(
+            expected.map { it.cumulativeMetres() },
+            activity.samples().map { it.distanceMetres() },
+        )
+        val gpx = ByteArrayOutputStream()
+        GpxFiles(context).exportTo("qualified", gpx)
+        val exported = GpxFiles.parse(ByteArrayInputStream(gpx.toByteArray()))
+        assertEquals(expected.size, exported.size)
+        expected.zip(exported).forEach { (point, route) ->
+            assertEquals(point.fix().latitude(), route.lat, 0.0)
+            assertEquals(point.fix().longitude(), route.lon, 0.0)
+            assertEquals(point.fix().timestamp(), route.time)
+        }
+        assertTrue(exported.last().segment != exported.first().segment)
+        val backup = ByteArrayOutputStream()
+        RecordingArchive(context).exportTo(backup)
+        FeatureStore(context).deleteActivity(activityId)
+        assertTrue(store.points("qualified").isEmpty())
+        RecordingArchive(context).restoreFrom(ByteArrayInputStream(backup.toByteArray()))
+        assertEquals(expected, store.points("qualified"))
+        ProfileDatabase.get(context)
+            .readableDatabase
+            .rawQuery(
+                "SELECT payload FROM recording_events WHERE session_id=?",
+                arrayOf("qualified"),
+            )
+            .use { cursor ->
+                var found = false
+                while (cursor.moveToNext()) if (cursor.getString(0).contains("GPS_FIX_STALE"))
+                    found = true
+                assertTrue("Coordinate-free rejection reason lost during backup", found)
+            }
+        assertEquals(
+            qualifiedDistance + 3,
+            FeatureStore(context).activities().first { it.id() == activityId }.distanceMetres()!!,
+            0.001,
+        )
+    }
+
     fun testFinalizationRetainsRawPointsAndComputesSamples() {
         val s = trace()
         val id = RecordingStore(context).finish(s, 100000)

@@ -274,3 +274,11 @@ The 0.9 architecture surfaces are checked by ktfmt 0.54
 developer/CI executables, downloaded from Maven Central with pinned SHA-256
 validation; no formatter source or JAR ships in the Android APK. No third-party
 implementation is adapted into app/domain code. See docs/FORMATTING.md.
+
+## GPS engineering comparison (0.10.1)
+
+OpenTracks (Apache-2.0), RunnerUp (GPL-3.0-or-later in reviewed tracker files) and
+GPSTest (Apache-2.0) were inspected as engineering references only. No source was
+copied or incorporated, no runtime dependency was added and this does not relicense
+Race Day Dreams. Pinned revisions, file paths, decisions and the inaccessible current
+Codeberg limitation are recorded in [the review](docs/GPS_ENGINE_REVIEW_0_10_1.md).

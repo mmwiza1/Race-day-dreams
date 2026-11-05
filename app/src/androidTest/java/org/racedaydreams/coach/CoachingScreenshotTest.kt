@@ -2,6 +2,8 @@ package org.racedaydreams.coach
 
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.lifecycle.ViewModelProvider
@@ -666,7 +668,7 @@ class CoachingScreenshotTest {
                     60000,
                     60000,
                     300.0,
-                    "GPS available",
+                    "GPS ready",
                     false,
                 )
         }
@@ -1755,20 +1757,75 @@ class CoachingScreenshotTest {
                         .performScrollTo()
                         .performClick()
                     val heading =
-                        if (kind == "progression") "Optional progression"
+                        if (kind == "progression") "Your workout suggestion"
                         else "Programme replacement"
                     await(heading)
                     compose.onNodeWithText(heading).assertIsDisplayed()
                     if (kind == "progression") {
-                        compose.onNodeWithText("Optional proposal").assertIsDisplayed()
+                        compose.onNodeWithText("Here's what to do").assertIsDisplayed()
+                        compose.onNodeWithText("Keep my current target").assertIsDisplayed()
+                        // At 200% the entry viewport cannot contain every instruction. Capture
+                        // the full task and weight cards at their real scroll positions as well.
                         compose
-                            .onNode(hasText("82 kg reference", substring = true))
+                            .onNodeWithTag("progression-review")
+                            .performScrollToNode(
+                                hasText(
+                                    "Aim for moderate to challenging perceived effort.",
+                                    substring = true,
+                                )
+                            )
+                        compose.onNodeWithText("Here's what to do").assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Complete 2 sets of 4–6 repetitions.")
                             .assertIsDisplayed()
-                        compose.onNodeWithText("Keep current target").assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Rest for 3 minutes between sets.")
+                            .assertIsDisplayed()
+                        capture("strength-programme-progression-instructions$suffix")
+                        compose
+                            .onNodeWithTag("progression-review")
+                            .performScrollToNode(
+                                hasText("suggested new weight reference is 82 kg", substring = true)
+                            )
+                        compose
+                            .onNode(
+                                hasText("suggested new weight reference is 82 kg", substring = true)
+                            )
+                            .assertIsDisplayed()
+                        compose
+                            .onNodeWithTag("progression-review")
+                            .performScrollToNode(
+                                hasText(
+                                    "not a weight you must lift or a recorded result",
+                                    substring = true,
+                                )
+                            )
+                        compose.onNodeWithText("About the weight").assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Your current target has no weight reference.")
+                            .assertIsDisplayed()
+                        compose
+                            .onNode(
+                                hasText("suggested new weight reference is 82 kg", substring = true)
+                            )
+                            .assertIsDisplayed()
+                        capture("strength-programme-progression-weight$suffix")
                         compose
                             .onNode(hasScrollToIndexAction())
-                            .performScrollToNode(hasText("Save optional target proposal"))
-                        compose.onNodeWithText("Save optional target proposal").assertIsDisplayed()
+                            .performScrollToNode(hasText("Save this suggestion for review"))
+                        compose
+                            .onNodeWithText("Save this suggestion for review")
+                            .assertIsDisplayed()
+                        compose
+                            .onNodeWithText("Advanced details")
+                            .assertIsDisplayed()
+                            .assert(
+                                SemanticsMatcher.expectValue(
+                                    SemanticsProperties.StateDescription,
+                                    "Collapsed",
+                                )
+                            )
+                        capture("strength-programme-progression-controls$suffix")
                         compose.onNode(hasScrollToIndexAction()).performScrollToIndex(0)
                     }
                 }
@@ -1781,6 +1838,87 @@ class CoachingScreenshotTest {
                             android.content.res.Configuration.UI_MODE_NIGHT_MASK,
                     )
                 capture("strength-programme-$kind$suffix")
+                if (kind == "progression") {
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("Advanced details"))
+                    compose.onNodeWithText("Advanced details").performClick()
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("What's changing?"))
+                    compose.onNodeWithText("What's changing?").assertIsDisplayed()
+                    compose.onNodeWithTag("change-weight-reference").assertExists()
+                    capture("strength-programme-progression-details$suffix")
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("What's staying the same?"))
+                    compose.onNodeWithText("What's staying the same?").assertIsDisplayed()
+                    compose.onNodeWithTag("unchanged-sets").assertIsDisplayed()
+                    compose.onNodeWithTag("unchanged-repetitions").assertIsDisplayed()
+                    capture("strength-programme-progression-targets$suffix")
+                    // Inspect the lower rows separately rather than requiring the full card
+                    // and the following disclosure to fit a 200% font viewport together.
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasTestTag("unchanged-rest"))
+                    compose.onNodeWithTag("unchanged-effort").performScrollTo()
+                    compose.onNodeWithTag("unchanged-rest").assertIsDisplayed()
+                    compose.onNodeWithTag("unchanged-effort").assertIsDisplayed()
+                    capture("strength-programme-progression-unchanged$suffix")
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("View supporting workouts"))
+                    compose
+                        .onNodeWithText("View supporting workouts")
+                        .assertIsDisplayed()
+                        .assert(
+                            SemanticsMatcher.expectValue(
+                                SemanticsProperties.StateDescription,
+                                "Collapsed",
+                            )
+                        )
+                    compose.onNodeWithText("Why this suggestion?").assertIsDisplayed()
+                    compose.onNodeWithText("Actual logged working sets").assertDoesNotExist()
+                    capture("strength-programme-progression-context$suffix")
+                    compose.onNodeWithText("View supporting workouts").performClick()
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("Supporting workouts"))
+                    compose
+                        .onAllNodesWithText("80 kg recorded · 6 repetitions")
+                        .onFirst()
+                        .performScrollTo()
+                        .assertIsDisplayed()
+                    compose.onNodeWithText("82 kg recorded · 6 repetitions").assertDoesNotExist()
+                    capture("strength-programme-progression-evidence$suffix")
+                    // The evidence is one tall lazy item. Align its last actual set using
+                    // measured content coordinates: scrolling to its final paragraph can
+                    // legitimately leave the preceding heading above the viewport.
+                    alignProgressionCapture(
+                        compose.onAllNodesWithText("80 kg recorded · 6 repetitions").onLast()
+                    )
+                    compose
+                        .onAllNodesWithText("80 kg recorded · 6 repetitions")
+                        .onLast()
+                        .assertIsDisplayed()
+                    compose.onNodeWithText("Calculation & safeguards").assertIsDisplayed()
+                    compose
+                        .onNode(
+                            hasText("Only recent exact-exercise working sets", substring = true)
+                        )
+                        .assertIsDisplayed()
+                    capture("strength-programme-progression-safeguards$suffix")
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("Save this suggestion for review"))
+                    compose.onNodeWithText("Save this suggestion for review").assertIsDisplayed()
+                    compose
+                        .onNodeWithText(
+                            "Saving this suggestion won't change your active programme. You can review and activate it separately."
+                        )
+                        .assertIsDisplayed()
+                    capture("strength-programme-progression-evidence-actions$suffix")
+                }
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))
                 Assert.assertEquals(actuals.toSet(), CoachingStore(context).strength().toSet())
@@ -1924,6 +2062,18 @@ class CoachingScreenshotTest {
             "Capture heading is not in the upper viewport: $text at $top",
             top in 100f..300f,
         )
+    }
+
+    private fun alignProgressionCapture(node: SemanticsNodeInteraction) {
+        node.performScrollTo()
+        compose.waitForIdle()
+        val viewport = compose.onNodeWithTag("progression-review")
+        val delta =
+            node.fetchSemanticsNode().positionInRoot.y -
+                viewport.fetchSemanticsNode().positionInRoot.y -
+                16f * context.resources.displayMetrics.density
+        viewport.performSemanticsAction(SemanticsActions.ScrollBy) { scroll -> scroll(0f, delta) }
+        compose.waitForIdle()
     }
 
     private fun capture(name: String, anchor: String? = null) {

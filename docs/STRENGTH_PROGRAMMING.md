@@ -123,3 +123,37 @@ own target across selected future occurrences, clear load references and record 
 accepted-base→replacement provenance. A changed measurement needs an individually reviewed
 target. SQL acceptance independently rechecks original intent, fresh exclusions/archived
 choices and equipment. These operations create no actual sets or completion evidence.
+
+## 0.10.1 coaching clarity
+
+The optional progression review now leads with the actual task in plain English. Repetition,
+time and distance instructions come from the preserved structured target. No effort or rest
+is invented when absent. Perceived effort (RPE) and repetitions left before failure (RIR) are
+separate explanations, never presented as interchangeable scales.
+
+About the weight distinguishes the current optional prescription reference from the suggested
+new reference. Neither is labelled as a lifted result. Only actual recorded sets in the supporting
+workouts are shown as recorded weights. Advanced details starts collapsed, can be expanded by
+touch/keyboard/accessibility action, and retains state through recreation. It exposes separate
+current/proposed targets, exact supporting records and the existing progression safeguards.
+
+Save this suggestion for review changes only the reviewed draft. Freshness and transactional
+checks remain intact; activation still requires a separate athlete choice. Keep my current
+target dismisses the review without saving. The underlying conservative calculations, retained
+history and backup formats are unchanged. See VERIFICATION.md for the current gate status;
+physical Galaxy S24 accessibility acceptance remains unperformed.
+
+### Compact progression review (5November refinement)
+
+Advanced now highlights only genuine target differences and lists unchanged sets, task,
+effort and rest once. These are read-only comparisons of the preserved target and the
+existing optional proposal, never values inferred from historical weights. A second
+collapsed View supporting workouts control contains retained exact-exercise working sets,
+original effort evidence, the full calculation reason and safeguards. At large font sizes,
+comparison values and unchanged labels stack naturally. Both disclosures retain accessible
+state and support keyboard/touch. Calculation, freshness checks and separate activation
+remain unchanged. Final source-bound captures and visual acceptance are recorded separately.
+
+When only time/distance grows, an unchanged optional weight reference is described as
+unchanged rather than a new0kgload increase. This is presentation only; progression
+calculations, actual logged weights and separate activation are unchanged.

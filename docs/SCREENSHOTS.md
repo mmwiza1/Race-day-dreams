@@ -1,4 +1,54 @@
-# Current0.10 actual-build capture checkpoint
+# Current0.10.1 authentic capture set —155verified images
+
+Source1dffb7dcf7607c237f257004f4b322aade097ce6 passed complete workflow42012242544 on
+API28/35/36,438cases and155captures each. Canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3
+retains exact API35artifact13407438794 bytes. All157blob identities/tree/commit checked.
+Fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600 matches app/capture code.
+
+All33progression captures were opened directly: eleven states in light/dark/200% — entry,
+full instructions, weight meaning, collapsed Advanced/actions, genuine target changes,
+upper/lower unchanged facts, short why/secondary-closed, actual evidence, lower safeguards,
+and expanded actions. Real scrolling covers the whole page; no mock UI/image editing.
+The owner's earlier dense-Advanced rejection is resolved by compact comparison/unchanged
+panels and a second evidence disclosure. See VISUAL_REVIEW_0_10_1.md for observed review.
+
+References remain separate in docs/design-reference. No separate0.10.1 progression bitmap
+is available, so review follows the owner's explicit accepted hierarchy and refinement
+requirements without a false pixel-match claim. Screenshots do not certify S24/TalkBack.
+Earlier pending/count notes below are historical and superseded by this verified set.
+
+# Historical capture checkpoints
+
+# Current0.10.1 visual-refinement gate
+
+The5November owner review supersedes the prior dense Advanced design. New canonical capture
+requirements total155, retaining all128 previous scenes and adding collapsed progression
+controls, expanded lower context, supporting records and scrolled instruction/weight cards
+in all3modes. Combined with primary
+and comparison captures, review33actual progression frames across the whole page and both
+nested disclosure states. No old screenshot or consistency-only check proves fidelity.
+
+The pre-refinement08cf375 workflow41939512123 passed435 EACH API28/35/36 and128captures;
+botb3a4195 was safely adopted. Refined438-case matrix and155 current-source images remain
+pending. References stay separate; never replace them with generated captures or mock UI.
+
+# 0.10.1 capture checkpoints
+
+Coaching source dc8d6fc / workflow41933727239 passed435 cases EACH API28/35/36 and all128
+required captures. Canonical198cd7c contains128 actual API35 PNGs at540x1200, fingerprint
+688e8ad3cf4b13d2e526edc046e94abe2daa5572b7eb64cf598c864178977a7c. All6 progression
+main/expanded light/dark/200%images were opened and reviewed against the approved task-first
+hierarchy; see VISUAL_REVIEW_0_10_1.md. Every previous125 scene remains required.
+
+The subsequent availability/audio source46ecbd3 is in its final full gate41936237874.
+Its fingerprint differs, so final source-bound captures must be adopted before acceptance.
+Do not confuse a passing earlier scene review with a final-source verification pass.
+
+Capture integrity, source binding and actual visual review are separate gates. References
+remain separate. No mock UI, image editing, physical S24 or human TalkBack pass is implied.
+
+## Historical0.10 capture checkpoint
+
 
 Source1a7c683/workflow41912323900 passed426tests each API28/35/36 and125required captures.
 Canonicalacf7a2285975deaaba9f3652be42615ec49e6a03 has source fingerprint

@@ -33,19 +33,34 @@ for large fonts. No Wear OS, remote service, account or Internet permission is n
 ## Routines and Dream Routes
 
 Thirteen short routines use fourteen original movement definitions with supplemental
-line illustrations and complete written instructions. The five mobility choices are
+bundled original illustrations and complete written instructions. The five mobility choices are
 optional, not calendar events or adherence/load evidence. Jogging preparation belongs
 within the planned warm-up. No movement is injury treatment or a guarantee of recovery.
 
-Dream Route assignments are stored once per activity. Original abstract London,
-Berlin, Paris, Tokyo and New York-inspired drawings use drawing coordinates, not GPS
-or official course geometry. An equivalent segment is normalized to 42.195 km and
-highlighted offline; longer runs show a full equivalent plus remaining distance.
-These drawings intentionally do not claim an actual or navigable event course.
+Dream Route assignments are stored once per activity. Five bundled geographic courses
+and original city artwork render offline, including annual Marathon de Paris2026 for new
+Paris assignments. Retained geometry IDs and existing offsets remain readable. These are
+marathon-equivalent achievements, not claims about the runner's physical location. See
+[DREAM_ROUTES.md](DREAM_ROUTES.md) for exact sources, licences and geometry limits.
+
+## 0.10.1 GPS qualification
+
+Native receipt age is checked using elapsed realtime before optional auto-pause. Stale,
+future, duplicate or invalid observations cannot request auto-pause transitions. A lost
+segment cannot be reopened by an old observation. Accurate, almost-stationary speed evidence
+can qualify a bounded jitter cluster without summing its edges as running distance; original
+accepted coordinates stay retained. Unknown speed is never assumed stationary.
+
+Weak/lost/recovered states describe available evidence, not a guarantee of accuracy. Precise
+live pace and pace cues are suppressed when current evidence is insufficient. Timings remain
+monotonic; GPS gaps never create distance. All thresholds, synthetic reproductions and their
+limits are in [GPS_DIAGNOSIS_0_10_1.md](GPS_DIAGNOSIS_0_10_1.md). Real S24 reception and power
+behaviour remain physical acceptance work.
 
 ## Backup and limits
 
-Schema8 adds coach_support without modifying old tables. App JSON envelope6 reads1–5;
+Current schema15 preserves the existing coach_support and typed strength repositories.
+App JSON envelope9 retains supported older readers;
 raw recording archive2 reads1. CompleteBackup format1 contains manifest.json, app.json
 and recordings.zip, with SHA-256 and byte lengths. ZIP entry names are fixed; no paths
 are extracted. App JSON retains its 8MiB complexity limit; raw archive has a 512MiB
@@ -58,8 +73,7 @@ archive export remains available for retained unfinished evidence.
 Recovery can lose the final unflushed five-second batch. Physical battery, locked-screen
 continuity, GNSS/HR accuracy, Bluetooth reconnection, audio routing and accessibility are
 not established by emulator or synthetic tests. History summaries avoid loading every
-coordinate; coaching hydration is bounded at12 recent native runs/60,000 points. Detailed
-history pagination and incremental rolling-PB recomputation remain scalability work.
-The current planner's actual flat segments are preserved; an arbitrary interval authoring
-UI, repeat/restart-rep control, custom race checklist and verified course datasets are not
-implemented in this increment. There is no medical readiness number or goal mutation.
+coordinate; coaching hydration is bounded at12 recent native runs/60,000 points. History list queries use database-backed paging and avoid raw GPS hydration; detail samples
+load when requested.
+The current planner's actual flat segments and custom workout execution remain preserved;
+this release does not introduce another run recorder or change programme generation. There is no medical readiness number or goal mutation.

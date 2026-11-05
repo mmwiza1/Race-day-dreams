@@ -1,4 +1,4 @@
-# Continue Codex — 0.10.0-test1 Strength Programming 2.0
+# Continue Codex — 0.10.1-test1 GPS Reliability & Coaching Clarity
 
 ## Permanent recovery rules
 
@@ -11,7 +11,161 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT —0.10 software complete; final review/readiness boundary
+## CURRENT —0.10.1 software and visual work complete; PR16 release integration
+
+Branch `feature/0.10.1-gps-reliability-coaching-clarity`, PR16 targets main. Version0.10.1-test1/code14.
+All agreed implementation is complete. Do not restart, redesign or begin0.11. Generic
+recovery rules above remain permanent. Inspect live PR/main/CI before following next steps.
+
+Verified source1dffb7dcf7607c237f257004f4b322aade097ce6 passed COMPLETE workflow42012242544:
+-438 instrumentation cases EACH API28/35/36 (1314emulator cases),155captures/API.
+-640893domain checks/38suites,64schema/migration,9release,13capture-validator,
+  source/provenance11, artwork14, pinned76Kotlin/122Java format and strict174canonical/14routine.
+-Actual domain/check, debug APK, lint and instrumentation build; current/older backup restore,
+  transactional rejection/rollback, actual/history and progression activation safeguards.
+Canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3 was adopted with all157blob identities,
+complete tree and exact unsigned commit/parent verified. Local handoff changes preserved.
+Fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600 matches app/capture source.
+API35APK13407813241 is51,979,576bytes; screenshots13407438794; all155PNG540x1200validate.
+Source ZIP SHA256c0434c6cd1eb1e6b602db5871260e7e0e06892e54b8d2826dd2c70d747ca4389.
+
+All33final-source progression frames opened directly: entry, full task, weight, collapsed
+Advanced/actions, genuine changes, upper/lower unchanged facts, short why/secondary-closed,
+secondary-open actual records, lower safeguards and expanded actions, each light/dark/200%.
+Rounded restrained cards/icons, genuine-only difference emphasis, compact unchanged facts,
+readable dark adaptation, natural200%stack/wrap/scroll and separate-save wording confirmed.
+No fixed-height clipping/overlap/horizontal scroll. Viewport edge cuts are reachable by scroll.
+A fixture has no current reference, optional82kg suggestion and actual80kg sets; never conflated.
+No separate0.10.1 reference bitmap exists in docs/design-reference: reviewed against the
+owner's explicit approved hierarchy/refinement instructions, not an invented pixel match.
+
+Confirmed fixes/documentation:
+- Native GPS stationary jitter, stale gap restoration, sparse auto-pause continuity and
+  stride-lost route bends have regressions; weak/lost/recovered and bounded cues remain honest.
+- Progression calculation/evidence/freshness/immutable revisions/save-vs-activation unchanged.
+  Genuine changes/unchanged facts, short reason, nested actual evidence; unchanged load
+  reference explicitly says unchanged during time/distance progression (regression reproduced).
+- Async artwork UI fixtures use queued StandardTestDispatcher and readiness asserts main
+  Looper, fixing a demonstrated test-recomposer worker resume. No production Dream changes.
+- No schema15/rootJSON9/raw2/complete1 change, no runtime dependency or permission change.
+  No Internet/background-location permission, backend/account/analytics/ads/LLM introduced.
+
+NEXT RELEASE-INTEGRATION ACTIONS (no implementation backlog):
+1. Commit/push final documentation on this feature branch. Source fingerprint must remain
+   identical. Keep PR16 draft while that final-head full gate is pending/red.
+2. Inspect final-head full CI. After all green and no newer main/review/conflict issue, mark
+   PR16 ready and squash-merge under the owner's explicit master-prompt authorisation.
+   Do not merge pending/red, create stable tags, or begin0.11. If PR16 is already merged,
+   do not duplicate it; verify actual main and post-merge workflow instead.
+3. Verify main CI and rolling Latest Development Build match the resulting main commit.
+   Record actual merge/main identities and artifact links. Physical S24 acceptance below
+   is explicitly post-merge, not an automated merge blocker per owner's master brief.
+
+PHYSICAL CHECKS — UNPERFORMED: S24 clear-sky/urban/measured-route GPS, walking/stillness,
+locked screen/background/battery saver, pause/resume, longer run, interruption/recovery,
+GPX/raw-backup coordinate comparison, Galaxy Watch7/Samsung Health comparison (not automatic
+truth), real Health Connect paths/denial, TTS/music/calls, BLE connect/reconnect, human TalkBack.
+Use TEST_BUILD.md; record human observations, never certify from emulator results.
+
+Tool recovery: CLI Git auth stopped, connected GitHub tools remain available. Use typed
+create_blob/tree/commit/update_ref with expected-head lease; verify local blobs/tree and
+import identical raw unsigned commit via scratch/rdd0101/import-exact-commit.py. No reset,
+force or discarded work. Binary artifacts use github_download_workflow_artifact + signed
+URL, verify ZIP digest and Git blob hashes. Refresh expired signed URLs normally; never
+UTF8-fetch PNG blobs or dump huge canonical logs. All source is safely committed; inspect
+actual local status for final metadata edits. Earlier checkpoints below are HISTORICAL.
+
+## Historical0.10.1 implementation and verification
+
+Completed implementation:
+- Pinned OpenTracks/RunnerUp/GPSTest comparison before changing GPS; Codeberg inaccessible,
+  archived OpenTracks GitHub snapshot used honestly. No external/GPL source incorporated.
+- Reproduced jitter distance, stale-gap restoration, sparse auto-pause and stride-erased
+  sharp bends. Native monotonic receipt qualification precedes auto-pause; original accepted
+  coordinates remain retained, unsupported gaps never add distance. Stationary qualification
+  uses bounded speed+accuracy evidence; genuine slow movement can leave the cluster.
+- Route simplification is rendering-only, off-main, bounded64-edge chunks/0.0015 normalised
+  tolerance with segment/kilometre boundaries preserved. Historical totals unchanged.
+- Plain task-first ProgrammeProgressionSheet: real reps/time/distance/rest, distinct RPE/RIR,
+  optional current/proposed weight references separate from actual recorded sets; real bounded
+  supporting-workout snapshot. Advanced details collapses/expands/restores, has state/click/
+  keyboard semantics. Save this suggestion for review remains a draft-only operation with
+  unchanged calculation/freshness/CAS/activation/history safeguards. Keep my current target
+  closes without saving. Limited running copy explains perceived effort.
+-8new component tests retain existing integration/activation/backup assertions. Required
+  captures128 = all125 previous scenes + expanded progression details in3modes.
+- Additional cue audit reproduced4 failures: isolated weak accuracy called an outage,
+  repeated loss/recovery announced repeatedly, and loss interrupted pause. Follow-up now
+  separates weak from >15s without usable fixes, tracks paused GPS availability without
+  recording paused movement, bounds distinct loss audio to60s elapsed, suppresses it during
+  pause, and limits automatic TalkBack live region to confirmed unpaused loss.
+
+Observed verification boundaries:
+- Unchanged baseline rerun588145domain/35suites,64schema,9release passed before changes.
+- GPS checkpoint b6322b6 COMPLETE workflow41928404979:427 EACH API28/35/36,125captures,
+  format/strict174canonical+14routine/build/lint. Bot5fa3d0489f8f6443dbc2e1abd4591ee1ae18ab51
+  fast-forward adopted with normal git; route/recorder PNGs opened and reviewed.
+- Coaching2c271c6 workflow41931167271:435 EACH API28/35/36, exactly1 keyboard-fixture
+  RequestFocus failure each, other434passed each. Canonical publication correctly blocked.
+  Compose key injection did not establish platform keyboard mode. Correction dc8d6fc retains
+  all focus/Enter/expand/collapse assertions, explicitly requests/asserts platform Keyboard
+  mode and focused state. Its workflow41933727239 was still executing when checked.
+- Current availability/audio source passes full local640866domain checks/38suites (GPS46311,
+  render6323,instructions87), pinned76Kotlin/122Java formatting, actual Gradle domain/check,
+  APK build/lint/instrumentation compilation (79tasks,3minutes). Schema64/release9/capture
+  validator13/source11/geometry/context/artwork/format-helper and strict174/14 checks pass.
+  No final current-source API/visual pass yet. No S24/human TalkBack/outdoor pass.
+
+Version0.10.1-test1/code14. No schema/backup/dependency/permission changes:
+schema15/rootJSON9/nested authoring2/strengthEngine2/strengthState2/raw2/complete1.
+New rejection events fit the existing raw codec; Android recovery/GPX/raw-backup test passed
+in the GPS checkpoint. Existing actuals, prescriptions, exclusions, assignments and PBs stay.
+
+Latest integrated source46ecbd3 / workflow41936237874: API35/36 pass435each; API28
+has EXACTLY1 failure/435, old GymSubstitutionScreenTest busy-equipment case expected empty
+new form but observed80kg (line112). All other434/API28 cases pass; canonical publication
+correctly blocked. Root: GymNowViewModel.command published busy=false with the replacement
+view BEFORE onSuccess cleared the old form. Local correction keeps busy=true through
+sync/ack callbacks; finally alone publishes idle. Original load-clearing/history assertions
+remain, strengthened with an Unconfined state collector asserting no premature idle emission.
+This is a minimal reliability fix, not a strength-programming redesign. It is included
+in the current checkpoint alongside observed visual/README documentation. Actual local
+Gradle full gate passes2m47s/79tasks; formatting76Kotlin/122Java passes. Push and rerun
+the complete matrix. Do not blindly rerun46ecbd3 or weaken blank-form assertions.
+
+Earlier checkpoint actions (superseded by NEXT CURRENT ACTIONS above):
+1. Inspect whether the current reliability checkpoint has been pushed; source46ecbd3
+   was not final because of the API28 acknowledgement race above. Push any unpushed
+   checkpoint only after its local gates (already passed).
+   Inspect live current PR/head/workflow. Preserve any new files. Run FULL API28/35/36 gate
+   on that final source, including the keyboard fixture correction. Check actual errors;
+   never weaken assertions or blindly rerun. Current expected Android count435/API.
+2. Canonical128 API35 captures publish ONLY when all3jobs pass. Fetch/ff bot via normal git
+   while preserving work. Verify source fingerprint/PNG integrity and OPEN actual images:
+   progression main+expanded light/dark/200%, live coach and recorded route. Fix genuine
+   clipping/interaction/contrast issues and rerun affected gates. Current125committed PNGs
+   show b6322b6 BEFORE the coaching redesign and MUST NOT be called final captures.
+3. Finalise README/release notes/SCREENSHOTS/VISUAL_REVIEW_0_10_1/VERIFICATION/handoff from
+   observed results only, removing pending wording only after acceptance. Verify final APK,
+   permission/dependency diff, backup/schema matrix, artifact IDs and actual test totals.
+   S24 acceptance checklist is in TEST_BUILD.md; every physical row remains unverified.
+4. Keep PR16 draft until complete final-head CI and actual visual review pass. Check blocking
+   reviews/conflicts/latest main. Then ready+squash merge per updated master authorisation.
+   Confirm merge SHA, post-merge main CI and rolling Latest Development Build/APK. Update
+   handoff to completed/merged state (focused follow-up docs PR if required). Report exact
+   results and physical S24 uncertainties. No permanent production tag; stop before0.11.
+
+Environment: actual local Gradle now WORKS with JAVA_HOME=/workspace/jdk17,
+GRADLE_USER_HOME=/workspace/gradle-cache, ANDROID_HOME=/workspace/android-sdk,
+ANDROID_USER_HOME=/workspace/android-user and sandbox network permission. No local KVM/S24.
+Logs are /workspace/scratch/rdd0101 (gps-cue-domain.log, gps-cue-android-local.log and others).
+Normal git fetch/push works with network permission. Artifact Azure redirects were forbidden;
+use the canonical screenshot bot's git files for visual review, not edited images or mock UI.
+
+The historical section below describes the prior pre-merge checkpoint; its old PR/main
+and no-auto-merge instructions are superseded by the current section and latest brief.
+
+## Historical 0.10 pre-merge handoff (superseded by live merged state)
 
 Branch feature/0.10-strength-programming / PR15 targets main. Main remainsc6299e2; inspect
 live state before action. Implementation source1a7c683eeabf349505a0c2f5f19da9323d93812d

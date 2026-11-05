@@ -1,4 +1,197 @@
+# Current0.10.1 software and visual verification —5November2026
+
+Verified source `1dffb7dcf7607c237f257004f4b322aade097ce6` passed COMPLETE
+[workflow42012242544](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42012242544).
+All required jobs green:438 instrumentation cases EACH API28/35/36 (1314total),155authentic
+captures/API, domain640893checks/38suites (GPS46311, render6323, instructions114),64schema/
+migration,9release,13capture-validator, source/provenance11, artwork14, pinned76Kotlin/122Java
+formatting, strict174canonical/14routine guidance, actual domain/check/debug build/lint/test
+compilation and resolved runtime inventory. No test/assertion/deadline was removed to pass.
+
+Canonical `d8539219c135766eae6979f9bcf8eb82b2fd65f3` contains155API35 PNG540x1200.
+ZIP artifact13407438794 digestc0434c6cd1eb1e6b602db5871260e7e0e06892e54b8d2826dd2c70d747ca4389,
+all157Git blob hashes, tree and exact unsigned bot commit/parent verified before adoption.
+App/capture fingerprint:
+`8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600`.
+API35APK13407813241 is51,979,576bytes (+114896/+0.22% versus0.10's51,864,680bytes).
+No new bundled artwork or runtime dependency. Temporary signed download URL expired once;
+refreshed through the authorised artifact tool, not a network-policy bypass or altered image.
+
+All33final-source progression frames opened directly across light/dark/200% and both
+disclosures, including the entire evidence/safeguards/action page via real scroll positions.
+Task first, genuine-only change comparison, unchanged facts once, short reason and separate
+actual80kg evidence/optional82kg reference confirmed. Cards grow and values stack; no internal
+clipping/overlap or horizontal scroll. See docs/VISUAL_REVIEW_0_10_1.md for observed details.
+Saving remains draft-only, with separate activation/freshness/version/CAS/history checks.
+Current/older backup reads, round trips, corrupt/future rejection, transaction rollback and
+actual/history preservation passed in the supported suites. Schema15/rootJSON9/raw2/complete1
+unchanged. Manifest/dependencies unchanged; built APK permissions have no Internet or
+background-location permission. No account/backend/analytics/ads/LLM introduced.
+
+The unchanged-reference copy regression first failed at instructioncheck72, then passed5new
+checks and modality UI coverage. The API36 worker-view exception was traced to Compose1.8.3's
+unconfined test frame dispatcher; queued StandardTestDispatcher plus explicit main-Looper
+assertion passes. No production Dream geometry, assignment, artwork or renderer changed.
+Earlier fixture scroll failures were corrected using real measured scroll positions while
+retaining all assertions. All earlier failed/pending notes below are historical boundaries.
+
+Galaxy S24 outdoor/urban/locked-screen/background/long-run/GPS comparison, audio/music/calls,
+BLE and human TalkBack remain UNPERFORMED. Synthetic/emulator results are not physical
+acceptance or a universal accuracy percentage. TEST_BUILD.md retains the human checklist.
+Final documentation-only head must pass its own full CI before PR16 leaves draft/merges;
+post-merge main and rolling development verification follow through GitHub's actual state.
+
+# Historical verification checkpoints
+
+## 5 November2026 —155-frame visual review; async test scheduler correction
+
+48661f9/workflow42008939238 passed438 EACH API28/35 and155captures. API36 ran438 with one
+DreamArtworkReadinessTest wrong-thread failure; other437passed including progression.
+Canonical publication blocked. API35artifact13407215552 digest verified; all6lower frames
+opened in light/dark/200%. Together with27earlier views,33views cover the full page.
+
+The stack resumes the test Recomposer through ApplyingContinuationInterceptor and
+TestMonotonicFrameClock on Default-worker3. Pinned Compose1.8.3 sources confirm its default
+UnconfinedTestDispatcher. Two async artwork fixtures now use StandardTestDispatcher; the
+readiness test additionally asserts Android main Looper in SideEffect. All asset/cache/
+cancellation/missing-file assertions/deadlines retained. No production Dream changes.
+
+A carry/time progression keeping the same optional reference reproduced new/0kgmore copy.
+Focused formatter fix +5checks and modality UI coverage preserve the actual engine. Full
+640893domain/38suites (instructions114), format, real Gradle domain/debug/lint/test compilation
+PASS79tasks/38seconds. Fresh full matrix required; no complete release pass/S24 claim.
+
+## 5 November2026 — lower-evidence capture anchor corrected
+
+Source09360a2 workflow42006209330 ran438 EACH API28/35/36. Exactly one new capture failed
+on each; other437passed each. All stack traces identify Calculation & safeguards visibility
+after scrolling to its final paragraph. The correction uses the last actual set's measured
+position relative to the viewport, then checks the set, heading and final paragraph together.
+It does not shrink UI or remove assertions. Format and actual Android-test compilation pass
+(48tasks/4seconds); fresh full matrix/155captures still required. No application code changed.
+
+## 5 November2026 — refined149-capture software and visual gate passed
+
+Source9180b34676ccf86299dddd99ff9690dc06c47bf4 passed COMPLETE workflow42002407269:
+438 instrumentation cases EACH API28/35/36,149captures/API, domain640888checks/38suites,
+64schema,9release,13capture-validator, build/lint/format and strict174canonical/14routine.
+API35APK13404027367 is51,979,576bytes; screenshots13404665849. Canonical0d84c2147552fabdf12505aa44bc74b1dca20776
+was recovered through the connected GitHub tool when CLI auth stopped: ZIP digest,151blob
+hashes, tree and exact unsigned commit/parent all agree. No local source/handoff was lost.
+
+Opened all27progression frames directly across light/dark/200% and reopened Live Coach,
+post-run route and recorder. Compact genuine-only changes and unchanged facts are clear;
+references remain optional and separate from actual80kg records. Large text stacks and
+scrolls without internal overlap. See VISUAL_REVIEW_0_10_1 for the observed design review.
+Six more safeguards/expanded-action captures are now required to inspect the very bottom
+of the200% open-evidence page.155-image follow-up gate/visual review remains pending;
+this is not final release acceptance. No S24/human TalkBack/outdoor pass is claimed.
+
+## 5 November2026 — revised visual fixture failures diagnosed
+
+Visual source3f2aef1 workflow41999140735 ran438 cases EACH API28/35/36, with exactly2
+new-fixture failures each (other436passed). Formatting, builds/lint, domain/schema and strict
+guidance passed; canonical publication correctly blocked. The lazy test queried unchanged
+facts before bringing their item into view. The capture also required earlier effort/rest
+rows to share the supporting-control viewport. Neither is a reason to shrink the accessible
+layout or drop assertions. The follow-up materialises the card and retains all facts/visibility
+checks in separate real scrolled captures.149required images now cover27progression frames,
+including full task/weight and upper/lower unchanged facts in all3modes. New matrix pending.
+
 ## 4 November 2026 — complete Strength Programming2.0 software gate
+
+## Requested visual refinement — local gate5November2026
+
+Owner review rejected the repetitive Advanced presentation; earlier visual notes are not final
+acceptance. Compact genuine differences, unchanged facts, short reason and a second evidence
+disclosure are now implemented without changing calculations or activation/evidence safeguards.
+Normal and large-text layouts use appropriate compare/stack arrangements. New domain tests
+cover genuine-only differences, missing versus zero, non-repetition tasks and separate RPE/RIR.
+
+Full local refined source PASSES640888domain/38suites,64schema,9release,13capture-validator,
+pinned76Kotlin/122Java formatting and actual Gradle domain/check, debug APK, lint and Android
+test compilation (final79tasks,1m34s). Expected new matrix438cases/API and149captures must
+still execute. Actual complete-page light/dark/200% visual review remains mandatory.
+
+The prior reliability source08cf375 has COMPLETE green workflow41939512123:435 EACH
+API28/35/36,128captures and strict guidance. This confirms the idle-before-form-clear fix;
+it does not accept the newly requested visual design. Canonicalb3a4195 safely adopted.
+
+## Final-source API28 failure — 5 November2026
+
+Workflow41936237874 on46ecbd3 passed435 EACH API35/36. API28 ran435 with one failure:
+GymSubstitutionScreenTest busy-equipment case saw the old80kg form after the acknowledged
+replacement while expecting a cleared input. Other434passed. Builds/lint/format/guidance
+passed; canonical publication correctly blocked. This is NOT a complete release pass.
+
+Source inspection confirms command published idle before form-cleanup acknowledgement.
+The correction keeps busy until sync/onSuccess completes, then finally publishes idle.
+Existing reference/actual/history assertions remain; the test additionally observes every
+idle replacement emission to prevent a timing-dependent pass. Corrected local Gradle
+domain/check, APK build, lint and instrumentation compilation pass (79tasks,2m47s);
+full corrected API28/35/36 and final-source captures remain pending.
+
+## GPS availability/audio follow-up — local regressions (4 November2026)
+
+Four additional assertions reproduced isolated poor accuracy being described as an immediate
+outage, repeated loss/recovery selecting repeated audio, and loss interrupting pause. The
+correction separates weak positional evidence from >15seconds without usable fixes, tracks
+usable paused GPS without recording paused movement, suppresses loss audio during pause,
+and bounds distinct announcements to60seconds elapsed. Ordinary quality changes no longer
+trigger a TalkBack live region. Existing actual-coordinate and distance semantics remain.
+
+Full offline suite now passes640866checks/38suites (GPS46311/render6323/instructions87).
+The new source still requires its own complete Android and visual gate. No physical
+reception/audio/TalkBack pass is implied by these deterministic regressions.
+
+## Coaching gate failure — 4 November2026 23:22UTC
+
+Workflow41931167271 on2c271c6 ran435 tests each on API28/35/36, with one keyboard-fixture
+failure each: RequestFocus returned false after Compose-injected Tab. Other434cases passed
+on each. Builds/lint/domain/schema/format/guidance passed. All three jobs confirmed the same single focus failure. This is not a complete release pass; canonical publication is blocked.
+
+The fixture correction explicitly establishes the platform Keyboard input mode before
+requesting disclosure focus, because Compose key injection does not perform Android's
+normal touch-mode transition. Focus, real Enter-to-expand and collapse assertions remain;
+input-mode and focused-state assertions are added. The corrected head requires a fresh
+full gate and actual visual review; no blind rerun or test weakening is accepted.
+
+## Current release — 0.10.1 checkpoint verification (4 November 2026)
+
+GPS checkpoint b6322b6 / draft PR16: actual local Gradle domain check, debug APK,
+lint and Android-test compilation PASSED (79 tasks,7m27s). Workflow41928404979 PASSED
+all API28/35/36 jobs, formatting, strict guidance and125 GPS-checkpoint captures.
+This verifies the GPS checkpoint, not the later coaching-source release gate. New coaching source also
+passes the actual local Gradle gate (79 tasks,3m11s), after adding the required explicit
+experimental-test opt-in for keyboard injection. No interaction coverage was removed.
+
+Current offline domain640850checks/38suites (GPS46295/render6323/instructions87),
+schema64/release9/capture-validator13 pass. Formatting checks76Kotlin/122Java. Added8
+production-content UI tests and retained existing two-stage activation/freshness/history
+integration assertions. Current/proposed references and actual recorded loads remain distinct.
+The new128capture set adds expanded progression in3modes while retaining every old scene.
+Actual current-build capture/visual acceptance and final full API matrix are still pending.
+
+0.10 merged as PR15, main `5827d291d94870d16e2398c5173319260a6d7d72`.
+Post-merge workflow41919350235 succeeded with426 cases EACH API28/35/36 and125 captures.
+Older entries below are historical checkpoints, including statements that PR15 was pending.
+
+Before changing architecture/recording, reran the unchanged baseline:588145 domain checks,
+64 schema and9 release-note tests passed. New regression traces demonstrated jitter distance,
+stale-fix recovery and sparse auto-pause failures on the baseline; the first permanent suite
+failed five assertions before fixes. A separate6000-point trace reproduces index-thinning
+losing a sharp route bend. See docs/GPS_DIAGNOSIS_0_10_1.md for exact evidence/thresholds.
+
+The corrected local domain gate passes37 suites including46295 GPS and new rendering checks;
+schema64 and release9 pass. Formatting applies pinned tools to touched recording/presentation
+surfaces. Actual Android build/lint/instrumentation compilation is being run; its final result
+and the API28/35/36 release gate remain pending. Current canonical captures still represent
+0.10, not this changed source. No S24, human TalkBack or outdoor accuracy pass is claimed.
+
+No schema/backup/raw archive format, runtime dependency or manifest permission change.
+Native accepted-coordinate GPX/raw-archive recovery regression was added for Android execution.
+OpenTracks/RunnerUp/GPSTest comparison is documented with pinned revisions and no code reuse.
+
 
 Source1a7c683eeabf349505a0c2f5f19da9323d93812d passed COMPLETE workflow41912323900: **426instrumentation
 cases EACH API28/35/36** (1278emulator cases), domain/app/test builds and lint,

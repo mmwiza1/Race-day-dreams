@@ -269,7 +269,9 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                 mutable.update { previous ->
                     previous.copy(
                         loading = false,
-                        busy = false,
+                        // Acknowledgement callbacks still own form cleanup. Keep input disabled
+                        // until syncFormToSelection/onSuccess finish; finally publishes idle.
+                        busy = true,
                         error = failure,
                         programme = if (fresh != null) fresh!!.programme else previous.programme,
                         authoredProgramme =

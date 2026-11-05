@@ -107,7 +107,7 @@ TEMPLATE_REQUIRED = tuple(f"{scene}{suffix}.png"
 REVISION_REQUIRED = tuple(f"{scene}{suffix}.png"
     for scene in ("strength-future-preview", "strength-future-settings")
     for suffix in ("", "-dark", "-large-font"))
-PROGRAMME_REVIEW_REQUIRED = tuple(f"strength-programme-{scene}{suffix}.png" for scene in ("progression", "history") for suffix in ("", "-dark", "-large-font"))
+PROGRAMME_REVIEW_REQUIRED = tuple(f"strength-programme-{scene}{suffix}.png" for scene in ("progression", "history", "progression-details", "progression-controls", "progression-context", "progression-evidence", "progression-instructions", "progression-weight", "progression-unchanged", "progression-targets", "progression-safeguards", "progression-evidence-actions") for suffix in ("", "-dark", "-large-font"))
 PROGRAMME_SWAP_REQUIRED = tuple(f"strength-programme-alternatives{suffix}.png" for suffix in ("", "-dark", "-large-font"))
 REQUIRED = tuple(sorted(PROGRAMME_REVIEW_REQUIRED + PROGRAMME_SWAP_REQUIRED + REVISION_REQUIRED + TEMPLATE_REQUIRED + OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED + GYM_REQUIRED + PROGRAMMING_REQUIRED))
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"

@@ -8,6 +8,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.withContext
 import org.junit.Rule
 import org.junit.Test
@@ -15,8 +16,10 @@ import org.junit.Test
 /**
  * Deterministic delayed/cancelled decode and missing-file publication, independent of disk speed.
  */
+@OptIn(ExperimentalTestApi::class)
 class DreamArtworkPublicationTest {
-    @get:Rule val compose = createComposeRule()
+    // Queue background completion on the UI test clock; do not apply composition on an IO worker.
+    @get:Rule val compose = createComposeRule(effectContext = StandardTestDispatcher())
 
     @Test
     fun obsoleteNonCancellableDecodeCannotPublishOverTheCurrentCity() {

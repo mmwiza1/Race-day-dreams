@@ -1,10 +1,14 @@
 package org.racedaydreams.coach
 
+import android.os.Looper
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.test.StandardTestDispatcher
+import org.junit.Assert.assertSame
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,8 +16,11 @@ import org.racedaydreams.domain.support.DreamRoutes
 
 /** Real bundled decode and publication, including cache eviction and retained composition reuse. */
 @RunWith(AndroidJUnit4::class)
+@OptIn(ExperimentalTestApi::class)
 class DreamArtworkReadinessTest {
-    @get:Rule val compose = createComposeRule()
+    // Async decode/path completion must enqueue work for the UI test clock rather than
+    // resume an unconfined test recomposer inline on the completing IO/Default worker.
+    @get:Rule val compose = createComposeRule(effectContext = StandardTestDispatcher())
 
     @Test
     fun eachCityPublishesItsArtworkAndReadinessTogetherWhenSwitching() {
@@ -21,6 +28,13 @@ class DreamArtworkReadinessTest {
         val selected = mutableStateOf(routes.first())
         val shown = mutableStateOf(true)
         compose.setContent {
+            SideEffect {
+                assertSame(
+                    "Composition must apply on Android's main thread",
+                    Looper.getMainLooper(),
+                    Looper.myLooper(),
+                )
+            }
             MaterialTheme {
                 CoachPage {
                     val route = selected.value

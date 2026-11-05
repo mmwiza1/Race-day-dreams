@@ -163,3 +163,10 @@ This refresh adds no separate service/SDK or network permission. Official UI rel
 record1.8.1 precomposed-node remeasurement and1.8.2 dialog-removal lifecycle fixes:
 https://developer.android.com/jetpack/androidx/releases/compose-ui . These upstream notes
 are engineering context, not a claim that they prove every device-specific fault fixed.
+
+## GPS engineering references
+
+The [0.10.1 comparison](docs/GPS_ENGINE_REVIEW_0_10_1.md) records pinned OpenTracks,
+RunnerUp and GPSTest sources and licences. This was source/behavioural research, not
+incorporation. In particular, no GPL RunnerUp implementation was copied or translated.
+No additional runtime library, artwork or geographic data was introduced.
