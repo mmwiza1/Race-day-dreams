@@ -121,7 +121,7 @@ class StrengthProgrammeBuilderScreenTest {
                 it.supersetGroup() != null
             }
         }
-        compose.runOnIdle { model.preview() }
+        click("Preview programme")
         await { model.state.value.preview != null }
         val programme = model.state.value.preview!!.programme
         programme.workouts().forEach { workout ->

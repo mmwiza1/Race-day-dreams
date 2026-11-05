@@ -73,7 +73,12 @@ Formatting/guidance green. API28 FAILED with NoSuchMethodError Stream.toList in 
 this is a demonstrated new compatibility defect, not a flaky timing assertion. Root correction
 replaces new Java9/16 List/Set/Stream runtime methods with existing Immutable helpers and
 Collectors.toList in GymWarmup/GymSupersets/SqliteGymToolsRepository. Domain gym tests remain7901.
-APIs35/36 still pending at this write; inspect their actual logs/results before claiming a pass.
+APIs35/36 also completed with fixture failures: grouped programme test calculated a preview
+without navigating to it; correction uses the real Preview programme control before activation.
+The new three-mode capture deleted the SQLite file between Activity owners; correction reuses
+one staged paused workout via accepted recovery helpers and never deletes under a live owner.
+All assertions retained, no sleeps/retry weakening. Compatibility fix committed ea6f48b.
+
 
 Next exact tasks: commit/push compatibility correction; verify current source gate on28/35/36,
 inspect all new repository/UI failures and9raw production captures. Format check passed on gym

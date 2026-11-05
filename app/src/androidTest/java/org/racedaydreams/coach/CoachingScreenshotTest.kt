@@ -895,11 +895,16 @@ class CoachingScreenshotTest {
 
     @Test
     fun capturesOptionalGymPreparationAndSupersetFromProductionScreens() {
+        // One staged workout across all modes: never delete a database beneath live feature owners.
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
         val originalFont = shell("settings get system font_scale").trim()
         val originalNight =
             shell("cmd uimode night").let {
                 if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
             }
+        var executionId: String? = null
         try {
             for ((suffix, night, scale) in
                 listOf(
@@ -907,57 +912,60 @@ class CoachingScreenshotTest {
                     Triple("-dark", "yes", "1.0"),
                     Triple("-large-font", "no", "2.0"),
                 )) {
-                scenario?.close()
-                scenario = null
-                SqliteUserPreferencesRepository(context).clear()
-                SqlitePrimaryFocusRepository(context)
-                    .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
                 shell("settings put system font_scale $scale")
                 shell("cmd uimode night $night")
-                scenario = ActivityScenario.launch(CoachActivity::class.java)
-                openGymNow()
-                compose.onNodeWithText("Build a workout").performScrollTo().performClick()
-                await("Workout name")
-                scenario?.onActivity { activity ->
-                    val model = ViewModelProvider(activity)[GymNowViewModel::class.java]
-                    model.builderTitle("Upper-body practice")
-                    Assert.assertTrue(
-                        model.builderPutSlot(
-                            null,
-                            ExerciseCatalog.definition("push-up").exercise(),
-                            GymSlotInput(
-                                sets = "2",
-                                minimumReps = "6",
-                                maximumReps = "10",
-                                restSeconds = "90",
-                            ),
+                val savedId = executionId
+                if (savedId == null) {
+                    scenario = ActivityScenario.launch(CoachActivity::class.java)
+                    openGymNow()
+                    compose.onNodeWithText("Build a workout").performScrollTo().performClick()
+                    await("Workout name")
+                    scenario?.onActivity { activity ->
+                        val model = ViewModelProvider(activity)[GymNowViewModel::class.java]
+                        model.builderTitle("Upper-body practice")
+                        Assert.assertTrue(
+                            model.builderPutSlot(
+                                null,
+                                ExerciseCatalog.definition("push-up").exercise(),
+                                GymSlotInput(
+                                    sets = "2",
+                                    minimumReps = "6",
+                                    maximumReps = "10",
+                                    restSeconds = "90",
+                                ),
+                            )
                         )
-                    )
-                    Assert.assertTrue(
-                        model.builderPutSlot(
-                            null,
-                            ExerciseCatalog.definition("plank").exercise(),
-                            GymSlotInput(sets = "2", seconds = "30", restSeconds = "60"),
+                        Assert.assertTrue(
+                            model.builderPutSlot(
+                                null,
+                                ExerciseCatalog.definition("plank").exercise(),
+                                GymSlotInput(sets = "2", seconds = "30", restSeconds = "60"),
+                            )
                         )
-                    )
-                    model.builderPair(model.state.value.builder.slots.first().id())
-                }
-                awaitGymReady {
-                    it.builder.slots.size == 2 &&
-                        it.builder.slots.all { slot -> slot.supersetGroup() != null }
-                }
-                compose.onNodeWithText("Start this workout").performScrollTo().performClick()
-                awaitGymReady { it.view?.observed()?.status() == GymExecution.Status.ACTIVE }
-                compose.onNodeWithText("Start rest timer").performScrollTo().performClick()
-                awaitGymReady {
-                    it.restTimer?.phase() ==
-                        org.racedaydreams.domain.strength.GymRestTimer.Phase.RUNNING
-                }
-                compose.onNodeWithText("Pause rest").performScrollTo().performClick()
-                awaitGymReady {
-                    it.restTimer?.phase() ==
-                        org.racedaydreams.domain.strength.GymRestTimer.Phase.PAUSED
-                }
+                        model.builderPair(model.state.value.builder.slots.first().id())
+                    }
+                    awaitGymReady {
+                        it.builder.slots.size == 2 &&
+                            it.builder.slots.all { slot -> slot.supersetGroup() != null }
+                    }
+                    compose.onNodeWithText("Start this workout").performScrollTo().performClick()
+                    awaitGymReady { it.view?.observed()?.status() == GymExecution.Status.ACTIVE }
+                    executionId = gymNowModel().state.value.view!!.observed()!!.id()
+                    compose.onNodeWithText("Start rest timer").performScrollTo().performClick()
+                    awaitGymReady {
+                        it.restTimer?.phase() ==
+                            org.racedaydreams.domain.strength.GymRestTimer.Phase.RUNNING
+                    }
+                    compose.onNodeWithText("Pause rest").performScrollTo().performClick()
+                    awaitGymReady {
+                        it.restTimer?.phase() ==
+                            org.racedaydreams.domain.strength.GymRestTimer.Phase.PAUSED
+                    }
+                } else reopenAndRecoverGym(savedId, 0)
+                Assert.assertEquals(
+                    org.racedaydreams.domain.strength.GymRestTimer.Phase.PAUSED,
+                    gymNowModel().state.value.restTimer!!.phase(),
+                )
                 alignHeading("Optional rest timer")
                 capture("gym-rest-timer$suffix")
                 compose.onNodeWithText("Optional warm-up ▾").performScrollTo().performClick()
@@ -978,13 +986,13 @@ class CoachingScreenshotTest {
                         context.resources.configuration.uiMode and
                             android.content.res.Configuration.UI_MODE_NIGHT_MASK,
                     )
+                pauseGymForRelaunch()
             }
         } finally {
             scenario?.close()
             scenario = null
             shell("settings put system font_scale $originalFont")
             shell("cmd uimode night $originalNight")
-            SqliteUserPreferencesRepository(context).clear()
         }
     }
 
