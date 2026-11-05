@@ -20,7 +20,11 @@ Branch feature/0.11-gym-health-recovery-intelligence, based on live main8796bc5d
 Baseline fetched/pulled, clean, no open PR. Main42046671050 green438/API155captures.
 Local unchanged baseline PASS:640893domain checks/38suites,64schema,9release, formatting,
 actual Gradle domain/check/debug/lint/test-APK compile79tasks/17sec. Logs scratch/rdd011.
-Version0.11.0-test1/code15. Schema15/JSON9/raw2/complete1 currently unchanged.
+Version0.11.0-test1/code15. Local implementation now schema16/rootJSON10/raw2/complete1.
+Draft PR18: https://github.com/mmwiza1/Race-day-dreams/pull/18 . Do not create a duplicate.
+Setup source19c74c2 passed full workflow42054247383. Remote bot commit e0a46f1 contains
+its canonical captures and MUST be preserved. Its bot-triggered follow-up42057028606
+is action_required, not a new source pass. New gym source still needs full Android matrix.
 
 Milestones (all required; not optional backlog):
 1. Gym: optional monotonic durable rest timer; conservative warm-up suggestions; genuine
@@ -37,18 +41,42 @@ Milestones (all required; not optional backlog):
 6. Selective quality catalogue additions; three6month athlete simulations; full regression,
    authentic new-screen light/dark/200%captures; docs and verified test APK. No stable tag.
 
-Current phase: baseline complete; development setup checkpoint. Inspect actual Git/PR before
-creating duplicates. Workflow filenames and same-repository capture branch conditions now
-point to0.11 while retaining source fingerprint,155existing captures and full matrix gates.
-Next: typed gym-tools boundary/domain timer and conservative warm-up policies; persistence
-and backup integration; GymNow live UI; superset engine + builder controls and tests.
-Do not invent a second execution/recording engine or expand generic JSON stores.
+Current phase: Milestone1 implementation/hardening, not release-complete.
+Implemented domain GymRestTimer monotonic state machine (explicit reboot/interruption),
+GymWarmup exact recent effort-backed light examples or general no-kg preparation, GymSupersets
+ordering/unequal rounds/skip/break. Existing GymExecutionEngine/coordinator remains authoritative.
+Typed SqliteGymToolsRepository shares database/restore transaction; additive16 two normalized
+rest tables, rootJSON10 requires gymTools and retains supported1–9 readers. raw2/complete1 unchanged.
+One optional inexact Android alarm, no new service/exact-alarm permission; private non-backed-up
+clock epoch prevents cross-device/reboot continuity claims. Alerts are optional and quiet during
+recording. Timer suggestions do not save actuals. Warm-up buttons only fill editable actual form.
+Live UI and scratch/programme draft group controls added; frozen prescriptions/actuals retained.
+Programme grouping uses existing slot group field; previously deferred programme guard removed.
+No automatic supersets or demanding-compound grouping imposed. Existing per-exercise optional
+rest targets/manual timer can be used between movements or rounds; no forced countdown blocking.
 
-New durable data should use typed repositories over shared ProfileDatabase transactions.
-Plan one clean additive schema16 and root backup10 when needed, preserving readers1–9;
-raw2/complete1 should remain unless a concrete requirement proves otherwise. Do not ship
-unbacked durable preferences or mutate frozen prescriptions/actuals. Keep previous migrations
-unchanged. New-install retention default differs from acknowledged existing-user policy.
+Observed local checks on this gym source:648794domain checks/39suites (GymTools7901),
+schema67 (all historical1..15→16), release9, capture-validator14. Actual offline Gradle
+:domain:check/:app:assembleDebug/:app:lintDebug/:app:assembleDebugAndroidTest PASS79tasks;
+final alarm-cleanup/repository-validation edit PASS75tasks/54sec. Format applied, check pending.
+New repository tests cover clock/recreation/alarms/graph validation/old9/current10/upgrade/rollback;
+new Compose tests cover optional preparation, actual independence, timer navigation and dark200%;
+new programme test covers grouped preview/activation/backup. Added9 genuine production-screen
+capture definitions (rest/warmup/superset ×light/dark/200%), raising mandatory captures155→164.
+Capture validator14 tests pass; NO new screenshots visually signed off yet. Do not claim emulator
+or S24 passes until observed. No usable local KVM; GitHub matrix is execution boundary.
+
+Next exact tasks: finish format/build/domain/release checks; inspect latest build logs in
+scratch/rdd011; fix compilation/test roots. Commit coherent gym checkpoint, preserve remote
+canonical bot e0a46f1 via ordinary merge, push PR18 and run APIs28/35/36. Inspect failing logs,
+download raw screenshot artifacts and review all9 new scenes. Keep handoff accurate. Then M2–6
+remain FULLY REQUIRED: do not stop at M1 or silently defer user scope. No implementation yet for
+analytics/PBs/achievements/recovery/body/nutrition/retention/catalogue additions/6month simulations.
+
+New durable data continues typed repositories over shared ProfileDatabase transactions.
+Future migrations must be additive beyond16, keeping supported upgrades; do not rewrite committed
+schema16 once distributed. Backup additions need strict validation and version rejection; do not
+silently export unvalidated new fields. Existing-user retention needs explicit acknowledgement.
 No new runtime dependency has been added. GPS0.10.1and screenshot production-window fixture
 are accepted; do not repeat/rewrite their completed repairs. All physical S24 checks remain
 UNPERFORMED; expanded checklist is required before final acceptance.

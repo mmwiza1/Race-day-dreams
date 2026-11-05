@@ -372,7 +372,7 @@ public final class StrengthProgrammingRepositoryTest extends AndroidTestCase {
         db.setVersion(13);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(15, db.getVersion());
+        assertEquals(16, db.getVersion());
         for (String table :
                 new String[] {"strength_sessions", "strength_user_state", "strength_exclusions"}) {
             try (var c = db.rawQuery("SELECT COUNT(*) FROM " + table, null)) {
@@ -398,7 +398,10 @@ public final class StrengthProgrammingRepositoryTest extends AndroidTestCase {
         manager.exportTo(output);
         var previous =
                 new JSONObject(output.toString(java.nio.charset.StandardCharsets.UTF_8.name()));
-        assertEquals(9, previous.getInt("version"));
+        assertEquals(10, previous.getInt("version"));
+        previous.put(
+                "version", 9); // Retain the explicit previous-release v9 authoring requirement.
+        previous.getJSONObject("data").remove("gymTools");
         previous.getJSONObject("data").remove("strengthProgramming");
         repository.activate(programme(), null, "accept", Collections.emptyList());
         try {

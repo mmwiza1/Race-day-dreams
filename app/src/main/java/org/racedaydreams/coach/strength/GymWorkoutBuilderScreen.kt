@@ -102,6 +102,38 @@ fun GymWorkoutBuilderScreen(model: GymNowViewModel, onWorkout: () -> Unit, onBac
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(gymTargetDescription(slot))
+                        if (slot.supersetGroup() != null) {
+                            Text("Superset · record each movement separately")
+                            if (
+                                index < draft.slots.lastIndex &&
+                                    draft.slots[index + 1].supersetGroup() == null
+                            ) {
+                                TextButton(
+                                    onClick = { model.builderExtend(slot.id()) },
+                                    enabled = enabled,
+                                ) {
+                                    Text("Add next exercise to superset")
+                                }
+                            }
+
+                            TextButton(
+                                onClick = { model.builderUngroup(slot.supersetGroup()) },
+                                enabled = enabled,
+                            ) {
+                                Text("Break this superset")
+                            }
+                        } else if (
+                            index < draft.slots.lastIndex &&
+                                draft.slots[index + 1].supersetGroup() == null
+                        ) {
+                            TextButton(
+                                onClick = { model.builderPair(slot.id()) },
+                                enabled = enabled,
+                            ) {
+                                Text("Pair with next exercise")
+                            }
+                        }
+
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),

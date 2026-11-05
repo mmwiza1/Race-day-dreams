@@ -109,7 +109,8 @@ REVISION_REQUIRED = tuple(f"{scene}{suffix}.png"
     for suffix in ("", "-dark", "-large-font"))
 PROGRAMME_REVIEW_REQUIRED = tuple(f"strength-programme-{scene}{suffix}.png" for scene in ("progression", "history", "progression-details", "progression-controls", "progression-context", "progression-evidence", "progression-instructions", "progression-weight", "progression-unchanged", "progression-targets", "progression-safeguards", "progression-evidence-actions") for suffix in ("", "-dark", "-large-font"))
 PROGRAMME_SWAP_REQUIRED = tuple(f"strength-programme-alternatives{suffix}.png" for suffix in ("", "-dark", "-large-font"))
-REQUIRED = tuple(sorted(PROGRAMME_REVIEW_REQUIRED + PROGRAMME_SWAP_REQUIRED + REVISION_REQUIRED + TEMPLATE_REQUIRED + OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED + GYM_REQUIRED + PROGRAMMING_REQUIRED))
+GYM_TOOLS_REQUIRED = tuple(f"{scene}{suffix}.png" for scene in ("gym-rest-timer", "gym-warmup", "gym-superset") for suffix in ("", "-dark", "-large-font"))
+REQUIRED = tuple(sorted(GYM_TOOLS_REQUIRED + PROGRAMME_REVIEW_REQUIRED + PROGRAMME_SWAP_REQUIRED + REVISION_REQUIRED + TEMPLATE_REQUIRED + OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED + GYM_REQUIRED + PROGRAMMING_REQUIRED))
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_FILE_BYTES = 16 * 1024 * 1024
 MAX_DECODED_BYTES = 42 * 1024 * 1024

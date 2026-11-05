@@ -32,7 +32,7 @@ class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(155, len(captures.REQUIRED))
+        self.assertEqual(164, len(captures.REQUIRED))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):
@@ -43,6 +43,11 @@ class CaptureValidationTest(unittest.TestCase):
         self.assertEqual({"strength-home.png", "strength-home-dark.png", "strength-home-large-font.png"},
                          set(captures.STRENGTH_REQUIRED))
         for name in captures.STRENGTH_REQUIRED:
+            self.assertIn(name, captures.REQUIRED)
+
+    def test_gym_preparation_requires_real_light_dark_and_large_views(self):
+        self.assertEqual(9, len(captures.GYM_TOOLS_REQUIRED))
+        for name in captures.GYM_TOOLS_REQUIRED:
             self.assertIn(name, captures.REQUIRED)
 
     def test_gym_now_requires_hub_builder_actuals_completion_and_accessibility_captures(self):

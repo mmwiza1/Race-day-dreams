@@ -210,7 +210,7 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
         db.setVersion(14);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(15, db.getVersion());
+        assertEquals(16, db.getVersion());
         assertEquals(value.programme(), programmes.programme(value.programme().id(), 1));
         assertEquals(value.programme().id(), programmes.currentReference().id());
         try (var c = db.rawQuery("SELECT payload FROM strength_sessions WHERE id='actual'", null)) {
@@ -230,7 +230,7 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
                         Clock.fixed(NOW, ZoneOffset.UTC));
         var bytes = new java.io.ByteArrayOutputStream();
         manager.exportTo(bytes);
-        assertEquals(9, new JSONObject(bytes.toString("UTF-8")).getInt("version"));
+        assertEquals(10, new JSONObject(bytes.toString("UTF-8")).getInt("version"));
         drafts.delete(value.id(), 1);
         manager.restoreFrom(new java.io.ByteArrayInputStream(bytes.toByteArray()));
         assertEquals(value, drafts.get(value.id()));

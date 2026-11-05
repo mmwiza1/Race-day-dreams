@@ -191,6 +191,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             out.put("release08", Release08Store.exportData(db));
             out.put("strengthEngine", SqliteGymExecutionRepository.exportData(db));
             out.put("strengthProgramming", SqliteStrengthProgrammingRepository.exportData(db));
+            out.put("gymTools", SqliteGymToolsRepository.exportData(db));
             db.setTransactionSuccessful();
             return out;
         } catch (JSONException e) {
@@ -240,6 +241,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             JSONObject gymProgramming,
             JSONObject strengthEngine,
             StrengthProgrammingArchive.Snapshot strengthProgramming,
+            SqliteGymToolsRepository.Snapshot gymTools,
             JSONObject support) {}
 
     private record SourceKey(String provider, String recordId) {}
@@ -448,6 +450,9 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                     data.optJSONObject("gymProgramming"),
                     strengthEngine,
                     strengthProgramming,
+                    SqliteGymToolsRepository.validate(
+                            data.has("gymTools") ? data.getJSONObject("gymTools") : null,
+                            strengthEngine),
                     data.optJSONObject("support"));
         } catch (JSONException | java.time.DateTimeException e) {
             throw FeatureJson.invalid(e);
@@ -596,6 +601,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             SqliteGymAssociationRepository.rebuildProjection(db);
             if (snapshot.strengthEngine() != null)
                 SqliteGymExecutionRepository.restore(db, snapshot.strengthEngine());
+            SqliteGymToolsRepository.restore(db, snapshot.gymTools());
             SupportStore.restore(db, snapshot.support());
             Release08Store.restore(db, data.optJSONObject("release08"));
             RecordingStore.restoreRetainedSamples(db);

@@ -95,6 +95,18 @@ public final class GymWorkoutSessionCoordinator {
                 Operation.SAVE, engine.selectExercise(slotId, ticks.now()), accepted.revision());
     }
 
+    public synchronized View skipExercise(String slotId) {
+        requireReady();
+        return persist(
+                Operation.SAVE, engine.skipExercise(slotId, ticks.now()), accepted.revision());
+    }
+
+    public synchronized View breakSuperset(String slotId) {
+        requireReady();
+        return persist(
+                Operation.SAVE, engine.breakSuperset(slotId, ticks.now()), accepted.revision());
+    }
+
     public synchronized View addExercises(List<GymWorkoutDefinition.Slot> slots) {
         requireReady();
         return persist(

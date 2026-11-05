@@ -26,7 +26,13 @@ final class GymSchemaFixture {
         }
     }
 
+    static void removeVersionSixteenTables(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE gym_rest_timers");
+        db.execSQL("DROP TABLE gym_rest_preferences");
+    }
+
     static void removeVersionFifteenTables(SQLiteDatabase db) {
+        removeVersionSixteenTables(db);
         for (String table :
                 new String[] {
                     "strength_concrete_draft_workouts",

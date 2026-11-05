@@ -167,6 +167,14 @@
     "app/src/main/java/org/racedaydreams/coach/RouteCard.kt",
     "domain/src/main/java/org/racedaydreams/domain/presentation/StrengthPrescriptionText.java",
     "domain/src/test/java/org/racedaydreams/domain/presentation/StrengthPrescriptionTextTestSuite.java",
-    "app/src/androidTest/java/org/racedaydreams/coach/ProgrammeProgressionClarityTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/ProgrammeProgressionClarityTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/strength/GymRestTimer.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/GymWarmup.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/GymSupersets.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/GymToolsTestSuite.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteGymToolsRepository.java",
+    "app/src/main/java/org/racedaydreams/coach/strength/GymRestAlerts.kt",
+    "app/src/main/java/org/racedaydreams/coach/strength/GymPreparationCards.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/GymToolsRepositoryTest.java"
   ]
 }

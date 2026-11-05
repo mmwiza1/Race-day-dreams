@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 15;
+    static final int VERSION = 16;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -56,6 +56,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateTwelveToThirteen(db);
         migrateThirteenToFourteen(db);
         migrateFourteenToFifteen(db);
+        migrateFifteenToSixteen(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -464,10 +465,32 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V15_SCHEMA_END
     }
 
+    private static void migrateFifteenToSixteen(SQLiteDatabase db) {
+        // V16_SCHEMA_BEGIN - advisory gym tools never replace actual training evidence.
+        db.execSQL(
+                "CREATE TABLE gym_rest_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                    + " default_seconds INTEGER NOT NULL CHECK(default_seconds BETWEEN 0 AND 1800),"
+                    + " suggest_after_set INTEGER NOT NULL CHECK(suggest_after_set IN (0,1)),"
+                    + " notifications INTEGER NOT NULL CHECK(notifications IN (0,1)), vibration"
+                    + " INTEGER NOT NULL CHECK(vibration IN (0,1)), audio INTEGER NOT NULL"
+                    + " CHECK(audio IN (0,1)))");
+        db.execSQL(
+                "CREATE TABLE gym_rest_timers (execution_id TEXT PRIMARY KEY NOT NULL REFERENCES"
+                    + " strength_executions(id) ON DELETE CASCADE, trigger_id TEXT NOT NULL, phase"
+                    + " TEXT NOT NULL CHECK(phase IN"
+                    + " ('RUNNING','PAUSED','COMPLETE','SKIPPED','INTERRUPTED')), epoch TEXT NOT"
+                    + " NULL, observed_millis INTEGER NOT NULL CHECK(observed_millis>=0),"
+                    + " remaining_millis INTEGER NOT NULL CHECK(remaining_millis>=0),"
+                    + " duration_millis INTEGER NOT NULL CHECK(duration_millis BETWEEN 0 AND"
+                    + " 3600000), CHECK(remaining_millis<=duration_millis), CHECK(phase NOT IN"
+                    + " ('COMPLETE','SKIPPED') OR remaining_millis=0))");
+        // V16_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 14)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 15)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -488,6 +511,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 11) migrateElevenToTwelve(db);
         if (oldVersion <= 12) migrateTwelveToThirteen(db);
         if (oldVersion <= 13) migrateThirteenToFourteen(db);
-        migrateFourteenToFifteen(db);
+        if (oldVersion <= 14) migrateFourteenToFifteen(db);
+        migrateFifteenToSixteen(db);
     }
 }

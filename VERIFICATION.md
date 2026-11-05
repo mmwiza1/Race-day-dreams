@@ -1,3 +1,14 @@
+## 0.11 development checkpoint — not release acceptance
+
+Baseline main8796bc5 and setup19c74c2 full workflow42054247383 passed. New gym implementation
+has648794local domain checks/39suites (GymTools7901), schema67 tests including historical
+1–15→16, release9/capture-validator14, and actual Android debug/lint/test compilation passes.
+The final alarm cleanup/repository validation edit passed75Gradle tasks/54sec. Source adds repository,
+Compose and nine production capture cases which still need API28/35/36 execution and visual
+review. Do not interpret baseline results as verification of later source. Schema16/rootJSON10,
+raw2/complete1. All S24 checks, including outdoor GPS, remain unperformed. Remaining0.11
+milestones and exact recovery boundary are maintained in CONTINUE_CODEX.md.
+
 # Confirmed follow-up merge and final-head gate —5 November2026
 
 PR17 final head0f30828e245a20e62c9ac171ee083de1bead2dd1 passed COMPLETE

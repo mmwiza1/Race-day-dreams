@@ -82,7 +82,7 @@ def create_schema(connection, version=14, frozen=False):
 def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if target not in (14, 15) or old < 1 or old >= target:
+    if target not in (14, 15, 16) or old < 1 or old >= target:
         raise ValueError("Only explicit upgrades to historical 14 or current 15 are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
@@ -463,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,16), (2,16), (14,14)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,17), (2,17), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -1046,6 +1046,35 @@ class ConcreteDraftMigrationTest(unittest.TestCase):
         self.assertIn('strength_concrete_draft_order', plan)
         self.assertNotIn('strength_concrete_draft_workouts', plan)
         self.assertNotIn('TEMP B-TREE', plan)
+
+
+class GymToolsSchemaTest(unittest.TestCase):
+    def test_schema15_upgrade_keeps_history_and_adds_only_typed_tools(self):
+        db=sqlite3.connect(':memory:');create_schema(db,15)
+        before={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        migrate_to_latest(db,16)
+        after={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        self.assertEqual(after-before,{'gym_rest_preferences','gym_rest_timers'})
+        self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(),[])
+        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],16)
+        self.assertTrue(before.issubset(after))
+    def test_all_supported_historical_schemas_upgrade_to_tools(self):
+        for version in range(1,16):
+            with self.subTest(version=version):
+                db=sqlite3.connect(':memory:')
+                create_schema(db,version)
+                migrate_to_latest(db,16)
+                self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],16)
+                self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(),[])
+                self.assertIsNotNone(db.execute("SELECT name FROM sqlite_master WHERE name='gym_rest_timers'").fetchone())
+                db.close()
+    def test_bad_preferences_and_orphan_timers_rejected(self):
+        db=sqlite3.connect(':memory:');create_schema(db,16)
+        for seconds in [-1,1801]:
+            with self.assertRaises(sqlite3.IntegrityError):
+                db.execute('INSERT INTO gym_rest_preferences VALUES(1,?,1,0,0,0)',(seconds,))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO gym_rest_timers VALUES('missing','manual','RUNNING','epoch',0,1000,1000)")
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

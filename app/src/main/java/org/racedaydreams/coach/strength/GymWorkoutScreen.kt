@@ -236,6 +236,34 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                     }
                 }
 
+                if (active) {
+                    GymRestCard(state, model, slot, enabled)
+                    GymWarmupCard(state, model, slot, enabled)
+                    if (slot.supersetGroup() != null)
+                        SemanticCard(Tile.Strength) {
+                            Text("Superset", style = MaterialTheme.typography.titleLarge)
+                            val next =
+                                org.racedaydreams.domain.strength.GymSupersets.next(execution)
+                            Text(
+                                next?.instruction()
+                                    ?: "All targeted working sets in this group are recorded."
+                            )
+                            Text(
+                                "Keep each exercise's actual sets separate. Rest targets are optional; you may rest between movements or rounds."
+                            )
+                            if (next != null)
+                                Button(onClick = model::nextSuperset, enabled = enabled) {
+                                    Text("Next in superset · round ${next.round()}")
+                                }
+                            TextButton(onClick = model::skipMovement, enabled = enabled) {
+                                Text("Skip this movement today")
+                            }
+                            TextButton(onClick = model::breakSuperset, enabled = enabled) {
+                                Text("Use ordinary exercises today")
+                            }
+                        }
+                }
+
                 val previous =
                     remember(state.recent, slot.exercise(), execution.id()) {
                         state.recent

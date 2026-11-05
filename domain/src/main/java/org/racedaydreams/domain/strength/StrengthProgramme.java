@@ -86,9 +86,6 @@ public record StrengthProgramme(
                 if (!exerciseIds.add(slot.exercise().id()))
                     throw new IllegalArgumentException(
                             "Combine repeated exercise sets in one slot.");
-                if (slot.supersetGroup() != null)
-                    throw new IllegalArgumentException(
-                            "Grouped execution is outside this release.");
             }
         }
     }
