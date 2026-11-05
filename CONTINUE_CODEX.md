@@ -35,6 +35,25 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, pending its own full matrix.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
+### Current recovery — storage dialog capture correction
+
+Actual6532496 workflow42130320604 completed:506cases on EACH API28/35/36,
+505passed and ONE identical failure each. All retention/backup/navigation/archive tests now
+pass. New storage capture reaches the real confirmation dialog, but capture() called onRoot()
+which correctly rejects its TWO separate production roots. Fix uses the existing isDialog()
+visible-root path for storage-confirmation frames, preserving visibility/date assertions and
+all timeouts. No production retention change or extra sleeps. Actual local full Gradle domain/
+debug/lint/instrumentation compile PASS79tasks/27sec;75schema and9release-note tests pass.
+Next full matrix is required; do not claim215captures or full green yet.
+
+M6 illustrations have STARTED but catalogue remains174 until complete entries are integrated.
+Two original reviewed hip abductor/adductor machine two-frame PNGs are safely retained in
+/workspace/generated_images/exec-c47bafd9-6ab0-475f-8577-91f4046c9031.png and
+exec-07b49869-0945-4354-8a8d-1803924b17d0.png. Correct outside/inside thigh pads, controlled
+outward/inward bent-knee motion. Not yet bundled at this checkpoint. No source/art work lost.
+Continue catalogue work while this corrected runtime matrix runs; no0.12 or merge before ALL
+remaining scope/visual/exact-head gates. PR18 remains draft.
+
 ### LATEST gate correction / restart recovery — continue from this source
 
 M5 d5f4651 /42125758697 FAILED with the SAME3failures on EACH API28/35/36. All506methods

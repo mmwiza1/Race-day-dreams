@@ -2696,11 +2696,14 @@ class CoachingScreenshotTest {
         val semantics =
             if (
                 name == "gym-equipment-alternatives" ||
+                    name.startsWith("storage-confirmation") ||
                     name.startsWith("strength-programme-alternatives") ||
                     name.startsWith("strength-programme-progression") ||
                     name.startsWith("strength-programme-history")
             ) {
-                // The full-screen production dialog and its covered activity are separate roots.
+                // Production dialogs and their covered activities are separate roots. Check the
+                // visible dialog, including the storage confirmation, rather than an ambiguous
+                // root.
                 compose
                     .onNode(isDialog(), useUnmergedTree = true)
                     .assertIsDisplayed()

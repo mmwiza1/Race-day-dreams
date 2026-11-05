@@ -1,3 +1,14 @@
+# Storage confirmation capture correction — full release remains incomplete
+
+Actual6532496 workflow42130320604 completed506tests EACH API28/35/36:505passed,
+one identical capture failure each. The real cleanup confirmation is a separate dialog root;
+the capture helper incorrectly queried one onRoot(). The following correction reuses the
+existing visible isDialog() path for this frame. Visibility/raw-date checks, timeouts and
+all production retention safeguards are unchanged. No arbitrary delay or weakened assertion.
+Local actual Gradle domain/debug/lint/test compile PASS79tasks/27sec;75schema/9release pass.
+Next exact-source runtime matrix and all12storage visual reviews remain required.
+No full0.11 acceptance, merge, published APK or physical-device success is claimed.
+
 # Current corrected M5 + simulation checkpoint — full release still incomplete
 
 M5d5f4651 /42125758697 ran506tests EACH API28/35/36 with the SAME3failures each: storage capture
