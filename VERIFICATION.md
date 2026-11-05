@@ -1,3 +1,18 @@
+# Merged0.10.1 checkpoint —5November2026
+
+PR16 final head `b12e11d550af4f8cf28eacf793c44a9568dbfb74` passed COMPLETE
+[workflow42015943868](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42015943868)
+before leaving draft:438cases EACH API28/35/36,155captures/API and all required domain/
+schema/backup/release/format/build/lint/guidance gates green. Its app/capture fingerprint
+is identical to the fully reviewed source below; canonical validation did not reroll assets.
+
+PR16 squash merge `75ab7c546570ffa460295bd45e1ee0f9fa7e5c48` was confirmed by GitHub's
+merged flag and actual main head. Signed merge object/tree verified locally without reset.
+This post-merge update changes only handoff/verification metadata. The Android main workflow
+verifies each actual tip before updating the rolling development APK; its Build information
+records the actual tested commit/run. No permanent stable tag, production package or physical
+S24 acceptance is claimed. No implementation remains; physical checks stay unperformed.
+
 # Current0.10.1 software and visual verification —5November2026
 
 Verified source `1dffb7dcf7607c237f257004f4b322aade097ce6` passed COMPLETE
@@ -38,8 +53,8 @@ retaining all assertions. All earlier failed/pending notes below are historical 
 Galaxy S24 outdoor/urban/locked-screen/background/long-run/GPS comparison, audio/music/calls,
 BLE and human TalkBack remain UNPERFORMED. Synthetic/emulator results are not physical
 acceptance or a universal accuracy percentage. TEST_BUILD.md retains the human checklist.
-Final documentation-only head must pass its own full CI before PR16 leaves draft/merges;
-post-merge main and rolling development verification follow through GitHub's actual state.
+Final documentation headb12e11d passed full42015943868 before PR16 was made ready and
+merged. Post-merge main/development identities are recorded by the actual workflow/release.
 
 # Historical verification checkpoints
 
