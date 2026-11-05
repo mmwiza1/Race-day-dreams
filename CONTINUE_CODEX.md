@@ -31,40 +31,48 @@ vector icons, rounded panels, restrained colours. Normal values compare side-by-
 font>=150% uses a vertical stack and unchanged facts become full-width rows. No horizontal
 scroll. Recommendation/evidence/freshness/save/activation calculations are untouched.
 
-Visual implementation3f2aef17576ee7b784e8f626c81b6a46bad6c2c3 is committed/pushed.
-Its complete workflow41999140735 ran438 cases EACH API28/35/36: exactly2 failures on each,
-other436passed. Build/lint/format/domain/schema/guidance passed. Publication correctly blocked.
-Both failures are new fixture scroll assumptions: unchanged rows were queried before their
-lazy item was materialised, and the lower supporting control's viewport was incorrectly
-required to contain earlier effort/rest rows. Stack traces confirmed the same boundaries
-on all3APIs. Do NOT rerun the unchanged failing source or shrink the UI to fit assertions.
+Current canonical0d84c2147552fabdf12505aa44bc74b1dca20776 matches GitHub byte-for-byte.
+Verified source9180b34676ccf86299dddd99ff9690dc06c47bf4 passed COMPLETE workflow42002407269:
+438 EACH API28/35/36 (1314cases),149captures/API, domain640888/38suites,64schema,9release,
+13capture-validator, source/provenance/artwork, pinned76Kotlin/122Java format, strict174/14,
+debug builds/lint. API35APK13404027367 is51,979,576bytes; screenshots13404665849.
+Fingerprint0d807e39fff63e482a3b4221110628723e5f988008e5d90d65f38c40de694148.
+All27progression frames were opened directly in light/dark/200%, including both disclosures.
+The genuine reference difference is distinct, unchanged facts are compact once, dark surfaces
+are legible,200% stacks and scrolls. Entry/task/weight/controls/changes/upper+lower unchanged/
+why+secondary-closed/actual80kg records inspected. Live Coach/route/recorder also reopened.
+No clipping/overlap inside layout; normal viewport cuts are reachable through scrolling.
 
-Capture-only checkpoint96e19a8 adds scrolled task/weight cards (instrumentation compile passed,
-48tasks/8seconds). The current follow-up scrolls into unchanged targets before querying,
-retains all content/visibility assertions, and captures upper/lower facts separately from
-why/supporting controls. No application or recommendation code changed in these follow-ups.
-Required set now149: all128old scenes retained,27progression frames across9states x3modes:
-entry, full task, weight, collapsed controls, changes, upper unchanged targets, lower unchanged
-facts, why/secondary-collapsed, secondary-open records. None has final visual acceptance yet.
+VISUAL FOLLOW-UP IN PROGRESS: at200% the open-evidence viewport ends before the lower
+safeguards and save action. Add6real captures (safeguards + expanded actions, all3modes),
+for155required images/33progression frames. Application/recommendation code unchanged.
+Current local follow-up needs commit/push, fresh438-case/API155-capture gate and review of
+those6new frames. Keep PR16 DRAFT until complete. No false final visual acceptance.
 
-Local visual source passes640888domain checks/38suites (instructions109),64schema,9release,
-13capture-validator,76Kotlin/122Java format and actual Gradle domain/check/debug/lint/test
-compilation. Current fixture follow-up needs final format/compile, commit/push and full matrix.
-Prior reliability08cf375 passed complete41939512123 (435 EACH API28/35/36,128captures),
-canonicalb3a4195 safely adopted. That confirms GPS/acknowledgement fixes, not the new design.
+Git CLI authentication stopped working after the green run. Connected GitHub tools work.
+Downloaded API35artifact via github_download_workflow_artifact (not CLI), verified ZIP
+SHA25693080db48076c2d908f9aec7239b8254b72d4f54bb386739f7f2abafc3207778, all151Git blob
+identities, tree49ac89fd0c93ebfc025ecc122eda3b565f71cb56 and exact unsigned bot commit/parent.
+Imported identical Git objects/ref fast-forward without reset/discard; local handoff preserved.
+Use normal Git only if auth returns; otherwise typed GitHub blob/tree/commit/update_ref with
+expected-head lease, then import identical verified commit locally. Never force/rewrite.
 
 NEXT CURRENT ACTIONS:
-1. Final format/Android-test compile and validator/release checks for the scroll follow-up;
-   commit/push without discarding96e19a8. PR16 stays draft. Inspect actual local status/log.
-2. Obtain a fresh438-case/API and149-capture gate; fix real failures without weakening checks.
-3. Adopt canonical149images from verified API35 source. OPEN all27progression frames and
-   final live-coach/route representatives; inspect complete-page light/dark/200% against the
-   owner's5November requirements. Old dense captures never establish revised visual acceptance.
-4. Finalise accurate README/release/SCREENSHOTS/VISUAL_REVIEW/VERIFICATION/handoff, then
-   obtain final-head green CI, check latest main/reviews/conflicts. Only after ALL software
+1. Finish format/Android-test compile and validator/release checks for6extra footer captures;
+   commit via connected GitHub tools if CLI remains unavailable. Preserve all completed work.
+2. Inspect fresh438-case/API155-capture gate; fix genuine failures without weakening checks.
+3. Adopt canonical155images with matching fingerprint. OPEN6new safeguards/actions frames,
+   recheck representative progression states, then finalise visual/verification/release docs.
+4. Obtain final-head green CI, check latest main/reviews/conflicts. Only after ALL software
    and revised visual gates pass may PR16 become ready/merge per existing master authorisation.
    Confirm post-merge main CI/rolling development APK, record final SHA and unperformed S24
-   checks. No stable tag or0.11 work. Preserve all GPS and completed strength code.
+   checks. No stable tag or0.11. No schema/backup/archive/dependency/permission change.
+
+Historical visual-fixture failure:3f2aef1/41999140735 ran438 EACH with exactly2failures each,
+other436passed. Corrected9180b34 brings the lazy unchanged card into view before querying
+and inspects upper/lower facts separately from lower controls. All assertions retained.
+96e19a8 adds full instruction/weight frames. Both corrections are already committed/pushed;
+do not duplicate or rerun the unchanged failed source. No application code changed in them.
 
 Completed implementation:
 - Pinned OpenTracks/RunnerUp/GPSTest comparison before changing GPS; Codeberg inaccessible,

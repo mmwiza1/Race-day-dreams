@@ -1,20 +1,41 @@
-# Revised visual acceptance — pending5November2026 captures
+# 0.10.1 progression visual review —5November2026
 
-The owner rejected the earlier dense Advanced presentation after reviewing it. The historical
-observations below establish rendered legibility only; they do NOT establish design fidelity
-or final acceptance. Do not merge on those images.
+The owner rejected the earlier dense Advanced presentation. That earlier legibility review
+is retained below as history and does not establish fidelity for this revision.
 
-The refined implementation preserves the primary task card and collapsed Advanced default.
-Inside Advanced: genuine differences only in What's changing?, unchanged compact labels in
-What's staying the same?, short Why this suggestion?, and a separate collapsed View supporting
-workouts control. Current and suggested planning references are distinct from actual logged
-weights. Original vector symbols/rounded cards use the existing restrained palette. At200%
-comparison values and unchanged facts stack vertically without a horizontal scroller.
+Verified source9180b34676ccf86299dddd99ff9690dc06c47bf4 passed COMPLETE workflow42002407269,
+438 EACH API28/35/36 and149captures/API. Canonical0d84c2147552fabdf12505aa44bc74b1dca20776
+contains the exact API35artifact13404665849 images. Fingerprint:
+`0d807e39fff63e482a3b4221110628723e5f988008e5d90d65f38c40de694148`.
+All27progression frames were opened directly: nine scroll/disclosure states in each mode.
+Some normal-font task/weight and unchanged/context frames are identical because those
+sections already fit together;200% captures separately inspect the full growing cards.
 
-Required current-build set:149images, including27progression frames (primary, scrolled instructions/weight, collapsed
-controls, expanded comparison, unchanged/context, supporting records x light/dark/200%).
-Open every progression frame, inspect the complete page and both disclosure states, then
-record the actual capture/source/CI identities. These revised captures remain pending.
+| Requested direction | Actual-build observation |
+| --- | --- |
+| Task first | Mint rounded instruction card leads with real sets/repetitions/rest and plain effort guidance. Blue decorative symbol and strong heading preserve a clear primary experience. |
+| Genuine changes | Rounded comparison panel shows Current reference: Not set and Suggested reference:82kg. Only the changed suggested value is emphasised; the optional-planning-reference label excludes any logged-weight claim. |
+| Unchanged facts | Sets2, repetitions4–6, RPE5–7/10 and rest3minutes appear once in compact labels. Two columns at normal text become full-width stacked rows at200%. The perceived-effort definition appears once. |
+| Short reason | A small separate panel explains the two comparable recorded workouts and effort. It is not duplicated above and below Advanced. |
+| Nested history | View supporting workouts is visibly collapsed until chosen. Its open view shows actual80kg sets and recorded effort/dates, then calculation/safeguards.82kg is never called recorded. |
+| Controls | Both disclosures have directional chevrons and clear title/subtitle hierarchy. Save remains Save this suggestion for review, with the explicit separate-activation explanation. |
+| Dark | Navy surfaces, subdued green/lavender task/reference cards, pale text and blue accents remain legible. Suggested value contrast remains distinct. |
+|200% | Values and facts stack; controls and button wrap/grow; all important text remains readable through scrolling. No horizontal scroller, cramped grid, internal overlap or ellipsis. |
+
+This review compares the implementation with the owner's explicit approved hierarchy and
+5November refinement instructions. No separate0.10.1 progression bitmap is available in
+`docs/design-reference`; no pixel-perfect comparison with an unavailable bitmap is claimed.
+Those older references remain separate from actual production-screen captures. The images
+are actual app UI with instrumentation-only retained evidence, not manually edited mockups.
+
+PENDING COMPLETE-PAGE FOLLOW-UP: the200% open-evidence image ends before the lower
+safeguards and action. Add six actual safeguards/expanded-actions captures across three
+modes (155total,33progression), open them, and record the new source/gate before final
+acceptance. Do not treat this27-frame review as completion of that remaining check.
+
+Live Coach/route/recorder representatives were also reopened at this source: native ready
+status, fitted geometry/legend/elevation and recorder options remain readable. A loop's
+shared start/finish point overlaps intentionally. No physical S24/TalkBack claim is made.
 
 # Historical0.10.1 observations
 

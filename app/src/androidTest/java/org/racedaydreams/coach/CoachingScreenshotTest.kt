@@ -1890,6 +1890,23 @@ class CoachingScreenshotTest {
                         .assertIsDisplayed()
                     compose.onNodeWithText("82 kg recorded · 6 repetitions").assertDoesNotExist()
                     capture("strength-programme-progression-evidence$suffix")
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(
+                            hasText("Only recent exact-exercise working sets", substring = true)
+                        )
+                    compose.onNodeWithText("Calculation & safeguards").assertIsDisplayed()
+                    capture("strength-programme-progression-safeguards$suffix")
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("Save this suggestion for review"))
+                    compose.onNodeWithText("Save this suggestion for review").assertIsDisplayed()
+                    compose
+                        .onNodeWithText(
+                            "Saving this suggestion won't change your active programme. You can review and activate it separately."
+                        )
+                        .assertIsDisplayed()
+                    capture("strength-programme-progression-evidence-actions$suffix")
                 }
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))

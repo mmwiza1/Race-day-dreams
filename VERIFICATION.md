@@ -1,3 +1,20 @@
+## 5 November2026 — refined149-capture software and visual gate passed
+
+Source9180b34676ccf86299dddd99ff9690dc06c47bf4 passed COMPLETE workflow42002407269:
+438 instrumentation cases EACH API28/35/36,149captures/API, domain640888checks/38suites,
+64schema,9release,13capture-validator, build/lint/format and strict174canonical/14routine.
+API35APK13404027367 is51,979,576bytes; screenshots13404665849. Canonical0d84c2147552fabdf12505aa44bc74b1dca20776
+was recovered through the connected GitHub tool when CLI auth stopped: ZIP digest,151blob
+hashes, tree and exact unsigned commit/parent all agree. No local source/handoff was lost.
+
+Opened all27progression frames directly across light/dark/200% and reopened Live Coach,
+post-run route and recorder. Compact genuine-only changes and unchanged facts are clear;
+references remain optional and separate from actual80kg records. Large text stacks and
+scrolls without internal overlap. See VISUAL_REVIEW_0_10_1 for the observed design review.
+Six more safeguards/expanded-action captures are now required to inspect the very bottom
+of the200% open-evidence page.155-image follow-up gate/visual review remains pending;
+this is not final release acceptance. No S24/human TalkBack/outdoor pass is claimed.
+
 ## 5 November2026 — revised visual fixture failures diagnosed
 
 Visual source3f2aef1 workflow41999140735 ran438 cases EACH API28/35/36, with exactly2
