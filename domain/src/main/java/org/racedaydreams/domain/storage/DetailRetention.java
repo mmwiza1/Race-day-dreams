@@ -190,9 +190,6 @@ public final class DetailRetention {
             boolean unfinishedRecording,
             boolean replacementInProgress) {
         checkContext(preview, current, now, epoch, unfinishedRecording, replacementInProgress);
-        if (now.isAfter(preview.inspectedAt().plus(Duration.ofHours(24))))
-            throw new IllegalArgumentException(
-                    "Refresh the detail preview before confirming cleanup.");
         if (preview.recordings().isEmpty())
             throw new IllegalArgumentException(
                     "There is no eligible detailed evidence in this preview.");
@@ -251,6 +248,9 @@ public final class DetailRetention {
                     "Restored or replaced data needs a fresh detail preview.");
         if (now.isBefore(preview.inspectedAt()) || current.chosenAt().isAfter(now))
             throw new IllegalArgumentException("Review the device clock and preview again.");
+        if (now.isAfter(preview.inspectedAt().plus(Duration.ofHours(24))))
+            throw new IllegalArgumentException(
+                    "Refresh the detail preview before continuing cleanup.");
         if (recording || replacing)
             throw new IllegalArgumentException(
                     "Finish recording or data replacement before cleaning up detail.");

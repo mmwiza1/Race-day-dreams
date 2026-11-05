@@ -29,25 +29,27 @@ public final class RecordingInventoryRepositoryTest extends AndroidTestCase {
 
     public void testRealFinishedEvidenceAndQualifiedResultsRemainByteIdentical() {
         var engine = new RunMetricsEngine(0, OLD);
-        for (int i = 0; i <= 100; i++)
+        for (int i = 0; i <= 2000; i++)
             engine.accept(
                     new RunMetricsEngine.Fix(
                             OLD.plusSeconds(i), i * 1000L, 0, i * .00003, 3.0, null, null, 3.0));
         var store = new RecordingStore(getContext());
         store.start("inventory-real", OLD, 0, null, null);
         store.appendBatch(
-                "inventory-real", engine.points(), engine.events(), 0, 0, 100000, "ACTIVE", null);
+                "inventory-real", engine.points(), engine.events(), 0, 0, 2000000, "ACTIVE", null);
         String activityId = store.finish(store.unfinished(), null, "rdd", false);
         String payload = scalar("SELECT payload FROM activities WHERE id='" + activityId + "'");
-        String point = scalar("SELECT payload FROM recording_points WHERE sequence=100");
+        String point = scalar("SELECT payload FROM recording_points WHERE sequence=2000");
         long bestEfforts = count("best_efforts");
+        assertTrue("The fixture must contain qualified PB evidence", bestEfforts > 0);
+        String effort = scalar("SELECT payload FROM best_efforts ORDER BY id LIMIT 1");
         var inventory = repository.inspect();
         assertFalse(inventory.unfinishedRecording());
         assertEquals(1, inventory.recordings().size());
         var row = inventory.recordings().get(0);
         assertEquals(activityId, row.activityId());
         assertEquals("inventory-real", row.sourceRecordId());
-        assertEquals(101L, row.points());
+        assertEquals(2001L, row.points());
         assertTrue(row.finished());
         assertEquals(0L, row.denseSamples().longValue());
         assertEquals(
@@ -61,8 +63,9 @@ public final class RecordingInventoryRepositoryTest extends AndroidTestCase {
                         .size());
         assertEquals(
                 payload, scalar("SELECT payload FROM activities WHERE id='" + activityId + "'"));
-        assertEquals(point, scalar("SELECT payload FROM recording_points WHERE sequence=100"));
+        assertEquals(point, scalar("SELECT payload FROM recording_points WHERE sequence=2000"));
         assertEquals(bestEfforts, count("best_efforts"));
+        assertEquals(effort, scalar("SELECT payload FROM best_efforts ORDER BY id LIMIT 1"));
         assertEquals(engine.points(), store.points("inventory-real"));
         assertEquals(inventory.recordings(), repository.inspect().recordings());
     }

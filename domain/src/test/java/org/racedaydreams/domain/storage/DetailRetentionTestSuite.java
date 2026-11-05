@@ -104,6 +104,50 @@ public final class DetailRetentionTestSuite {
                                 List.of(old),
                                 false,
                                 false));
+        // A once-approved preview must not authorize a delayed cleanup days later.
+        rejects(
+                () ->
+                        DetailRetention.checkBatch(
+                                approval,
+                                choice,
+                                NOW.plus(Duration.ofHours(24)).plusNanos(1),
+                                "dataset",
+                                List.of(old),
+                                false,
+                                false));
+        // Even an already-empty resumed batch needs fresh consent/context.
+        rejects(
+                () ->
+                        DetailRetention.checkBatch(
+                                approval,
+                                choice,
+                                NOW.plus(Duration.ofDays(2)),
+                                "dataset",
+                                List.of(),
+                                false,
+                                false));
+        var lateApproval =
+                DetailRetention.approve(
+                        preview, choice, NOW.plus(Duration.ofHours(23)), "dataset", false, false);
+        rejects(
+                () ->
+                        DetailRetention.checkBatch(
+                                lateApproval,
+                                choice,
+                                NOW.plus(Duration.ofHours(25)),
+                                "dataset",
+                                List.of(old),
+                                false,
+                                false));
+        DetailRetention.checkBatch(
+                approval,
+                choice,
+                NOW.plus(Duration.ofHours(24)),
+                "dataset",
+                List.of(old),
+                false,
+                false);
+        checks++;
         var unknown =
                 DetailRetention.preview(
                         Policy.LAST_24_MONTHS,

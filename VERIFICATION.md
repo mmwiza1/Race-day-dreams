@@ -16,6 +16,18 @@ full490/API execution. No pruning is enabled; schema18/root12/raw2/complete1 unc
 retention persistence/cleanup/UI and M6 catalogue/simulations/final delivery remain required.
 No physical Galaxy S24 or human TalkBack acceptance is claimed. PR18 stays draft.
 
+Following policy review reproduced an expired-preview acceptance in the not-yet-enabled cleanup
+batch guard. Four added boundary/late-approval/empty-batch checks fail before the fix and pass after
+sharing the24hour freshness guard. Domain658601/45suites, retention7496; actual local Gradle79tasks/
+1m10sec passes with the strengthened2001sample/5PB inventory fixture.72schema/9release and pinned
+93Kotlin/152Java formatting pass. These new proof tests need their own full490/API runtime gate.
+
+Verified intermediate7dc API35APK artifact13457712005:52,618,954bytes, SHA256
+8fd6c063f413e851d0f7c79380141f35ae390acc4538ed71cb5409dcd7815388.
+ZIP SHA25634bf90bf3a2dec031fbb0a781b820c2f3e8447278539b15e269c1e41011c839b verified.
+aapt:0.11.0-test1/code15/min28/target35, noINTERNET permission.639,378bytes/+1.230% over verified
+0.10.1CI51,979,576bytes. No new dependencies/artwork; this is not the final0.11APK.
+
 Earlier checkpoint evidence below is historical; the CURRENT handoff controls remaining work.
 
 ## Latest 0.11 M2 gate correction

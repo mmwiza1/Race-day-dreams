@@ -86,6 +86,30 @@ UTF8 bytes/empty data/cutoff. Local actual Gradle domain/debug/lint/test compila
 55sec; formatting93Kotlin/152Java. These FOUR tests need the following full490/API matrix; the
 486/API gate above predates this read-only addition. No schema/backup changes for inventory.
 
+### Following retention-proof correction (inspect actual SHA/status)
+
+Inventory source0d633f9 was pushed; full workflow42119859259 started, expected490/API/203captures.
+Do not claim its result until inspecting the actual workflow. While that gate runs, source review
+found that checkBatch accepted an already-approved preview after its24hour expiry. A regression
+failed before the fix (retention-expiry-before-fix.log). The common context check now enforces
+freshness for EVERY batch, including empty resumed batches. Boundary/late-approval tests pass.
+This guards the future cleanup system; no production deletion has been enabled.
+
+The real-recording inventory test is strengthened from a sub-kilometre trace to2001accepted
+samples/5qualified PB results, verified independently with the pure calculator; it asserts nonempty
+PB evidence and byte-identical PB payload rather than vacuously comparing zero rows. Same four
+instrumented methods, so total490/API remains. Local frozen-source domain658601/45suites,
+DetailRetention7496, Android domain/debug/lint/test compile PASS79tasks/1m10sec;72schema/9release/
+format93Kotlin/152Java pass. Logs retention-proof-* and InventoryEvidenceFixture.java under scratch.
+Its own final source still requires full Android execution; previous486green is source7dc only.
+
+Verified green7dc APK artifact13457712005:52,618,954bytes, SHA256
+8fd6c063f413e851d0f7c79380141f35ae390acc4538ed71cb5409dcd7815388.
+Artifact ZIP SHA25634bf90bf3a2dec031fbb0a781b820c2f3e8447278539b15e269c1e41011c839b verified.
+Local body-verified-api35.apk; aapt confirms0.11.0-test1/code15/min28/target35 and NO INTERNET
+permission. Size delta versus0.10.1CI51,979,576 is639,378bytes/+1.230%. No new dependencies or
+artwork in this checkpoint. This is a verified intermediate debug APK, NOT final0.11 delivery.
+
 ### Exact remaining work — continue M5, then M6 (do not stop at one checkpoint)
 
 1. Inspect actual status/log/remote/PR18/current CI. Preserve canonical bot and any local source.
