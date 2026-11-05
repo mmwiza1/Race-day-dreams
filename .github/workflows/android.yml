@@ -78,7 +78,9 @@ jobs:
           script: |
             adb shell wm size 540x1200
             adb shell wm density 210
-            ./gradlew :app:connectedDebugAndroidTest
+            # Bound each complete test method; normal capture methods finish well under10min.
+            # AndroidJUnitRunner reports the blocked test stack rather than hanging indefinitely.
+            ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000
             # Only the named instrumentation fixture reports bounded resource measurements.
             # Do not dump application/device logs, health values or route evidence.
             adb logcat -d -s GymBackupFixture:I '*:S'

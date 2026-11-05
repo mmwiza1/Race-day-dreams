@@ -33,6 +33,21 @@ Older commit/push instructions below describe the pre-commit checkpoint. Preserv
 live metadata if uncommitted. PR16 is already merged and cannot remain draft.
 
 
+UPDATE —5November2026,12:40UTC:
+CI-bound commitbe0a306a574c9c955c260ad10392e48d4a09c511 is pushed and identical locally;
+its bounded workflow42028621679 supersedes244e0b0. Exported cancelled42023014049 logs
+NOW confirm all3APIs stopped at34/438 completed, no assertion failure, as screenshot tests
+begin. This is an actual stall, not merely a slow completed pass; no Android report existed.
+A focused fixture startup correction is being prepared: advance the UI test clock once
+in@Before before any ActivityScenario launch, so the StandardTestDispatcher recomposer
+queued by the empty rule starts before production content/lifecycle. Add runner-supported
+600000ms per-method timeout (normal methods finish well under10min) to expose a blocked
+stack if it persists, alongside the30min step bound. No content/readiness assertion or
+case is removed. This is a diagnosis-driven attempted correction, NOT a demonstrated pass.
+Local pinned formatting/release9 and real offline Gradle domain/check/debug/lint/test-APK
+compile PASS79tasks/31sec. Commit/push and inspect the replacement full gate before claiming fixed.
+
+
 PR16 is MERGED, not draft/open: squash75ab7c546570ffa460295bd45e1ee0f9fa7e5c48.
 Main checkpoint6f73afe3ff3b20a13c73f5af4792247f68883659 adds only post-merge documentation.
 Do not reset/reopen/reimplement PR16, GPS/coaching work or0.10. No0.11 features authorised.

@@ -1,3 +1,14 @@
+## Screenshot fixture startup diagnosis —5November2026
+
+After cancellation,42023014049 logs show API28/35/36 each completed34/438cases with
+zero failures, then no progress for over30minutes. No test report was generated. The
+empty-rule StandardTestDispatcher queues recomposer startup before any host exists;
+explicitly advance the main test clock before ActivityScenario launches content. This
+attempted startup correction retains all assertions. A runner-supported600000ms per-method
+deadline will expose a blocked method/stack if it persists; it does not replace the full
+438case or155capture requirements. Local pinned formatting,release9 and real offline Gradle domain/check/debug/lint/test-APK
+compile PASS79tasks/31sec. Success remains pending the corrected full matrix.
+
 ## Follow-up instrumentation gate bound —5November2026
 
 Follow-up42023014049 at244e0b0 passed build/lint/format/guidance but all3API

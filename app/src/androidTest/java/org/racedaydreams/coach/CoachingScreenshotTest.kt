@@ -43,6 +43,10 @@ class CoachingScreenshotTest {
 
     @Before
     fun seed() {
+        // The empty rule queues its recomposer on StandardTestDispatcher before a host exists.
+        // Start it on the UI test clock before ActivityScenario launches production content;
+        // otherwise initial lifecycle/content work can wait for a recomposer not yet running.
+        compose.mainClock.advanceTimeByFrame()
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
         val today = LocalDate.now()
