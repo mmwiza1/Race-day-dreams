@@ -31,40 +31,40 @@ vector icons, rounded panels, restrained colours. Normal values compare side-by-
 font>=150% uses a vertical stack and unchanged facts become full-width rows. No horizontal
 scroll. Recommendation/evidence/freshness/save/activation calculations are untouched.
 
-Current visual checkpoint3f2aef17576ee7b784e8f626c81b6a46bad6c2c3 is committed and pushed.
-Full workflow41999140735 is running the438-case/API and137-capture gate.
-A capture-only follow-up adds scrolled instruction and weight cards in all3modes, for143
-required captures. Follow-up instrumentation compilation PASSED (48tasks,8seconds),
-13capture-validator and9release tests pass; a fresh source-bound full matrix is needed. PR16 remains
-draft; its description now reflects this refinement. No uncommitted implementation was lost.
-Prior canonical-only bot b3a4195 follows08cf375. FULL workflow41939512123
-PASSED435 EACH API28/35/36,128captures, all build/lint/format/guidance gates. This validates
-all GPS/clarity/acknowledgement-race software BEFORE the requested visual refinement, not
-its appearance. Valid images/history were adopted by safe git ff; none were discarded.
+Visual implementation3f2aef17576ee7b784e8f626c81b6a46bad6c2c3 is committed/pushed.
+Its complete workflow41999140735 ran438 cases EACH API28/35/36: exactly2 failures on each,
+other436passed. Build/lint/format/domain/schema/guidance passed. Publication correctly blocked.
+Both failures are new fixture scroll assumptions: unchanged rows were queried before their
+lazy item was materialised, and the lower supporting control's viewport was incorrectly
+required to contain earlier effort/rest rows. Stack traces confirmed the same boundaries
+on all3APIs. Do NOT rerun the unchanged failing source or shrink the UI to fit assertions.
 
-Refinement files: ProgrammeProgressionSheet.kt (compact comparison + two functional
-saved-state disclosures), StrengthPrescriptionText.java (pure comparison view data), its
-domain tests, ProgrammeProgressionClarityTest.kt, CoachingScreenshotTest.kt and capture
-validators. Full local refined gate PASSED:640888domain/38suites (instructions109),64schema,
-9release,13capture-validator,76Kotlin/122Java format; actual Gradle domain/check, debug APK,
-lint and Android-test compilation final run1m34s/79tasks (initial refined run4m47s also green).
-Three new UI tests strengthen genuine-only highlights,200%stacking/keyboard and nested
-state restoration; expected438 cases/API. Capture set now143: preserve128, add collapsed
-controls, expanded lower context, actual evidence and scrolled instruction/weight cards
-in light/dark/200% (21progression frames
-across7states x3modes). None of the143new-source images has yet been captured/reviewed.
+Capture-only checkpoint96e19a8 adds scrolled task/weight cards (instrumentation compile passed,
+48tasks/8seconds). The current follow-up scrolls into unchanged targets before querying,
+retains all content/visibility assertions, and captures upper/lower facts separately from
+why/supporting controls. No application or recommendation code changed in these follow-ups.
+Required set now149: all128old scenes retained,27progression frames across9states x3modes:
+entry, full task, weight, collapsed controls, changes, upper unchanged targets, lower unchanged
+facts, why/secondary-collapsed, secondary-open records. None has final visual acceptance yet.
+
+Local visual source passes640888domain checks/38suites (instructions109),64schema,9release,
+13capture-validator,76Kotlin/122Java format and actual Gradle domain/check/debug/lint/test
+compilation. Current fixture follow-up needs final format/compile, commit/push and full matrix.
+Prior reliability08cf375 passed complete41939512123 (435 EACH API28/35/36,128captures),
+canonicalb3a4195 safely adopted. That confirms GPS/acknowledgement fixes, not the new design.
 
 NEXT CURRENT ACTIONS:
-1. Check workflow41999140735 for pushed3f2aef1; PR16 stays draft. Do not duplicate the commit.
-2. Inspect real438-case API28/35/36 gate, fix actual failures without weakening assertions.
-3. Adopt canonical143images from verified API35 source. OPEN all21progression frames and
-   final live-coach/route representatives; compare with the owner's precise5November visual
-   requirements. Do not reuse the old dense Advanced screenshots as visual acceptance.
+1. Final format/Android-test compile and validator/release checks for the scroll follow-up;
+   commit/push without discarding96e19a8. PR16 stays draft. Inspect actual local status/log.
+2. Obtain a fresh438-case/API and149-capture gate; fix real failures without weakening checks.
+3. Adopt canonical149images from verified API35 source. OPEN all27progression frames and
+   final live-coach/route representatives; inspect complete-page light/dark/200% against the
+   owner's5November requirements. Old dense captures never establish revised visual acceptance.
 4. Finalise accurate README/release/SCREENSHOTS/VISUAL_REVIEW/VERIFICATION/handoff, then
    obtain final-head green CI, check latest main/reviews/conflicts. Only after ALL software
    and revised visual gates pass may PR16 become ready/merge per existing master authorisation.
-   Confirm post-merge main CI/rolling development APK, record final SHA and physical S24
-   unknowns. No stable tag or0.11 work. Preserve all GPS and completed strength code.
+   Confirm post-merge main CI/rolling development APK, record final SHA and unperformed S24
+   checks. No stable tag or0.11 work. Preserve all GPS and completed strength code.
 
 Completed implementation:
 - Pinned OpenTracks/RunnerUp/GPSTest comparison before changing GPS; Codeberg inaccessible,

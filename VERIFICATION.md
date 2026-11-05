@@ -1,3 +1,14 @@
+## 5 November2026 — revised visual fixture failures diagnosed
+
+Visual source3f2aef1 workflow41999140735 ran438 cases EACH API28/35/36, with exactly2
+new-fixture failures each (other436passed). Formatting, builds/lint, domain/schema and strict
+guidance passed; canonical publication correctly blocked. The lazy test queried unchanged
+facts before bringing their item into view. The capture also required earlier effort/rest
+rows to share the supporting-control viewport. Neither is a reason to shrink the accessible
+layout or drop assertions. The follow-up materialises the card and retains all facts/visibility
+checks in separate real scrolled captures.149required images now cover27progression frames,
+including full task/weight and upper/lower unchanged facts in all3modes. New matrix pending.
+
 ## 4 November 2026 — complete Strength Programming2.0 software gate
 
 ## Requested visual refinement — local gate5November2026
@@ -10,7 +21,7 @@ cover genuine-only differences, missing versus zero, non-repetition tasks and se
 
 Full local refined source PASSES640888domain/38suites,64schema,9release,13capture-validator,
 pinned76Kotlin/122Java formatting and actual Gradle domain/check, debug APK, lint and Android
-test compilation (final79tasks,1m34s). Expected new matrix438cases/API and143captures must
+test compilation (final79tasks,1m34s). Expected new matrix438cases/API and149captures must
 still execute. Actual complete-page light/dark/200% visual review remains mandatory.
 
 The prior reliability source08cf375 has COMPLETE green workflow41939512123:435 EACH

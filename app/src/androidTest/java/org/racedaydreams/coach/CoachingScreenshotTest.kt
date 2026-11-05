@@ -1850,6 +1850,22 @@ class CoachingScreenshotTest {
                     capture("strength-programme-progression-details$suffix")
                     compose
                         .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasText("What's staying the same?"))
+                    compose.onNodeWithText("What's staying the same?").assertIsDisplayed()
+                    compose.onNodeWithTag("unchanged-sets").assertIsDisplayed()
+                    compose.onNodeWithTag("unchanged-repetitions").assertIsDisplayed()
+                    capture("strength-programme-progression-targets$suffix")
+                    // Inspect the lower rows separately rather than requiring the full card
+                    // and the following disclosure to fit a 200% font viewport together.
+                    compose
+                        .onNodeWithTag("progression-review")
+                        .performScrollToNode(hasTestTag("unchanged-rest"))
+                    compose.onNodeWithTag("unchanged-effort").performScrollTo()
+                    compose.onNodeWithTag("unchanged-rest").assertIsDisplayed()
+                    compose.onNodeWithTag("unchanged-effort").assertIsDisplayed()
+                    capture("strength-programme-progression-unchanged$suffix")
+                    compose
+                        .onNodeWithTag("progression-review")
                         .performScrollToNode(hasText("View supporting workouts"))
                     compose
                         .onNodeWithText("View supporting workouts")
@@ -1860,8 +1876,7 @@ class CoachingScreenshotTest {
                                 "Collapsed",
                             )
                         )
-                    compose.onNodeWithTag("unchanged-rest").assertIsDisplayed()
-                    compose.onNodeWithTag("unchanged-effort").assertIsDisplayed()
+                    compose.onNodeWithText("Why this suggestion?").assertIsDisplayed()
                     compose.onNodeWithText("Actual logged working sets").assertDoesNotExist()
                     capture("strength-programme-progression-context$suffix")
                     compose.onNodeWithText("View supporting workouts").performClick()

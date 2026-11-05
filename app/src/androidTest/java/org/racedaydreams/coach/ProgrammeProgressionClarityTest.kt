@@ -332,6 +332,8 @@ class ProgrammeProgressionClarityTest {
         compose.onNodeWithTag("change-weight-reference").assertExists()
         compose.onNodeWithTag("change-sets").assertDoesNotExist()
         compose.onNodeWithTag("change-effort").assertDoesNotExist()
+        // This is a lazy page: materialise the unchanged card before inspecting its facts.
+        scroll("What's staying the same?")
         compose.onNodeWithTag("unchanged-sets").assertExists()
         compose.onNodeWithTag("unchanged-repetitions").assertExists()
         compose.onNodeWithTag("unchanged-effort").assertExists()
