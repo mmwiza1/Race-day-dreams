@@ -1,3 +1,13 @@
+## Latest 0.11 M2 gate correction
+
+Workflow42090255426 completed465tests on each supported API with three identical failures:
+two stale current-backup version assertions (10 rather than11), and the new Strength trends
+capture waiting after an unscrolled dashboard action. The correction scrolls those real actions
+into view and asserts the unique destination intro before waiting for data; it keeps the20second
+bound and all original content assertions. Corrected local debug/lint/test compilation passes
+75tasks/15sec. Full new-source Android/visual verification is pending; earlier green sources
+remain separate evidence. PR18 remains draft; M3–6 scope remains required.
+
 ## 0.11 development checkpoint — not release acceptance
 
 Current gym workflow42062688210 exposed API28 NoSuchMethodError from new Stream.toList calls.

@@ -398,7 +398,7 @@ public final class StrengthProgrammingRepositoryTest extends AndroidTestCase {
         manager.exportTo(output);
         var previous =
                 new JSONObject(output.toString(java.nio.charset.StandardCharsets.UTF_8.name()));
-        assertEquals(10, previous.getInt("version"));
+        assertEquals(11, previous.getInt("version"));
         previous.put(
                 "version", 9); // Retain the explicit previous-release v9 authoring requirement.
         previous.getJSONObject("data").remove("gymTools");

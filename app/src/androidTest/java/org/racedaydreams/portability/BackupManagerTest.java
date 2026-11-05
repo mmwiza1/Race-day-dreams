@@ -80,7 +80,7 @@ public final class BackupManagerTest extends AndroidTestCase {
         store.saveShoe(shoe("extra"));
         BackupManager.RestoreSummary summary =
                 manager.restoreFrom(new ByteArrayInputStream(snapshot));
-        assertEquals(10, summary.version());
+        assertEquals(11, summary.version());
         assertEquals(1, summary.manualActivities());
         assertEquals(1, summary.manualResults());
         assertEquals(1, summary.shoes());

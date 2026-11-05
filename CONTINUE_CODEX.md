@@ -97,6 +97,19 @@ M2 IMPLEMENTED / LOCAL GATES PASS —NEEDS FULL ANDROID + VISUAL VERIFICATION
 - Docs: STRENGTH_ANALYTICS_0_11.md, VISUAL_REVIEW_0_11.md, release, architecture, privacy,
  screenshot boundaries, owner TEST_BUILD checklist. No unperformed S24 pass claimed.
 
+LATEST M2 GATE —42090255426 /123384c completed465tests EACH API28/35/36, with the same3failures:
+- StrengthProgrammingRepositoryTest previous.getInt(version) and BackupManagerTest summary.version
+  still expected10 although the current envelope is11. Corrected literals, retaining explicit v9/v8
+  old-reader rejection/restore tests and the new v10/v11 cases.
+- New analytics capture timed out at This week so far after an unscrolled dashboard-card click.
+  Component analytics/records/milestone UI tests all passed. Capture now scrolls the actual three
+  dashboard actions into view before clicking and checks the destination's unique introductory
+  text before requiring loaded data. Timeout is unchanged; no sleep/assertion weakening.
+  Verify this navigation diagnosis on the next actual matrix; do not claim a pass yet.
+- Local corrected debug/lint/test compilation PASS75tasks/15sec; no production/domain/schema
+  change in this correction. Other462instrumented cases passed per API. No188capture artifacts
+  were published from this failed workflow. Next gate required before M3 acceptance.
+
 IMMEDIATE NEXT TASKS (continue automatically, do not stop after one fix)
 1. Inspect status/log/remote/PR18. M2 code + handoff is pushed (or finish the recorded pending push), maintaining draft.
  Run full API28/35/36 on current source; inspect actual failures, fix roots, retain assertions.
