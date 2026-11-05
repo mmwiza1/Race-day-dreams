@@ -107,6 +107,8 @@ class FeatureNavigationTest {
                 "strength/pbs",
                 "strength/pbs/history",
                 "strength/analytics",
+                "strength/recovery",
+                "gym-programme-review/{draftId}",
                 "strength/source/{id}",
                 "strength/history",
                 "gym",

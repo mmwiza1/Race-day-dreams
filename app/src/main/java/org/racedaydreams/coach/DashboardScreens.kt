@@ -26,6 +26,7 @@ import org.racedaydreams.domain.UnitSystem
     DestinationCard("Recorded milestones","Local recognition from genuine training, with no streaks or penalties"){open("achievements")}
     DestinationCard("Workout history","${state.strengthSessions.size} recorded sessions"){open("history?kind=STRENGTH")}
     DestinationCard("Exercises","Search, favourite and manage your exercises"){open("exercises")}
+    DestinationCard("Recovery & training balance","Optional guidance from recent training; review changes before activation"){open("strength/recovery")}
     state.strengthSessions.maxByOrNull{it.startedAt()}?.let{CoachCard{Text("Most recent workout",style=MaterialTheme.typography.titleSmall);Text(friendlyDate(it.startedAt().atOffset(it.offset()).toLocalDate()));Text("${it.exercises().size} exercises · ${it.duration().toMinutes()} min")}}
 }
 @Composable fun ProgressDashboard(state:CoachUiState,open:(String)->Unit)=CoachPage{

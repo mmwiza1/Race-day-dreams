@@ -18,6 +18,9 @@ behaviour only; the complete agreed release is not yet ready for review.
 - A restrained set of local training milestones, backed by retained source references.
   Optional in-app celebrations are off by default; there are no streak penalties.
 
+- Optional recovery guidance from recorded effort and fresh comparable supporting evidence.
+  Lighter-week and lower-conflict gym-date previews reuse separate review and activation.
+
 ## Improvements
 
 - The accepted0.10.1 GPS, coaching clarity and screenshot lifecycle foundations are retained.
@@ -32,7 +35,7 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 - This is an incomplete development checkpoint. New gym and strength-intelligence screens
   still require their complete final-source API28/35/36 and authentic visual review.
-- Conservative recovery/hybrid proposals, body/protein guidance, retention/storage and the
+- Recovery/hybrid proposals still need their Android and visual gate; body/protein guidance, retention/storage and the
   catalogue/final-simulation milestones remain to implement. They are not shipped controls.
 - Android may delay optional rest notifications during sleep/battery saving. A reboot or
   cross-device restore interrupts timer continuity and requires explicit review.
@@ -51,8 +54,11 @@ behaviour only; the complete agreed release is not yet ready for review.
 - Unchanged baseline8796bc5 passed640893domain checks,64schema tests,9release tests,
   formatting and local Android build/lint/test compilation before implementation.
 - Baseline main42046671050 passed438instrumentation cases and155captures per API28/35/36.
-- Local current implementation:649416domain checks/42suites,70schema tests,9release-note
+- Local current implementation:649731domain checks/43suites,70schema tests,9release-note
   tests and15capture-validator tests; Android debug build/lint/instrumentation compilation pass.
 - Gym-only matrix runs exposed unsupported Java collection calls and new fixture entry/reset
   errors; corrections preserve assertions. Complete final-source automated/visual acceptance
   remains pending. Baseline/source results are distinguished in VERIFICATION.md.
+
+- Verified M2 workflow42100006847 passed465tests and188authentic captures per API28/35/36.
+  The following recovery/UI-refinement checkpoint still requires its own emulator and visual gate.

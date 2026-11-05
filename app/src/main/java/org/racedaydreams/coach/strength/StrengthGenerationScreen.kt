@@ -28,6 +28,7 @@ fun StrengthGenerationScreen(
     model: StrengthGenerationViewModel,
     onBack: () -> Unit,
     onActivated: () -> Unit,
+    initialDraftId: String? = null,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
     var section by rememberSaveable { mutableStateOf("library") }
@@ -47,13 +48,18 @@ fun StrengthGenerationScreen(
             section == "preview" && workoutId != null -> workoutId = null
             section == "preview" -> {
                 model.close()
-                section = "library"
+                if (initialDraftId != null) onBack() else section = "library"
             }
             section == "configure" -> section = "library"
             else -> onBack()
         }
     }
     BackHandler { back() }
+    LaunchedEffect(state.loading, initialDraftId) {
+        if (!state.loading && initialDraftId != null && state.draft?.id() != initialDraftId) {
+            model.open(initialDraftId) { section = "preview" }
+        }
+    }
     LaunchedEffect(state.loading) {
         if (!state.loading && state.draft != null && section == "library") section = "preview"
     }

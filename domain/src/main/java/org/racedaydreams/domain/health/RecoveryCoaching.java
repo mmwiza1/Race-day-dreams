@@ -8,6 +8,12 @@ public final class RecoveryCoaching {
         var segment=new org.racedaydreams.domain.WorkoutSegment(org.racedaydreams.domain.WorkoutSegment.Kind.RUN,w.distanceKm(),w.duration(),null,null,null,3.0,"Conversational effort; stop or shorten if needed. No catch-up mileage.");
         return new org.racedaydreams.domain.PlannedWorkout(w.id(),w.date(),org.racedaydreams.domain.WorkoutCategory.EASY_RUN,w.distanceKm(),w.duration(),Collections.singletonList(segment),"Runner chose an easy alternative. "+reason);
     }
+    /** Shared non-diagnostic interpretation; freshness and corroboration are caller-owned. */
+    public static boolean adversePersonalTrend(HealthIntelligence.Trend trend) {
+        return trend.metric()==HealthIntelligence.Metric.RESTING_HR && trend.interpretation().equals("Above recent personal baseline")
+            || (trend.metric()==HealthIntelligence.Metric.SLEEP_MINUTES || trend.metric()==HealthIntelligence.Metric.HRV_RMSSD)
+                && trend.interpretation().equals("Below recent personal baseline");
+    }
     public record Context(List<String> evidence,List<String> options,boolean reviewSuggested) {}
     public static Context evaluate(List<HealthIntelligence.Trend> trends,boolean highRunningLoad,boolean repeatedHighRpe,boolean hardLowerBody){
         var reasons=new ArrayList<String>();boolean sleep=false,hrv=false,rhr=false;

@@ -31,30 +31,6 @@ fun AchievementsScreen(
                 TextButton(onClick = model::dismiss) { Text("Dismiss celebration") }
             }
         }
-        SemanticCard(Tile.Neutral) {
-            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                Checkbox(
-                    checked = state.celebrations,
-                    onCheckedChange = { model.refresh(it) },
-                    enabled = !state.loading,
-                    modifier =
-                        Modifier.semantics {
-                            contentDescription = "Celebrate new milestones in app"
-                        },
-                )
-                Text(
-                    "Celebrate new milestones in app",
-                    modifier = Modifier.weight(1f).padding(vertical = 12.dp),
-                )
-            }
-            Text(
-                "Optional and off by default. No system notifications or missed-training reminders. Your records remain available either way.",
-                style = MaterialTheme.typography.bodySmall,
-            )
-            TextButton(onClick = { model.refresh() }, enabled = !state.loading) {
-                Text("Refresh recorded evidence")
-            }
-        }
         if (!state.loading && state.awards.isEmpty())
             SemanticCard(Tile.Insight) {
                 Text("No eligible milestones recorded yet.")
@@ -67,7 +43,26 @@ fun AchievementsScreen(
             var proof by rememberSaveable(award.id()) { mutableStateOf(false) }
             SemanticCard(Tile.Progress) {
                 Text("✓ ${award.kind().title()}", style = MaterialTheme.typography.titleLarge)
-                Text(award.kind().explanation())
+                Text(
+                    when (award.kind()) {
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Kind.FIRST_GYM ->
+                            "Your first completed workout with a recorded working set."
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Kind.FIVE_GYM ->
+                            "Five completed strength workouts in your recorded history."
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Kind.FIFTY_GYM ->
+                            "Fifty completed strength workouts in your recorded history."
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Kind.FIRST_RUN ->
+                            "Your first completed run in your recorded history."
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Kind.TEN_RUNS ->
+                            "Ten completed runs in your recorded history."
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Kind
+                            .FIRST_FIVE_KM_RUN ->
+                            "One completed run has at least 5 km of recorded distance."
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Kind
+                            .TWELVE_TRAINING_WEEKS ->
+                            "Training recorded in twelve different weeks. The weeks do not need to be consecutive."
+                    }
+                )
                 Text(
                     "Recognised ${friendlyDate(stored.recognizedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate())}",
                     style = MaterialTheme.typography.labelMedium,
@@ -82,6 +77,7 @@ fun AchievementsScreen(
                     Text(if (proof) "Hide milestone evidence" else "View milestone evidence")
                 }
                 if (proof) {
+                    Text(award.kind().explanation())
                     Text(
                         "Retained recognition from ${award.evidence().size} recorded sources. Later imports do not award it again or silently redate it."
                     )
@@ -120,6 +116,30 @@ fun AchievementsScreen(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
+            }
+        }
+        SemanticCard(Tile.Neutral) {
+            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                Checkbox(
+                    checked = state.celebrations,
+                    onCheckedChange = { model.refresh(it) },
+                    enabled = !state.loading,
+                    modifier =
+                        Modifier.semantics {
+                            contentDescription = "Celebrate new milestones in app"
+                        },
+                )
+                Text(
+                    "Celebrate new milestones in app",
+                    modifier = Modifier.weight(1f).padding(vertical = 12.dp),
+                )
+            }
+            Text(
+                "Optional and off by default. No system notifications or missed-training reminders. Your records remain available either way.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            TextButton(onClick = { model.refresh() }, enabled = !state.loading) {
+                Text("Refresh recorded evidence")
             }
         }
     }

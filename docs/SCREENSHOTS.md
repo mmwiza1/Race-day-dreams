@@ -5,7 +5,7 @@ Canonical8a86d56 preserves the API35 originals. The capture ZIP hash and all164P
 were checked; all9new gym light/dark/200%images opened directly. See VISUAL_REVIEW_0_11.md for
 observed issues and subsequent refinements. No edited screenshot or mock UI is used.
 
-The next final-source checkpoint requires188images:155baseline +15gym settings/preparation/
+The next final-source checkpoint requires194images:155baseline +6recovery +15gym settings/preparation/
 evidence +18analytics/records/milestones. Those additional/revised current-source images are NOT
 yet captured or visually accepted. Full release acceptance also requires the remaining milestone
 screens, meaningful disclosure/scroll states, light/dark/200%review and exact source fingerprints.

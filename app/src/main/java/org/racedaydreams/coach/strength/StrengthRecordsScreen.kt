@@ -35,16 +35,6 @@ fun StrengthRecordsScreen(
         }
         CoachHeading("Strength records")
         Text("What you recorded and what we estimate are kept separate. No maximal test is needed.")
-        OutlinedButton(
-            onClick = onHistory,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Historical entries & full PB history")
-        }
-        if (historicalCount > 0)
-            Text(
-                "$historicalCount self-reported historical entries are available in full PB history. They are separate from recorded workout evidence."
-            )
         val points = history
         if (points == null) CircularProgressIndicator()
         else if (points.isEmpty())
@@ -178,6 +168,16 @@ fun StrengthRecordsScreen(
                     Text("Show more exercises")
                 }
         }
+        OutlinedButton(
+            onClick = onHistory,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        ) {
+            Text("Historical entries & full PB history")
+        }
+        if (historicalCount > 0)
+            Text(
+                "$historicalCount self-reported historical entries are available in full PB history. They are separate from recorded workout evidence."
+            )
     }
 }
 

@@ -65,6 +65,48 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
         return new ConcreteStrengthProgrammeDraft(id, 1, null, p, Collections.emptyList());
     }
 
+    public void testRecoveryPreviewRoundTripsWithoutActivatingAndKeepsOriginalRevision()
+            throws Exception {
+        var original = draft("recovery");
+        drafts.save(original, 0);
+        drafts.activate(original, "original-acceptance");
+        var before = programmes.currentReference();
+        var review =
+                new org.racedaydreams.domain.recovery.TrainingRecovery.Review(
+                        LocalDate.of(2026, 11, 4),
+                        "Optional review",
+                        "Keep or preview",
+                        true,
+                        true,
+                        Collections.emptyList(),
+                        Collections.emptyList());
+        var proposal =
+                org.racedaydreams.domain.recovery.RecoveryProgrammeProposal.lighterWeek(
+                        original.programme(), review, NOW, ZoneOffset.UTC, Collections.emptySet());
+        var next =
+                new ConcreteStrengthProgrammeDraft(
+                        "recovery-preview",
+                        1,
+                        before,
+                        proposal.proposed(),
+                        Collections.emptyList());
+        drafts.save(next, 0);
+        assertEquals(before, programmes.currentReference());
+        assertEquals(original.programme(), programmes.programme(before.id(), before.revision()));
+        var backup = new SqliteBackupRepository(getContext());
+        var archive = backup.exportUserData();
+        backup.restoreUserData(archive, false);
+        assertEquals(next, drafts.get(next.id()));
+        assertEquals(before, programmes.currentReference());
+        var accepted = drafts.activate(next, "athlete-reviewed-lighter-week");
+        assertEquals(
+                next.programme(),
+                programmes.programme(accepted.after().id(), accepted.after().revision()));
+        assertEquals(original.programme(), programmes.programme(before.id(), before.revision()));
+        assertEquals(2, programmes.decisions().size());
+        assertTrue(new CoachingStore(getContext()).strength().isEmpty());
+    }
+
     public void testExactDatedPreviewReloadAndBoundedSummaryDoesNotActivateOrHydrate() {
         var value = draft("concrete");
         drafts.save(value, 0);

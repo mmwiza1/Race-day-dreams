@@ -48,6 +48,26 @@ fun NavGraphBuilder.strengthGraph(
             },
         )
     }
+    composable("strength/recovery") {
+        val recovery: TrainingRecoveryViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+        TrainingRecoveryScreen(recovery, onBack = { nav.popBackStack() }) {
+            nav.navigate("gym-programme-review/${Uri.encode(it)}")
+        }
+    }
+    composable("gym-programme-review/{draftId}") { destination ->
+        val generation: StrengthGenerationViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel()
+        StrengthGenerationScreen(
+            generation,
+            onBack = { nav.popBackStack() },
+            onActivated = {
+                model.refresh()
+                programmeModel().reload()
+                if (!nav.popBackStack("gym", false)) nav.navigate("gym") { launchSingleTop = true }
+            },
+            initialDraftId = destination.arguments?.getString("draftId"),
+        )
+    }
     composable("strength-custom-exercise") {
         CustomStrengthExerciseScreen(programmeModel(), onBack = { nav.popBackStack() }) {
             model.refresh()

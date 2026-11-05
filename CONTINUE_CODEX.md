@@ -20,7 +20,7 @@ software scope and all automated/visual gates are complete; then prepare for own
 
 Branch: feature/0.11-gym-health-recovery-intelligence
 Draft PR: https://github.com/mmwiza1/Race-day-dreams/pull/18
-Latest implementation: c96bbd311d2db592813182d70caddf336e822466 (M2 + observed gym visual refinements).
+Latest verified implementation:5f79cfc (M2), canonical124e036; current following M3 checkpoint adds recovery/hybrid previews and observed visual refinements. Use git log for this checkpoint SHA.
 This handoff is a following documentation-only checkpoint; inspect actual git status/log/remote
 before continuing. No valid local work may be reset/discarded. Main baseline8796bc5 is unchanged
 unless a fresh fetch proves advancement. No new runtime dependency or Internet permission.
@@ -91,13 +91,13 @@ M2 IMPLEMENTED / LOCAL GATES PASS —NEEDS FULL ANDROID + VISUAL VERIFICATION
  :app:assembleDebugAndroidTest79tasks/1m2sec.649416domain checks/42suites (GymTools7909),
  schema70, release9, capture-validator15 PASS. Formatting final full check PASS85Kotlin/136Java on this committed code.
  Logs /workspace/scratch/rdd011/milestone2-final-*; prior logs retained for actual failure evidence.
-- Required captures NOW188:155baseline +15gym controls/settings/evidence +18analytics/records/
+- Required M2 captures188 (M3 definitions now194):155baseline +15gym controls/settings/evidence +18analytics/records/
  milestones across light/dark/200%. Definitions are production screens, NOT yet fresh reviewed PNGs.
  Canonical directory currently164sourcea26150d. Do not claim new current-source screenshot acceptance.
 - Docs: STRENGTH_ANALYTICS_0_11.md, VISUAL_REVIEW_0_11.md, release, architecture, privacy,
  screenshot boundaries, owner TEST_BUILD checklist. No unperformed S24 pass claimed.
 
-LATEST M2 GATE —42090255426 /123384c completed465tests EACH API28/35/36, with the same3failures:
+PREVIOUS FAILED M2 GATE —42090255426 /123384c completed465tests EACH API28/35/36, with the same3failures:
 - StrengthProgrammingRepositoryTest previous.getInt(version) and BackupManagerTest summary.version
   still expected10 although the current envelope is11. Corrected literals, retaining explicit v9/v8
   old-reader rejection/restore tests and the new v10/v11 cases.
@@ -110,8 +110,21 @@ LATEST M2 GATE —42090255426 /123384c completed465tests EACH API28/35/36, with 
   change in this correction. Other462instrumented cases passed per API. No188capture artifacts
   were published from this failed workflow. Next gate required before M3 acceptance.
 
+LATEST VERIFIED M2 —5f79cfc / COMPLETE workflow42100006847 SUCCESS
+-465tests EACH API28/35/36,188authentic captures/API; all formatting/guidance/build/lint gates pass.
+ Canonical124e036 safely fast-forwarded preserving every M3 edit. API35 artifact13450557133 ZIP
+ SHA256cbc2225c897edb2f4c17aa6ac01b7ecb413959426a9979833728d3b8398b1620 downloaded/verified;
+ all188rawPNG bytes match canonical Git. Local archive/extraction scratch/rdd011/m2-api35*.
+-Open actual light/dark/200% views as recorded in VISUAL_REVIEW_0_11.md. Review prompted moving
+ milestone celebration settings and historical PB entry below actual results, and moving long
+ milestone caveats behind evidence disclosure. These follow-up refinements need fresh captures.
+-M3 local Android domain/build/lint/test compilation PASS1m15sec/79tasks after the latest
+ visual edits. Current final-source gate must include those edits and source fingerprints.
+
 IMMEDIATE NEXT TASKS (continue automatically, do not stop after one fix)
-1. Inspect status/log/remote/PR18. M2 code + handoff is pushed (or finish the recorded pending push), maintaining draft.
+1. Inspect status/log/remote/PR18. M2 corrections5f79cfc are pushed and draft PR18 now matches.
+ Full workflow42100006847 was running API28/35/36 when M3 began; format/guidance passed.
+ Preserve any new canonical bot commit and all local M3 work.
  Run full API28/35/36 on current source; inspect actual failures, fix roots, retain assertions.
  Git pushes previously advanced refs without refreshing PR/synchronize; a close/reopen of SAME
  draft PR18 through gh api refreshed it and started CI. Do not create duplicate PRs or rerun blindly.
@@ -121,9 +134,20 @@ IMMEDIATE NEXT TASKS (continue automatically, do not stop after one fix)
  Direct Azure redirect via gh can403; do not dump signed URLs/base64. ZIP/PNG hashes must match.
  Raw M1 captures/ZIPs available in scratch/rdd011; new M2 images still need download and direct review.
  Review light/dark/200%, controls, source links, old historical PB navigation and workout invariants.
-3. Once M2 gates are green, continue M3–6 BELOW. Keep the PR draft; not full release-complete yet.
+3. M2 gates are green. Finish current M3 full matrix/visual review, then continue M4–6 BELOW.
+ Keep the PR draft; not full release-complete. M3 adds no schema/backup/permission/dependency.
 
-M3 —NOT IMPLEMENTED: conservative recovery/deload and hybrid scheduling
+M3 —IMPLEMENTED / LOCAL GATES PASS; EMULATOR AND VISUAL GATE PENDING: conservative recovery/deload and hybrid scheduling
+- Surviving untracked TrainingRecovery.java preserved and audited. Added RecoveryProgrammeProposal,
+  TrainingRecoveryViewModel/Screen and existing typed preview navigation; no new persistence format.
+  315 pure-domain assertions pass. Added4Compose cases,1existing-review route UI case,1repository backup/activation case
+  and6authentic capture definitions (required total194); Android execution/visual review PENDING.
+  Local compile found/fixed Tile.Running and test exportData method names. Current reviewed-source
+  local full Gradle gate PASS79tasks/1m15sec;649731domain/43suites,70schema,9release,15capture
+  validator,88Kotlin/139Java formatting check PASS. Logs scratch/rdd011/recovery-reviewed-android.log
+  and recovery-format-verified.log. No M3 emulator/visual pass yet; push and inspect full matrix.
+  See docs/RECOVERY_0_11.md for precise original heuristics, limits and existing activation safeguards.
+  Do not claim M3 acceptance until current compilation/repository/UI/API captures pass.
 - Reuse existing RecoveryCoaching, reviewed concrete programme drafts/editors/activation, and
  coherent decision history. Inspect StrengthProgrammeEditor/ConcreteStrengthProgrammeEditor,
  ConcreteStrengthProgrammeDraft/Repository, SqliteStrengthProgrammingRepository and

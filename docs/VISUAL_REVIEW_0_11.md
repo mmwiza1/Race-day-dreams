@@ -39,3 +39,28 @@ retention/catalogue milestones and their UI have not reached visual acceptance. 
 integrity check alone cannot establish design quality. Inspect every new screen and meaningful
 scroll/disclosure state against the approved plain-English0.10.1 direction before completion.
 No Galaxy S24 physical or human TalkBack acceptance is claimed.
+
+## Verified strength-intelligence checkpoint
+
+Source5f79cfc passed complete42100006847:465tests/API28/35/36 and188source-verified
+captures per API. Canonical124e036 was adopted without discarding local recovery work.
+API35 artifact13450557133 ZIP SHA256cbc2225c897edb2f4c17aa6ac01b7ecb413959426a9979833728d3b8398b1620
+was verified; all188PNG bytes match the canonical files.
+
+Direct review includes analytics main and expanded attribution in light/dark/200%, recorded
+records in all modes and measured history at200%, and milestone main in light/200%. Cards
+retain contrast, independent task labels and natural vertical wrapping. The recorded-data
+summary is distinct from the estimated single-repetition result. No horizontal scrolling or
+text overlap was observed in those frames; ordinary below-fold content remains scrollable.
+
+The200%frames exposed hierarchy improvements: celebration settings consumed the entire first
+milestone viewport, and historical/manual PB controls displaced actual workout records. Current
+source moves those controls below the results and keeps complete milestone caveats behind the
+real evidence disclosure. Regenerated captures and direct review remain required for these edits.
+Recovery screens are newly defined; no actual recovery screenshot acceptance is claimed yet.
+
+Further direct checkpoint review opened all18new intelligence frames, plus timer/settings, warm-up/
+evidence and superset representatives in dark/light/200%. The adjusted timer controls have clear
+vertical spacing; warm-up rationale is secondary; superset movement order is visible. Scrolling
+works without compressed grids. These observations do not substitute for fresh194frame recovery
+and refined-hierarchy acceptance on the next source.

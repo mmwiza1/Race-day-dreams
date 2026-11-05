@@ -189,6 +189,9 @@
     "app/src/main/java/org/racedaydreams/data/SqliteAchievementsRepository.java",
     "app/src/androidTest/java/org/racedaydreams/data/AchievementsRepositoryTest.java",
     "app/src/main/java/org/racedaydreams/coach/strength/Achievements*.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/AchievementsScreenTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/AchievementsScreenTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/recovery/*.java",
+    "domain/src/test/java/org/racedaydreams/domain/recovery/*.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/TrainingRecoveryScreenTest.kt"
   ]
 }

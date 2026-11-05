@@ -1006,6 +1006,80 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesRecoveryGuidanceFromActualRecordedEvidence() {
+        val today = LocalDate.now()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        for (days in listOf(1L, 5L, 8L)) CoachingStore(context)
+            .saveStrength(
+                StrengthSession(
+                    "recovery-$days",
+                    today.minusDays(days).atTime(12, 0).toInstant(ZoneOffset.UTC),
+                    ZoneOffset.UTC,
+                    Duration.ofMinutes(40),
+                    null,
+                    "Screenshot fixture, not user evidence",
+                    listOf(
+                        StrengthSession.ExerciseSets(
+                            bench,
+                            listOf(
+                                StrengthSession.SetEntry("work-a", 5, 60.0, 9.0, false),
+                                StrengthSession.SetEntry("work-b", 5, 60.0, 9.0, false),
+                            ),
+                        )
+                    ),
+                )
+            )
+        val before = CoachingStore(context).strength().toSet()
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Log workout")
+                compose
+                    .onNodeWithText("Recovery & training balance")
+                    .performScrollTo()
+                    .performClick()
+                await("An optional lighter week is available for review")
+                alignHeading("Recovery & training balance")
+                capture("training-recovery$suffix")
+                compose.onNodeWithText("Supporting evidence ▾").performScrollTo().performClick()
+                alignHeading("Why this guidance?")
+                capture("training-recovery-evidence$suffix")
+                compose.onNodeWithText("Keep my current programme").performScrollTo().performClick()
+                await("Your current programme is unchanged.")
+                Assert.assertEquals(before, CoachingStore(context).strength().toSet())
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            shell("settings put system font_scale $originalFont")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesOptionalGymPreparationAndSupersetFromProductionScreens() {
         // One staged workout across all modes: never delete a database beneath live feature owners.
         SqliteUserPreferencesRepository(context).clear()

@@ -1331,3 +1331,23 @@ Source9c7717e corrects the observed40683366281 Kotlin custom-exercise context re
 ## Subsequent association and visual-gate work
 
 The original pending gate completed successfully at f21af7b/workflow40684717270 with311tests perAPI28/35/36. Association-domain coverage now adds204checks (201,295total/30suites), including retained-origin and local-offset boundaries. Strict GymAssociationJson has3Android cases;314-test attempt40687196167 ran all314 onAPI28 with one screenshot-root failure. The helper at1f7f42a now selects the actual dialog semantics while retaining assertions. Its full314-test/88capture matrix is pending; no new complete-pass or physical result is claimed. No database/backup version changed; explicit association UI/persistence remains unfinished.
+
+## 0.11 recovery milestone development boundary
+
+Current uncommitted M3 pure-domain check passed315new recovery/proposal assertions. Current
+Android compilation/repository/UI gate is still being run; no emulator or visual acceptance is
+claimed. New capture definitions require194images including six recovery views. M2 correction
+source5f79cfc is under complete workflow42100006847; inspect its actual conclusion. Recovery
+uses existing typed drafts/activation and backup support; schema17/root11/raw2/complete1 unchanged.
+
+M2 correction5f79cfc COMPLETE42100006847 passed465tests EACH API28/35/36 and188captures/API.
+Canonical124e036 and API35artifact13450557133 raw PNGs match exactly. M3 local Android gate
+passed79tasks/1m2sec before the following visual hierarchy refinements; final-source verification
+remains required. Root11/schema17/raw2/complete1 unchanged. No S24 acceptance is claimed.
+
+Current M3 reviewed-source local gate PASSED: :domain:check, :app:assembleDebug, :app:lintDebug,
+:app:assembleDebugAndroidTest (79tasks/1m15sec);649731domain/43suites including315recovery
+assertions. Formatting88Kotlin/139Java, schema70/release9/capture-validator15 passed. Seven new
+instrumentation methods are compiled, not yet claimed executed (expected472/API,194captures).
+Verified M2 API35 debug APK52,323,751bytes; SHA256a788880f0f642e527ba4238ef9a4460d35049650bd8e14bfa0f0cd220a77094e;
+artifact13450302836 from42100006847. Increase versus0.10.1:344,175bytes/+0.662%; no new artwork.

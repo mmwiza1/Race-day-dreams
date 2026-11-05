@@ -526,8 +526,10 @@ Record observations and build commit for each check; nothing below is a claimed 
   movement, break the group today, finish early, and verify original prescription/actuals persist.
 - Preview and explicitly activate programme revisions. Inspect working-set trends, measured
   records versus estimates, historical PB editing, milestone evidence and celebration opt-out.
-- When their milestones are implemented: exercise conservative recovery/deload approvals and
-  hybrid schedule choices; verify keeping the original programme works without a silent change.
+- Open Recovery & training balance with fresh/missing effort evidence. Keep the programme,
+  preview a lighter week and review its exact changed/unchanged targets before separate activation.
+  Verify completed/started sessions and later weeks remain exact. For Hybrid, review lower-conflict
+  dates, keep either schedule, and confirm no running plan moves. All require physical verification.
 - When available: grant/deny/revoke Health Connect height/weight separately, use real providers
   and manual/unit fallbacks, inspect source/timestamp and conservative general protein guidance.
 - When available: review retention acknowledgement/preview, back up first, execute bounded
