@@ -214,6 +214,11 @@ class RefinementUiTest {
         compose.onNodeWithText("Strength").performClick()
         await("PBs & progression")
         compose.onNodeWithText("PBs & progression").performClick()
+        await("Strength records")
+        compose
+            .onNodeWithText("Historical entries & full PB history")
+            .performScrollTo()
+            .performClick()
         await("Exercise progress and PB history")
         compose.onNodeWithText("View progression").performScrollTo().performClick()
         compose

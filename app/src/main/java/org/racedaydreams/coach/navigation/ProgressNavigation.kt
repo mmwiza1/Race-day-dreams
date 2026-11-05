@@ -12,6 +12,26 @@ fun NavGraphBuilder.progressGraph(
     model: CoachViewModel,
     nav: NavHostController,
 ) {
+    composable("achievements") {
+        val milestones: org.racedaydreams.coach.strength.AchievementsViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel()
+        org.racedaydreams.coach.strength.AchievementsScreen(
+            milestones,
+            onSource = { evidence ->
+                nav.navigate(
+                    if (
+                        evidence.source() ==
+                            org.racedaydreams.domain.achievements.TrainingMilestones.Source.RUN
+                    )
+                        "activity/${Uri.encode(evidence.recordId())}"
+                    else "strength/source/${Uri.encode(evidence.recordId())}"
+                )
+            },
+        ) {
+            nav.popBackStack()
+        }
+    }
+
     composable("progress") { ProgressDashboard(readState()) { nav.navigate(it) } }
 
     listOf("pbs", "trends", "weight").forEach { section ->

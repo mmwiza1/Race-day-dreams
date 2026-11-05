@@ -43,6 +43,18 @@ public final class GymToolsTestSuite {
         eq(GymRestTimer.Phase.INTERRUPTED, t.observe(clock(500)).phase(), "clock regression");
         eq(180L, t.skip(clock(2000)).reset(clock(3000)).secondsRemaining(), "skip/reset");
         eq(209L, t.adjust(30, clock(2000)).secondsRemaining(), "adjust elapsed rest");
+        eq(
+                210_000L,
+                t.adjust(30, clock(2000)).durationMillis(),
+                "adjust changes full chosen period");
+        eq(
+                210L,
+                t.adjust(30, clock(2000)).reset(clock(3000)).secondsRemaining(),
+                "reset adjusted period after short elapsed");
+        eq(
+                150L,
+                t.adjust(-30, clock(61000)).reset(clock(62000)).secondsRemaining(),
+                "reset adjusted period after longer elapsed");
         eq(0L, t.adjust(-180, clock(2000)).secondsRemaining(), "no negative rest");
         eq(0L, GymRestTimer.start("w", "s", 0, clock(0)).secondsRemaining(), "explicit no rest");
         rejects(() -> GymRestTimer.start("w", "s", 1801, clock(0)), "bounded rest");
@@ -196,6 +208,40 @@ public final class GymToolsTestSuite {
         u.saveSet("row", new StrengthSession.SetEntry("ur", 5, 30, 7.0, false), tick(3));
         eq("row", GymSupersets.next(u.snapshot()).slotId(), "finished movement need not repeat");
         check(GymSupersets.next(u.snapshot()).restBeforeNext(), "unequal rounds retain rest");
+        var afterSkip =
+                GymExecutionEngine.start(
+                        "skip-rest",
+                        GymExecution.Origin.CUSTOM,
+                        definition,
+                        null,
+                        ZoneOffset.UTC,
+                        tick(0));
+        afterSkip.saveSet(
+                "bench",
+                new StrengthSession.SetEntry("completed-bench", 5, 40, 7.0, false),
+                tick(1));
+        afterSkip.selectExercise("row", tick(2));
+        afterSkip.skipExercise("row", tick(3));
+        check(
+                GymSupersets.next(afterSkip.snapshot()).restBeforeNext(),
+                "skipping the last movement retains round rest");
+        eq(
+                2,
+                GymSupersets.next(afterSkip.snapshot()).round(),
+                "next unsuperseded round after skip");
+        var skipped =
+                GymExecutionEngine.start(
+                        "skip-all",
+                        GymExecution.Origin.CUSTOM,
+                        definition,
+                        null,
+                        ZoneOffset.UTC,
+                        tick(0));
+        skipped.skipExercise("bench", tick(1));
+        skipped.skipExercise("row", tick(2));
+        eq(null, GymSupersets.next(skipped.snapshot()), "all skipped has no suggested movement");
+        check(skipped.snapshot().actualSets().isEmpty(), "skips never fabricate sets");
+        check(skipped.snapshot().hasUnfinishedTargets(), "skipped targets remain uncompleted");
         rejects(() -> GymSupersets.group(slots, 0, 2, "again"), "do not corrupt existing group");
     }
 

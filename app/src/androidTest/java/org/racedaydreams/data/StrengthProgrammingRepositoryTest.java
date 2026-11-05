@@ -372,7 +372,7 @@ public final class StrengthProgrammingRepositoryTest extends AndroidTestCase {
         db.setVersion(13);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(16, db.getVersion());
+        assertEquals(17, db.getVersion());
         for (String table :
                 new String[] {"strength_sessions", "strength_user_state", "strength_exclusions"}) {
             try (var c = db.rawQuery("SELECT COUNT(*) FROM " + table, null)) {

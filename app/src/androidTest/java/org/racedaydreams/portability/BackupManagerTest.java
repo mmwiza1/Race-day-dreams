@@ -76,7 +76,7 @@ public final class BackupManagerTest extends AndroidTestCase {
         assertTrue(text.contains("\n  \"format\""));
         JSONObject envelope = new JSONObject(text);
         assertEquals(BackupManager.FORMAT, envelope.getString("format"));
-        assertEquals(10, envelope.getInt("version"));
+        assertEquals(11, envelope.getInt("version"));
         store.saveShoe(shoe("extra"));
         BackupManager.RestoreSummary summary =
                 manager.restoreFrom(new ByteArrayInputStream(snapshot));

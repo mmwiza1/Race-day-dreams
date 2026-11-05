@@ -192,7 +192,7 @@ public final class GymAssociationRepositoryTest extends AndroidTestCase {
         settings.putSetting("sentinel", "original");
         byte[] bytes = export();
         var envelope = new JSONObject(new String(bytes, StandardCharsets.UTF_8));
-        assertEquals(10, envelope.getInt("version"));
+        assertEquals(11, envelope.getInt("version"));
         assertEquals(
                 2,
                 envelope.getJSONObject("data").getJSONObject("strengthEngine").getInt("version"));

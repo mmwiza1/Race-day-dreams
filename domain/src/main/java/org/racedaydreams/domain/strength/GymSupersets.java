@@ -78,7 +78,10 @@ public final class GymSupersets {
             }
         }
         if (chosen == null) return null;
-        boolean rest = round > 0 && group.indexOf(chosen) <= group.indexOf(current);
+        boolean rest =
+                round > 0
+                        && (group.indexOf(current) < 0
+                                || group.indexOf(chosen) <= group.indexOf(current));
         return new Next(
                 chosen.id(),
                 round + 1,

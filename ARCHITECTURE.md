@@ -448,3 +448,19 @@ Bounded summary queries never hydrate workouts. Activation checks the saved revi
 current ownership inside the existing transaction; no second execution engine is introduced.
 The nested authoring archive is independently versioned (write 2, read 1–2); JSON envelope 9,
 raw archive 2 and complete package 1 stay unchanged.
+
+## 0.11 gym and read-only intelligence boundaries (development)
+
+`GymRestTimer`, `GymWarmup` and `GymSupersets` are pure policies around the existing single
+`GymExecutionEngine`/session coordinator. A separate typed advisory-rest repository shares the
+SQLite pool and restore transaction; it cannot write actual sets or prescriptions. A private
+install/boot identity plus elapsed-realtime anchors prevents false continuity after reboot or
+cross-device restore. Optional inexact notification alarms do not introduce another workout service.
+
+`StrengthVolume` and `StrengthRecords` project accepted actuals off-main. Their UI offers evidence
+progressively without changing targets. `TrainingMilestones` derives a small fixed set of genuine
+history recognitions. `SqliteAchievementsRepository` stores bounded normalized headers, ordered
+source references and a celebration preference. Its feature ViewModel reads activity summaries,
+never raw GPS for counts. Missing source references are labelled, not reconstructed. Schema17 and
+root JSON11 are additive over16/10; old supported backup readers remain, with strict new-section
+validation before the shared replacement transaction. See docs/STRENGTH_ANALYTICS_0_11.md.

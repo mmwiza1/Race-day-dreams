@@ -129,8 +129,9 @@ public final class GymToolsRepositoryTest extends AndroidTestCase {
         var out = new java.io.ByteArrayOutputStream();
         manager.exportTo(out);
         var envelope = new JSONObject(out.toString("UTF-8"));
-        assertEquals(10, envelope.getInt("version"));
+        assertEquals(11, envelope.getInt("version"));
         tools.preferences(new GymRestTimer.Preferences(300, false, false, false, false));
+        envelope.put("version", 10); // Retain the previous envelope's required gym-tools contract.
         envelope.getJSONObject("data").remove("gymTools");
         try {
             manager.restoreFrom(
@@ -157,7 +158,7 @@ public final class GymToolsRepositoryTest extends AndroidTestCase {
         db.setVersion(15);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(16, db.getVersion());
+        assertEquals(17, db.getVersion());
         assertEquals("yes", new SqliteSettingsRepository(getContext()).getSetting("preserved"));
         try (var c =
                 db.rawQuery("SELECT payload FROM strength_sessions WHERE id='history'", null)) {

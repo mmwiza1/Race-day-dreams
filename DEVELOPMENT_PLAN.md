@@ -1,3 +1,13 @@
+## Active 0.11.0-test1 — Gym, Health & Recovery Intelligence
+
+One draft PR18, feature/0.11-gym-health-recovery-intelligence. No automatic merge or stable tag.
+Gym execution and recorded strength intelligence are implemented in development checkpoints;
+Android/visual hardening is still in progress. All agreed milestones remain required: conservative
+recovery/deload and hybrid proposals; optional HC height/weight/manual/protein; acknowledged
+safe raw-detail retention/storage; complete selective catalogue additions, three six-month athlete
+simulations and final release gates. CONTINUE_CODEX.md contains exact commits and observed results.
+No remaining milestone is silently deferred. Historical plans below describe their own releases.
+
 # Active0.10 — Strength Programming 2.0
 
 PR15 / feature/0.10-strength-programming implements the agreed full0.10 software scope:

@@ -511,3 +511,29 @@ add their physical cases when connected. Rest timers/supersets/generated warm-up
 - [ ] Open earlier programme revisions/dated targets; no reactivation/edit action. Check
   current owner and actuals remain unchanged, including after complete backup/restore.
 - [ ] Check proposal/history light/dark/200% text, scrolling, keyboard and TalkBack on S24.
+
+## 0.11 owner acceptance — physical Galaxy S24, not yet performed
+
+Use the final test APK only after the automated API 28/35/36 and current-source screenshot gates.
+Record observations and build commit for each check; nothing below is a claimed pass.
+
+- Complete a real Gym Now session with manually entered working sets. Exercise optional rest
+  start/pause/resume/reset/adjust/skip, navigation and screen lock. Verify notification permission,
+  opt-in sound/vibration, music, battery-saving delays, and quiet alerts during run recording.
+- Review warm-up suggestions with/without recent exact-exercise evidence. Edit/skip examples;
+  save performed warm-ups separately and check that PB/working-set totals exclude them.
+- Run paired and three-exercise supersets with uneven targets; swap busy equipment, skip a
+  movement, break the group today, finish early, and verify original prescription/actuals persist.
+- Preview and explicitly activate programme revisions. Inspect working-set trends, measured
+  records versus estimates, historical PB editing, milestone evidence and celebration opt-out.
+- When their milestones are implemented: exercise conservative recovery/deload approvals and
+  hybrid schedule choices; verify keeping the original programme works without a silent change.
+- When available: grant/deny/revoke Health Connect height/weight separately, use real providers
+  and manual/unit fallbacks, inspect source/timestamp and conservative general protein guidance.
+- When available: review retention acknowledgement/preview, back up first, execute bounded
+  detail cleanup and confirm summaries, PBs, programmes and meaningful history still open.
+- Complete JSON and complete-package backup/restore checks on a copy of genuine long-term data.
+- Inspect light/dark/200% text, human TalkBack order, keyboard entry and touch targets.
+- Repeat the outstanding 0.10.1 outdoor/urban/known-distance GPS, locked-screen/background,
+  pause/resume/interruption/long-run/GPX and Watch comparison checks. Emulator/synthetic passes
+  cannot establish outdoor S24 accuracy, and neither comparison device is automatically ground truth.

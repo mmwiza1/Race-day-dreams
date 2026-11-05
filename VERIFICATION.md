@@ -5,6 +5,32 @@ Compatible Immutable/Collectors correction is in progress; no Android pass is cl
 source until the complete matrix reruns successfully. M2 projections/UI are uncommitted and
 not part of the earlier gym-only verification.
 
+M2 local source now adds schema17/rootJSON11 (raw2/complete1 unchanged). Current combined
+source passes649416domain checks/42suites,70schema tests, local Android build/lint/test compilation
+79tasks/1m20sec and final UI/repository edits75tasks/53sec. Release/capture-validator checks are
+rerun before commit. New instrumented methods/canonical182capture definitions still need actual
+API execution and visual review. No published current-source APK or final UI signoff is claimed.
+
+Gym-only run42067939767 on bbb458b completed448tests on each API28/35/36, each with ONE new
+fixture entry failure; all other cases passed. The source compatibility and capture reset defects
+from42062688210 no longer recur. Corrected test now uses the real Build a programme from scratch
+control before Preview/activation; current gym workflow on a26150d is pending. This is not a green
+release gate and no screenshots were published from failed runs.
+
+GYM CHECKPOINT GREEN: sourcea26150d completed full42073702201:448tests EACH API28/35/36,
+164source-verified captures/API, formatting and174/14guidance gates. Canonical8a86d56 preserves
+raw API35artifacts; capture ZIP hash and ALL164PNG Git identities checked. All9new gym images
+opened in light/dark/200%; resulting refinements are documented in VISUAL_REVIEW_0_11.md and
+require fresh captures. Verified CI APK52,127,084bytes, SHA256
+18dee819bce01a3e3fb157eea5a7021bb22c801e8c6bdefbbc839fadf576f1a5
+(+147,508bytes/+0.284%over main0.10.1CI baseline). No new bundled artwork yet.
+
+LATEST M2 LOCAL:649416domain checks/42suites,70schema tests,9release-note,15capture-validator;
+actual Gradle domain/debug/lint/test-APK compile PASS79tasks/1m2sec. Schema17/rootJSON11,
+raw2/complete1. New actual source/evidence UI and reviewed gym refinements require188captures
+and their own full API matrix. NO M2 runtime/screenshot acceptance is claimed from older source.
+M3–6 remain unimplemented; all physical Galaxy S24 checks remain unperformed.
+
 Baseline main8796bc5 and setup19c74c2 full workflow42054247383 passed. New gym implementation
 has648794local domain checks/39suites (GymTools7901), schema67 tests including historical
 1–15→16, release9/capture-validator14, and actual Android debug/lint/test compilation passes.

@@ -1,4 +1,17 @@
-# Current0.10.1 authentic screenshots —155 source-verified images
+# 0.11 development captures — verified gym checkpoint, final source pending
+
+Workflow42073702201/sourcea26150d passed448tests and164required captures EACH API28/35/36.
+Canonical8a86d56 preserves the API35 originals. The capture ZIP hash and all164PNG Git identities
+were checked; all9new gym light/dark/200%images opened directly. See VISUAL_REVIEW_0_11.md for
+observed issues and subsequent refinements. No edited screenshot or mock UI is used.
+
+The next final-source checkpoint requires188images:155baseline +15gym settings/preparation/
+evidence +18analytics/records/milestones. Those additional/revised current-source images are NOT
+yet captured or visually accepted. Full release acceptance also requires the remaining milestone
+screens, meaningful disclosure/scroll states, light/dark/200%review and exact source fingerprints.
+Reference images remain separate. The older verification below records its historical source.
+
+# Archived0.10.1 authentic screenshots —155 source-verified images
 
 Source `a75b9a5dc870e01598d7229c195d528a84405e57` passed the COMPLETE [workflow42035888968](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42035888968):
 438 cases EACH API28/35/36,155 authentic captures/API, domain640893checks/38suites,

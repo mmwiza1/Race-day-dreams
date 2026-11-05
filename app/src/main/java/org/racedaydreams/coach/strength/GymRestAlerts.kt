@@ -18,7 +18,10 @@ import org.racedaydreams.data.SqliteGymToolsRepository
 import org.racedaydreams.domain.strength.GymRestTimer
 import org.racedaydreams.recording.RunRecordingService
 
-/** Device-local, non-backed-up identity plus boot epoch; wall time is never a countdown clock. */
+/**
+ * Private identity file plus boot epoch. Backed-up opaque timer anchors cannot adopt another
+ * installation identity.
+ */
 internal class GymRestClock(private val context: Context) {
     private val install by lazy {
         synchronized(GymRestClock::class.java) {

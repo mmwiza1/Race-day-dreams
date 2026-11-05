@@ -11,6 +11,12 @@ behaviour only; the complete agreed release is not yet ready for review.
   evidence; otherwise the app offers movement preparation without invented weights.
 - Manually group adjacent exercises in workout and programme drafts. Superset rounds keep
   actual sets separate and support today-only skips, substitutions and breaking the group.
+- Recorded working-set trends, exercise frequency and a transparent primary-area breakdown.
+  Secondary involvement stays separate, and unsupported anatomy remains unclassified.
+- A recorded-performance page separates actual working sets from bounded single-repetition
+  estimates. Historical/manual PB entry and the original progression history remain available.
+- A restrained set of local training milestones, backed by retained source references.
+  Optional in-app celebrations are off by default; there are no streak penalties.
 
 ## Improvements
 
@@ -18,13 +24,16 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 ## Fixes
 
-- No additional runtime correction is claimed at this checkpoint.
+- Single-repetition results stay measured records rather than being duplicated as estimates.
+- New gym helpers use the existing Android-9-compatible immutable collection primitives.
+- Superset skips remain incomplete targets and never appear as completed actual sets.
 
 ## Known limitations
 
-- This is an incomplete development checkpoint. New gym controls still require the full
-  API28/35/36 and authentic screenshot review. Analytics/PBs/achievements, recovery/hybrid,
-  body/protein guidance, retention and catalogue milestones remain to implement.
+- This is an incomplete development checkpoint. New gym and strength-intelligence screens
+  still require their complete final-source API28/35/36 and authentic visual review.
+- Conservative recovery/hybrid proposals, body/protein guidance, retention/storage and the
+  catalogue/final-simulation milestones remain to implement. They are not shipped controls.
 - Android may delay optional rest notifications during sleep/battery saving. A reboot or
   cross-device restore interrupts timer continuity and requires explicit review.
 - Physical Galaxy S24 acceptance remains unperformed, including0.10.1 outdoor GPS checks.
@@ -32,8 +41,9 @@ behaviour only; the complete agreed release is not yet ready for review.
 ## Data and privacy
 
 - Local-first, account-free operation remains. No Internet permission or backend is added.
-- Additive schema16 stores typed rest preferences/countdowns. Root JSON10 retains older
-  supported backup readers; raw archive2 and complete package1 remain unchanged.
+- Additive schema16 stores typed rest preferences/countdowns; schema17 adds normalized local
+  milestone recognition and sources. Root JSON11 retains older supported readers through10.
+  Raw archive2 and complete package1 remain unchanged.
 - Timer and warm-up suggestions never become recorded training automatically.
 
 ## Verification
@@ -41,4 +51,8 @@ behaviour only; the complete agreed release is not yet ready for review.
 - Unchanged baseline8796bc5 passed640893domain checks,64schema tests,9release tests,
   formatting and local Android build/lint/test compilation before implementation.
 - Baseline main42046671050 passed438instrumentation cases and155captures per API28/35/36.
-- New-release automated and visual acceptance remains pending.
+- Local current implementation:649416domain checks/42suites,70schema tests,9release-note
+  tests and15capture-validator tests; Android debug build/lint/instrumentation compilation pass.
+- Gym-only matrix runs exposed unsupported Java collection calls and new fixture entry/reset
+  errors; corrections preserve assertions. Complete final-source automated/visual acceptance
+  remains pending. Baseline/source results are distinguished in VERIFICATION.md.

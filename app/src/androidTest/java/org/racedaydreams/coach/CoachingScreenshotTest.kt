@@ -501,10 +501,16 @@ class CoachingScreenshotTest {
         await("Log workout")
         capture("strength")
         click("PBs & progression")
+        await("Strength records")
+        compose
+            .onNodeWithText("Historical entries & full PB history")
+            .performScrollTo()
+            .performClick()
         await("Exercise progress and PB history")
         compose.onAllNodesWithText("View progression")[0].performScrollTo().performClick()
         alignHeading("Exercise progress and PB history")
         capture("strength-pbs")
+        back()
         back()
         compose.onNodeWithText("Exercises").performScrollTo().performClick()
         await("Search exercises or aliases")
@@ -894,6 +900,111 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesRecordedStrengthTrendsAndMeasuredVersusEstimatedRecords() {
+        val today = LocalDate.now()
+        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        for (week in 0..11) {
+            if (week == 3) continue // An explicitly missing week, never interpolated training.
+            CoachingStore(context)
+                .saveStrength(
+                    StrengthSession(
+                        "volume-week-$week",
+                        today
+                            .minusDays(1)
+                            .minusWeeks(week.toLong())
+                            .atTime(12, 0)
+                            .toInstant(ZoneOffset.UTC),
+                        ZoneOffset.UTC,
+                        Duration.ofMinutes(35),
+                        null,
+                        "Screenshot fixture, not user evidence",
+                        listOf(
+                            StrengthSession.ExerciseSets(
+                                bench,
+                                listOf(
+                                    StrengthSession.SetEntry("warm", 5, 20.0, null, true),
+                                    StrengthSession.SetEntry("work-a", 6, 65.0 - week, 7.0, false),
+                                    StrengthSession.SetEntry("work-b", 6, 65.0 - week, 7.0, false),
+                                ),
+                            )
+                        ),
+                    )
+                )
+        }
+        val before = CoachingStore(context).strength().toSet()
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Log workout")
+                click("Strength trends")
+                await("This week so far")
+                alignHeading("Strength trends")
+                capture("strength-analytics$suffix")
+                compose.onNodeWithText("How are sets attributed?").performScrollTo().performClick()
+                alignHeading("Primary areas this week")
+                capture("strength-analytics-details$suffix")
+                back()
+                click("PBs & progression")
+                await("Recorded performance")
+                alignHeading("Strength records")
+                capture("strength-records$suffix")
+                compose
+                    .onAllNodesWithText("View measured history")[0]
+                    .performScrollTo()
+                    .performClick()
+                alignHeading("Repetition records and progression")
+                capture("strength-records-history$suffix")
+                back()
+                click("Recorded milestones")
+                await("✓ First recorded strength workout")
+                alignHeading("Recorded milestones")
+                capture("training-milestones$suffix")
+                compose
+                    .onAllNodesWithText("View milestone evidence")[0]
+                    .performScrollTo()
+                    .performClick()
+                alignHeading("Hide milestone evidence")
+                capture("training-milestones-evidence$suffix")
+                Assert.assertEquals(before, CoachingStore(context).strength().toSet())
+                if (scale == "2.0")
+                    Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (night == "yes")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            shell("settings put system font_scale $originalFont")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesOptionalGymPreparationAndSupersetFromProductionScreens() {
         // One staged workout across all modes: never delete a database beneath live feature owners.
         SqliteUserPreferencesRepository(context).clear()
@@ -968,9 +1079,17 @@ class CoachingScreenshotTest {
                 )
                 alignHeading("Optional rest timer")
                 capture("gym-rest-timer$suffix")
+                compose.onNodeWithText("Timer settings ▾").performScrollTo().performClick()
+                alignHeading("Default rest when no target is prescribed")
+                capture("gym-rest-settings$suffix")
+                compose.onNodeWithText("Timer settings ▴").performScrollTo().performClick()
                 compose.onNodeWithText("Optional warm-up ▾").performScrollTo().performClick()
                 alignHeading("Optional warm-up ▴")
                 capture("gym-warmup$suffix")
+                compose.onNodeWithText("Why this preparation?").performScrollTo().performClick()
+                alignHeading("Hide preparation evidence")
+                capture("gym-warmup-evidence$suffix")
+                compose.onNodeWithText("Hide preparation evidence").performScrollTo().performClick()
                 compose.onNodeWithText("Skip preparation guidance").performScrollTo().performClick()
                 alignHeading("Superset")
                 capture("gym-superset$suffix")

@@ -71,7 +71,10 @@ internal fun GymRestCard(
                 },
                 style = MaterialTheme.typography.headlineSmall,
             )
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 if (timer.phase() == GymRestTimer.Phase.RUNNING)
                     OutlinedButton(onClick = { model.restAction("pause") }, enabled = enabled) {
                         Text("Pause rest")
@@ -97,12 +100,13 @@ internal fun GymRestCard(
                 }
             }
         }
-        Button(
-            onClick = { model.restAction("start") },
-            enabled = enabled && timer?.phase() != GymRestTimer.Phase.RUNNING,
-        ) {
-            Text("Start rest timer")
-        }
+        if (
+            timer == null ||
+                timer.phase() in listOf(GymRestTimer.Phase.COMPLETE, GymRestTimer.Phase.SKIPPED)
+        )
+            Button(onClick = { model.restAction("start") }, enabled = enabled) {
+                Text("Start rest timer")
+            }
         TextButton(
             onClick = { details = !details },
             modifier =
@@ -114,7 +118,10 @@ internal fun GymRestCard(
         }
         if (details) {
             Text("Default rest when no target is prescribed")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 listOf(0, 60, 90, 120, 180, 300).forEach { value ->
                     FilterChip(
                         selected = prefs.defaultSeconds() == value,
@@ -232,6 +239,7 @@ internal fun GymWarmupCard(
     enabled: Boolean,
 ) {
     var open by rememberSaveable(slot.id(), slot.exercise().id()) { mutableStateOf(false) }
+    var evidence by rememberSaveable(slot.id(), slot.exercise().id()) { mutableStateOf(false) }
     val suggestion =
         remember(slot, state.recent, state.view?.observed()?.actualSets()) {
             model.warmupSuggestion()
@@ -248,10 +256,7 @@ internal fun GymWarmupCard(
         }
         if (open && suggestion != null) {
             Text(suggestion.instruction())
-            Text(suggestion.why(), style = MaterialTheme.typography.bodyMedium)
-            Text(
-                "These are suggestions, not completed sets. Edit the form to what you perform before saving. Warm-ups do not count as working sets, PBs or progression evidence."
-            )
+            Text("These are practice ideas, not recorded sets. Review and edit them before saving.")
             suggestion.ramps().forEach { ramp ->
                 OutlinedButton(onClick = { model.prepareWarmup(ramp) }, enabled = enabled) {
                     Text(
@@ -261,6 +266,21 @@ internal fun GymWarmupCard(
             }
             TextButton(onClick = { model.prepareWarmup(null) }, enabled = enabled) {
                 Text("Enter my own warm-up")
+            }
+            TextButton(
+                onClick = { evidence = !evidence },
+                modifier =
+                    Modifier.heightIn(min = 48.dp).semantics {
+                        stateDescription = if (evidence) "Expanded" else "Collapsed"
+                    },
+            ) {
+                Text(if (evidence) "Hide preparation evidence" else "Why this preparation?")
+            }
+            if (evidence) {
+                Text(suggestion.why(), style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    "Warm-ups do not count as working sets, PBs or progression evidence. Suggested loads are not completed lifts or working-weight prescriptions."
+                )
             }
             TextButton(onClick = { open = false }) { Text("Skip preparation guidance") }
         }

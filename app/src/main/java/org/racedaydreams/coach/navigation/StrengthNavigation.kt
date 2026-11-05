@@ -99,7 +99,21 @@ fun NavGraphBuilder.strengthGraph(
 
     composable("strength/log") { StrengthScreen(readState(), model) }
 
-    composable("strength/pbs") { StrengthScreen(readState(), model, section = "pbs") }
+    composable("strength/analytics") {
+        StrengthAnalyticsScreen(readState().strengthSessions, onBack = { nav.popBackStack() })
+    }
+
+    composable("strength/pbs") {
+        StrengthRecordsScreen(
+            readState().strengthSessions,
+            readState().massUnit,
+            readState().historicalStrength.size,
+            onHistory = { nav.navigate("strength/pbs/history") },
+            onWorkout = { nav.navigate("strength/source/${Uri.encode(it)}") },
+            onBack = { nav.popBackStack() },
+        )
+    }
+    composable("strength/pbs/history") { StrengthScreen(readState(), model, section = "pbs") }
 
     composable("strength/source/{id}") { d ->
         StrengthScreen(

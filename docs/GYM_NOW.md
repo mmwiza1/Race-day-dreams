@@ -173,3 +173,7 @@ movements do not force completed exercises to repeat. Breaking a group today cha
 only; the frozen prescription and all recorded sets stay intact. Programme draft grouping still
 requires preview/explicit activation, producing an immutable revision. No automatic superset
 assignment is imposed on generated plans.
+
+Timer adjustments change both remaining rest and the full chosen period; Reset rest uses that
+adjusted full period consistently, regardless of when the adjustment was made. This advisory
+period remains separate from the original prescribed rest and from recorded workout time.

@@ -127,7 +127,9 @@ public record GymRestTimer(
                         : current.phase == Phase.PAUSED || current.phase == Phase.INTERRUPTED
                                 ? current.phase
                                 : Phase.RUNNING;
-        return copy(next, now, remaining, Math.max(current.durationMillis, remaining));
+        // Adjust the full chosen period too, so Reset has the same meaning at any elapsed time.
+        long duration = Math.max(0, Math.min(3_600_000, current.durationMillis + seconds * 1000L));
+        return copy(next, now, remaining, duration);
     }
 
     public long secondsRemaining() {

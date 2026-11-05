@@ -130,3 +130,16 @@ shared private local database. They are included only in user-requested backups/
 there is no automatic upload. Excluding/restoring an exercise does not delete recorded
 history or PBs. Diagnostics retain their existing allow-list; actual sets, exclusion reasons and reviewed
 decision payloads are not added. No Internet permission or runtime network dependency is added.
+
+## 0.11 local gym tools and recognition (development)
+
+Optional rest timing uses a private installation-identity file that is not restored from backups.
+Timer backups retain opaque epoch/clock anchors for continuity checks; another installation cannot
+adopt that identity and treats the timer as interrupted. These are app-local markers, not hardware IDs.
+Opt-in Android rest alerts use generic text rather than exercise loads, GPS or health values. They
+may be delayed by Android; no additional continuously running service or Internet access is added.
+Strength analytics read recorded actuals locally. Milestone recognition retains small source
+references/times and relevant recorded distance in typed local tables and explicit user backups.
+It does not hydrate GPS routes for achievement counts. Optional celebrations stay in-app; there are
+no achievement uploads, system streak notifications or telemetry. Diagnostic allow-lists remain
+separate from these private records.

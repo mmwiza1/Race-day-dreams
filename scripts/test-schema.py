@@ -82,8 +82,8 @@ def create_schema(connection, version=14, frozen=False):
 def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if target not in (14, 15, 16) or old < 1 or old >= target:
-        raise ValueError("Only explicit upgrades to historical 14 or current 15 are supported")
+    if target not in (14, 15, 16, 17) or old < 1 or old >= target:
+        raise ValueError("Only explicit upgrades to historical 14–16 or current 17 are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -463,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,17), (2,17), (14,14)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,18), (2,18), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -1075,6 +1075,33 @@ class GymToolsSchemaTest(unittest.TestCase):
                 db.execute('INSERT INTO gym_rest_preferences VALUES(1,?,1,0,0,0)',(seconds,))
         with self.assertRaises(sqlite3.IntegrityError):
             db.execute("INSERT INTO gym_rest_timers VALUES('missing','manual','RUNNING','epoch',0,1000,1000)")
+
+class AchievementsSchemaTest(unittest.TestCase):
+    def test_all_supported_upgrades_add_only_normalized_recognition(self):
+        for version in range(1,17):
+            with self.subTest(version=version):
+                db=sqlite3.connect(':memory:');create_schema(db,version)
+                migrate_to_latest(db,17)
+                self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],17)
+                self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(),[])
+                db.close()
+    def test_awards_require_valid_definitions_and_unique_source_evidence(self):
+        db=sqlite3.connect(':memory:');create_schema(db,17)
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO training_milestones VALUES('made-up','2026-01-01','2026-01-01')")
+        db.execute("INSERT INTO training_milestones VALUES('FIRST_GYM','2026-01-01','2026-01-01')")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO training_milestone_sources VALUES('FIRST_GYM',0,'GYM','one','2026-01-01',0,100)")
+        db.execute("INSERT INTO training_milestone_sources VALUES('FIRST_GYM',0,'GYM','one','2026-01-01',0,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO training_milestone_sources VALUES('FIRST_GYM',1,'GYM','one','2026-01-01',0,NULL)")
+    def test_later_migration_failure_rolls_back_all_added_tables(self):
+        db=sqlite3.connect(':memory:');create_schema(db,15)
+        db.execute('CREATE TABLE training_milestone_sources (conflict TEXT)');db.commit()
+        with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db,17)
+        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],15)
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='gym_rest_timers'").fetchone())
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='training_milestones'").fetchone())
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

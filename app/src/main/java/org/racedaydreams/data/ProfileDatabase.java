@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 16;
+    static final int VERSION = 17;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -57,6 +57,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateThirteenToFourteen(db);
         migrateFourteenToFifteen(db);
         migrateFifteenToSixteen(db);
+        migrateSixteenToSeventeen(db);
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -487,10 +488,31 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V16_SCHEMA_END
     }
 
+    private static void migrateSixteenToSeventeen(SQLiteDatabase db) {
+        // V17_SCHEMA_BEGIN - stable local recognition; never replaces source actuals.
+        db.execSQL(
+                "CREATE TABLE training_milestones (kind TEXT PRIMARY KEY NOT NULL CHECK(kind IN"
+                    + " ('FIRST_GYM','FIVE_GYM','FIFTY_GYM','FIRST_RUN','TEN_RUNS','FIRST_FIVE_KM_RUN','TWELVE_TRAINING_WEEKS')),"
+                    + " earned_at TEXT NOT NULL, recognized_at TEXT NOT NULL)");
+        db.execSQL(
+                "CREATE TABLE training_milestone_sources (award_kind TEXT NOT NULL REFERENCES"
+                    + " training_milestones(kind) ON DELETE CASCADE, position INTEGER NOT NULL"
+                    + " CHECK(position BETWEEN 0 AND 49), source_type TEXT NOT NULL"
+                    + " CHECK(source_type IN ('RUN','GYM')), record_id TEXT NOT NULL, occurred_at"
+                    + " TEXT NOT NULL, offset_seconds INTEGER CHECK(offset_seconds BETWEEN -64800"
+                    + " AND 64800), distance_metres REAL CHECK(distance_metres>=0), PRIMARY"
+                    + " KEY(award_kind,position), UNIQUE(award_kind,source_type,record_id),"
+                    + " CHECK(source_type='RUN' OR distance_metres IS NULL))");
+        db.execSQL(
+                "CREATE TABLE training_milestone_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                        + " celebrations INTEGER NOT NULL CHECK(celebrations IN (0,1)))");
+        // V17_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 15)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 16)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -512,6 +534,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 12) migrateTwelveToThirteen(db);
         if (oldVersion <= 13) migrateThirteenToFourteen(db);
         if (oldVersion <= 14) migrateFourteenToFifteen(db);
-        migrateFifteenToSixteen(db);
+        if (oldVersion <= 15) migrateFifteenToSixteen(db);
+        migrateSixteenToSeventeen(db);
     }
 }

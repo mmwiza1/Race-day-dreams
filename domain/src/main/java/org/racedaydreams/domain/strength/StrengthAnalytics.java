@@ -28,11 +28,11 @@ public final class StrengthAnalytics {
     public static Double sessionLoad(StrengthSession session) {
         return session.rpe() == null ? null : session.duration().toMillis() / 60000.0 * session.rpe();
     }
-    /** Epley estimate, restricted to 2–10 reps; a single rep is recorded load, not a prediction. */
+    /** Epley estimate restricted to 2–10 working reps; measured singles are not estimates. */
     public static Double estimatedOneRepMax(StrengthExercise exercise, StrengthSession.SetEntry set) {
-        if (set.reps() < 1 || !exercise.estimateOneRepMax() || exercise.mode() != StrengthExercise.Mode.WEIGHTED
+        if (set.reps() < 2 || !exercise.estimateOneRepMax() || exercise.mode() != StrengthExercise.Mode.WEIGHTED
                 || set.warmUp() || set.reps() > 10 || set.kilograms() <= 0) return null;
-        return set.reps() == 1 ? set.kilograms() : set.kilograms() * (1 + set.reps() / 30.0);
+        return set.kilograms() * (1 + set.reps() / 30.0);
     }
     public static List<Record> progression(List<StrengthSession> sessions) {
         var sorted = new ArrayList<>(sessions);

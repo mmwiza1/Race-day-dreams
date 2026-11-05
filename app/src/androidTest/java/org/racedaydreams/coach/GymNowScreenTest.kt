@@ -338,6 +338,14 @@ class GymNowScreenTest {
         await { execution()?.slots()?.size == 1 }
         assertTrue(execution()!!.actualSets().isEmpty())
         click("Optional warm-up ▾")
+        click("Why this preparation?")
+        compose
+            .onNodeWithText(
+                "Warm-ups do not count as working sets, PBs or progression evidence. Suggested loads are not completed lifts or working-weight prescriptions."
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+        click("Hide preparation evidence")
         click("Enter my own warm-up")
         assertTrue(model.state.value.form.warmUp)
         assertTrue(execution()!!.actualSets().isEmpty())
@@ -362,6 +370,7 @@ class GymNowScreenTest {
             model.state.value.restTimer?.phase() ==
                 org.racedaydreams.domain.strength.GymRestTimer.Phase.PAUSED
         }
+        compose.onNodeWithText("Start rest timer").assertDoesNotExist()
         val paused = model.state.value.restTimer!!.remainingMillis()
         click("Add 30 seconds")
         await { model.state.value.restTimer!!.remainingMillis() == paused + 30_000 }

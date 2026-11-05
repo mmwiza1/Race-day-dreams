@@ -245,16 +245,29 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                             val next =
                                 org.racedaydreams.domain.strength.GymSupersets.next(execution)
                             Text(
+                                execution
+                                    .slots()
+                                    .filter { it.supersetGroup() == slot.supersetGroup() }
+                                    .mapIndexed { index, movement ->
+                                        "${index+1}. ${movement.exercise().name()}"
+                                    }
+                                    .joinToString("\n")
+                            )
+                            Text(
                                 next?.instruction()
-                                    ?: "All targeted working sets in this group are recorded."
+                                    ?: "No further movement is suggested in this group. Skips are not recorded as completed sets."
                             )
                             Text(
                                 "Keep each exercise's actual sets separate. Rest targets are optional; you may rest between movements or rounds."
                             )
-                            if (next != null)
+                            if (next != null && next.slotId() != slot.id())
                                 Button(onClick = model::nextSuperset, enabled = enabled) {
-                                    Text("Next in superset · round ${next.round()}")
+                                    Text("Continue to next movement · round ${next.round()}")
                                 }
+                            else if (next != null)
+                                Text(
+                                    "Record this movement's actual set below. Then we'll suggest the next movement."
+                                )
                             TextButton(onClick = model::skipMovement, enabled = enabled) {
                                 Text("Skip this movement today")
                             }

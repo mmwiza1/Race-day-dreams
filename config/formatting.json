@@ -175,6 +175,20 @@
     "app/src/main/java/org/racedaydreams/data/SqliteGymToolsRepository.java",
     "app/src/main/java/org/racedaydreams/coach/strength/GymRestAlerts.kt",
     "app/src/main/java/org/racedaydreams/coach/strength/GymPreparationCards.kt",
-    "app/src/androidTest/java/org/racedaydreams/data/GymToolsRepositoryTest.java"
+    "app/src/androidTest/java/org/racedaydreams/data/GymToolsRepositoryTest.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthVolume.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/StrengthVolumeTestSuite.java",
+    "app/src/main/java/org/racedaydreams/coach/strength/StrengthAnalyticsScreen.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/StrengthAnalyticsScreenTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/strength/StrengthRecords.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/StrengthRecordsTestSuite.java",
+    "app/src/main/java/org/racedaydreams/coach/strength/StrengthRecordsScreen.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/StrengthRecordsScreenTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/achievements/*.java",
+    "domain/src/test/java/org/racedaydreams/domain/achievements/*.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteAchievementsRepository.java",
+    "app/src/androidTest/java/org/racedaydreams/data/AchievementsRepositoryTest.java",
+    "app/src/main/java/org/racedaydreams/coach/strength/Achievements*.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/AchievementsScreenTest.kt"
   ]
 }
