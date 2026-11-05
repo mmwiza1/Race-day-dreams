@@ -11,63 +11,63 @@ remain distinct. Reuse one Gym Now execution engine. No Internet permission, acc
 backend, ads, analytics, subscriptions or runtime LLM. No unperformed physical-device claims.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT —0.10.1-test1 MERGED; software complete, physical acceptance remains
+## CURRENT —0.10.1 application complete; focused post-merge screenshot-test follow-up
 
-PR16 was squash-merged into main on5November2026:
-`75ab7c546570ffa460295bd45e1ee0f9fa7e5c48`.
-GitHub confirmed merged=true and main pointed to that signed merge result. Its complete
-signed Git object/tree was verified before fast-forwarding local main without reset/loss.
-This post-merge handoff/verification update is release bookkeeping only; no app/test code
-changed. Inspect actual live main/log before assuming any checkpoint SHA is still latest.
+PR16 is MERGED, not draft/open: squash75ab7c546570ffa460295bd45e1ee0f9fa7e5c48.
+Main checkpoint6f73afe3ff3b20a13c73f5af4792247f68883659 adds only post-merge documentation.
+Do not reset/reopen/reimplement PR16, GPS/coaching work or0.10. No0.11 features authorised.
+All33progression views were reviewed; source640893/38suites and full438/API155capture
+pre-merge gates42012242544 and42015943868 passed. Those remain valid observed boundaries.
 
-There is NO unfinished0.10.1 implementation backlog. Do not restart or begin0.11 without
-new user instructions. The earlier notes below are historical failed/pending checkpoints,
-not active work. The release remains0.10.1-test1/code14, debug-signed/test/development.
-No permanent production/stable tag was created.
+POST-MERGE DELIVERY BLOCKER (not a new application regression): main42018800515 passed
+438 EACH API28/36. API35 ran438 with one CoachingScreenshotTest.capturesSourcedCityRoutesWithDarkAndLargeText
+failure, other437passed. Stack: SnapshotStateObserver previousThreadId85 versus main2,
+measure/layout/draw crossing threads while the test's unconfined frame resumed background
+artwork work. Publication correctly skipped. Rolling development is STILL0.10.0 until a
+new main gate passes; do not report0.10.1APK published. Never rerun unchanged to chase green.
 
-Verification:
--Verified application source1dffb7dcf7607c237f257004f4b322aade097ce6 passed full42012242544.
--Final PR headb12e11d550af4f8cf28eacf793c44a9568dbfb74 passed COMPLETE42015943868 before
- ready/merge:438cases EACH API28/35/36 (1314total),155captures/API, domain640893/38suites,
- 64schema/migration,9release,13capture-validator, source/provenance/artwork, build/lint,
- pinned76Kotlin/122Java format and strict174canonical/14routine guidance.
--Canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3 matches original verified API35artifact
- 13407438794, all157blob identities/tree/commit.155PNG540x1200 validate. All33final-source
- progression views opened directly across light/dark/200%, both disclosures and full lower
- evidence/safeguards/actions. No internal clipping/overlap/horizontal scroll; values stack.
--Fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600 matches source.
- Branch API35APK13407813241 is51,979,576bytes; main delivery uses its own verified artifact.
--Schema15/rootJSON9/raw2/complete1 and supported older reads unchanged; current/old backups,
- corrupt/future rejection, transactional rollback and actual/history preservation pass.
--No runtime dependency or permission change. No Internet/background-location permission,
- backend/account/analytics/ads/LLM. Accepted GPS coordinates/historical totals retained.
--Task-first suggestions, genuine-only changes/unchanged facts, short reason, nested actual
- evidence, clear current/suggested/actual loads, unchanged-reference wording, separate-save/
- activation safeguards complete. Conservative progression/starting-load engine unchanged.
--Confirmed GPS jitter/stale-gap/auto-pause/render-bend defects have regressions. Physical
- owner-specific S24 accuracy remains unverified; no universal accuracy claim.
+ACTIVE branch `fix/0.10.1-screenshot-test-dispatcher`, created from live6f73afe.
+Remote branch created at same parent. Current local follow-up:
+-CoachingScreenshotTest uses createEmptyComposeRule(effectContext=StandardTestDispatcher()),
+ exactly as the already-corrected two async artwork fixtures. Pinned Compose1.8.3 source
+ confirms empty-rule default is unconfined too. Queue composition for its main test clock;
+ retain EVERY readiness/loading/identity/content/capture assertion and all deadlines.
+-No app/UI/engine/recorder/Dream production code, dependencies, data or permissions changed.
+-Android workflow's four existing capture-branch literals retarget only this same-repository
+ follow-up branch, so it can regenerate155source-bound actual images. Matrix28/35/36,
+ canonical publication prerequisites and main release requirements remain intact.
+-Local pinned format and real Gradle domain/check/debug/lint/test compile PASS79tasks/36sec.
+ Domain640893/38suites, schema15/rootJSON9/raw2/complete1 unchanged. No Internet.
 
-Release integration is automatically tracked by the Android workflow for live main:
-https://github.com/mmwiza1/Race-day-dreams/actions/workflows/android.yml?query=branch%3Amain
-The workflow publishes the rolling Latest Development Build only after all supported API,
-guidance/format/source gates pass and its built SHA is still the main tip. Use release Build
-information to verify actual main/CI identity and APK/checksum; never assume an old asset is
-current. If resuming before post-merge automation finishes, verify it; fix real failures via
-focused branch/PR rather than rewriting main. Do not create a stable tag or expand scope.
+NEXT EXACT TASKS:
+1. Commit/push the focused fixture/workflow correction and these observed failure notes.
+   Open focused DRAFT follow-up PR into main (expected17, inspect actual number). Do not
+   develop on main or pretend PR16 is still open. Use connected GitHub API expected-head leases;
+   CLI auth is unavailable. Import identical verified objects without reset/force/discard.
+2. Run full438/API155capture gate. Fix actual roots, not assertions/timeouts. Regenerate
+   canonical images under the follow-up branch, verify ZIP/blob/tree/commit/fingerprint,
+   inspect final progression/Dream representatives (no design changes intended).
+3. Final observed docs/head CI; after green/visual checks, ready/merge the follow-up under
+   master's explicit post-merge-failure recovery authority. No stable tag/0.11 scope.
+4. Verify resulting actual main CI and rolling development APK/checksum match latest main.
+   Record actual follow-up merge SHA and artifact links. Do not stop at a partial pass.
 
-PHYSICAL ACCEPTANCE — ALL UNPERFORMED until a human records results in TEST_BUILD.md:
-S24 measured-route clear-sky/urban GPS, walking/stationary drift, bridges/tunnels or brief
-loss, locked screen/background/battery saver, pause/resume, meaningful longer run, process
-interruption/recovery, GPX/raw backup consistency, Watch7/Samsung Health comparison (neither
-is automatically ground truth), real Health Connect permission/data paths, TTS/music/calls,
-BLE connect/reconnect and human TalkBack/large text. Software/emulator passes do not certify
-these. This is the only remaining product acceptance; no0.11 work is authorised.
+Physical S24 GPS/outdoor/urban/measured-route/locked-screen/background/battery/long-run,
+interruption/recovery/GPX comparison, real Health Connect, TTS/music/calls, BLE and human
+TalkBack remain UNPERFORMED. TEST_BUILD.md is the human checklist; emulator passes never
+certify physical results. Original application scope is complete; only this proven test
+harness/delivery blocker remains. Preserve all already-merged code and reviewed155captures.
 
-Tool recovery: CLI Git auth stopped; connected GitHub tools work. Source commits were
-pushed with expected-head leases and identical verified local tree/unsigned commits. Binary
-artifacts use github_download_workflow_artifact then signed URL with ZIP/Git hash checks;
-refresh expired URLs normally. Do not UTF8-fetch PNGs or dump giant canonical logs. Preserve
-all work, inspect current state, and follow the permanent recovery rules above.
+Existing canonicald8539219c135766eae6979f9bcf8eb82b2fd65f3 covers app/capture source1dffb7d,
+fingerprint8934bfba682b352720364db52d5ff1d64ec013d4b41397541111d45677bcf600. New fixture/
+workflow source intentionally needs its own fingerprint/captures; do not replace references
+with screenshots. All prior APKs are debug-signed test/development, no permanent stable tag.
+
+Tool recovery: connected GitHub create_blob/tree/commit/update_ref with expected-head lease,
+verify local Git blob/tree then raw unsigned commit via scratch/rdd0101/import-exact-commit.py
+(pass the new tracking ref as second argument). Binary github_download_workflow_artifact
+returns file URI; download signed URL promptly, refresh normally if expired, verify ZIP/Git
+hashes. Never UTF8-fetch PNGs, dump huge canonical logs, reset or rewrite accepted history.
 
 ## Historical0.10.1 implementation and verification
 

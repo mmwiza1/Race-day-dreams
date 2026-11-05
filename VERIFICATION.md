@@ -1,3 +1,20 @@
+# Post-merge delivery failure —5November2026 (latest boundary)
+
+Main6f73afe/workflow42018800515 passed438 EACH API28/36. API35 ran438 with one failure,
+other437passed: CoachingScreenshotTest.capturesSourcedCityRoutesWithDarkAndLargeText.
+SnapshotStateObserver reported worker thread85 followed by main thread2 during layout/draw.
+The snapshot/graphics stack plus pinned Compose1.8.3 empty-rule factory confirms the same
+unconfined test frame problem already fixed in two async artwork component fixtures.
+Publication was correctly skipped: rolling development remains0.10.0, not0.10.1 yet.
+
+Focused follow-up from live main uses a queued StandardTestDispatcher in the screenshot
+fixture. Every assertion/readiness/identity/loading guard and deadline remains. The existing
+four branch restrictions are retargeted to that same-repository follow-up only, allowing
+fresh155source-bound captures under the unchanged full API28/35/36 gate. No production
+app/recorder/UI/Dream/data/dependency/permission change. Local pinned format and actual
+Gradle domain/check/debug/lint/test compilation PASS79tasks/36seconds. Follow-up full gate
+is required; older pre-merge green rows below do not claim this post-main run passed.
+
 # Merged0.10.1 checkpoint —5November2026
 
 PR16 final head `b12e11d550af4f8cf28eacf793c44a9568dbfb74` passed COMPLETE

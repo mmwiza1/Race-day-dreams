@@ -15,6 +15,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
 import java.time.*
 import java.util.EnumSet
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.*
 import org.junit.runner.RunWith
 import org.racedaydreams.coach.strength.GymNowState
@@ -30,8 +31,11 @@ import org.racedaydreams.reminders.EveningReminders
 
 /** Fixtures are compiled only into the instrumentation APK, never the installable app. */
 @RunWith(AndroidJUnit4::class)
+@OptIn(ExperimentalTestApi::class)
 class CoachingScreenshotTest {
-    @get:Rule val compose = createEmptyComposeRule()
+    // Async city decode/preparation must queue test composition for the main test clock,
+    // never resume the unconfined test frame inline on an IO/Default worker.
+    @get:Rule val compose = createEmptyComposeRule(effectContext = StandardTestDispatcher())
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()
 
