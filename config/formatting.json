@@ -200,6 +200,8 @@
     "app/src/main/java/org/racedaydreams/health/HealthConnectGateway.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/BodyMeasurementsScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/BodyMeasurementsRepositoryTest.java",
-    "app/src/androidTest/java/org/racedaydreams/health/HealthConnectGatewayTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/health/HealthConnectGatewayTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/storage/*.java",
+    "domain/src/test/java/org/racedaydreams/domain/storage/*.java"
   ]
 }

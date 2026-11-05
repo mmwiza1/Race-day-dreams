@@ -1387,3 +1387,19 @@ THIRD_PARTY.md was not yet copied into its bundled offline asset. Domain/schema 
 Android tests never ran. The asset is synchronized; all15additional exact workflow pre-build
 checks pass, and local Android gate passes79tasks/48sec. No assertion, cmp or quality gate removed.
 Current complete486case/203capture matrix is required.
+
+## Retention policy and current capture corrections
+
+The pure DetailRetention policy passes7492assertions on a5000record lightweight inventory and
+consent/ownership/freshness boundaries. It does not prune data or supply a storage UI. Combined
+current source658597domain/45suites and local debug/lint/test compilation pass79tasks/1m21sec;
+93Kotlin/150Java formatting,72schema/9release/15capture-validator checks pass. Schema18/root12/
+raw2/complete1 unchanged. No actual raw-detail removal is implemented or claimed.
+
+Workflow42110187809 /6e2ffdd completed485cases/API: two new capture failures each, plus an
+existing post-save visibility assertion onAPI35. Actual body repository/backup/component and
+recovery activation cases passed. Current source uses UK evidence dates, a real authored-today
+recovery fixture/action, and explicit keyboard dismissal before the busy-swap Save/check. All
+original assertions and timeouts remain. The SDK height contract method now follows JUnit3 test
+naming (it was previously undiscovered), making the next expected count486. This is not yet an
+observed emulator pass;203fresh raw captures and direct review remain pending.

@@ -200,28 +200,44 @@ M4 —IMPLEMENTED / CURRENT LOCAL GATES PASS; FULL ANDROID/VISUAL GATE PENDING
  No body data required for programming. Document general adult sports protein range from valid
  weight/focus; height is NOT its primary basis; no unsupported numeric advice/medical claims.
 
-M5 —NOT IMPLEMENTED: safe retention/storage
-- Read-only audit begun: RecordingStore.kt finalization creates dense DistanceSamples in canonical
- activity payload as well as recording_points coordinates/sensors; cleanup must address both,
- preserving immutable totals, qualified PBs/laps/aggregates first. withRetainedSamples and
- restoreRetainedSamples can repopulate evidence from retained rows: missing-detail metadata and
- truthful route/GPX/backup handling must prevent fabricated reconstruction.
-- RecordingArchive.kt currently writer2/read1–2, contiguous sequence validation, explicit1000session/
- 100000point/512MiB caps (ERRORS, not silent truncation). CompleteBackup1 already holds a shared
- SQLite transaction over JSON+raw exports and rejects unfinished recording. Preserve that useful
- transaction boundary; do not add speculative background services/locks without need.
-- Design default24months only for true new installs; upgrade users require explicit grandfathered
- acknowledgement. Preview + confirmed bounded whole-session transactions, idempotence/rollback,
- no active/recoverable recorder cleanup, no deletion of ordinary workouts/sets/PBs/versions/awards.
-
--24months new-install default /5years/forever; existing users grandfathered until informed explicit
- acknowledgement. Preview and separate bounded/idempotent transactional cleanup with operation
- coordination. NEVER delete ordinary summaries/actuals/PBs/versions/decisions/awards/shoe totals.
-- Inspect RecordingStore/raw archive2/complete package1 and route/GPX dependencies BEFORE pruning.
- Preserve truthful missing-detail flags and summaries, never invented route/splits. If archive needs
- new metadata, version safely with older reads, never export a misleading archive. SQLite deletes
- do not automatically shrink file size; report logical removals versus actual physical bytes honestly.
- Root JSON has existing explicit32MiB limit; do not silently truncate long histories or exports.
+M5 —STARTED: TESTED PURE POLICY; STORAGE/CLEANUP/UI STILL NOT IMPLEMENTED
+- DetailRetention.java + DetailRetentionTestSuite implement real UTC calendar24month/5year/
+ forever cutoffs, new-install default versus protected existing-user choice, immutable preview
+ inventories and counts, explicit consent freshness, dataset/choice identity, ownership/source
+ guards, active recording/replacement rejection and fresh bounded-batch proofs.7492assertions
+ pass, including5000lightweight inventory rows. This is not a pruning implementation or UI.
+ Current schema18/root12/raw2/complete1 unchanged. No raw data has been deleted.
+- Latest local combined source658597domain/45suites, actual Gradle domain/debug/lint/test compile
+ PASS79tasks/1m21sec.93Kotlin/150Java formatting,72schema,9release,15capture-validator pass.
+ Logs capture-policy-checkpoint-*; retain earlier failures for diagnosis. Compile alone is not
+ emulator/visual acceptance. Do not call these inventory tests the full six-month athlete sims.
+- IMPORTANT corrected source audit: RecordingStore.finish creates DistanceSamples for qualified
+ calculations, but SqliteActivityRepository.putActivity stores backupActivity(a), which strips
+ RDD/GPX samples BEFORE canonical SQLite persistence. Native payloads/JSON backups are already
+ summaries; recording_points/events hold dense evidence. Do NOT call putActivity(emptySamples)
+ while pruning: that method deletes qualified/preserved PB rows before recalculating. Preserve
+ summaries, annotations, laps, best_efforts/preserved_best_efforts and all programme/gym data.
+- Root backup already exports qualified best-effort summaries; after restore missing raw data
+ leaves preserved results. withRetainedSamples/restoreRetainedSamples rehydrate only retained
+ points; preserve their honest absent-evidence behavior. Route/GPX/Story need explicit removed-
+ detail status instead of invented geometry or indefinite loading.
+- RecordingArchive.kt writer2/read1–2 has contiguous point sequences, explicit1000session/
+ 100000point/512MiB ERROR caps (no silent truncation). CompleteBackup1 already protects JSON+raw
+ export in one shared SQLite transaction and rejects unfinished recording. Use this boundary;
+ avoid speculative background services/locks. Whole-session bounded transactions avoid broken
+ archive sequences after partial prefix deletion. Raw availability/removal provenance likely
+ requires additive typed metadata and new raw format3 with old1–2 readers; investigate before
+ coding. Old suitable archives should be explicitly restorable after a confirmed cleanup.
+- NEXT: implement actual typed retention prefs with true-new-install24mo versus grandfathered
+ upgrades, explicit acknowledgement and non-destructive older-backup defaults; source summary
+ inventory/usage, preview + confirmed transactional/idempotent cleanup, truthful removed markers,
+ bounded interruption/recovery, no active/recoverable recorder or backup conflicts. Add migrations/
+ backup version only when needed (current18/12 are immutable checkpoints), validate graph/rollback,
+ old/current raw/complete restore, and guard consent when data is restored/replaced between batches.
+- Keep workout summaries/actual sets/PBs/races/versions/decisions/awards/shoes/trends indefinitely.
+ Do not delete external HC-provider data or low-volume body observations. SQLite logical deletes
+ do not automatically shrink physical files; report actual versus approximate bytes honestly.
+ Root JSON has an explicit32MiB cap; never silently truncate long histories/exports.
 
 M6 —NOT IMPLEMENTED: selective catalogue + final hardening
 -174canonical/14routine guidance currently preserved. Grow toward220–250 only for genuine gaps
@@ -564,3 +580,28 @@ artwork/capture validators and guidance report), plus standalone full domain/sch
 Gradle domain/debug/lint/test compilation then PASS79tasks/48sec. Log body-notice-final-android.log
 and body-notice-exact-prebuild.log. Current source has no new known local failures; full486case/
 203capture matrix must now run. No body/recovery emulator or visual pass is claimed from421093.
+
+## Latest full Android failure + capture corrections (follow-up source)
+
+6e2ffdd /42110187809 completed485tests EACH API28/35/36. API28/36 each failed2new captures;
+API35 failed those2 plus one existing busy-swap visibility assertion (482other cases passed there,
+483on28/36). All new body repo/component tests and recovery activation/backup passed. No203images
+were published. Exact HTML reports/ZIP hashes are retained under scratch/rdd011/m4-reports*.
+
+Confirmed corrections in the following source (retain all assertions/timeouts):
+- Body detailed history used raw Instant ISO text, violating the established normal-language
+ capture gate. Evidence timestamps now use explicit UK dates/UTC time; added component regression.
+- Strength recovery capture still awaited a legacy Log today's workout on the fixture's rest day.
+ It now seeds a real authored session today and checks its actual Start workout action. Shared
+ helper retains original defaults and model/busy/Today/heading/action readiness checks. No sleep.
+- API35 busy-swap failure was the post-save visible counter, AFTER actuals/load-clear safeguards
+ passed. Fixture left IME open while scrolling to/checking the result; it now explicitly closes
+ keyboard before Save, preserving all data and visible-counter assertions. Verify next matrix.
+- New SDK permission test used JUnit4 annotation inside a JUnit3 AndroidTestCase and was not run.
+ Renamed to test... to match existing discovery, so next full count is486/API, not485.
+
+Current local source (including M5 policy) passes capture-policy-checkpoint-android.log1m21sec/
+79tasks and all format/schema/release/capture-validator gates. Push coherent checkpoints, inspect
+full486/API203capture gate, fix real failures, adopt canonical bot without losing policy work,
+then directly inspect recovery/body/refined records/milestones in light/dark/200%. Do not mark
+ready/merge. M5 actual cleanup and all M6 work remain required within0.11.
