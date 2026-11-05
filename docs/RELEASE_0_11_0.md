@@ -36,11 +36,9 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 ## Known limitations
 
-- This is an incomplete development checkpoint. New gym and strength-intelligence screens
-  still require their complete final-source API28/35/36 and authentic visual review.
-- Recovery/hybrid and body/protein screens require their current-source Android and visual gate.
-  Retention/storage and catalogue/final-simulation milestones remain to implement; those controls
-  are not shipped. This is not a software-complete0.11 release.
+- This is an incomplete development checkpoint. Retention cleanup/storage and catalogue/final-
+  simulation milestones remain to implement; cleanup controls are not shipped. The read-only
+  storage inventory never deletes data. This is not a software-complete0.11 release.
 - Android may delay optional rest notifications during sleep/battery saving. A reboot or
   cross-device restore interrupts timer continuity and requires explicit review.
 - Physical Galaxy S24 acceptance remains unperformed, including0.10.1 outdoor GPS checks.
@@ -61,7 +59,7 @@ behaviour only; the complete agreed release is not yet ready for review.
 - Unchanged baseline8796bc5 passed640893domain checks,64schema tests,9release tests,
   formatting and local Android build/lint/test compilation before implementation.
 - Baseline main42046671050 passed438instrumentation cases and155captures per API28/35/36.
-- Local current implementation:651105domain checks/44suites,72schema tests,9release-note
+- Local current implementation:658597domain checks/45suites,72schema tests,9release-note
   tests and15capture-validator tests; Android debug build/lint/instrumentation compilation pass.
 - Gym-only matrix runs exposed unsupported Java collection calls and new fixture entry/reset
   errors; corrections preserve assertions. Complete final-source automated/visual acceptance
@@ -74,3 +72,9 @@ behaviour only; the complete agreed release is not yet ready for review.
   awaited the wrong focus mode, and a reduced-set proposal retained its old time estimate.
   Both are corrected on the following body checkpoint; existing assertions/safeguards remain.
   Its complete486case/203capture matrix must pass before any final-source acceptance claim.
+
+- Recovery/body source7dc0b56 passed complete workflow42115688372:486tests and203authentic
+  captures EACH API28/35/36. All203API35rawPNG identities verified against canonical6a3eb10;
+  recovery/body and refreshed recorded-results/milestones reviewed in light/dark/200%.
+- Following read-only inventory implementation compiles and passes lint locally; its four new
+  database tests need the next full Android matrix. No retention deletion is enabled.

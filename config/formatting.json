@@ -202,6 +202,8 @@
     "app/src/androidTest/java/org/racedaydreams/data/BodyMeasurementsRepositoryTest.java",
     "app/src/androidTest/java/org/racedaydreams/health/HealthConnectGatewayTest.kt",
     "domain/src/main/java/org/racedaydreams/domain/storage/*.java",
-    "domain/src/test/java/org/racedaydreams/domain/storage/*.java"
+    "domain/src/test/java/org/racedaydreams/domain/storage/*.java",
+    "app/src/main/java/org/racedaydreams/data/SqliteRecordingInventoryRepository.java",
+    "app/src/androidTest/java/org/racedaydreams/data/RecordingInventoryRepositoryTest.java"
   ]
 }

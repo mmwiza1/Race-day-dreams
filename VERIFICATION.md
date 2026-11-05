@@ -1,3 +1,23 @@
+# Current 0.11 checkpoint — recovery/body matrix green, full release still incomplete
+
+Source7dc0b56 passed COMPLETE [workflow42115688372](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42115688372).
+486tests EACH API28/35/36, zero skips/failures,203actual captures/API. Formatting, strict174/14
+guidance, domain658597checks/45suites,72schema/backup,9release-note,15capture-validator, source/
+geometry/build/lint passed. All three Android logs and full workflow conclusion inspected.
+Canonical6a3eb10 safely fast-forwarded preserving in-progress read-only inventory. API35 ZIP
+artifact13457836505 SHA256bd33b114da72b4a768ff579e84bd2a55c6b5fdbfb92b2cdad99e78cd35034627;
+ALL203rawPNG bytes match canonical Git. Direct actual image review recorded in VISUAL_REVIEW_0_11.md.
+This confirms the UK evidence dates, authored recovery navigation, keyboard-visible busy-swap
+fixture and SDK test discovery corrections. No assertions/timeouts weakened.
+
+Following read-only inventory code passes actual local Gradle domain/debug/lint/test compilation
+79tasks/55sec, formatting93Kotlin/152Java. Four new repository tests are compiled but still require
+full490/API execution. No pruning is enabled; schema18/root12/raw2/complete1 unchanged. M5 actual
+retention persistence/cleanup/UI and M6 catalogue/simulations/final delivery remain required.
+No physical Galaxy S24 or human TalkBack acceptance is claimed. PR18 stays draft.
+
+Earlier checkpoint evidence below is historical; the CURRENT handoff controls remaining work.
+
 ## Latest 0.11 M2 gate correction
 
 Workflow42090255426 completed465tests on each supported API with three identical failures:

@@ -64,3 +64,24 @@ evidence and superset representatives in dark/light/200%. The adjusted timer con
 vertical spacing; warm-up rationale is secondary; superset movement order is visible. Scrolling
 works without compressed grids. These observations do not substitute for fresh194frame recovery
 and refined-hierarchy acceptance on the next source.
+
+## Verified recovery/body and refreshed hierarchy — source7dc0b56
+
+Complete workflow42115688372 passed486cases and203captures on EACH API28/35/36. API35 ZIP
+13457836505 SHA256bd33b114da72b4a768ff579e84bd2a55c6b5fdbfb92b2cdad99e78cd35034627 was
+verified and all203original PNG bytes matched canonical6a3eb10. No image transformations.
+
+Directly inspected all15recovery/body production frames: recovery primary/evidence and body
+protein primary/calculation/measurement history, each in light/dark/200%. Also reopened recorded
+strength results and milestones in all3modes after moving historical-entry/celebration controls.
+Rounded semantic cards and primary instructions retain the approved0.10.1 hierarchy. Recorded
+65kg×6 is visibly distinct from the approximate78kg estimate. Body guidance exposes its chosen
+87kg/source/date, with calculation and limitations behind a functional disclosure. UK timestamps
+replace raw ISO evidence text. Dark foregrounds retain contrast.200%labels wrap vertically with
+readable controls; below-fold content is ordinary scrolling, not horizontal compression.
+
+These are reviewed scroll/disclosure frames, not whole-page composites. Some content is below
+fold at200%, intentionally reachable by scrolling; a scrolled disclosure title may lie above the
+viewport. This is not clipping within a control. Automated interactions cover the actual actions.
+No human TalkBack, real-device keyboard or physical Galaxy S24 result is implied. New retention
+screens/catalogue additions and final-source full-release acceptance remain outstanding.
