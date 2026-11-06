@@ -1,6 +1,6 @@
 # Material UI development capture gate
 
-0.12 requires375real current-source captures: all359previous captures plus16device/branded,
+0.12 requires377real current-source captures: all359previous captures plus18device/branded,
 light/dark/200% Home/live/finish-confirmation and wide-window navigation cases. Required names
 and strict PNG validation are in scripts/verify-dream-screenshots.py;18validator tests pass.
 The protected same-repo branch publication rule now targets feature/material3-expressive-ui,
@@ -89,7 +89,7 @@ in all3modes. Combined with primary
 and comparison captures, review33actual progression frames across the whole page and both
 nested disclosure states. No old screenshot or consistency-only check proves fidelity.
 
-The pre-refinement08cf375 workflow41939512123 passed435 EACH API28/35/36 and128captures;
+The pre-refinement08cf377 workflow41939512123 passed435 EACH API28/35/36 and128captures;
 botb3a4195 was safely adopted. Refined438-case matrix and155 current-source images remain
 pending. References stay separate; never replace them with generated captures or mock UI.
 
@@ -128,7 +128,7 @@ pending-work language is superseded by this source-bound current checkpoint.
 
 **91 authentic current-source API35 captures**, adopted from botb768e0b after successful
 workflow40741473316. Sourcef3a988a68f3d1b6dbb618422a80612b90cf4d92e, fingerprint:
-`2f31ea66e537562c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722`.
+`2f31ea66e537762c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722`.
 The source-commit.txt/source.sha256 files beside the PNGs are the authoritative identities;
 documentation-only commits do not change these rendering inputs. All required names,
 540×1200 dimensions and PNG integrity pass scripts/verify-dream-screenshots.py.

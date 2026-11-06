@@ -20,10 +20,10 @@ motion; navigation and buttons retain official Material interaction feedback.
 The shell retains all destinations and back behaviour. It uses the existing official
 NavigationBar on compact windows and NavigationRail at 840dp width and 480dp height or
 larger. Insets are consumed after Scaffold padding so nested IME padding does not count
-system bars twice. Large-text compact navigation retains the established semantic labels.
+system bars twice. Large-text compact navigation retains the established semantic labels. Expanded-window rails widen at large fonts and scroll when needed; no destination is clipped in short windows.
 
 The active goal editor remains an AndroidView, with its data entry and draft behaviour
-preserved. The permission rationale is also a real Android View screen and resolves the same colour roles, including device colours, without migrating its lifecycle. The unexported
+preserved. State-aware tint/text lists retain visibly disabled options and saving controls. The permission rationale is also a real Android View screen and resolves the same colour roles, including device colours, without migrating its lifecycle. The unexported
 legacy MainActivity is not a migration target; no new UI is built there.
 
 ## Official guidance consulted

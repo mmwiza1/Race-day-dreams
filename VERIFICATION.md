@@ -18,8 +18,15 @@ release-note9, route-source11, artwork14 and strict223 guidance asset hashes pas
 Follow-on palette/GPS/window-restoration candidate passes full Gradle79tasks/1m11s and
 format108Kotlin/159Java. Its actual packaged version0.12.0-test1/code16 and noINTERNET
 were checked with aapt.
+Review fixes retain disabled native-control cues and make large-font rails wide/scrollable;
+new short-wide200% captures exercise actual navigation. Local full Gradle79tasks/1m16s passes.
+Intermediate0205 workflow42211442948: API35/36 each514tests and375validated captures SUCCESS;
+logs inspected. Representative actual previews reviewed; ZIP artifact13499374591 SHA
+7f5be4cb102d8118a8cd45fca79937d8daff6e8efaf21eda36e0826952dd082b. API28stillpending.
+This is not final-source evidence. The current377capture gate and new disabled-state test
+still require the exact candidate matrix and final visual review.
 All220canonical/14routine guidance is retained. New theme/disclosure/recording-control tests
-and375required actual captures (all359previous +16colour/large-text/wide cases) still need the
+and377required actual captures (all359previous +18colour/large-text/wide cases) still need the
 complete API28/35/36 runtime matrix and visual review. No new screenshot, merge or publication
 success is claimed here.
 

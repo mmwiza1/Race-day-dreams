@@ -25,7 +25,7 @@ def png(width=320, height=640, pixels=None):
 class CaptureValidationTest(unittest.TestCase):
     def test_material_variants_extend_the_existing_capture_set(self):
         expected = {f'{scene}-material-{mode}.png' for scene in ('home','live') for mode in ('brand-light','device-light','brand-dark','device-dark','brand-large-font','device-large-font')}
-        expected.update(('home-material-wide.png','plan-material-wide.png','live-material-finish-brand-large-font.png','live-material-finish-device-large-font.png'))
+        expected.update(('home-material-wide.png','plan-material-wide.png','home-material-wide-large-font.png','plan-material-wide-large-font.png','live-material-finish-brand-large-font.png','live-material-finish-device-large-font.png'))
         self.assertEqual(expected, set(captures.MATERIAL_REQUIRED))
         self.assertEqual(359, len(set(captures.REQUIRED) - expected))
         self.assertTrue(expected.issubset(captures.REQUIRED))
@@ -54,7 +54,7 @@ class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(375, len(captures.REQUIRED))
+        self.assertEqual(377, len(captures.REQUIRED))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):

@@ -9,6 +9,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -184,11 +186,19 @@ private fun CoachApp(
     Row(Modifier.fillMaxSize()) {
         if (useRail && showNavigation) {
             NavigationRail(
-                Modifier.fillMaxHeight().safeDrawingPadding(),
+                Modifier.fillMaxHeight()
+                    .width(
+                        if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f)
+                            144.dp
+                        else 80.dp
+                    )
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState()),
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 tabs.forEach { (destination, label) ->
                     NavigationRailItem(
+                        modifier = Modifier.fillMaxWidth(),
                         selected =
                             route == destination ||
                                 destination == "strength" && route?.startsWith("strength") == true,

@@ -2663,6 +2663,7 @@ class CoachingScreenshotTest {
 
     @Test
     fun capturesWideWindowNavigationAndBoundedContent() {
+        val originalFont = shell("settings get system font_scale").trim()
         val originalWidth = context.resources.configuration.screenWidthDp
         val size = shell("wm size")
         val originalOverride =
@@ -2677,9 +2678,29 @@ class CoachingScreenshotTest {
             click("Plan")
             await("This week")
             capture("plan-material-wide")
+            scenario?.close()
+            scenario = null
+            shell("settings put system font_scale 2.0")
+            shell("wm size 1400x720")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            compose.waitUntil(20000) {
+                context.resources.configuration.screenWidthDp >= 840 &&
+                    context.resources.configuration.fontScale >= 1.99f
+            }
+            // Every destination remains reachable when enlarged labels exceed the rail viewport.
+            compose.onNodeWithText("Strength").performScrollTo().assertIsDisplayed().performClick()
+            await("Log workout")
+            compose.onNodeWithText("Home").performScrollTo().performClick()
+            awaitHomeReady(false)
+            capture("home-material-wide-large-font")
+            compose.onNodeWithText("Plan").performScrollTo().performClick()
+            await("This week")
+            capture("plan-material-wide-large-font")
         } finally {
             scenario?.close()
             scenario = null
+            restoreFontScale(originalFont)
             shell("wm size ${originalOverride ?: "reset"}")
             compose.waitUntil(20000) {
                 context.resources.configuration.screenWidthDp == originalWidth

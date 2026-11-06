@@ -88,8 +88,8 @@ public final class OnboardingView extends ScrollView {
 
     private void tintChildren(View view) {
         if (view instanceof android.widget.CompoundButton control) {
-            control.setTextColor(palette[1]);
-            control.setButtonTintList(android.content.res.ColorStateList.valueOf(palette[2]));
+            control.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
+            control.setButtonTintList(stateColours(palette[2], disabledColour(0.38f)));
             if (control instanceof RadioButton) {
                 android.graphics.drawable.GradientDrawable tile =
                         new android.graphics.drawable.GradientDrawable();
@@ -99,16 +99,26 @@ public final class OnboardingView extends ScrollView {
                 control.setBackground(tile);
             }
         } else if (view instanceof Button button) {
-            button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(palette[2]));
-            button.setTextColor(palette[3]);
+            button.setBackgroundTintList(stateColours(palette[2], disabledColour(0.12f)));
+            button.setTextColor(stateColours(palette[3], disabledColour(0.38f)));
         } else if (view instanceof TextView label) {
-            label.setTextColor(palette[1]);
+            label.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
             if (view instanceof EditText)
-                view.setBackgroundTintList(android.content.res.ColorStateList.valueOf(palette[2]));
+                view.setBackgroundTintList(stateColours(palette[2], disabledColour(0.38f)));
         }
         if (view instanceof ViewGroup group) {
             for (int i = 0; i < group.getChildCount(); i++) tintChildren(group.getChildAt(i));
         }
+    }
+
+    private int disabledColour(float opacity) {
+        return (palette[1] & 0x00FFFFFF) | (Math.round(255 * opacity) << 24);
+    }
+
+    private static android.content.res.ColorStateList stateColours(int enabled, int disabled) {
+        return new android.content.res.ColorStateList(
+                new int[][] {new int[] {-android.R.attr.state_enabled}, new int[0]},
+                new int[] {disabled, enabled});
     }
 
     public OnboardingView(
