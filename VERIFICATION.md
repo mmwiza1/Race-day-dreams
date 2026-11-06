@@ -1,3 +1,57 @@
+# 0.11.0-test1 — verified software and visual checkpoint
+
+Source `ee760bf33356092dc7559738b90b1d089bf45521` passed the complete [Android workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418).
+The final metadata/documentation head must also pass required CI before the authorised PR18 merge.
+Post-merge main CI and rolling APK publication remain separate delivery checks, not claimed here.
+
+| Gate | Observed result |
+| --- | --- |
+| Domain | 700,108 checks across 47 suites |
+| Six-month athlete simulations | 4,226 assertions, three six-calendar-month histories |
+| Schema/migrations | 75 tests; additive upgrades and non-destructive failure paths |
+| API28 | 508 instrumentation tests, 359 authentic captures, success |
+| API35 | 508 instrumentation tests, 359 authentic captures, success |
+| API36 | 508 instrumentation tests, 359 authentic captures, success |
+| Guidance | 220/220 canonical exercises and 14/14 routine movements |
+| Original guide assets | 223 exact provenance/hash matches; 11,634,030 bytes |
+| Formatting | Pinned checks pass for 97 Kotlin and 158 Java files; 14 formatter tests |
+| Other offline checks | 9 release-note, 17 capture-validator, 11 route-source, 14 Dream-artwork tests |
+| Android build/lint | Debug APK, lint and instrumentation compilation pass |
+
+All three Android job logs and the complete workflow conclusion were inspected. Backup cases
+include supported older readers, current round trips, corrupt/future/conflicting rejection,
+transaction rollback, retained PB/actual/programme evidence and the 1,100-summary complete fixture.
+Schema19/root JSON13/retention1/raw archive3/complete package1 retain supported historical reads.
+The original recording engine, immutable history and separate reviewed activation remain intact.
+
+Canonical bot `436e429f3d0e69312ae7c3a844f44dc34b676eca` was safely fast-forwarded.
+Fingerprint `0b13cd7ffae330ebdb2b29f07e635119d11c7cd9131cd04c8906b32901f78436` matches the current source and source metadata. API35 artifact13471938317
+ZIP SHA256 `e9a8dbd49caace3f5c67ae4fa582044b4dfb42cd01c4ace03c94dee52beed167` was downloaded,
+hashed and all359original PNG bytes compared exactly with Git. No screenshot editing or mock UI.
+The corrected large-text guide tails were opened directly; full mistakes text is readable inside
+the real scroll viewport. Representative final-source light/dark/200% gym, recovery, body,
+records and storage views retain the approved instruction-first hierarchy. Detailed review is in
+docs/VISUAL_REVIEW_0_11.md; semantic/UI checks do not substitute for human hardware acceptance.
+
+Verified API35 APK artifact13471928190 is55,250,287bytes, version0.11.0-test1/code15, SHA256
+`f25ea63a6d71275e3a6c9297c84e72eaa75b4f3fd5fa158772280c1ec4b49979`.
+Its ZIP SHA is `d0da064bbf075da9843cb1645a1bc4dadbf41ed7bfa6812fed13ca56c2934bde`.
+Actual packaged permissions were inspected: no INTERNET. READ_HEIGHT is the only new body
+permission; no runtime dependency, background health access, account or telemetry is added.
+Compared with verified0.10.1 CI APK51,979,576bytes: +3,270,711bytes/+6.2923%. Compared with
+pre-catalogue M5 API35 APK52,750,085bytes: +2,500,202bytes/+4.7397%. New artwork accounts for
+2,435,370bytes. These compare CI packages, not different local incremental DEX layouts.
+This feature artifact is not a claim that merged-main publication has already occurred.
+
+The beginner100kg scenario records76runs/25gym workouts; hybrid87kg102/77; experienced70kg102/51.
+Each spans27weekly windows with an explicit missing-data week. Assertions preserve unknown
+health/effort, optional advice, exact-exercise load safeguards, user choices and retained history.
+They establish software invariants, not physiological improvements or outdoor GPS accuracy.
+
+Galaxy S24/provider/audio/locked-screen/battery/human TalkBack and real-data cleanup/restore
+checks remain UNPERFORMED, including0.10.1 outdoor GPS acceptance. See TEST_BUILD.md.
+Historical source-specific verification follows; earlier pending text is not the current state.
+
 # End-of-page guide capture correction — final runtime gate required
 
 b3f4ec1 workflow42145898695 API28/36 each507passed of508; their ONLYfailure was a fixed capture

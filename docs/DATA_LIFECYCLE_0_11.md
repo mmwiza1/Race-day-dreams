@@ -75,7 +75,9 @@ If the original receipt is missing, do not guess that arbitrary conflicting evid
 
 ## Verification boundary
 
-Domain/schema/local compilation and dedicated repository/UI tests are included. Actual API28/35/
-36 execution, authentic215capture review and final0.11 acceptance must be recorded from the latest
-workflow in VERIFICATION.md. This document does not claim an unobserved emulator or S24 pass.
-The larger history fixture is a backup test, not one of the three six-month athlete simulations.
+Sourceee760bf passed the complete508test/359capture matrix on API28/35/36, including real
+transactional retention/backup cases and the1100-summary complete fixture. Direct confirmation,
+policy, preview and storage review includes light/dark/200%. See VERIFICATION.md for exact
+workflow/artifact evidence. Three six-month pure-domain scenarios separately validate retention
+eligibility and history; they do not pretend to perform database deletion. Final metadata-head/
+main publication remains a delivery gate. No physicalS24/provider/real-data acceptance is claimed.

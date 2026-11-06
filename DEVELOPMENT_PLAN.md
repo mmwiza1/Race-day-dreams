@@ -8,7 +8,8 @@ All six implementation milestones are now present: optional gym timer/warm-up/su
 recorded strength trends/records/milestones; reviewed recovery/hybrid proposals; optional body/
 protein guidance; acknowledged transactional raw-detail retention/storage/compatible restore;
 and220fully illustrated canonical exercises plus three genuine six-month athlete simulations.
-Final-source Android/visual/artifact acceptance remains required. CONTINUE_CODEX.md and
+Sourceee760bf passed all508tests/359captures EACH API28/35/36 and actual-source visual/artifact
+acceptance. Final metadata-head CI, authorised merge and main publication remain. CONTINUE_CODEX.md and
 VERIFICATION.md record the exact observed boundary; no software or hardware pass is assumed.
 No0.12work is started. The following sections describe historical releases, not active backlogs.
 

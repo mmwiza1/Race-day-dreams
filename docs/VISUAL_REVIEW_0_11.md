@@ -1,3 +1,33 @@
+# 0.11 final-source visual acceptance
+
+Verified source `ee760bf33356092dc7559738b90b1d089bf45521`, complete workflow42148419418:508tests/359captures EACH API28/35/36.
+Canonical436e429 contains the original API35renders; all359PNG bytes match the downloaded,
+SHA-verified artifact13471938317. Source fingerprint `0b13cd7ffae330ebdb2b29f07e635119d11c7cd9131cd04c8906b32901f78436` matches. References remain separate.
+
+The earlier source89 review opened all46new guide light views and the major new production
+screens in light/dark/200%. Production layout has not changed since that review; the sole guide
+copy refinement replaces an inappropriate opposite-rotation alternative with inward practice.
+Current-source review reopened all3corrected200%mistakes panels, large timer/body/confirmation,
+dark recovery/rotation guidance and actual-versus-estimated records. The full mistakes text now
+fits and is readable; no fixed heading position is fabricated beyond the page's maximum scroll.
+All global heading assertions remain. Current-source PNG/semantics/navigation checks pass.
+
+Rounded semantic cards, blue actions, readable hierarchy and natural wrapping match the approved
+0.10.1 instruction-first direction. Technical justification stays secondary. Actual65kg×6 remains
+separate from approximate78kg. Chosen weight/source and optional recovery review remain explicit.
+Large titles and controls wrap/stack without horizontal scrolling; content below the viewport is
+ordinary scrolling. Dark foregrounds remain legible. The supplied older reference JPEGs are
+unchanged; no separate0.10.1reference bitmap exists, so no invented pixel comparison is claimed.
+
+Artwork and complete motion/equipment/contact review cover all46additions. Automated capture
+visits every addition in light/dark/200%; this is not a claim of manual inspection of every one
+of the359PNG states. The recorded direct reviews cover each new major screen, representative
+accessibility modes and meaningful scroll/disclosure states. No mock or edited screenshot is used.
+
+Software visual acceptance is complete for this source. Exact final metadata-head and post-merge
+CI/publication remain delivery gates. PhysicalS24/human TalkBack/provider/audio/outdoorGPS checks
+remain unperformed. Historical reviews and the problems corrected during development follow.
+
 # End-of-page capture follow-up — all font transitions verified
 
 b3f4ec1 matrix42145898695 ran508tests EACH API28/35/36:507passed/one identical catalogue-tail

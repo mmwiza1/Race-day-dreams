@@ -74,3 +74,7 @@ stays unchanged, and older supported body readers remain. Large export limits fa
 Domain, schema, repository, UI and production-capture cases are defined. Consult VERIFICATION.md
 for observed results. New current-source API28/35/36, screenshots and physical S24 body-provider
 acceptance are not claimed until actually verified.
+
+Final software sourceee760bf passed508tests/359captures EACH API28/35/36 and scoped actual
+light/dark/200%visual review. VERIFICATION.md records exact evidence and pending delivery state.
+Real GalaxyS24/provider/audio/human TalkBack checks remain unperformed.

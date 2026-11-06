@@ -67,3 +67,7 @@ older achievement data restores to empty recognition/celebrations off. The later
 package1 stays unchanged. These earlier milestone formats remain supported readers. Restore validates before replacement and uses the existing shared SQLite
 transaction. These new screens still require the final-source API 28/35/36 and authentic visual gate;
 consult `CONTINUE_CODEX.md` and `VERIFICATION.md` for observed results rather than assuming passes.
+
+Final software sourceee760bf passed508tests/359captures EACH API28/35/36 and scoped actual
+light/dark/200%visual review. VERIFICATION.md records exact evidence and pending delivery state.
+Real GalaxyS24/provider/audio/human TalkBack checks remain unperformed.

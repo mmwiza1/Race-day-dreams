@@ -1,89 +1,95 @@
 # Race Day Dreams 0.11.0-test1
 
-Gym, Health & Recovery Intelligence is in development. This document records implemented
-behaviour only; the complete agreed release is not yet ready for review.
+Gym, Health & Recovery Intelligence adds practical gym tools, evidence-backed training insight
+and explicit control over long-term recording detail. Running, Strength and Hybrid remain
+independently useful, private and account-free.
 
 ## What's new
 
-- Optional Gym Now rest timer with pause/resume, reset, adjustment and skip. Prescribed rest
-  is guidance; it never blocks saving a set. Completion notifications are opt-in.
-- Optional warm-up guidance. Light load examples require recent exact-exercise working-set
-  evidence; otherwise the app offers movement preparation without invented weights.
-- Manually group adjacent exercises in workout and programme drafts. Superset rounds keep
-  actual sets separate and support today-only skips, substitutions and breaking the group.
-- Recorded working-set trends, exercise frequency and a transparent primary-area breakdown.
-  Secondary involvement stays separate, and unsupported anatomy remains unclassified.
-- A recorded-performance page separates actual working sets from bounded single-repetition
-  estimates. Historical/manual PB entry and the original progression history remain available.
-- A restrained set of local training milestones, backed by retained source references.
-  Optional in-app celebrations are off by default; there are no streak penalties.
-- Optional recovery guidance from recorded effort and fresh comparable supporting evidence.
-  Lighter-week and lower-conflict gym-date previews reuse separate review and activation.
-
-- Optional height and weight history with source labels, manual cm/inch and kg/pound entry,
-  and independent Health Connect access. General adult protein guidance is off by default and
-  requires an explicitly chosen, recent weight; imported measurements never silently replace it.
-
-- Explicit recording-detail retention choices, protected existing-user defaults, preview and
-  separate cleanup confirmation. Permanent workout/PB/programme history stays. Storage estimates
-  distinguish raw payload bytes from physical database files; compatible raw backups can restore
-  proven original detail.
-
-- Forty-six fully illustrated catalogue additions cover hip machines, cable hip work, beginner
-  pushing, chair sit-to-stand, timed core/inner-thigh holds, shoulder-blade control, unilateral
-  bridges, a distance-based overhead carry and specific Smith-machine/shoulder-control options, floor presses, supported single-leg work,
-  crawling, dedicated posterior-chain machines and distinct shoulder rotation tasks. Support-based
-  substitutions explain changed leverage; loads never transfer between different exercises.
+- Optional Gym Now rest timers with start, pause, resume, reset, adjustment and skip. Rest is
+  guidance, never a condition for saving your next set. Sound and vibration are optional.
+- Optional warm-up suggestions. Load examples require recent working sets for the exact exercise;
+  otherwise preparation guidance avoids invented weights. Only saved actual sets become history.
+- Supersets in workout and programme drafts, with ordered rounds, independent actual sets,
+  today-only substitutions, skipped movements and the option to break the group.
+- Strength trends based on recorded working sets, with explained primary-area attribution and
+  separate secondary involvement. Warm-ups and unsupported custom anatomy are not fabricated volume.
+- Recorded performance and history clearly distinguish actual lifts, repetitions, holds and
+  distances from bounded estimated one-repetition results. Original historical PB entry remains.
+- A small set of local, evidence-backed training milestones. Recognition survives backup/restore;
+  celebrations are optional and there are no streak penalties.
+- Conservative recovery guidance and optional lighter-week or lower-conflict Hybrid schedule
+  previews. Keeping your programme is valid; saving and activating changes remain separate.
+- Optional Health Connect height and weight history, manual metric/imperial entry and source
+  labels. General adult protein guidance is off by default and requires a chosen recent weight.
+- Storage management with 24-month, five-year and Keep forever choices. Existing users keep
+  historical detail until informed acknowledgement. Saving a policy never deletes data: a fresh
+  preview and separate confirmation precede bounded, transactional cleanup.
+- 220 fully illustrated canonical exercises, including 46 useful additions. New options include
+  beginner pushing, hip machines and cable work, supported single-leg training, shoulder control,
+  timed holds and carries. All 14 supporting routine movements retain illustrated guidance.
 
 ## Improvements
 
-- The accepted0.10.1 GPS, coaching clarity and screenshot lifecycle foundations are retained.
+- Clear instructions lead; evidence and calculations appear behind working disclosures.
+- Every new exercise has explicit equipment, movement and measurement metadata, searchable aliases,
+  original technique artwork, written cues, common mistakes and accessible descriptions.
+- Busy-equipment alternatives include floor presses without assuming a free bench. Different
+  exercises retain independent load evidence; exclusions and historical actuals remain intact.
+- Storage figures distinguish logical raw payloads from physical SQLite files. Activities explain
+  removed detail honestly; compatible original archives can restore proven matching evidence.
+- The accepted GPS, running plans, strength programming, Gym Now and reviewed-proposal architecture
+  remain in place. No new runtime dependency or Internet permission is introduced.
 
 ## Fixes
 
-- Single-repetition results stay measured records rather than being duplicated as estimates.
-- New gym helpers use the existing Android-9-compatible immutable collection primitives.
-- Superset skips remain incomplete targets and never appear as completed actual sets.
+- Single-repetition actual results are not duplicated as estimated maximal lifts.
+- Warm-ups cannot qualify as working-set volume, progression evidence or normal working-set PBs.
+- Superset skips remain incomplete targets rather than completed actual sets.
+- Screenshot fixtures restore the effective font scale and await real Android configuration,
+  preventing large-text state from leaking into later navigation tests.
 
 ## Known limitations
 
-- This is an incomplete development checkpoint. New retention cleanup/restore/UI require their
-  current-source Android and visual gate. Final220-catalogue Android screenshots and visual review remain to finish; three six-month
-  athlete simulations already pass4226domain assertions.
-  This is not a software-complete0.11 release.
-- Android may delay optional rest notifications during sleep/battery saving. A reboot or
-  cross-device restore interrupts timer continuity and requires explicit review.
-- Physical Galaxy S24 acceptance remains unperformed, including0.10.1 outdoor GPS checks.
+- Galaxy S24 acceptance is unperformed, including outdoor GPS accuracy, locked-screen battery
+  behaviour, notification/audio interaction, real Health Connect providers and human TalkBack.
+- Android may delay optional rest alerts during sleep or battery saving. Reboot or cross-device
+  restore interrupts timer continuity and requires explicit review.
+- Removed raw routes cannot be reconstructed from totals. Export a suitable complete backup first;
+  deleting SQLite rows does not necessarily reclaim device storage immediately.
+- Protein guidance is general adult information, not a medical prescription. Individual medical
+  or dietary circumstances may change requirements. No fresh chosen weight means no numerical range.
 
 ## Data and privacy
 
-- Local-first, account-free operation remains. No Internet permission or backend is added.
-- Additive schema16 stores typed rest preferences/countdowns; schema17 adds normalized local
-  milestone recognition and sources. Schema18 adds typed height observations and optional guidance
-  preferences. Schema19 adds typed retention consent and removal receipts. Root JSON13 retains
-  supported older readers through12; raw archive3 reads1–3. Complete package1 is unchanged.
-  See DATA_LIFECYCLE_0_11.md for explicit bounds and raw-versus-summary backup semantics.
-- Timer and warm-up suggestions never become recorded training automatically.
-- Optional READ_HEIGHT is the only new body-feature permission. No background health access or
-  runtime dependency is introduced. General protein ranges are not medical prescriptions.
+Additive migrations advance SQLite to schema 19. Root JSON backup 13 reads supported older roots
+1–12; raw recording archive 3 reads formats 1–3; complete package 1 is unchanged. Typed retention
+preferences, consent and removal receipts are backed up. Malformed, conflicting and future-format
+restores fail before destructive replacement or roll back transactionally.
+
+Cleanup removes only eligible finished app-owned dense detail. Summaries, actual gym sets, PBs,
+race results, programmes, decisions, milestones and ordinary body observations remain. Active,
+paused and recoverable recordings are protected. No Health Connect provider record is deleted.
+
+The app remains local-first, free and account-free, with no Internet permission, backend,
+advertising, analytics, subscriptions or runtime LLM. Optional READ_HEIGHT is the only new body
+permission; there is no background Health Connect access.
 
 ## Verification
 
-- Local220-guide source passes700108domain checks across47suites,75schema/migration tests,
-  9release-note tests,17capture-validator tests,11route-source tests and14artwork tests.
-  Strict220/220canonical and14/14routine guidance and all223original asset hashes pass.
-- Three deterministic six-month athlete histories pass4226integration assertions using
-  production domain calculations. They validate missing evidence, conservative advice,
-  explicit user choice and retained history; they do not claim physiological outcomes.
-  See ATHLETE_SIMULATIONS_0_11.md.
-- The complete retention implementation passed506tests and215captures on each API28/35/36
-  at sourcee39a308 (workflow42133056947). Source2cc10d0 passed508tests/296captures on API28
-  and36; API35had one font-fixture restoration failure, now corrected with an explicit normal
-  scale. No assertion or production training rule was relaxed.
-- Final220-source508/API Android gate,359captures/API, direct visual review, comparable APK
-  size and final rolling development artifact remain pending. Earlier checkpoints do not
-  establish final release acceptance. Physical GalaxyS24 checks remain unperformed.
+Source `ee760bf` passed [the complete software workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418):
+508 instrumentation tests and 359 authentic captures on each Android API 28, 35 and 36;
+700,108 domain checks across 47 suites; 75 schema/migration tests; complete illustrated guidance
+for all 220 canonical exercises and 14 routine movements; 223 reviewed artwork hashes; and
+pinned formatting, lint, build, source and release-note checks.
 
-Current220source89ff744 passed508tests/359captures on API36; API28/35 each had one rapid font
-restoration failure. The following fixture synchronises on the system configuration broadcast
-and real settings/resources; its strengthened three-cycle regression and full matrix are pending.
+The three six-month athlete histories pass 4,226 assertions. Actual screenshots were inspected
+in light, dark and 200% modes, including complete scrolled guide mistakes and cleanup confirmation.
+The verified feature API 35 APK is 55,250,287 bytes, an increase of 6.2923% over the verified
+0.10.1 CI package. New exercise artwork adds 2,435,370 bytes.
+
+Exact final-head and main CI, and development publication, are tracked in VERIFICATION.md and
+PR #18. No physical acceptance or already-published main artifact is implied. See
+VERIFICATION.md, docs/VISUAL_REVIEW_0_11.md and TEST_BUILD.md for evidence and the remaining
+physical-device checklist. Synthetic histories validate software invariants; they do not
+establish physiological outcomes or outdoor GPS accuracy.

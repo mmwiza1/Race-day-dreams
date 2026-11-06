@@ -16,24 +16,52 @@ wins. No incomplete/red/pending/forced merge, branch-protection bypass or stable
 specific authorisation. Real hardware checks remain honest limitations, never fabricated passes.
 The app recommends. The athlete decides. The plan adapts.
 
-## CURRENT — 0.11.0-test1 Gym, Health & Recovery Intelligence
+## CURRENT — 0.11.0-test1 software complete; finish delivery
 
-Continue ALL six agreed milestones. Owner explicitly AUTHORISES AUTOMATIC MERGE of PR18 once
-ALL software/visual acceptance is complete and exact-head required checks are green; then verify
-post-merge main and publish/verify the rolling development APK. Do not stop merely at review-ready.
-Keep PR18 draft while incomplete. No stable tag. Do not restart or discard completed work.
-This instruction supersedes all historical no-auto-merge wording below.
+All six agreed milestones are implemented and the complete software/visual checkpoint is green.
+Do not restart features, revive earlier pending sections or begin0.12. Owner AUTHORISES automatic
+squash merge of PR18 once the final metadata head passes all required checks, then post-merge main
+CI and verified rolling development APK/version/source/SHA. No stable tag or physical-test claims.
 
-- Branch: `feature/0.11-gym-health-recovery-intelligence`
-- PR: https://github.com/mmwiza1/Race-day-dreams/pull/18 (draft/open)
-- Live main inspected/fetched: `8796bc5d38360dcd83f5b6fa725cd0c03f4ad605` (unchanged).
-- Latest FULL green implementation: `e39a3086e33c10fdc7fa3b774dba56a7eecc64f0` (M5/simulations;174catalogue).
-- Canonical bot: `c7af9ce`, adopted with normal fast-forward while preserving all new catalogue files.
-- Inventory checkpoint: `0d633f9`; following expiry/PB-proof checkpoint: `1606ade`.
-- Following documentation checkpoint: inspect actual HEAD/log/status for its own SHA.
-- Last full-gate baseline90ec691: app0.11.0-test1/code15, schema18/rootJSON12/raw2/complete1.
-  Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
-  Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
+- Branch: feature/0.11-gym-health-recovery-intelligence; PR https://github.com/mmwiza1/Race-day-dreams/pull/18.
+- Verified source: `ee760bf33356092dc7559738b90b1d089bf45521`; COMPLETE workflow42148419418 SUCCESS.
+-508tests and359authentic screenshots EACH API28/35/36; all three full logs inspected.
+- Canonical bot436e429f3d0e69312ae7c3a844f44dc34b676eca adopted by safe fast-forward; all359PNG
+  bytes match SHA-verified API35ZIP13471938317. Fingerprint `0b13cd7ffae330ebdb2b29f07e635119d11c7cd9131cd04c8906b32901f78436`.
+-700108domain checks/47suites;4226six-month scenario assertions;75schema;9release;17capture-
+  validator;14formatter;11route-source;14artwork tests.97Kotlin/158Java pinned formatting.
+-220complete canonical guides (46additions),14routine movements,223original assets/11634030bytes.
+  No missing IDs or generic artwork. All new movements reviewed; final corrected200%tails opened.
+- Currentcode15/schema19/rootJSON13/retention1/raw3/complete1. Historical readers and typed
+  transactional restore/pruning tests pass; original174definitions and actual history preserved.
+- Verified feature API35APK13471928190:55250287bytes, SHA
+  f25ea63a6d71275e3a6c9297c84e72eaa75b4f3fd5fa158772280c1ec4b49979, actualversion15/0.11.0-test1,
+  no INTERNET permission. +6.2923%versus0.10.1 CI; +4.7397%versus pre-catalogue M5sameAPI.
+- All original generated PNGs/artifacts/logs remain under /workspace/generated_images and
+  /workspace/scratch/rdd011. Canonical originals are docs/screenshots, not design-reference JPEGs.
+
+Implemented: optional gym timer/warm-ups/supersets; actual strength trends/records/milestones;
+reviewed conservative recovery/deload/hybrid proposals; optional body/Health Connect/protein;
+protected retention consent/expiry/dataset-bound previews/raw-only cleanup/removal provenance/
+compatible archive recovery/storage UI;220complete exercises and three actual six-month domain
+simulations. No unrelated feature or new runtime dependency. PhysicalS24checks remain UNPERFORMED.
+
+NEXT EXACT DELIVERY TASKS:
+1. Commit/push this final documentation checkpoint after release-note validation. Source fingerprint
+   MUST remain the verified value above. Inspect its exact-head full CI, not an older green run.
+2. KeepPR18draft until that head is allgreen; update final PR description/results and confirm no
+   blocking reviews/conflicts. Mark ready and squash merge (owner authorised; no new approval).
+3. Fetch actualmain, verify merged tree/version/source fingerprint and full post-merge workflow.
+4. Verify rollingLatestDevelopmentBuild APK/version15/source commit/SHA against GitHub metadata,
+   downloaded APK and checksum file. Never publish stale/unverified source or create a stable tag.
+5. Record final delivery evidence in the PR and handoff, and report mainSHA/APK/link/physical checks.
+
+If PR18 is already merged when resuming, inspect actualmain/Actions/development release FIRST;
+do not repeat completed implementation or create a replacement feature PR. Final delivery evidence
+belongs to PR18 and its main workflow. Maintain the permanent branch/PR/verification safeguards.
+The following are archived checkpoints; their pending/failing wording is historical only.
+
+## Archived development checkpoints
 
 ### LATEST — bounded end-of-page capture visibility correction
 

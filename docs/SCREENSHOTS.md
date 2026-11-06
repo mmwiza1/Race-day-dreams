@@ -1,3 +1,14 @@
+# 0.11 authentic screenshots —359 source-verified captures
+
+Complete workflow42148419418 passed508tests and359captures EACH API28/35/36 at source
+`ee760bf33356092dc7559738b90b1d089bf45521`. Canonical436e429 was safely fast-forwarded; all359API35PNG bytes match
+SHA-verified ZIP13471938317 (`e9a8dbd49caace3f5c67ae4fa582044b4dfb42cd01c4ace03c94dee52beed167`).
+Fingerprint `0b13cd7ffae330ebdb2b29f07e635119d11c7cd9131cd04c8906b32901f78436` matches the actual code/test source. PNG integrity is not visual acceptance:
+see VISUAL_REVIEW_0_11.md for direct light/dark/200%, guidance, disclosure and scrolled-tail review.
+All46new guides are captured in all3modes; original design references stay in docs/design-reference.
+README previews use these genuine production-screen renders, never mockups. No S24/human TalkBack
+acceptance is implied. Earlier checkpoint descriptions below retain their own historical sources.
+
 # 0.11 development captures — verified gym checkpoint, final source pending
 
 Workflow42073702201/sourcea26150d passed448tests and164required captures EACH API28/35/36.

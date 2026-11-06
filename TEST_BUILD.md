@@ -1,3 +1,16 @@
+# 0.11.0-test1 software verification / physical acceptance
+
+Complete [workflow42148419418](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418) at sourceee760bf passed508tests EACH API28/35/36,
+359authentic captures/API,700108domain checks/47suites,75schema/migration and all release,
+formatting, build/lint, provenance and220canonical/14routine guidance gates. Canonical436e429
+matches all359API35artifact PNGs. The feature APK is55250287bytes, code15, debug-signed/test only.
+Schema19/rootJSON13/raw3/complete1 retain supported older readers. Export a complete backup before
+upgrading; debug signing keys may differ between builds and must not cause casual data loss.
+Final metadata-head/main CI and rolling publication are checked separately. See VERIFICATION.md.
+
+The0.11GalaxyS24checklist near the end of this file and all0.10.1outdoorGPS rows remain
+UNPERFORMED. Emulators do not certify provider, audio, battery, physical GPS or human TalkBack.
+
 # 0.10.1 software verification / real-device acceptance
 
 ## Verified0.10.1 software build

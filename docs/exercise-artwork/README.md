@@ -36,8 +36,10 @@ record actual metres; timed holds remain separate from repetition tasks. Each ad
 complete guidance, original art and a stable identity; the original174 definitions are retained.
 
 Bundled additions total **2,435,370 bytes** over the prior177assets. The selective catalogue
-now reaches220 complete entries. Final comparable CI APK size and actual new-guide screenshots
-remain pending the exact-source Android gate; asset completeness does not replace visual review.
+now reaches220 complete entries. Verified sourceee760bf passes508tests/359captures EACH API28/35/36, including all46additions
+in light/dark/200%. The API35CI APK is55,250,287bytes: +2,500,202/+4.7397%versus pre-catalogue
+M5API35, and+6.2923%versus0.10.1 CI. The final200%tail views were directly reviewed; see
+VISUAL_REVIEW_0_11.md. Asset completeness alone does not replace that visual review.
 
 ## Authorship and review
 
