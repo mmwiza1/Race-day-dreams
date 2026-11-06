@@ -398,6 +398,7 @@ class CoachingScreenshotTest {
         org.racedaydreams.recording.RunRecordingService.workoutState.value = null
         org.racedaydreams.recording.RunRecordingService.savedActivity.value = null
         try {
+            dismissCaptureDialogs()
             scenario?.close()
         } finally {
             fixtureFontScale?.let { restoreFontScale(it) }
@@ -2560,15 +2561,43 @@ class CoachingScreenshotTest {
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))
                 Assert.assertEquals(actuals.toSet(), CoachingStore(context).strength().toSet())
+                dismissCaptureDialogs()
                 scenario?.close()
                 scenario = null
             }
+        } catch (failure: Throwable) {
+            android.util.Log.i("RddGate", "CAPTURE_FAILURE $kind ${failure.javaClass.name}")
+            failure.stackTrace.take(16).forEach { android.util.Log.i("RddGate", "  at $it") }
+            throw failure
         } finally {
+            dismissCaptureDialogs()
             scenario?.close()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
+    }
+
+    /** Dismiss actual popup windows before synchronously destroying their host renderer. */
+    private fun dismissCaptureDialogs() {
+        if (scenario == null) return
+        repeat(3) {
+            val count =
+                compose
+                    .onAllNodes(isDialog(), useUnmergedTree = true)
+                    .fetchSemanticsNodes(atLeastOneRootRequired = false)
+                    .size
+            if (count == 0) return
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            androidx.test.espresso.Espresso.pressBack()
+            compose.waitUntil(20000) {
+                compose
+                    .onAllNodes(isDialog(), useUnmergedTree = true)
+                    .fetchSemanticsNodes(atLeastOneRootRequired = false)
+                    .size < count
+            }
+        }
+        compose.onAllNodes(isDialog(), useUnmergedTree = true).assertCountEquals(0)
     }
 
     private fun gymNowModel(): GymNowViewModel {

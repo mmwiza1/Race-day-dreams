@@ -10,11 +10,15 @@ Test-only GateProgressListener now emits case identities and bounded stack frame
 cases; CI streams only that tag, not private application logs. No timeout/assertion was weakened.
 
 Source dbbd4d8 workflow42216657172: API35/36 fail the same3native first-Continue flows;
-other cases complete, including new Material capture methods. API28stillpending. These are
+other cases complete, including new Material capture methods. API28alsofailed: fourbounded snapshots show mainThreadedRenderer.nPauseSurface and test
+ActivityScenario.close in captureAuthoredReviewScenes finally; the cleanup may mask an earlier
+assertion. Actual log `/tmp/rdd-material-dbbd28-job.log`, job127888264154. These are
 regressions requiring correction, not green acceptance. Current local fix preserves platform
 button drawables/input behaviour and themes only colours/outline; existing touch assertions stay.
 A direct native Continue regression and ComposeTimeoutException hierarchy diagnostics were added.
-Local debug/lint/instrumentation compilation PASS75tasks/49s. Runtime proof is still pending.
+Local debug/lint/instrumentation compilation PASS75tasks/49s. Runtime proof is still pending. Follow-on fixture closes actual dialogs through production Back
+navigation before host destruction, including failure cleanup, and logs the original exception
+class/frames first. All assertions/captures remain. Local gate75tasks/34s and formatting110/159pass.
 The emulator action's one-command-per-shell execution is handled by scripts/run-android-gate.sh;
 5real-process tests pass for cleanup/exit propagation. Its contents are fingerprinted. No budgets
 or assertions were weakened.
