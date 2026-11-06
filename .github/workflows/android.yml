@@ -80,7 +80,11 @@ jobs:
             adb shell wm density 210
             # Bound each complete test method; normal capture methods finish well under10min.
             # AndroidJUnitRunner reports the blocked test stack rather than hanging indefinitely.
-            ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000
+            # Test-only identities/stacks expose a stalled gate without private app log dumps.
+            adb logcat -v raw -s RddGate:I '*:S' &
+            rdd_test_log_pid=$!
+            trap 'kill "$rdd_test_log_pid" 2>/dev/null || true' EXIT
+            ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000 -Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener
             # Only the named instrumentation fixture reports bounded resource measurements.
             # Do not dump application/device logs, health values or route evidence.
             adb logcat -d -s GymBackupFixture:I '*:S'

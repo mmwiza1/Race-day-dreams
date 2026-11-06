@@ -226,6 +226,7 @@
     "app/src/main/java/org/racedaydreams/coach/PbCelebration.kt",
     "app/src/main/java/org/racedaydreams/ui/OnboardingView.java",
     "app/src/main/java/org/racedaydreams/health/HealthPermissionRationaleActivity.kt",
-    "app/src/androidTest/java/org/racedaydreams/ui/OnboardingPaletteTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/ui/OnboardingPaletteTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/GateProgressListener.kt"
   ]
 }

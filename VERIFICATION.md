@@ -1,40 +1,36 @@
-# Material UI modernisation — 0.12.0-test1 in progress
+# Material UI modernisation — 0.12.0-test1 remains blocked on API28
 
-Dedicated branch `feature/material3-expressive-ui`, draft [PR19](https://github.com/mmwiza1/Race-day-dreams/pull/19), from merged main e6037e1.
-Previous 0.11 PR18 is merged and published; its main workflow42186511931 and later
-main documentation workflow42205982831 passed. Historical pending wording below is archived.
+Branch `feature/material3-expressive-ui`, draft [PR19](https://github.com/mmwiza1/Race-day-dreams/pull/19), baselinee6037e1. Previous0.11PR18is merged/published; historical pending wording below is archived.
 
-Observed local baseline: 700108 domain checks/47 suites, schema75, release-note9,
-and full Gradle domain/debug/lint/instrumentation compilation PASS79tasks/34s.
-Foundation sourcef6326cd builds/lints/compiles instrumentation locally (75tasks/3m26s),
-pinned formatting103Kotlin/158Java and formatter-tool14 tests pass. Its runtime workflow
-42209685248 was superseded/cancelled; API35 failures identified obsolete Settings selectors,
-corrected without weakening assertions. This is not final-head evidence.
+Source0205 workflow[42211442948](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42211442948) FAILED:
+API35/36each514tests and375validated captures succeeded; API28reported47/514complete with0failures
+at11:49:15UTC, then no progress until the unchanged30min step timeout at12:12:23UTC. Actual
+complete logs inspected. No case identity/stack/report establishes a cause. No full green claim.
+Test-only GateProgressListener now emits case identities and bounded stack frames during long
+cases; CI streams only that tag, not private application logs. No timeout/assertion was weakened.
 
-Integrated core and retained-View changes compiled/linted with full Gradle gate PASS79tasks/2m18s;
-updated Settings action tests then passed the same gate79tasks/43s. The final Home recent-run
-presentation addition also passed the same full gate79tasks/1m34s. Capture validator18, schema75,
-release-note9, route-source11, artwork14 and strict223 guidance asset hashes pass locally.
-Follow-on palette/GPS/window-restoration candidate passes full Gradle79tasks/1m11s and
-format108Kotlin/159Java. Its actual packaged version0.12.0-test1/code16 and noINTERNET
-were checked with aapt.
-Review fixes retain disabled native-control cues and make large-font rails wide/scrollable;
-new short-wide200% captures exercise actual navigation. Local full Gradle79tasks/1m16s passes.
-Intermediate0205 workflow42211442948: API35/36 each514tests and375validated captures SUCCESS;
-logs inspected. Representative actual previews reviewed; ZIP artifact13499374591 SHA
-7f5be4cb102d8118a8cd45fca79937d8daff6e8efaf21eda36e0826952dd082b. API28stillpending.
-This is not final-source evidence. The current379capture gate and new disabled-state test
-still require the exact candidate matrix and final visual review.
-All220canonical/14routine guidance is retained. New theme/disclosure/recording-control tests
-and379required actual captures (all359previous +20colour/large-text/wide cases) still need the
-complete API28/35/36 runtime matrix and visual review. No new screenshot, merge or publication
-success is claimed here.
+UI checkpoints5bbda84/7d39914/53ccd40 preserve engines/data and add visible GPS status,
+state-aware disabled native controls, scrollable large-text rails and rounded native buttons.
+Current379required captures retain all359originals and add20device/branded/light/dark/200%/wide,
+confirmation and retained-form views. Final runtime and visual gate remains REQUIRED.
 
-Version0.12.0-test1/code16. Runtime dependencies, manifest permissions, launcher icon,
-schema19/rootJSON13/raw3/complete1 are unchanged. Local appearance choice is display-only,
-not part of portable training backups. UI changes do not alter retained evidence or policies.
-Real Galaxy/Pixel/Xiaomi, human TalkBack, GPS, providers, locked-screen/OEM and audio checks
-remain UNPERFORMED. This section must be updated with final exact-source evidence.
+Observed local checks:700108domain checks/47suites;75schema/migration,9release-note,
+14formatter-tool,18capture-validator,11route-source,14Dream-artwork tests and223exact guide
+asset hashes pass. All220canonical/14routine guides retained. Integrated full Gradle domain/
+debug/lint/instrumentation compilation passed79tasks/1m16s; native capture updates75tasks/18s;
+test-only diagnostic compilation/lint75tasks/16s. No local emulator/physical pass is claimed.
+
+Actual API35preview artifact13499374591 ZIP SHA
+7f5be4cb102d8118a8cd45fca79937d8daff6e8efaf21eda36e0826952dd082b was downloaded/extracted.
+Representative Home/live/history/trends/shoes/onboarding and Strength/health/recovery/storage/
+Plan/calendar previews were opened in light/dark/200%. No blocking contrast/clipping found in
+those previews; later native/rail refinements still need exact-source inspection.
+
+Packaged local APKversion0.12.0-test1/code16 and noINTERNET verified using aapt. No runtime
+library, manifest, icon, schema or backup-format change: schema19/rootJSON13/raw3/complete1.
+Local appearance choice is display-only and not part of portable training backups.
+Physical Galaxy/Pixel/Xiaomi, human TalkBack, outdoorGPS, providers/OEM/audio checks remain
+UNPERFORMED. No merge or0.12publication success is claimed.
 
 # 0.11.0-test1 — verified software and visual checkpoint
 
