@@ -9,6 +9,16 @@ complete logs inspected. No case identity/stack/report establishes a cause. No f
 Test-only GateProgressListener now emits case identities and bounded stack frames during long
 cases; CI streams only that tag, not private application logs. No timeout/assertion was weakened.
 
+Source dbbd4d8 workflow42216657172: API35/36 fail the same3native first-Continue flows;
+other cases complete, including new Material capture methods. API28stillpending. These are
+regressions requiring correction, not green acceptance. Current local fix preserves platform
+button drawables/input behaviour and themes only colours/outline; existing touch assertions stay.
+A direct native Continue regression and ComposeTimeoutException hierarchy diagnostics were added.
+Local debug/lint/instrumentation compilation PASS75tasks/49s. Runtime proof is still pending.
+The emulator action's one-command-per-shell execution is handled by scripts/run-android-gate.sh;
+5real-process tests pass for cleanup/exit propagation. Its contents are fingerprinted. No budgets
+or assertions were weakened.
+
 UI checkpoints5bbda84/7d39914/53ccd40 preserve engines/data and add visible GPS status,
 state-aware disabled native controls, scrollable large-text rails and rounded native buttons.
 Current379required captures retain all359originals and add20device/branded/light/dark/200%/wide,
