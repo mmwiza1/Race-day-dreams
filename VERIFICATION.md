@@ -23,10 +23,10 @@ new short-wide200% captures exercise actual navigation. Local full Gradle79tasks
 Intermediate0205 workflow42211442948: API35/36 each514tests and375validated captures SUCCESS;
 logs inspected. Representative actual previews reviewed; ZIP artifact13499374591 SHA
 7f5be4cb102d8118a8cd45fca79937d8daff6e8efaf21eda36e0826952dd082b. API28stillpending.
-This is not final-source evidence. The current377capture gate and new disabled-state test
+This is not final-source evidence. The current379capture gate and new disabled-state test
 still require the exact candidate matrix and final visual review.
 All220canonical/14routine guidance is retained. New theme/disclosure/recording-control tests
-and377required actual captures (all359previous +18colour/large-text/wide cases) still need the
+and379required actual captures (all359previous +20colour/large-text/wide cases) still need the
 complete API28/35/36 runtime matrix and visual review. No new screenshot, merge or publication
 success is claimed here.
 

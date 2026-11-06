@@ -99,8 +99,24 @@ public final class OnboardingView extends ScrollView {
                 control.setBackground(tile);
             }
         } else if (view instanceof Button button) {
-            button.setBackgroundTintList(stateColours(palette[2], disabledColour(0.12f)));
-            button.setTextColor(stateColours(palette[3], disabledColour(0.38f)));
+            boolean primary =
+                    Integer.valueOf(R.string.onboarding_continue).equals(button.getTag())
+                            || Integer.valueOf(R.string.onboarding_save).equals(button.getTag())
+                            || Integer.valueOf(R.string.onboarding_saving).equals(button.getTag());
+            android.graphics.drawable.GradientDrawable shape =
+                    new android.graphics.drawable.GradientDrawable();
+            shape.setCornerRadius(dp(28));
+            shape.setColor(stateColours(primary ? palette[2] : palette[4], disabledColour(0.12f)));
+            if (!primary) shape.setStroke(dp(1), stateColours(palette[5], disabledColour(0.12f)));
+            button.setBackgroundTintList(null);
+            button.setBackground(
+                    new android.graphics.drawable.RippleDrawable(
+                            android.content.res.ColorStateList.valueOf(
+                                    (palette[1] & 0x00FFFFFF) | 0x20000000),
+                            shape,
+                            null));
+            button.setTextColor(
+                    stateColours(primary ? palette[3] : palette[2], disabledColour(0.38f)));
         } else if (view instanceof TextView label) {
             label.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
             if (view instanceof EditText)
@@ -651,7 +667,9 @@ public final class OnboardingView extends ScrollView {
             card.setStroke(dp(1), 0xFF888888);
             option.setBackground(card);
             option.setEnabled(enabled.test(value));
-            group.addView(option, blockParams());
+            LinearLayout.LayoutParams optionParams = blockParams();
+            optionParams.bottomMargin = dp(8);
+            group.addView(option, optionParams);
             option.setChecked(value == selected);
             option.setOnCheckedChangeListener(
                     (view, checked) -> {
@@ -713,9 +731,11 @@ public final class OnboardingView extends ScrollView {
     private Button button(int textResource) {
         Button button = new Button(getContext());
         button.setText(textResource);
+        button.setTag(textResource);
         button.setTextSize(16);
+        button.setSingleLine(false);
         button.setAllCaps(false);
-        button.setMinHeight(dp(48));
+        button.setMinHeight(dp(56));
         return button;
     }
 

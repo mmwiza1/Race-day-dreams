@@ -1,6 +1,6 @@
 # Material UI development capture gate
 
-0.12 requires377real current-source captures: all359previous captures plus18device/branded,
+0.12 requires379real current-source captures: all359previous captures plus20device/branded,
 light/dark/200% Home/live/finish-confirmation and wide-window navigation cases. Required names
 and strict PNG validation are in scripts/verify-dream-screenshots.py;18validator tests pass.
 The protected same-repo branch publication rule now targets feature/material3-expressive-ui,

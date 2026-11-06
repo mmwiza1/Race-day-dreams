@@ -9,6 +9,7 @@ Material You / Material 3 Expressive UI modernisation. Development test release.
 ## Improvements
 
 - Shared colour roles, typography, shapes and tonal surfaces across existing Compose destinations.
+- Retained goal-entry buttons gain rounded ripple feedback, clear action hierarchy and wrapping labels.
 - Readable, scrolling content with bounded width and navigation rail on larger displays.
 - Running Home brings the current goal and next sessions closer to today's workout.
 - Live running separates distance, elapsed time, current pace and active average pace. Finish asks for confirmation, and large-text controls stack vertically.

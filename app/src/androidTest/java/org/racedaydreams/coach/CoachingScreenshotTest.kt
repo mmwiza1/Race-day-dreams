@@ -2654,6 +2654,59 @@ class CoachingScreenshotTest {
         }
     }
 
+    @Test
+    fun capturesRetainedGoalFormInDarkAndLargeText() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for (mode in
+                listOf(
+                    MaterialCapture("dark", false, "yes", 1f),
+                    MaterialCapture("large-font", false, "no", 2f),
+                )) {
+                scenario?.close()
+                scenario = null
+                prefs
+                    .edit()
+                    .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false)
+                    .commit()
+                shell("cmd uimode night ${mode.night}")
+                shell("settings put system font_scale ${mode.scale}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                click("Settings")
+                await("Activity data source")
+                compose
+                    .onNodeWithText("Edit race goal and availability")
+                    .performScrollTo()
+                    .performClick()
+                androidx.test.espresso.Espresso.onView(
+                        androidx.test.espresso.matcher.ViewMatchers.withText(
+                            org.racedaydreams.R.string.onboarding_edit_title
+                        )
+                    )
+                    .check(
+                        androidx.test.espresso.assertion.ViewAssertions.matches(
+                            androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+                        )
+                    )
+                capture("onboarding-material-${mode.suffix}")
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("cmd uimode night $night")
+        }
+    }
+
     private data class MaterialCapture(
         val suffix: String,
         val dynamic: Boolean,
