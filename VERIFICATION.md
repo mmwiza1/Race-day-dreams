@@ -1,3 +1,30 @@
+# 0.11 delivered — merged main and published APK independently verified
+
+PR18 merged as `f96733a23a44b3d86cdf9a31eb19d95820142e86`, after exact-head
+[workflow42183404625](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42183404625) succeeded.
+The fetched main tree exactly matches final PR headc2fe649. Complete post-merge
+[workflow42186511931](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42186511931) SUCCEEDED,
+including publication. Each API28/35/36 passed508tests/359authentic captures; all three full logs
+inspected. Main's domain log independently confirms700108checks/47suites. Schema75, backup/
+restore/retention, formatting, lint/build,220/220canonical+14/14routine guidance, source,
+provenance and release-note gates all pass. Physical acceptance is NOT implied.
+
+The rollingdevelopment prerelease tag and release Buildinformation both identify f96733a and
+its verified main workflow. Downloaded released APK and .sha256 file match GitHub asset digest:
+`a62c864f0f5da776b1125fab783748ea7061128b44ffa15eae4d8490f8f253f8`.
+Actual55250287byte APK reports0.11.0-test1/code15; packaged permissions have no INTERNET.
+[APK](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-0.11.0-test1.apk)
+and [checksum](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-0.11.0-test1.apk.sha256).
+Canonical fingerprint remains0b13cd7ffae330ebdb2b29f07e635119d11c7cd9131cd04c8906b32901f78436;
+source-verification and direct light/dark/200%review evidence follow below. No stable tag created.
+
+This post-delivery record is documentation on the retained feature branch, not an unverified
+application change to main. Main's release notes/Buildinformation and PR18 record the delivered
+version. Only the real GalaxyS24/provider/audio/battery/human TalkBack/real-data cleanup and
+outdoorGPS checks in TEST_BUILD.md remain unperformed. No0.12work is started.
+
+Earlier checkpoint descriptions below retain their own dates/source and are historical.
+
 # 0.11.0-test1 — verified software and visual checkpoint
 
 Source `ee760bf33356092dc7559738b90b1d089bf45521` passed the complete [Android workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418).
