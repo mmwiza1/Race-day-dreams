@@ -33,6 +33,12 @@ before the still-mandatory fullsuite. New optional size motion was removed conse
 specific Snapshotfix is claimed before runtime evidence. Local build/lint/testcompile75tasks/28s,
 format110Kotlin159Java and6real-process gate tests pass. Runtime/visual verification remains open.
 
+Fast guard e632935/workflow42229618599 proves nativeviewport error onAPI35/36: Continue
+bounds[26,1126,488,74] put its centre in systemnavigation; allocatedformends1137 whilebutton
+ends1200. Standalonecallback/draft advancement succeeds. The clipping follow-up keeps children
+and visibility requests inside the real nativeviewport, with no arbitrarypadding or inputchange.
+Local Androidbuild/lint/instrumentation compilation75tasks/50s passes; runtimeproofpending.
+
 UI checkpoints5bbda84/7d39914/53ccd40 preserve engines/data and add visible GPS status,
 state-aware disabled native controls, scrollable large-text rails and rounded native buttons.
 Current379required captures retain all359originals and add20device/branded/light/dark/200%/wide,

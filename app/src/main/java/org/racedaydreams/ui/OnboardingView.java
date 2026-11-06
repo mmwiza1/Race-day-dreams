@@ -162,8 +162,17 @@ public final class OnboardingView extends ScrollView {
         this.draft = new OnboardingDraft(initial, draftJson, derivedPerformanceEligibility);
         this.editing = initial != null;
         setFillViewport(true);
-        setClipToPadding(false);
+        // AndroidView does not clip the native subtree to its Compose viewport by default.
+        // Keep native visibility/scroll requests inside the actual allocated form bounds.
+        setClipChildren(true);
+        setClipToPadding(true);
         render();
+    }
+
+    @Override
+    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+        setClipBounds(new android.graphics.Rect(0, 0, width, height));
     }
 
     /** Includes incomplete text and the current step, for rotation and local draft persistence. */

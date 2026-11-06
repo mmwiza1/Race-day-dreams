@@ -22,7 +22,7 @@ larger. Insets are consumed after Scaffold padding so nested IME padding does no
 system bars twice. Large-text compact navigation retains the established semantic labels. Expanded-window rails widen at large fonts and scroll when needed; no destination is clipped in short windows.
 
 The active goal editor remains an AndroidView, with its data entry and draft behaviour
-preserved. State-aware tint/text lists retain visibly disabled options and saving controls. Existing native buttons use rounded ripple backgrounds, primary/secondary hierarchy, wrapping labels and56dp targets; option cards have breathing room. No View migration is introduced. The permission rationale is also a real Android View screen and resolves the same colour roles, including device colours, without migrating its lifecycle. The unexported
+preserved. State-aware tint/text lists retain visibly disabled options and saving controls. Existing native buttons use rounded ripple backgrounds, primary/secondary hierarchy, wrapping labels and56dp targets; option cards have breathing room. No View migration is introduced. The native ScrollView explicitly clips to its allocated viewport so scrolling/visibility cannot place Continue over system navigation. The permission rationale is also a real Android View screen and resolves the same colour roles, including device colours, without migrating its lifecycle. The unexported
 legacy MainActivity is not a migration target; no new UI is built there.
 
 ## Official guidance consulted
