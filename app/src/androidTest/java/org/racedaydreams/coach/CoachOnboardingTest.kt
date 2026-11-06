@@ -376,7 +376,43 @@ class CoachOnboardingTest {
     private fun nativeContinue(nextStep: Int) {
         waitNativeStep(nextStep - 1)
         waitNativeText(R.string.onboarding_continue)
-        onView(withText(R.string.onboarding_continue)).perform(scrollTo(), click())
+        onView(withText(R.string.onboarding_continue))
+            .perform(scrollTo())
+            .check { view, missing ->
+                if (missing != null) throw missing
+                val button = requireNotNull(view)
+                val location = IntArray(2)
+                button.getLocationOnScreen(location)
+                val root = button.rootView
+                val origin = IntArray(2)
+                root.getLocationOnScreen(origin)
+                val navigation =
+                    androidx.core.view.ViewCompat.getRootWindowInsets(root)
+                        ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())
+                        ?.bottom ?: 0
+                val safeBottom = origin[1] + root.height - navigation
+                android.util.Log.i(
+                    "RddGate",
+                    "NATIVE_CONTINUE x=${location[0]} y=${location[1]} width=${button.width} height=${button.height} root=${root.width}x${root.height} safeBottom=$safeBottom",
+                )
+                var ancestor: View? = button
+                repeat(6) {
+                    ancestor?.let { current ->
+                        val xy = IntArray(2)
+                        current.getLocationOnScreen(xy)
+                        android.util.Log.i(
+                            "RddGate",
+                            "NATIVE_ANCESTOR ${current.javaClass.simpleName} x=${xy[0]} y=${xy[1]} width=${current.width} height=${current.height} scrollY=${current.scrollY}",
+                        )
+                        ancestor = current.parent as? View
+                    }
+                }
+                assertTrue(
+                    "Continue must be inside navigation-safe bounds: y=${location[1]}, height=${button.height}, safeBottom=$safeBottom",
+                    location[1] + button.height <= safeBottom,
+                )
+            }
+            .perform(click())
         waitNativeStep(nextStep)
     }
 

@@ -23,6 +23,16 @@ The emulator action's one-command-per-shell execution is handled by scripts/run-
 5real-process tests pass for cleanup/exit propagation. Its contents are fingerprinted. No budgets
 or assertions were weakened.
 
+Latest0aa6fd8 workflow42222222193 FAILED. API35 additionally exposed worker→main
+SnapshotStateObserver access in analytics200%; nativeContinue3failures persist (window hidden,
+draftstep0). API28reports AppNotIdle frame churn in alternatives/history and a wide-window
+configuration timeout; nPauseSurface samples alone do not establish permanent native deadlock.
+Follow-on tests log actualbutton/ancestor geometry and require navigation-safe bounds, use the
+established realmain-thread window owner for analytics, and run these original regression cases
+before the still-mandatory fullsuite. New optional size motion was removed conservatively; no
+specific Snapshotfix is claimed before runtime evidence. Local build/lint/testcompile75tasks/28s,
+format110Kotlin159Java and6real-process gate tests pass. Runtime/visual verification remains open.
+
 UI checkpoints5bbda84/7d39914/53ccd40 preserve engines/data and add visible GPS status,
 state-aware disabled native controls, scrollable large-text rails and rounded native buttons.
 Current379required captures retain all359originals and add20device/branded/light/dark/200%/wide,

@@ -14,8 +14,7 @@ are used for semantic cards. Warning meaning is also expressed by text.
 CoachPage, CoachCard, CoachButton, SemanticCard and GuidanceCard retain their existing
 callers. Pages scroll and centre within an 840dp maximum width. Buttons have at least a
 56dp height. Existing input components retain their native keyboard/focus behaviour.
-WhyDetails exposes a real accessible expand/collapse action and uses restrained content-size
-motion; navigation and buttons retain official Material interaction feedback.
+WhyDetails exposes a real accessible expand/collapse action without a layout-changing animation; navigation and buttons retain official Material interaction feedback.
 
 The shell retains all destinations and back behaviour. It uses the existing official
 NavigationBar on compact windows and NavigationRail at 840dp width and 480dp height or

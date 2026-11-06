@@ -55,9 +55,10 @@ elif Path(sys.argv[0]).name == 'gradlew':
         if time.monotonic() >= deadline:
             raise AssertionError('Diagnostic reader did not start')
         time.sleep(0.01)
-    (state / 'gradle-args.json').write_text(json.dumps(args))
-    event('gradle')
-    sys.exit(int(os.environ.get('RDD_GATE_TEST_GRADLE_EXIT', '0')))
+    guard = any(arg.startswith('-Pandroid.testInstrumentationRunnerArguments.class=') for arg in args)
+    (state / ('guard-args.json' if guard else 'gradle-args.json')).write_text(json.dumps(args))
+    event('gradle-guard' if guard else 'gradle-full')
+    sys.exit(int(os.environ.get('RDD_GATE_TEST_GUARD_EXIT' if guard else 'RDD_GATE_TEST_GRADLE_EXIT', '0')))
 else:
     assert args == ['build/canonical-screenshots'], args
     event('verify')
@@ -109,7 +110,7 @@ class AndroidGateTest(unittest.TestCase):
         code, _, stderr = self.run_gate()
         self.assertEqual(0, code, stderr)
         self.assertEqual(
-            ['size:540x1200', 'density:210', 'reader-start', 'gradle', 'fixture-log', 'pull', 'verify', 'reader-stop'],
+            ['size:540x1200', 'density:210', 'reader-start', 'gradle-guard', 'gradle-full', 'fixture-log', 'pull', 'verify', 'reader-stop'],
             self.events(),
         )
         self.assertEqual([
@@ -117,6 +118,14 @@ class AndroidGateTest(unittest.TestCase):
             '-Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000',
             '-Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener',
         ], json.loads((self.state / 'gradle-args.json').read_text()))
+        self.assert_reader_stopped()
+
+    def test_native_guard_failure_blocks_full_suite_and_exports(self):
+        code, _, stderr = self.run_gate(RDD_GATE_TEST_GUARD_EXIT='17')
+        self.assertEqual(17, code, stderr)
+        self.assertIn('gradle-guard', self.events())
+        self.assertNotIn('gradle-full', self.events())
+        self.assertNotIn('pull', self.events())
         self.assert_reader_stopped()
 
     def test_gradle_failure_keeps_its_exit_and_skips_exports_but_reaps_reader(self):

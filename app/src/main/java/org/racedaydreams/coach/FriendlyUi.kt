@@ -1,6 +1,5 @@
 package org.racedaydreams.coach
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -22,7 +21,7 @@ fun shortDate(date: LocalDate): String =
 @Composable
 fun WhyDetails(text: String, title: String = "Why?") {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    Column(Modifier.fillMaxWidth().animateContentSize()) {
+    Column(Modifier.fillMaxWidth()) {
         ListItem(
             headlineContent = { Text(if (expanded) "Hide details" else title) },
             trailingContent = {

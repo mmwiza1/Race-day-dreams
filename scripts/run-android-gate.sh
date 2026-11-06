@@ -27,6 +27,13 @@ adb shell wm density 210
 adb logcat -v raw -s RddGate:I '*:S' &
 rdd_test_log_pid=$!
 
+# Fail fast on the real native interaction and large-text disclosure regressions.
+# A passing guard never substitutes for the complete unfiltered suite below.
+./gradlew :app:connectedDebugAndroidTest \
+    -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000 \
+    -Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener \
+    '-Pandroid.testInstrumentationRunnerArguments.class=org.racedaydreams.coach.CoachOnboardingTest#canContinueWithoutHealthAndSaveGoalThroughExistingForm,org.racedaydreams.ui.OnboardingPaletteTest,org.racedaydreams.coach.StrengthAnalyticsScreenTest'
+
 ./gradlew :app:connectedDebugAndroidTest \
     -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000 \
     -Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener
