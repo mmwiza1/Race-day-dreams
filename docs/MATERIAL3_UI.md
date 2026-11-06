@@ -12,14 +12,15 @@ portable training backup contracts are unchanged. Material's paired on-container
 are used for semantic cards. Warning meaning is also expressed by text.
 
 CoachPage, CoachCard, CoachButton, SemanticCard and GuidanceCard retain their existing
-callers. Pages scroll and centre within an 840dp maximum width. Buttons have at least a
-56dp height. Existing input components retain their native keyboard/focus behaviour.
+callers. Pages scroll and centre within an 840dp maximum width. CoachButton and native goal
+actions have at least56dp height; other standard Material controls retain at least48dp touch
+targets. Existing input components retain their native keyboard/focus behaviour.
 WhyDetails exposes a real accessible expand/collapse action without a layout-changing animation; navigation and buttons retain official Material interaction feedback.
 
 The shell retains all destinations and back behaviour. It uses the existing official
 NavigationBar on compact windows and NavigationRail at 840dp width and 480dp height or
 larger. Insets are consumed after Scaffold padding so nested IME padding does not count
-system bars twice. Large-text compact navigation retains the established semantic labels. Expanded-window rails widen at large fonts and scroll when needed; no destination is clipped in short windows.
+system bars twice. Large-text compact navigation retains the established semantic labels. Expanded-window rails widen at large fonts and can scroll when needed in short windows.
 
 The active goal editor remains an AndroidView, with its data entry and draft behaviour
 preserved. State-aware tint/text lists retain visibly disabled options and saving controls. Existing native buttons use rounded ripple backgrounds, primary/secondary hierarchy, wrapping labels and56dp targets; option cards have breathing room. No View migration is introduced. The native ScrollView explicitly clips to its allocated viewport so scrolling/visibility cannot place Continue over system navigation. The permission rationale is also a real Android View screen and resolves the same colour roles, including device colours, without migrating its lifecycle. The unexported

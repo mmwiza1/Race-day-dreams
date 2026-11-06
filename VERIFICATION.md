@@ -1,66 +1,48 @@
-# Material UI modernisation — 0.12.0-test1 remains blocked on API28
+# Material UI modernisation — 0.12.0-test1 verification in progress
 
-Branch `feature/material3-expressive-ui`, draft [PR19](https://github.com/mmwiza1/Race-day-dreams/pull/19), baselinee6037e1. Previous0.11PR18is merged/published; historical pending wording below is archived.
+Branch `feature/material3-expressive-ui`, draft [PR #19](https://github.com/mmwiza1/Race-day-dreams/pull/19), baselinee6037e1. Previous0.11 is merged and published; historical pending wording below is archived.
 
-Source0205 workflow[42211442948](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42211442948) FAILED:
-API35/36each514tests and375validated captures succeeded; API28reported47/514complete with0failures
-at11:49:15UTC, then no progress until the unchanged30min step timeout at12:12:23UTC. Actual
-complete logs inspected. No case identity/stack/report establishes a cause. No full green claim.
-Test-only GateProgressListener now emits case identities and bounded stack frames during long
-cases; CI streams only that tag, not private application logs. No timeout/assertion was weakened.
+Source **88f74538be1341d6a2605fc0278550e05c569c81**, workflow
+[42231796054](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42231796054):
 
-Source dbbd4d8 workflow42216657172: API35/36 fail the same3native first-Continue flows;
-other cases complete, including new Material capture methods. API28alsofailed: fourbounded snapshots show mainThreadedRenderer.nPauseSurface and test
-ActivityScenario.close in captureAuthoredReviewScenes finally; the cleanup may mask an earlier
-assertion. Actual log `/tmp/rdd-material-dbbd28-job.log`, job127888264154. These are
-regressions requiring correction, not green acceptance. Current local fix preserves platform
-button drawables/input behaviour and themes only colours/outline; existing touch assertions stay.
-A direct native Continue regression and ComposeTimeoutException hierarchy diagnostics were added.
-Local debug/lint/instrumentation compilation PASS75tasks/49s. Runtime proof is still pending. Follow-on fixture closes actual dialogs through production Back
-navigation before host destruction, including failure cleanup, and logs the original exception
-class/frames first. All assertions/captures remain. Local gate75tasks/34s and formatting110/159pass.
-The emulator action's one-command-per-shell execution is handled by scripts/run-android-gate.sh;
-5real-process tests pass for cleanup/exit propagation. Its contents are fingerprinted. No budgets
-or assertions were weakened.
+| Gate | Observed result |
+| --- | --- |
+| API35 | 516 instrumentation tests passed;379 authentic captures validated |
+| API36 | 516 instrumentation tests passed;379 authentic captures validated |
+| API28 | All516 ran;515passed, one wide-window screenshot configuration timeout |
+| Offline checks | 700108domain checks/47suites;75schema/migration;9release-note |
+| Guidance | 220canonical/14routine guides;223exact asset hashes |
+| Formatting | 110Kotlin/159Java;14formatter-tool tests |
+| Other checks | 18capture-validator,11route-source,14Dream-artwork,6CI-shell lifecycle tests |
+| Android build/lint | Passed locally and in all three CI jobs |
 
-Latest0aa6fd8 workflow42222222193 FAILED. API35 additionally exposed worker→main
-SnapshotStateObserver access in analytics200%; nativeContinue3failures persist (window hidden,
-draftstep0). API28reports AppNotIdle frame churn in alternatives/history and a wide-window
-configuration timeout; nPauseSurface samples alone do not establish permanent native deadlock.
-Follow-on tests log actualbutton/ancestor geometry and require navigation-safe bounds, use the
-established realmain-thread window owner for analytics, and run these original regression cases
-before the still-mandatory fullsuite. New optional size motion was removed conservatively; no
-specific Snapshotfix is claimed before runtime evidence. Local build/lint/testcompile75tasks/28s,
-format110Kotlin159Java and6real-process gate tests pass. Runtime/visual verification remains open.
+The API28 failure waits on the application context's width, while the actual rail uses Activity
+LocalConfiguration. The follow-on capture helper observes actual Activity dimensions, laid-out
+decor width and font scale instead, keeping the original20s budget and all navigation/capture
+assertions. It also requires the production rail's840dp/480dp thresholds. Timeout diagnostics
+report actual and app dimensions plus public wm size/density. Local full domain/debug/lint/test
+compilation passed79tasks/35s; formatting and18capture-validator checks pass. Its runtime gate
+is pending. No full-green release, canonical0.12 capture adoption or merge is claimed yet.
 
-Fast guard e632935/workflow42229618599 proves nativeviewport error onAPI35/36: Continue
-bounds[26,1126,488,74] put its centre in systemnavigation; allocatedformends1137 whilebutton
-ends1200. Standalonecallback/draft advancement succeeds. The clipping follow-up keeps children
-and visibility requests inside the real nativeviewport, with no arbitrarypadding or inputchange.
-Local Androidbuild/lint/instrumentation compilation75tasks/50s passes; runtimeproofpending.
+The native Continue defect is now demonstrated and corrected: its centre previously fell in
+system navigation because AndroidView did not clip native visibility to the allocated viewport.
+The native ScrollView now clips to its real bounds; API35/36 logs show the button ending exactly
+at the1137px safe boundary, and every original onboarding flow passes. Large-text analytics and
+previously failing API28 alternatives/history dialog cases also pass. The main-thread lifecycle
+fixture and removal of optional new size animation retain all assertions; no single unproven
+animation cause is claimed.
 
-UI checkpoints5bbda84/7d39914/53ccd40 preserve engines/data and add visible GPS status,
-state-aware disabled native controls, scrollable large-text rails and rounded native buttons.
-Current379required captures retain all359originals and add20device/branded/light/dark/200%/wide,
-confirmation and retained-form views. Final runtime and visual gate remains REQUIRED.
+Source88f API36 artifact13510259807 was downloaded to scratch/material-preview/clip36; all379
+raw PNGs pass strict validation. ZIP SHA256
+`b4ef0e70edaaf65eb20e343733105423e5f2b35140f93f481ca8b84ea07beea6`.
+Earlier actual API35 previews were inspected across running/strength/health/recovery/storage,
+light/dark/200%; latest native/rail and final-source visual review remain required.
+Source88f API35/36 APKs are55,332,266bytes; final identity/checksum review remains pending.
 
-Observed local checks:700108domain checks/47suites;75schema/migration,9release-note,
-14formatter-tool,18capture-validator,11route-source,14Dream-artwork tests and223exact guide
-asset hashes pass. All220canonical/14routine guides retained. Integrated full Gradle domain/
-debug/lint/instrumentation compilation passed79tasks/1m16s; native capture updates75tasks/18s;
-test-only diagnostic compilation/lint75tasks/16s. No local emulator/physical pass is claimed.
-
-Actual API35preview artifact13499374591 ZIP SHA
-7f5be4cb102d8118a8cd45fca79937d8daff6e8efaf21eda36e0826952dd082b was downloaded/extracted.
-Representative Home/live/history/trends/shoes/onboarding and Strength/health/recovery/storage/
-Plan/calendar previews were opened in light/dark/200%. No blocking contrast/clipping found in
-those previews; later native/rail refinements still need exact-source inspection.
-
-Packaged local APKversion0.12.0-test1/code16 and noINTERNET verified using aapt. No runtime
-library, manifest, icon, schema or backup-format change: schema19/rootJSON13/raw3/complete1.
-Local appearance choice is display-only and not part of portable training backups.
-Physical Galaxy/Pixel/Xiaomi, human TalkBack, outdoorGPS, providers/OEM/audio checks remain
-UNPERFORMED. No merge or0.12publication success is claimed.
+Version0.12.0-test1/code16. No runtime dependency, manifest permission, launcher icon, engine,
+schema or backup-format change: schema19/rootJSON13/raw3/complete1. Local appearance choice is
+not part of portable training backups. Physical Galaxy/Pixel/Xiaomi, human TalkBack, outdoorGPS,
+providers/OEM/audio checks remain **UNPERFORMED**. No0.12 publication is claimed.
 
 # 0.11.0-test1 — verified software and visual checkpoint
 

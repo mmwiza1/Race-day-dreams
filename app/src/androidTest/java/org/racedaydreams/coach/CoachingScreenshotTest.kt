@@ -2754,7 +2754,7 @@ class CoachingScreenshotTest {
             shell("wm size 1400x1800")
             scenario = ActivityScenario.launch(CoachActivity::class.java)
             awaitHomeReady(false)
-            compose.waitUntil(20000) { context.resources.configuration.screenWidthDp >= 840 }
+            awaitMaterialWideWindow()
             compose.onNodeWithText("Calendar").assertIsDisplayed()
             capture("home-material-wide")
             click("Plan")
@@ -2766,10 +2766,7 @@ class CoachingScreenshotTest {
             shell("wm size 1400x720")
             scenario = ActivityScenario.launch(CoachActivity::class.java)
             awaitHomeReady(false)
-            compose.waitUntil(20000) {
-                context.resources.configuration.screenWidthDp >= 840 &&
-                    context.resources.configuration.fontScale >= 1.99f
-            }
+            awaitMaterialWideWindow(minimumFontScale = 1.99f)
             // Every destination remains reachable when enlarged labels exceed the rail viewport.
             compose.onNodeWithText("Strength").performScrollTo().assertIsDisplayed().performClick()
             await("Log workout")
@@ -2787,6 +2784,71 @@ class CoachingScreenshotTest {
             compose.waitUntil(20000) {
                 context.resources.configuration.screenWidthDp == originalWidth
             }
+        }
+    }
+
+    private data class MaterialWindowSnapshot(
+        val widthDp: Int,
+        val heightDp: Int,
+        val fontScale: Float,
+        val density: Float,
+        val decorWidth: Int,
+        val decorHeight: Int,
+    ) {
+        val decorWidthDp: Float
+            get() = if (density.isFinite() && density > 0f) decorWidth / density else 0f
+    }
+
+    private fun actualMaterialWindow(): MaterialWindowSnapshot? {
+        var snapshot: MaterialWindowSnapshot? = null
+        scenario?.onActivity { activity ->
+            val configuration = activity.resources.configuration
+            val decor = activity.window.decorView
+            snapshot =
+                MaterialWindowSnapshot(
+                    configuration.screenWidthDp,
+                    configuration.screenHeightDp,
+                    configuration.fontScale,
+                    activity.resources.displayMetrics.density,
+                    decor.width,
+                    decor.height,
+                )
+        }
+        return snapshot
+    }
+
+    private fun awaitMaterialWideWindow(minimumFontScale: Float? = null) {
+        var last: MaterialWindowSnapshot? = null
+        try {
+            compose.waitUntil(20000) {
+                last = actualMaterialWindow()
+                last?.let { window ->
+                    window.widthDp >= 840 &&
+                        window.heightDp >= 480 &&
+                        window.decorWidthDp >= 840f &&
+                        window.decorHeight > 0 &&
+                        (minimumFontScale == null || window.fontScale >= minimumFontScale)
+                } == true
+            }
+            android.util.Log.i("RddGate", "MATERIAL_WINDOW_READY $last")
+        } catch (failure: Throwable) {
+            // Production uses this Activity's LocalConfiguration, not the application context.
+            // Keep the original failure and expose public window/configuration values only.
+            val app = context.resources.configuration
+            android.util.Log.i(
+                "RddGate",
+                "MATERIAL_WINDOW_FAILURE expectedWidthDp>=840 expectedHeightDp>=480 " +
+                    "minimumFontScale=$minimumFontScale actual=$last " +
+                    "app=${app.screenWidthDp}x${app.screenHeightDp} font=${app.fontScale}",
+            )
+            runCatching {
+                android.util.Log.i(
+                    "RddGate",
+                    "MATERIAL_WINDOW_DISPLAY size=${shell("wm size").replace('\n', ' ').take(180)} " +
+                        "density=${shell("wm density").replace('\n', ' ').take(180)}",
+                )
+            }
+            throw failure
         }
     }
 
