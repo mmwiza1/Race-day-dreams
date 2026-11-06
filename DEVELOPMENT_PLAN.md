@@ -1,10 +1,26 @@
 # Active UI release — 0.12.0-test1
 
-Material You / Material 3 Expressive modernisation only. Foundation and core presentation are
-implemented on feature/material3-expressive-ui/PR19. Remaining work is final runtime,
-accessibility and authentic visual verification, correcting any demonstrated regressions,
-then authorised delivery. See CONTINUE_CODEX.md. No deferred intelligence feature or engine
-rewrite belongs to this scope;0.11is merged. Historical plans follow.
+Material You / Material 3 Expressive modernisation only. Shared dynamic/branded themes,
+tonal surfaces, typography, adaptive navigation, running Home/live hierarchy and retained
+native form/privacy-page presentation are implemented on feature/material3-expressive-ui/PR19.
+Sourcebed9a81 passed full workflow42265222799: each API28/35/36 passed nine guard methods,
+517full instrumentation cases and383authentic captures. Domain700,108checks/47suites,
+75schema tests, build/lint/formatting and source/artwork/guidance gates passed. Canonical
+bot862117f carries the fresh gallery, preserving all prior required captures.
+
+Raw-artifact/source matching, actual API35/36 visual review and candidate APK checks passed,
+with the documented forced short-wide platform-strip limitation. Exact delivery-head checks
+remain; observed results and hashes are recorded in VERIFICATION.md.
+Then follow the authorised ready/merge/main-CI/rolling-publication sequence. A successful
+branch matrix alone is not a published-main result. All real GalaxyS24/Pixel/Xiaomi and
+human TalkBack checks remain unperformed.
+
+Version0.12.0-test1/code16 preserves schema19/rootJSON13/raw3/complete1, engine behaviour,
+retention, history and all existing features. No dependency, permission, launcher-icon or
+data-format change is required. Existing official Material3 components provide the UI;
+new experimental Expressive motion/loading APIs were deliberately not introduced. No
+deferred intelligence feature or engine rewrite belongs to this scope;0.11is merged.
+Historical plans follow and do not reopen completed release work. See CONTINUE_CODEX.md.
 
 ## Completed 0.11.0-test1 — Gym, Health & Recovery Intelligence
 

@@ -1,20 +1,29 @@
-# Material UI development capture gate
+# Material UI — 0.12 current-source capture gate
 
-0.12 requires383 real current-source captures: all359 previous captures plus24 device/branded,
-light/dark/200% Home/live/finish-confirmation, wide-window navigation and native Health Connect
-privacy-page views. Required names and strict PNG validation are in
-scripts/verify-dream-screenshots.py; the validator has19 regression tests.
+Source `bed9a81a611cc9793ab4bf96314604b668e97c5b` passed complete
+[workflow42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799).
+Each supported API28/35/36 passed nine guard methods,517 full instrumentation cases and383
+authentic captures. The set retains all359 prior captures and adds24 device/branded,
+light/dark/200% Home/live/finish-confirmation, wide-window navigation and native Health
+Connect privacy-page views. Required names and strict PNG validation remain in
+scripts/verify-dream-screenshots.py, with19 validator regression tests.
 
-The protected same-repo branch publication rule targets feature/material3-expressive-ui,
-retaining exact-head and source-fingerprint checks. Nine CI-shell helper tests cover the
-runner's diagnostic/cleanup and virtual-device setup behaviour; they do not certify app rendering.
-The complete supported gate expects517 instrumentation cases and383 captures perAPI28/35/36.
+Canonical bot `862117f` was safely fetched after that successful matrix. The committed
+gallery identifies this exact source and fingerprint:
+`a88c2576b4908314f161f9a46c2df81ffa949f05a7c7ba934dd8e567407ef92c`.
+These are current0.12production-screen renders, not old gallery images or mockups.
+All383PNG bytes match raw API35 artifact13528616131 exactly. Final API35/36 pixel review and
+candidate APK checks passed, with the forced short-wide platform-strip limitation recorded in
+VERIFICATION.md and VISUAL_REVIEW_0_12.md. A passing PNG validator does not establish visual fidelity.
 
-Final exact-source runtime, capture/source verification, visual acceptance and APK acceptance
-are still pending. Do not relabel older captures as current or infer visual correctness from
-PNG/schema checks. Inspect application content and actual system-bar rendering, including
-large-text native Close controls and short-wide navigation. Design references remain separate
-and unedited. Historical source-specific evidence follows.
+Same-repository canonical publication retains the exact-head/source-fingerprint rule for
+feature/material3-expressive-ui. Nine CI-shell helper tests cover runner setup, bounded
+diagnostics and cleanup; they do not certify rendering. Final documentation-head checks,
+main merge/post-merge CI and the matching rolling download remain distinct delivery gates.
+Inspect content and actual bars, including native large-text Close and short-wide
+navigation. Design references remain separate and unedited. All hardware/human TalkBack
+checks remain unperformed. Earlier source-specific evidence below is historical and does
+not describe the current gallery or reopen completed release work.
 
 # 0.11 authentic screenshots —359 source-verified captures
 

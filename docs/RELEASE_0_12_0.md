@@ -25,8 +25,11 @@ Material You / Material 3 Expressive UI modernisation. Development test release.
 
 ## Known limitations
 
-- This release is in development. Final exact-source API 28/35/36, screenshot/visual and APK acceptance remain pending.
+- This is a development/test build. The complete source software matrix has passed;
+  source-bound visual/APK acceptance passed. Exact delivery-head and main publication
+  are tracked in VERIFICATION.md; hardware acceptance remains separate.
 - Official Material 3 components already in the app are reused. Newer experimental Expressive motion/loading APIs are not included; a dependency upgrade was deliberately avoided.
+- Forced short-wide emulator captures retain a blank platform navigation strip; app navigation remains usable. Real rotation and system navigation need hardware checks.
 - Galaxy, Pixel, Xiaomi and human TalkBack checks require real hardware; none is claimed here.
 
 ## Privacy and compatibility
@@ -38,8 +41,16 @@ the existing launcher icon, offline operation and account-free model are preserv
 
 ## Verification
 
-The release gate requires517 instrumentation cases and383 authentic captures on each supported
-API28/35/36: all359 previous captures plus24 additional UI views. It also includes19 capture-validator
-and9 CI-shell helper tests. These are gate requirements, not a claim that final-source verification
-or publication has passed. Consult [observed verification](../VERIFICATION.md) for actual results.
-Physical-device and human accessibility checks remain separate.
+Source `bed9a81a611cc9793ab4bf96314604b668e97c5b` passed the complete
+[workflow42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799).
+Each API28/35/36 passed nine guard methods,517 full instrumentation cases and383 authentic
+captures, retaining all359 previous captures plus24 additional UI views. Build, lint,
+700,108domain checks/47suites,75schema tests, pinned formatting, strict220canonical/14routine
+guidance and source/artwork gates passed. Focused checks include19capture-validator,
+9CI-shell helper,14formatter-tool and9release-note tests.
+
+Canonical commit862117f contains the fresh API35 gallery and source fingerprint. All383PNG
+bytes match the verified raw artifact; current API35/36 pixel review and candidate APK identity/
+permission/size checks passed. Consult [observed verification](../VERIFICATION.md) for hashes and
+the exact delivery head. No final-main publication is claimed here. GalaxyS24/Pixel/Xiaomi
+and human accessibility acceptance remain unperformed.

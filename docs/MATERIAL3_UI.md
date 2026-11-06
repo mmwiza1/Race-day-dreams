@@ -44,7 +44,7 @@ requirements for operating the app and have not been backported with custom comp
 
 Baseline: 700,108 domain checks / 47 suites, 75 schema tests, 9 release-note tests and
 Android domain/debug/lint/instrumentation compilation passed before UI changes.
-Foundation and subsequent runtime/visual results must be recorded in VERIFICATION.md.
+The complete0.12sourcebed9a81 passed517full cases/383captures on each supported API; raw-byte/source checks and actual API35/36 visual review passed with the documented forced short-wide platform-strip limitation. VERIFICATION.md records exact results, hashes and delivery status.
 An existing Material3 dependency is not proof of design fidelity. Final-source actual
 screenshots, including light/dark/device colours/branded colours/200%/wide windows,
 require inspection before release. Hardware and human TalkBack checks remain separate.

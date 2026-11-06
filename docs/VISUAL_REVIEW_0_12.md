@@ -6,11 +6,14 @@ support the review; neither replaces inspection of the rendered page.
 
 ## Observed checkpoint
 
-Source `9b9bf8775c672d7275d921be22cc837d85e41fd4`, workflow42257165012,
-API35 artifact13524991116:383 strict-valid captures. ZIP SHA256:
-`66c3a6f06ddb0c1b488ab936e0e367480f1313e479e7fa2d1fc0658af9a6a56f`.
-The following3343a20 correction changes capture readiness only, not production presentation.
-Its fresh complete matrix and final-source visual/source checks remain required.
+Source `bed9a81a611cc9793ab4bf96314604b668e97c5b`, complete workflow42265222799:
+517 full cases and383 authentic captures on each API28/35/36. Canonical862117f preserves all
+API35 originals. Every383 PNG byte matches downloaded artifact13528616131; ZIP SHA256:
+`73bebd47fd56a53344c12c474a009fdd09efec0d3c98e912be1f01edc8fe30d7`.
+Fingerprint `a88c2576b4908314f161f9a46c2df81ffa949f05a7c7ba934dd8e567407ef92c`
+matches actual source. API36 artifact13528298057 contains383 valid captures, ZIP SHA256
+`d4513989f49c117ed02409bf3dd44821c4d0b5243f59c124a0a7ee75a3b8b6d9`.
+No image editing, replacement mockup or test-only substitute screen is used.
 
 Direct inspection covered:
 
@@ -33,12 +36,15 @@ Ordinary viewport-edge cropping is scrollable content, not lost text. Native Clo
 visible above the navigation inset at200%; the scrolled privacy text clips below the31px
 status strip. Light/dark phone and native system icons have contrasting backgrounds.
 
-## Outstanding acceptance and limitations
+## Final review and retained limitations
 
-The9b API36 full matrix failed one route-capture readiness lookup; no canonical publication
-occurred. Final API36 light Home/live/200% bar pixels must still be inspected. Appearance flags
-alone do not prove system rendering. The following test waits for actual route/story content,
-retaining merged-tree, alignment and visibility assertions without a timeout increase.
+Actual API36 branded light Home/live,200% Home/live, device-dark live, native permission footer
+and short-wide views were opened directly. Light live and large-text phone navigation buttons
+are now clearly dark against the pale surface; dark mode retains bright icons. This closes the
+previous phone-bar visual blocker. Appearance flags alone were not accepted as evidence.
+Application content meets the intended Material You hierarchy/shape/colour direction while
+preserving the established illustrated guidance and Dream Route identity. No claim of full
+experimental Expressive API adoption or physical-device acceptance is made.
 
 Forced1400x720 emulator captures show a reserved bottom platform navigation strip without
 three-button icons. The app's rail remains reachable and its content scrolls; normal phone

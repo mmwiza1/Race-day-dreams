@@ -1,141 +1,66 @@
-# Material UI — isolated supported-renderer verification pending
+# Material UI — 0.12.0-test1 verified software and visual source
 
-The37.2.13-only candidate ae833a0/workflow42263888656 still failed API36's fast guard.
-The confirmed blocking window now names **Application Not Responding: com.android.launcher3**.
-No invalid-ColorBuffer warning appears in this run; those earlier warnings do not establish
-this hang's cause. API28/35 were still running when the renderer follow-up was prepared and
-must not be called passed. The complete API36 suite correctly remained blocked by its guard.
+UI/capture source **bed9a81a611cc9793ab4bf96314604b668e97c5b** passed the complete
+[workflow42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799).
+All completed job conclusions and the three Android logs were independently inspected.
+Final documentation-head CI and actual-main publication remain separate delivery checks.
 
-The next isolated CI correction retains37.2.13/build16740729 and replaces the action's deprecated
-swiftshader_indirect default with explicit **-gpu software**, preserving no-window/no-snapshot/
-noaudio/no-boot-anim. [Google's graphics guidance](https://developer.android.com/studio/run/emulator-acceleration)
-documents this supported backend. All APIs, dimensions, focus assertions, nine guard cases,
-full517 cases,383 captures and method/step budgets remain. No automatic retry or ANR dismissal.
-The diagnostic whitelist now accepts only SystemUI/Launcher identity+reason and excludes other
-app content. **Nine** actual-process runner-helper tests and **nine** release-note tests pass;
-shell syntax/diff checks pass. This is not a claimed runtime resolution. Fresh matrix required.
-
-# Material UI — SystemUI infrastructure failure and targeted patch
-
-Source3343a20/workflow42261726118 API36 failed its fast guard before the full suite.
-Bounded diagnostics identify the focus owner as **Application Not Responding: com.android.systemui**
-while the virtual device is awake. The app's window flags request focus normally. This is
-separate from the prior asynchronous route-capture lookup; that readiness correction is retained.
-API28/35 results were pending when this follow-up was prepared, not assumed successful.
-
-CI now pins emulator37.2.13/build16740729. [Google's release notes](https://developer.android.com/studio/releases/emulator)
-document its host GLES graphics-resource cleanup fix. The official stable-channel SDK XML
-identifies the Linux ZIP as349658551bytes/SHA1f41f9e31eb5ca64926603c03265c50bbc0ff4172.
-This upstream defect is relevant to the rendering failures, but is not proven to be the cause
-of this particular SystemUI ANR. The renderer is unchanged to isolate the patch. Narrow failure
-diagnostics retain only SystemUI's public ANR identity/reason, not a general app log dump.
-Seven process-lifecycle helper tests, nine release-note tests and shell/diff checks pass.
-No test is weakened, no ANR dialog is dismissed and no runtime pass is claimed for this patch.
-
-# Material UI — latest runtime checkpoint, final gate pending
-
-Source `9b9bf8775c672d7275d921be22cc837d85e41fd4`,
-[workflow 42257165012](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42257165012):
-
-- API28 and API35 each passed all **517 instrumentation tests / 383 captures**.
-- API36 passed **516 of 517**. Its only failure was the screenshot navigation flow looking
-  up “Your recorded route” immediately after “Run detail”; the route projection is loaded
-  asynchronously. The existing long-route flow already waits for “Route story”.
-- Native Close is fully visible in light/dark/200% on all three APIs. The current awake
-  device setup and focused-window assertions passed. The failure-time evidence does not
-  justify another recording, window-focus or production route-engine change.
-- The following test correction waits for actual route/story content before capture and
-  retains merged-tree, alignment, visibility and full-suite assertions. No extra timeout,
-  arbitrary delay or unmerged-tree fallback is used. Its complete new matrix remains required.
-
-API35 raw artifact13524991116 contains383 valid PNGs; ZIP SHA256
-`66c3a6f06ddb0c1b488ab936e0e367480f1313e479e7fa2d1fc0658af9a6a56f`.
-Current-source light/dark/200% Home/live, native privacy/Close, wide navigation, progression,
-gym, analytics, recovery, body and storage images were opened directly. No blocking app-content
-layout issue was found; final API36 actual-pixel review remains required. A failed full matrix
-correctly prevented canonical publication; the canonical gallery remains an earlier source.
-
-API35 candidate APK artifact13525100975:55,348,650 bytes, version0.12.0-test1/code16,
-SHA256 `b8a9fcedf4c29695315ab6377bd196e405af9268cf5639c2727261b6c78534f1`.
-Its actual packaged permissions contain no INTERNET. This branch artifact is not a merged-main
-release. No merge/publication or physical-device acceptance is claimed.
-
-The earlier complete source-specific checkpoints below remain historical evidence.
-
-# Material UI modernisation — 0.12.0-test1
-
-UI source **df35cf2beab51a33851c9b2198c00d23a4678ef1** passed the complete
-[42241394212 workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42241394212).
-The subsequent system-bar presentation follow-up requires its own runtime/visual gate before merge.
-
-| Gate | Observed result for df35cf2 |
+| Gate | Observed result |
 | --- | --- |
-| API28 / API35 / API36 | **516 instrumentation tests and379 authentic captures passed on EACH API** |
-| Domain | 700108 checks /47suites |
-| Schema/migrations | 75tests; formats unchanged |
-| Guidance | 220canonical /14routine guides;223exact asset hashes |
-| Formatting | 110Kotlin /159Java;14formatter-tool tests |
-| Other checks | 9release-note,18capture-validator,11route-source,14artwork,6CI-shell tests |
-| Android | Domain/check, debug APK, lint and instrumentation compilation pass |
+| API28 / API35 / API36 | **Each:9 guard methods,517 full instrumentation tests,383 authentic captures** |
+| Domain | **700,108 checks /47 suites**, including4,226 six-month athlete assertions |
+| Schema/migrations/backups | **75 schema tests**; existing old/current backup, rollback and history cases pass |
+| Guidance | **220 canonical /14 routine guides;223 exact asset hashes** |
+| Formatting | **110 Kotlin /159 Java;14 formatter-tool tests** |
+| Other checks | **9 release-note,9 runner-helper,19 capture-validator,11 map-source,14 artwork tests** |
+| Android | Domain/check, debug APK, lint, instrumentation compilation and dependency inventory pass |
 
-All three complete job conclusions/logs were inspected. API28now uses an explicit Pixel2virtual
-profile: actual capture windows are1400x1800 and1400x720; short-wide200% viewport is1018dp by524dp.
-This fixes the demonstrated old320x640default-profile clamp without weakening840dp/480dp or
-379capture assertions. Native Continue now stays at the1137px safe boundary. The test-only
-lifecycle barrier joins actual window and ViewModel work before synthetic fixture deletion;
-all former SQLite deletion, analytics and dialog failures pass. No production persistence change.
+The mandatory complete suite remains unfiltered after its fast guard. No assertion, API,
+required capture or timeout was removed. Pinned emulator37.2.13/build16740729 uses the documented
+software backend (Lavapipe/ANGLE). Previous platform ANR overlays prevented app focus; those
+attempts were not treated as app passes. Earlier colour-buffer warnings do not prove their cause.
+The current complete matrix passes; some nonblocking emulator texture warnings remain in logs.
 
-Canonical bot816000e was safely fast-forwarded. All379rawAPI35PNGs from artifact13515864653
-match committed bytes exactly. Fingerprint
-`e60eb348849df71c83019c1e9bdb47e1baa2c6e5c0258de2aae352fde7672d92`
-matches that UI/capture source. API35ZIP SHA256
-`829b4a6795d6ed8c9416ab8b5f739adc399c05b02b7c9a176cf8ce3c159e0a27`.
-Actual build images reviewed across Home/live, native forms, Plan/calendar/history/trends,
-strength/progression/GymNow, health/recovery/body/storage, device/branded/light/dark/200%/wide.
-No blocking app-content overlap, horizontal clipping or unreadable controls was found.
+## Authentic screenshots and visual review
 
-**Visual gate still open:** API36light Home shows contrasting navigation buttons, but some
-live/large-text images retain faint white buttons. Correct Home appearance flags do not prove
-later rendered system-bar contrast. A small follow-up uses Google's documented transparent
-three-button navigation treatment onAPI29+, retaining the opaque themed Surface and light/dark
-icon requests. Capture checks now cover focused live/native/wide windows, navigation insets,
-legacy flags, IME and contrast state. Global system-window idleness replaces the old fixed200ms
-sleep. This is a targeted presentation experiment, not a claimed resolved platform cause.
-Local follow-up domain/debug/lint/instrumentation compilation passes79tasks/1m5s. Its full
-517case/383capture matrix, new fingerprint and actual bar screenshots remain required.
+Canonical bot **862117fa28096100ac91c31e193069e8ef062067** was safely fast-forwarded.
+Fingerprint **a88c2576b4908314f161f9a46c2df81ffa949f05a7c7ba934dd8e567407ef92c**
+matches current UI/capture source and metadata. All383 committed PNG bytes equal the rawAPI35
+artifact13528616131 exactly. ZIP53,248,374bytes, SHA256:
+`73bebd47fd56a53344c12c474a009fdd09efec0d3c98e912be1f01edc8fe30d7`.
+API36 artifact13528298057 also passes strict383-name/PNG verification; ZIP53,159,293bytes, SHA256:
+`d4513989f49c117ed02409bf3dd44821c4d0b5243f59c124a0a7ee75a3b8b6d9`.
 
-The active native permission entry also had an AOSP9configuration mismatch: inherited black
-navigation background with requested dark icons. Its retained Activity now matches legacy bar
-backgrounds to the actual page palette and paints decor behind transparent bars. Privacy text,
-Close callback, native layout and inset handling are unchanged. A real ActivityScenario/Espresso
-capture method checks light/dark/200%, legacy palette equality and functional Close. Four native
-captures are added; all379prior captures remain required. Current expected matrix is517tests/
-383captures perAPI. Local native-source full domain/debug/lint/test compilation passes79tasks/
-1m12s;19capture-validator and6CI-shell tests pass. Runtime/native visual acceptance remains open.
+Actual API35/36 Home/live/native permission views were inspected in branded/device, light/dark
+and200% modes. Expanded and scrolled progression, gym, analytics, health/recovery/body/storage,
+history/trends/shoes/race and wide navigation were sampled. No blocking app-owned clipping,
+overlap, unreadable contrast or missing primary action was found. API36 light live/large-text
+navigation buttons now have clear contrast in the actual captures, not merely matching flags.
+Native Continue/Close stay in safe visible bounds. References remain separate and unedited.
+See docs/VISUAL_REVIEW_0_12.md for exact observations.
 
-The first517-source guard5f38913 failed onAPI35/36at nativeClose scrollTo (other8guardcases
-passed; fullsuite correctlyblocked). AOSPScrollView's rectangle calculation uses fullheight,
-whileits ownsystem-inset padding clips that visiblearea. The correction moves safeinsets to
-anouterFrameLayout, givingtheScrollViewits actual safeviewport. Existingreal scroll/click
-assertions remain andnowrequire100%buttonvisibility/fullglobalbounds. Localcomplete domain/
-debug/lint/testcompilepasses79tasks/1m8s. Its newruntime/visualgate ispending.
+**Retained emulator limitation:** forced1400x720/200% captures have a blank reserved platform
+navigation strip. App rail destinations remain reachable and content scrolls; normal phone and
+tall-wide captures show system navigation buttons. This is not claimed fixed or hidden by cropping.
+Real rotation/navigation/OEM checks remain on TEST_BUILD.md. Human TalkBack and hardware are
+not established by emulator semantics or screenshots.
 
-4a5b6e1/API36job128017108362 subsequently failedatbootstrap: thefirstonboarding andevery
-laterActivityroot lackedwindowfocus; theappwindowdidnothaveNOT_FOCUSABLE. Theexactowner
-ofthatfocuswasnotcaptured. TheCI-onlyfollow-up establishesawake/unlockedvirtual-device
-preconditions andbounds publicpower/focus failurediagnostics. Itpreserves allfocusassertions,
-method/stepbudgets andoriginalfailureexit. Sevenreal-processhelpertests andshellsyntaxpass.
-Thisdoesnotconstitutephysical locked-screenrecordingverification. Newmatrix remainsrequired.
+## Verified candidate APK and preserved contracts
 
-Verified df35cf2 API35APK artifact13517359333: **55,348,650bytes**,0.12.0-test1/code16, SHA256
-`5a44b97683dfdfa7f9c7fb0ad63da837c201169a6371f7e5332e4e38a7ce1656`.
-APKZIP SHA `1b4bdaad6665157954ca62af7e84945f6a90f89e46bbe3caf9bf7a038228356f`.
-Compared with verified0.11CIAPK55,250,287bytes: +98,363bytes /+0.1780%. No new artwork.
-Actual packaged permissions inspected: **no INTERNET**. This is not a final follow-up/main APK.
+API35 artifact13527711983 contains **Race-Day-Dreams-0.12.0-test1-debug.apk**, version0.12.0-test1,
+code16, **55,348,650bytes**, SHA256:
+`cdf006c6d43bf0314d409f9bbed60af9eded7d228e7c861d9ada51e01899a73b`.
+Its ZIP SHA256 is `edc27371974749d872ad7b3c20a19f7f57293bf18b00c0aa8c49af059278426c`.
+Actual package inspection confirms **no INTERNET permission**. Versus verified0.11CI55,250,287bytes,
+the increase is98,363bytes/**0.1780%**; no artwork or runtime dependency was added. This is a
+verified branch candidate, not a claim of main publication. Final rolling APK must match main CI.
 
-No dependency, launcher icon, engine, schema or backup-format change: schema19/rootJSON13/
-raw3/complete1. Physical Galaxy/Pixel/Xiaomi, human TalkBack, outdoorGPS and provider/OEM/audio
-checks remain **UNPERFORMED**. PR19remains draft; no0.12 merge or publication is claimed.
+No launcher icon, domain, recording, persistence, manifest permission or data-format change:
+**schema19 / rootJSON13 / raw3 / complete1**. Recorded actuals, old programme revisions, backups,
+retention, Health Connect and one authoritative recorder retain their existing contracts.
+All three UI milestones are implemented; delivery-head checks/merge/main publication are next.
+Physical Galaxy S24/Pixel/Xiaomi, human TalkBack, outdoorGPS, providers, OEM/background/audio/
+locked-screen/battery checks remain **UNPERFORMED**. Earlier verification below is historical.
 
 # 0.11.0-test1 — verified software and visual checkpoint
 

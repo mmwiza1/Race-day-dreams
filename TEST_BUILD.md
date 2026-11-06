@@ -2,19 +2,29 @@
 
 Export a complete backup before changing debug-signing builds. Do not uninstall a live
 installation casually. Current observed results are in VERIFICATION.md. Final exact-source
-API28/35/36, visual/screenshot and APK acceptance are pending; no stable/public-store release
-is implied. Use only an APK whose source, version and checksum match the verified release.
+software CI passed on API28/35/36 at sourcebed9a81 in workflow42265222799. Source-bound
+visual review and candidate APK checks passed; exact documentation-head checks, main CI and
+rolling publication remain separate delivery gates. No stable/public-store release is implied. Use only an APK whose source,
+version and checksum match the intended verified build; a branch APK is not a main release.
 
-The expanded software gate requires517 instrumentation cases and383 authentic captures perAPI,
-retaining all359 older frames and adding24 UI views. It includes19 capture-validator and9 CI-shell
-helper tests. Counts alone do not prove that the latest source passed or that bars render correctly.
+Each supported API passed nine guard methods,517 full instrumentation cases and383 authentic
+captures, retaining all359 older frames and adding24 UI views. Focused checks pass19capture-
+validator and9CI-shell helper tests. Canonical862117f retains this source's API35 gallery.
+Counts and appearance flags alone do not establish actual bar contrast or physical usability.
+
+The0.12branch artifacts use `Race-Day-Dreams-0.12.0-test1-debug-api-35` and
+`Race-Day-Dreams-0.12.0-test1-debug.apk`; the rolling Latest Development Build identifies
+its own verified-main version and commit. Export a complete backup before upgrading.
 
 The existing native goal and Health Connect privacy screens retain their entry, draft and Close
 behaviour. Their safe viewports and theme-matched bars are part of this release's UI verification.
 No runtime dependency, permission, schema or backup-format change is introduced. Official existing
 Material3 components are reused; newer experimental Expressive motion/loading APIs are not added.
+Version0.12.0-test1/code16 retains schema19/rootJSON13/raw3/complete1. Existing data,
+recording, coaching, retention and backup readers keep their established contracts.
 
-Physical checks (all UNPERFORMED):
+Physical checks (all UNPERFORMED; record device, OS/One UI version, APK commit and date):
+
 - Galaxy S24, Pixel and Xiaomi: system light/dark, device colours on/off and colour changes.
 - 200% text: Home, running controls/finish confirmation, goal entry keyboard, programme
   forms, Gym Now, history/splits, calendar, health/recovery, shoes, permissions and storage.

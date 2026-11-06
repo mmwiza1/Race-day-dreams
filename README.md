@@ -16,8 +16,12 @@ separates distance, time and pace, keeps controls accessible at large text sizes
 before finishing. Recorded evidence, coaching calculations and all data formats are preserved.
 
 See [design scope](docs/MATERIAL3_UI.md), [release notes](docs/RELEASE_0_12_0.md) and
-[observed verification](VERIFICATION.md). This release is in development; the preview images
-below remain the last verified baseline until final-source captures pass the release gate.
+[observed verification](VERIFICATION.md). The current development source passed the complete
+API 28/35/36 software gate; the gallery below contains its authentic 0.12 captures.
+Source-bound visual/APK acceptance passed; exact delivery-head checks and main publication
+are tracked separately.
+This remains a test build. The existing Material 3 components are retained; newer experimental
+Expressive motion/loading APIs are not included, and no runtime dependency upgrade is required.
 
 ## Preserved 0.11.0-test1 — Gym, Health & Recovery Intelligence
 
@@ -48,7 +52,7 @@ Workout suggestions explain the task first, then optional weight references and 
 Advanced details compares only changed targets and groups unchanged facts. Full actual
 workout evidence has a separate disclosure. Saving a suggestion remains separate from programme activation.
 
-The software and visual gate passed on API28/35/36, with155authentic captures including
+That release's software and visual gate passed on API28/35/36, with155authentic captures including
 33progression views. See [verification](VERIFICATION.md), [the visual review](docs/VISUAL_REVIEW_0_10_1.md)
 and [release notes](docs/RELEASE_0_10_1.md). The rolling download below always identifies its
 own verified-main version. No physical Galaxy S24 acceptance is claimed.
@@ -116,16 +120,22 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The gallery records its exact source commit and fingerprint;
-new captures replace it only after the complete supported API matrix succeeds.
-Emulator captures do not imply physical S24 or human TalkBack acceptance.
+data, not UI mockups. The current **383-image 0.12 gallery** was captured from source
+`bed9a81a611cc9793ab4bf96314604b668e97c5b` after
+[workflow 42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799)
+passed on API 28, 35 and 36: nine guard methods, 517 full instrumentation cases and 383
+captures on each API. Canonical commit `862117f` retains those production-screen renders
+and their source fingerprint. Image/source integrity, direct visual inspection and APK
+acceptance remain distinct gates; their current results are in [VERIFICATION.md](VERIFICATION.md)
+and [the visual review](docs/VISUAL_REVIEW_0_12.md). No physical S24 or human TalkBack result
+is inferred from emulator captures.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
-| Today | Weekly Plan | Live Coach | Dream Route |
+| Today | Weekly Plan | Live running | Dream Route |
 | --- | --- | --- | --- |
-| ![Today](docs/screenshots/home.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live Coach](docs/screenshots/live-coach.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
+| ![Today](docs/screenshots/home-material-brand-light.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live running](docs/screenshots/live-material-brand-light.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
 
 | Strength Today | Programme templates | Dated programme preview | Workout suggestion |
 | --- | --- | --- | --- |
