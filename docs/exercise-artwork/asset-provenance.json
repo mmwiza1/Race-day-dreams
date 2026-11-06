@@ -72,6 +72,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_bear_plank.webp",
+      "bytes": 35638,
+      "sha256": "67acfc67e210990bbcdf6c3823a6f9c67118a3d275cdc7bdf560f0f16b6edee8",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_belt_squat.webp",
       "bytes": 82424,
       "sha256": "74caefe68886acbacaebe8b55c330bccbcf566c55c410133498b056fa14ff0ff",
@@ -254,6 +261,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_copenhagen_plank_long_lever.webp",
+      "bytes": 41334,
+      "sha256": "17df8571f904316e28bd190ee01cdd41016484b0fa0bbaae8527c69e95e06305",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_copenhagen_plank_short_lever.webp",
+      "bytes": 50816,
+      "sha256": "9048301c7255d01bb98f7997ae5ecb8299cd4840b668f8dc334f192dc809268e",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_cossack_squat.webp",
       "bytes": 38484,
       "sha256": "abefba0f157b90ccfc241d20f122888b4a5ca8a4d4b84f28cb6458a2d2c7af3f",
@@ -272,6 +293,13 @@
       "bytes": 36824,
       "sha256": "7fa819d802cc36745b1e41909f8d5592cbd1c057ea79e5800ac301d1114dc8a0",
       "creation": "Original project image generation,23 October2026; reviewed movement, equipment and framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_dead_bug_heel_tap.webp",
+      "bytes": 39994,
+      "sha256": "ac86c124c42404abe8072cb17b7b7a47a4606314d867918d02344b3551f8f498",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -765,6 +793,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_overhead_dumbbell_carry.webp",
+      "bytes": 34408,
+      "sha256": "a8fa3b9e6c0b18c996a286447de84b8a2b03129fdff15d75ca9dfe8e9378e51c",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_overhead_press.webp",
       "bytes": 40284,
       "sha256": "cad9d6b1d382ca2961305febe517a377f852d1449c1ab3d119372d43d27ba882",
@@ -940,6 +975,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_scapular_push_up.webp",
+      "bytes": 25154,
+      "sha256": "3c9589a8cd642f3aa286ccb287b64b84b2e6fdf60ca7ba070c1979776a8d71f6",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_seated_barbell_press.webp",
       "bytes": 60654,
       "sha256": "e25d23279a5e910cf08fc1a082538925edefbd9879a53a89f95f5edf7031534e",
@@ -1007,6 +1049,13 @@
       "bytes": 44446,
       "sha256": "c97ed7298ed03f196500a773b079b2240ed13fb090db3107dbeeda5f4d6942a9",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_single_leg_glute_bridge.webp",
+      "bytes": 29226,
+      "sha256": "a87f4548172b539be4b90e33871bfcf236ac0489af0b04112e4d0ad8b085a995",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -1105,6 +1154,13 @@
       "bytes": 64664,
       "sha256": "820412cf174295e247d4c148bf27b7ca04d6dda4a88437f58ce723b964d019f4",
       "creation": "Original project image generation, 23 October 2026; individually reviewed movement, equipment and corrected framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_standing_pallof_hold.webp",
+      "bytes": 31184,
+      "sha256": "58c2fe8e25ccd268a76c093aa593c8871971827b3b204a828439e78b712ddeb4",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {

@@ -46,10 +46,10 @@ preparation retain their existing behaviour. Spontaneous runs stay independent u
 you explicitly associate them with a plan.
 
 Strength and Progress use summary dashboards with dedicated detail screens. The
-local catalogue has 184 canonical exercises, live name/alias search, favourites,
+local catalogue has 192 canonical exercises, live name/alias search, favourites,
 recents and hide/archive choices. Sets and PBs support repetitions, duration and
 distance without invented reps. Every canonical exercise has original illustrated guidance, movement-specific
-instructions, cues, mistakes and accessible descriptions. All184 entries are checked
+instructions, cues, mistakes and accessible descriptions. All192 entries are checked
 by strict catalogue and packaged-resource tests; assets work offline.
 
 Retained legacy six-week gym blocks support 1–6 days, equipment/time constraints,

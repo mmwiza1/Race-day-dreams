@@ -1,3 +1,17 @@
+# Current192-guide checkpoint — local gates green, runtime pending
+
+Actual complete Gradle domain/debug/lint/instrumentation compilation PASS79tasks/1min in
+catalogue-eighteen-android.log.681773domain checks/47suites; strict192canonical/14routine
+guides,195original assets/10027798bytes verified,17capture-validator tests. New static/time/
+load+time/load+distance records retain actual evidence and exclude warmups. New guide production
+capture visits all18addition IDs in all3display modes: next full matrix507cases/272captures/API.
+Packaged APK aapt permission inspection confirms NO INTERNET. Persistence versions unchanged.
+
+Earlier17b42c4 workflow42135690419 (184guide source) is still running; inspect actual result.
+Its expected507cases/248frames are separate from the next192guide source gate. New original
+Copenhagen support arms corrected before bundling. Final catalogue growth and final-source
+software/visual/release gates remain unfinished. PR18 remains draft; no S24 pass or merge claim.
+
 # M5 verified;184-guide catalogue and warning-first confirmation checkpoint
 
 [e39a308 complete workflow42133056947](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42133056947)

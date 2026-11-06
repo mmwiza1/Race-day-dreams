@@ -1301,6 +1301,75 @@ public final class ExerciseMetadataCatalog {
                 BEGINNER_FRIENDLY,
                 setup(DUMBBELLS, BENCH, STABLE_STEP));
 
+        define(
+                out,
+                "bear-plank",
+                CORE,
+                areas(TRUNK),
+                areas(SHOULDERS, QUADS),
+                BEGINNER_FRIENDLY,
+                setup());
+        define(
+                out,
+                "scapular-push-up",
+                SCAPULAR_CONTROL,
+                areas(SHOULDERS),
+                areas(UPPER_BACK, TRUNK),
+                BEGINNER_FRIENDLY,
+                setup());
+        define(
+                out,
+                "copenhagen-plank-short-lever",
+                CORE,
+                areas(HIP_ADDUCTORS, TRUNK),
+                areas(SHOULDERS),
+                INTERMEDIATE,
+                setup(BENCH),
+                UNILATERAL);
+        define(
+                out,
+                "copenhagen-plank-long-lever",
+                CORE,
+                areas(HIP_ADDUCTORS, TRUNK),
+                areas(SHOULDERS),
+                TECHNICAL,
+                setup(BENCH),
+                UNILATERAL);
+
+        define(
+                out,
+                "dead-bug-heel-tap",
+                CORE,
+                areas(TRUNK),
+                areas(HIP_FLEXORS),
+                BEGINNER_FRIENDLY,
+                setup());
+        define(
+                out,
+                "single-leg-glute-bridge",
+                HIP_EXTENSION,
+                areas(GLUTES),
+                areas(HAMSTRINGS, TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(),
+                UNILATERAL);
+        define(
+                out,
+                "standing-pallof-hold",
+                CORE,
+                areas(TRUNK),
+                areas(SHOULDERS),
+                BEGINNER_FRIENDLY,
+                setup(CABLE_STATION, CABLE_HANDLE));
+        define(
+                out,
+                "overhead-dumbbell-carry",
+                CARRY,
+                areas(SHOULDERS, TRUNK),
+                areas(FOREARMS, UPPER_BACK),
+                INTERMEDIATE,
+                setup(DUMBBELLS));
+
         var canonicalIds = new java.util.HashSet<String>();
         for (var definition : ExerciseCatalog.definitions())
             canonicalIds.add(definition.exercise().id());

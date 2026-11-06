@@ -35,6 +35,43 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
+### Current192-guide continuation checkpoint
+
+Following17b42c4 is COMMITTED/PUSHED (184guides plus warning-first confirmation). Its full
+workflow42135690419 is IN PROGRESS; inspect actual result, expected507cases/248captures/API.
+Do not cancel it with gratuitous pushes or rely on the older e39 green for newer source.
+PR18description updated with truthful current/pending results; remains draft.
+
+Local following source now has192canonical/14routine guides,195original assets/10027798bytes.
+Eight more complete entries:bear-plank,scapular-push-up,copenhagen-plank-short-lever,
+copenhagen-plank-long-lever,dead-bug-heel-tap,single-leg-glute-bridge,standing-pallof-hold,
+overhead-dumbbell-carry. Copenhagen support arms corrected to elbow/entire forearm flat on mat;
+original rejected drafts NOT bundled. Scapular-control role prevents ordinary chest-press swaps.
+New modalities retain actual time/load+time/load+distance; warmups never become recorded PBs.
+Actual whole local Gradle domain/debug/lint/test compile PASS79tasks/1min, log
+catalogue-eighteen-android.log.681773domain checks/47suites, strict192/192+14/14,
+17capture-validator and195asset SHA/provenance checks pass. Packaged APK inspected using aapt:
+NO INTERNET permission. No new dependency/schema/backup change. Current future capture gate
+is507cases/272frames/API because the single production-guide method iterates all18newIDs in
+all3display modes, plus218existing/storage views. New-source runtime/visual gate is NOT yet run.
+
+This section is committed with the tested192source/docs checkpoint; inspect actual HEAD/log
+for its SHA. NEXT: preserve it while inspecting17b42c4results;
+continue selective quality additions toward220–250. At least28further complete additions are
+still needed to reach220; not silently deferred/reduced. Final-source full matrix, allnewactual
+screenshots/200%scroll tails, APK size and release docs remain required before authorised merge.
+Then verify actualmain/post-merge workflow/rollingAPKversion15andSHA; no stabletag/hardwareclaim.
+
+More original art is being generated, not yet bundled/registered: imagegen cell102 (side-lying
+hipadduction,scapularpullup,proneYraise,cableexternalrotation), corrected externalrotation
+cell107, and Smith-machine4movements cell108. Resume still-running cells; inspect alloutputs.
+Generation results stored as art_<underscore_id> with output_hint for durable /workspace/
+generated_images paths. The first cable externalrotation draft exec-ef979732-7917-4ac8-94c4-
+617d6a7348ca.png is REJECTED: near arm moves inward, not resisted far-arm outward rotation.
+Wait/inspect corrected art_cable_external_rotation_corrected before any integration. All other
+new drafts require individual visual review before use. No text-only canonical entries or
+unrelated-pose fallback. Existing192source is complete/tested, not dependent on those drafts.
+
 ### LATEST — M5 full matrix green; ten-entry M6 source checkpoint
 
 Actual e39a3086e33c10fdc7fa3b774dba56a7eecc64f0 COMPLETE workflow42133056947 SUCCESS.

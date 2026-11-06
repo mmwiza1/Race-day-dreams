@@ -29,8 +29,9 @@ behaviour only; the complete agreed release is not yet ready for review.
   distinguish raw payload bytes from physical database files; compatible raw backups can restore
   proven original detail.
 
-- Ten fully illustrated catalogue additions cover hip machines, cable hip work, beginner
-  pushing, chair sit-to-stand, side-lying hip work and a dumbbell calf option. Support-based
+- Eighteen fully illustrated catalogue additions cover hip machines, cable hip work, beginner
+  pushing, chair sit-to-stand, timed core/inner-thigh holds, shoulder-blade control, unilateral
+  bridges and a distance-based overhead carry. Support-based
   substitutions explain changed leverage; loads never transfer between different exercises.
 
 ## Improvements

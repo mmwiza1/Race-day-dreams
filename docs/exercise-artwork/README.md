@@ -2,11 +2,11 @@
 
 ## Current coverage
 
-All **184/184 canonical exercises** have movement-specific illustrated guidance.
+All **192/192 canonical exercises** have movement-specific illustrated guidance.
 All **14/14 supporting-routine movements** have artwork. The strict catalogue audit
 passes; no canonical exercise uses a schematic or a generic unrelated-pose fallback.
 
-There are **187 original local WebP assets**, totalling **9,740,044 bytes** before APK
+There are **195 original local WebP assets**, totalling **10,027,798 bytes** before APK
 packaging. Each is a 1200×800 sequence encoded at quality 84. Only the displayed
 asset is decoded. Single-frame holds, two-frame movements and three-frame technical
 lifts retain meaningful captions and complete written/screen-reader instructions.
@@ -16,15 +16,18 @@ the strict packaged-file audit. `missing-canonical-ids.txt` is currently empty.
 
 ## 0.11 catalogue checkpoint
 
-Ten complete additions cover seated hip adductor/abductor machines, cable hip adduction/
+Eighteen complete additions cover seated hip adductor/abductor machines, cable hip adduction/
 abduction, cable glute kickback, seated dumbbell calf raise, wall/knee push-ups, chair
-sit-to-stand and side-lying hip abduction. Each has its own original two-frame artwork,
+sit-to-stand and side-lying hip abduction. Further additions cover straight-arm shoulder-blade
+control, short/long-lever Copenhagen holds, bear plank, heel taps, single-leg glute bridge,
+Pallof hold and overhead dumbbell carry. Each has its own original movement-specific artwork,
 explicit measurement/equipment/role metadata, readable instructions and accessibility copy.
-The first cable-adduction draft was rejected and corrected: the cuff must be on the near
+Copenhagen drafts were corrected to put the elbow and entire forearm on the mat;
+static holds use a single useful frame. The first cable-adduction draft was rejected and corrected: the cuff must be on the near
 leg so inward movement works against the cable, not with its pull. No rejected draft ships.
 Wall/knee pushing alternatives explain support/leverage rather than invented added load.
 
-Bundled additions total **541,384 bytes** over the prior177assets. APK comparison and actual
+Bundled additions total **829,138 bytes** over the prior177assets. APK comparison and actual
 new-guide screenshots remain pending the next exact-source Android gate. This checkpoint
 does not complete the agreed selective growth toward220–250 exercises.
 

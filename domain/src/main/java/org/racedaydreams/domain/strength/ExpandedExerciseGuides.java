@@ -202,6 +202,142 @@ public final class ExpandedExerciseGuides {
                 "Seated Calf Raise|Bodyweight Single-Leg Calf Raise",
                 "Weights secure; forefeet on step",
                 "Raise heels; lower smoothly");
+        add(
+                out,
+                "bear-plank",
+                "plank",
+                "Begin on hands and knees with hands under shoulders and knees under hips. Tuck"
+                        + " your toes and keep your back comfortably level.",
+                "Lift both knees just clear of the mat and hold while breathing. Keep knees bent"
+                    + " and hips near shoulder height; lower the knees before trunk control fades."
+                    + " Record the hold duration, not repetitions.",
+                "Trunk, with shoulder and thigh support",
+                "Keep the knees close to the mat|Press through stable hands and toes|Breathe during"
+                        + " the hold",
+                "Lifting the hips into a pike|Letting the lower back sag|Holding your breath",
+                "Plank|Dead Bug",
+                "Knees hover; hold and breathe");
+        add(
+                out,
+                "scapular-push-up",
+                "scapular-control",
+                "Set up in a high plank with hands beneath your shoulders and legs extended. Keep"
+                        + " elbows straight and your head, trunk and hips aligned.",
+                "Let your chest settle a small distance between your shoulders, then push the floor"
+                    + " away to spread your shoulder blades. Keep the elbows straight throughout;"
+                    + " this is shoulder-blade movement rather than a full push-up.",
+                "Muscles controlling the shoulder blades, with trunk support",
+                "Keep the elbows straight|Use a small shoulder-blade movement|Keep hips and trunk"
+                        + " steady",
+                "Bending elbows into an ordinary push-up|Arching the lower back|Rounding the whole"
+                        + " spine to exaggerate the movement",
+                "Wall Push-Up|Push-Up",
+                "Straight arms; chest settles slightly",
+                "Push floor away; spread shoulder blades");
+        add(
+                out,
+                "copenhagen-plank-short-lever",
+                "plank",
+                "Lie on your side beside a secure padded bench. Place the inside of your upper knee"
+                    + " on its seat with that knee bent. Support your lower forearm on a mat, elbow"
+                    + " beneath the shoulder.",
+                "Lift your hips into a controlled side-plank line while the upper knee stays"
+                    + " supported and the lower leg clears the floor. Hold while breathing, then"
+                    + " lower deliberately and change sides. Choose an ordinary side plank if this"
+                    + " setup is too demanding.",
+                "Inner-thigh and trunk muscles, with shoulder support",
+                "Keep the supported knee padded|Keep the whole forearm grounded|Begin with a short"
+                        + " manageable hold",
+                "Supporting on a fist instead of your forearm|Letting the bench slide|Twisting or"
+                        + " dropping the hips",
+                "Side Plank|Copenhagen Plank (Long Lever)",
+                "Upper knee supported; hold with forearm grounded");
+        add(
+                out,
+                "copenhagen-plank-long-lever",
+                "plank",
+                "Lie on your side beside a secure padded bench. Place the inside of your upper"
+                        + " ankle on the seat with that leg straight. Ground the lower forearm on a"
+                        + " mat, elbow beneath the shoulder.",
+                "Lift into a side-plank line through the straight supported leg and trunk, with the"
+                    + " lower leg clear of the floor. Breathe and lower before control fades. Use"
+                    + " the knee-supported version when the longer lever is too demanding; change"
+                    + " sides as prescribed.",
+                "Inner-thigh and trunk muscles, with shoulder support",
+                "Keep the upper ankle supported|Keep the whole forearm grounded|Use a short"
+                        + " controlled hold",
+                "Losing secure ankle contact|Holding after hips start sagging|Starting with a long"
+                        + " hold beyond your current control",
+                "Copenhagen Plank (Short Lever)|Side Plank",
+                "Upper ankle supported; hold with forearm grounded");
+        add(
+                out,
+                "dead-bug-heel-tap",
+                "core",
+                "Lie on your back with head supported, arms reaching upwards and both hips and"
+                        + " knees comfortably bent to a tabletop position. Keep your pelvis still.",
+                "Lower one bent leg until the heel gently touches the mat, then return to tabletop"
+                    + " and alternate sides. Keep your arms still and use a shorter lowering range"
+                    + " if your back starts arching.",
+                "Trunk stabilisers with hip-flexor involvement",
+                "Keep the knee bent|Keep your pelvis still|Move slowly while breathing",
+                "Straightening the moving leg unnecessarily|Arching the lower back|Pressing"
+                        + " forcefully into the floor with the tapping foot",
+                "Dead Bug|Bird Dog",
+                "Both legs in tabletop; arms still",
+                "Tap one heel; return and alternate");
+        add(
+                out,
+                "single-leg-glute-bridge",
+                "bridge",
+                "Lie on your back with one foot planted near your hips and the other leg lifted"
+                        + " clear. Rest your arms alongside you and keep both sides of your pelvis"
+                        + " level.",
+                "Press through the planted foot to lift your hips into a controlled"
+                        + " shoulder-to-knee line, then lower slowly. Keep the other leg lifted and"
+                        + " stop before your lower back arches; change sides as prescribed.",
+                "Glutes with hamstring and trunk involvement",
+                "Keep the working foot stable|Keep both hips level|Lift from the hip rather than"
+                        + " the lower back",
+                "Twisting the pelvis|Pushing through the lifted leg|Overarching at the top",
+                "Glute Bridge|Hip Thrust",
+                "One foot planted; other leg lifted",
+                "Raise hips level; lower smoothly");
+        add(
+                out,
+                "standing-pallof-hold",
+                "core",
+                "Stand side-on to a chest-height cable and hold the handle with both hands. Take a"
+                    + " stable stance and reach your hands straight ahead without turning towards"
+                    + " the pulley.",
+                "Hold the arms extended while keeping ribs and pelvis facing forwards. Breathe,"
+                    + " return the handle to your chest to finish and change sides as prescribed."
+                    + " Record the actual cable load and hold duration, not repetitions.",
+                "Trunk stabilisers with shoulder support",
+                "Keep hips and ribs facing forwards|Use a manageable cable load|Breathe during the"
+                        + " hold",
+                "Turning towards the pulley|Leaning sideways|Continuing after trunk control fades",
+                "Side Plank|Pallof Press",
+                "Hold hands forward; resist rotation");
+        add(
+                out,
+                "overhead-dumbbell-carry",
+                "carry",
+                "With clear overhead space and a clear walking path, bring two manageable dumbbells"
+                        + " to a stable overhead position. Keep wrists above shoulders and ribs"
+                        + " comfortably over your pelvis.",
+                "Walk with small controlled steps while keeping both weights steady overhead, then"
+                    + " lower them deliberately. End before arm or trunk control fades. Record"
+                    + " distance and total load across both dumbbells; these loads do not transfer"
+                    + " from another carry.",
+                "Shoulders and trunk, with grip and upper-back involvement",
+                "Start with manageable overhead loads|Keep breathing and ribs controlled|Keep both"
+                        + " weights steady",
+                "Leaning backwards to hold the weights|Walking beneath obstacles|Continuing when"
+                        + " arms or grip become unstable",
+                "Farmer’s Carry|Front Rack Carry",
+                "Stable two-dumbbell overhead support",
+                "Walk steadily; lower deliberately");
         return Map.copyOf(out);
     }
 

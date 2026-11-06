@@ -18,6 +18,8 @@ public final class CatalogueExpansionTestSuite {
         actualsAndWarmupsStaySeparate();
         supportedProgressionsExplainLeverageNotInventedLoad();
         cableAlternativesNeedTheAttachmentAndKeepHipDirection();
+        staticHoldsAndShoulderBladeControlAreDistinctTasks();
+        carriesAndLoadedHoldsKeepTheirMeasurementEvidence();
         System.out.println("CatalogueExpansionTestSuite: " + checks + " checks passed.");
     }
 
@@ -208,6 +210,131 @@ public final class CatalogueExpansionTestSuite {
             check(TechniqueIllustrations.forExercise(id).phases().size() == 2);
             check(TechniqueGuide.forExercise(id).mistakes().size() == 3);
         }
+    }
+
+    private static void staticHoldsAndShoulderBladeControlAreDistinctTasks() {
+        var now = Instant.parse("2026-11-06T12:00:00Z");
+        for (var id :
+                List.of(
+                        "bear-plank",
+                        "copenhagen-plank-short-lever",
+                        "copenhagen-plank-long-lever")) {
+            var exercise = ExerciseCatalog.definition(id).exercise();
+            check(exercise.measurement() == StrengthExercise.MeasurementProfile.DURATION);
+            check(!exercise.estimateOneRepMax());
+            check(TechniqueIllustrations.forExercise(id).phases().size() == 1);
+            var actual = new StrengthSession.SetEntry("hold", 0, 0, null, false, 20L, null);
+            var session =
+                    new StrengthSession(
+                            "session-" + id,
+                            now,
+                            ZoneOffset.UTC,
+                            Duration.ofMinutes(5),
+                            null,
+                            "",
+                            List.of(new StrengthSession.ExerciseSets(exercise, List.of(actual))));
+            var records = StrengthRecords.progression(List.of(session), now);
+            check(records.size() == 1);
+            check(records.get(0).key().kind() == StrengthRecords.Kind.DURATION);
+            check(records.get(0).value() == 20);
+        }
+        var shortLever = ExerciseMetadataCatalog.require("copenhagen-plank-short-lever");
+        var longLever = ExerciseMetadataCatalog.require("copenhagen-plank-long-lever");
+        check(shortLever.equipment().availableWith(Set.of(BENCH)));
+        check(!shortLever.equipment().availableWith(Set.of()));
+        check(!shortLever.suitability().appropriateFor(GymProgramme.Experience.BEGINNER));
+        check(!longLever.suitability().appropriateFor(GymProgramme.Experience.INTERMEDIATE));
+        check(longLever.suitability().appropriateFor(GymProgramme.Experience.EXPERIENCED));
+        check(
+                !TechniqueIllustrations.forExercise(shortLever.exerciseId())
+                        .asset()
+                        .equals(
+                                TechniqueIllustrations.forExercise(longLever.exerciseId())
+                                        .asset()));
+        check(TechniqueGuide.forExercise(shortLever.exerciseId()).setup().contains("upper knee"));
+        check(TechniqueGuide.forExercise(longLever.exerciseId()).setup().contains("upper ankle"));
+        check(
+                ExerciseMetadataCatalog.require("scapular-push-up").primaryRole()
+                        == ExerciseMetadata.Role.SCAPULAR_CONTROL);
+        var context =
+                new ExerciseSubstitutionEngine.Context(
+                        ExerciseCatalog.definition("bench-press").exercise(),
+                        GymProgramme.Goal.GENERAL,
+                        GymProgramme.Experience.BEGINNER,
+                        Set.of(),
+                        Set.of(),
+                        Set.of(),
+                        Set.of(),
+                        ExerciseSubstitutionEngine.Reason.ALTERNATIVES);
+        check(
+                ExerciseSubstitutionEngine.rank(context, 50).stream()
+                        .noneMatch(c -> c.exercise().id().equals("scapular-push-up")));
+        check(
+                TechniqueGuide.forExercise("scapular-push-up")
+                        .movement()
+                        .contains("elbows straight"));
+    }
+
+    private static void carriesAndLoadedHoldsKeepTheirMeasurementEvidence() {
+        var now = Instant.parse("2026-11-06T12:00:00Z");
+        for (var id : List.of("standing-pallof-hold", "overhead-dumbbell-carry")) {
+            var exercise = ExerciseCatalog.definition(id).exercise();
+            check(exercise.measurement().usesLoad());
+            check(!exercise.measurement().usesReps());
+            check(!exercise.estimateOneRepMax());
+            var actual =
+                    new StrengthSession.SetEntry(
+                            "actual",
+                            0,
+                            10,
+                            7.0,
+                            false,
+                            exercise.measurement().usesDuration() ? 30L : null,
+                            exercise.measurement().usesDistance() ? 20.0 : null);
+            var warmup =
+                    new StrengthSession.SetEntry(
+                            "warmup",
+                            0,
+                            15,
+                            null,
+                            true,
+                            exercise.measurement().usesDuration() ? 40L : null,
+                            exercise.measurement().usesDistance() ? 30.0 : null);
+            var session =
+                    new StrengthSession(
+                            "loaded-task-" + id,
+                            now,
+                            ZoneOffset.UTC,
+                            Duration.ofMinutes(5),
+                            null,
+                            "",
+                            List.of(
+                                    new StrengthSession.ExerciseSets(
+                                            exercise, List.of(warmup, actual))));
+            var records = StrengthRecords.progression(List.of(session), now);
+            check(!records.isEmpty());
+            check(records.stream().allMatch(p -> p.actual().equals(actual)));
+            check(records.stream().noneMatch(StrengthRecords.Point::estimated));
+            check(
+                    records.stream()
+                            .noneMatch(
+                                    p ->
+                                            p.key().kind()
+                                                    == StrengthRecords.Kind
+                                                            .BODYWEIGHT_REPETITIONS));
+        }
+        check(
+                ExerciseCatalog.definition("dead-bug-heel-tap").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.REPS_ONLY);
+        check(
+                ExerciseMetadataCatalog.require("single-leg-glute-bridge")
+                        .roles()
+                        .contains(ExerciseMetadata.Role.UNILATERAL));
+        check(TechniqueIllustrations.forExercise("standing-pallof-hold").phases().size() == 1);
+        check(
+                TechniqueGuide.forExercise("overhead-dumbbell-carry")
+                        .movement()
+                        .contains("total load across both"));
     }
 
     private static void check(boolean value) {
