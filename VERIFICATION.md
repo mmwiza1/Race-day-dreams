@@ -1,3 +1,33 @@
+# Material UI — latest runtime checkpoint, final gate pending
+
+Source `9b9bf8775c672d7275d921be22cc837d85e41fd4`,
+[workflow 42257165012](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42257165012):
+
+- API28 and API35 each passed all **517 instrumentation tests / 383 captures**.
+- API36 passed **516 of 517**. Its only failure was the screenshot navigation flow looking
+  up “Your recorded route” immediately after “Run detail”; the route projection is loaded
+  asynchronously. The existing long-route flow already waits for “Route story”.
+- Native Close is fully visible in light/dark/200% on all three APIs. The current awake
+  device setup and focused-window assertions passed. The failure-time evidence does not
+  justify another recording, window-focus or production route-engine change.
+- The following test correction waits for actual route/story content before capture and
+  retains merged-tree, alignment, visibility and full-suite assertions. No extra timeout,
+  arbitrary delay or unmerged-tree fallback is used. Its complete new matrix remains required.
+
+API35 raw artifact13524991116 contains383 valid PNGs; ZIP SHA256
+`66c3a6f06ddb0c1b488ab936e0e367480f1313e479e7fa2d1fc0658af9a6a56f`.
+Current-source light/dark/200% Home/live, native privacy/Close, wide navigation, progression,
+gym, analytics, recovery, body and storage images were opened directly. No blocking app-content
+layout issue was found; final API36 actual-pixel review remains required. A failed full matrix
+correctly prevented canonical publication; the canonical gallery remains an earlier source.
+
+API35 candidate APK artifact13525100975:55,348,650 bytes, version0.12.0-test1/code16,
+SHA256 `b8a9fcedf4c29695315ab6377bd196e405af9268cf5639c2727261b6c78534f1`.
+Its actual packaged permissions contain no INTERNET. This branch artifact is not a merged-main
+release. No merge/publication or physical-device acceptance is claimed.
+
+The earlier complete source-specific checkpoints below remain historical evidence.
+
 # Material UI modernisation — 0.12.0-test1
 
 UI source **df35cf2beab51a33851c9b2198c00d23a4678ef1** passed the complete

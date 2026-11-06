@@ -1,12 +1,20 @@
 # Material UI development capture gate
 
-0.12 requires379real current-source captures: all359previous captures plus20device/branded,
-light/dark/200% Home/live/finish-confirmation and wide-window navigation cases. Required names
-and strict PNG validation are in scripts/verify-dream-screenshots.py;18validator tests pass.
-The protected same-repo branch publication rule now targets feature/material3-expressive-ui,
-retaining exact-head and source fingerprint checks. No stale image is relabelled as current.
-Actual capture, source verification and visual review are still pending. References remain
-separate from authentic screenshots. A schema/test pass is not visual acceptance.
+0.12 requires383 real current-source captures: all359 previous captures plus24 device/branded,
+light/dark/200% Home/live/finish-confirmation, wide-window navigation and native Health Connect
+privacy-page views. Required names and strict PNG validation are in
+scripts/verify-dream-screenshots.py; the validator has19 regression tests.
+
+The protected same-repo branch publication rule targets feature/material3-expressive-ui,
+retaining exact-head and source-fingerprint checks. Seven CI-shell helper tests cover the
+runner's diagnostic/cleanup and virtual-device setup behaviour; they do not certify app rendering.
+The complete supported gate expects517 instrumentation cases and383 captures perAPI28/35/36.
+
+Final exact-source runtime, capture/source verification, visual acceptance and APK acceptance
+are still pending. Do not relabel older captures as current or infer visual correctness from
+PNG/schema checks. Inspect application content and actual system-bar rendering, including
+large-text native Close controls and short-wide navigation. Design references remain separate
+and unedited. Historical source-specific evidence follows.
 
 # 0.11 authentic screenshots —359 source-verified captures
 

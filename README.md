@@ -105,8 +105,8 @@ API-35 package. Publication waits for the full API 28/35/36 matrix and canonical
 No permanent stable release is created by merging this test update.
 
 These are **debug-signed test APKs**, not Play Store production packages. Actions
-artifacts for the0.10.1candidate are named `Race-Day-Dreams-0.10.1-test1-debug-api-35`
-and contain `Race-Day-Dreams-0.10.1-test1-debug.apk`. The rolling download follows the
+artifacts for this candidate are named `Race-Day-Dreams-0.12.0-test1-debug-api-35`
+and contain `Race-Day-Dreams-0.12.0-test1-debug.apk`. The rolling download follows the
 latest verified main and identifies its own version/commit; a branch candidate is not
 silently published as main. Check [VERIFICATION.md](VERIFICATION.md) and export a complete
 local backup before upgrading.
@@ -116,9 +116,9 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The reliability checkpoint08cf375 passed435instrumentation tests per
-supported API and128authentic captures. The owner requested a compact visual refinement;
-its438-case gate and137 refreshed captures are pending final review; these source-bound results do not imply physical S24/TalkBack acceptance.
+data, not UI mockups. The gallery records its exact source commit and fingerprint;
+new captures replace it only after the complete supported API matrix succeeds.
+Emulator captures do not imply physical S24 or human TalkBack acceptance.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).

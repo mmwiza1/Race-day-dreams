@@ -1,8 +1,18 @@
 # Material UI acceptance — 0.12.0-test1
 
 Export a complete backup before changing debug-signing builds. Do not uninstall a live
-installation casually. Current automated results are in VERIFICATION.md; final APK and
-current-source screenshots are pending. No stable/public-store release is implied.
+installation casually. Current observed results are in VERIFICATION.md. Final exact-source
+API28/35/36, visual/screenshot and APK acceptance are pending; no stable/public-store release
+is implied. Use only an APK whose source, version and checksum match the verified release.
+
+The expanded software gate requires517 instrumentation cases and383 authentic captures perAPI,
+retaining all359 older frames and adding24 UI views. It includes19 capture-validator and7 CI-shell
+helper tests. Counts alone do not prove that the latest source passed or that bars render correctly.
+
+The existing native goal and Health Connect privacy screens retain their entry, draft and Close
+behaviour. Their safe viewports and theme-matched bars are part of this release's UI verification.
+No runtime dependency, permission, schema or backup-format change is introduced. Official existing
+Material3 components are reused; newer experimental Expressive motion/loading APIs are not added.
 
 Physical checks (all UNPERFORMED):
 - Galaxy S24, Pixel and Xiaomi: system light/dark, device colours on/off and colour changes.

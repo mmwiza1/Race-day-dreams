@@ -497,6 +497,11 @@ class CoachingScreenshotTest {
         compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
         compose.onAllNodesWithText("Recorded run")[0].performClick()
         await("Run detail")
+        // The detail title is available before the retained GPS projection is published.
+        // Wait for the real route/story content, as in the long-route flow below, before
+        // capturing or scrolling its merged semantics. Do not capture a loading frame.
+        await("Route story")
+        await("Your recorded route")
         capture("activity-detail")
         alignHeading("Your recorded route")
         capture("post-run-route")
