@@ -49,6 +49,13 @@ captures are added; all379prior captures remain required. Current expected matri
 383captures perAPI. Local native-source full domain/debug/lint/test compilation passes79tasks/
 1m12s;19capture-validator and6CI-shell tests pass. Runtime/native visual acceptance remains open.
 
+The first517-source guard5f38913 failed onAPI35/36at nativeClose scrollTo (other8guardcases
+passed; fullsuite correctlyblocked). AOSPScrollView's rectangle calculation uses fullheight,
+whileits ownsystem-inset padding clips that visiblearea. The correction moves safeinsets to
+anouterFrameLayout, givingtheScrollViewits actual safeviewport. Existingreal scroll/click
+assertions remain andnowrequire100%buttonvisibility/fullglobalbounds. Localcomplete domain/
+debug/lint/testcompilepasses79tasks/1m8s. Its newruntime/visualgate ispending.
+
 Verified df35cf2 API35APK artifact13517359333: **55,348,650bytes**,0.12.0-test1/code16, SHA256
 `5a44b97683dfdfa7f9c7fb0ad63da837c201169a6371f7e5332e4e38a7ce1656`.
 APKZIP SHA `1b4bdaad6665157954ca62af7e84945f6a90f89e46bbe3caf9bf7a038228356f`.

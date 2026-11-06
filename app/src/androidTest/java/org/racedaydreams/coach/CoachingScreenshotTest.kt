@@ -2926,9 +2926,21 @@ class CoachingScreenshotTest {
                         .perform(androidx.test.espresso.action.ViewActions.scrollTo())
                         .check(
                             androidx.test.espresso.assertion.ViewAssertions.matches(
-                                androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+                                androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed()
                             )
                         )
+                        .check { view, missing ->
+                            if (missing != null) throw missing
+                            val button = checkNotNull(view)
+                            val visible = android.graphics.Rect()
+                            Assert.assertTrue(button.getGlobalVisibleRect(visible))
+                            Assert.assertEquals(button.height, visible.height())
+                            Assert.assertEquals(button.width, visible.width())
+                            android.util.Log.i(
+                                "RddGate",
+                                "NATIVE_PERMISSION_CLOSE ${mode.suffix} full=$visible button=${button.width}x${button.height}",
+                            )
+                        }
                     if (mode.scale == 2f)
                         captureNativePermission("permission-rationale-actions-large-font")
                     close.perform(androidx.test.espresso.action.ViewActions.click())

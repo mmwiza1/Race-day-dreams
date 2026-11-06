@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -75,11 +76,18 @@ class HealthPermissionRationaleActivity : Activity() {
                 setOnClickListener { finish() }
             }
         )
-        setContentView(
+        val scroll =
             ScrollView(this).apply {
                 isFillViewport = true
                 setBackgroundColor(colours.surface.toArgb())
                 addView(content)
+            }
+        setContentView(
+            FrameLayout(this).apply {
+                setBackgroundColor(colours.surface.toArgb())
+                // ScrollView's scroll-to-child calculation uses its full height, not its
+                // clipped padding area. Apply safe insets outside that actual viewport.
+                addView(scroll, FrameLayout.LayoutParams(-1, -1))
                 setOnApplyWindowInsetsListener { view, insets ->
                     if (Build.VERSION.SDK_INT >= 30) {
                         val safe =
