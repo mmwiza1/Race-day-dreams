@@ -2840,6 +2840,120 @@ class CoachingScreenshotTest {
     )
 
     @Test
+    fun capturesPublicPermissionRationaleInLightDarkAndLargeText() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        val heading = "Your health data stays on this device"
+        try {
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false).commit()
+            for (mode in
+                listOf(
+                    MaterialCapture("light", false, "no", 1f),
+                    MaterialCapture("dark", false, "yes", 1f),
+                    MaterialCapture("large-font", false, "no", 2f),
+                )) {
+                shell("cmd uimode night ${mode.night}")
+                shell("settings put system font_scale ${mode.scale}")
+                val native =
+                    ActivityScenario.launch(
+                        org.racedaydreams.health.HealthPermissionRationaleActivity::class.java
+                    )
+                try {
+                    compose.waitUntil(20000) {
+                        var ready = false
+                        native.onActivity { activity ->
+                            val dark =
+                                activity.resources.configuration.uiMode and
+                                    android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+                                    android.content.res.Configuration.UI_MODE_NIGHT_YES
+                            val bars =
+                                androidx.core.view.WindowCompat.getInsetsController(
+                                    activity.window,
+                                    activity.window.decorView,
+                                )
+                            ready =
+                                activity.window.decorView.hasWindowFocus() &&
+                                    dark == (mode.night == "yes") &&
+                                    activity.resources.configuration.fontScale >=
+                                        mode.scale - .01f &&
+                                    bars.isAppearanceLightStatusBars == !dark &&
+                                    bars.isAppearanceLightNavigationBars == !dark
+                        }
+                        ready
+                    }
+                    // A native Activity must be checked through its real View hierarchy.
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(heading)
+                        )
+                        .perform(androidx.test.espresso.action.ViewActions.scrollTo())
+                        .check(
+                            androidx.test.espresso.assertion.ViewAssertions.matches(
+                                androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+                            )
+                        )
+                    native.onActivity { activity ->
+                        val root =
+                            activity
+                                .findViewById<android.view.ViewGroup>(android.R.id.content)
+                                .getChildAt(0)
+                        val surface =
+                            (root.background as android.graphics.drawable.ColorDrawable).color
+                        if (android.os.Build.VERSION.SDK_INT < 35) {
+                            Assert.assertEquals(
+                                "Native navigation background must match its page",
+                                surface,
+                                activity.window.navigationBarColor,
+                            )
+                            Assert.assertEquals(
+                                "Native status background must match its page",
+                                surface,
+                                activity.window.statusBarColor,
+                            )
+                        }
+                    }
+                    captureNativePermission("permission-rationale-${mode.suffix}")
+                    val close =
+                        androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText("Close")
+                        )
+                    close
+                        .perform(androidx.test.espresso.action.ViewActions.scrollTo())
+                        .check(
+                            androidx.test.espresso.assertion.ViewAssertions.matches(
+                                androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+                            )
+                        )
+                    if (mode.scale == 2f)
+                        captureNativePermission("permission-rationale-actions-large-font")
+                    close.perform(androidx.test.espresso.action.ViewActions.click())
+                    compose.waitUntil(20000) { native.state == Lifecycle.State.DESTROYED }
+                } finally {
+                    native.close()
+                }
+            }
+        } finally {
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("cmd uimode night $night")
+        }
+    }
+
+    private fun captureNativePermission(name: String) {
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        automation.waitForIdle(200, 20000)
+        val bitmap = automation.takeScreenshot()
+        Assert.assertNotNull(bitmap)
+        saveCapture(name, bitmap)
+    }
+
+    @Test
     fun capturesWideWindowNavigationAndBoundedContent() {
         val originalFont = shell("settings get system font_scale").trim()
         val originalWidth = context.resources.configuration.screenWidthDp
@@ -3334,6 +3448,10 @@ class CoachingScreenshotTest {
         automation.waitForIdle(200, 20000)
         val bitmap = automation.takeScreenshot()
         Assert.assertNotNull(bitmap)
+        saveCapture(name, bitmap)
+    }
+
+    private fun saveCapture(name: String, bitmap: Bitmap) {
         val dir = File(context.getExternalFilesDir(null), "screenshots")
         dir.mkdirs()
         File(dir, "$name.png").outputStream().use {

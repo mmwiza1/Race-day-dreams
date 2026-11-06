@@ -15,14 +15,34 @@ import org.racedaydreams.coach.theme.*
 class HealthPermissionRationaleActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val dark =
+            resources.configuration.uiMode and
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
         val colours =
             raceDayColourScheme(
                 this,
-                resources.configuration.uiMode and
-                    android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
-                    android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                dark,
                 getSharedPreferences(APPEARANCE_PREFERENCES, 0).getBoolean(DYNAMIC_COLOUR, true),
             )
+        // The retained native Activity does not use Compose's edge-to-edge shell. In
+        // particular, API28's light Material theme otherwise inherits a black navigation
+        // background while requesting dark icons. Match its bars to the real page palette.
+        window.decorView.setBackgroundColor(colours.surface.toArgb())
+        if (Build.VERSION.SDK_INT < 35) {
+            window.statusBarColor = colours.surface.toArgb()
+            window.navigationBarColor = colours.surface.toArgb()
+        }
+        if (Build.VERSION.SDK_INT >= 29) {
+            // Newer Android versions may enforce transparent bars. The page supplies its
+            // surface behind both bars; use the same transparent treatment as the app shell.
+            window.isStatusBarContrastEnforced = false
+            window.isNavigationBarContrastEnforced = false
+        }
+        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = !dark
+            isAppearanceLightNavigationBars = !dark
+        }
         val content =
             LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL

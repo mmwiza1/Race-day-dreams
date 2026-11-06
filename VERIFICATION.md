@@ -38,7 +38,16 @@ icon requests. Capture checks now cover focused live/native/wide windows, naviga
 legacy flags, IME and contrast state. Global system-window idleness replaces the old fixed200ms
 sleep. This is a targeted presentation experiment, not a claimed resolved platform cause.
 Local follow-up domain/debug/lint/instrumentation compilation passes79tasks/1m5s. Its full
-516case/379capture matrix, new fingerprint and actual bar screenshots remain required.
+517case/383capture matrix, new fingerprint and actual bar screenshots remain required.
+
+The active native permission entry also had an AOSP9configuration mismatch: inherited black
+navigation background with requested dark icons. Its retained Activity now matches legacy bar
+backgrounds to the actual page palette and paints decor behind transparent bars. Privacy text,
+Close callback, native layout and inset handling are unchanged. A real ActivityScenario/Espresso
+capture method checks light/dark/200%, legacy palette equality and functional Close. Four native
+captures are added; all379prior captures remain required. Current expected matrix is517tests/
+383captures perAPI. Local native-source full domain/debug/lint/test compilation passes79tasks/
+1m12s;19capture-validator and6CI-shell tests pass. Runtime/native visual acceptance remains open.
 
 Verified df35cf2 API35APK artifact13517359333: **55,348,650bytes**,0.12.0-test1/code16, SHA256
 `5a44b97683dfdfa7f9c7fb0ad63da837c201169a6371f7e5332e4e38a7ce1656`.

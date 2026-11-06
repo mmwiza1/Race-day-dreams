@@ -476,3 +476,5 @@ warning-first copy refinement and three new scrolled confirmation-tail captures.
 catalogue additions require30real guide frames, all light/dark/200%, via production navigation.
 These following248captures require a fresh exact-source matrix and direct review. The e39
 screenshots remain authentic historical checkpoint evidence, not acceptance of newer source.
+
+The Material update also requires four authentic public permission-rationale captures: light, dark,200% entry and200% Close action. These launch the real retained native Activity. All379earlier scenes remain, making383required images; no design reference is a build capture.
