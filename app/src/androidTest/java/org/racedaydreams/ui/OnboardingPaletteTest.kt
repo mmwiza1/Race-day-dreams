@@ -91,6 +91,13 @@ class OnboardingPaletteTest {
                 assertEquals(original, view.draftJson())
             }
             assertEquals(0, writes)
+            val next =
+                descendants(view).filterIsInstance<Button>().single {
+                    it.text.toString() == context.getString(R.string.onboarding_continue)
+                }
+            assertTrue(next.performClick())
+            assertEquals(2, org.json.JSONObject(view.draftJson()).getInt("step"))
+            assertEquals(1, writes)
         }
     }
 

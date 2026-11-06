@@ -99,24 +99,28 @@ public final class OnboardingView extends ScrollView {
                 control.setBackground(tile);
             }
         } else if (view instanceof Button button) {
+            CharSequence title = button.getText();
             boolean primary =
-                    Integer.valueOf(R.string.onboarding_continue).equals(button.getTag())
-                            || Integer.valueOf(R.string.onboarding_save).equals(button.getTag())
-                            || Integer.valueOf(R.string.onboarding_saving).equals(button.getTag());
-            android.graphics.drawable.GradientDrawable shape =
-                    new android.graphics.drawable.GradientDrawable();
-            shape.setCornerRadius(dp(28));
-            shape.setColor(stateColours(primary ? palette[2] : palette[4], disabledColour(0.12f)));
-            if (!primary) shape.setStroke(dp(1), stateColours(palette[5], disabledColour(0.12f)));
-            button.setBackgroundTintList(null);
-            button.setBackground(
-                    new android.graphics.drawable.RippleDrawable(
-                            android.content.res.ColorStateList.valueOf(
-                                    (palette[1] & 0x00FFFFFF) | 0x20000000),
-                            shape,
-                            null));
+                    android.text.TextUtils.equals(
+                                    title, getContext().getString(R.string.onboarding_continue))
+                            || android.text.TextUtils.equals(
+                                    title, getContext().getString(R.string.onboarding_save))
+                            || android.text.TextUtils.equals(
+                                    title, getContext().getString(R.string.onboarding_saving));
+            // Preserve the platform drawable, padding and input behaviour; clip only its outline.
+            button.setBackgroundTintList(
+                    stateColours(primary ? palette[2] : palette[4], disabledColour(0.12f)));
             button.setTextColor(
                     stateColours(primary ? palette[3] : palette[2], disabledColour(0.38f)));
+            button.setOutlineProvider(
+                    new android.view.ViewOutlineProvider() {
+                        @Override
+                        public void getOutline(View target, android.graphics.Outline outline) {
+                            outline.setRoundRect(
+                                    0, 0, target.getWidth(), target.getHeight(), dp(28));
+                        }
+                    });
+            button.setClipToOutline(true);
         } else if (view instanceof TextView label) {
             label.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
             if (view instanceof EditText)
@@ -731,9 +735,7 @@ public final class OnboardingView extends ScrollView {
     private Button button(int textResource) {
         Button button = new Button(getContext());
         button.setText(textResource);
-        button.setTag(textResource);
         button.setTextSize(16);
-        button.setSingleLine(false);
         button.setAllCaps(false);
         button.setMinHeight(dp(56));
         return button;
