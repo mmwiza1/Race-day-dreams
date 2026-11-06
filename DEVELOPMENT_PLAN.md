@@ -1,3 +1,11 @@
+# Active UI release — 0.12.0-test1
+
+Material You / Material 3 Expressive modernisation only. Foundation and core presentation are
+implemented on feature/material3-expressive-ui/PR19. Remaining work is final runtime,
+accessibility and authentic visual verification, correcting any demonstrated regressions,
+then authorised delivery. See CONTINUE_CODEX.md. No deferred intelligence feature or engine
+rewrite belongs to this scope;0.11is merged. Historical plans follow.
+
 ## Active 0.11.0-test1 — Gym, Health & Recovery Intelligence
 
 PR18, feature/0.11-gym-health-recovery-intelligence, remains draft until the complete software

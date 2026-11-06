@@ -1,3 +1,19 @@
+# Material UI acceptance — 0.12.0-test1
+
+Export a complete backup before changing debug-signing builds. Do not uninstall a live
+installation casually. Current automated results are in VERIFICATION.md; final APK and
+current-source screenshots are pending. No stable/public-store release is implied.
+
+Physical checks (all UNPERFORMED):
+- Galaxy S24, Pixel and Xiaomi: system light/dark, device colours on/off and colour changes.
+- 200% text: Home, running controls/finish confirmation, goal entry keyboard, programme
+  forms, Gym Now, history/splits, calendar, health/recovery, shoes, permissions and storage.
+- TalkBack/keyboard: all navigation destinations, meaningful metric groups, real disclosure
+  states, focus order, buttons and dialogs; check contrast and comfortable touch targets.
+- Rotation, split-screen, wider displays, IME and system bars: no clipped fields or covered actions.
+- Preserve the existing outdoor GPS, locked-screen running, Health Connect, audio and backup
+  owner acceptance tasks below. Emulator success does not certify hardware behaviour.
+
 # 0.11.0-test1 software verification / physical acceptance
 
 Complete [workflow42148419418](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418) at sourceee760bf passed508tests EACH API28/35/36,

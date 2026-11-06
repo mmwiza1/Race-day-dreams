@@ -7,7 +7,19 @@ A free, open-source, account-free Android running and strength coach.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.11.0-test1 — Gym, Health & Recovery Intelligence
+## 0.12.0-test1 — Material You / Material 3 Expressive UI
+
+A shared adaptive theme brings device colours (Android 12+), a branded blue fallback,
+clearer typography, rounded tonal cards and wide-window navigation to the existing app.
+Home emphasises today's session, the current goal and upcoming training. Live running
+separates distance, time and pace, keeps controls accessible at large text sizes and asks
+before finishing. Recorded evidence, coaching calculations and all data formats are preserved.
+
+See [design scope](docs/MATERIAL3_UI.md), [release notes](docs/RELEASE_0_12_0.md) and
+[observed verification](VERIFICATION.md). This release is in development; the preview images
+below remain the last verified baseline until final-source captures pass the release gate.
+
+## Preserved 0.11.0-test1 — Gym, Health & Recovery Intelligence
 
 Optional rest timing, evidence-based warm-up suggestions and supersets build on the existing
 Gym Now engine. Strength trends and records use actual working sets; measured results remain

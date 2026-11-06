@@ -1,3 +1,13 @@
+# Material UI development capture gate
+
+0.12 requires375real current-source captures: all359previous captures plus16device/branded,
+light/dark/200% Home/live/finish-confirmation and wide-window navigation cases. Required names
+and strict PNG validation are in scripts/verify-dream-screenshots.py;18validator tests pass.
+The protected same-repo branch publication rule now targets feature/material3-expressive-ui,
+retaining exact-head and source fingerprint checks. No stale image is relabelled as current.
+Actual capture, source verification and visual review are still pending. References remain
+separate from authentic screenshots. A schema/test pass is not visual acceptance.
+
 # 0.11 authentic screenshots —359 source-verified captures
 
 Complete workflow42148419418 passed508tests and359captures EACH API28/35/36 at source

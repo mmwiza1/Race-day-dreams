@@ -659,8 +659,8 @@ class CoachingScreenshotTest {
         compose.waitForIdle()
         capture("gym-strength-first")
         back()
-        click("⚙ Settings")
-        await("Settings")
+        click("Settings")
+        await("Activity data source")
         capture("settings")
         alignHeading("Activity data source")
         capture("data-sources")
@@ -742,14 +742,14 @@ class CoachingScreenshotTest {
         capture("exercise-static-stretch")
         back()
         back()
-        click("⚙ Settings")
-        await("Settings")
+        click("Settings")
+        await("Activity data source")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle()
         capture("onboarding")
         back()
-        click("⚙ Settings")
-        await("Settings")
+        click("Settings")
+        await("Activity data source")
         compose.onNodeWithText("Shoes and mileage").performScrollTo().performClick()
         await("Your shoes")
         capture("shoes")
@@ -1056,7 +1056,7 @@ class CoachingScreenshotTest {
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
-                click("⚙ Settings")
+                click("Settings")
                 await("Storage & recording detail")
                 compose
                     .onNodeWithText("Storage & recording detail")
@@ -2579,6 +2579,110 @@ class CoachingScreenshotTest {
         return result
     }
 
+    @Test
+    fun capturesMaterialDeviceAndBrandColoursWithAccessibleLiveControls() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val originalDynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, dynamic, night, scale) in
+                listOf(
+                    MaterialCapture("brand-light", false, "no", 1f),
+                    MaterialCapture("device-light", true, "no", 1f),
+                    MaterialCapture("brand-dark", false, "yes", 1f),
+                    MaterialCapture("device-dark", true, "yes", 1f),
+                    MaterialCapture("brand-large-font", false, "no", 2f),
+                    MaterialCapture("device-large-font", true, "yes", 2f),
+                )) {
+                scenario?.close()
+                scenario = null
+                prefs
+                    .edit()
+                    .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic)
+                    .commit()
+                shell("cmd uimode night $night")
+                shell("settings put system font_scale $scale")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                capture("home-material-$suffix")
+                compose
+                    .onNode(hasText("Run now") and hasClickAction())
+                    .performScrollTo()
+                    .performClick()
+                await("Custom workout")
+                compose.onNodeWithText("Free run").performScrollTo().performClick()
+                await("Start GPS recording")
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    org.racedaydreams.recording.RunRecordingService.status.value =
+                        org.racedaydreams.domain.recording.RunMetricsEngine.Status(
+                            5020.0,
+                            1694000,
+                            1694000,
+                            337.0,
+                            "GPS ready",
+                            false,
+                        )
+                }
+                await("Distance")
+                compose.onNodeWithText("Pause").assertIsDisplayed()
+                compose.onNodeWithText("Finish & save").assertIsDisplayed()
+                capture("live-material-$suffix")
+                if (scale == 2f) {
+                    compose.onNodeWithText("Finish & save").performClick()
+                    await("Finish this run?")
+                    capture("live-material-finish-$suffix")
+                    compose.onNodeWithText("Keep recording").performClick()
+                }
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    org.racedaydreams.recording.RunRecordingService.status.value = null
+                }
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            prefs
+                .edit()
+                .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, originalDynamic)
+                .commit()
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    private data class MaterialCapture(
+        val suffix: String,
+        val dynamic: Boolean,
+        val night: String,
+        val scale: Float,
+    )
+
+    @Test
+    fun capturesWideWindowNavigationAndBoundedContent() {
+        val size = shell("wm size")
+        val originalOverride =
+            Regex("Override size: ([0-9]+x[0-9]+)").find(size)?.groupValues?.get(1)
+        try {
+            shell("wm size 1400x1800")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            compose.waitUntil(20000) { context.resources.configuration.screenWidthDp >= 840 }
+            compose.onNodeWithText("Calendar").assertIsDisplayed()
+            capture("home-material-wide")
+            click("Plan")
+            await("This week")
+            capture("plan-material-wide")
+        } finally {
+            scenario?.close()
+            scenario = null
+            shell("wm size ${originalOverride ?: "reset"}")
+        }
+    }
+
     private fun awaitGymReady(predicate: (GymNowState) -> Boolean = { true }) {
         val model = gymNowModel()
         compose.waitUntil(20000) {
@@ -2885,6 +2989,7 @@ class CoachingScreenshotTest {
         val semantics =
             if (
                 name == "gym-equipment-alternatives" ||
+                    name.startsWith("live-material-finish-") ||
                     name.startsWith("storage-confirmation") ||
                     name.startsWith("strength-programme-alternatives") ||
                     name.startsWith("strength-programme-progression") ||

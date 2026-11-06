@@ -1,3 +1,30 @@
+# Material UI modernisation — 0.12.0-test1 in progress
+
+Dedicated branch `feature/material3-expressive-ui`, draft [PR19](https://github.com/mmwiza1/Race-day-dreams/pull/19), from merged main e6037e1.
+Previous 0.11 PR18 is merged and published; its main workflow42186511931 and later
+main documentation workflow42205982831 passed. Historical pending wording below is archived.
+
+Observed local baseline: 700108 domain checks/47 suites, schema75, release-note9,
+and full Gradle domain/debug/lint/instrumentation compilation PASS79tasks/34s.
+Foundation sourcef6326cd builds/lints/compiles instrumentation locally (75tasks/3m26s),
+pinned formatting103Kotlin/158Java and formatter-tool14 tests pass. Its runtime workflow
+42209685248 is an intermediate run, not final-head release evidence.
+
+Integrated core and retained-View changes compiled/linted with full Gradle gate PASS79tasks/2m18s;
+updated Settings action tests then passed the same gate79tasks/43s. The final Home recent-run
+presentation addition also passed the same full gate79tasks/1m34s. Capture validator18, schema75,
+release-note9, route-source11, artwork14 and strict223 guidance asset hashes pass locally.
+All220canonical/14routine guidance is retained. New theme/disclosure/recording-control tests
+and375required actual captures (all359previous +16colour/large-text/wide cases) still need the
+complete API28/35/36 runtime matrix and visual review. No new screenshot, merge or publication
+success is claimed here.
+
+Version0.12.0-test1/code16. Runtime dependencies, manifest permissions, launcher icon,
+schema19/rootJSON13/raw3/complete1 are unchanged. Local appearance choice is display-only,
+not part of portable training backups. UI changes do not alter retained evidence or policies.
+Real Galaxy/Pixel/Xiaomi, human TalkBack, GPS, providers, locked-screen/OEM and audio checks
+remain UNPERFORMED. This section must be updated with final exact-source evidence.
+
 # 0.11.0-test1 — verified software and visual checkpoint
 
 Source `ee760bf33356092dc7559738b90b1d089bf45521` passed the complete [Android workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418).
