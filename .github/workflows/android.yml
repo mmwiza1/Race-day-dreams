@@ -72,6 +72,9 @@ jobs:
         with:
           #37.2.12.0 passed all supported APIs; avoid a moving latest binary.
           emulator-build: 16428233
+          # API28 limits forced dimensions to twice the initial display size. A real
+          # 1080px device profile permits the mandatory1400px expanded-window captures.
+          profile: pixel_2
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           target: default

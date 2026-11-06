@@ -20,7 +20,7 @@ WhyDetails exposes a real accessible expand/collapse action without a layout-cha
 The shell retains all destinations and back behaviour. It uses the existing official
 NavigationBar on compact windows and NavigationRail at 840dp width and 480dp height or
 larger. Insets are consumed after Scaffold padding so nested IME padding does not count
-system bars twice. Large-text compact navigation retains the established semantic labels. Expanded-window rails widen at large fonts and can scroll when needed in short windows.
+system bars twice. System-bar icon appearance follows the active Compose dark state; AndroidX retains edge-to-edge layout and scrims. Large-text compact navigation retains the established semantic labels. Expanded-window rails widen at large fonts and can scroll when needed in short windows.
 
 The active goal editor remains an AndroidView, with its data entry and draft behaviour
 preserved. State-aware tint/text lists retain visibly disabled options and saving controls. Existing native buttons use rounded ripple backgrounds, primary/secondary hierarchy, wrapping labels and56dp targets; option cards have breathing room. No View migration is introduced. The native ScrollView explicitly clips to its allocated viewport so scrolling/visibility cannot place Continue over system navigation. The permission rationale is also a real Android View screen and resolves the same colour roles, including device colours, without migrating its lifecycle. The unexported

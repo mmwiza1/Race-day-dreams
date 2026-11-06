@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,6 +114,23 @@ fun RaceDayTheme(
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
     val scheme = raceDayColourScheme(context, darkTheme, dynamicColour ?: useDynamic)
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        // enableEdgeToEdge owns bar layout/scrims. Keep icon appearance aligned with the
+        // actual Compose theme after configuration changes, rather than only at onCreate.
+        val activity =
+            generateSequence(view.context) { (it as? android.content.ContextWrapper)?.baseContext }
+                .filterIsInstance<android.app.Activity>()
+                .firstOrNull()
+        SideEffect {
+            activity?.let {
+                androidx.core.view.WindowCompat.getInsetsController(it.window, view).apply {
+                    isAppearanceLightStatusBars = !darkTheme
+                    isAppearanceLightNavigationBars = !darkTheme
+                }
+            }
+        }
+    }
     MaterialTheme(colorScheme = scheme, typography = Type, shapes = Form, content = content)
 }
 

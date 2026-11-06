@@ -152,6 +152,7 @@ class AndroidGateTest(unittest.TestCase):
         workflow = (ROOT / '.github/workflows/android.yml').read_text()
         self.assertIn('script: sh scripts/run-android-gate.sh', workflow)
         self.assertIn('timeout-minutes: 30', workflow)
+        self.assertIn('profile: pixel_2', workflow)
         self.assertNotIn('rdd_test_log_pid', workflow)
 
 

@@ -19,6 +19,7 @@ Material You / Material 3 Expressive UI modernisation. Development test release.
 - Consume shell insets before screen keyboard padding to avoid counting system bars twice.
 - Align retained Android form and permission surfaces with the shared light/dark palette, preserving disabled-control cues.
 - Keep navigation destinations reachable with large text in short expanded windows.
+- Keep native goal-form actions inside their actual scrolling viewport, above system navigation.
 
 ## Known limitations
 

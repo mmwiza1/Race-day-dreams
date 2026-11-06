@@ -16,13 +16,25 @@ Source **88f74538be1341d6a2605fc0278550e05c569c81**, workflow
 | Other checks | 18capture-validator,11route-source,14Dream-artwork,6CI-shell lifecycle tests |
 | Android build/lint | Passed locally and in all three CI jobs |
 
-The API28 failure waits on the application context's width, while the actual rail uses Activity
-LocalConfiguration. The follow-on capture helper observes actual Activity dimensions, laid-out
-decor width and font scale instead, keeping the original20s budget and all navigation/capture
-assertions. It also requires the production rail's840dp/480dp thresholds. Timeout diagnostics
-report actual and app dimensions plus public wm size/density. Local full domain/debug/lint/test
-compilation passed79tasks/35s; formatting and18capture-validator checks pass. Its runtime gate
-is pending. No full-green release, canonical0.12 capture adoption or merge is claimed yet.
+Follow-on b0de1af/workflow[42235931661](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42235931661)
+FAILED overall: API36passed516tests/379captures; API35had7capture-fixture SQLite failures and
+API28had2failures (incomplete fixture deletion and wide-window timeout). Actual diagnostics now
+show API28physical320x640, forced640x1280 after requesting1400x1800. Android9's forced-size
+clamp explains the failed wide precondition. The workflow now explicitly uses pixel_2 initial
+hardware instead. The Activity/window>=840dp/480dp,200% and exact379capture assertions remain.
+
+The test-only follow-up joins actual Activity ViewModel/lifecycle and tracked window-recomposer
+work before deleting synthetic fixture files, including destroyed owners from recreation. It
+excludes the test rule's own recomposer and blocks further reset if bounded20s shutdown fails.
+Production persistence/reset is unchanged. Original authored-review errors retain cleanup errors.
+The real Settings colour toggle is now exercised; six-mode captures require actual window
+light/dark appearance flags. A theme effect keeps icon appearance aligned with current dark
+state while enableEdgeToEdge retains layout/scrims. API36light navigation buttons were faint
+in genuine0.11and88f captures; new screenshots must verify the visible result, not just flags.
+
+Local full domain/debug/lint/instrumentation compilation passed79tasks/35s after the lifecycle
+helper. Final formatter/runtime/visual gates remain required. No current full-green release,
+canonical0.12 adoption, merge or publication is claimed.
 
 The native Continue defect is now demonstrated and corrected: its centre previously fell in
 system navigation because AndroidView did not clip native visibility to the allocated viewport.
