@@ -48,7 +48,9 @@ import java.util.function.Predicate;
 public final class OnboardingView extends ScrollView {
     public interface Listener {
         void onSave(UserProfile profile);
+
         void onDraftChanged(String json);
+
         void onCancel();
     }
 
@@ -60,20 +62,117 @@ public final class OnboardingView extends ScrollView {
     private TextView pacePreview;
     private boolean rendering;
     private boolean saving;
+    private int[] palette;
 
-    public OnboardingView(Context context, String draftJson, UserProfile initial, Listener listener) {
-        this(context, draftJson, initial, initial != null && initial.performanceEligible(), listener);
+    /** Receives the existing Compose theme without rebuilding the retained form or its draft. */
+    public void applyPalette(
+            int background,
+            int text,
+            int primary,
+            int onPrimary,
+            int card,
+            int outline,
+            int errorColour) {
+        int[] next = {background, text, primary, onPrimary, card, outline, errorColour};
+        if (java.util.Arrays.equals(palette, next)) return;
+        palette = next;
+        applyPaletteToContent();
     }
 
-    public OnboardingView(Context context, String draftJson, UserProfile initial,
-            boolean derivedPerformanceEligibility, Listener listener) {
+    private void applyPaletteToContent() {
+        if (palette == null || content == null) return;
+        setBackgroundColor(palette[0]);
+        tintChildren(content);
+        if (error != null) error.setTextColor(palette[6]);
+    }
+
+    private void tintChildren(View view) {
+        if (view instanceof android.widget.CompoundButton control) {
+            control.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
+            control.setButtonTintList(stateColours(palette[2], disabledColour(0.38f)));
+            if (control instanceof RadioButton) {
+                android.graphics.drawable.GradientDrawable tile =
+                        new android.graphics.drawable.GradientDrawable();
+                tile.setColor(palette[4]);
+                tile.setCornerRadius(dp(20));
+                tile.setStroke(dp(1), palette[5]);
+                control.setBackground(tile);
+            }
+        } else if (view instanceof Button button) {
+            CharSequence title = button.getText();
+            boolean primary =
+                    android.text.TextUtils.equals(
+                                    title, getContext().getString(R.string.onboarding_continue))
+                            || android.text.TextUtils.equals(
+                                    title, getContext().getString(R.string.onboarding_save))
+                            || android.text.TextUtils.equals(
+                                    title, getContext().getString(R.string.onboarding_saving));
+            // Preserve the platform drawable, padding and input behaviour; clip only its outline.
+            button.setBackgroundTintList(
+                    stateColours(primary ? palette[2] : palette[4], disabledColour(0.12f)));
+            button.setTextColor(
+                    stateColours(primary ? palette[3] : palette[2], disabledColour(0.38f)));
+            button.setOutlineProvider(
+                    new android.view.ViewOutlineProvider() {
+                        @Override
+                        public void getOutline(View target, android.graphics.Outline outline) {
+                            outline.setRoundRect(
+                                    0, 0, target.getWidth(), target.getHeight(), dp(28));
+                        }
+                    });
+            button.setClipToOutline(true);
+        } else if (view instanceof TextView label) {
+            label.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
+            if (view instanceof EditText)
+                view.setBackgroundTintList(stateColours(palette[2], disabledColour(0.38f)));
+        }
+        if (view instanceof ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) tintChildren(group.getChildAt(i));
+        }
+    }
+
+    private int disabledColour(float opacity) {
+        return (palette[1] & 0x00FFFFFF) | (Math.round(255 * opacity) << 24);
+    }
+
+    private static android.content.res.ColorStateList stateColours(int enabled, int disabled) {
+        return new android.content.res.ColorStateList(
+                new int[][] {new int[] {-android.R.attr.state_enabled}, new int[0]},
+                new int[] {disabled, enabled});
+    }
+
+    public OnboardingView(
+            Context context, String draftJson, UserProfile initial, Listener listener) {
+        this(
+                context,
+                draftJson,
+                initial,
+                initial != null && initial.performanceEligible(),
+                listener);
+    }
+
+    public OnboardingView(
+            Context context,
+            String draftJson,
+            UserProfile initial,
+            boolean derivedPerformanceEligibility,
+            Listener listener) {
         super(context);
         this.listener = Objects.requireNonNull(listener);
         this.draft = new OnboardingDraft(initial, draftJson, derivedPerformanceEligibility);
         this.editing = initial != null;
         setFillViewport(true);
-        setClipToPadding(false);
+        // AndroidView does not clip the native subtree to its Compose viewport by default.
+        // Keep native visibility/scroll requests inside the actual allocated form bounds.
+        setClipChildren(true);
+        setClipToPadding(true);
         render();
+    }
+
+    @Override
+    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+        setClipBounds(new android.graphics.Rect(0, 0, width, height));
     }
 
     /** Includes incomplete text and the current step, for rotation and local draft persistence. */
@@ -109,13 +208,26 @@ public final class OnboardingView extends ScrollView {
         content = new LinearLayout(getContext());
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(20), dp(12), dp(20), dp(24));
-        addView(content, new ScrollView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        addView(
+                content,
+                new ScrollView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         text(editing ? R.string.onboarding_edit_title : R.string.onboarding_title, 26, true);
-        int[] stepNames = {R.string.onboarding_step_goal, R.string.onboarding_step_approach,
-                R.string.onboarding_step_routine, R.string.onboarding_step_review};
-        TextView step = text(getContext().getString(R.string.onboarding_step,
-                draft.step + 1, getContext().getString(stepNames[draft.step])), 16, true);
+        int[] stepNames = {
+            R.string.onboarding_step_goal,
+            R.string.onboarding_step_approach,
+            R.string.onboarding_step_routine,
+            R.string.onboarding_step_review
+        };
+        TextView step =
+                text(
+                        getContext()
+                                .getString(
+                                        R.string.onboarding_step,
+                                        draft.step + 1,
+                                        getContext().getString(stepNames[draft.step])),
+                        16,
+                        true);
         step.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
         if (draft.invalidDraft) text(R.string.onboarding_draft_invalid, 16, false);
         switch (draft.step) {
@@ -131,9 +243,11 @@ public final class OnboardingView extends ScrollView {
         LinearLayout buttons = new LinearLayout(getContext());
         buttons.setOrientation(LinearLayout.VERTICAL);
         content.addView(buttons, blockParams());
-        Button next = button(draft.step == 3
-                ? (saving ? R.string.onboarding_saving : R.string.onboarding_save)
-                : R.string.onboarding_continue);
+        Button next =
+                button(
+                        draft.step == 3
+                                ? (saving ? R.string.onboarding_saving : R.string.onboarding_save)
+                                : R.string.onboarding_continue);
         buttons.addView(next, blockParams());
         next.setOnClickListener(view -> advance());
         if (draft.step > 0) {
@@ -147,6 +261,7 @@ public final class OnboardingView extends ScrollView {
             cancel.setOnClickListener(view -> listener.onCancel());
         }
         if (saving) setControlsEnabled(content, false);
+        applyPaletteToContent();
         rendering = false;
         post(() -> scrollTo(0, 0));
     }
@@ -155,7 +270,10 @@ public final class OnboardingView extends ScrollView {
         text(R.string.onboarding_philosophy, 18, false);
         disclosure(R.string.onboarding_privacy);
         section(R.string.onboarding_distance);
-        radioOptions(RaceDistance.values(), draft.distance, RaceDistance::label,
+        radioOptions(
+                RaceDistance.values(),
+                draft.distance,
+                RaceDistance::label,
                 value -> {
                     draft.distance = value;
                     if (value == RaceDistance.GENERAL_FITNESS) {
@@ -165,7 +283,8 @@ public final class OnboardingView extends ScrollView {
                     }
                     changed();
                     render();
-                }, value -> true);
+                },
+                value -> true);
         CheckBox event = new CheckBox(getContext());
         event.setId(View.generateViewId());
         event.setText(R.string.onboarding_event);
@@ -174,16 +293,24 @@ public final class OnboardingView extends ScrollView {
         event.setChecked(draft.event);
         event.setEnabled(draft.distance != RaceDistance.GENERAL_FITNESS);
         content.addView(event, blockParams());
-        event.setOnCheckedChangeListener((button, selected) -> {
-            draft.event = selected;
-            changed();
-            render();
-        });
-        text(draft.distance == RaceDistance.GENERAL_FITNESS
-                ? R.string.onboarding_general_event_hint : R.string.onboarding_event_hint, 16, false);
+        event.setOnCheckedChangeListener(
+                (button, selected) -> {
+                    draft.event = selected;
+                    changed();
+                    render();
+                });
+        text(
+                draft.distance == RaceDistance.GENERAL_FITNESS
+                        ? R.string.onboarding_general_event_hint
+                        : R.string.onboarding_event_hint,
+                16,
+                false);
         if (draft.event) {
-            EditText raceName = input(R.string.onboarding_race_name, draft.raceName,
-                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+            EditText raceName =
+                    input(
+                            R.string.onboarding_race_name,
+                            draft.raceName,
+                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
             watch(raceName, value -> draft.raceName = value);
             TextView label = section(R.string.onboarding_race_date);
             Button date = button(R.string.onboarding_choose_date);
@@ -198,13 +325,23 @@ public final class OnboardingView extends ScrollView {
 
     private void chooseDate() {
         LocalDate selected = draft.raceDate == null ? LocalDate.now().plusDays(1) : draft.raceDate;
-        DatePickerDialog picker = new DatePickerDialog(getContext(), (view, year, month, day) -> {
-            draft.raceDate = LocalDate.of(year, month + 1, day);
-            changed();
-            render();
-        }, selected.getYear(), selected.getMonthValue() - 1, selected.getDayOfMonth());
-        picker.getDatePicker().setMinDate(LocalDate.now().atStartOfDay(ZoneId.systemDefault())
-                .toInstant().toEpochMilli());
+        DatePickerDialog picker =
+                new DatePickerDialog(
+                        getContext(),
+                        (view, year, month, day) -> {
+                            draft.raceDate = LocalDate.of(year, month + 1, day);
+                            changed();
+                            render();
+                        },
+                        selected.getYear(),
+                        selected.getMonthValue() - 1,
+                        selected.getDayOfMonth());
+        picker.getDatePicker()
+                .setMinDate(
+                        LocalDate.now()
+                                .atStartOfDay(ZoneId.systemDefault())
+                                .toInstant()
+                                .toEpochMilli());
         picker.show();
     }
 
@@ -212,11 +349,17 @@ public final class OnboardingView extends ScrollView {
         section(R.string.onboarding_goal_mode);
         LinearLayout target = new LinearLayout(getContext());
         target.setOrientation(LinearLayout.VERTICAL);
-        radioOptions(GoalMode.values(), draft.goalMode, GoalMode::label, value -> {
-            draft.goalMode = value;
-            target.setVisibility(value == GoalMode.TARGET_TIME ? VISIBLE : GONE);
-            changed();
-        }, value -> draft.distance != RaceDistance.GENERAL_FITNESS || value == GoalMode.FINISH);
+        radioOptions(
+                GoalMode.values(),
+                draft.goalMode,
+                GoalMode::label,
+                value -> {
+                    draft.goalMode = value;
+                    target.setVisibility(value == GoalMode.TARGET_TIME ? VISIBLE : GONE);
+                    changed();
+                },
+                value ->
+                        draft.distance != RaceDistance.GENERAL_FITNESS || value == GoalMode.FINISH);
         disclosure(R.string.onboarding_finish_explanation, R.string.onboarding_max_explanation);
         content.addView(target, blockParams());
         TextView targetLabel = new TextView(getContext());
@@ -242,19 +385,29 @@ public final class OnboardingView extends ScrollView {
         pacePreview.setTextSize(18);
         pacePreview.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
         target.addView(pacePreview, blockParams());
-        watch(time, value -> {
-            draft.targetTime = value;
-            updatePacePreview();
-        });
+        watch(
+                time,
+                value -> {
+                    draft.targetTime = value;
+                    updatePacePreview();
+                });
         updatePacePreview();
         target.setVisibility(draft.goalMode == GoalMode.TARGET_TIME ? VISIBLE : GONE);
         section(R.string.onboarding_strategy);
-        radioOptions(TrainingStrategy.values(), draft.strategy, TrainingStrategy::label,
+        radioOptions(
+                TrainingStrategy.values(),
+                draft.strategy,
+                TrainingStrategy::label,
                 value -> {
                     draft.strategy = value;
                     changed();
-                }, value -> value != TrainingStrategy.PERFORMANCE || draft.canSelectPerformance());
-        disclosure(R.string.onboarding_distance_first_explanation, R.string.onboarding_balanced_explanation, R.string.onboarding_performance_explanation, R.string.onboarding_zone2_explanation);
+                },
+                value -> value != TrainingStrategy.PERFORMANCE || draft.canSelectPerformance());
+        disclosure(
+                R.string.onboarding_distance_first_explanation,
+                R.string.onboarding_balanced_explanation,
+                R.string.onboarding_performance_explanation,
+                R.string.onboarding_zone2_explanation);
         if (draft.retainingPerformanceWithoutCurrentEvidence()) {
             text(R.string.onboarding_performance_retained, 16, false);
         } else if (!draft.performanceEligible) {
@@ -269,45 +422,67 @@ public final class OnboardingView extends ScrollView {
         TextView countLabel = section(R.string.onboarding_run_count);
         List<String> countLabels = new ArrayList<>();
         for (int count = 1; count <= 7; count++) countLabels.add(Integer.toString(count));
-        Spinner count = spinner(countLabels, draft.runsPerWeek - 1, position -> {
-            draft.runsPerWeek = position + 1;
-            changed();
-        });
+        Spinner count =
+                spinner(
+                        countLabels,
+                        draft.runsPerWeek - 1,
+                        position -> {
+                            draft.runsPerWeek = position + 1;
+                            changed();
+                        });
         countLabel.setLabelFor(count.getId());
         TextView longDayLabel = section(R.string.onboarding_long_run_day);
         List<String> dayLabels = new ArrayList<>();
         dayLabels.add(getContext().getString(R.string.onboarding_no_preference));
         for (DayOfWeek day : DayOfWeek.values()) dayLabels.add(dayName(day));
-        Spinner longDay = spinner(dayLabels,
-                draft.longRunDay == null ? 0 : draft.longRunDay.getValue(), position -> {
-                    draft.longRunDay = position == 0 ? null : DayOfWeek.of(position);
-                    changed();
-                });
+        Spinner longDay =
+                spinner(
+                        dayLabels,
+                        draft.longRunDay == null ? 0 : draft.longRunDay.getValue(),
+                        position -> {
+                            draft.longRunDay = position == 0 ? null : DayOfWeek.of(position);
+                            changed();
+                        });
         longDayLabel.setLabelFor(longDay.getId());
         section(R.string.onboarding_gym_days);
         disclosure(R.string.onboarding_gym_days_hint);
         dayCheckboxes(draft.gymDays, R.string.onboarding_gym_day_description);
         section(R.string.onboarding_schedule);
-        radioOptions(ScheduleType.values(), draft.scheduleType, ScheduleType::label, value -> {
-            draft.scheduleType = value;
-            changed();
-        }, value -> true);
+        radioOptions(
+                ScheduleType.values(),
+                draft.scheduleType,
+                ScheduleType::label,
+                value -> {
+                    draft.scheduleType = value;
+                    changed();
+                },
+                value -> true);
         disclosure(R.string.onboarding_fixed_hint);
         section(R.string.onboarding_units);
-        radioOptions(UnitSystem.values(), draft.units, UnitSystem::label, value -> {
-            draft.units = value;
-            changed();
-        }, value -> true);
+        radioOptions(
+                UnitSystem.values(),
+                draft.units,
+                UnitSystem::label,
+                value -> {
+                    draft.units = value;
+                    changed();
+                },
+                value -> true);
     }
 
     private void reviewStep() {
         text(R.string.onboarding_review_intro, 16, false);
         detail(R.string.onboarding_review_goal, draft.distance.label());
         if (draft.event) {
-            detail(R.string.onboarding_review_race, draft.raceName.trim().isEmpty()
-                    ? getContext().getString(R.string.onboarding_unnamed_race) : draft.raceName.trim());
-            detail(R.string.onboarding_review_date,
-                    draft.raceDate == null ? getContext().getString(R.string.onboarding_choose_date)
+            detail(
+                    R.string.onboarding_review_race,
+                    draft.raceName.trim().isEmpty()
+                            ? getContext().getString(R.string.onboarding_unnamed_race)
+                            : draft.raceName.trim());
+            detail(
+                    R.string.onboarding_review_date,
+                    draft.raceDate == null
+                            ? getContext().getString(R.string.onboarding_choose_date)
                             : formatDate(draft.raceDate));
         } else {
             text(R.string.onboarding_no_event, 16, false);
@@ -316,8 +491,12 @@ public final class OnboardingView extends ScrollView {
         if (draft.goalMode == GoalMode.TARGET_TIME) {
             detail(R.string.onboarding_review_time, draft.targetTime);
             try {
-                detail(R.string.onboarding_target_preview, PaceCalculator.targetPace(
-                        PaceCalculator.parseTime(draft.targetTime), draft.distance, draft.units));
+                detail(
+                        R.string.onboarding_target_preview,
+                        PaceCalculator.targetPace(
+                                PaceCalculator.parseTime(draft.targetTime),
+                                draft.distance,
+                                draft.units));
             } catch (IllegalArgumentException exception) {
                 // A restored unfinished draft may need correction. Save still validates all inputs.
                 text(exception.getMessage(), 16, false);
@@ -330,8 +509,11 @@ public final class OnboardingView extends ScrollView {
         }
         text(getContext().getString(R.string.onboarding_review_runs, draft.runsPerWeek), 16, false);
         detail(R.string.onboarding_review_running_days, daysSummary(draft.runningDays));
-        detail(R.string.onboarding_review_long_day, draft.longRunDay == null
-                ? getContext().getString(R.string.onboarding_no_preference) : dayName(draft.longRunDay));
+        detail(
+                R.string.onboarding_review_long_day,
+                draft.longRunDay == null
+                        ? getContext().getString(R.string.onboarding_no_preference)
+                        : dayName(draft.longRunDay));
         detail(R.string.onboarding_review_gym_days, daysSummary(draft.gymDays));
         detail(R.string.onboarding_review_schedule, draft.scheduleType.label());
         detail(R.string.onboarding_review_units, draft.units.label());
@@ -342,11 +524,14 @@ public final class OnboardingView extends ScrollView {
         try {
             if (draft.step == 0) {
                 if (draft.event && draft.raceDate == null) {
-                    throw new IllegalArgumentException(getContext().getString(R.string.onboarding_date_required));
+                    throw new IllegalArgumentException(
+                            getContext().getString(R.string.onboarding_date_required));
                 }
-                OnboardingValidator.validateRaceGoal(draft.goal(GoalMode.FINISH), Clock.systemDefaultZone());
+                OnboardingValidator.validateRaceGoal(
+                        draft.goal(GoalMode.FINISH), Clock.systemDefaultZone());
             } else if (draft.step == 1) {
-                OnboardingValidator.validateRaceGoal(draft.goal(draft.goalMode), Clock.systemDefaultZone());
+                OnboardingValidator.validateRaceGoal(
+                        draft.goal(draft.goalMode), Clock.systemDefaultZone());
                 draft.validateStrategy();
             } else if (draft.step == 2) {
                 draft.preferences();
@@ -371,9 +556,14 @@ public final class OnboardingView extends ScrollView {
             if (draft.targetTime.trim().isEmpty()) {
                 pacePreview.setText(R.string.onboarding_target_prompt);
             } else {
-                pacePreview.setText(getContext().getString(R.string.onboarding_target_preview,
-                        PaceCalculator.targetPace(PaceCalculator.parseTime(draft.targetTime),
-                                draft.distance, draft.units)));
+                pacePreview.setText(
+                        getContext()
+                                .getString(
+                                        R.string.onboarding_target_preview,
+                                        PaceCalculator.targetPace(
+                                                PaceCalculator.parseTime(draft.targetTime),
+                                                draft.distance,
+                                                draft.units)));
             }
         } catch (IllegalArgumentException exception) {
             pacePreview.setText(exception.getMessage());
@@ -395,9 +585,22 @@ public final class OnboardingView extends ScrollView {
         Button help = button(android.R.string.dialog_alert_title);
         help.setText("Why? / Learn more");
         TextView details = new TextView(getContext());
-        StringBuilder explanation=new StringBuilder();for(int resource:resources){if(explanation.length()>0)explanation.append("\n\n");explanation.append(getContext().getString(resource));}details.setText(explanation); details.setTextSize(16); details.setVisibility(GONE);
-        content.addView(help, blockParams()); content.addView(details, blockParams());
-        help.setOnClickListener(v -> {boolean show=details.getVisibility()!=VISIBLE;details.setVisibility(show?VISIBLE:GONE);help.setText(show?"Hide details":"Why? / Learn more");});
+        StringBuilder explanation = new StringBuilder();
+        for (int resource : resources) {
+            if (explanation.length() > 0) explanation.append("\n\n");
+            explanation.append(getContext().getString(resource));
+        }
+        details.setText(explanation);
+        details.setTextSize(16);
+        details.setVisibility(GONE);
+        content.addView(help, blockParams());
+        content.addView(details, blockParams());
+        help.setOnClickListener(
+                v -> {
+                    boolean show = details.getVisibility() != VISIBLE;
+                    details.setVisibility(show ? VISIBLE : GONE);
+                    help.setText(show ? "Hide details" : "Why? / Learn more");
+                });
     }
 
     private TextView text(int resource, int size, boolean heading) {
@@ -438,18 +641,29 @@ public final class OnboardingView extends ScrollView {
     }
 
     private void watch(EditText input, Consumer<String> update) {
-        input.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                update.accept(s.toString());
-                changed();
-            }
-            @Override public void afterTextChanged(Editable editable) { }
-        });
+        input.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        update.accept(s.toString());
+                        changed();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {}
+                });
     }
 
-    private <E extends Enum<E>> void radioOptions(E[] values, E selected,
-            Function<E, String> label, Consumer<E> selection, Predicate<E> enabled) {
+    private <E extends Enum<E>> void radioOptions(
+            E[] values,
+            E selected,
+            Function<E, String> label,
+            Consumer<E> selection,
+            Predicate<E> enabled) {
         RadioGroup group = new RadioGroup(getContext());
         group.setOrientation(RadioGroup.VERTICAL);
         content.addView(group, blockParams());
@@ -459,15 +673,21 @@ public final class OnboardingView extends ScrollView {
             option.setText(label.apply(value));
             option.setTextSize(16);
             option.setMinHeight(dp(56));
-            option.setPadding(dp(12),dp(8),dp(12),dp(8));
-            android.graphics.drawable.GradientDrawable card=new android.graphics.drawable.GradientDrawable();
-            card.setCornerRadius(dp(12));card.setStroke(dp(1),0xFF888888);option.setBackground(card);
+            option.setPadding(dp(12), dp(8), dp(12), dp(8));
+            android.graphics.drawable.GradientDrawable card =
+                    new android.graphics.drawable.GradientDrawable();
+            card.setCornerRadius(dp(12));
+            card.setStroke(dp(1), 0xFF888888);
+            option.setBackground(card);
             option.setEnabled(enabled.test(value));
-            group.addView(option, blockParams());
+            LinearLayout.LayoutParams optionParams = blockParams();
+            optionParams.bottomMargin = dp(8);
+            group.addView(option, optionParams);
             option.setChecked(value == selected);
-            option.setOnCheckedChangeListener((view, checked) -> {
-                if (checked && !rendering) selection.accept(value);
-            });
+            option.setOnCheckedChangeListener(
+                    (view, checked) -> {
+                        if (checked && !rendering) selection.accept(value);
+                    });
         }
     }
 
@@ -475,24 +695,30 @@ public final class OnboardingView extends ScrollView {
         Spinner spinner = new Spinner(getContext());
         spinner.setId(View.generateViewId());
         spinner.setMinimumHeight(dp(48));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item, labels);
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, labels);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setSelection(selected, false);
         content.addView(spinner, blockParams());
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (!rendering) update.accept(position);
-            }
-            @Override public void onNothingSelected(AdapterView<?> parent) { }
-        });
+        spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (!rendering) update.accept(position);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
         return spinner;
     }
 
     private void dayCheckboxes(EnumSet<DayOfWeek> days, int descriptionResource) {
-        android.widget.GridLayout grid=new android.widget.GridLayout(getContext());grid.setColumnCount(3);
-        content.addView(grid,blockParams());
+        android.widget.GridLayout grid = new android.widget.GridLayout(getContext());
+        grid.setColumnCount(3);
+        content.addView(grid, blockParams());
         for (DayOfWeek day : DayOfWeek.values()) {
             CheckBox box = new CheckBox(getContext());
             box.setText(day.getDisplayName(java.time.format.TextStyle.SHORT, Locale.UK));
@@ -500,11 +726,18 @@ public final class OnboardingView extends ScrollView {
             box.setTextSize(16);
             box.setMinHeight(dp(48));
             box.setChecked(days.contains(day));
-            android.widget.GridLayout.LayoutParams cell=new android.widget.GridLayout.LayoutParams();cell.width=0;cell.columnSpec=android.widget.GridLayout.spec(android.widget.GridLayout.UNDEFINED,1f);grid.addView(box,cell);
-            box.setOnCheckedChangeListener((button, checked) -> {
-                if (checked) days.add(day); else days.remove(day);
-                changed();
-            });
+            android.widget.GridLayout.LayoutParams cell =
+                    new android.widget.GridLayout.LayoutParams();
+            cell.width = 0;
+            cell.columnSpec =
+                    android.widget.GridLayout.spec(android.widget.GridLayout.UNDEFINED, 1f);
+            grid.addView(box, cell);
+            box.setOnCheckedChangeListener(
+                    (button, checked) -> {
+                        if (checked) days.add(day);
+                        else days.remove(day);
+                        changed();
+                    });
         }
     }
 
@@ -513,7 +746,7 @@ public final class OnboardingView extends ScrollView {
         button.setText(textResource);
         button.setTextSize(16);
         button.setAllCaps(false);
-        button.setMinHeight(dp(48));
+        button.setMinHeight(dp(56));
         return button;
     }
 
@@ -525,7 +758,8 @@ public final class OnboardingView extends ScrollView {
     private String daysSummary(EnumSet<DayOfWeek> days) {
         List<String> labels = new ArrayList<>();
         for (DayOfWeek day : days) labels.add(dayName(day));
-        return labels.isEmpty() ? getContext().getString(R.string.onboarding_no_days)
+        return labels.isEmpty()
+                ? getContext().getString(R.string.onboarding_no_days)
                 : String.join(", ", labels);
     }
 

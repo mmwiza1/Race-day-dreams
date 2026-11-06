@@ -1,3 +1,94 @@
+# Latest delivery gate — external startup failure, sequencing follow-up pending
+
+The documentation-only head5d4e4d2/workflow42276183081 failed API36's nine-method guard:
+four focus-dependent cases failed and the517-case suite correctly did not run. Actual focus
+was held by **Application Not Responding: com.android.systemui**. The same UI/capture source
+previously passed the complete bed9a81 matrix recorded below. This new failed head is not
+merge-ready; API28/35 were still running when the follow-up was prepared.
+
+AOSP28/35/36 show that the lastanr dump emits Reason without a leading process identity, so
+the previous identity-gated parser missed it. Diagnostics now use only real am_anr event tuples
+whose process field is exactly SystemUI or Launcher, capped at five. Other app events/reasons
+are excluded, including annotations that merely mention SystemUI. Original failure exits and
+reader cleanup remain, including failures during preparation.
+
+The following CI-only correction drains actual broadcast queues before display setup and
+between independent size/density updates via the supported `am wait-for-broadcast-idle`, each
+bounded at20seconds. There is no fixed settling sleep, retry, ANR dismissal or test-budget
+increase. Queue idleness does not prove focus/render readiness or exclude late posted broadcasts;
+all existing real focus/dimension/visibility assertions remain mandatory. The internal cause of
+the platform ANR is still unproven; no runtime fix is claimed before verification.
+
+Ten actual-process runner-helper tests, nine release-note tests, shell syntax and diff checks
+pass. No application source, dependency, permission, recording, data or backup change. A fresh
+complete API28/35/36 and source-fingerprint/capture gate remains required before merge.
+AOSP references: [portable command](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-9.0.0_r1/services/core/java/com/android/server/am/ActivityManagerShellCommand.java),
+[ANR event schema](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-16.0.0_r1/services/core/java/com/android/server/am/EventLogTags.logtags).
+
+# Material UI — 0.12.0-test1 verified software and visual source
+
+UI/capture source **bed9a81a611cc9793ab4bf96314604b668e97c5b** passed the complete
+[workflow42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799).
+All completed job conclusions and the three Android logs were independently inspected.
+Final documentation-head CI and actual-main publication remain separate delivery checks.
+
+| Gate | Observed result |
+| --- | --- |
+| API28 / API35 / API36 | **Each:9 guard methods,517 full instrumentation tests,383 authentic captures** |
+| Domain | **700,108 checks /47 suites**, including4,226 six-month athlete assertions |
+| Schema/migrations/backups | **75 schema tests**; existing old/current backup, rollback and history cases pass |
+| Guidance | **220 canonical /14 routine guides;223 exact asset hashes** |
+| Formatting | **110 Kotlin /159 Java;14 formatter-tool tests** |
+| Other checks | **9 release-note,9 runner-helper,19 capture-validator,11 map-source,14 artwork tests** |
+| Android | Domain/check, debug APK, lint, instrumentation compilation and dependency inventory pass |
+
+The mandatory complete suite remains unfiltered after its fast guard. No assertion, API,
+required capture or timeout was removed. Pinned emulator37.2.13/build16740729 uses the documented
+software backend (Lavapipe/ANGLE). Previous platform ANR overlays prevented app focus; those
+attempts were not treated as app passes. Earlier colour-buffer warnings do not prove their cause.
+The current complete matrix passes; some nonblocking emulator texture warnings remain in logs.
+
+## Authentic screenshots and visual review
+
+Canonical bot **862117fa28096100ac91c31e193069e8ef062067** was safely fast-forwarded.
+Fingerprint **a88c2576b4908314f161f9a46c2df81ffa949f05a7c7ba934dd8e567407ef92c**
+matches current UI/capture source and metadata. All383 committed PNG bytes equal the rawAPI35
+artifact13528616131 exactly. ZIP53,248,374bytes, SHA256:
+`73bebd47fd56a53344c12c474a009fdd09efec0d3c98e912be1f01edc8fe30d7`.
+API36 artifact13528298057 also passes strict383-name/PNG verification; ZIP53,159,293bytes, SHA256:
+`d4513989f49c117ed02409bf3dd44821c4d0b5243f59c124a0a7ee75a3b8b6d9`.
+
+Actual API35/36 Home/live/native permission views were inspected in branded/device, light/dark
+and200% modes. Expanded and scrolled progression, gym, analytics, health/recovery/body/storage,
+history/trends/shoes/race and wide navigation were sampled. No blocking app-owned clipping,
+overlap, unreadable contrast or missing primary action was found. API36 light live/large-text
+navigation buttons now have clear contrast in the actual captures, not merely matching flags.
+Native Continue/Close stay in safe visible bounds. References remain separate and unedited.
+See docs/VISUAL_REVIEW_0_12.md for exact observations.
+
+**Retained emulator limitation:** forced1400x720/200% captures have a blank reserved platform
+navigation strip. App rail destinations remain reachable and content scrolls; normal phone and
+tall-wide captures show system navigation buttons. This is not claimed fixed or hidden by cropping.
+Real rotation/navigation/OEM checks remain on TEST_BUILD.md. Human TalkBack and hardware are
+not established by emulator semantics or screenshots.
+
+## Verified candidate APK and preserved contracts
+
+API35 artifact13527711983 contains **Race-Day-Dreams-0.12.0-test1-debug.apk**, version0.12.0-test1,
+code16, **55,348,650bytes**, SHA256:
+`cdf006c6d43bf0314d409f9bbed60af9eded7d228e7c861d9ada51e01899a73b`.
+Its ZIP SHA256 is `edc27371974749d872ad7b3c20a19f7f57293bf18b00c0aa8c49af059278426c`.
+Actual package inspection confirms **no INTERNET permission**. Versus verified0.11CI55,250,287bytes,
+the increase is98,363bytes/**0.1780%**; no artwork or runtime dependency was added. This is a
+verified branch candidate, not a claim of main publication. Final rolling APK must match main CI.
+
+No launcher icon, domain, recording, persistence, manifest permission or data-format change:
+**schema19 / rootJSON13 / raw3 / complete1**. Recorded actuals, old programme revisions, backups,
+retention, Health Connect and one authoritative recorder retain their existing contracts.
+All three UI milestones are implemented; delivery-head checks/merge/main publication are next.
+Physical Galaxy S24/Pixel/Xiaomi, human TalkBack, outdoorGPS, providers, OEM/background/audio/
+locked-screen/battery checks remain **UNPERFORMED**. Earlier verification below is historical.
+
 # 0.11.0-test1 — verified software and visual checkpoint
 
 Source `ee760bf33356092dc7559738b90b1d089bf45521` passed the complete [Android workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418).

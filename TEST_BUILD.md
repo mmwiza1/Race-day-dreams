@@ -1,3 +1,39 @@
+# Material UI acceptance — 0.12.0-test1
+
+Export a complete backup before changing debug-signing builds. Do not uninstall a live
+installation casually. Current observed results are in VERIFICATION.md. Final exact-source
+software CI passed on API28/35/36 at sourcebed9a81 in workflow42265222799. Source-bound
+visual review and candidate APK checks passed; exact documentation-head checks, main CI and
+rolling publication remain separate delivery gates. No stable/public-store release is implied. Use only an APK whose source,
+version and checksum match the intended verified build; a branch APK is not a main release.
+
+Each supported API passed nine guard methods,517 full instrumentation cases and383 authentic
+captures, retaining all359 older frames and adding24 UI views. Focused checks pass19capture-
+validator and9CI-shell helper tests. Canonical862117f retains this source's API35 gallery.
+Counts and appearance flags alone do not establish actual bar contrast or physical usability.
+
+The0.12branch artifacts use `Race-Day-Dreams-0.12.0-test1-debug-api-35` and
+`Race-Day-Dreams-0.12.0-test1-debug.apk`; the rolling Latest Development Build identifies
+its own verified-main version and commit. Export a complete backup before upgrading.
+
+The existing native goal and Health Connect privacy screens retain their entry, draft and Close
+behaviour. Their safe viewports and theme-matched bars are part of this release's UI verification.
+No runtime dependency, permission, schema or backup-format change is introduced. Official existing
+Material3 components are reused; newer experimental Expressive motion/loading APIs are not added.
+Version0.12.0-test1/code16 retains schema19/rootJSON13/raw3/complete1. Existing data,
+recording, coaching, retention and backup readers keep their established contracts.
+
+Physical checks (all UNPERFORMED; record device, OS/One UI version, APK commit and date):
+
+- Galaxy S24, Pixel and Xiaomi: system light/dark, device colours on/off and colour changes.
+- 200% text: Home, running controls/finish confirmation, goal entry keyboard, programme
+  forms, Gym Now, history/splits, calendar, health/recovery, shoes, permissions and storage.
+- TalkBack/keyboard: all navigation destinations, meaningful metric groups, real disclosure
+  states, focus order, buttons and dialogs; check contrast and comfortable touch targets.
+- Rotation, split-screen, wider displays, IME and system bars: no clipped fields or covered actions.
+- Preserve the existing outdoor GPS, locked-screen running, Health Connect, audio and backup
+  owner acceptance tasks below. Emulator success does not certify hardware behaviour.
+
 # 0.11.0-test1 software verification / physical acceptance
 
 Complete [workflow42148419418](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418) at sourceee760bf passed508tests EACH API28/35/36,

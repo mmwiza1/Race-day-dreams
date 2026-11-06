@@ -1,3 +1,30 @@
+# Material UI — 0.12 current-source capture gate
+
+Source `bed9a81a611cc9793ab4bf96314604b668e97c5b` passed complete
+[workflow42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799).
+Each supported API28/35/36 passed nine guard methods,517 full instrumentation cases and383
+authentic captures. The set retains all359 prior captures and adds24 device/branded,
+light/dark/200% Home/live/finish-confirmation, wide-window navigation and native Health
+Connect privacy-page views. Required names and strict PNG validation remain in
+scripts/verify-dream-screenshots.py, with19 validator regression tests.
+
+Canonical bot `862117f` was safely fetched after that successful matrix. The committed
+gallery identifies this exact source and fingerprint:
+`a88c2576b4908314f161f9a46c2df81ffa949f05a7c7ba934dd8e567407ef92c`.
+These are current0.12production-screen renders, not old gallery images or mockups.
+All383PNG bytes match raw API35 artifact13528616131 exactly. Final API35/36 pixel review and
+candidate APK checks passed, with the forced short-wide platform-strip limitation recorded in
+VERIFICATION.md and VISUAL_REVIEW_0_12.md. A passing PNG validator does not establish visual fidelity.
+
+Same-repository canonical publication retains the exact-head/source-fingerprint rule for
+feature/material3-expressive-ui. Nine CI-shell helper tests cover runner setup, bounded
+diagnostics and cleanup; they do not certify rendering. Final documentation-head checks,
+main merge/post-merge CI and the matching rolling download remain distinct delivery gates.
+Inspect content and actual bars, including native large-text Close and short-wide
+navigation. Design references remain separate and unedited. All hardware/human TalkBack
+checks remain unperformed. Earlier source-specific evidence below is historical and does
+not describe the current gallery or reopen completed release work.
+
 # 0.11 authentic screenshots —359 source-verified captures
 
 Complete workflow42148419418 passed508tests and359captures EACH API28/35/36 at source
@@ -79,7 +106,7 @@ in all3modes. Combined with primary
 and comparison captures, review33actual progression frames across the whole page and both
 nested disclosure states. No old screenshot or consistency-only check proves fidelity.
 
-The pre-refinement08cf375 workflow41939512123 passed435 EACH API28/35/36 and128captures;
+The pre-refinement08cf377 workflow41939512123 passed435 EACH API28/35/36 and128captures;
 botb3a4195 was safely adopted. Refined438-case matrix and155 current-source images remain
 pending. References stay separate; never replace them with generated captures or mock UI.
 
@@ -118,7 +145,7 @@ pending-work language is superseded by this source-bound current checkpoint.
 
 **91 authentic current-source API35 captures**, adopted from botb768e0b after successful
 workflow40741473316. Sourcef3a988a68f3d1b6dbb618422a80612b90cf4d92e, fingerprint:
-`2f31ea66e537562c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722`.
+`2f31ea66e537762c5533cfa21447a9608ac87c1a1056ce8f89fa660aa4ee1722`.
 The source-commit.txt/source.sha256 files beside the PNGs are the authoritative identities;
 documentation-only commits do not change these rendering inputs. All required names,
 540×1200 dimensions and PNG integrity pass scripts/verify-dream-screenshots.py.
@@ -466,3 +493,5 @@ warning-first copy refinement and three new scrolled confirmation-tail captures.
 catalogue additions require30real guide frames, all light/dark/200%, via production navigation.
 These following248captures require a fresh exact-source matrix and direct review. The e39
 screenshots remain authentic historical checkpoint evidence, not acceptance of newer source.
+
+The Material update also requires four authentic public permission-rationale captures: light, dark,200% entry and200% Close action. These launch the real retained native Activity. All379earlier scenes remain, making383required images; no design reference is a build capture.

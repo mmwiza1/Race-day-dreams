@@ -16,12 +16,11 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.printToString
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.closeSoftKeyboard
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
@@ -50,8 +49,8 @@ import org.junit.runner.RunWith
 import org.racedaydreams.R
 import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.SqliteUserPreferencesRepository
-import org.racedaydreams.domain.RaceDistance
 import org.racedaydreams.domain.GoalMode
+import org.racedaydreams.domain.RaceDistance
 import org.racedaydreams.domain.RaceGoal
 import org.racedaydreams.domain.ScheduleType
 import org.racedaydreams.domain.TrainingPreferences
@@ -69,10 +68,13 @@ import org.racedaydreams.ui.OnboardingView
 @RunWith(AndroidJUnit4::class)
 class CoachOnboardingTest {
     @get:Rule val compose = createEmptyComposeRule()
-    private val context: Context get() = ApplicationProvider.getApplicationContext()
+    private val context: Context
+        get() = ApplicationProvider.getApplicationContext()
+
     private var scenario: ActivityScenario<CoachActivity>? = null
 
-    @Before fun clearFixture() {
+    @Before
+    fun clearFixture() {
         // JUnit runs on the instrumentation thread, not the UI thread. No health provider is
         // queried or seeded, and the app remains usable regardless of provider availability.
         val store = FeatureStore(context)
@@ -80,14 +82,16 @@ class CoachOnboardingTest {
         SqliteUserPreferencesRepository(context).clear()
     }
 
-    @After fun closeFixture() {
+    @After
+    fun closeFixture() {
         scenario?.close()
         scenario = null
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
     }
 
-    @Test fun canContinueWithoutHealthAndSaveGoalThroughExistingForm() {
+    @Test
+    fun canContinueWithoutHealthAndSaveGoalThroughExistingForm() {
         launch()
         continueToGoals()
         repeat(3) { index -> nativeContinue(index + 2) }
@@ -104,9 +108,13 @@ class CoachOnboardingTest {
         assertEquals(profile, SqliteUserPreferencesRepository(context).load().get())
     }
 
-    @Test fun optionalManualBaselineSurvivesRecreationAndKeepsItsProvenance() {
+    @Test
+    fun optionalManualBaselineSurvivesRecreationAndKeepsItsProvenance() {
         launch()
-        compose.onNodeWithText("Fill gaps or correct this baseline").performScrollTo().performClick()
+        compose
+            .onNodeWithText("Fill gaps or correct this baseline")
+            .performScrollTo()
+            .performClick()
         waitForText("Optional current-running details")
         field("Current weekly distance (km)").performScrollTo().performTextInput("24.5")
         field("Current usual runs/week").performScrollTo().performTextInput("3")
@@ -119,44 +127,66 @@ class CoachOnboardingTest {
         field("Longest recent run (km)").assertTextContains("10")
         compose.onNodeWithText("Save optional baseline").performScrollTo().performClick()
         waitForText("Start with the running you already do")
-        compose.onNodeWithText("Average recorded weekly distance: 24.5 km · manual")
-            .performScrollTo().assertIsDisplayed()
+        compose
+            .onNodeWithText("Average recorded weekly distance: 24.5 km · manual")
+            .performScrollTo()
+            .assertIsDisplayed()
         val stored = FeatureStore(context).savedManualBaseline()
         assertEquals(24.5, stored.weeklyDistanceKm()!!, 0.0)
         assertTrue(FeatureStore(context).manualBaselineRecordedAt() != null)
         assertTrue(FeatureStore(context).activities().isEmpty())
     }
 
-    @Test fun unfinishedTargetTimeFormSurvivesRecreationWithoutChangingGoal() {
+    @Test
+    fun unfinishedTargetTimeFormSurvivesRecreationWithoutChangingGoal() {
         launch()
         continueToGoals()
         onView(withText("Half Marathon")).perform(scrollTo(), click())
         nativeContinue(2)
         onView(withText("Target Time")).perform(scrollTo(), click())
-        onView(withHint(R.string.onboarding_target_hint)).perform(scrollTo(), replaceText("1:59:59"))
+        onView(withHint(R.string.onboarding_target_hint))
+            .perform(scrollTo(), replaceText("1:59:59"))
         closeSoftKeyboard()
 
         scenario!!.recreate()
         onView(withHint(R.string.onboarding_target_hint)).check(matches(withText("1:59:59")))
-        onView(withText("Target race pace: 5:41/km")).perform(scrollTo()).check(matches(isDisplayed()))
-        assertTrue("An unfinished form must not create a saved goal", !SqliteUserPreferencesRepository(context).load().isPresent)
+        onView(withText("Target race pace: 5:41/km"))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+        assertTrue(
+            "An unfinished form must not create a saved goal",
+            !SqliteUserPreferencesRepository(context).load().isPresent,
+        )
     }
 
-    @Test fun existingHistoryIsReviewedBeforeOptionalGapQuestions() {
-        val monday = LocalDate.now(ZoneOffset.UTC).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val records = (1L..8L).flatMap { week ->
-            listOf(0L, 2L, 5L).map { day ->
-                val start = monday.minusWeeks(week).plusDays(day).atTime(LocalTime.of(7, 0)).toInstant(ZoneOffset.UTC)
-                fixtureRun("run-$week-$day", start)
+    @Test
+    fun existingHistoryIsReviewedBeforeOptionalGapQuestions() {
+        val monday =
+            LocalDate.now(ZoneOffset.UTC).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val records =
+            (1L..8L).flatMap { week ->
+                listOf(0L, 2L, 5L).map { day ->
+                    val start =
+                        monday
+                            .minusWeeks(week)
+                            .plusDays(day)
+                            .atTime(LocalTime.of(7, 0))
+                            .toInstant(ZoneOffset.UTC)
+                    fixtureRun("run-$week-$day", start)
+                }
             }
-        }
         FeatureStore(context).applyImport("health-connect", records, emptyList(), null)
         launch()
 
-        compose.onNodeWithText("Found 24 recorded runs in the available history window.")
-            .performScrollTo().assertIsDisplayed()
+        compose
+            .onNodeWithText("Found 24 recorded runs in the available history window.")
+            .performScrollTo()
+            .assertIsDisplayed()
         compose.onAllNodes(hasSetTextAction()).assertCountEquals(0)
-        compose.onNodeWithText("Fill gaps or correct this baseline").performScrollTo().performClick()
+        compose
+            .onNodeWithText("Fill gaps or correct this baseline")
+            .performScrollTo()
+            .performClick()
         waitForText("Optional current-running details")
         field("Current weekly distance (km)").assertDoesNotExist()
         field("Current usual runs/week").assertDoesNotExist()
@@ -164,15 +194,22 @@ class CoachOnboardingTest {
         field("Approximate easy pace (MM:SS/km)").performScrollTo().assertIsDisplayed()
     }
 
-    @Test fun officialResultIsStoredSeparatelyFromActivitiesAndProgressSurvivesRecreation() {
+    @Test
+    fun officialResultIsStoredSeparatelyFromActivitiesAndProgressSurvivesRecreation() {
         launchSavedProfile()
         compose.onNodeWithText("Progress").performClick()
-        waitForText("Running PBs");compose.onNodeWithText("Running PBs").performClick()
+        waitForText("Running PBs")
+        compose.onNodeWithText("Running PBs").performClick()
         compose.onNodeWithText("Add a race or manual result").performScrollTo().performClick()
         field("Finishing time (MM:SS or H:MM:SS)").performScrollTo().performTextInput("26:00")
-        compose.onNodeWithText("Result date: ${friendlyDate(LocalDate.now())}").performScrollTo().performClick()
+        compose
+            .onNodeWithText("Result date: ${friendlyDate(LocalDate.now())}")
+            .performScrollTo()
+            .performClick()
         compose.onNodeWithText("Choose date").performClick()
-        field("Race or event name (optional)").performScrollTo().performTextInput("Synthetic fixture 5K")
+        field("Race or event name (optional)")
+            .performScrollTo()
+            .performTextInput("Synthetic fixture 5K")
         compose.onNodeWithText("This is my official chip time").performScrollTo().performClick()
         compose.onNodeWithText("Save result").performScrollTo().performClick()
 
@@ -183,7 +220,10 @@ class CoachOnboardingTest {
         assertEquals(ResultSource.OFFICIAL_CHIP, result.source())
         assertEquals("Synthetic fixture 5K", result.eventName())
         assertEquals(LocalDate.now(), result.date())
-        assertNull("Entering an official result must not invent a linked activity", result.activityId())
+        assertNull(
+            "Entering an official result must not invent a linked activity",
+            result.activityId(),
+        )
         assertTrue(FeatureStore(context).activities().isEmpty())
 
         scenario!!.recreate()
@@ -193,10 +233,13 @@ class CoachOnboardingTest {
         assertTrue(FeatureStore(context).activities().isEmpty())
     }
 
-    @Test fun shoeFormRetainsExplicitZeroStartingMileageAndDefaultMetadata() {
+    @Test
+    fun shoeFormRetainsExplicitZeroStartingMileageAndDefaultMetadata() {
         launchSavedProfile()
         compose.onNodeWithText("Progress").performClick()
-        waitForText("Training trends");compose.onNodeWithText("Training trends").performClick();waitForText("Progress from your recorded running")
+        waitForText("Training trends")
+        compose.onNodeWithText("Training trends").performClick()
+        waitForText("Progress from your recorded running")
         compose.onNodeWithText("View and manage shoes").performScrollTo().performClick()
         waitForText("Your shoes")
         compose.onNodeWithText("Add shoes").performScrollTo().performClick()
@@ -225,24 +268,31 @@ class CoachOnboardingTest {
         assertEquals(listOf(shoe), FeatureStore(context).shoes())
     }
 
-    @Test fun savedPerformancePreferenceCanBeKeptWithoutInventingCurrentEligibility() {
+    @Test
+    fun savedPerformancePreferenceCanBeKeptWithoutInventingCurrentEligibility() {
         launchSavedProfile(TrainingStrategy.PERFORMANCE, true)
         val original = SqliteUserPreferencesRepository(context).load().get()
         assertTrue(original.performanceEligible())
         assertTrue(FeatureStore(context).activities().isEmpty())
-        compose.onNodeWithText("Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed.")
-            .performScrollTo().assertIsDisplayed()
+        compose
+            .onNodeWithText(
+                "Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed."
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
 
-        compose.onNodeWithText("⚙ Settings").performClick()
+        compose.onNodeWithText("Settings").performClick()
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         waitNativeText(R.string.onboarding_edit_title)
         nativeContinue(2)
         onView(withText(R.string.onboarding_performance_retained))
-            .perform(scrollTo()).check(matches(isDisplayed()))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
         nativeContinue(3)
         nativeContinue(4)
         onView(withText(R.string.onboarding_performance_retained))
-            .perform(scrollTo()).check(matches(isDisplayed()))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
         waitNativeText(R.string.onboarding_save)
         onView(withText(R.string.onboarding_save)).perform(scrollTo(), click())
 
@@ -251,41 +301,73 @@ class CoachOnboardingTest {
         assertEquals(original.raceGoal(), stored.raceGoal())
         assertEquals(original.preferences(), stored.preferences())
         assertEquals(TrainingStrategy.PERFORMANCE, stored.preferences().strategy())
-        assertFalse("Current eligibility must come from the empty evidence, not the legacy flag", stored.performanceEligible())
+        assertFalse(
+            "Current eligibility must come from the empty evidence, not the legacy flag",
+            stored.performanceEligible(),
+        )
         assertTrue(FeatureStore(context).activities().isEmpty())
     }
 
-    private fun fixtureRun(id: String, start: Instant) = ActivityRecord(
-        id, SourceIdentity("health-connect", id, "org.racedaydreams.synthetic.test"),
-        start, start.plus(Duration.ofMinutes(40)), ZoneOffset.UTC, ZoneOffset.UTC,
-        6_000.0, null, null, null, null, null, null,
-        "Synthetic instrumentation fixture", emptyList(), emptyList(), null, null
-    )
+    private fun fixtureRun(id: String, start: Instant) =
+        ActivityRecord(
+            id,
+            SourceIdentity("health-connect", id, "org.racedaydreams.synthetic.test"),
+            start,
+            start.plus(Duration.ofMinutes(40)),
+            ZoneOffset.UTC,
+            ZoneOffset.UTC,
+            6_000.0,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "Synthetic instrumentation fixture",
+            emptyList(),
+            emptyList(),
+            null,
+            null,
+        )
 
     private fun launch() {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         waitForText("Make today yours")
-        compose.onNodeWithText("Train for a race",useUnmergedTree=false).performClick()
+        compose.onNodeWithText("Train for a race", useUnmergedTree = false).performClick()
         waitForText("Start with the running you already do")
     }
 
-    private fun launchSavedProfile(strategy: TrainingStrategy = TrainingStrategy.DISTANCE_FIRST,
-                                   legacyEligibility: Boolean = false) {
-        val profile = UserProfile(
-            RaceGoal(RaceDistance.FIVE_K, "", null, GoalMode.FINISH, null),
-            TrainingPreferences(strategy,
-                EnumSet.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY),
-                3, DayOfWeek.SATURDAY, emptySet(), ScheduleType.FLEXIBLE, UnitSystem.METRIC),
-            legacyEligibility
-        )
+    private fun launchSavedProfile(
+        strategy: TrainingStrategy = TrainingStrategy.DISTANCE_FIRST,
+        legacyEligibility: Boolean = false,
+    ) {
+        val profile =
+            UserProfile(
+                RaceGoal(RaceDistance.FIVE_K, "", null, GoalMode.FINISH, null),
+                TrainingPreferences(
+                    strategy,
+                    EnumSet.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY),
+                    3,
+                    DayOfWeek.SATURDAY,
+                    emptySet(),
+                    ScheduleType.FLEXIBLE,
+                    UnitSystem.METRIC,
+                ),
+                legacyEligibility,
+            )
         SqliteUserPreferencesRepository(context).save(profile)
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         waitForText("Today")
     }
 
     private fun continueToGoals() {
-        compose.onNodeWithText("Looks right / continue to my goals").performScrollTo().performClick()
-        awaitCondition("baseline review to be persisted") { FeatureStore(context).getSetting("baseline.reviewed") == "true" }
+        compose
+            .onNodeWithText("Looks right / continue to my goals")
+            .performScrollTo()
+            .performClick()
+        awaitCondition("baseline review to be persisted") {
+            FeatureStore(context).getSetting("baseline.reviewed") == "true"
+        }
         waitNativeStep(1)
         waitNativeText(R.string.onboarding_title)
         onView(withText(R.string.onboarding_title)).check(matches(isDisplayed()))
@@ -294,14 +376,57 @@ class CoachOnboardingTest {
     private fun nativeContinue(nextStep: Int) {
         waitNativeStep(nextStep - 1)
         waitNativeText(R.string.onboarding_continue)
-        onView(withText(R.string.onboarding_continue)).perform(scrollTo(), click())
+        onView(withText(R.string.onboarding_continue))
+            .perform(scrollTo())
+            .check { view, missing ->
+                if (missing != null) throw missing
+                val button = requireNotNull(view)
+                val location = IntArray(2)
+                button.getLocationOnScreen(location)
+                val root = button.rootView
+                val origin = IntArray(2)
+                root.getLocationOnScreen(origin)
+                val navigation =
+                    androidx.core.view.ViewCompat.getRootWindowInsets(root)
+                        ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())
+                        ?.bottom ?: 0
+                val safeBottom = origin[1] + root.height - navigation
+                android.util.Log.i(
+                    "RddGate",
+                    "NATIVE_CONTINUE x=${location[0]} y=${location[1]} width=${button.width} height=${button.height} root=${root.width}x${root.height} safeBottom=$safeBottom",
+                )
+                var ancestor: View? = button
+                repeat(6) {
+                    ancestor?.let { current ->
+                        val xy = IntArray(2)
+                        current.getLocationOnScreen(xy)
+                        android.util.Log.i(
+                            "RddGate",
+                            "NATIVE_ANCESTOR ${current.javaClass.simpleName} x=${xy[0]} y=${xy[1]} width=${current.width} height=${current.height} scrollY=${current.scrollY}",
+                        )
+                        ancestor = current.parent as? View
+                    }
+                }
+                assertTrue(
+                    "Continue must be inside navigation-safe bounds: y=${location[1]}, height=${button.height}, safeBottom=$safeBottom",
+                    location[1] + button.height <= safeBottom,
+                )
+            }
+            .perform(click())
         waitNativeStep(nextStep)
     }
 
     private fun waitNativeStep(step: Int) {
-        val names = listOf(R.string.onboarding_step_goal, R.string.onboarding_step_approach,
-            R.string.onboarding_step_routine, R.string.onboarding_step_review)
-        waitNativeText(context.getString(R.string.onboarding_step, step, context.getString(names[step - 1])))
+        val names =
+            listOf(
+                R.string.onboarding_step_goal,
+                R.string.onboarding_step_approach,
+                R.string.onboarding_step_routine,
+                R.string.onboarding_step_review,
+            )
+        waitNativeText(
+            context.getString(R.string.onboarding_step, step, context.getString(names[step - 1]))
+        )
     }
 
     private fun waitNativeText(resource: Int) = waitNativeText(context.getString(resource))
@@ -309,31 +434,39 @@ class CoachOnboardingTest {
     private fun waitNativeText(expected: String) {
         awaitCondition("enabled native text '$expected'") {
             var found = false
-            scenario!!.onActivity { activity -> found = hasEnabledText(activity.window.decorView, expected) }
+            scenario!!.onActivity { activity ->
+                found = hasEnabledText(activity.window.decorView, expected)
+            }
             found
         }
     }
 
     private fun hasEnabledText(view: View, text: String): Boolean {
-        if (view is TextView && view.text.toString() == text && view.isShown && view.isEnabled) return true
-        if (view is ViewGroup) for (index in 0 until view.childCount) {
-            if (hasEnabledText(view.getChildAt(index), text)) return true
-        }
+        if (view is TextView && view.text.toString() == text && view.isShown && view.isEnabled)
+            return true
+        if (view is ViewGroup)
+            for (index in 0 until view.childCount) {
+                if (hasEnabledText(view.getChildAt(index), text)) return true
+            }
         return false
     }
 
     private fun field(label: String) = compose.onNode(hasSetTextAction() and hasText(label))
 
     private fun waitForText(text: String) {
-        awaitCondition("Compose text '$text'") { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+        awaitCondition("Compose text '$text'") {
+            compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     private fun awaitCondition(description: String, condition: () -> Boolean) {
-        try { compose.waitUntil(15_000, condition) }
-        catch (failure: AssertionError) {
+        try {
+            compose.waitUntil(15_000, condition)
+        } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
             throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
-        }
-        catch (failure: Exception) {
+        } catch (failure: AssertionError) {
+            throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
+        } catch (failure: Exception) {
             throw AssertionError("While waiting for $description\n${failureDiagnostics()}", failure)
         }
     }
@@ -342,20 +475,27 @@ class CoachOnboardingTest {
         val native = StringBuilder()
         runCatching { scenario?.onActivity { appendView(it.window.decorView, native, 0) } }
             .onFailure { native.append("Native hierarchy unavailable: ").append(it.message) }
-        val semantics = runCatching { compose.onRoot(useUnmergedTree = true).printToString(maxDepth = 8) }
-            .getOrElse { "Compose hierarchy unavailable: ${it.message}" }
+        val semantics =
+            runCatching { compose.onRoot(useUnmergedTree = true).printToString(maxDepth = 8) }
+                .getOrElse { "Compose hierarchy unavailable: ${it.message}" }
         return "Native hierarchy and current goal draft:\n$native\nCompose hierarchy:\n$semantics"
     }
 
     private fun appendView(view: View, output: StringBuilder, depth: Int) {
         if (output.length > 16_000) return
-        output.append("  ".repeat(depth)).append(view.javaClass.simpleName)
-            .append(" shown=").append(view.isShown).append(" enabled=").append(view.isEnabled)
+        output
+            .append("  ".repeat(depth))
+            .append(view.javaClass.simpleName)
+            .append(" shown=")
+            .append(view.isShown)
+            .append(" enabled=")
+            .append(view.isEnabled)
         if (view is TextView) output.append(" text=").append(view.text)
         if (view is OnboardingView) output.append(" draft=").append(view.draftJson())
         output.append('\n')
-        if (view is ViewGroup) for (index in 0 until view.childCount) {
-            appendView(view.getChildAt(index), output, depth + 1)
-        }
+        if (view is ViewGroup)
+            for (index in 0 until view.childCount) {
+                appendView(view.getChildAt(index), output, depth + 1)
+            }
     }
 }

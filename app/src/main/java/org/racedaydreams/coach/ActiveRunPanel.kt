@@ -5,7 +5,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,17 @@ fun ActiveRunPanel(
                     } ?: "Recording",
                 style = MaterialTheme.typography.headlineMedium,
             )
+            Text(
+                s.gps(),
+                modifier =
+                    Modifier.semantics {
+                        // Ordinary quality fluctuations stay readable without repeated speech.
+                        if (!s.paused() && s.gps().contains("temporarily lost"))
+                            liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+                    },
+            )
+            if (s.gps() == "GPS signal weak")
+                Text("Your pace may be temporarily inaccurate. Continue by effort.")
             if (w != null && !w.complete()) {
                 Text(
                     w.current()?.kind()?.name?.lowercase()?.replace('_', ' ') ?: "Run",
@@ -58,14 +71,36 @@ fun ActiveRunPanel(
                     style = MaterialTheme.typography.headlineLarge,
                 )
             }
-            Text(
-                s.secondsPerKm()
-                    ?.takeIf { s.hasReliablePace() }
-                    ?.let {
-                        "${formatPaceSeconds(it*if(imperial)1.609344 else 1.0)} /${if(imperial)"mi"else"km"}"
-                    } ?: "Pace unavailable",
-                style = MaterialTheme.typography.displaySmall,
-            )
+            GuidanceCard {
+                RunMetric(
+                    "Distance",
+                    if (imperial) "${decimal(s.metres()/1609.344)} mi"
+                    else "${decimal(s.metres()/1000)} km",
+                    prominent = true,
+                )
+                RunMetric(
+                    "Elapsed time",
+                    PaceCalculator.formatTime(Duration.ofMillis(s.elapsedMillis())),
+                )
+                HorizontalDivider()
+                RunMetric(
+                    "Current pace",
+                    s.secondsPerKm()
+                        ?.takeIf { s.hasReliablePace() }
+                        ?.let {
+                            "${formatPaceSeconds(it*if(imperial)1.609344 else 1.0)} /${if(imperial)"mi"else"km"}"
+                        } ?: "Pace unavailable",
+                )
+                if (s.metres() > 0 && s.movingMillis() > 0)
+                    RunMetric(
+                        "Active average pace",
+                        "${formatPaceSeconds(s.movingMillis()/1000.0/(s.metres()/if(imperial)1609.344 else 1000.0))} /${if(imperial)"mi"else"km"}",
+                    )
+                Text(
+                    "Active ${PaceCalculator.formatTime(Duration.ofMillis(s.movingMillis()))}",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
             w?.current()?.let { step ->
                 if (step.fastPace() != null && step.slowPace() != null)
                     Text(
@@ -87,26 +122,7 @@ fun ActiveRunPanel(
                         imperial,
                     )
             }
-            Text(
-                if (imperial) "${decimal(s.metres()/1609.344)} mi"
-                else "${decimal(s.metres()/1000)} km",
-                style = MaterialTheme.typography.headlineMedium,
-            )
-            Text(
-                "Elapsed ${PaceCalculator.formatTime(Duration.ofMillis(s.elapsedMillis()))} · Active ${PaceCalculator.formatTime(Duration.ofMillis(s.movingMillis()))}"
-            )
-            hr?.let { Text("Heart rate ${it.toInt()} bpm") }
-            Text(
-                s.gps(),
-                modifier =
-                    Modifier.semantics {
-                        // Ordinary quality fluctuations stay readable without repeated speech.
-                        if (!s.paused() && s.gps().contains("temporarily lost"))
-                            liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
-                    },
-            )
-            if (s.gps() == "GPS signal weak")
-                Text("Your pace may be temporarily inaccurate. Continue by effort.")
+            hr?.let { RunMetric("Heart rate", "${it.toInt()} bpm") }
             notice?.let { Text(it) }
             var details by remember { mutableStateOf(false) }
             TextButton(
@@ -158,7 +174,13 @@ fun ActiveRunPanel(
                 )
             }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        var confirmFinish by rememberSaveable { mutableStateOf(false) }
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            maxItemsInEachRow = if (LocalDensity.current.fontScale >= 1.5f) 1 else 2,
+        ) {
             Button(
                 onClick = { send(if (s.paused()) "RESUME" else "PAUSE") },
                 modifier = Modifier.weight(1f).heightIn(min = 64.dp),
@@ -166,11 +188,50 @@ fun ActiveRunPanel(
                 Text(if (s.paused()) "Resume" else "Pause")
             }
             OutlinedButton(
-                onClick = { send("FINISH") },
+                onClick = { confirmFinish = true },
                 modifier = Modifier.weight(1f).heightIn(min = 64.dp),
             ) {
                 Text("Finish & save")
             }
         }
+        if (confirmFinish)
+            AlertDialog(
+                onDismissRequest = { confirmFinish = false },
+                title = { Text("Finish this run?") },
+                text = {
+                    Text(
+                        "Save the distance and time recorded so far. You can keep recording instead."
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            confirmFinish = false
+                            send("FINISH")
+                        }
+                    ) {
+                        Text("Save recorded run")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { confirmFinish = false }) { Text("Keep recording") }
+                },
+            )
+    }
+}
+
+@Composable
+private fun RunMetric(label: String, value: String, prominent: Boolean = false) {
+    Column(
+        Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Text(label, style = MaterialTheme.typography.labelLarge)
+        Text(
+            value,
+            style =
+                if (prominent) MaterialTheme.typography.displaySmall
+                else MaterialTheme.typography.headlineMedium,
+        )
     }
 }
