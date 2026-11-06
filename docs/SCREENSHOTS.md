@@ -1,4 +1,30 @@
-# Current0.10.1 authentic screenshots —155 source-verified images
+# 0.11 authentic screenshots —359 source-verified captures
+
+Complete workflow42148419418 passed508tests and359captures EACH API28/35/36 at source
+`ee760bf33356092dc7559738b90b1d089bf45521`. Canonical436e429 was safely fast-forwarded; all359API35PNG bytes match
+SHA-verified ZIP13471938317 (`e9a8dbd49caace3f5c67ae4fa582044b4dfb42cd01c4ace03c94dee52beed167`).
+Fingerprint `0b13cd7ffae330ebdb2b29f07e635119d11c7cd9131cd04c8906b32901f78436` matches the actual code/test source. PNG integrity is not visual acceptance:
+see VISUAL_REVIEW_0_11.md for direct light/dark/200%, guidance, disclosure and scrolled-tail review.
+All46new guides are captured in all3modes; original design references stay in docs/design-reference.
+README previews use these genuine production-screen renders, never mockups. No S24/human TalkBack
+acceptance is implied. Earlier checkpoint descriptions below retain their own historical sources.
+
+# 0.11 development captures — verified gym checkpoint, final source pending
+
+Workflow42073702201/sourcea26150d passed448tests and164required captures EACH API28/35/36.
+Canonical8a86d56 preserves the API35 originals. The capture ZIP hash and all164PNG Git identities
+were checked; all9new gym light/dark/200%images opened directly. See VISUAL_REVIEW_0_11.md for
+observed issues and subsequent refinements. No edited screenshot or mock UI is used.
+
+The next final-source checkpoint requires203images:155baseline +9body/protein +6recovery +15gym settings/preparation/
+evidence +18analytics/records/milestones. Those additional/revised current-source images are NOT
+yet captured or visually accepted. Full release acceptance also requires the remaining milestone
+screens, meaningful disclosure/scroll states, light/dark/200%review and exact source fingerprints.
+Reference images remain separate. Latest verified M2 source5f79cfc/workflow42100006847 passed465cases/API and188captures/API;
+canonical124e036 matches all raw artifact PNGs. The older verification below records its own
+historical source. Recovery/body203frame captures still require their actual gate.
+
+# Archived0.10.1 authentic screenshots —155 source-verified images
 
 Source `a75b9a5dc870e01598d7229c195d528a84405e57` passed the COMPLETE [workflow42035888968](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42035888968):
 438 cases EACH API28/35/36,155 authentic captures/API, domain640893checks/38suites,
@@ -421,3 +447,22 @@ captures asf79c3c5. All new replacement/progression/history modes were opened. I
 passed, but200%progression footer/action hierarchy did not pass visual review. A new
 proposal-first scrollable review and stronger entry/control assertions require another full
 gate and fresh125captures; do not treat image existence as visual acceptance.
+
+## 0.11 storage source — pending runtime capture/review
+
+The next required source set is215actual production PNGs: prior203plus storage-management,
+storage-retention, storage-preview and storage-confirmation in light/dark/200%text. The fixture
+navigates Home→Settings→Storage, reviews actual old raw evidence and cancels the real confirmation;
+it asserts original points/absence of a removal receipt across all modes. Source fingerprints and
+PNG integrity remain mandatory. No M5 visual sign-off until the actual new frames are captured and
+opened; existing203canonical frames belong to the pre-M5 source90ec691/ad2654a. No mock screens.
+
+## 0.11 storage verification and catalogue checkpoint
+
+Source e39a308 passed506cases/API28/35/36 and215actual captures/API in workflow42133056947.
+All215API35PNGs from artifact13464174574 matched canonicalc7af9ce exactly; all12storage
+light/dark/200%frames were opened for visual review. Large-font confirmation prompted a
+warning-first copy refinement and three new scrolled confirmation-tail captures. Ten complete
+catalogue additions require30real guide frames, all light/dark/200%, via production navigation.
+These following248captures require a fresh exact-source matrix and direct review. The e39
+screenshots remain authentic historical checkpoint evidence, not acceptance of newer source.

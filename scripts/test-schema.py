@@ -82,8 +82,8 @@ def create_schema(connection, version=14, frozen=False):
 def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if target not in (14, 15) or old < 1 or old >= target:
-        raise ValueError("Only explicit upgrades to historical 14 or current 15 are supported")
+    if target not in (14, 15, 16, 17, 18, 19) or old < 1 or old >= target:
+        raise ValueError("Only explicit upgrades to historical 14–18 or current 19 are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -463,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,16), (2,16), (14,14)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,20), (2,20), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -1046,6 +1046,110 @@ class ConcreteDraftMigrationTest(unittest.TestCase):
         self.assertIn('strength_concrete_draft_order', plan)
         self.assertNotIn('strength_concrete_draft_workouts', plan)
         self.assertNotIn('TEMP B-TREE', plan)
+
+
+class GymToolsSchemaTest(unittest.TestCase):
+    def test_schema15_upgrade_keeps_history_and_adds_only_typed_tools(self):
+        db=sqlite3.connect(':memory:');create_schema(db,15)
+        before={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        migrate_to_latest(db,16)
+        after={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        self.assertEqual(after-before,{'gym_rest_preferences','gym_rest_timers'})
+        self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(),[])
+        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],16)
+        self.assertTrue(before.issubset(after))
+    def test_all_supported_historical_schemas_upgrade_to_tools(self):
+        for version in range(1,16):
+            with self.subTest(version=version):
+                db=sqlite3.connect(':memory:')
+                create_schema(db,version)
+                migrate_to_latest(db,16)
+                self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],16)
+                self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(),[])
+                self.assertIsNotNone(db.execute("SELECT name FROM sqlite_master WHERE name='gym_rest_timers'").fetchone())
+                db.close()
+    def test_bad_preferences_and_orphan_timers_rejected(self):
+        db=sqlite3.connect(':memory:');create_schema(db,16)
+        for seconds in [-1,1801]:
+            with self.assertRaises(sqlite3.IntegrityError):
+                db.execute('INSERT INTO gym_rest_preferences VALUES(1,?,1,0,0,0)',(seconds,))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO gym_rest_timers VALUES('missing','manual','RUNNING','epoch',0,1000,1000)")
+
+class AchievementsSchemaTest(unittest.TestCase):
+    def test_all_supported_upgrades_add_only_normalized_recognition(self):
+        for version in range(1,17):
+            with self.subTest(version=version):
+                db=sqlite3.connect(':memory:');create_schema(db,version)
+                migrate_to_latest(db,17)
+                self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],17)
+                self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(),[])
+                db.close()
+    def test_awards_require_valid_definitions_and_unique_source_evidence(self):
+        db=sqlite3.connect(':memory:');create_schema(db,17)
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO training_milestones VALUES('made-up','2026-01-01','2026-01-01')")
+        db.execute("INSERT INTO training_milestones VALUES('FIRST_GYM','2026-01-01','2026-01-01')")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO training_milestone_sources VALUES('FIRST_GYM',0,'GYM','one','2026-01-01',0,100)")
+        db.execute("INSERT INTO training_milestone_sources VALUES('FIRST_GYM',0,'GYM','one','2026-01-01',0,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO training_milestone_sources VALUES('FIRST_GYM',1,'GYM','one','2026-01-01',0,NULL)")
+    def test_later_migration_failure_rolls_back_all_added_tables(self):
+        db=sqlite3.connect(':memory:');create_schema(db,15)
+        db.execute('CREATE TABLE training_milestone_sources (conflict TEXT)');db.commit()
+        with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db,17)
+        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0],15)
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='gym_rest_timers'").fetchone())
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='training_milestones'").fetchone())
+
+
+class BodySchemaTest(unittest.TestCase):
+    def test_all_supported_upgrades_to_eighteen_preserve_existing_settings(self):
+        for version in range(1,18):
+            with self.subTest(version=version):
+                db=sqlite3.connect(':memory:');create_schema(db,version)
+                if version >= 2: db.execute("INSERT INTO settings VALUES('old','retained')");db.commit()
+                migrate_to_latest(db,18)
+                self.assertEqual(18,db.execute('PRAGMA user_version').fetchone()[0])
+                if version >= 2:self.assertEqual('retained',db.execute("SELECT setting_value FROM settings WHERE setting_key='old'").fetchone()[0])
+                self.assertEqual(0,db.execute('SELECT COUNT(*) FROM body_heights').fetchone()[0])
+                db.close()
+
+    def test_height_source_identity_and_atomic_basis_constraints(self):
+        db=sqlite3.connect(':memory:');create_schema(db,18)
+        db.execute("INSERT INTO body_heights VALUES('h',1.78,'2026-11-05T12:00:00Z',1793880000,0,NULL,'manual','h',NULL,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO body_heights VALUES('other',1.79,'2026-11-05T12:00:00Z',1793880000,0,NULL,'manual','h',NULL,NULL)")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("INSERT INTO body_guidance_preferences VALUES(1,1,'CENTIMETRES','missing',NULL,80)")
+        db.execute("INSERT INTO body_guidance_preferences VALUES(1,0,'INCHES',NULL,NULL,NULL)")
+        self.assertEqual(1,db.execute('SELECT COUNT(*) FROM body_heights').fetchone()[0])
+        db.close()
+
+class DetailRetentionSchemaTest(unittest.TestCase):
+    def test_all_supported_upgrades_protect_existing_detail(self):
+        for old in range(1,19):
+            with self.subTest(old=old):
+                db=sqlite3.connect(':memory:');create_schema(db,old)
+                if old>=2:db.execute("INSERT INTO settings VALUES('keep','yes')");db.commit()
+                migrate_to_latest(db,19)
+                self.assertEqual(('KEEP_FOREVER','EXISTING_UNREVIEWED',None,None),db.execute('SELECT policy,choice,chosen_at,choice_id FROM detail_retention_preferences').fetchone())
+                self.assertEqual([],db.execute('PRAGMA foreign_key_check').fetchall())
+                if old>=2:self.assertEqual('yes',db.execute("SELECT setting_value FROM settings WHERE setting_key='keep'").fetchone()[0])
+                db.close()
+    def test_unacknowledged_shorter_retention_is_invalid(self):
+        db=sqlite3.connect(':memory:');create_schema(db,19)
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("UPDATE detail_retention_preferences SET policy='LAST_24_MONTHS'")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("UPDATE detail_retention_preferences SET choice='ACKNOWLEDGED'")
+        db.close()
+    def test_failed_migration_keeps_old_database(self):
+        db=sqlite3.connect(':memory:');create_schema(db,18)
+        db.execute('CREATE TABLE detail_retention_state (conflict TEXT)');db.commit()
+        with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db,19)
+        self.assertEqual(18,db.execute('PRAGMA user_version').fetchone()[0])
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='detail_retention_preferences'").fetchone())
+        db.close()
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

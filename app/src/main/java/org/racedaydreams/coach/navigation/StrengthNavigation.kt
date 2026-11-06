@@ -48,6 +48,26 @@ fun NavGraphBuilder.strengthGraph(
             },
         )
     }
+    composable("strength/recovery") {
+        val recovery: TrainingRecoveryViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+        TrainingRecoveryScreen(recovery, onBack = { nav.popBackStack() }) {
+            nav.navigate("gym-programme-review/${Uri.encode(it)}")
+        }
+    }
+    composable("gym-programme-review/{draftId}") { destination ->
+        val generation: StrengthGenerationViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel()
+        StrengthGenerationScreen(
+            generation,
+            onBack = { nav.popBackStack() },
+            onActivated = {
+                model.refresh()
+                programmeModel().reload()
+                if (!nav.popBackStack("gym", false)) nav.navigate("gym") { launchSingleTop = true }
+            },
+            initialDraftId = destination.arguments?.getString("draftId"),
+        )
+    }
     composable("strength-custom-exercise") {
         CustomStrengthExerciseScreen(programmeModel(), onBack = { nav.popBackStack() }) {
             model.refresh()
@@ -99,7 +119,21 @@ fun NavGraphBuilder.strengthGraph(
 
     composable("strength/log") { StrengthScreen(readState(), model) }
 
-    composable("strength/pbs") { StrengthScreen(readState(), model, section = "pbs") }
+    composable("strength/analytics") {
+        StrengthAnalyticsScreen(readState().strengthSessions, onBack = { nav.popBackStack() })
+    }
+
+    composable("strength/pbs") {
+        StrengthRecordsScreen(
+            readState().strengthSessions,
+            readState().massUnit,
+            readState().historicalStrength.size,
+            onHistory = { nav.navigate("strength/pbs/history") },
+            onWorkout = { nav.navigate("strength/source/${Uri.encode(it)}") },
+            onBack = { nav.popBackStack() },
+        )
+    }
+    composable("strength/pbs/history") { StrengthScreen(readState(), model, section = "pbs") }
 
     composable("strength/source/{id}") { d ->
         StrengthScreen(

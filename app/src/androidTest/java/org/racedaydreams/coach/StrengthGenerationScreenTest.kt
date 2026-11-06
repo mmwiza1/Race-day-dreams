@@ -45,6 +45,62 @@ class StrengthGenerationScreenTest {
     }
 
     @Test
+    fun reviewedRecoveryRouteOpensSavedPreviewWithoutActivating() {
+        val value = io {
+            val now = Instant.now()
+            val settings =
+                StrengthProgramme.Settings(
+                    GymProgramme.Goal.GENERAL,
+                    GymProgramme.Priority.BALANCED,
+                    GymProgramme.Experience.BEGINNER,
+                    DayOfWeek.values().toSet(),
+                    2,
+                    45,
+                    emptySet(),
+                )
+            val programme =
+                StrengthProgrammeGenerator()
+                    .generate(
+                        StrengthProgrammeGenerator.Request(
+                            "saved-recovery",
+                            now,
+                            "Saved recovery review",
+                            settings,
+                            LocalDate.now(),
+                            4,
+                            null,
+                            org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH,
+                            emptySet(),
+                            null,
+                            emptySet(),
+                            emptySet(),
+                            false,
+                        )
+                    )
+            val draft =
+                ConcreteStrengthProgrammeDraft("external-preview", 1, null, programme, emptyList())
+            SqliteConcreteStrengthProgrammeDraftRepository(app).save(draft, 0)
+            draft
+        }
+        compose.runOnIdle { model = create(SavedStateHandle()) }
+        compose.setContent {
+            MaterialTheme {
+                StrengthGenerationScreen(model, {}, { activations++ }, initialDraftId = value.id())
+            }
+        }
+        await { model.state.value.draft?.id() == value.id() }
+        compose.onNodeWithText("Review every block").assertIsDisplayed()
+        click("Review activation")
+        compose.onNodeWithText("Keep reviewing").performClick()
+        assertEquals(0, activations)
+        assertNull(io { programmes.currentReference() })
+        assertEquals(
+            value,
+            io { SqliteConcreteStrengthProgrammeDraftRepository(app).get(value.id()) },
+        )
+    }
+
+    @Test
     fun templateConfigurationCreatesDatedEditablePreviewAndNeedsExplicitActivation() {
         install()
         click("Configure 2-day Full Body")

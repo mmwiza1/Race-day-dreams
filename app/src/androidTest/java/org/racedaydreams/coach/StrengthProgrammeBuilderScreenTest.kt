@@ -87,12 +87,59 @@ class StrengthProgrammeBuilderScreenTest {
                 org.racedaydreams.portability.BackupManager(app, SqliteBackupRepository(app))
             val output = java.io.ByteArrayOutputStream()
             manager.exportTo(output)
-            assertEquals(9, org.json.JSONObject(output.toString("UTF-8")).getInt("version"))
+            assertEquals(13, org.json.JSONObject(output.toString("UTF-8")).getInt("version"))
             SqliteUserPreferencesRepository(app).clear()
             manager.restoreFrom(java.io.ByteArrayInputStream(output.toByteArray()))
         }
         assertEquals(candidate, io { repository.programme(candidate.id(), candidate.revision()) })
         assertEquals(savedDrafts, io { repository.drafts(20, 0) })
+        assertTrue(io { CoachingStore(app).strength().isEmpty() })
+    }
+
+    @Test
+    fun groupedProgrammeDraftSurvivesPreviewActivationAndBackupWithoutActualSets() {
+        install()
+        click("Build a programme from scratch")
+        await { model.state.value.draft != null }
+        completeOneDayDraft()
+        val block = model.state.value.draft!!.blocks().single()
+        val day = block.days().single()
+        compose.runOnIdle {
+            model.putSlot(
+                block.id(),
+                day.id(),
+                null,
+                ExerciseCatalog.definition("plank").exercise(),
+                GymSlotInput(seconds = "30"),
+                {},
+            )
+        }
+        await { model.state.value.draft!!.blocks().single().days().single().slots().size == 2 }
+        compose.runOnIdle { model.superset(block.id(), day.id(), day.slots().single().id()) }
+        await {
+            model.state.value.draft!!.blocks().single().days().single().slots().all {
+                it.supersetGroup() != null
+            }
+        }
+        click("Preview programme")
+        await { model.state.value.preview != null }
+        val programme = model.state.value.preview!!.programme
+        programme.workouts().forEach { workout ->
+            assertEquals(1, workout.definition().slots().map { it.supersetGroup() }.distinct().size)
+            assertNotNull(workout.definition().slots().first().supersetGroup())
+        }
+        click("Review activation")
+        compose.onNodeWithText("Activate programme").performClick()
+        await { activations == 1 }
+        io {
+            val backup =
+                org.racedaydreams.portability.BackupManager(app, SqliteBackupRepository(app))
+            val bytes = java.io.ByteArrayOutputStream()
+            backup.exportTo(bytes)
+            SqliteUserPreferencesRepository(app).clear()
+            backup.restoreFrom(java.io.ByteArrayInputStream(bytes.toByteArray()))
+        }
+        assertEquals(programme, io { repository.programme(programme.id(), programme.revision()) })
         assertTrue(io { CoachingStore(app).strength().isEmpty() })
     }
 

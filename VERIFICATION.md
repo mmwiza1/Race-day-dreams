@@ -1,3 +1,308 @@
+# 0.11.0-test1 — verified software and visual checkpoint
+
+Source `ee760bf33356092dc7559738b90b1d089bf45521` passed the complete [Android workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418).
+The final metadata/documentation head must also pass required CI before the authorised PR18 merge.
+Post-merge main CI and rolling APK publication remain separate delivery checks, not claimed here.
+
+| Gate | Observed result |
+| --- | --- |
+| Domain | 700,108 checks across 47 suites |
+| Six-month athlete simulations | 4,226 assertions, three six-calendar-month histories |
+| Schema/migrations | 75 tests; additive upgrades and non-destructive failure paths |
+| API28 | 508 instrumentation tests, 359 authentic captures, success |
+| API35 | 508 instrumentation tests, 359 authentic captures, success |
+| API36 | 508 instrumentation tests, 359 authentic captures, success |
+| Guidance | 220/220 canonical exercises and 14/14 routine movements |
+| Original guide assets | 223 exact provenance/hash matches; 11,634,030 bytes |
+| Formatting | Pinned checks pass for 97 Kotlin and 158 Java files; 14 formatter tests |
+| Other offline checks | 9 release-note, 17 capture-validator, 11 route-source, 14 Dream-artwork tests |
+| Android build/lint | Debug APK, lint and instrumentation compilation pass |
+
+All three Android job logs and the complete workflow conclusion were inspected. Backup cases
+include supported older readers, current round trips, corrupt/future/conflicting rejection,
+transaction rollback, retained PB/actual/programme evidence and the 1,100-summary complete fixture.
+Schema19/root JSON13/retention1/raw archive3/complete package1 retain supported historical reads.
+The original recording engine, immutable history and separate reviewed activation remain intact.
+
+Canonical bot `436e429f3d0e69312ae7c3a844f44dc34b676eca` was safely fast-forwarded.
+Fingerprint `0b13cd7ffae330ebdb2b29f07e635119d11c7cd9131cd04c8906b32901f78436` matches the current source and source metadata. API35 artifact13471938317
+ZIP SHA256 `e9a8dbd49caace3f5c67ae4fa582044b4dfb42cd01c4ace03c94dee52beed167` was downloaded,
+hashed and all359original PNG bytes compared exactly with Git. No screenshot editing or mock UI.
+The corrected large-text guide tails were opened directly; full mistakes text is readable inside
+the real scroll viewport. Representative final-source light/dark/200% gym, recovery, body,
+records and storage views retain the approved instruction-first hierarchy. Detailed review is in
+docs/VISUAL_REVIEW_0_11.md; semantic/UI checks do not substitute for human hardware acceptance.
+
+Verified API35 APK artifact13471928190 is55,250,287bytes, version0.11.0-test1/code15, SHA256
+`f25ea63a6d71275e3a6c9297c84e72eaa75b4f3fd5fa158772280c1ec4b49979`.
+Its ZIP SHA is `d0da064bbf075da9843cb1645a1bc4dadbf41ed7bfa6812fed13ca56c2934bde`.
+Actual packaged permissions were inspected: no INTERNET. READ_HEIGHT is the only new body
+permission; no runtime dependency, background health access, account or telemetry is added.
+Compared with verified0.10.1 CI APK51,979,576bytes: +3,270,711bytes/+6.2923%. Compared with
+pre-catalogue M5 API35 APK52,750,085bytes: +2,500,202bytes/+4.7397%. New artwork accounts for
+2,435,370bytes. These compare CI packages, not different local incremental DEX layouts.
+This feature artifact is not a claim that merged-main publication has already occurred.
+
+The beginner100kg scenario records76runs/25gym workouts; hybrid87kg102/77; experienced70kg102/51.
+Each spans27weekly windows with an explicit missing-data week. Assertions preserve unknown
+health/effort, optional advice, exact-exercise load safeguards, user choices and retained history.
+They establish software invariants, not physiological improvements or outdoor GPS accuracy.
+
+Galaxy S24/provider/audio/locked-screen/battery/human TalkBack and real-data cleanup/restore
+checks remain UNPERFORMED, including0.10.1 outdoor GPS acceptance. See TEST_BUILD.md.
+Historical source-specific verification follows; earlier pending text is not the current state.
+
+# End-of-page guide capture correction — final runtime gate required
+
+b3f4ec1 workflow42145898695 API28/36 each507passed of508; their ONLYfailure was a fixed capture
+heading-position assumption at max scroll (431/417px). The three-cycle rapid-font restoration
+regression now PASSES on all three. API35also507passed/one identical417px heading failure.
+Actual full logs inspected. Current complete Gradle gate PASS79tasks/29sec. Following capture requires
+complete mistakes text inside its actual scroll viewport, plus the heading. All original global
+heading assertions and359required images remain. No production UI/engine change or claim of
+final acceptance. See CONTINUE_CODEX.md for exact next tasks and historical evidence below.
+
+# Current220-guide / configuration-broadcast barrier — runtime gate pending
+
+Actual complete Gradle domain/debug/lint/instrumentation compilation PASS79tasks/34sec;
+700108checks/47suites,240catalogue checks,4226six-month simulation assertions. All220canonical
+and14routine guides remain complete;223art assets/11634030bytes. No production engine change.
+
+89ff744 workflow42142524174:API36 PASSED508tests/359captures. API28and35 EACH507passed with
+one font-fixture restoration regression. Explicit settings writes alone were still overwritten.
+AOSP9/15 confirm app callbacks precede queued persistence and the later configuration broadcast.
+Following fixture waits for that system acknowledgement AND settings/resources, and strengthens
+the same test to three rapid large→normal cycles. No weakened assertion, longer timeout or sleep.
+The following full508/API/359capture matrix and final-source visual/artifact acceptance remain
+REQUIRED. No merge/publication/S24physical success is claimed. Historical evidence follows.
+
+# 220-guide source checkpoint — final Android and visual gate required
+
+Local full Gradle domain/debug/lint/instrumentation compilation PASS79tasks/1m25sec;
+700107domain checks/47suites, including4226six-month simulations and239new-catalogue checks.
+Strict220canonical/14routine guides,223original artwork hashes/11634030bytes,
+75schema,9release,17capture-validator,11route-source and14artwork checks pass.
+Final fixture correction and three new real200%guide-tail captures also PASS the complete
+Gradle gate79tasks/46sec. No pending Android runtime result is claimed.
+
+200guide source2cc10d0 workflow42139333738:API28and36 EACH508tests/296captures PASS;
+API35exactlyonefailure/507passed: unset font restoration delete left actual+storedscale2.0.
+Following fixture explicitly restores effective default1.0 and preserves actual configuration/
+navigation assertions. Final220source expected508tests/359captures/API remains REQUIRED.
+All software/visual gates, finalAPKsize and authorised merge/postmerge publication remain pending.
+NoS24physical acceptance is claimed. Historical source-specific evidence follows.
+
+#200-guide checkpoint and API28 display-state correction — runtime verification required
+
+17b42c4 workflow42135690419 FAILED overall:API35/36 each507tests and248captures PASS;
+API28ran507cases with15failures/492passes. First missing Plan label followed by independent
+missing nav labels and one non-visible substitution explanation. Actual three job logs inspected.
+No canonical publication. Sourcee39 remains latest full matrix green.
+
+Screenshot finally blocks could write literal null for an unset font setting. The correction
+validates/restores the original font, waits for actual app resource configuration, restores in
+cleanup even on failure, and adds unset→200%→normal navigation regression. The original failed
+run did not log its raw font setting; observed missing labels are consistent with large text,
+not proof of its initial raw value. No old assertions removed or weakened, no extra sleeps,
+no production navigation changes. Next whole gate508cases/API,296captures for200guide source.
+
+Current local685765domain checks/47suites, strict200/200+14/14guides,203original assets/
+10557886bytes,17capture-validator tests; actual Gradle build/lint/test compile79tasks/1m2sec.
+All source-specific final gates/captures still required. Catalogue growth to220 and final release
+remain incomplete. No merge, new development publication or S24 acceptance is claimed.
+
+# Current192-guide checkpoint — local gates green, runtime pending
+
+Actual complete Gradle domain/debug/lint/instrumentation compilation PASS79tasks/1min in
+catalogue-eighteen-android.log.681773domain checks/47suites; strict192canonical/14routine
+guides,195original assets/10027798bytes verified,17capture-validator tests. New static/time/
+load+time/load+distance records retain actual evidence and exclude warmups. New guide production
+capture visits all18addition IDs in all3display modes: next full matrix507cases/272captures/API.
+Packaged APK aapt permission inspection confirms NO INTERNET. Persistence versions unchanged.
+
+Earlier17b42c4 workflow42135690419 (184guide source) is still running; inspect actual result.
+Its expected507cases/248frames are separate from the next192guide source gate. New original
+Copenhagen support arms corrected before bundling. Final catalogue growth and final-source
+software/visual/release gates remain unfinished. PR18 remains draft; no S24 pass or merge claim.
+
+# M5 verified;184-guide catalogue and warning-first confirmation checkpoint
+
+[e39a308 complete workflow42133056947](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42133056947)
+SUCCESS:506instrumentation tests EACH API28/35/36,215authentic captures/API, no skips/failures.
+All three Android logs inspected. API35ZIP13464174574 SHA256
+0535cb6762ef24856b47b77eb1a8d97e8260418257f614677e88a547eedcb941 verified; all215PNGbytes
+match canonicalc7af9ce. All12new storage frames opened directly in light,dark,200%. Large text
+scrolls naturally, buttons remain visible. Visual review found the long confirmation warning
+needed earlier emphasis; following source puts loss/backup warning first and explicitly tests/
+captures scrolling to the remaining explanation, with both confirmation actions visible.
+
+Following source adds ten complete canonical guides (184/184,14/14routines), reviewed original
+movement-specific artwork541384bytes, typed roles/setup/measurement and actual/PB/substitution
+guards. Current local domain673997checks/47suites; Gradle domain/debug/lint/test compile PASS
+79tasks/50sec; the actual following warning-source full Gradle gate also PASS79tasks/58sec. New source runtime and visual gate is
+REQUIRED:507cases/API,248captures/API, including every new guide in all three display modes.
+75schema/9release/17capture-validator and strict guidance/provenance pass. No final-source
+Android success or final0.11 acceptance is inferred from this earlier e39 pass. Catalogue growth
+and final release remain incomplete; all S24 hardware acceptance remains unperformed.
+
+# Storage confirmation capture correction — full release remains incomplete
+
+Actual6532496 workflow42130320604 completed506tests EACH API28/35/36:505passed,
+one identical capture failure each. The real cleanup confirmation is a separate dialog root;
+the capture helper incorrectly queried one onRoot(). The following correction reuses the
+existing visible isDialog() path for this frame. Visibility/raw-date checks, timeouts and
+all production retention safeguards are unchanged. No arbitrary delay or weakened assertion.
+Local actual Gradle domain/debug/lint/test compile PASS79tasks/27sec;75schema/9release pass.
+Next exact-source runtime matrix and all12storage visual reviews remain required.
+No full0.11 acceptance, merge, published APK or physical-device success is claimed.
+
+# Current corrected M5 + simulation checkpoint — full release still incomplete
+
+M5d5f4651 /42125758697 ran506tests EACH API28/35/36 with the SAME3failures each: storage capture
+used Settings instead of the actual ⚙ Settings toolbar text; exact route contract omitted the new
+settings/storage destination; unsupported archive test still rejected now-supported numeric3.
+503other cases passed each, including ALL11new retention repository and4storage component cases.
+No215capture artifact/canonical publication was produced. Three actual logs and API36full HTML
+report inspected; verified ZIP hash is in CONTINUE_CODEX.md.
+
+Following source corrects those exact contracts without removing/loosening assertions or adding
+sleeps. Capture also awaits the feature snapshot; positive raw restore exercises1/2/3. Eligibility
+cutoff uses readable UK/UTC text, and lifecycle wording accurately describes in-process cleanup.
+Current source includes the locally verified4226check six-month athlete suite (662836total/46).
+Actual latest Gradle domain/debug/lint/test compile PASS79tasks/26sec;75schema/9release/
+16capture-validator and97Kotlin/156Java formatting pass. Logs retention-fixed-ready-* and
+retention-fixed-final-*. New full506/API/215capture execution is REQUIRED before acceptance.
+
+Workspace briefly restarted; wait returned READY and all committed/uncommitted source/logs were
+verified intact. Current schema19/rootJSON13/retention1/raw3/complete1. Catalogue remains174/14;
+selective growth and final-source delivery remain unfinished. Owner authorised automatic merge
+ONLY after complete scope/green gates, then verify main CI/development APK. No S24 checks passed.
+
+Earlier source-specific checkpoints follow; do not treat pending historical wording as current.
+
+# Six-month simulation checkpoint — local pure-domain verification
+
+Production-domain scenario suite passes4226assertions across three calendar-six-month histories.
+Observed76runs/25gym (100kg beginner),102/77 (87kg hybrid),102/51 (70kg experienced), each27weekly
+windows with one explicit recorded-data gap. Actual Gradle :domain:check PASS5tasks/32sec;
+662836total checks/46suites;97Kotlin/156Java formatting passes. This does not claim physiological
+outcomes, actual database pruning, physical GPS accuracy or S24 acceptance. See ATHLETE_SIMULATIONS_0_11.md.
+
+M5 d5f4651 runtime workflow42125758697 is still pending when recorded. Expected506cases and
+215captures/API. Preserve its actual results separately from pre-M5 full green490/API. Catalogue
+expansion/final-source software acceptance remains incomplete; no merge/publication claim yet.
+Owner-authorised automatic merge/post-merge verification applies AFTER full scope/green gates.
+
+# Current M5 retention checkpoint — local gates pass, full release incomplete
+
+Pre-M5 source90ec691 COMPLETE workflow42120919432 SUCCESS:490tests EACH API28/35/36,
+203captures/API. All three Android logs and workflow conclusion inspected. Canonicalad2654a
+adopted with normal fast-forward, preserving every uncommitted M5 source/test/document change.
+
+Current additive M5 schema19/rootJSON13/retention1/raw3/complete1 source passes actual local
+Gradle domain/debug/lint/instrumentation compilation79tasks/1m13sec;658610domain checks/45suites
+(retention7505),75schema/migration,9release-note,16capture-validator,97Kotlin/155Java formatting,
+source11/artwork14 and strict174canonical/14routine guidance. Notices byte comparison passes.
+Logs: scratch/rdd011/retention-checkpoint-*; backend/UI earlier failures/logs retained.
+
+New eleven repository tests include protected upgrades, explicit choices, real PB byte preservation,
+transaction failure rollback, all unfinished states, expired/changed/replaced approval, matching
+archive2/3 restoration, coordinate conflict rejection, current/older/future JSON and complete
+backup, independent idempotent session batches and1100summary complete backup. Four UI cases and
+one production capture method add12frames. EXPECTED next matrix506tests/API and215captures;
+compilation is NOT an Android runtime pass. No current M5 screenshot/physical acceptance claimed.
+
+M5 source is implemented for testing, not ready to merge. M6 catalogue/six-month athlete simulations
+and final release remain unfinished. Owner authorises automatic merge AFTER every software gate
+and full scope, then post-merge main/rolling APK verification. No stable tag. All S24 checks remain
+UNPERFORMED, including0.10.1 outdoor GPS. The complete active boundary is in CONTINUE_CODEX.md.
+
+Earlier checkpoints below retain their original source-specific evidence.
+
+# Current 0.11 checkpoint — recovery/body matrix green, full release still incomplete
+
+Source7dc0b56 passed COMPLETE [workflow42115688372](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42115688372).
+486tests EACH API28/35/36, zero skips/failures,203actual captures/API. Formatting, strict174/14
+guidance, domain658597checks/45suites,72schema/backup,9release-note,15capture-validator, source/
+geometry/build/lint passed. All three Android logs and full workflow conclusion inspected.
+Canonical6a3eb10 safely fast-forwarded preserving in-progress read-only inventory. API35 ZIP
+artifact13457836505 SHA256bd33b114da72b4a768ff579e84bd2a55c6b5fdbfb92b2cdad99e78cd35034627;
+ALL203rawPNG bytes match canonical Git. Direct actual image review recorded in VISUAL_REVIEW_0_11.md.
+This confirms the UK evidence dates, authored recovery navigation, keyboard-visible busy-swap
+fixture and SDK test discovery corrections. No assertions/timeouts weakened.
+
+Following read-only inventory code passes actual local Gradle domain/debug/lint/test compilation
+79tasks/55sec, formatting93Kotlin/152Java. Four new repository tests are compiled but still require
+full490/API execution. No pruning is enabled; schema18/root12/raw2/complete1 unchanged. M5 actual
+retention persistence/cleanup/UI and M6 catalogue/simulations/final delivery remain required.
+No physical Galaxy S24 or human TalkBack acceptance is claimed. PR18 stays draft.
+
+Following policy review reproduced an expired-preview acceptance in the not-yet-enabled cleanup
+batch guard. Four added boundary/late-approval/empty-batch checks fail before the fix and pass after
+sharing the24hour freshness guard. Domain658601/45suites, retention7496; actual local Gradle79tasks/
+1m10sec passes with the strengthened2001sample/5PB inventory fixture.72schema/9release and pinned
+93Kotlin/152Java formatting pass. These new proof tests need their own full490/API runtime gate.
+
+Verified intermediate7dc API35APK artifact13457712005:52,618,954bytes, SHA256
+8fd6c063f413e851d0f7c79380141f35ae390acc4538ed71cb5409dcd7815388.
+ZIP SHA25634bf90bf3a2dec031fbb0a781b820c2f3e8447278539b15e269c1e41011c839b verified.
+aapt:0.11.0-test1/code15/min28/target35, noINTERNET permission.639,378bytes/+1.230% over verified
+0.10.1CI51,979,576bytes. No new dependencies/artwork; this is not the final0.11APK.
+
+Earlier checkpoint evidence below is historical; the CURRENT handoff controls remaining work.
+
+## Latest 0.11 M2 gate correction
+
+Workflow42090255426 completed465tests on each supported API with three identical failures:
+two stale current-backup version assertions (10 rather than11), and the new Strength trends
+capture waiting after an unscrolled dashboard action. The correction scrolls those real actions
+into view and asserts the unique destination intro before waiting for data; it keeps the20second
+bound and all original content assertions. Corrected local debug/lint/test compilation passes
+75tasks/15sec. Full new-source Android/visual verification is pending; earlier green sources
+remain separate evidence. PR18 remains draft; M3–6 scope remains required.
+
+## 0.11 development checkpoint — not release acceptance
+
+Current gym workflow42062688210 exposed API28 NoSuchMethodError from new Stream.toList calls.
+Compatible Immutable/Collectors correction is in progress; no Android pass is claimed for that
+source until the complete matrix reruns successfully. M2 projections/UI are uncommitted and
+not part of the earlier gym-only verification.
+
+M2 local source now adds schema17/rootJSON11 (raw2/complete1 unchanged). Current combined
+source passes649416domain checks/42suites,70schema tests, local Android build/lint/test compilation
+79tasks/1m20sec and final UI/repository edits75tasks/53sec. Release/capture-validator checks are
+rerun before commit. New instrumented methods/canonical182capture definitions still need actual
+API execution and visual review. No published current-source APK or final UI signoff is claimed.
+
+Gym-only run42067939767 on bbb458b completed448tests on each API28/35/36, each with ONE new
+fixture entry failure; all other cases passed. The source compatibility and capture reset defects
+from42062688210 no longer recur. Corrected test now uses the real Build a programme from scratch
+control before Preview/activation; current gym workflow on a26150d is pending. This is not a green
+release gate and no screenshots were published from failed runs.
+
+GYM CHECKPOINT GREEN: sourcea26150d completed full42073702201:448tests EACH API28/35/36,
+164source-verified captures/API, formatting and174/14guidance gates. Canonical8a86d56 preserves
+raw API35artifacts; capture ZIP hash and ALL164PNG Git identities checked. All9new gym images
+opened in light/dark/200%; resulting refinements are documented in VISUAL_REVIEW_0_11.md and
+require fresh captures. Verified CI APK52,127,084bytes, SHA256
+18dee819bce01a3e3fb157eea5a7021bb22c801e8c6bdefbbc839fadf576f1a5
+(+147,508bytes/+0.284%over main0.10.1CI baseline). No new bundled artwork yet.
+
+LATEST M2 LOCAL:649416domain checks/42suites,70schema tests,9release-note,15capture-validator;
+actual Gradle domain/debug/lint/test-APK compile PASS79tasks/1m2sec. Schema17/rootJSON11,
+raw2/complete1. New actual source/evidence UI and reviewed gym refinements require188captures
+and their own full API matrix. NO M2 runtime/screenshot acceptance is claimed from older source.
+M3–6 remain unimplemented; all physical Galaxy S24 checks remain unperformed.
+
+Baseline main8796bc5 and setup19c74c2 full workflow42054247383 passed. New gym implementation
+has648794local domain checks/39suites (GymTools7901), schema67 tests including historical
+1–15→16, release9/capture-validator14, and actual Android debug/lint/test compilation passes.
+The final alarm cleanup/repository validation edit passed75Gradle tasks/54sec. Source adds repository,
+Compose and nine production capture cases which still need API28/35/36 execution and visual
+review. Do not interpret baseline results as verification of later source. Schema16/rootJSON10,
+raw2/complete1. All S24 checks, including outdoor GPS, remain unperformed. Remaining0.11
+milestones and exact recovery boundary are maintained in CONTINUE_CODEX.md.
+
 # Confirmed follow-up merge and final-head gate —5 November2026
 
 PR17 final head0f30828e245a20e62c9ac171ee083de1bead2dd1 passed COMPLETE
@@ -1279,3 +1584,75 @@ Source9c7717e corrects the observed40683366281 Kotlin custom-exercise context re
 ## Subsequent association and visual-gate work
 
 The original pending gate completed successfully at f21af7b/workflow40684717270 with311tests perAPI28/35/36. Association-domain coverage now adds204checks (201,295total/30suites), including retained-origin and local-offset boundaries. Strict GymAssociationJson has3Android cases;314-test attempt40687196167 ran all314 onAPI28 with one screenshot-root failure. The helper at1f7f42a now selects the actual dialog semantics while retaining assertions. Its full314-test/88capture matrix is pending; no new complete-pass or physical result is claimed. No database/backup version changed; explicit association UI/persistence remains unfinished.
+
+## 0.11 recovery milestone development boundary
+
+Current uncommitted M3 pure-domain check passed315new recovery/proposal assertions. Current
+Android compilation/repository/UI gate is still being run; no emulator or visual acceptance is
+claimed. New capture definitions require194images including six recovery views. M2 correction
+source5f79cfc is under complete workflow42100006847; inspect its actual conclusion. Recovery
+uses existing typed drafts/activation and backup support; schema17/root11/raw2/complete1 unchanged.
+
+M2 correction5f79cfc COMPLETE42100006847 passed465tests EACH API28/35/36 and188captures/API.
+Canonical124e036 and API35artifact13450557133 raw PNGs match exactly. M3 local Android gate
+passed79tasks/1m2sec before the following visual hierarchy refinements; final-source verification
+remains required. Root11/schema17/raw2/complete1 unchanged. No S24 acceptance is claimed.
+
+Current M3 reviewed-source local gate PASSED: :domain:check, :app:assembleDebug, :app:lintDebug,
+:app:assembleDebugAndroidTest (79tasks/1m15sec);649731domain/43suites including315recovery
+assertions. Formatting88Kotlin/139Java, schema70/release9/capture-validator15 passed. Seven new
+instrumentation methods are compiled, not yet claimed executed (expected472/API,194captures).
+Verified M2 API35 debug APK52,323,751bytes; SHA256a788880f0f642e527ba4238ef9a4460d35049650bd8e14bfa0f0cd220a77094e;
+artifact13450302836 from42100006847. Increase versus0.10.1:344,175bytes/+0.662%; no new artwork.
+
+## 0.11 M3 corrections + body milestone — current local checkpoint
+
+M3 source889ecff /42103872457 completed472tests EACH API28/35/36, with the same2failures
+per API (other470passed). Full reports confirm recovery capture failed in awaitHomeReady: it
+selected Strength but awaited Running. It now asserts Strength readiness with the same timeout.
+Lighter-week activation hit the existing changed-workout time-budget guard; the pure proposal
+now recomputes the existing StrengthWorkoutBudget estimate, with additional domain assertions.
+Neither failure was rerun blindly or worked around by weakening a safeguard. No194images were
+published from that failed run.
+
+Current frozen-source local Gradle gate PASS79tasks/1m17sec: domain/check, debug APK, lint and
+instrumentation APK.651105domain checks/44suites (BodyGuidance1368; TrainingRecovery321),72schema
+tests,9release tests,15capture-validator tests,93Kotlin/148Java format checks, strict174canonical/
+14routine guidance,11route-source and14artwork checks pass. Exact logs scratch/rdd011/body-frozen-*.
+The earlier lint failure from nested unbraced import validation was fixed with explicit braces;
+no lint baseline/suppression was added. SDK1.1.0 HeightRecord/READ_HEIGHT and Kotlin inMeters
+compile against the actual dependency. Only optional READ_HEIGHT was added; no Internet,
+background-health permission or runtime dependency change.
+
+Schema18/rootJSON12/bodyMeasurements1/raw2/complete1. Old roots1–11 and schemas1–17 remain
+supported; old body sections restore empty/off. Seven new body repository tests, five body UI
+methods and an SDK permission-contract method are COMPILED, not yet claimed run. Full expected
+current-source gate486cases/API and203authentic captures is pending. Existing canonical188images
+remain source5f79cfc; no recovery/body visual sign-off or Galaxy S24 pass is claimed.
+
+The final frozen body-source gate, including history-permission recheck and honest unknown import
+time, passed79tasks/1m22sec. Logs body-checkpoint-final-gate/format/schema/release/validator; exact
+counts remain651105/44domain,93Kotlin/148Java,72schema,9release,15capture-validator. The executor
+restart preserved all files and these results. Full486case/203capture matrix is still pending.
+
+Body publicationb4b2141 /42109324867 failed pre-build cmp on all APIs because the updated
+THIRD_PARTY.md was not yet copied into its bundled offline asset. Domain/schema passed, but
+Android tests never ran. The asset is synchronized; all15additional exact workflow pre-build
+checks pass, and local Android gate passes79tasks/48sec. No assertion, cmp or quality gate removed.
+Current complete486case/203capture matrix is required.
+
+## Retention policy and current capture corrections
+
+The pure DetailRetention policy passes7492assertions on a5000record lightweight inventory and
+consent/ownership/freshness boundaries. It does not prune data or supply a storage UI. Combined
+current source658597domain/45suites and local debug/lint/test compilation pass79tasks/1m21sec;
+93Kotlin/150Java formatting,72schema/9release/15capture-validator checks pass. Schema18/root12/
+raw2/complete1 unchanged. No actual raw-detail removal is implemented or claimed.
+
+Workflow42110187809 /6e2ffdd completed485cases/API: two new capture failures each, plus an
+existing post-save visibility assertion onAPI35. Actual body repository/backup/component and
+recovery activation cases passed. Current source uses UK evidence dates, a real authored-today
+recovery fixture/action, and explicit keyboard dismissal before the busy-swap Save/check. All
+original assertions and timeouts remain. The SDK height contract method now follows JUnit3 test
+naming (it was previously undiscovered), making the next expected count486. This is not yet an
+observed emulator pass;203fresh raw captures and direct review remain pending.

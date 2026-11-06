@@ -10,6 +10,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -321,6 +322,88 @@ class GymNowScreenTest {
         assertEquals(execution()!!.actualSets(), saved.actualSets())
         assertTrue(saved.events().any { it.type() == GymExecution.EventType.RECOVERED_WITH_GAP })
         assertTrue(io { SqliteGymExecutionRepository(application).unfinished().isEmpty() })
+    }
+
+    @Test fun optionalRestAndPreparationPreserveActualsAcrossNavigation() = gymTools(false)
+
+    @Test fun optionalRestAndPreparationRemainUsableAtDoubleTextInDarkMode() = gymTools(true)
+
+    private fun gymTools(largeDark: Boolean) {
+        install(largeDark = largeDark)
+        click("Start open workout")
+        await { execution() != null }
+        click("Add exercise")
+        compose.onNodeWithText("Exercise name or alias").performTextInput("bench press")
+        click(ExerciseCatalog.definition("bench-press").exercise().name())
+        await { execution()?.slots()?.size == 1 }
+        assertTrue(execution()!!.actualSets().isEmpty())
+        click("Optional warm-up ▾")
+        click("Why this preparation?")
+        compose
+            .onNodeWithText(
+                "Warm-ups do not count as working sets, PBs or progression evidence. Suggested loads are not completed lifts or working-weight prescriptions."
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+        click("Hide preparation evidence")
+        click("Enter my own warm-up")
+        assertTrue(model.state.value.form.warmUp)
+        assertTrue(execution()!!.actualSets().isEmpty())
+        enter("Actual load · kg", "20")
+        enter("Actual repetitions", "5")
+        click("Save actual set")
+        await { execution()?.actualSets()?.size == 1 }
+        assertTrue(execution()!!.actualSets().single().actual().warmUp())
+        assertFalse(model.state.value.form.warmUp)
+        val actuals = execution()!!.actualSets()
+        click("Start rest timer")
+        await {
+            model.state.value.restTimer?.phase() ==
+                org.racedaydreams.domain.strength.GymRestTimer.Phase.RUNNING
+        }
+        val trigger = model.state.value.restTimer!!.triggerId()
+        // A second command while running observes the same deadline, never restarts it.
+        compose.runOnIdle { model.restAction("start") }
+        await { model.state.value.restTimer?.triggerId() == trigger }
+        click("Pause rest")
+        await {
+            model.state.value.restTimer?.phase() ==
+                org.racedaydreams.domain.strength.GymRestTimer.Phase.PAUSED
+        }
+        compose.onNodeWithText("Start rest timer").assertDoesNotExist()
+        val paused = model.state.value.restTimer!!.remainingMillis()
+        click("Add 30 seconds")
+        await { model.state.value.restTimer!!.remainingMillis() == paused + 30_000 }
+        click("Back to Gym Now")
+        click("Continue workout")
+        assertEquals(paused + 30_000, model.state.value.restTimer!!.remainingMillis())
+        click("Resume rest")
+        await {
+            model.state.value.restTimer?.phase() ==
+                org.racedaydreams.domain.strength.GymRestTimer.Phase.RUNNING
+        }
+        click("Skip rest")
+        await {
+            model.state.value.restTimer?.phase() ==
+                org.racedaydreams.domain.strength.GymRestTimer.Phase.SKIPPED
+        }
+        click("Reset rest")
+        await {
+            model.state.value.restTimer?.phase() ==
+                org.racedaydreams.domain.strength.GymRestTimer.Phase.RUNNING
+        }
+        click("Timer settings ▾")
+        compose
+            .onNodeWithContentDescription("Show rest suggestions")
+            .performScrollTo()
+            .performClick()
+        await { !model.state.value.restPreferences.suggestAfterSet() }
+        compose
+            .onNodeWithText("Default rest when no target is prescribed")
+            .performScrollTo()
+            .assertIsDisplayed()
+        assertEquals(actuals, execution()!!.actualSets())
+        assertTrue(io { CoachingStore(application).strength().isEmpty() })
     }
 
     private fun install(

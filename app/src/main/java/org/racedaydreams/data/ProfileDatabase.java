@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 15;
+    static final int VERSION = 19;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -56,6 +56,17 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateTwelveToThirteen(db);
         migrateThirteenToFourteen(db);
         migrateFourteenToFifteen(db);
+        migrateFifteenToSixteen(db);
+        migrateSixteenToSeventeen(db);
+        migrateSeventeenToEighteen(db);
+        migrateEighteenToNineteen(db);
+        // Only truly new databases receive the new-install default. Upgrades stay protected.
+        db.execSQL(
+                "UPDATE detail_retention_preferences SET policy='LAST_24_MONTHS',"
+                        + " choice='NEW_INSTALL_DEFAULT',chosen_at=?,choice_id=? WHERE id=1",
+                new Object[] {
+                    java.time.Instant.now().toString(), java.util.UUID.randomUUID().toString()
+                });
     }
 
     private static void createVersionOne(SQLiteDatabase db) {
@@ -464,10 +475,110 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V15_SCHEMA_END
     }
 
+    private static void migrateFifteenToSixteen(SQLiteDatabase db) {
+        // V16_SCHEMA_BEGIN - advisory gym tools never replace actual training evidence.
+        db.execSQL(
+                "CREATE TABLE gym_rest_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                    + " default_seconds INTEGER NOT NULL CHECK(default_seconds BETWEEN 0 AND 1800),"
+                    + " suggest_after_set INTEGER NOT NULL CHECK(suggest_after_set IN (0,1)),"
+                    + " notifications INTEGER NOT NULL CHECK(notifications IN (0,1)), vibration"
+                    + " INTEGER NOT NULL CHECK(vibration IN (0,1)), audio INTEGER NOT NULL"
+                    + " CHECK(audio IN (0,1)))");
+        db.execSQL(
+                "CREATE TABLE gym_rest_timers (execution_id TEXT PRIMARY KEY NOT NULL REFERENCES"
+                    + " strength_executions(id) ON DELETE CASCADE, trigger_id TEXT NOT NULL, phase"
+                    + " TEXT NOT NULL CHECK(phase IN"
+                    + " ('RUNNING','PAUSED','COMPLETE','SKIPPED','INTERRUPTED')), epoch TEXT NOT"
+                    + " NULL, observed_millis INTEGER NOT NULL CHECK(observed_millis>=0),"
+                    + " remaining_millis INTEGER NOT NULL CHECK(remaining_millis>=0),"
+                    + " duration_millis INTEGER NOT NULL CHECK(duration_millis BETWEEN 0 AND"
+                    + " 3600000), CHECK(remaining_millis<=duration_millis), CHECK(phase NOT IN"
+                    + " ('COMPLETE','SKIPPED') OR remaining_millis=0))");
+        // V16_SCHEMA_END
+    }
+
+    private static void migrateSixteenToSeventeen(SQLiteDatabase db) {
+        // V17_SCHEMA_BEGIN - stable local recognition; never replaces source actuals.
+        db.execSQL(
+                "CREATE TABLE training_milestones (kind TEXT PRIMARY KEY NOT NULL CHECK(kind IN"
+                    + " ('FIRST_GYM','FIVE_GYM','FIFTY_GYM','FIRST_RUN','TEN_RUNS','FIRST_FIVE_KM_RUN','TWELVE_TRAINING_WEEKS')),"
+                    + " earned_at TEXT NOT NULL, recognized_at TEXT NOT NULL)");
+        db.execSQL(
+                "CREATE TABLE training_milestone_sources (award_kind TEXT NOT NULL REFERENCES"
+                    + " training_milestones(kind) ON DELETE CASCADE, position INTEGER NOT NULL"
+                    + " CHECK(position BETWEEN 0 AND 49), source_type TEXT NOT NULL"
+                    + " CHECK(source_type IN ('RUN','GYM')), record_id TEXT NOT NULL, occurred_at"
+                    + " TEXT NOT NULL, offset_seconds INTEGER CHECK(offset_seconds BETWEEN -64800"
+                    + " AND 64800), distance_metres REAL CHECK(distance_metres>=0), PRIMARY"
+                    + " KEY(award_kind,position), UNIQUE(award_kind,source_type,record_id),"
+                    + " CHECK(source_type='RUN' OR distance_metres IS NULL))");
+        db.execSQL(
+                "CREATE TABLE training_milestone_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                        + " celebrations INTEGER NOT NULL CHECK(celebrations IN (0,1)))");
+        // V17_SCHEMA_END
+    }
+
+    private static void migrateSeventeenToEighteen(SQLiteDatabase db) {
+        // V18_SCHEMA_BEGIN - optional observations and explicitly selected nutrition basis.
+        db.execSQL(
+                "CREATE TABLE body_heights (id TEXT PRIMARY KEY NOT NULL, metres REAL NOT NULL"
+                    + " CHECK(metres>0 AND metres<=3), observed_at TEXT NOT NULL, observed_seconds"
+                    + " INTEGER NOT NULL, observed_nanos INTEGER NOT NULL CHECK(observed_nanos"
+                    + " BETWEEN 0 AND 999999999), offset_seconds INTEGER CHECK(offset_seconds"
+                    + " BETWEEN -64800 AND 64800), provider TEXT NOT NULL, source_id TEXT NOT NULL,"
+                    + " origin TEXT, imported_at TEXT, UNIQUE(provider,source_id))");
+        db.execSQL(
+                "CREATE INDEX body_heights_by_time ON body_heights(observed_seconds"
+                        + " DESC,observed_nanos DESC,id)");
+        db.execSQL(
+                "CREATE TABLE body_guidance_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                    + " protein_enabled INTEGER NOT NULL CHECK(protein_enabled IN (0,1)),"
+                    + " height_unit TEXT NOT NULL CHECK(height_unit IN ('CENTIMETRES','INCHES')),"
+                    + " basis_id TEXT, basis_at TEXT, basis_kg REAL CHECK(basis_kg>0 AND"
+                    + " basis_kg<=1000), CHECK((basis_id IS NULL AND basis_at IS NULL AND basis_kg"
+                    + " IS NULL) OR (basis_id IS NOT NULL AND basis_at IS NOT NULL AND basis_kg IS"
+                    + " NOT NULL)))");
+        // V18_SCHEMA_END
+    }
+
+    private static void migrateEighteenToNineteen(SQLiteDatabase db) {
+        // V19_SCHEMA_BEGIN - consent and current raw-detail availability, never workout history.
+        db.execSQL(
+                "CREATE TABLE detail_retention_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                    + " policy TEXT NOT NULL CHECK(policy IN"
+                    + " ('LAST_24_MONTHS','LAST_5_YEARS','KEEP_FOREVER')), choice TEXT NOT NULL"
+                    + " CHECK(choice IN"
+                    + " ('NEW_INSTALL_DEFAULT','EXISTING_UNREVIEWED','ACKNOWLEDGED')), chosen_at"
+                    + " TEXT,choice_id TEXT, CHECK((choice='EXISTING_UNREVIEWED' AND"
+                    + " policy='KEEP_FOREVER' AND chosen_at IS NULL AND choice_id IS NULL) OR"
+                    + " (choice!='EXISTING_UNREVIEWED' AND chosen_at IS NOT NULL AND choice_id IS"
+                    + " NOT NULL)))");
+        db.execSQL(
+                "INSERT INTO detail_retention_preferences"
+                        + " VALUES(1,'KEEP_FOREVER','EXISTING_UNREVIEWED',NULL,NULL)");
+        db.execSQL(
+                "CREATE TABLE detail_retention_state (id INTEGER PRIMARY KEY CHECK(id=1),epoch TEXT"
+                        + " NOT NULL)");
+        db.execSQL("INSERT INTO detail_retention_state VALUES(1,lower(hex(randomblob(16))))");
+        db.execSQL(
+                "CREATE TABLE recording_detail_removals (session_id TEXT PRIMARY KEY NOT NULL,"
+                    + " activity_id TEXT NOT NULL UNIQUE REFERENCES activities(id) ON DELETE"
+                    + " CASCADE, provider TEXT NOT NULL CHECK(provider IN ('rdd','gpx')),record_id"
+                    + " TEXT NOT NULL, ended_at TEXT NOT NULL,removed_at TEXT NOT NULL,policy TEXT"
+                    + " NOT NULL CHECK(policy IN ('LAST_24_MONTHS','LAST_5_YEARS')), started_at"
+                    + " TEXT NOT NULL,started_mono INTEGER NOT NULL"
+                    + " CHECK(started_mono>=0),last_mono INTEGER NOT NULL"
+                    + " CHECK(last_mono>=started_mono), point_count INTEGER NOT NULL"
+                    + " CHECK(point_count>=0),event_count INTEGER NOT NULL CHECK(event_count>=0),"
+                    + " points_hash TEXT NOT NULL,events_hash TEXT NOT"
+                    + " NULL,CHECK(session_id=record_id),CHECK(point_count>0 OR event_count>0))");
+        // V19_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 14)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 18)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -488,6 +599,10 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 11) migrateElevenToTwelve(db);
         if (oldVersion <= 12) migrateTwelveToThirteen(db);
         if (oldVersion <= 13) migrateThirteenToFourteen(db);
-        migrateFourteenToFifteen(db);
+        if (oldVersion <= 14) migrateFourteenToFifteen(db);
+        if (oldVersion <= 15) migrateFifteenToSixteen(db);
+        if (oldVersion <= 16) migrateSixteenToSeventeen(db);
+        if (oldVersion <= 17) migrateSeventeenToEighteen(db);
+        migrateEighteenToNineteen(db);
     }
 }

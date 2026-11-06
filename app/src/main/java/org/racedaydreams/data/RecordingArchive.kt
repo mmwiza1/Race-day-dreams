@@ -2,76 +2,526 @@ package org.racedaydreams.data
 
 import android.content.ContentValues
 import android.content.Context
-import org.json.JSONObject
 import java.io.*
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.zip.*
+import org.json.JSONObject
 
-/** Version-one streaming companion archive for user-owned raw route/sensor/event evidence.
- * Merge only; conflicts reject atomically. This is paired with the regular app JSON backup.
- * Health Connect caches are never included. Temporary files remain application-private.
+/**
+ * Version-three streaming companion archive for user-owned raw route/sensor/event evidence. Merge
+ * only; conflicts reject atomically. This is paired with the regular app JSON backup. Health
+ * Connect caches are never included. Temporary files remain application-private.
  */
-class RecordingArchive(private val context:Context) {
-    private val helper=ProfileDatabase.get(context)
-    companion object {const val MAX_BYTES=512L*1024*1024;const val MAX_LINE=8*1024*1024
-        private fun digest(file:File):String {val md=MessageDigest.getInstance("SHA-256");file.inputStream().use{input->val b=ByteArray(32768);while(true){val n=input.read(b);if(n<0)break;md.update(b,0,n)}};return md.digest().joinToString(""){"%02x".format(it)}}
-        private fun lines(file:File,block:(JSONObject)->Unit){file.bufferedReader().use{r->val line=StringBuilder();while(true){val c=r.read();if(c<0){require(line.isEmpty()){ "Truncated archive row" };break};if(c==10){if(line.isNotEmpty())block(JSONObject(line.toString()));line.setLength(0)}else{require(line.length<MAX_LINE){"Archive row too large"};line.append(c.toChar())}}}}
+class RecordingArchive(private val context: Context) {
+    private val helper = ProfileDatabase.get(context)
+
+    companion object {
+        const val MAX_BYTES = 512L * 1024 * 1024
+        const val MAX_LINE = 8 * 1024 * 1024
+
+        private fun digest(file: File): String {
+            val md = MessageDigest.getInstance("SHA-256")
+            file.inputStream().use { input ->
+                val b = ByteArray(32768)
+                while (true) {
+                    val n = input.read(b)
+                    if (n < 0) break
+                    md.update(b, 0, n)
+                }
+            }
+            return md.digest().joinToString("") { "%02x".format(it) }
+        }
+
+        private fun lines(file: File, block: (JSONObject) -> Unit) {
+            file.bufferedReader().use { r ->
+                val line = StringBuilder()
+                while (true) {
+                    val c = r.read()
+                    if (c < 0) {
+                        require(line.isEmpty()) { "Truncated archive row" }
+                        break
+                    }
+                    if (c == 10) {
+                        if (line.isNotEmpty()) block(JSONObject(line.toString()))
+                        line.setLength(0)
+                    } else {
+                        require(line.length < MAX_LINE) { "Archive row too large" }
+                        line.append(c.toChar())
+                    }
+                }
+            }
+        }
     }
-    fun exportTo(output:OutputStream){
-        val file=File.createTempFile("route-export-",".jsonl",context.cacheDir)
-        try{
-            val db=helper.readableDatabase;db.beginTransaction();try{
-                var writtenBytes=0L
-                file.bufferedWriter().use{w->
-                    fun row(j:JSONObject){val text=j.toString();writtenBytes+=text.toByteArray(Charsets.UTF_8).size+1;require(writtenBytes<=MAX_BYTES){"Recording archive exceeds 512 MiB"};require(text.length<=MAX_LINE){"Recording payload exceeds archive row limit"};w.write(text);w.newLine()}
-                    db.rawQuery("SELECT id,state,started_at,started_mono,last_mono,activity_id FROM recording_sessions ORDER BY id",null).use{c->var sessions=0;while(c.moveToNext()){
-                        require(++sessions<=1000){"Archive exceeds 1000 recordings; export routes separately"};val id=c.getString(0)
-                        row(JSONObject().put("kind","session").put("id",id).put("state",c.getString(1)).put("start",c.getString(2)).put("mono",c.getLong(3)).put("last",c.getLong(4)).put("activity",c.getString(5)))
-                        SupportStore(context).get("execution",id)?.let{row(JSONObject().put("kind","context").put("id",id).put("payload",it))}
-                        for((table,kind) in listOf("recording_points" to "point","recording_events" to "event"))db.rawQuery("SELECT sequence,payload FROM $table WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{p->var count=0;while(p.moveToNext()){if(kind=="point")require(++count<=100000){"Recording exceeds archive point limit"};row(JSONObject().put("kind",kind).put("id",id).put("seq",p.getInt(0)).put("payload",JSONObject(p.getString(1))))}}
-                        if(!c.isNull(5))db.rawQuery("SELECT payload FROM activities WHERE id=?",arrayOf(c.getString(5))).use{a->if(a.moveToFirst())row(JSONObject().put("kind","activity").put("id",id).put("payload",JSONObject(a.getString(0))))}
-                    }}
-                };db.setTransactionSuccessful()
-            }finally{db.endTransaction()}
-            require(file.length()<=MAX_BYTES){"Recording archive exceeds 512 MiB"}
-            val manifest=JSONObject().put("format","rdd-owned-recordings").put("version",2).put("bytes",file.length()).put("sha256",digest(file)).toString().toByteArray()
-            val zip=ZipOutputStream(output);zip.putNextEntry(ZipEntry("manifest.json"));zip.write(manifest);zip.closeEntry();zip.putNextEntry(ZipEntry("recordings.jsonl"));file.inputStream().use{it.copyTo(zip)};zip.closeEntry();zip.finish();zip.flush()
-        }finally{file.delete()}
+
+    fun exportTo(output: OutputStream) {
+        val file = File.createTempFile("route-export-", ".jsonl", context.cacheDir)
+        try {
+            val db = helper.readableDatabase
+            db.beginTransaction()
+            try {
+                var writtenBytes = 0L
+                file.bufferedWriter().use { w ->
+                    fun row(j: JSONObject) {
+                        val text = j.toString()
+                        writtenBytes += text.toByteArray(Charsets.UTF_8).size + 1
+                        require(writtenBytes <= MAX_BYTES) { "Recording archive exceeds 512 MiB" }
+                        require(text.length <= MAX_LINE) {
+                            "Recording payload exceeds archive row limit"
+                        }
+                        w.write(text)
+                        w.newLine()
+                    }
+                    db.rawQuery(
+                            "SELECT id,state,started_at,started_mono,last_mono,activity_id FROM recording_sessions ORDER BY id",
+                            null,
+                        )
+                        .use { c ->
+                            var sessions = 0
+                            while (c.moveToNext()) {
+                                require(++sessions <= 100000) {
+                                    "Archive exceeds 100000 recordings; nothing was truncated"
+                                }
+                                val id = c.getString(0)
+                                row(
+                                    JSONObject()
+                                        .put("kind", "session")
+                                        .put("id", id)
+                                        .put("state", c.getString(1))
+                                        .put("start", c.getString(2))
+                                        .put("mono", c.getLong(3))
+                                        .put("last", c.getLong(4))
+                                        .put("activity", c.getString(5))
+                                )
+                                SupportStore(context).get("execution", id)?.let {
+                                    row(
+                                        JSONObject()
+                                            .put("kind", "context")
+                                            .put("id", id)
+                                            .put("payload", it)
+                                    )
+                                }
+                                for ((table, kind) in
+                                    listOf(
+                                        "recording_points" to "point",
+                                        "recording_events" to "event",
+                                    )) db.rawQuery(
+                                        "SELECT sequence,payload FROM $table WHERE session_id=? ORDER BY sequence",
+                                        arrayOf(id),
+                                    )
+                                    .use { p ->
+                                        var count = 0
+                                        while (p.moveToNext()) {
+                                            if (kind == "point")
+                                                require(++count <= 500000) {
+                                                    "Recording exceeds archive point limit"
+                                                }
+                                            row(
+                                                JSONObject()
+                                                    .put("kind", kind)
+                                                    .put("id", id)
+                                                    .put("seq", p.getInt(0))
+                                                    .put("payload", JSONObject(p.getString(1)))
+                                            )
+                                        }
+                                    }
+                                if (!c.isNull(5))
+                                    db.rawQuery(
+                                            "SELECT payload FROM activities WHERE id=?",
+                                            arrayOf(c.getString(5)),
+                                        )
+                                        .use { a ->
+                                            if (a.moveToFirst())
+                                                row(
+                                                    JSONObject()
+                                                        .put("kind", "activity")
+                                                        .put("id", id)
+                                                        .put("payload", JSONObject(a.getString(0)))
+                                                )
+                                        }
+                                SqliteDetailRetentionRepository.removal(db, id)?.let { removed ->
+                                    row(
+                                        JSONObject()
+                                            .put("kind", "removed")
+                                            .put("id", id)
+                                            .put(
+                                                "payload",
+                                                SqliteDetailRetentionRepository.removalJson(removed),
+                                            )
+                                    )
+                                }
+                            }
+                        }
+                }
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+            require(file.length() <= MAX_BYTES) { "Recording archive exceeds 512 MiB" }
+            val manifest =
+                JSONObject()
+                    .put("format", "rdd-owned-recordings")
+                    .put("version", 3)
+                    .put("bytes", file.length())
+                    .put("sha256", digest(file))
+                    .toString()
+                    .toByteArray()
+            val zip = ZipOutputStream(output)
+            zip.putNextEntry(ZipEntry("manifest.json"))
+            zip.write(manifest)
+            zip.closeEntry()
+            zip.putNextEntry(ZipEntry("recordings.jsonl"))
+            file.inputStream().use { it.copyTo(zip) }
+            zip.closeEntry()
+            zip.finish()
+            zip.flush()
+        } finally {
+            file.delete()
+        }
     }
-    fun restoreFrom(input:InputStream){
-        val file=File.createTempFile("route-restore-",".jsonl",context.cacheDir)
-        try{
-            val zip=ZipInputStream(input);var manifest:JSONObject?=null;var data=false;val names=mutableSetOf<String>()
-            while(true){val e=zip.nextEntry?:break;require(names.add(e.name)&&names.size<=2){"Duplicate archive entry"};when(e.name){
-                "manifest.json"->{val b=ByteArrayOutputStream();val buf=ByteArray(1024);while(true){val n=zip.read(buf);if(n<0)break;require(b.size()+n<=8192);b.write(buf,0,n)};manifest=JSONObject(b.toString("UTF-8"))}
-                "recordings.jsonl"->{data=true;file.outputStream().use{out->val b=ByteArray(32768);var count=0L;while(true){val n=zip.read(b);if(n<0)break;count+=n;require(count<=MAX_BYTES){"Expanded archive too large"};out.write(b,0,n)}}}
-                else->error("Unsupported archive entry")
-            };zip.closeEntry()}
-            val m=manifest?:error("Missing manifest");require(data&&m.getString("format")=="rdd-owned-recordings"&&m.get("version") is Int&&m.getInt("version") in 1..2&&m.getLong("bytes")==file.length()&&m.getString("sha256")==digest(file)){"Archive integrity/version mismatch"}
-            val bounds=mutableMapOf<String,LongRange>();val completed=mutableSetOf<String>();val activityRows=mutableSetOf<String>();val activityIds=mutableMapOf<String,String>();val eventSeq=mutableMapOf<String,Int>()
-            val contexts=mutableSetOf<String>();val ids=mutableSetOf<String>();val seq=mutableMapOf<String,Int>();val lastMono=mutableMapOf<String,Long>();val lastDistance=mutableMapOf<String,Double>()
-            lines(file){j->val id=j.getString("id");require(id.length in 1..256);when(j.getString("kind")){
-                "session"->{require(ids.add(id)&&ids.size<=1000);Instant.parse(j.getString("start"));require(j.getLong("mono")>=0&&j.getLong("last")>=j.getLong("mono"));require(j.getString("state") in listOf("ACTIVE","PAUSED","RECOVERABLE","FINISHED"));bounds[id]=j.getLong("mono")..j.getLong("last");if(j.getString("state")=="FINISHED"){completed.add(id);activityIds[id]=j.getString("activity")}}
-                "context"->{require(id in ids&&contexts.add(id));SupportStore.validatePayload("execution",j.getJSONObject("payload"))}
-                "point"->{require(id in ids);val expected=seq[id]?:0;require(j.getInt("seq")==expected&&expected<100000);seq[id]=expected+1;val p=RecordingStore.decode(j.getJSONObject("payload"));require(p.fix().monotonicMillis() in bounds.getValue(id)&&p.activeMillis()<=p.fix().monotonicMillis()-bounds.getValue(id).first&&p.fix().monotonicMillis()>(lastMono[id]?:-1)&&p.cumulativeMetres()>=(lastDistance[id]?:0.0)&&p.activeMillis()>=0&&p.segment()>=0);lastMono[id]=p.fix().monotonicMillis();lastDistance[id]=p.cumulativeMetres()}
-                "event"->{require(id in ids&&j.getInt("seq")== (eventSeq[id]?:0));eventSeq[id]=(eventSeq[id]?:0)+1;val p=j.getJSONObject("payload");require(p.getString("type").length in 1..64&&p.getLong("mono") in bounds.getValue(id));if(p.has("value")&&!p.isNull("value"))require(p.getDouble("value").isFinite());Instant.parse(p.getString("wall"))}
-                "activity"->{require(id in ids&&activityRows.add(id));val a=FeatureJson.activity(j.getJSONObject("payload"));require(a.id()==activityIds[id]&&a.source().recordId()==id&&a.source().provider() in listOf("rdd","gpx"))}
-                else->error("Unsupported recording row")
-            }}
-            require(activityRows.containsAll(completed)){"Finished recording metadata is missing"}
-            val db=helper.writableDatabase;db.beginTransaction();try{
-                require(RecordingStore(context).unfinished()==null){"Finish or recover your active run before restoring"}
-                val skip=mutableSetOf<String>()
-                lines(file){j->val id=j.getString("id");when(j.getString("kind")){
-                    "session"->{db.rawQuery("SELECT state,started_at,started_mono,last_mono FROM recording_sessions WHERE id=?",arrayOf(id)).use{c->if(c.moveToFirst()){require(c.getString(1)==j.getString("start")&&c.getLong(2)==j.getLong("mono")&&c.getLong(3)==j.getLong("last")){"Existing recording conflict"};skip.add(id)}else db.insertOrThrow("recording_sessions",null,ContentValues().apply{put("id",id);put("state",if(j.getString("state")=="FINISHED")"FINISHED"else"RECOVERABLE");put("started_at",j.getString("start"));put("started_mono",j.getLong("mono"));put("last_mono",j.getLong("last"));if(j.has("activity"))put("activity_id",j.getString("activity"))})}}
-                    "context"->{val old=SupportStore(context).get("execution",id);require(old==null||old.toString()==j.getJSONObject("payload").toString()){ "Existing execution conflict" };SupportStore.put(db,"execution",id,j.getJSONObject("payload"))}
-                    "point","event"->{val table=if(j.getString("kind")=="point")"recording_points"else"recording_events";if(id !in skip)db.insertOrThrow(table,null,ContentValues().apply{put("session_id",id);put("sequence",j.getInt("seq"));put("payload",j.getJSONObject("payload").toString())})else db.rawQuery("SELECT payload FROM $table WHERE session_id=? AND sequence=?",arrayOf(id,j.getInt("seq").toString())).use{c->require(c.moveToFirst()&&c.getString(0)==j.getJSONObject("payload").toString()){ "Existing sample conflict" }}}
-                    "activity"->{val a=FeatureJson.activity(j.getJSONObject("payload"));db.rawQuery("SELECT payload FROM activities WHERE id=?",arrayOf(a.id())).use{c->if(!c.moveToFirst()||FeatureJson.activity(JSONObject(c.getString(0))).samples().isEmpty())FeatureStore.putActivity(db,a,false)}}
-                }}
-                for(id in skip)for((table,count) in listOf("recording_points" to (seq[id]?:0),"recording_events" to (eventSeq[id]?:0)))db.rawQuery("SELECT COUNT(*) FROM $table WHERE session_id=?",arrayOf(id)).use{c->require(c.moveToFirst()&&c.getInt(0)==count){"Existing recording has different evidence coverage"}}
-                RecordingStore.restoreRetainedSamples(db);db.setTransactionSuccessful()
-            }finally{db.endTransaction()}
-        }finally{file.delete()}
+
+    fun restoreFrom(input: InputStream) {
+        val file = File.createTempFile("route-restore-", ".jsonl", context.cacheDir)
+        try {
+            val zip = ZipInputStream(input)
+            var manifest: JSONObject? = null
+            var data = false
+            val names = mutableSetOf<String>()
+            while (true) {
+                val e = zip.nextEntry ?: break
+                require(names.add(e.name) && names.size <= 2) { "Duplicate archive entry" }
+                when (e.name) {
+                    "manifest.json" -> {
+                        val b = ByteArrayOutputStream()
+                        val buf = ByteArray(1024)
+                        while (true) {
+                            val n = zip.read(buf)
+                            if (n < 0) break
+                            require(b.size() + n <= 8192)
+                            b.write(buf, 0, n)
+                        }
+                        manifest = JSONObject(b.toString("UTF-8"))
+                    }
+                    "recordings.jsonl" -> {
+                        data = true
+                        file.outputStream().use { out ->
+                            val b = ByteArray(32768)
+                            var count = 0L
+                            while (true) {
+                                val n = zip.read(b)
+                                if (n < 0) break
+                                count += n
+                                require(count <= MAX_BYTES) { "Expanded archive too large" }
+                                out.write(b, 0, n)
+                            }
+                        }
+                    }
+                    else -> error("Unsupported archive entry")
+                }
+                zip.closeEntry()
+            }
+            val m = manifest ?: error("Missing manifest")
+            require(
+                data &&
+                    m.getString("format") == "rdd-owned-recordings" &&
+                    m.get("version") is Int &&
+                    m.getInt("version") in 1..3 &&
+                    m.getLong("bytes") == file.length() &&
+                    m.getString("sha256") == digest(file)
+            ) {
+                "Archive integrity/version mismatch"
+            }
+            val bounds = mutableMapOf<String, LongRange>()
+            val completed = mutableSetOf<String>()
+            val activityRows = mutableSetOf<String>()
+            val activityIds = mutableMapOf<String, String>()
+            val eventSeq = mutableMapOf<String, Int>()
+            val removed =
+                mutableMapOf<String, org.racedaydreams.domain.storage.RemovedRecordingDetail>()
+            val sessionStarts = mutableMapOf<String, Instant>()
+            val contexts = mutableSetOf<String>()
+            val ids = mutableSetOf<String>()
+            val seq = mutableMapOf<String, Int>()
+            val lastMono = mutableMapOf<String, Long>()
+            val lastDistance = mutableMapOf<String, Double>()
+            lines(file) { j ->
+                val id = j.getString("id")
+                require(id.length in 1..256)
+                when (j.getString("kind")) {
+                    "session" -> {
+                        require(
+                            ids.add(id) &&
+                                ids.size <= if (m.getInt("version") >= 3) 100000 else 1000
+                        )
+                        sessionStarts[id] = Instant.parse(j.getString("start"))
+                        require(j.getLong("mono") >= 0 && j.getLong("last") >= j.getLong("mono"))
+                        require(
+                            j.getString("state") in
+                                listOf("ACTIVE", "PAUSED", "RECOVERABLE", "FINISHED")
+                        )
+                        bounds[id] = j.getLong("mono")..j.getLong("last")
+                        if (j.getString("state") == "FINISHED") {
+                            completed.add(id)
+                            activityIds[id] = j.getString("activity")
+                        }
+                    }
+                    "context" -> {
+                        require(id in ids && contexts.add(id))
+                        SupportStore.validatePayload("execution", j.getJSONObject("payload"))
+                    }
+                    "point" -> {
+                        require(id in ids)
+                        val expected = seq[id] ?: 0
+                        require(
+                            j.getInt("seq") == expected &&
+                                expected < if (m.getInt("version") >= 3) 500000 else 100000
+                        )
+                        seq[id] = expected + 1
+                        val p = RecordingStore.decode(j.getJSONObject("payload"))
+                        require(
+                            p.fix().monotonicMillis() in bounds.getValue(id) &&
+                                p.activeMillis() <=
+                                    p.fix().monotonicMillis() - bounds.getValue(id).first &&
+                                p.fix().monotonicMillis() > (lastMono[id] ?: -1) &&
+                                p.cumulativeMetres() >= (lastDistance[id] ?: 0.0) &&
+                                p.activeMillis() >= 0 &&
+                                p.segment() >= 0
+                        )
+                        lastMono[id] = p.fix().monotonicMillis()
+                        lastDistance[id] = p.cumulativeMetres()
+                    }
+                    "event" -> {
+                        require(id in ids && j.getInt("seq") == (eventSeq[id] ?: 0))
+                        eventSeq[id] = (eventSeq[id] ?: 0) + 1
+                        val p = j.getJSONObject("payload")
+                        require(
+                            p.getString("type").length in 1..64 &&
+                                p.getLong("mono") in bounds.getValue(id)
+                        )
+                        if (p.has("value") && !p.isNull("value"))
+                            require(p.getDouble("value").isFinite())
+                        Instant.parse(p.getString("wall"))
+                    }
+                    "activity" -> {
+                        require(id in ids && activityRows.add(id))
+                        val a = FeatureJson.activity(j.getJSONObject("payload"))
+                        require(
+                            a.id() == activityIds[id] &&
+                                a.source().recordId() == id &&
+                                a.source().provider() in listOf("rdd", "gpx")
+                        )
+                    }
+                    "removed" -> {
+                        require(m.getInt("version") >= 3 && id in completed && id !in removed)
+                        val proof =
+                            SqliteDetailRetentionRepository.readRemoval(j.getJSONObject("payload"))
+                        require(
+                            proof.sessionId() == id &&
+                                proof.activityId() == activityIds[id] &&
+                                proof.startedAt() == sessionStarts[id] &&
+                                proof.startedMono() == bounds.getValue(id).first &&
+                                proof.lastMono() == bounds.getValue(id).last
+                        )
+                        removed[id] = proof
+                    }
+                    else -> error("Unsupported recording row")
+                }
+            }
+            for (id in removed.keys) require((seq[id] ?: 0) == 0 && (eventSeq[id] ?: 0) == 0) {
+                "Removed detail cannot contain raw rows"
+            }
+            require(activityRows.containsAll(completed)) {
+                "Finished recording metadata is missing"
+            }
+            val db = helper.writableDatabase
+            db.beginTransaction()
+            try {
+                require(RecordingStore(context).unfinished() == null) {
+                    "Finish or recover your active run before restoring"
+                }
+                val skip = mutableSetOf<String>()
+                val restoreDetails =
+                    mutableMapOf<String, org.racedaydreams.domain.storage.RemovedRecordingDetail>()
+                lines(file) { j ->
+                    val id = j.getString("id")
+                    when (j.getString("kind")) {
+                        "session" -> {
+                            db.rawQuery(
+                                    "SELECT state,started_at,started_mono,last_mono,activity_id FROM recording_sessions WHERE id=?",
+                                    arrayOf(id),
+                                )
+                                .use { c ->
+                                    if (c.moveToFirst()) {
+                                        require(
+                                            c.getString(0) == "FINISHED" &&
+                                                j.getString("state") == "FINISHED" &&
+                                                c.getString(1) == j.getString("start") &&
+                                                c.getLong(2) == j.getLong("mono") &&
+                                                c.getLong(3) == j.getLong("last") &&
+                                                c.getString(4) == j.getString("activity")
+                                        ) {
+                                            "Existing recording conflict"
+                                        }
+                                        val proof = SqliteDetailRetentionRepository.removal(db, id)
+                                        if (
+                                            proof != null &&
+                                                id !in removed &&
+                                                ((seq[id] ?: 0) > 0 || (eventSeq[id] ?: 0) > 0)
+                                        ) {
+                                            require(
+                                                proof.startedAt() ==
+                                                    Instant.parse(j.getString("start")) &&
+                                                    proof.startedMono() == j.getLong("mono") &&
+                                                    proof.lastMono() == j.getLong("last")
+                                            ) {
+                                                "Archived detail has different timing"
+                                            }
+                                            for (table in
+                                                listOf("recording_points", "recording_events")) db
+                                                .rawQuery(
+                                                    "SELECT COUNT(*) FROM $table WHERE session_id=?",
+                                                    arrayOf(id),
+                                                )
+                                                .use { rows ->
+                                                    require(
+                                                        rows.moveToFirst() && rows.getLong(0) == 0L
+                                                    ) {
+                                                        "Existing recording has conflicting detail"
+                                                    }
+                                                }
+                                            restoreDetails[id] = proof
+                                        } else skip.add(id)
+                                    } else
+                                        db.insertOrThrow(
+                                            "recording_sessions",
+                                            null,
+                                            ContentValues().apply {
+                                                put("id", id)
+                                                put(
+                                                    "state",
+                                                    if (j.getString("state") == "FINISHED")
+                                                        "FINISHED"
+                                                    else "RECOVERABLE",
+                                                )
+                                                put("started_at", j.getString("start"))
+                                                put("started_mono", j.getLong("mono"))
+                                                put("last_mono", j.getLong("last"))
+                                                if (j.has("activity"))
+                                                    put("activity_id", j.getString("activity"))
+                                            },
+                                        )
+                                }
+                        }
+                        "context" -> {
+                            val old = SupportStore(context).get("execution", id)
+                            require(
+                                old == null ||
+                                    old.toString() == j.getJSONObject("payload").toString()
+                            ) {
+                                "Existing execution conflict"
+                            }
+                            SupportStore.put(db, "execution", id, j.getJSONObject("payload"))
+                        }
+                        "point",
+                        "event" -> {
+                            val table =
+                                if (j.getString("kind") == "point") "recording_points"
+                                else "recording_events"
+                            if (id !in skip)
+                                db.insertOrThrow(
+                                    table,
+                                    null,
+                                    ContentValues().apply {
+                                        put("session_id", id)
+                                        put("sequence", j.getInt("seq"))
+                                        put("payload", j.getJSONObject("payload").toString())
+                                    },
+                                )
+                            else
+                                db.rawQuery(
+                                        "SELECT payload FROM $table WHERE session_id=? AND sequence=?",
+                                        arrayOf(id, j.getInt("seq").toString()),
+                                    )
+                                    .use { c ->
+                                        require(
+                                            c.moveToFirst() &&
+                                                c.getString(0) ==
+                                                    j.getJSONObject("payload").toString()
+                                        ) {
+                                            "Existing sample conflict"
+                                        }
+                                    }
+                        }
+                        "activity" -> {
+                            val incoming = FeatureJson.activity(j.getJSONObject("payload"))
+                            db.rawQuery(
+                                    "SELECT payload FROM activities WHERE id=?",
+                                    arrayOf(incoming.id()),
+                                )
+                                .use { c ->
+                                    if (!c.moveToFirst())
+                                        FeatureStore.putActivity(db, incoming, false)
+                                    else {
+                                        val existing =
+                                            FeatureJson.activity(JSONObject(c.getString(0)))
+                                        require(
+                                            existing.source() == incoming.source() &&
+                                                existing.start() == incoming.start() &&
+                                                existing.end() == incoming.end() &&
+                                                existing.distanceMetres() ==
+                                                    incoming.distanceMetres() &&
+                                                existing.movingTime() == incoming.movingTime()
+                                        ) {
+                                            "Archived summary conflicts with retained activity; existing data retained"
+                                        }
+                                        // Compatible raw restore does not replace actual totals or
+                                        // newer annotations.
+                                    }
+                                }
+                        }
+                        "removed" -> {
+                            val proof = removed.getValue(id)
+                            var hasRows = false
+                            for (table in listOf("recording_points", "recording_events")) db
+                                .rawQuery(
+                                    "SELECT 1 FROM $table WHERE session_id=? LIMIT 1",
+                                    arrayOf(id),
+                                )
+                                .use { hasRows = hasRows || it.moveToFirst() }
+                            if (hasRows) SqliteDetailRetentionRepository.requireMatches(db, proof)
+                            else {
+                                val old = SqliteDetailRetentionRepository.removal(db, id)
+                                require(old == null || old == proof) {
+                                    "Conflicting removal provenance"
+                                }
+                                SqliteDetailRetentionRepository.putRemoval(db, proof)
+                            }
+                        }
+                    }
+                }
+                for (id in skip.filter { it !in removed }) for ((table, count) in
+                    listOf(
+                        "recording_points" to (seq[id] ?: 0),
+                        "recording_events" to (eventSeq[id] ?: 0),
+                    )) db.rawQuery("SELECT COUNT(*) FROM $table WHERE session_id=?", arrayOf(id))
+                    .use { c ->
+                        require(c.moveToFirst() && c.getInt(0) == count) {
+                            "Existing recording has different evidence coverage"
+                        }
+                    }
+                for ((id, proof) in restoreDetails) {
+                    SqliteDetailRetentionRepository.requireMatches(db, proof)
+                    db.delete("recording_detail_removals", "session_id=?", arrayOf(id))
+                }
+                SqliteDetailRetentionRepository.reconcileAvailable(db)
+                RecordingStore.restoreRetainedSamples(db)
+                SqliteDetailRetentionRepository.invalidateApprovals(db)
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+        } finally {
+            file.delete()
+        }
     }
 }

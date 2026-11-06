@@ -10,7 +10,10 @@ public final class TechniqueIllustrations {
             phases=Collections.unmodifiableList(new ArrayList<>(phases));
         }
     }
-    public static Artwork forExercise(String id) {return switch(id) {
+    public static Artwork forExercise(String id) {
+        var expanded = ExpandedExerciseGuides.artwork(id);
+        if (expanded != null) return expanded;
+        return switch(id) {
         case "dead-hang" -> new Artwork("guide_dead_hang","Dead hang: both hands grip a secure overhead bar, arms extended and shoulders controlled. Feet are off the floor with knees gently bent. Breathe steadily without swinging; use a stable step to reach or leave the bar safely.",Arrays.asList("Secure grip; controlled hang"));
         case "seated-leg-curl" -> new Artwork("guide_seated_leg_curl","Seated leg curl: thighs are secured beneath the upper restraint, back supported and knee near the machine pivot. With legs extended, the lower calves rest on the roller below them. Bend the knees to pull the roller down and back beneath the seat, then extend under control.",Arrays.asList("Calves on lower roller; thighs secured","Bend knees; return smoothly"));
         case "incline-dumbbell-press" -> new Artwork("guide_incline_dumbbell_press","Incline dumbbell press: sit back against a moderately inclined bench with feet planted and weights beside the upper chest. Press the dumbbells above the upper chest, then lower smoothly without arching off the backrest.",Arrays.asList("Back supported; weights by chest","Press; controlled return"));

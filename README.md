@@ -7,7 +7,24 @@ A free, open-source, account-free Android running and strength coach.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.10.1-test1 — GPS Reliability & Coaching Clarity
+## 0.11.0-test1 — Gym, Health & Recovery Intelligence
+
+Optional rest timing, evidence-based warm-up suggestions and supersets build on the existing
+Gym Now engine. Strength trends and records use actual working sets; measured results remain
+separate from estimates. Restrained milestones and recovery/Hybrid proposals explain their
+supporting evidence and leave changes under the athlete's control.
+
+Optional height/weight history and general protein guidance work with manual entry or Health
+Connect. Storage settings offer 24 months, five years or Keep forever for eligible raw recording
+detail. Existing users remain protected until informed acknowledgement; preview and confirmation
+precede cleanup. Summaries, PBs, actual sets and programme history remain.
+
+All 220 canonical exercises and 14 routine movements have illustrated guidance. The 46 additions
+cover useful beginner, machine, cable, unilateral, carry and shoulder-control gaps rather than
+padding the library with superficial variants. See [release notes](docs/RELEASE_0_11_0.md),
+[verification](VERIFICATION.md) and the [physical-device checklist](TEST_BUILD.md).
+
+## Preserved 0.10.1 — GPS Reliability & Coaching Clarity
 
 Native recording now rejects stale delivery before auto-pause, preserves honest GPS gaps,
 and avoids summing a bounded stationary jitter cluster as running distance. Large route
@@ -46,10 +63,10 @@ preparation retain their existing behaviour. Spontaneous runs stay independent u
 you explicitly associate them with a plan.
 
 Strength and Progress use summary dashboards with dedicated detail screens. The
-local catalogue has 174 canonical exercises, live name/alias search, favourites,
+local catalogue has 220 canonical exercises, live name/alias search, favourites,
 recents and hide/archive choices. Sets and PBs support repetitions, duration and
 distance without invented reps. Every canonical exercise has original illustrated guidance, movement-specific
-instructions, cues, mistakes and accessible descriptions. All174 entries are checked
+instructions, cues, mistakes and accessible descriptions. All220 entries are checked
 by strict catalogue and packaged-resource tests; assets work offline.
 
 Retained legacy six-week gym blocks support 1–6 days, equipment/time constraints,
@@ -109,6 +126,10 @@ The route is drawn from retained observations on an offline canvas, not street t
 Dream Routes use versioned sourced geographic lines and original city illustrations,
 not official maps or navigation. Paris uses the annual Marathon de Paris2026 street itinerary with ODbL OSM geometry. Old assignments retain their original drawings.
 Physical sensor/audio behaviour still requires the Galaxy S24 checklist.
+
+| Gym preparation | Recorded strength | Recovery guidance | Storage control |
+| --- | --- | --- | --- |
+| ![Optional rest guidance](docs/screenshots/gym-rest-timer.png) | ![Recorded working-set trends](docs/screenshots/strength-analytics.png) | ![Evidence-backed recovery guidance](docs/screenshots/training-recovery.png) | ![Storage and recording detail](docs/screenshots/storage-management.png) |
 
 ## Build and tests
 

@@ -287,7 +287,54 @@ fun StrengthProgrammeBuilderScreen(
                                         style = MaterialTheme.typography.titleMedium,
                                     )
                                     Text(gymTargetDescription(slot))
+                                    if (slot.supersetGroup() != null)
+                                        Text("Superset · repeat exercises in order, then rest")
                                     FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        if (slot.supersetGroup() != null) {
+                                            TextButton(
+                                                onClick = {
+                                                    model.superset(
+                                                        block.id(),
+                                                        day.id(),
+                                                        slot.id(),
+                                                        true,
+                                                    )
+                                                },
+                                                enabled = enabled,
+                                            ) {
+                                                Text("Break superset")
+                                            }
+                                            if (
+                                                day.slots().getOrNull(index + 1)?.let {
+                                                    it.supersetGroup() == null
+                                                } == true
+                                            )
+                                                TextButton(
+                                                    onClick = {
+                                                        model.superset(
+                                                            block.id(),
+                                                            day.id(),
+                                                            slot.id(),
+                                                        )
+                                                    },
+                                                    enabled = enabled,
+                                                ) {
+                                                    Text("Add next to superset")
+                                                }
+                                        } else if (
+                                            day.slots().getOrNull(index + 1)?.let {
+                                                it.supersetGroup() == null
+                                            } == true
+                                        ) {
+                                            TextButton(
+                                                onClick = {
+                                                    model.superset(block.id(), day.id(), slot.id())
+                                                },
+                                                enabled = enabled,
+                                            ) {
+                                                Text("Pair with next exercise")
+                                            }
+                                        }
                                         TextButton(
                                             onClick = {
                                                 slotForm =

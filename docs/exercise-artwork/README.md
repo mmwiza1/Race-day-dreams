@@ -1,18 +1,45 @@
-# Original instructional artwork — 0.8.1
+# Original instructional artwork — current catalogue
 
 ## Current coverage
 
-All **174/174 canonical exercises** have movement-specific illustrated guidance.
+All **220/220 canonical exercises** have movement-specific illustrated guidance.
 All **14/14 supporting-routine movements** have artwork. The strict catalogue audit
 passes; no canonical exercise uses a schematic or a generic unrelated-pose fallback.
 
-There are **177 original local WebP assets**, totalling **9,198,660 bytes** before APK
+There are **223 original local WebP assets**, totalling **11,634,030 bytes** before APK
 packaging. Each is a 1200×800 sequence encoded at quality 84. Only the displayed
 asset is decoded. Single-frame holds, two-frame movements and three-frame technical
 lifts retain meaningful captions and complete written/screen-reader instructions.
 The exact byte sizes, SHA256 checksums and creation/licence records are in
 `asset-provenance.json`. Adding an exercise without a guide fails domain tests and
 the strict packaged-file audit. `missing-canonical-ids.txt` is currently empty.
+
+## 0.11 catalogue checkpoint
+
+Forty-six complete additions cover seated hip adductor/abductor machines, cable hip adduction/
+abduction, cable glute kickback, seated dumbbell calf raise, wall/knee push-ups, chair
+sit-to-stand and side-lying hip abduction. Further additions cover straight-arm shoulder-blade
+control, short/long-lever Copenhagen holds, bear plank, heel taps, single-leg glute bridge,
+Pallof hold and overhead dumbbell carry. Eight further additions cover inner-thigh floor work,
+scapular pulling, prone Y raise, cable external rotation and four Smith-machine setups. Each has its own original movement-specific artwork,
+explicit measurement/equipment/role metadata, readable instructions and accessibility copy.
+Copenhagen drafts were corrected to put the elbow and entire forearm on the mat;
+static holds use a single useful frame. The first cable-adduction draft was rejected and corrected: the cuff must be on the near
+leg so inward movement works against the cable, not with its pull. No rejected draft ships.
+Wall/knee pushing alternatives explain support/leverage rather than invented added load.
+
+Further additions cover floor presses, unilateral machines, hip control, supported squatting,
+reverse Nordic, reverse-hyper and 45-degree benches, crawling, shoulder taps, hip lifts,
+one-arm carries and distinct inward/outward shoulder rotations. Specific equipment requirements
+prevent unrelated machines or supports being assumed available. New bodyweight distance tasks
+record actual metres; timed holds remain separate from repetition tasks. Each addition has
+complete guidance, original art and a stable identity; the original174 definitions are retained.
+
+Bundled additions total **2,435,370 bytes** over the prior177assets. The selective catalogue
+now reaches220 complete entries. Verified sourceee760bf passes508tests/359captures EACH API28/35/36, including all46additions
+in light/dark/200%. The API35CI APK is55,250,287bytes: +2,500,202/+4.7397%versus pre-catalogue
+M5API35, and+6.2923%versus0.10.1 CI. The final200%tail views were directly reviewed; see
+VISUAL_REVIEW_0_11.md. Asset completeness alone does not replace that visual review.
 
 ## Authorship and review
 

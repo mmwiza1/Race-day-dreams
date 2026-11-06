@@ -37,6 +37,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_back_extension_forty_five_degree.webp",
+      "bytes": 48302,
+      "sha256": "f6a1838168852c33a6cd62f60841c4e4a6037aab5a0942b39e1ebb9779b4da11",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_back_squat.webp",
       "bytes": 53830,
       "sha256": "28c5b3e136b6b38f40a2652471aaffdc5277bb633b4f0448df9e13472882934f",
@@ -69,6 +76,20 @@
       "bytes": 66168,
       "sha256": "62e74724feb1ee216215aecd6b37b2dc3c25a22e2566636a5a65d8d387b70da2",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_bear_crawl.webp",
+      "bytes": 35744,
+      "sha256": "a54071346e8bec4aa7834a46979ec12272fe7ae63581aa7b1999993bdbc348cf",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_bear_plank.webp",
+      "bytes": 35638,
+      "sha256": "67acfc67e210990bbcdf6c3823a6f9c67118a3d275cdc7bdf560f0f16b6edee8",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -142,10 +163,45 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_cable_external_rotation.webp",
+      "bytes": 57906,
+      "sha256": "13bcf66ef92daf4d067d64dd0380f8e40d5f88990fb53eea33975cb1be58cbe4",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_cable_fly.webp",
       "bytes": 68718,
       "sha256": "6d3d01f1b7bf218050b9826fb916880f77203988d75542f423a592186bdf0069",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_cable_glute_kickback.webp",
+      "bytes": 64808,
+      "sha256": "4a131ae42f552c79bb02a090656c3747118896331cb9af09588c425bf2c2302d",
+      "creation": "Original project image generation, 5-6 November 2026; individually reviewed full-body framing, equipment, resistance direction and both movement states; cable adduction corrected to cuff the near leg; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_cable_hip_abduction.webp",
+      "bytes": 56036,
+      "sha256": "2d592b757bff74ca7bf3d6a36c85a7d78d198bec2b67e93143630d2a55f8e94c",
+      "creation": "Original project image generation, 5-6 November 2026; individually reviewed full-body framing, equipment, resistance direction and both movement states; cable adduction corrected to cuff the near leg; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_cable_hip_adduction.webp",
+      "bytes": 53932,
+      "sha256": "06b5e4a94d5d0181c63c4b4eafe26d3080bcc9863ea2177f70c5844b3893f531",
+      "creation": "Original project image generation, 5-6 November 2026; individually reviewed full-body framing, equipment, resistance direction and both movement states; cable adduction corrected to cuff the near leg; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_cable_internal_rotation.webp",
+      "bytes": 60558,
+      "sha256": "65c195be8a2cdf58eee2146b5a8aa89acb1a388d223df5997afd2d2ed5ac6175",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -163,6 +219,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_cable_y_raise.webp",
+      "bytes": 59196,
+      "sha256": "281e1ce4bc34c519bb7ee2f4887cbadf69757b0292048b04871ff92ed98afa45",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_calf_raise.webp",
       "bytes": 33876,
       "sha256": "6c39d99832a36047600a1c8233d0324e75be5ab4212643eefc118a2632df4375",
@@ -174,6 +237,13 @@
       "bytes": 23138,
       "sha256": "c9105a8c8ad15c474136b5d083922bb0b02f3e610942dcdfdb1c6c7f3b5665c2",
       "creation": "Original project image generation,23 October2026; reviewed before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_chair_sit_to_stand.webp",
+      "bytes": 39710,
+      "sha256": "5d245f3e26ef7f6ec6e97216983eeb3ad6e73bb68a2f264b17fa686c6b536d0e",
+      "creation": "Original project image generation, 5-6 November 2026; two movement states reviewed for full-body framing, setup, limb placement and movement direction; resized to 1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -226,6 +296,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_copenhagen_plank_long_lever.webp",
+      "bytes": 41334,
+      "sha256": "17df8571f904316e28bd190ee01cdd41016484b0fa0bbaae8527c69e95e06305",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_copenhagen_plank_short_lever.webp",
+      "bytes": 50816,
+      "sha256": "9048301c7255d01bb98f7997ae5ecb8299cd4840b668f8dc334f192dc809268e",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_cossack_squat.webp",
       "bytes": 38484,
       "sha256": "abefba0f157b90ccfc241d20f122888b4a5ca8a4d4b84f28cb6458a2d2c7af3f",
@@ -244,6 +328,13 @@
       "bytes": 36824,
       "sha256": "7fa819d802cc36745b1e41909f8d5592cbd1c057ea79e5800ac301d1114dc8a0",
       "creation": "Original project image generation,23 October2026; reviewed movement, equipment and framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_dead_bug_heel_tap.webp",
+      "bytes": 39994,
+      "sha256": "ac86c124c42404abe8072cb17b7b7a47a4606314d867918d02344b3551f8f498",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -328,6 +419,13 @@
       "bytes": 37658,
       "sha256": "182727aac39c662d7af63f5a5ae8575cc1d19dab8b1b3a842678acf201b08dff",
       "creation": "Original project image generation,23 October2026; reviewed movement, equipment and framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_dumbbell_floor_press.webp",
+      "bytes": 61504,
+      "sha256": "f2f5a7bc5358c0f0b06221d61674cbc740634182a59f133166640f004444337e",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -436,6 +534,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_glute_kickback_machine.webp",
+      "bytes": 49604,
+      "sha256": "fdb06cd83bb30f3c5d195602473791347fe933fffa20277addc43437eb1318b4",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_goblet_squat.webp",
       "bytes": 35182,
       "sha256": "bc5d3a070054db12a7bb38ee7341459d0a4e3367a8d1b3c79c1fe12b2b8c6c77",
@@ -506,6 +611,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_hip_abductor_machine.webp",
+      "bytes": 73664,
+      "sha256": "9bde2f1b6f1dd4ba5f3af7ff18efaf4d0ca18872e03044eed96994a43e1efee9",
+      "creation": "Original project image generation, 5 November 2026; two movement states individually reviewed for supported posture, inside/outside thigh-pad placement and direction; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_hip_adductor_machine.webp",
+      "bytes": 80164,
+      "sha256": "05d366b8a1b82d88868fca6b9964df2cbc4565950070ac9e4c8bc6500e2888bd",
+      "creation": "Original project image generation, 5 November 2026; two movement states individually reviewed for supported posture, inside/outside thigh-pad placement and direction; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_hip_flexor.webp",
       "bytes": 27362,
       "sha256": "2cddbf9560a3ac3c11b6495591ea76ddd2932e00ba3fbdb46e291bae002715b4",
@@ -541,6 +660,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_incline_push_up.webp",
+      "bytes": 41302,
+      "sha256": "8cecb1478f4bb05359f5893e0bdc4fc30c2b431d9cecf3825bdc2e5778de57fa",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_inverted_row.webp",
       "bytes": 58926,
       "sha256": "144c49c4eda3c33b57f3bcd539097d7fac63d60bc1dbaf51d0ab51d9d3cf1f03",
@@ -562,6 +688,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_kettlebell_floor_press.webp",
+      "bytes": 56792,
+      "sha256": "a83a4edecb40389dbdc7ab93644808ebc7aa07e99a8769647fdb574470086717",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_kettlebell_goblet_squat.webp",
       "bytes": 36456,
       "sha256": "2518ccb4be95177a32d4e80f763fd08f527adcc481843ef119069a2e74a8f50e",
@@ -580,6 +713,13 @@
       "bytes": 44418,
       "sha256": "fcd55b15ff3c3084ef80956333702e37384416f1d17330ed8bfe2b8df2b28f73",
       "creation": "Original project image generation,23 October2026; reviewed movement, equipment and framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_knee_push_up.webp",
+      "bytes": 39342,
+      "sha256": "455633a3848943f8462a3c2e89468703462340d24e0d1836b1f685cde938e2e1",
+      "creation": "Original project image generation, 5-6 November 2026; two movement states reviewed for full-body framing, setup, limb placement and movement direction; resized to 1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -608,6 +748,13 @@
       "bytes": 37966,
       "sha256": "3a9fa0a78f985d14464a82260fda9b55ca8d9d24d07ac320b26a83d94e9e334a",
       "creation": "Original project image generation,23 October2026; reviewed movement, equipment and framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_lateral_step_down.webp",
+      "bytes": 31504,
+      "sha256": "2f3b9de133a9bed098411a488793434c44a950bfac8e4c609a2b719e7b3b2e09",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -716,6 +863,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_overhead_dumbbell_carry.webp",
+      "bytes": 34408,
+      "sha256": "a8fa3b9e6c0b18c996a286447de84b8a2b03129fdff15d75ca9dfe8e9378e51c",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_overhead_press.webp",
       "bytes": 40284,
       "sha256": "cad9d6b1d382ca2961305febe517a377f852d1449c1ab3d119372d43d27ba882",
@@ -765,6 +919,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_plank_shoulder_tap.webp",
+      "bytes": 57494,
+      "sha256": "fb16784129c6bd2e67018c5ba6ce3a8e6c935cebb085adedb9aa2b5fcba297ab",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_power_clean.webp",
       "bytes": 54830,
       "sha256": "b24a38363e377d747ad7e44fb02022e233d82aa858c113dd920e868a86c73f27",
@@ -783,6 +944,13 @@
       "bytes": 70706,
       "sha256": "6d354d1e8fcd2a6a601183947918a18d1e07ccba9696cf6a7376e179723e9ce3",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_prone_y_raise.webp",
+      "bytes": 32692,
+      "sha256": "ae2f678b981d0ba2c9eff1adc5c72422c01b9d2f140c882aa19ab294b4e9ab2c",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -835,6 +1003,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_reverse_hyperextension.webp",
+      "bytes": 62632,
+      "sha256": "eaab93cc0a7ca41f972604969049fe0ec3badd9bd2e783b99b1d4c47f926ce9b",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_reverse_lunge.webp",
       "bytes": 42800,
       "sha256": "7968abc28b9feaa4c35e829f4bfbd6a9f523791270bde28beb474e300c115ff5",
@@ -846,6 +1021,13 @@
       "bytes": 36244,
       "sha256": "8bcb4cc70cc2c3583acdc0094414dfc1dd7aa33fe943edcfdbc7d25b0dbeafbc",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_reverse_nordic.webp",
+      "bytes": 34244,
+      "sha256": "abf998c9ad9c1dafb4624de7a53df3b359fd906a82a7eb0d4e8d1c2158bf61cf",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -891,6 +1073,20 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_scapular_pull_up.webp",
+      "bytes": 48002,
+      "sha256": "96486329e1fc08ec1252fdb98489467057eb65efa8c04ac0f6a901035f4f98e8",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_scapular_push_up.webp",
+      "bytes": 25154,
+      "sha256": "3c9589a8cd642f3aa286ccb287b64b84b2e6fdf60ca7ba070c1979776a8d71f6",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement/support; Copenhagen drafts corrected to elbow and entire forearm flat on mat before bundling; static holds use one frame; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_seated_barbell_press.webp",
       "bytes": 60654,
       "sha256": "e25d23279a5e910cf08fc1a082538925edefbd9879a53a89f95f5edf7031534e",
@@ -912,6 +1108,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_seated_dumbbell_calf_raise.webp",
+      "bytes": 67300,
+      "sha256": "372f4eb96493e0def1b5b2e397f20d604579852b4113629a4849f4c19b7beeb0",
+      "creation": "Original project image generation, 5-6 November 2026; individually reviewed full-body framing, equipment, resistance direction and both movement states; cable adduction corrected to cuff the near leg; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_seated_glute.webp",
       "bytes": 29614,
       "sha256": "95611cc2b1686b8b3d94b4e1cc35d6727543fed8d610f4f17c254ce87e9b1695",
@@ -926,10 +1129,45 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_side_lying_dumbbell_external_rotation.webp",
+      "bytes": 70396,
+      "sha256": "de4a08af5d22c5b3e57437974046e7140e809479d71f9f073cd7ee023bea33d9",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_side_lying_hip_abduction.webp",
+      "bytes": 29368,
+      "sha256": "f4cfae140883ff5e1d037bd808a024b0850c8ff827cd14fd333e1a196f271820",
+      "creation": "Original project image generation, 5-6 November 2026; two movement states reviewed for full-body framing, setup, limb placement and movement direction; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_side_lying_hip_adduction.webp",
+      "bytes": 79548,
+      "sha256": "709633df338aa466fa1f209cd763cf3152994ccf49217e33d3ff76cd5829aa61",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_side_plank.webp",
       "bytes": 41878,
       "sha256": "0ca59f7ea29876d562f62b846bf46ecc116cf49cc0ee6c5612cf36cbfe2e3bd9",
       "creation": "Original project image generation,23 October2026; reviewed movement, equipment and framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_side_plank_hip_lift.webp",
+      "bytes": 54556,
+      "sha256": "c38205c0976847524dad48f6bd2bb99b2bd6394d9910676f7e3448738830e3c3",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_single_arm_overhead_carry.webp",
+      "bytes": 32858,
+      "sha256": "146638c07fbe8879198da3067cb899c12a09e281a05da073ac7c530ed346aa19",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -947,6 +1185,27 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_single_leg_glute_bridge.webp",
+      "bytes": 29226,
+      "sha256": "a87f4548172b539be4b90e33871bfcf236ac0489af0b04112e4d0ad8b085a995",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_single_leg_hip_thrust.webp",
+      "bytes": 47202,
+      "sha256": "74f056f8dfd5fb2ba66b7c07080d7bc06b150e8e229ec5e0953285ac438d178d",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_single_leg_leg_extension.webp",
+      "bytes": 89404,
+      "sha256": "5c9c82a3bdadddf27e57edd425616dc8e2bf8ee1fd0f9759eb36dad399b15bce",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_single_leg_press.webp",
       "bytes": 92348,
       "sha256": "9b1b7a1e1a46f86566504226b8459b7b0a569ea0448bc359186cfccee25b80c2",
@@ -958,6 +1217,13 @@
       "bytes": 39724,
       "sha256": "af0ac39512ea1a05dd8d02cb007c4494ab076cd25b8f9d869b04000c4aa1d116",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_single_leg_seated_leg_curl.webp",
+      "bytes": 85954,
+      "sha256": "b97bbbe6f46c12e24a5e25779433fc5ba54575a85dd2ed0c8996ff1f6c7d26cf",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -996,6 +1262,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_incline_bench_press.webp",
+      "bytes": 81410,
+      "sha256": "024c4c22f42b330e834e8f53a0d2f7f2d1ede55505e465e13be814222714959a",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_smith_machine_bench_press.webp",
       "bytes": 74784,
       "sha256": "4fc3ed073262bb46c8fb2ecae42498a3e0b3853619cfbbf01f862a9314f67079",
@@ -1007,6 +1280,27 @@
       "bytes": 70788,
       "sha256": "7388d52aaf030f8f729ee5546f360ace13004a5cb4e3f01e35a0d5346d3b8e98",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_romanian_deadlift.webp",
+      "bytes": 78674,
+      "sha256": "b3819bfb856dc209052823d9b62c35299c24dc525ee262a27b488421ebe324c8",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_split_squat.webp",
+      "bytes": 72310,
+      "sha256": "f7274cb7a291a927e48d4216387cb1773bbcc1ec477d9d757fbd5817221337de",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_standing_calf_raise.webp",
+      "bytes": 79546,
+      "sha256": "fb0e76279c57b5ec276cae503afe7d57003dc38806656957fea757c2ab4bb209",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -1042,6 +1336,13 @@
       "bytes": 64664,
       "sha256": "820412cf174295e247d4c148bf27b7ca04d6dda4a88437f58ce723b964d019f4",
       "creation": "Original project image generation, 23 October 2026; individually reviewed movement, equipment and corrected framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_standing_pallof_hold.webp",
+      "bytes": 31184,
+      "sha256": "58c2fe8e25ccd268a76c093aa593c8871971827b3b204a828439e78b712ddeb4",
+      "creation": "Original project image generation, 6 November 2026; reviewed full-body framing, actual equipment and measurement-specific movement states; resized to1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -1084,6 +1385,20 @@
       "bytes": 44672,
       "sha256": "6676e6878b8b6368e82737768409e90e88227680460e5e85ab02cc02b0188a48",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_supported_hip_airplane.webp",
+      "bytes": 41160,
+      "sha256": "814236c02b20d9a154e9d3ee8df07b057434927f87494f7b4e925371886a8a9b",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_supported_single_leg_squat.webp",
+      "bytes": 55738,
+      "sha256": "617cb65abbe170c51dba6f4cd392d896d889a65f1bfda6ffd4afb4635e1c81c9",
+      "creation": "Original project image generation, 6 November 2026; individually reviewed movement direction, equipment contact, limb placement and complete framing before bundling",
       "licence": "MIT project contribution"
     },
     {
@@ -1161,6 +1476,13 @@
       "bytes": 62650,
       "sha256": "8874848dc6e17352842acd9213f00873c09d49d613cef58cdf28c97d10f627bf",
       "creation": "Original project image generation, 23 October 2026; individually reviewed movement, receiving positions and equipment before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_wall_push_up.webp",
+      "bytes": 37060,
+      "sha256": "7ff28a238e3dd78126197fb2642ea35c1a2feb29359204dece0b1d27910e0a08",
+      "creation": "Original project image generation, 5-6 November 2026; two movement states reviewed for full-body framing, setup, limb placement and movement direction; resized to 1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {

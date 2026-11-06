@@ -4,6 +4,8 @@ import org.racedaydreams.domain.coaching.Immutable;
 /** Original offline coaching copy and diagram specifications; no third-party assets. */
 public record TechniqueGuide(String pattern,String setup,String movement,List<String> cues,List<String> mistakes,String muscles,List<String> alternatives) {
     public static TechniqueGuide forExercise(String id){
+        var expanded = ExpandedExerciseGuides.guide(id);
+        if (expanded != null) return expanded;
         String pattern,setup,movement,muscles;List<String> alternatives;
         switch(id){
             case "back-squat", "front-squat", "leg-press" -> {pattern="squat";setup=id.equals("leg-press")?"Sit with your back supported and feet stable on the platform.":"Set your feet comfortably apart and brace; support the load securely.";movement=id.equals("leg-press")?"Lower the platform under control, then press without locking your knees.":"Bend hips and knees together to a controlled depth, then stand through your whole foot.";muscles="Quadriceps and glutes";alternatives=Immutable.list("Goblet Squat","Leg Press");}

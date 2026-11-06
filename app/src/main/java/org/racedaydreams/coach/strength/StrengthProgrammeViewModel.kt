@@ -313,7 +313,46 @@ class StrengthProgrammeViewModel(app: Application, private val retained: SavedSt
             val slot = gymSlotFromInput(slotId, exercise, input)
             val rows = day.slots().toMutableList()
             val index = rows.indexOfFirst { old -> old.id() == slot.id() }
-            if (index < 0) rows.add(slot) else rows[index] = slot
+            if (index < 0) rows.add(slot)
+            else
+                rows[index] =
+                    GymWorkoutDefinition.Slot(
+                        slot.id(),
+                        slot.exercise(),
+                        slot.target(),
+                        rows[index].supersetGroup(),
+                    )
+            it.replaceDay(
+                blockId,
+                StrengthProgrammeDraft.Day(day.id(), day.weekday(), day.title(), rows, day.notes()),
+            )
+        }
+
+    fun superset(blockId: String, dayId: String, slotId: String, breakGroup: Boolean = false) =
+        edit {
+            val day =
+                it.blocks().first { b -> b.id() == blockId }.days().first { d -> d.id() == dayId }
+            val index = day.slots().indexOfFirst { s -> s.id() == slotId }
+            require(index >= 0) { "This exercise is no longer in the draft." }
+            val group = day.slots()[index].supersetGroup()
+            val rows =
+                when {
+                    breakGroup -> {
+                        require(group != null) { "This exercise is not grouped." }
+                        GymSupersets.ungroup(day.slots(), group)
+                    }
+                    group == null -> GymSupersets.group(day.slots(), index, 2, id())
+                    else -> {
+                        val first = day.slots().indexOfFirst { s -> s.supersetGroup() == group }
+                        val count = day.slots().count { s -> s.supersetGroup() == group }
+                        GymSupersets.group(
+                            GymSupersets.ungroup(day.slots(), group),
+                            first,
+                            count + 1,
+                            group,
+                        )
+                    }
+                }
             it.replaceDay(
                 blockId,
                 StrengthProgrammeDraft.Day(day.id(), day.weekday(), day.title(), rows, day.notes()),
@@ -331,7 +370,14 @@ class StrengthProgrammeViewModel(app: Application, private val retained: SavedSt
                 day.id(),
                 day.weekday(),
                 day.title(),
-                day.slots().filterNot { s -> s.id() == slotId },
+                day.slots()
+                    .first { s -> s.id() == slotId }
+                    .supersetGroup()
+                    .let { group ->
+                        (if (group == null) day.slots()
+                            else GymSupersets.ungroup(day.slots(), group))
+                            .filterNot { s -> s.id() == slotId }
+                    },
                 day.notes(),
             ),
         )

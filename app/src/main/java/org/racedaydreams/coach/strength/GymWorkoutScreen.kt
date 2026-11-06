@@ -236,6 +236,47 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                     }
                 }
 
+                if (active) {
+                    GymRestCard(state, model, slot, enabled)
+                    GymWarmupCard(state, model, slot, enabled)
+                    if (slot.supersetGroup() != null)
+                        SemanticCard(Tile.Strength) {
+                            Text("Superset", style = MaterialTheme.typography.titleLarge)
+                            val next =
+                                org.racedaydreams.domain.strength.GymSupersets.next(execution)
+                            Text(
+                                execution
+                                    .slots()
+                                    .filter { it.supersetGroup() == slot.supersetGroup() }
+                                    .mapIndexed { index, movement ->
+                                        "${index+1}. ${movement.exercise().name()}"
+                                    }
+                                    .joinToString("\n")
+                            )
+                            Text(
+                                next?.instruction()
+                                    ?: "No further movement is suggested in this group. Skips are not recorded as completed sets."
+                            )
+                            Text(
+                                "Keep each exercise's actual sets separate. Rest targets are optional; you may rest between movements or rounds."
+                            )
+                            if (next != null && next.slotId() != slot.id())
+                                Button(onClick = model::nextSuperset, enabled = enabled) {
+                                    Text("Continue to next movement · round ${next.round()}")
+                                }
+                            else if (next != null)
+                                Text(
+                                    "Record this movement's actual set below. Then we'll suggest the next movement."
+                                )
+                            TextButton(onClick = model::skipMovement, enabled = enabled) {
+                                Text("Skip this movement today")
+                            }
+                            TextButton(onClick = model::breakSuperset, enabled = enabled) {
+                                Text("Use ordinary exercises today")
+                            }
+                        }
+                }
+
                 val previous =
                     remember(state.recent, slot.exercise(), execution.id()) {
                         state.recent

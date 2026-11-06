@@ -130,3 +130,37 @@ shared private local database. They are included only in user-requested backups/
 there is no automatic upload. Excluding/restoring an exercise does not delete recorded
 history or PBs. Diagnostics retain their existing allow-list; actual sets, exclusion reasons and reviewed
 decision payloads are not added. No Internet permission or runtime network dependency is added.
+
+## 0.11 local gym tools and recognition (development)
+
+Optional rest timing uses a private installation-identity file that is not restored from backups.
+Timer backups retain opaque epoch/clock anchors for continuity checks; another installation cannot
+adopt that identity and treats the timer as interrupted. These are app-local markers, not hardware IDs.
+Opt-in Android rest alerts use generic text rather than exercise loads, GPS or health values. They
+may be delayed by Android; no additional continuously running service or Internet access is added.
+Strength analytics read recorded actuals locally. Milestone recognition retains small source
+references/times and relevant recorded distance in typed local tables and explicit user backups.
+It does not hydrate GPS routes for achievement counts. Optional celebrations stay in-app; there are
+no achievement uploads, system streak notifications or telemetry. Diagnostic allow-lists remain
+separate from these private records.
+
+### Optional body guidance (0.11 development)
+
+Height observations and nutrition preferences stay in the local typed database and explicit
+user backups. The optional Health Connect READ_HEIGHT grant supports this feature only; manual
+entry remains available. Protein guidance is off by default and requires an explicitly chosen
+weight. Imported values do not become automatically authoritative. No body values are added
+to diagnostics, analytics, remote APIs or background uploads. See docs/BODY_GUIDANCE_0_11.md.
+
+## Explicit recording-detail cleanup
+
+Settings → Storage & recording detail saves a typed24month/5year/forever preference. Existing
+installations and older backups remain protected until informed acknowledgement. Saving a choice
+never deletes data. A fresh preview and separate confirmation are required for foreground cleanup;
+there is no automatic expiry worker. Only eligible finished app-owned dense GPS/sensor/event rows
+are removed. Workout summaries, actual gym sets, PBs, programmes, awards and coaching history stay.
+Health Connect provider records and ordinary body measurements are untouched. Local receipts and
+fingerprints document removed detail and allow compatible original archives to be restored without
+guessing. No data is uploaded. JSON13 preserves preferences/receipts; raw3 and complete1 preserve
+available detail with explicit limits. See docs/DATA_LIFECYCLE_0_11.md. SQLite deletion does not
+promise immediate device-space reclamation. Physical S24 cleanup/restore tests remain unperformed.

@@ -18,6 +18,11 @@ fun NavGraphBuilder.settingsGraph(
     requestReset: () -> Unit,
     requestWeightPermission: () -> Unit,
 ) {
+    composable("settings/storage") {
+        val storage: org.racedaydreams.coach.storage.StorageManagementViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel()
+        org.racedaydreams.coach.storage.StorageManagementScreen(storage) { nav.popBackStack() }
+    }
     composable("health-intelligence") { HealthIntelligenceScreen(model) }
 
     composable("settings") {
@@ -36,6 +41,7 @@ fun NavGraphBuilder.settingsGraph(
             requestReset,
             requestWeightPermission,
             { nav.navigate("health-intelligence") },
+            { nav.navigate("settings/storage") },
         )
     }
 }

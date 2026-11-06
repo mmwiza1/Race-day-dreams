@@ -21,17 +21,22 @@ import org.racedaydreams.domain.UnitSystem
     DestinationCard("Gym now","Start a planned or spontaneous workout, with each actual set saved locally"){open("gym-now")}
     DestinationCard("Log workout","Record what you actually did"){open("strength/log")}
     DestinationCard("Gym programme","Programming for your strength goals, independently or with running"){open("gym")}
+    DestinationCard("Strength trends","Working sets, primary muscle areas and recorded exercise frequency"){open("strength/analytics")}
     DestinationCard("PBs & progression","Historical and workout records together"){open("strength/pbs")}
+    DestinationCard("Recorded milestones","Local recognition from genuine training, with no streaks or penalties"){open("achievements")}
     DestinationCard("Workout history","${state.strengthSessions.size} recorded sessions"){open("history?kind=STRENGTH")}
     DestinationCard("Exercises","Search, favourite and manage your exercises"){open("exercises")}
+    DestinationCard("Recovery & training balance","Optional guidance from recent training; review changes before activation"){open("strength/recovery")}
     state.strengthSessions.maxByOrNull{it.startedAt()}?.let{CoachCard{Text("Most recent workout",style=MaterialTheme.typography.titleSmall);Text(friendlyDate(it.startedAt().atOffset(it.offset()).toLocalDate()));Text("${it.exercises().size} exercises · ${it.duration().toMinutes()} min")}}
 }
 @Composable fun ProgressDashboard(state:CoachUiState,open:(String)->Unit)=CoachPage{
     CoachHeading("Progress")
     DestinationCard("Running PBs","Your results and progression"){open("progress/pbs")}
     DestinationCard("Training trends","Running volume and workload context"){open("progress/trends")}
+    DestinationCard("Recorded milestones","Running and strength evidence, with optional in-app celebrations"){open("achievements")}
     DestinationCard("Body weight","Recorded measurements, without judgement"){open("progress/weight")}
     DestinationCard("Weekly coaching review","Evidence, recommendations and your decisions"){open("weekly")}
+    DestinationCard("Body & protein guidance","Optional source-labelled measurements and general adult nutrition guidance"){open("progress/body")}
     state.weights.maxByOrNull{it.at()}?.let{CoachCard{Text("Latest weight",style=MaterialTheme.typography.titleSmall);Text("${decimal(state.massUnit.fromKilograms(it.kilograms()))} ${state.massUnit.name.lowercase()}")}}
 }
 fun exerciseMatches(state:CoachUiState,query:String):List<StrengthExercise>{

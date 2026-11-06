@@ -191,6 +191,10 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             out.put("release08", Release08Store.exportData(db));
             out.put("strengthEngine", SqliteGymExecutionRepository.exportData(db));
             out.put("strengthProgramming", SqliteStrengthProgrammingRepository.exportData(db));
+            out.put("gymTools", SqliteGymToolsRepository.exportData(db));
+            out.put("achievements", SqliteAchievementsRepository.exportData(db));
+            out.put("bodyMeasurements", SqliteBodyMeasurementsRepository.exportData(db));
+            out.put("detailRetention", SqliteDetailRetentionRepository.exportData(db));
             db.setTransactionSuccessful();
             return out;
         } catch (JSONException e) {
@@ -240,6 +244,10 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             JSONObject gymProgramming,
             JSONObject strengthEngine,
             StrengthProgrammingArchive.Snapshot strengthProgramming,
+            SqliteGymToolsRepository.Snapshot gymTools,
+            SqliteAchievementsRepository.Snapshot achievements,
+            SqliteBodyMeasurementsRepository.Snapshot bodyMeasurements,
+            SqliteDetailRetentionRepository.Snapshot detailRetention,
             JSONObject support) {}
 
     private record SourceKey(String provider, String recordId) {}
@@ -427,6 +435,19 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                         data.optJSONObject("gymProgramming"),
                         development,
                         authored);
+            var retention =
+                    SqliteDetailRetentionRepository.validate(
+                            data.has("detailRetention")
+                                    ? data.getJSONObject("detailRetention")
+                                    : null);
+            for (var row : retention.removals()) {
+                var identity = activitySources.get(row.activityId());
+                if (identity == null
+                        || !identity.provider().equals(row.provider())
+                        || !identity.recordId().equals(row.recordId()))
+                    throw new IllegalArgumentException(
+                            "Removed detail disagrees with activity provenance.");
+            }
             return new RestoreData(
                     profile,
                     draft,
@@ -448,6 +469,16 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                     data.optJSONObject("gymProgramming"),
                     strengthEngine,
                     strengthProgramming,
+                    SqliteGymToolsRepository.validate(
+                            data.has("gymTools") ? data.getJSONObject("gymTools") : null,
+                            strengthEngine),
+                    SqliteAchievementsRepository.validate(
+                            data.has("achievements") ? data.getJSONObject("achievements") : null),
+                    SqliteBodyMeasurementsRepository.validate(
+                            data.has("bodyMeasurements")
+                                    ? data.getJSONObject("bodyMeasurements")
+                                    : null),
+                    retention,
                     data.optJSONObject("support"));
         } catch (JSONException | java.time.DateTimeException e) {
             throw FeatureJson.invalid(e);
@@ -596,6 +627,10 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             SqliteGymAssociationRepository.rebuildProjection(db);
             if (snapshot.strengthEngine() != null)
                 SqliteGymExecutionRepository.restore(db, snapshot.strengthEngine());
+            SqliteGymToolsRepository.restore(db, snapshot.gymTools());
+            SqliteAchievementsRepository.restore(db, snapshot.achievements());
+            SqliteBodyMeasurementsRepository.restore(db, snapshot.bodyMeasurements());
+            SqliteDetailRetentionRepository.restore(db, snapshot.detailRetention());
             SupportStore.restore(db, snapshot.support());
             Release08Store.restore(db, data.optJSONObject("release08"));
             RecordingStore.restoreRetainedSamples(db);

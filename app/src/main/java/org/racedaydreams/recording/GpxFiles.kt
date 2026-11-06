@@ -58,7 +58,10 @@ class GpxFiles(private val context:Context):ActivityFileImporter {
         return store.finish(RecordingStore.Session(id,"ACTIVE",start,0,last),last,"gpx")
     }
     fun exportTo(id:String,output:OutputStream){
-        val points=RecordingStore(context).points(id);require(points.size>=2){"No route samples retained for this recording"}
+        val points=RecordingStore(context).points(id)
+        if(points.isEmpty() && org.racedaydreams.data.SqliteDetailRetentionRepository(context).removal(id)!=null)
+            error("This run's raw route was removed through storage cleanup. Restore a compatible earlier raw backup before exporting GPX; the summary remains available.")
+        require(points.size>=2){"No route samples retained for this recording"}
         val writer=output.bufferedWriter(Charsets.UTF_8);writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx version=\"1.1\" creator=\"Race Day Dreams\" xmlns=\"http://www.topografix.com/GPX/1/1\"><trk><name>Recorded run</name>")
         var segment:Int?=null
         for(p in points){if(segment!=p.segment()){if(segment!=null)writer.write("</trkseg>");writer.write("<trkseg>");segment=p.segment()};val f=p.fix();writer.write("<trkpt lat=\"${f.latitude()}\" lon=\"${f.longitude()}\">");f.altitude()?.let{writer.write("<ele>$it</ele>")};writer.write("<time>${f.timestamp()}</time></trkpt>")};writer.write("</trkseg></trk></gpx>");writer.flush()

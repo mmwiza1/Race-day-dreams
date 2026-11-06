@@ -1,4 +1,19 @@
-# Active0.10 — Strength Programming 2.0
+## Active 0.11.0-test1 — Gym, Health & Recovery Intelligence
+
+PR18, feature/0.11-gym-health-recovery-intelligence, remains draft until the complete software
+and visual gate passes. Owner authorises automatic squash merge only after that gate, followed
+by actual main/post-merge CI and rolling development APK/checksum verification. No stable tag.
+
+All six implementation milestones are now present: optional gym timer/warm-up/superset tools;
+recorded strength trends/records/milestones; reviewed recovery/hybrid proposals; optional body/
+protein guidance; acknowledged transactional raw-detail retention/storage/compatible restore;
+and220fully illustrated canonical exercises plus three genuine six-month athlete simulations.
+Sourceee760bf passed all508tests/359captures EACH API28/35/36 and actual-source visual/artifact
+acceptance. Final metadata-head CI, authorised merge and main publication remain. CONTINUE_CODEX.md and
+VERIFICATION.md record the exact observed boundary; no software or hardware pass is assumed.
+No0.12work is started. The following sections describe historical releases, not active backlogs.
+
+# Completed0.10 — Strength Programming 2.0
 
 PR15 / feature/0.10-strength-programming implements the agreed full0.10 software scope:
 manual/custom authoring,9editable templates, goal/experience-specific blocks, exact previews,
@@ -8,8 +23,7 @@ captures. Refined large-text progression passed actual visual review; existing0.
 typed schema15/rootJSON9 durability and one native gym engine remain preserved.
 Final documentation-only CI must be inspected before PR readiness/merge. Galaxy S24/TalkBack
 physical acceptance is still unperformed. No additional0.10feature backlog remains.
-0.11 nutrition/analytics/PB redesign/achievements/deload/advanced hybrid/rest timers/
-warm-up generation/supersets/catalogue-for-breadth remain explicitly deferred.
+Those0.11features were deferred from0.10 and are tracked by the active0.11section above.
 
 The following sections retain earlier release history.
 

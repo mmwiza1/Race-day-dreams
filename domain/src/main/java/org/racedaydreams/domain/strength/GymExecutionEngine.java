@@ -261,6 +261,45 @@ public final class GymExecutionEngine {
         return state;
     }
 
+    /** Today-only skip preserves the original target; finishing may honestly be partial. */
+    public GymExecution skipExercise(String slotId, Tick at) {
+        requireActive();
+        slot(slotId);
+        state =
+                withEvent(
+                        state.status(),
+                        timing(at),
+                        state.selectedSlotId(),
+                        state.slots(),
+                        state.actualSets(),
+                        EventType.EXERCISE_SKIPPED,
+                        slotId,
+                        null,
+                        null,
+                        false);
+        return state;
+    }
+
+    public GymExecution breakSuperset(String slotId, Tick at) {
+        requireActive();
+        var selected = slot(slotId);
+        if (selected.supersetGroup() == null) return state;
+        var changed = GymSupersets.ungroup(state.slots(), selected.supersetGroup());
+        state =
+                withEvent(
+                        state.status(),
+                        timing(at),
+                        state.selectedSlotId(),
+                        changed,
+                        state.actualSets(),
+                        EventType.SUPERSET_UNGROUPED,
+                        slotId,
+                        null,
+                        null,
+                        false);
+        return state;
+    }
+
     public int workingSets(String slotId) {
         var selected = slot(slotId);
         int count = 0;

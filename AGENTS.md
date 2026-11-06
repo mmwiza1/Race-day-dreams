@@ -15,6 +15,17 @@ For implementation work:
 7. Merge only when the agreed scope is complete, migrations/backups are safe, required tests are green, and release documentation is accurate.
 8. After merge, verify the actual `main` head and post-merge workflow before treating the release checkpoint as complete.
 
+For owner-authorised feature releases, deliver the whole agreed scope, pass all mandatory
+software/visual gates on the exact final PR head, then mark ready and merge automatically using
+the established repository convention. A draft is a development state, not final delivery.
+Verify the actual merged main tree and post-merge CI, and verify the corresponding rolling
+Latest Development Build APK, version, commit and checksum before claiming publication.
+Do not request another approval solely for an already authorised merge. A later explicit manual-
+review instruction overrides this default. Never bypass branch protection, force a merge, merge
+incomplete work or red/pending checks, weaken tests, or claim unperformed hardware acceptance.
+Migration/backup/retention safety remains mandatory. No stable production tag without specific
+authorisation. If permissions prevent merging/publication, report the exact limitation honestly.
+
 Small repository-maintenance/documentation updates may be made directly by the repository owner or an explicitly authorised maintenance action, but Codex feature development must still use a branch + PR workflow.
 
 When `CONTINUE_CODEX.md` is present, treat its generic continuation rules as permanent and its active-release section as the authoritative current scope. Always inspect live repository state before following checkpoint SHAs or version numbers recorded there.

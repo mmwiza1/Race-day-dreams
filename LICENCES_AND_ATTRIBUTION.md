@@ -170,3 +170,18 @@ The [0.10.1 comparison](docs/GPS_ENGINE_REVIEW_0_10_1.md) records pinned OpenTra
 RunnerUp and GPSTest sources and licences. This was source/behavioural research, not
 incorporation. In particular, no GPL RunnerUp implementation was copied or translated.
 No additional runtime library, artwork or geographic data was introduced.
+
+The optional0.11 general protein range uses original MIT app code and explanatory wording.
+Sports-nutrition factual references are documented in docs/BODY_GUIDANCE_0_11.md; no source
+article text, images, commercial nutrition database or official branding is redistributed.
+
+## 0.11 original catalogue additions
+
+The220canonical guides include46new exercises with original movement copy and artwork;
+all223local instructional WebPs are original project contributions,
+generated from original movement specifications and individually reviewed for framing,
+equipment, limb placement and resistance direction. No stock image, scraped exercise art or
+commercial guide was used. Artwork is contributed under MIT; exact file hashes, sizes and
+review provenance are maintained in docs/exercise-artwork/asset-provenance.json. Bundled
+illustrations are general instruction, not individual form assessment. No runtime service,
+image download or new library is required.

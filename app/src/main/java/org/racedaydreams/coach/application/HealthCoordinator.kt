@@ -13,13 +13,18 @@ class HealthCoordinator(
     private val imports: org.racedaydreams.domain.health.HealthImportRepository,
     private val settings: org.racedaydreams.domain.settings.SettingsRepository,
     private val development: DevelopmentStore,
+    private val bodyMeasurements: org.racedaydreams.data.SqliteBodyMeasurementsRepository,
 ) {
     fun syncHealth() =
         operations.submit {
             val result = health.sync(imports)
-            if (HealthConnectGateway.WEIGHT_PERMISSION in health.grantedPermissions())
-                health.syncWeights(development)
-            operations.update { it.copy(message = result.message) }
+            val bodyMessage =
+                if (health.grantedPermissions().any { it in HealthConnectGateway.BODY_PERMISSIONS })
+                    health.syncBodyMeasurements(bodyMeasurements)
+                else null
+            operations.update {
+                it.copy(message = listOfNotNull(result.message, bodyMessage).joinToString("\n"))
+            }
         }
 
     fun permissionResult(granted: Set<String>) {

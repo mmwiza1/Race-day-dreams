@@ -81,17 +81,21 @@ public final class ExerciseSubstitutionEngineTestSuite {
                 alternatives.size(),
                 "Busy flow is bounded to four genuine options when available");
         equal(
-                "machine-chest-press",
+                "dumbbell-floor-press",
                 alternatives.get(0).exercise().id(),
-                "A different machine setup avoids the busy barbell/bench/rack first");
+                "Floor press uses available dumbbells without the busy bench or rack");
+        equal(
+                "machine-chest-press",
+                alternatives.get(1).exercise().id(),
+                "A distinct machine setup also avoids the busy barbell/bench/rack");
+        equal(
+                "knee-push-up",
+                alternatives.get(2).exercise().id(),
+                "The beginner equipment-free option remains available");
         equal(
                 "push-up",
-                alternatives.get(1).exercise().id(),
-                "Equipment-free fallback outranks more shared setup");
-        equal(
-                "dumbbell-bench-press",
-                alternatives.get(2).exercise().id(),
-                "Dumbbell option shares only the bench and explains that limitation");
+                alternatives.get(3).exercise().id(),
+                "Ordinary equipment-free push-up outranks a shared bench");
         for (var suggestion : alternatives) {
             ok(
                     suggestion.explanation().contains("Check that this setup is free"),
@@ -107,15 +111,18 @@ public final class ExerciseSubstitutionEngineTestSuite {
                 ExerciseSubstitutionEngine.rank(
                         context("bench-press", Collections.emptySet(), EQUIPMENT_UNAVAILABLE), 4);
         equal(
-                1,
+                2,
                 filtered.size(),
-                "No equipment does not manufacture a list of unsuitable alternatives");
+                "Exactly the two reviewed equipment-free horizontal pushes; wall setup is"
+                        + " unavailable");
         equal(
-                "push-up",
+                "knee-push-up",
                 filtered.get(0).exercise().id(),
-                "Only the real equipment-free horizontal push is offered");
+                "The new knee-supported push-up has no external equipment requirement");
+        equal("push-up", filtered.get(1).exercise().id(), "Ordinary push-up remains offered");
         ok(
-                filtered.get(0).measurementChanged(),
+                filtered.stream()
+                        .allMatch(ExerciseSubstitutionEngine.Suggestion::measurementChanged),
                 "Load-and-reps to bodyweight reps is explicitly flagged");
     }
 

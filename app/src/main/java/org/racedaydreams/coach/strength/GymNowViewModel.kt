@@ -26,6 +26,7 @@ import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.GymWorkoutJson
 import org.racedaydreams.data.SqliteGymAssociationRepository
 import org.racedaydreams.data.SqliteGymExecutionRepository
+import org.racedaydreams.data.SqliteGymToolsRepository
 import org.racedaydreams.data.SqliteStrengthProgrammingRepository
 import org.racedaydreams.data.StrengthUserStore
 import org.racedaydreams.domain.strength.ExerciseMetadata
@@ -35,6 +36,9 @@ import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.GymExecutionRepository
 import org.racedaydreams.domain.strength.GymNowWorkouts
 import org.racedaydreams.domain.strength.GymProgramme
+import org.racedaydreams.domain.strength.GymRestTimer
+import org.racedaydreams.domain.strength.GymSupersets
+import org.racedaydreams.domain.strength.GymWarmup
 import org.racedaydreams.domain.strength.GymWorkoutAdapter
 import org.racedaydreams.domain.strength.GymWorkoutAssociation
 import org.racedaydreams.domain.strength.GymWorkoutDefinition
@@ -96,6 +100,8 @@ data class GymSwapState(
 )
 
 data class GymNowState(
+    val restPreferences: GymRestTimer.Preferences = GymRestTimer.Preferences.defaults(),
+    val restTimer: GymRestTimer? = null,
     val loading: Boolean = true,
     val busy: Boolean = false,
     val error: String? = null,
@@ -127,6 +133,10 @@ data class GymNowState(
  */
 class GymNowViewModel(application: Application, private val retained: SavedStateHandle) :
     AndroidViewModel(application) {
+    private val tools = SqliteGymToolsRepository(application)
+    private val restClock = GymRestClock(application)
+    private val alerts = GymRestAlerts(application)
+    private var savedRest: GymRestTimer? = null
     private val repository = SqliteGymExecutionRepository(application)
     private val associations =
         GymAssociationCoordinator(SqliteGymAssociationRepository(application), Clock.systemUTC()) {
@@ -165,6 +175,8 @@ class GymNowViewModel(application: Application, private val retained: SavedState
     }
 
     private data class Panel(
+        val restPreferences: GymRestTimer.Preferences,
+        val restTimer: GymRestTimer?,
         val programme: GymProgramme?,
         val authoredProgramme: StrengthProgramme?,
         val unfinished: List<GymExecutionRepository.Summary>,
@@ -188,7 +200,19 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                 programming.programme(reference.id(), reference.revision())
                     ?: error("The preserved authored programme is missing.")
             else null
+        val observed = coordinator.view().observed()
+        val executionId = observed?.id()
+        savedRest
+            ?.takeIf {
+                it.executionId() != executionId ||
+                    observed?.status() in
+                        listOf(GymExecution.Status.FINISHED, GymExecution.Status.DISCARDED)
+            }
+            ?.let { alerts.sync(it.skip(restClock.now()), tools.preferences()) }
+        val rest = executionId?.let(tools::timer)
         return Panel(
+            tools.preferences(),
+            rest,
             if (authored == null) programmes.current() else null,
             authored,
             repository.unfinished(),
@@ -258,6 +282,8 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                                 associations.review(completed.id())
                             }
                             fresh = panel(mutable.value.favouritePage)
+                            if (fresh?.restTimer != null)
+                                restClock.now() // initialise private epoch on IO
                         } catch (error: RuntimeException) {
                             if (failure == null)
                                 failure =
@@ -266,8 +292,11 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                     }
                 }
                 val snapshot = view
+                savedRest = fresh?.restTimer
                 mutable.update { previous ->
                     previous.copy(
+                        restPreferences = fresh?.restPreferences ?: previous.restPreferences,
+                        restTimer = savedRest?.observe(restClock.now()),
                         loading = false,
                         // Acknowledgement callbacks still own form cleanup. Keep input disabled
                         // until syncFormToSelection/onSuccess finish; finally publishes idle.
@@ -676,6 +705,84 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         selectedSlot()?.let { saveForm(formKey(it.id()), next) }
     }
 
+    fun restPreferences(value: GymRestTimer.Preferences) = command {
+        tools.preferences(value)
+        savedRest?.let { alerts.sync(it.observe(restClock.now()), value) }
+    }
+
+    fun restAction(action: String) = command {
+        val execution = coordinator.view().accepted()?.execution() ?: error("Open a workout first.")
+        val slot = execution.slots().firstOrNull { it.id() == execution.selectedSlotId() }
+        val now = restClock.now()
+        val previous = tools.timer(execution.id())
+        val next =
+            tools.change(execution.id()) { old ->
+                when (action) {
+                    "start" ->
+                        if (old?.observe(now)?.phase() == GymRestTimer.Phase.RUNNING)
+                            old.observe(now)
+                        else
+                            GymRestTimer.start(
+                                execution.id(),
+                                UUID.randomUUID().toString(),
+                                GymRestTimer.suggestedSeconds(slot, tools.preferences()),
+                                now,
+                            )
+                    "pause" -> requireNotNull(old).pause(now)
+                    "resume" -> requireNotNull(old).resume(now)
+                    "reset" -> requireNotNull(old).reset(now)
+                    "+30" -> requireNotNull(old).adjust(30, now)
+                    "-30" -> requireNotNull(old).adjust(-30, now)
+                    "skip" -> requireNotNull(old).skip(now)
+                    else -> error("Unknown rest action.")
+                }
+            }
+        if (previous != null) alerts.sync(previous.skip(now), tools.preferences())
+        alerts.sync(next, tools.preferences())
+    }
+
+    fun warmupSuggestion(): GymWarmup.Suggestion? {
+        val execution = mutable.value.view?.observed() ?: return null
+        val slot = selectedSlot() ?: return null
+        return GymWarmup.suggest(
+            slot,
+            mutable.value.recent,
+            execution.actualSets(),
+            mutable.value.authoredProgramme?.settings()?.experience()
+                ?: mutable.value.programme?.settings()?.experience()
+                ?: GymProgramme.Experience.BEGINNER,
+            Instant.now(),
+        )
+    }
+
+    fun prepareWarmup(ramp: GymWarmup.Ramp?) = updateForm {
+        it.copy(
+            warmUp = true,
+            kilograms = ramp?.kilograms()?.toString() ?: it.kilograms,
+            repetitions = ramp?.repetitions()?.toString() ?: it.repetitions,
+        )
+    }
+
+    fun nextSuperset() = command {
+        GymSupersets.next(coordinator.view().observed() ?: error("Open a workout first."))?.let {
+            coordinator.selectExercise(it.slotId())
+        }
+    }
+
+    fun skipMovement() = command {
+        val id = coordinator.view().observed()?.selectedSlotId() ?: error("Choose an exercise.")
+        coordinator.skipExercise(id)
+        GymSupersets.next(coordinator.view().observed())?.let {
+            coordinator.selectExercise(it.slotId())
+        }
+    }
+
+    fun breakSuperset() = command {
+        coordinator.breakSuperset(
+            coordinator.view().observed()?.selectedSlotId() ?: error("Choose an exercise.")
+        )
+    }
+
     fun saveSet() {
         if (mutable.value.busy || mutable.value.view?.pending() != null) return
         val slot = selectedSlot() ?: return
@@ -780,7 +887,10 @@ class GymNowViewModel(application: Application, private val retained: SavedState
             if (!canObserve()) return@withLock
             val observed = withContext(Dispatchers.IO) { coordinator.observe() }
             // A command can begin while observation is in flight. It owns the next snapshot.
-            if (canObserve()) mutable.update { it.copy(view = observed) }
+            if (canObserve())
+                mutable.update {
+                    it.copy(view = observed, restTimer = savedRest?.observe(restClock.now()))
+                }
         }
     }
 
@@ -830,10 +940,40 @@ class GymNowViewModel(application: Application, private val retained: SavedState
         )
     }
 
+    fun builderPair(slotId: String) = changeBuilder { draft ->
+        val from = draft.slots.indexOfFirst { it.id() == slotId }
+        draft.copy(slots = GymSupersets.group(draft.slots, from, 2, UUID.randomUUID().toString()))
+    }
+
+    fun builderExtend(slotId: String) = changeBuilder { draft ->
+        val at = draft.slots.indexOfFirst { it.id() == slotId }
+        val group = draft.slots.getOrNull(at)?.supersetGroup() ?: error("Choose a superset.")
+        val first = draft.slots.indexOfFirst { it.supersetGroup() == group }
+        val last = draft.slots.indexOfLast { it.supersetGroup() == group }
+        require(last < draft.slots.lastIndex && draft.slots[last + 1].supersetGroup() == null) {
+            "Choose an adjacent ungrouped exercise."
+        }
+        draft.copy(
+            slots =
+                GymSupersets.group(
+                    GymSupersets.ungroup(draft.slots, group),
+                    first,
+                    last - first + 2,
+                    group,
+                )
+        )
+    }
+
+    fun builderUngroup(group: String) = changeBuilder {
+        it.copy(slots = GymSupersets.ungroup(it.slots, group))
+    }
+
     fun builderTitle(title: String) = changeBuilder { it.copy(title = title) }
 
     fun builderRemove(slotId: String) = changeBuilder {
-        it.copy(slots = it.slots.filterNot { slot -> slot.id() == slotId })
+        val group = it.slots.firstOrNull { slot -> slot.id() == slotId }?.supersetGroup()
+        val rows = if (group == null) it.slots else GymSupersets.ungroup(it.slots, group)
+        it.copy(slots = rows.filterNot { slot -> slot.id() == slotId })
     }
 
     fun builderMove(slotId: String, delta: Int) = changeBuilder { draft ->
@@ -872,7 +1012,15 @@ class GymNowViewModel(application: Application, private val retained: SavedState
             changeBuilder { draft ->
                 val rows = draft.slots.toMutableList()
                 val at = rows.indexOfFirst { it.id() == slot.id() }
-                if (at < 0) rows.add(slot) else rows[at] = slot
+                if (at < 0) rows.add(slot)
+                else
+                    rows[at] =
+                        GymWorkoutDefinition.Slot(
+                            slot.id(),
+                            slot.exercise(),
+                            slot.target(),
+                            rows[at].supersetGroup(),
+                        )
                 draft.copy(slots = rows)
             }
         } catch (error: IllegalArgumentException) {

@@ -26,7 +26,33 @@ final class GymSchemaFixture {
         }
     }
 
+    static void removeVersionNineteenTables(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE recording_detail_removals");
+        db.execSQL("DROP TABLE detail_retention_preferences");
+        db.execSQL("DROP TABLE detail_retention_state");
+    }
+
+    static void removeVersionEighteenTables(SQLiteDatabase db) {
+        removeVersionNineteenTables(db);
+        db.execSQL("DROP TABLE body_heights");
+        db.execSQL("DROP TABLE body_guidance_preferences");
+    }
+
+    static void removeVersionSeventeenTables(SQLiteDatabase db) {
+        removeVersionEighteenTables(db);
+        db.execSQL("DROP TABLE training_milestone_sources");
+        db.execSQL("DROP TABLE training_milestones");
+        db.execSQL("DROP TABLE training_milestone_preferences");
+    }
+
+    static void removeVersionSixteenTables(SQLiteDatabase db) {
+        removeVersionSeventeenTables(db);
+        db.execSQL("DROP TABLE gym_rest_timers");
+        db.execSQL("DROP TABLE gym_rest_preferences");
+    }
+
     static void removeVersionFifteenTables(SQLiteDatabase db) {
+        removeVersionSixteenTables(db);
         for (String table :
                 new String[] {
                     "strength_concrete_draft_workouts",

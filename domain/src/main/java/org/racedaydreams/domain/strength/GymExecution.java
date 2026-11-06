@@ -62,6 +62,8 @@ public record GymExecution(
         EXERCISE_SELECTED,
         EXERCISES_ADDED,
         EXERCISE_REPLACED,
+        EXERCISE_SKIPPED,
+        SUPERSET_UNGROUPED,
         SET_SAVED,
         PAUSED,
         RESUMED,
@@ -121,7 +123,9 @@ public record GymExecution(
                 throw new IllegalArgumentException(
                         "Set events require exact actual/slot identities.");
             }
-            if ((type == EventType.EXERCISE_SELECTED
+            if ((type == EventType.EXERCISE_SKIPPED
+                            || type == EventType.SUPERSET_UNGROUPED
+                            || type == EventType.EXERCISE_SELECTED
                             || type == EventType.EXERCISE_REPLACED
                             || type == EventType.EXERCISES_ADDED)
                     && slotId == null) {

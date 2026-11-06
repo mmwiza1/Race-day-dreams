@@ -31,6 +31,14 @@ public final class ExerciseSubstitutionEngine {
         {"bodyweight-squat", "kettlebell-goblet-squat"},
         {"single-leg-calf-raise-bodyweight", "single-leg-calf-raise"}
     };
+    private static final String[][] SUPPORT_PAIRS = {
+        {"wall-push-up", "incline-push-up"},
+        {"incline-push-up", "push-up"},
+        {"wall-push-up", "knee-push-up"},
+        {"wall-push-up", "push-up"},
+        {"knee-push-up", "push-up"},
+        {"chair-sit-to-stand", "bodyweight-squat"}
+    };
 
     private ExerciseSubstitutionEngine() {}
 
@@ -251,7 +259,16 @@ public final class ExerciseSubstitutionEngine {
         if (context.reason() == Reason.EQUIPMENT_BUSY)
             text.append(" Check that this setup is free; shared equipment may still be busy.");
         if (context.reason() == Reason.EASIER || context.reason() == Reason.HARDER) {
-            if (candidate.progression() != 0)
+            if (candidate.progression() != 0
+                    && context.original().mode() == StrengthExercise.Mode.BODYWEIGHT
+                    && candidate.exercise().mode() == StrengthExercise.Mode.BODYWEIGHT)
+                text.append(
+                        candidate.progression() < 0
+                                ? " Uses more support or less demanding leverage; review your"
+                                        + " repetition target."
+                                : " Uses less support or more demanding leverage; review your"
+                                        + " repetition target.");
+            else if (candidate.progression() != 0)
                 text.append(
                         candidate.progression() < 0
                                 ? " Removes the added-loading variation."
@@ -303,11 +320,13 @@ public final class ExerciseSubstitutionEngine {
         return result.toString();
     }
 
-    /**
-     * Reviewed added-load pairs, not a claim that technical complexity measures physical effort.
-     */
+    /** Reviewed added-load and support pairs; technical complexity is not physical effort. */
     private static int reviewedProgression(String original, String replacement) {
         for (var pair : ADDED_LOAD_PAIRS) {
+            if (pair[0].equals(original) && pair[1].equals(replacement)) return 1;
+            if (pair[1].equals(original) && pair[0].equals(replacement)) return -1;
+        }
+        for (var pair : SUPPORT_PAIRS) {
             if (pair[0].equals(original) && pair[1].equals(replacement)) return 1;
             if (pair[1].equals(original) && pair[0].equals(replacement)) return -1;
         }

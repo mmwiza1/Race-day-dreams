@@ -66,9 +66,11 @@ class CoachingScreenshotTest {
         get() = ApplicationProvider.getApplicationContext()
 
     private var scenario: ActivityScenario<CoachActivity>? = null
+    private var fixtureFontScale: String? = null
 
     @Before
     fun seed() {
+        fixtureFontScale = shell("settings get system font_scale").trim()
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
         val today = LocalDate.now()
@@ -395,7 +397,11 @@ class CoachingScreenshotTest {
         org.racedaydreams.recording.RunRecordingService.status.value = null
         org.racedaydreams.recording.RunRecordingService.workoutState.value = null
         org.racedaydreams.recording.RunRecordingService.savedActivity.value = null
-        scenario?.close()
+        try {
+            scenario?.close()
+        } finally {
+            fixtureFontScale?.let { restoreFontScale(it) }
+        }
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
     }
@@ -501,10 +507,16 @@ class CoachingScreenshotTest {
         await("Log workout")
         capture("strength")
         click("PBs & progression")
+        await("Strength records")
+        compose
+            .onNodeWithText("Historical entries & full PB history")
+            .performScrollTo()
+            .performClick()
         await("Exercise progress and PB history")
         compose.onAllNodesWithText("View progression")[0].performScrollTo().performClick()
         alignHeading("Exercise progress and PB history")
         capture("strength-pbs")
+        back()
         back()
         compose.onNodeWithText("Exercises").performScrollTo().performClick()
         await("Search exercises or aliases")
@@ -792,9 +804,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -886,9 +896,616 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesRecordedStrengthTrendsAndMeasuredVersusEstimatedRecords() {
+        val today = LocalDate.now()
+        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        for (week in 0..11) {
+            if (week == 3) continue // An explicitly missing week, never interpolated training.
+            CoachingStore(context)
+                .saveStrength(
+                    StrengthSession(
+                        "volume-week-$week",
+                        today
+                            .minusDays(1)
+                            .minusWeeks(week.toLong())
+                            .atTime(12, 0)
+                            .toInstant(ZoneOffset.UTC),
+                        ZoneOffset.UTC,
+                        Duration.ofMinutes(35),
+                        null,
+                        "Screenshot fixture, not user evidence",
+                        listOf(
+                            StrengthSession.ExerciseSets(
+                                bench,
+                                listOf(
+                                    StrengthSession.SetEntry("warm", 5, 20.0, null, true),
+                                    StrengthSession.SetEntry("work-a", 6, 65.0 - week, 7.0, false),
+                                    StrengthSession.SetEntry("work-b", 6, 65.0 - week, 7.0, false),
+                                ),
+                            )
+                        ),
+                    )
+                )
+        }
+        val before = CoachingStore(context).strength().toSet()
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Log workout")
+                compose.onNodeWithText("Strength trends").performScrollTo().performClick()
+                await("See what you recorded, rather than what your programme planned.")
+                await("This week so far")
+                alignHeading("Strength trends")
+                capture("strength-analytics$suffix")
+                compose.onNodeWithText("How are sets attributed?").performScrollTo().performClick()
+                alignHeading("Primary areas this week")
+                capture("strength-analytics-details$suffix")
+                back()
+                compose.onNodeWithText("PBs & progression").performScrollTo().performClick()
+                await("Recorded performance")
+                alignHeading("Strength records")
+                capture("strength-records$suffix")
+                compose
+                    .onAllNodesWithText("View measured history")[0]
+                    .performScrollTo()
+                    .performClick()
+                alignHeading("Repetition records and progression")
+                capture("strength-records-history$suffix")
+                back()
+                compose.onNodeWithText("Recorded milestones").performScrollTo().performClick()
+                await("✓ First recorded strength workout")
+                alignHeading("Recorded milestones")
+                capture("training-milestones$suffix")
+                compose
+                    .onAllNodesWithText("View milestone evidence")[0]
+                    .performScrollTo()
+                    .performClick()
+                alignHeading("Hide milestone evidence")
+                capture("training-milestones-evidence$suffix")
+                Assert.assertEquals(before, CoachingStore(context).strength().toSet())
+                if (scale == "2.0")
+                    Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (night == "yes")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesStoragePolicyPreviewAndExplicitConfirmationFromProductionNavigation() {
+        val old = Instant.parse("2020-01-01T00:00:00Z")
+        val engine = org.racedaydreams.domain.recording.RunMetricsEngine(0, old)
+        for (i in 0..100) engine.accept(
+            org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
+                old.plusSeconds(i.toLong()),
+                i * 1000L,
+                0.0,
+                i * .00003,
+                3.0,
+                null,
+                null,
+                3.0,
+            )
+        )
+        val store = RecordingStore(context)
+        store.start("retention-capture", old, 0)
+        store.appendBatch(
+            "retention-capture",
+            engine.points(),
+            engine.events(),
+            0,
+            0,
+            100000,
+            "ACTIVE",
+        )
+        store.finish(store.unfinished()!!, null, "rdd", false)
+        val retention = SqliteDetailRetentionRepository(context)
+        retention.acknowledge(
+            org.racedaydreams.domain.storage.DetailRetention.Policy.LAST_24_MONTHS,
+            Instant.now(),
+        )
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                click("⚙ Settings")
+                await("Storage & recording detail")
+                compose
+                    .onNodeWithText("Storage & recording detail")
+                    .performScrollTo()
+                    .performClick()
+                await("Your history stays")
+                // Require the feature-owned snapshot, not only its static initial heading.
+                await("Saved choice: 24 months")
+                alignHeading("Storage & recording detail")
+                capture("storage-management$suffix")
+                alignHeading("Detailed recording retention")
+                capture("storage-retention$suffix")
+                compose.onNodeWithText("Review eligible detail").performScrollTo().performClick()
+                await("Cleanup preview")
+                alignHeading("Cleanup preview")
+                capture("storage-preview$suffix")
+                compose
+                    .onNodeWithText("Review cleanup confirmation")
+                    .performScrollTo()
+                    .performClick()
+                await("Remove this raw detail?")
+                capture("storage-confirmation$suffix")
+                compose
+                    .onNodeWithText(
+                        "Cleanup may continue while the app is running. If interrupted, refresh to review remaining detail."
+                    )
+                    .performScrollTo()
+                    .assertIsDisplayed()
+                compose.onNodeWithText("Remove previewed raw detail").assertIsDisplayed()
+                compose.onNodeWithText("Keep my recording detail").assertIsDisplayed()
+                capture("storage-confirmation-details$suffix")
+                compose.onNodeWithText("Keep my recording detail").performClick()
+                Assert.assertEquals(engine.points(), store.points("retention-capture"))
+                Assert.assertNull(retention.removal("retention-capture"))
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun restoresUnsetFontAfterLargeTextBeforeNormalNavigation() {
+        shell("settings delete system font_scale")
+        repeat(3) {
+            shell("settings put system font_scale 2.0")
+            Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+            restoreFontScale("null")
+            Assert.assertEquals(1f, context.resources.configuration.fontScale, .01f)
+        }
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        awaitHomeReady(false)
+        compose.onNodeWithText("Plan").assertIsDisplayed()
+        compose.onNodeWithText("Calendar").assertIsDisplayed()
+        compose.onNodeWithText("Progress").assertIsDisplayed()
+    }
+
+    @Test
+    fun capturesExpandedCatalogueGuidanceInAllDisplayModes() {
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Log workout")
+                compose.onNodeWithText("Exercises").performScrollTo().performClick()
+                await("Search exercises or aliases")
+                for (id in ExpandedExerciseGuides.identities().sorted()) {
+                    val exercise = ExerciseCatalog.definition(id).exercise()
+                    compose
+                        .onNodeWithText("Search exercises or aliases")
+                        .performScrollTo()
+                        .performTextReplacement(exercise.name())
+                    androidx.test.espresso.Espresso.closeSoftKeyboard()
+                    compose.onNodeWithTag("exercise-row-$id").performScrollTo().performClick()
+                    await("Overview")
+                    click("How to do it")
+                    capture("exercise-$id-howto$suffix")
+                    if (
+                        suffix == "-large-font" &&
+                            id in
+                                setOf(
+                                    "side-lying-dumbbell-external-rotation",
+                                    "back-extension-forty-five-degree",
+                                    "glute-kickback-machine",
+                                )
+                    ) {
+                        val mistakes =
+                            TechniqueGuide.forExercise(id)!!.mistakes().joinToString("\n") {
+                                "• $it"
+                            }
+                        val body = compose.onNodeWithText(mistakes)
+                        // This is near the page end: max scroll may prevent an arbitrary
+                        // upper heading position. Require the complete actual content instead.
+                        body.performScrollTo().assertIsDisplayed()
+                        compose.onNodeWithText("Common mistakes").assertIsDisplayed()
+                        val viewport =
+                            compose
+                                .onNode(hasScrollAction() and hasAnyDescendant(hasText(mistakes)))
+                                .fetchSemanticsNode()
+                        val detail = body.fetchSemanticsNode()
+                        Assert.assertTrue(
+                            "Complete mistakes text must fit the scroll viewport for $id",
+                            detail.positionInRoot.y >= viewport.positionInRoot.y - 1f &&
+                                detail.positionInRoot.y + detail.size.height <=
+                                    viewport.positionInRoot.y + viewport.size.height + 1f,
+                        )
+                        capture("exercise-$id-howto-details$suffix", "Common mistakes")
+                        compose
+                            .onNodeWithText(
+                                "Alternatives: ${org.racedaydreams.domain.strength.TechniqueGuide.forExercise(id)!!.alternatives().joinToString()}"
+                            )
+                            .performScrollTo()
+                            .assertIsDisplayed()
+                    }
+                    back()
+                    await("Search exercises or aliases")
+                }
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesOptionalBodyGuidanceAndSourceHistory() {
+        val body = org.racedaydreams.data.SqliteBodyMeasurementsRepository(context)
+        val now = Instant.now()
+        val weight =
+            org.racedaydreams.domain.body.BodyWeight(
+                "body-guidance-fixture",
+                87.0,
+                now.minusSeconds(86400),
+                ZoneOffset.UTC,
+                "manual",
+                "body-guidance-fixture",
+                null,
+            )
+        body.saveWeight(weight)
+        body.saveHeight(
+            org.racedaydreams.domain.body.BodyHeight(
+                "body-height-fixture",
+                1.78,
+                now.minusSeconds(86400),
+                ZoneOffset.UTC,
+                "manual",
+                "body-height-fixture",
+                null,
+                null,
+            )
+        )
+        body.preferences(
+            org.racedaydreams.domain.body.BodyMeasurementsRepository.Preferences(
+                true,
+                org.racedaydreams.domain.body.HeightUnit.CENTIMETRES,
+                org.racedaydreams.domain.body.ProteinGuidance.Basis.from(weight),
+            )
+        )
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.HYBRID)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose
+                    .onNode(
+                        (hasText("Progress") or hasContentDescription("Progress")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Body & protein guidance")
+                compose.onNodeWithText("Body & protein guidance").performScrollTo().performClick()
+                await("A general daily range is about 120–175 grams of protein.")
+                alignHeading("Body & protein guidance")
+                capture("body-protein$suffix")
+                compose.onNodeWithText("Calculation & sources ▾").performScrollTo().performClick()
+                alignHeading("Calculation & sources ▴")
+                capture("body-protein-details$suffix")
+                compose.onNodeWithText("Choose or record a weight").performScrollTo().performClick()
+                alignHeading("Record a measurement")
+                capture("body-measurements$suffix")
+                Assert.assertEquals(weight, body.weights().first { it.id() == weight.id() })
+                Assert.assertTrue(body.preferences().basis().matches(weight))
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesRecoveryGuidanceFromActualRecordedEvidence() {
+        val today = LocalDate.now()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        // Today's authored session makes the Strength Home action an actual Start workout.
+        val programmes = SqliteStrengthProgrammingRepository(context)
+        val programme =
+            StrengthProgrammeGenerator()
+                .generate(
+                    StrengthProgrammeGenerator.Request(
+                        "recovery-capture",
+                        Instant.now(),
+                        "Strength foundation",
+                        StrengthProgramme.Settings(
+                            GymProgramme.Goal.STRENGTH,
+                            GymProgramme.Priority.STRENGTH_FIRST,
+                            GymProgramme.Experience.INTERMEDIATE,
+                            DayOfWeek.values().toSet(),
+                            3,
+                            60,
+                            ExerciseMetadata.Equipment.values().toSet(),
+                        ),
+                        today,
+                        6,
+                        "full-body-3",
+                        org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH,
+                        emptySet(),
+                        null,
+                        emptySet(),
+                        emptySet(),
+                        false,
+                    )
+                )
+        Assert.assertTrue(programme.workouts().any { it.date() == today })
+        programmes.activate(
+            programme,
+            programmes.currentReference(),
+            "recovery-capture-accept",
+            emptyList(),
+        )
+        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        for (days in listOf(1L, 5L, 8L)) CoachingStore(context)
+            .saveStrength(
+                StrengthSession(
+                    "recovery-$days",
+                    today.minusDays(days).atTime(12, 0).toInstant(ZoneOffset.UTC),
+                    ZoneOffset.UTC,
+                    Duration.ofMinutes(40),
+                    null,
+                    "Screenshot fixture, not user evidence",
+                    listOf(
+                        StrengthSession.ExerciseSets(
+                            bench,
+                            listOf(
+                                StrengthSession.SetEntry("work-a", 5, 60.0, 9.0, false),
+                                StrengthSession.SetEntry("work-b", 5, 60.0, 9.0, false),
+                            ),
+                        )
+                    ),
+                )
+            )
+        val before = CoachingStore(context).strength().toSet()
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(true, "Start workout")
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Log workout")
+                compose
+                    .onNodeWithText("Recovery & training balance")
+                    .performScrollTo()
+                    .performClick()
+                await("An optional lighter week is available for review")
+                alignHeading("Recovery & training balance")
+                capture("training-recovery$suffix")
+                compose.onNodeWithText("Supporting evidence ▾").performScrollTo().performClick()
+                alignHeading("Why this guidance?")
+                capture("training-recovery-evidence$suffix")
+                compose.onNodeWithText("Keep my current programme").performScrollTo().performClick()
+                await("Your current programme is unchanged.")
+                Assert.assertEquals(before, CoachingStore(context).strength().toSet())
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesOptionalGymPreparationAndSupersetFromProductionScreens() {
+        // One staged workout across all modes: never delete a database beneath live feature owners.
+        SqliteUserPreferencesRepository(context).clear()
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        var executionId: String? = null
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                val savedId = executionId
+                if (savedId == null) {
+                    scenario = ActivityScenario.launch(CoachActivity::class.java)
+                    openGymNow()
+                    compose.onNodeWithText("Build a workout").performScrollTo().performClick()
+                    await("Workout name")
+                    scenario?.onActivity { activity ->
+                        val model = ViewModelProvider(activity)[GymNowViewModel::class.java]
+                        model.builderTitle("Upper-body practice")
+                        Assert.assertTrue(
+                            model.builderPutSlot(
+                                null,
+                                ExerciseCatalog.definition("push-up").exercise(),
+                                GymSlotInput(
+                                    sets = "2",
+                                    minimumReps = "6",
+                                    maximumReps = "10",
+                                    restSeconds = "90",
+                                ),
+                            )
+                        )
+                        Assert.assertTrue(
+                            model.builderPutSlot(
+                                null,
+                                ExerciseCatalog.definition("plank").exercise(),
+                                GymSlotInput(sets = "2", seconds = "30", restSeconds = "60"),
+                            )
+                        )
+                        model.builderPair(model.state.value.builder.slots.first().id())
+                    }
+                    awaitGymReady {
+                        it.builder.slots.size == 2 &&
+                            it.builder.slots.all { slot -> slot.supersetGroup() != null }
+                    }
+                    compose.onNodeWithText("Start this workout").performScrollTo().performClick()
+                    awaitGymReady { it.view?.observed()?.status() == GymExecution.Status.ACTIVE }
+                    executionId = gymNowModel().state.value.view!!.observed()!!.id()
+                    compose.onNodeWithText("Start rest timer").performScrollTo().performClick()
+                    awaitGymReady {
+                        it.restTimer?.phase() ==
+                            org.racedaydreams.domain.strength.GymRestTimer.Phase.RUNNING
+                    }
+                    compose.onNodeWithText("Pause rest").performScrollTo().performClick()
+                    awaitGymReady {
+                        it.restTimer?.phase() ==
+                            org.racedaydreams.domain.strength.GymRestTimer.Phase.PAUSED
+                    }
+                } else reopenAndRecoverGym(savedId, 0)
+                Assert.assertEquals(
+                    org.racedaydreams.domain.strength.GymRestTimer.Phase.PAUSED,
+                    gymNowModel().state.value.restTimer!!.phase(),
+                )
+                alignHeading("Optional rest timer")
+                capture("gym-rest-timer$suffix")
+                compose.onNodeWithText("Timer settings ▾").performScrollTo().performClick()
+                alignHeading("Default rest when no target is prescribed")
+                capture("gym-rest-settings$suffix")
+                compose.onNodeWithText("Timer settings ▴").performScrollTo().performClick()
+                compose.onNodeWithText("Optional warm-up ▾").performScrollTo().performClick()
+                alignHeading("Optional warm-up ▴")
+                capture("gym-warmup$suffix")
+                compose.onNodeWithText("Why this preparation?").performScrollTo().performClick()
+                alignHeading("Hide preparation evidence")
+                capture("gym-warmup-evidence$suffix")
+                compose.onNodeWithText("Hide preparation evidence").performScrollTo().performClick()
+                compose.onNodeWithText("Skip preparation guidance").performScrollTo().performClick()
+                alignHeading("Superset")
+                capture("gym-superset$suffix")
+                Assert.assertTrue(
+                    gymNowModel().state.value.view!!.observed()!!.actualSets().isEmpty()
+                )
+                Assert.assertTrue(CoachingStore(context).strength().isEmpty())
+                if (scale == "2.0")
+                    Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+                if (night == "yes")
+                    Assert.assertEquals(
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                        context.resources.configuration.uiMode and
+                            android.content.res.Configuration.UI_MODE_NIGHT_MASK,
+                    )
+                pauseGymForRelaunch()
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1108,9 +1725,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1256,9 +1871,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1399,9 +2012,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1517,9 +2128,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1631,9 +2240,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1959,9 +2566,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -2038,15 +2643,100 @@ class CoachingScreenshotTest {
         awaitGymReady { it.view?.accepted()?.execution()?.status() == GymExecution.Status.ACTIVE }
     }
 
-    private fun shell(command: String): String =
-        InstrumentationRegistry.getInstrumentation()
-            .uiAutomation
-            .executeShellCommand(command)
-            .use { descriptor ->
-                java.io.FileInputStream(descriptor.fileDescriptor).use {
-                    it.readBytes().toString(Charsets.UTF_8)
-                }
+    private fun restoreFontScale(original: String) {
+        // An unset value means the normal scale, not a literal "null" to write. Deleting
+        // the setting after a large-text capture is not a portable configuration reset:
+        // API35 was observed retaining/re-persisting 2.0 after that delete. Write the
+        // explicit effective default and still await the actual application configuration.
+        val scale = original.toFloatOrNull()?.takeIf { it.isFinite() && it > 0f } ?: 1f
+        shell("settings put system font_scale $scale")
+    }
+
+    private fun shell(command: String): String {
+        val expectedScale =
+            when {
+                command.startsWith("settings put system font_scale ") ->
+                    command.substringAfterLast(' ').toFloat()
+                command == "settings delete system font_scale" -> 1f
+                else -> null
             }
+        val alreadyApplied =
+            expectedScale == null ||
+                kotlin.math.abs(context.resources.configuration.fontScale - expectedScale) < .01f
+        val acknowledged = java.util.concurrent.atomic.AtomicBoolean(alreadyApplied)
+        val receiver =
+            if (expectedScale != null && !alreadyApplied)
+                object : android.content.BroadcastReceiver() {
+                    override fun onReceive(
+                        receivingContext: Context,
+                        intent: android.content.Intent,
+                    ) {
+                        if (
+                            intent.action == android.content.Intent.ACTION_CONFIGURATION_CHANGED &&
+                                kotlin.math.abs(
+                                    context.resources.configuration.fontScale - expectedScale
+                                ) < .01f
+                        ) {
+                            acknowledged.set(true)
+                        }
+                    }
+                }
+            else null
+        if (receiver != null) {
+            androidx.core.content.ContextCompat.registerReceiver(
+                context,
+                receiver,
+                android.content.IntentFilter(android.content.Intent.ACTION_CONFIGURATION_CHANGED),
+                androidx.core.content.ContextCompat.RECEIVER_EXPORTED,
+            )
+        }
+        try {
+            val output =
+                InstrumentationRegistry.getInstrumentation()
+                    .uiAutomation
+                    .executeShellCommand(command)
+                    .use { descriptor ->
+                        java.io.FileInputStream(descriptor.fileDescriptor).use {
+                            it.readBytes().toString(Charsets.UTF_8)
+                        }
+                    }
+            if (expectedScale != null) {
+                // Android sends the app's configuration callback before its queued persistent
+                // settings write. A rapid next write can otherwise be overwritten by that old
+                // configuration. The system configuration broadcast follows the persistence
+                // message (AMS on28, ATMS on35); await it AND real settings/resources.
+                try {
+                    compose.waitUntil(20000) {
+                        acknowledged.get() &&
+                            kotlin.math.abs(
+                                context.resources.configuration.fontScale - expectedScale
+                            ) < .01f &&
+                            kotlin.math.abs(
+                                android.provider.Settings.System.getFloat(
+                                    context.contentResolver,
+                                    android.provider.Settings.System.FONT_SCALE,
+                                    1f,
+                                ) - expectedScale
+                            ) < .01f
+                    }
+                } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
+                    throw AssertionError(
+                        "Font configuration after $command: expected $expectedScale, actual ${context.resources.configuration.fontScale}, stored ${shell("settings get system font_scale").trim()}, broadcast ${acknowledged.get()}",
+                        failure,
+                    )
+                }
+                Assert.assertEquals(
+                    "Applied font scale after $command",
+                    expectedScale,
+                    context.resources.configuration.fontScale,
+                    .01f,
+                )
+            }
+            return output
+        } finally {
+            if (receiver != null) context.unregisterReceiver(receiver)
+        }
+    }
 
     private fun back() {
         androidx.test.espresso.Espresso.closeSoftKeyboard()
@@ -2195,11 +2885,14 @@ class CoachingScreenshotTest {
         val semantics =
             if (
                 name == "gym-equipment-alternatives" ||
+                    name.startsWith("storage-confirmation") ||
                     name.startsWith("strength-programme-alternatives") ||
                     name.startsWith("strength-programme-progression") ||
                     name.startsWith("strength-programme-history")
             ) {
-                // The full-screen production dialog and its covered activity are separate roots.
+                // Production dialogs and their covered activities are separate roots. Check the
+                // visible dialog, including the storage confirmation, rather than an ambiguous
+                // root.
                 compose
                     .onNode(isDialog(), useUnmergedTree = true)
                     .assertIsDisplayed()
@@ -2238,7 +2931,10 @@ class CoachingScreenshotTest {
             }
     }
 
-    private fun awaitHomeReady(strength: Boolean) {
+    private fun awaitHomeReady(
+        strength: Boolean,
+        expectedAction: String = if (strength) "Log today's workout" else "Run now",
+    ) {
         compose.waitUntil(20000) {
             // Use this scenario's model as well as semantics: a retiring activity's
             // Today node must not satisfy readiness while the new activity is loading.
@@ -2264,10 +2960,7 @@ class CoachingScreenshotTest {
                     .fetchSemanticsNodes()
                     .isNotEmpty() &&
                 compose
-                    .onAllNodes(
-                        hasText(if (strength) "Log today's workout" else "Run now") and
-                            hasClickAction()
-                    )
+                    .onAllNodes(hasText(expectedAction) and hasClickAction())
                     .fetchSemanticsNodes()
                     .isNotEmpty()
         }

@@ -1,3 +1,16 @@
+# 0.11.0-test1 software verification / physical acceptance
+
+Complete [workflow42148419418](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418) at sourceee760bf passed508tests EACH API28/35/36,
+359authentic captures/API,700108domain checks/47suites,75schema/migration and all release,
+formatting, build/lint, provenance and220canonical/14routine guidance gates. Canonical436e429
+matches all359API35artifact PNGs. The feature APK is55250287bytes, code15, debug-signed/test only.
+Schema19/rootJSON13/raw3/complete1 retain supported older readers. Export a complete backup before
+upgrading; debug signing keys may differ between builds and must not cause casual data loss.
+Final metadata-head/main CI and rolling publication are checked separately. See VERIFICATION.md.
+
+The0.11GalaxyS24checklist near the end of this file and all0.10.1outdoorGPS rows remain
+UNPERFORMED. Emulators do not certify provider, audio, battery, physical GPS or human TalkBack.
+
 # 0.10.1 software verification / real-device acceptance
 
 ## Verified0.10.1 software build
@@ -511,3 +524,39 @@ add their physical cases when connected. Rest timers/supersets/generated warm-up
 - [ ] Open earlier programme revisions/dated targets; no reactivation/edit action. Check
   current owner and actuals remain unchanged, including after complete backup/restore.
 - [ ] Check proposal/history light/dark/200% text, scrolling, keyboard and TalkBack on S24.
+
+## 0.11 owner acceptance — physical Galaxy S24, not yet performed
+
+Use the final test APK only after the automated API 28/35/36 and current-source screenshot gates.
+Record observations and build commit for each check; nothing below is a claimed pass.
+
+- Complete a real Gym Now session with manually entered working sets. Exercise optional rest
+  start/pause/resume/reset/adjust/skip, navigation and screen lock. Verify notification permission,
+  opt-in sound/vibration, music, battery-saving delays, and quiet alerts during run recording.
+- Review warm-up suggestions with/without recent exact-exercise evidence. Edit/skip examples;
+  save performed warm-ups separately and check that PB/working-set totals exclude them.
+- Run paired and three-exercise supersets with uneven targets; swap busy equipment, skip a
+  movement, break the group today, finish early, and verify original prescription/actuals persist.
+- Preview and explicitly activate programme revisions. Inspect working-set trends, measured
+  records versus estimates, historical PB editing, milestone evidence and celebration opt-out.
+- Open Recovery & training balance with fresh/missing effort evidence. Keep the programme,
+  preview a lighter week and review its exact changed/unchanged targets before separate activation.
+  Verify completed/started sessions and later weeks remain exact. For Hybrid, review lower-conflict
+  dates, keep either schedule, and confirm no running plan moves. All require physical verification.
+- Grant/deny/revoke Health Connect height/weight separately, use real providers and manual
+  cm/inch/kg/pound fallbacks, inspect source/timestamp and explicitly choose a weight for optional
+  protein guidance. Verify a newer import cannot silently replace that choice, and stale/missing/
+  changed/future weight gets no numerical range. These real-provider checks remain unperformed.
+- Review Settings → Storage & recording detail on an upgraded installation: existing detail
+  must remain protected. Save each retention option without deletion; review counts and cancel
+  confirmation first. Back up, then confirm a bounded cleanup on a COPY of real history. Navigate
+  away/reopen between batches; summaries, PBs, programmes, milestones and actual sets must remain.
+- Verify an active/paused/recoverable run blocks cleanup. Inspect the removed-detail message and
+  GPX refusal, then restore a suitable original raw backup and inspect the original route. Try a
+  conflicting file and verify no partial replacement. Observe actual file sizes without assuming
+  SQLite deletes immediately reclaim space. These tests require real hardware and remain unperformed.
+- Complete JSON and complete-package backup/restore checks on a copy of genuine long-term data.
+- Inspect light/dark/200% text, human TalkBack order, keyboard entry and touch targets.
+- Repeat the outstanding 0.10.1 outdoor/urban/known-distance GPS, locked-screen/background,
+  pause/resume/interruption/long-run/GPX and Watch comparison checks. Emulator/synthetic passes
+  cannot establish outdoor S24 accuracy, and neither comparison device is automatically ground truth.

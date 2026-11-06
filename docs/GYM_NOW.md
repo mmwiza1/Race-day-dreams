@@ -151,3 +151,29 @@ Application/capture source f3a988a passed workflow40741473316 with 331 tests on 
 associations and concise busy alternatives were directly reviewed, alongside dark/200%
 layouts. Real S24 acceptance remains unperformed. No further Strength2.0 feature phase
 is required for this scope-controlled release; only final PR-head checks/review remain.
+
+## 0.11 preparation and grouped execution (development)
+
+Optional rest uses a persisted monotonic anchor with a private install/boot identity, not wall
+clock or a second workout service. Navigation does not restart the timer. Explicit pause freezes
+remaining rest; reboot/other-device restore interrupts it. Optional notifications use one inexact
+alarm and Android notification audio policy, remain quiet during native recording, and may be
+delayed by Android. They require user permission/settings. Rest never prevents the next set.
+
+Warm-up guidance is separate from prescriptions and actuals. Numeric examples require exact
+recent working-set evidence with recorded effort; no evidence yields general preparation.
+Selecting an example fills an editable warm-up form; only Save actual set records performance.
+Warm-ups remain excluded from PB, progression and working-set counts.
+
+Adjacent draft exercises can form groups of two or more. Superset execution suggests exercise
+order and rounds from each slot's actual working sets, including retained sets before a swap.
+Warm-ups do not advance rounds. Each exercise's rest target remains optional; the timer can be
+used between movements or rounds and adjusted/skipped. Unequal target counts and skipped
+movements do not force completed exercises to repeat. Breaking a group today changes execution
+only; the frozen prescription and all recorded sets stay intact. Programme draft grouping still
+requires preview/explicit activation, producing an immutable revision. No automatic superset
+assignment is imposed on generated plans.
+
+Timer adjustments change both remaining rest and the full chosen period; Reset rest uses that
+adjusted full period consistently, regardless of when the adjustment was made. This advisory
+period remains separate from the original prescribed rest and from recorded workout time.

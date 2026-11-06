@@ -1,3 +1,17 @@
+# 0.11 body/recovery feature boundaries
+
+TrainingRecoveryViewModel builds evidence-backed options off-main; preview-only domain proposals
+save through existing concrete strength drafts and reviewed activation. No new planner or workout
+executor is introduced. Completed/started prescriptions, immutable versions and actuals stay distinct.
+
+BodyMeasurementsViewModel owns optional observation/guidance state separately from CoachViewModel.
+SqliteBodyMeasurementsRepository implements a typed boundary over normalized schema18 height and
+preference tables and the existing weight owner. Optional provider pages stage before one shared
+transaction; denied metrics/manual observations are not replaced. Root JSON12 adds strict body v1
+with older supported readers. No height/body preference is stored in a generic payload table.
+Protein needs an explicit identity/time/mass snapshot and never derives from height. See
+ docs/BODY_GUIDANCE_0_11.md and VERIFICATION.md for original heuristics and observed gates.
+
 # 0.10 programme authoring boundary
 
 New Android-independent StrengthProgramme/Draft models preserve dated blocks, frozen
@@ -448,3 +462,30 @@ Bounded summary queries never hydrate workouts. Activation checks the saved revi
 current ownership inside the existing transaction; no second execution engine is introduced.
 The nested authoring archive is independently versioned (write 2, read 1–2); JSON envelope 9,
 raw archive 2 and complete package 1 stay unchanged.
+
+## 0.11 gym and read-only intelligence boundaries (development)
+
+`GymRestTimer`, `GymWarmup` and `GymSupersets` are pure policies around the existing single
+`GymExecutionEngine`/session coordinator. A separate typed advisory-rest repository shares the
+SQLite pool and restore transaction; it cannot write actual sets or prescriptions. A private
+install/boot identity plus elapsed-realtime anchors prevents false continuity after reboot or
+cross-device restore. Optional inexact notification alarms do not introduce another workout service.
+
+`StrengthVolume` and `StrengthRecords` project accepted actuals off-main. Their UI offers evidence
+progressively without changing targets. `TrainingMilestones` derives a small fixed set of genuine
+history recognitions. `SqliteAchievementsRepository` stores bounded normalized headers, ordered
+source references and a celebration preference. Its feature ViewModel reads activity summaries,
+never raw GPS for counts. Missing source references are labelled, not reconstructed. Schema17 and
+root JSON11 are additive over16/10; old supported backup readers remain, with strict new-section
+validation before the shared replacement transaction. See docs/STRENGTH_ANALYTICS_0_11.md.
+
+## 0.11 typed recording-detail lifecycle
+
+SqliteDetailRetentionRepository shares ProfileDatabase transactions with backups and the recorder;
+DetailRetention and RemovedRecordingDetail are Android-independent rules/proofs. Schema19 adds
+normalized preferences/epoch/removal receipts; rootJSON13/retention1 and raw3 keep older readers.
+StorageManagementViewModel owns only explicit foreground review/cleanup. Each atomic batch uses
+an indexed per-session proof and removes raw rows only, preserving canonical history/PBs. No new
+service, worker, database, permission or runtime dependency. CompleteBackup1 keeps its existing
+outer shared transaction. See docs/DATA_LIFECYCLE_0_11.md for consent, restore, bounds and failure
+semantics. Existing GPS recording/execution engine behaviour is unchanged.
