@@ -23,6 +23,15 @@ def png(width=320, height=640, pixels=None):
 
 
 class CaptureValidationTest(unittest.TestCase):
+    def test_catalogue_expansion_has_every_display_mode(self):
+        import re
+        guide_source = (Path(__file__).resolve().parent.parent / 'domain/src/main/java/org/racedaydreams/domain/strength/ExpandedExerciseGuides.java').read_text()
+        identities = set(re.findall(r'add\(\s*out,\s*"([^"]+)"', guide_source))
+        self.assertEqual(identities, set(captures.CATALOGUE_EXPANSION_IDS))
+        expected = {f'exercise-{identity}-howto{suffix}.png' for identity in identities for suffix in ('', '-dark', '-large-font')}
+        self.assertEqual(expected, set(captures.CATALOGUE_EXPANSION_REQUIRED))
+        self.assertTrue(expected.issubset(captures.REQUIRED))
+
     def test_progression_and_history_require_three_actual_modes(self):
         self.assertEqual(len(captures.PROGRAMME_REVIEW_REQUIRED), 36)
         for scene in ('progression', 'history', 'progression-details', 'progression-instructions', 'progression-weight', 'progression-controls', 'progression-context', 'progression-evidence', 'progression-unchanged', 'progression-targets', 'progression-safeguards', 'progression-evidence-actions'):
@@ -30,14 +39,14 @@ class CaptureValidationTest(unittest.TestCase):
                 self.assertIn(f'strength-programme-{scene}{suffix}.png', captures.REQUIRED)
 
     def test_storage_requires_real_policy_preview_and_confirmation_in_three_modes(self):
-        expected={f'{scene}{suffix}.png' for scene in ('storage-management','storage-retention','storage-preview','storage-confirmation') for suffix in ('','-dark','-large-font')}
+        expected={f'{scene}{suffix}.png' for scene in ('storage-management','storage-retention','storage-preview','storage-confirmation','storage-confirmation-details') for suffix in ('','-dark','-large-font')}
         self.assertEqual(expected,set(captures.STORAGE_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
 
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(215, len(captures.REQUIRED))
+        self.assertEqual(248, len(captures.REQUIRED))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):

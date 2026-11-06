@@ -174,3 +174,13 @@ No additional runtime library, artwork or geographic data was introduced.
 The optional0.11 general protein range uses original MIT app code and explanatory wording.
 Sports-nutrition factual references are documented in docs/BODY_GUIDANCE_0_11.md; no source
 article text, images, commercial nutrition database or official branding is redistributed.
+
+## 0.11 original catalogue additions
+
+The additional instructional WebPs and movement copy are original project contributions,
+generated from original movement specifications and individually reviewed for framing,
+equipment, limb placement and resistance direction. No stock image, scraped exercise art or
+commercial guide was used. Artwork is contributed under MIT; exact file hashes, sizes and
+review provenance are maintained in docs/exercise-artwork/asset-provenance.json. Bundled
+illustrations are general instruction, not individual form assessment. No runtime service,
+image download or new library is required.

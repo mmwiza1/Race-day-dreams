@@ -212,7 +212,15 @@ fun StorageManagementContent(
                         Modifier.heightIn(max = 360.dp).verticalScroll(scroll)
                     ) {
                         Text(
-                            "Remove detailed evidence from ${state.preview.recordings().size} finished ${if (state.preview.recordings().size == 1) "recording" else "recordings"}? Your recorded summaries, PBs and training history stay. Maps and precise sample-based detail will no longer be available without a suitable earlier raw backup. This cannot be undone by the app alone. Cleanup may continue while the app is running. If interrupted, refresh to review remaining detail."
+                            "Maps and detailed sensor evidence will be removed. This cannot be undone without a suitable earlier raw backup."
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            "Remove raw detail from ${state.preview.recordings().size} finished ${if (state.preview.recordings().size == 1) "recording" else "recordings"}? Your recorded summaries, PBs and training history stay. Precise sample-based splits will no longer be available."
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            "Cleanup may continue while the app is running. If interrupted, refresh to review remaining detail."
                         )
                     }
                 }

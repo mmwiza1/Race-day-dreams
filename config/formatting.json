@@ -210,6 +210,8 @@
     "app/src/main/java/org/racedaydreams/data/RecordingArchive.kt",
     "app/src/main/java/org/racedaydreams/coach/storage/*.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/StorageManagementScreenTest.kt",
-    "domain/src/test/java/org/racedaydreams/domain/simulation/*.java"
+    "domain/src/test/java/org/racedaydreams/domain/simulation/*.java",
+    "domain/src/main/java/org/racedaydreams/domain/strength/ExpandedExerciseGuides.java",
+    "domain/src/test/java/org/racedaydreams/domain/strength/CatalogueExpansionTestSuite.java"
   ]
 }

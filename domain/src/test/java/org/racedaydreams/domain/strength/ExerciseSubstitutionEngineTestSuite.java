@@ -85,12 +85,16 @@ public final class ExerciseSubstitutionEngineTestSuite {
                 alternatives.get(0).exercise().id(),
                 "A different machine setup avoids the busy barbell/bench/rack first");
         equal(
-                "push-up",
+                "knee-push-up",
                 alternatives.get(1).exercise().id(),
-                "Equipment-free fallback outranks more shared setup");
+                "The added beginner equipment-free option outranks shared setup");
+        equal(
+                "push-up",
+                alternatives.get(2).exercise().id(),
+                "The ordinary equipment-free push-up remains available");
         equal(
                 "dumbbell-bench-press",
-                alternatives.get(2).exercise().id(),
+                alternatives.get(3).exercise().id(),
                 "Dumbbell option shares only the bench and explains that limitation");
         for (var suggestion : alternatives) {
             ok(
@@ -107,15 +111,18 @@ public final class ExerciseSubstitutionEngineTestSuite {
                 ExerciseSubstitutionEngine.rank(
                         context("bench-press", Collections.emptySet(), EQUIPMENT_UNAVAILABLE), 4);
         equal(
-                1,
+                2,
                 filtered.size(),
-                "No equipment does not manufacture a list of unsuitable alternatives");
+                "Exactly the two reviewed equipment-free horizontal pushes; wall setup is"
+                        + " unavailable");
         equal(
-                "push-up",
+                "knee-push-up",
                 filtered.get(0).exercise().id(),
-                "Only the real equipment-free horizontal push is offered");
+                "The new knee-supported push-up has no external equipment requirement");
+        equal("push-up", filtered.get(1).exercise().id(), "Ordinary push-up remains offered");
         ok(
-                filtered.get(0).measurementChanged(),
+                filtered.stream()
+                        .allMatch(ExerciseSubstitutionEngine.Suggestion::measurementChanged),
                 "Load-and-reps to bodyweight reps is explicitly flagged");
     }
 

@@ -27,13 +27,72 @@ This instruction supersedes all historical no-auto-merge wording below.
 - Branch: `feature/0.11-gym-health-recovery-intelligence`
 - PR: https://github.com/mmwiza1/Race-day-dreams/pull/18 (draft/open)
 - Live main inspected/fetched: `8796bc5d38360dcd83f5b6fa725cd0c03f4ad605` (unchanged).
-- Latest FULL green implementation: `7dc0b56f097c944ba38c0cf33800c81a7beb53a3`.
-- Canonical bot: `6a3eb10`, adopted with normal fast-forward while preserving new inventory files.
+- Latest FULL green implementation: `e39a3086e33c10fdc7fa3b774dba56a7eecc64f0` (M5/simulations;174catalogue).
+- Canonical bot: `c7af9ce`, adopted with normal fast-forward while preserving all new catalogue files.
 - Inventory checkpoint: `0d633f9`; following expiry/PB-proof checkpoint: `1606ade`.
 - Following documentation checkpoint: inspect actual HEAD/log/status for its own SHA.
 - Last full-gate baseline90ec691: app0.11.0-test1/code15, schema18/rootJSON12/raw2/complete1.
-  Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, pending its own full matrix.
+  Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
+
+### LATEST — M5 full matrix green; ten-entry M6 source checkpoint
+
+Actual e39a3086e33c10fdc7fa3b774dba56a7eecc64f0 COMPLETE workflow42133056947 SUCCESS.
+All506tests EACH API28/35/36 passed,215authentic captures/API; all three Android logs and
+workflow conclusion inspected. Canonical c7af9ce safely adopted with normal fast-forward,
+preserving every uncommitted catalogue file. API35ZIP13464174574 SHA256
+0535cb6762ef24856b47b77eb1a8d97e8260418257f614677e88a547eedcb941 verified and all215
+raw PNG bytes compared exactly with Git. All12storage frames opened directly in light/dark/
+200%. This verifies implemented M5 cleanup/restore/consent safeguards, NOT final0.11 scope.
+
+Visual review found200%confirmation put undo/backup warning below the initial view. Current
+following source puts that warning FIRST and splits text into separately scrollable paragraphs.
+Tests now scroll to the lifecycle explanation and require both real buttons visible. Three new
+confirmation-details captures are required; no deletion/evidence or activation rules changed.
+
+Catalogue checkpoint:184canonical/14routine, all have complete written+illustrated guidance.
+Ten additions: hip-abductor-machine,hip-adductor-machine,wall-push-up,knee-push-up,
+side-lying-hip-abduction,chair-sit-to-stand,cable-hip-abduction,cable-hip-adduction,
+cable-glute-kickback,seated-dumbbell-calf-raise. All ten new two-frame WebPs individually
+reviewed,1200x800quality84,541384bytes total. First cable-adduction draft rejected and corrected
+to cuff the near leg, so inward movement opposes cable tension. No rejected draft ships.
+ExpandedExerciseGuides is one content registry used by the existing template, no bespoke screen.
+Specific hip-machine capabilities and stable-chair requirement added. Existing IDs unchanged.
+Reviewed easier wall/knee/ordinary push-up and chair/squat relationships explain support/leverage,
+not invented added load. Same-movement substitutions still require fresh loads and exclusions.
+New CatalogueExpansionTestSuite95checks; previous exact no-equipment substitution fixture now
+asserts BOTH genuine knee/ordinary push-ups rather than falsely assuming only one exists.
+
+Local complete Gradle domain/debug/lint/instrumentation compile PASS79tasks/50sec before the
+warning copy refinement;673997domain checks/47suites, strict184/184+14/14 guidance,
+187assets/9740044bytes provenance,17capture-validator,75schema/9release notes pass.
+Current warning-source actual full Gradle gate PASS79tasks/58sec, recorded in
+catalogue-warning-ready-android.log. Formatter97Kotlin/158Java applied. Current full next
+runtime gate should be507methods/API and248captures/API (30new guide frames+3confirmation-tail).
+Production guide capture iterates every ExpandedExerciseGuides identity in all three modes.
+These new frames have NOT yet run or been reviewed. No merge/publication/final S24 claim.
+
+APK baseline downloaded from successful e39API35 artifact13464124570:52750085bytes.
+Following local184guide APK measured54737666bytes (+1987581,+3.77%; cross-build provisional).
+Compressed entry delta558638bytes, of which new art541384; final comparable CI size still needed.
+Source/permission/dependency/schema/root/raw/complete versions unchanged by catalogue work.
+Current0.11 remainscode15/schema19/root13/retention1/raw3/complete1.
+
+NEXT: finish/test/commit/push this184guide+warning checkpoint, inspect its exact full matrix and
+all new guide/confirmation-tail screenshots. Continue SELECTIVE QUALITY growth toward220–250;
+this is still unfinished, not silently reduced. Three six-month simulations are already complete.
+Four further original drafts safely exist under /workspace/generated_images (not bundled yet):
+bear_plank exec-6d16b68e-b38d-490b-8c5d-e1ce6e43007f.png (reviewed acceptable),
+scapular_push_up exec-2ebab8a0-a7a1-4c3f-b42c-c052e71013b9.png (reviewed acceptable),
+Copenhagen short exec-7c8d5071-3bd8-4304-9372-e0efbecf346d.png and long
+exec-6e1b6948-891e-4b35-87ff-b40124cce631.png require corrected elbow/forearm floor contact.
+Imagegen correction cell85 was started; if still active wait/resume it, otherwise inspect
+store art_copenhagen_short_corrected/art_copenhagen_long_corrected output_hint and saved PNGs.
+Do NOT bundle the original Copenhagen drafts without correcting their support arm. Once ready,
+add full definitions/metadata/guides/art provenance/tests; static holds get DURATION and one frame.
+No new canonical exercise may ship text-only. No0.12. KeepPR18draft until FULL agreed scope,
+final exact-source tests/visuals/docs/APK are green, then owner-authorised squash merge and
+verify main/post-merge CI/rolling development APK/version/code/SHA. All hardware checks unperformed.
 
 ### Current recovery — storage dialog capture correction
 

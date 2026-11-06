@@ -1212,6 +1212,95 @@ public final class ExerciseMetadataCatalog {
                 BEGINNER_FRIENDLY,
                 setup(WALL, WEIGHT_PLATE));
 
+        define(
+                out,
+                "hip-abductor-machine",
+                ISOLATION,
+                areas(GLUTES),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(HIP_ABDUCTOR_MACHINE));
+        define(
+                out,
+                "hip-adductor-machine",
+                ISOLATION,
+                areas(HIP_ADDUCTORS),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(HIP_ADDUCTOR_MACHINE));
+        define(
+                out,
+                "wall-push-up",
+                HORIZONTAL_PUSH,
+                areas(CHEST),
+                areas(TRICEPS, SHOULDERS, TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(WALL));
+        define(
+                out,
+                "knee-push-up",
+                HORIZONTAL_PUSH,
+                areas(CHEST),
+                areas(TRICEPS, SHOULDERS, TRUNK),
+                BEGINNER_FRIENDLY,
+                setup());
+
+        define(
+                out,
+                "side-lying-hip-abduction",
+                ISOLATION,
+                areas(GLUTES),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(),
+                UNILATERAL);
+        define(
+                out,
+                "chair-sit-to-stand",
+                SQUAT,
+                areas(QUADS, GLUTES),
+                areas(TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(STABLE_CHAIR));
+
+        define(
+                out,
+                "cable-hip-abduction",
+                ISOLATION,
+                areas(GLUTES),
+                areas(TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(CABLE_STATION, CABLE_ANKLE_CUFF),
+                UNILATERAL);
+        define(
+                out,
+                "cable-hip-adduction",
+                ISOLATION,
+                areas(HIP_ADDUCTORS),
+                areas(TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(CABLE_STATION, CABLE_ANKLE_CUFF),
+                UNILATERAL);
+
+        define(
+                out,
+                "cable-glute-kickback",
+                HIP_EXTENSION,
+                areas(GLUTES),
+                areas(HAMSTRINGS, TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(CABLE_STATION, CABLE_ANKLE_CUFF),
+                UNILATERAL,
+                ISOLATION);
+        define(
+                out,
+                "seated-dumbbell-calf-raise",
+                CALF,
+                areas(CALVES),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(DUMBBELLS, BENCH, STABLE_STEP));
+
         var canonicalIds = new java.util.HashSet<String>();
         for (var definition : ExerciseCatalog.definitions())
             canonicalIds.add(definition.exercise().id());

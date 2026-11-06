@@ -1077,9 +1077,70 @@ class CoachingScreenshotTest {
                     .performClick()
                 await("Remove this raw detail?")
                 capture("storage-confirmation$suffix")
+                compose
+                    .onNodeWithText(
+                        "Cleanup may continue while the app is running. If interrupted, refresh to review remaining detail."
+                    )
+                    .performScrollTo()
+                    .assertIsDisplayed()
+                compose.onNodeWithText("Remove previewed raw detail").assertIsDisplayed()
+                compose.onNodeWithText("Keep my recording detail").assertIsDisplayed()
+                capture("storage-confirmation-details$suffix")
                 compose.onNodeWithText("Keep my recording detail").performClick()
                 Assert.assertEquals(engine.points(), store.points("retention-capture"))
                 Assert.assertNull(retention.removal("retention-capture"))
+                scenario?.close()
+                scenario = null
+            }
+        } finally {
+            scenario?.close()
+            scenario = null
+            shell("settings put system font_scale $originalFont")
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesExpandedCatalogueGuidanceInAllDisplayModes() {
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, night, scale) in
+                listOf(
+                    Triple("", "no", "1.0"),
+                    Triple("-dark", "yes", "1.0"),
+                    Triple("-large-font", "no", "2.0"),
+                )) {
+                shell("settings put system font_scale $scale")
+                shell("cmd uimode night $night")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                compose
+                    .onNode(
+                        (hasText("Strength") or hasContentDescription("Strength")) and
+                            hasClickAction()
+                    )
+                    .performClick()
+                await("Log workout")
+                compose.onNodeWithText("Exercises").performScrollTo().performClick()
+                await("Search exercises or aliases")
+                for (id in ExpandedExerciseGuides.identities().sorted()) {
+                    val exercise = ExerciseCatalog.definition(id).exercise()
+                    compose
+                        .onNodeWithText("Search exercises or aliases")
+                        .performScrollTo()
+                        .performTextReplacement(exercise.name())
+                    androidx.test.espresso.Espresso.closeSoftKeyboard()
+                    compose.onNodeWithTag("exercise-row-$id").performScrollTo().performClick()
+                    await("Overview")
+                    click("How to do it")
+                    capture("exercise-$id-howto$suffix")
+                    back()
+                    await("Search exercises or aliases")
+                }
                 scenario?.close()
                 scenario = null
             }

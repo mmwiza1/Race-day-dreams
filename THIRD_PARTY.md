@@ -289,3 +289,13 @@ Original calculations/wording draw on Thomas/Erdman/Burke2016 (ACSM joint positi
 DOI10.1249/MSS.0000000000000852) and Jäger et al.2017 (ISSN protein/exercise position stand,
 DOI10.1186/s12970-017-0177-8). These factual references do not introduce bundled third-party
 content, an app dependency, runtime download or a licence change. See docs/BODY_GUIDANCE_0_11.md.
+
+## 0.11 original catalogue additions
+
+The additional instructional WebPs and movement copy are original project contributions,
+generated from original movement specifications and individually reviewed for framing,
+equipment, limb placement and resistance direction. No stock image, scraped exercise art or
+commercial guide was used. Artwork is contributed under MIT; exact file hashes, sizes and
+review provenance are maintained in docs/exercise-artwork/asset-provenance.json. Bundled
+illustrations are general instruction, not individual form assessment. No runtime service,
+image download or new library is required.

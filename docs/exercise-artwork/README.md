@@ -1,18 +1,32 @@
-# Original instructional artwork — 0.8.1
+# Original instructional artwork — current catalogue
 
 ## Current coverage
 
-All **174/174 canonical exercises** have movement-specific illustrated guidance.
+All **184/184 canonical exercises** have movement-specific illustrated guidance.
 All **14/14 supporting-routine movements** have artwork. The strict catalogue audit
 passes; no canonical exercise uses a schematic or a generic unrelated-pose fallback.
 
-There are **177 original local WebP assets**, totalling **9,198,660 bytes** before APK
+There are **187 original local WebP assets**, totalling **9,740,044 bytes** before APK
 packaging. Each is a 1200×800 sequence encoded at quality 84. Only the displayed
 asset is decoded. Single-frame holds, two-frame movements and three-frame technical
 lifts retain meaningful captions and complete written/screen-reader instructions.
 The exact byte sizes, SHA256 checksums and creation/licence records are in
 `asset-provenance.json`. Adding an exercise without a guide fails domain tests and
 the strict packaged-file audit. `missing-canonical-ids.txt` is currently empty.
+
+## 0.11 catalogue checkpoint
+
+Ten complete additions cover seated hip adductor/abductor machines, cable hip adduction/
+abduction, cable glute kickback, seated dumbbell calf raise, wall/knee push-ups, chair
+sit-to-stand and side-lying hip abduction. Each has its own original two-frame artwork,
+explicit measurement/equipment/role metadata, readable instructions and accessibility copy.
+The first cable-adduction draft was rejected and corrected: the cuff must be on the near
+leg so inward movement works against the cable, not with its pull. No rejected draft ships.
+Wall/knee pushing alternatives explain support/leverage rather than invented added load.
+
+Bundled additions total **541,384 bytes** over the prior177assets. APK comparison and actual
+new-guide screenshots remain pending the next exact-source Android gate. This checkpoint
+does not complete the agreed selective growth toward220–250 exercises.
 
 ## Authorship and review
 

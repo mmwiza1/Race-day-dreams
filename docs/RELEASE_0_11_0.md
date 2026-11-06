@@ -29,6 +29,10 @@ behaviour only; the complete agreed release is not yet ready for review.
   distinguish raw payload bytes from physical database files; compatible raw backups can restore
   proven original detail.
 
+- Ten fully illustrated catalogue additions cover hip machines, cable hip work, beginner
+  pushing, chair sit-to-stand, side-lying hip work and a dumbbell calf option. Support-based
+  substitutions explain changed leverage; loads never transfer between different exercises.
+
 ## Improvements
 
 - The accepted0.10.1 GPS, coaching clarity and screenshot lifecycle foundations are retained.

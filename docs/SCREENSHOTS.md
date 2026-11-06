@@ -445,3 +445,13 @@ navigates Home→Settings→Storage, reviews actual old raw evidence and cancels
 it asserts original points/absence of a removal receipt across all modes. Source fingerprints and
 PNG integrity remain mandatory. No M5 visual sign-off until the actual new frames are captured and
 opened; existing203canonical frames belong to the pre-M5 source90ec691/ad2654a. No mock screens.
+
+## 0.11 storage verification and catalogue checkpoint
+
+Source e39a308 passed506cases/API28/35/36 and215actual captures/API in workflow42133056947.
+All215API35PNGs from artifact13464174574 matched canonicalc7af9ce exactly; all12storage
+light/dark/200%frames were opened for visual review. Large-font confirmation prompted a
+warning-first copy refinement and three new scrolled confirmation-tail captures. Ten complete
+catalogue additions require30real guide frames, all light/dark/200%, via production navigation.
+These following248captures require a fresh exact-source matrix and direct review. The e39
+screenshots remain authentic historical checkpoint evidence, not acceptance of newer source.

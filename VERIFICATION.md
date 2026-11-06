@@ -1,3 +1,23 @@
+# M5 verified;184-guide catalogue and warning-first confirmation checkpoint
+
+[e39a308 complete workflow42133056947](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42133056947)
+SUCCESS:506instrumentation tests EACH API28/35/36,215authentic captures/API, no skips/failures.
+All three Android logs inspected. API35ZIP13464174574 SHA256
+0535cb6762ef24856b47b77eb1a8d97e8260418257f614677e88a547eedcb941 verified; all215PNGbytes
+match canonicalc7af9ce. All12new storage frames opened directly in light,dark,200%. Large text
+scrolls naturally, buttons remain visible. Visual review found the long confirmation warning
+needed earlier emphasis; following source puts loss/backup warning first and explicitly tests/
+captures scrolling to the remaining explanation, with both confirmation actions visible.
+
+Following source adds ten complete canonical guides (184/184,14/14routines), reviewed original
+movement-specific artwork541384bytes, typed roles/setup/measurement and actual/PB/substitution
+guards. Current local domain673997checks/47suites; Gradle domain/debug/lint/test compile PASS
+79tasks/50sec; the actual following warning-source full Gradle gate also PASS79tasks/58sec. New source runtime and visual gate is
+REQUIRED:507cases/API,248captures/API, including every new guide in all three display modes.
+75schema/9release/17capture-validator and strict guidance/provenance pass. No final-source
+Android success or final0.11 acceptance is inferred from this earlier e39 pass. Catalogue growth
+and final release remain incomplete; all S24 hardware acceptance remains unperformed.
+
 # Storage confirmation capture correction — full release remains incomplete
 
 Actual6532496 workflow42130320604 completed506tests EACH API28/35/36:505passed,

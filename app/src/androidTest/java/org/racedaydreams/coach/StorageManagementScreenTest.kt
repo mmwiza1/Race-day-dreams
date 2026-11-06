@@ -106,6 +106,19 @@ class StorageManagementScreenTest {
             .assertIsDisplayed()
         compose.onNodeWithText("Review cleanup confirmation").performScrollTo().performClick()
         compose.onNodeWithText("Remove this raw detail?").assertIsDisplayed()
+        compose
+            .onNodeWithText(
+                "Maps and detailed sensor evidence will be removed. This cannot be undone without a suitable earlier raw backup."
+            )
+            .assertIsDisplayed()
+        compose
+            .onNodeWithText(
+                "Cleanup may continue while the app is running. If interrupted, refresh to review remaining detail."
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose.onNodeWithText("Remove previewed raw detail").assertIsDisplayed()
+        compose.onNodeWithText("Keep my recording detail").assertIsDisplayed()
         Assert.assertEquals(0, cleaned)
         compose.onNodeWithText("Keep my recording detail").performClick()
         Assert.assertEquals(0, cleaned)
