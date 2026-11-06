@@ -1165,9 +1165,14 @@ class CoachingScreenshotTest {
                                     "glute-kickback-machine",
                                 )
                     ) {
+                        alignHeading("Common mistakes")
+                        compose.onNodeWithText("Common mistakes").assertIsDisplayed()
                         compose
-                            .onNodeWithText("Common mistakes")
-                            .performScrollTo()
+                            .onNodeWithText(
+                                TechniqueGuide.forExercise(id)!!.mistakes().joinToString("\n") {
+                                    "• $it"
+                                }
+                            )
                             .assertIsDisplayed()
                         capture("exercise-$id-howto-details$suffix", "Common mistakes")
                         compose

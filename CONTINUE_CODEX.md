@@ -35,6 +35,20 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
+### Current visual-capture refinement
+
+3a13db7 is pushed; its matrix42145400078 began but is superseded by this concrete capture fix.
+Actual89API36ZIP downloaded/SHAverified to scratch/rdd011/catalogue220-89-api36; strict359PNG
+integrity passes. Directly reviewed all36later-addition light views (first10light reviewed from
+17bAPI35) and all3large-text guide tails. Movement-specific art/setup and wrapping are clear.
+The tail frames exposed a capture issue: scrollTo made Common mistakes heading appear only at
+the bottom, hiding its body in the screenshot. Following capture reuses existing alignHeading
+and explicitly requires full mistakes text displayed before capture. Actual app UI/scrolling is
+unchanged. No removed assertion. This and broadcast-barrier fixes require the next whole matrix.
+Actual full Gradle domain/build/lint/instrumentation compile PASS79tasks/30sec after the tail
+alignment/assertion change (catalogue220-tail-review-android.log).17capture-validator checks pass.
+No final visual acceptance or source/canonical correspondence is claimed from the older images.
+
 ### CURRENT RECOVERY —220catalogue complete; Android font transition barrier under verification
 
 AllM1–6 implementation and six-month simulations are present. This checkpoint preserves89ff744
