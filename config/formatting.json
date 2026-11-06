@@ -212,6 +212,12 @@
     "app/src/androidTest/java/org/racedaydreams/coach/StorageManagementScreenTest.kt",
     "domain/src/test/java/org/racedaydreams/domain/simulation/*.java",
     "domain/src/main/java/org/racedaydreams/domain/strength/ExpandedExerciseGuides.java",
-    "domain/src/test/java/org/racedaydreams/domain/strength/CatalogueExpansionTestSuite.java"
+    "domain/src/test/java/org/racedaydreams/domain/strength/CatalogueExpansionTestSuite.java",
+    "app/src/main/java/org/racedaydreams/coach/theme/*.kt",
+    "app/src/main/java/org/racedaydreams/coach/SemanticTiles.kt",
+    "app/src/main/java/org/racedaydreams/coach/GuidanceStyle.kt",
+    "app/src/main/java/org/racedaydreams/coach/FriendlyUi.kt",
+    "app/src/main/java/org/racedaydreams/coach/SettingsScreen.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/MaterialThemeTest.kt"
   ]
 }

@@ -49,12 +49,12 @@ When specifically instructed to implement this work:
 
 Update the short block below whenever a session stops mid-task. Replace stale checkpoint entries rather than appending lengthy historical transcripts.
 
-- **Active owner-authorised task:** None recorded in this file; consult latest request.
-- **Working branch / PR:** Determine from live git and GitHub.
-- **Completed since baseline:** Determine from live commits and diff.
-- **Tests and evidence:** Record exact commands, outcomes and CI links; distinguish pending from passed.
-- **Next safe step:** Inspect current state and continue only the authorised unfinished task.
-- **Blockers / hardware checks:** Record honestly.
+- **Active owner-authorised task:** Material You / Material 3 Expressive modernisation of existing active UI only. Preserve engines, data, icon and navigation. Dedicated branch/PR; authorised merge only after complete software and visual gates.
+- **Working branch / PR:** `feature/material3-expressive-ui`, from `e6037e1`; PR not yet opened. Previous 0.11 branch and its final delivery log remain untouched.
+- **Completed since baseline:** Milestone 1 foundation implemented and locally verified: central RaceDayTheme, dynamic/branded toggle, light/dark type/shapes/tonal roles, accessible shared disclosures, bounded scrolling pages, wide NavigationRail, consumed shell insets, retained View XML brand palettes. Version 0.12.0-test1/code16 and release-note/workflow names updated. No runtime dependency/schema/backup/permission changes. Focused audit: CoachActivity has a partial fixed scheme/default type and shapes; shared CoachCard/SemanticCard/GuidanceCard spread across feature screens. Active legacy OnboardingView and HealthPermissionRationaleActivity remain Views; do not migrate obsolete MainActivity. Official Android Material3, motion and adaptive navigation guidance consulted.
+- **Tests and evidence:** Pre-change baseline: `sh scripts/test-domain.sh` passed (47 suites/700108 checks); schema 75 and release-note 9 passed. Offline Gradle domain:check/debug build/lint/instrumentation APK compilation passed, 79 tasks/34s. Main e603 CI was in progress; f967 main CI passed. Foundation Android debug/lint/instrumentation compilation PASS, 75 tasks/3m26s; pinned formatting PASS103 Kotlin/158 Java, 14 formatter tests, release notes9. New Material theme/disclosure runtime tests are compiled, not yet run. Milestone 2 Home/live-run edits are in progress and still require compilation. No new authentic screenshots or runtime matrix yet.
+- **Next safe step:** Implement shared theme/colour/type/shapes and adaptive shell first; then core running hierarchy, remaining active UI, accessibility and authentic final-source captures/API28/35/36. Version target 0.12.0-test1/code16 for this UI-only release; no deferred intelligence features.
+- **Blockers / hardware checks:** No local emulator/KVM; use established GitHub API28/35/36 matrix. Physical Galaxy/Pixel/Xiaomi, human TalkBack, GPS and Health Connect checks remain unperformed.
 
 ## End-of-session handoff
 
