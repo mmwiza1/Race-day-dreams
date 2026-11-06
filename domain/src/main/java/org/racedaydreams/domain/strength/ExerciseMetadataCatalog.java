@@ -1440,6 +1440,184 @@ public final class ExerciseMetadataCatalog {
                 BEGINNER_FRIENDLY,
                 setup(SMITH_MACHINE, STABLE_STEP));
 
+        define(
+                out,
+                "dumbbell-floor-press",
+                HORIZONTAL_PUSH,
+                areas(CHEST),
+                areas(TRICEPS, SHOULDERS),
+                BEGINNER_FRIENDLY,
+                setup(DUMBBELLS),
+                PRIMARY_STRENGTH);
+        define(
+                out,
+                "kettlebell-floor-press",
+                HORIZONTAL_PUSH,
+                areas(CHEST),
+                areas(TRICEPS, SHOULDERS),
+                BEGINNER_FRIENDLY,
+                setup(KETTLEBELLS),
+                PRIMARY_STRENGTH);
+        define(
+                out,
+                "single-leg-hip-thrust",
+                HIP_EXTENSION,
+                areas(GLUTES),
+                areas(HAMSTRINGS, TRUNK),
+                INTERMEDIATE,
+                setup(BENCH),
+                UNILATERAL);
+        define(
+                out,
+                "lateral-step-down",
+                UNILATERAL,
+                areas(QUADS, GLUTES),
+                areas(TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(STABLE_STEP),
+                SQUAT);
+
+        define(
+                out,
+                "plank-shoulder-tap",
+                CORE,
+                areas(TRUNK),
+                areas(SHOULDERS),
+                INTERMEDIATE,
+                setup());
+        define(
+                out,
+                "side-plank-hip-lift",
+                CORE,
+                areas(TRUNK),
+                areas(SHOULDERS, GLUTES),
+                INTERMEDIATE,
+                setup(),
+                UNILATERAL);
+        define(
+                out,
+                "single-arm-overhead-carry",
+                CARRY,
+                areas(SHOULDERS, TRUNK),
+                areas(FOREARMS, UPPER_BACK),
+                INTERMEDIATE,
+                setup(DUMBBELLS),
+                UNILATERAL);
+
+        define(
+                out,
+                "single-leg-seated-leg-curl",
+                HAMSTRING,
+                areas(HAMSTRINGS),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(SEATED_LEG_CURL_MACHINE),
+                UNILATERAL,
+                ISOLATION);
+        define(
+                out,
+                "single-leg-leg-extension",
+                ISOLATION,
+                areas(QUADS),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(LEG_EXTENSION_MACHINE),
+                UNILATERAL);
+        define(
+                out,
+                "reverse-hyperextension",
+                HIP_EXTENSION,
+                areas(GLUTES, HAMSTRINGS),
+                areas(TRUNK),
+                INTERMEDIATE,
+                setup(REVERSE_HYPER_MACHINE));
+
+        define(
+                out,
+                "supported-single-leg-squat",
+                SQUAT,
+                areas(QUADS, GLUTES),
+                areas(TRUNK),
+                INTERMEDIATE,
+                setup(SQUAT_RACK),
+                UNILATERAL);
+        define(
+                out,
+                "supported-hip-airplane",
+                HIP_STABILITY,
+                areas(GLUTES),
+                areas(TRUNK, HAMSTRINGS),
+                INTERMEDIATE,
+                setup(SQUAT_RACK),
+                HINGE,
+                UNILATERAL);
+        define(out, "reverse-nordic", ISOLATION, areas(QUADS), areas(TRUNK), INTERMEDIATE, setup());
+        define(
+                out,
+                "bear-crawl",
+                CONDITIONING,
+                areas(TRUNK, SHOULDERS),
+                areas(QUADS),
+                INTERMEDIATE,
+                setup(),
+                CORE);
+        define(
+                out,
+                "glute-kickback-machine",
+                HIP_EXTENSION,
+                areas(GLUTES),
+                areas(HAMSTRINGS, QUADS, TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(GLUTE_KICKBACK_MACHINE),
+                UNILATERAL,
+                ISOLATION);
+        define(
+                out,
+                "back-extension-forty-five-degree",
+                HINGE,
+                areas(GLUTES, HAMSTRINGS),
+                areas(TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(BACK_EXTENSION_BENCH));
+        define(
+                out,
+                "incline-push-up",
+                HORIZONTAL_PUSH,
+                areas(CHEST),
+                areas(TRICEPS, SHOULDERS, TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(BENCH),
+                PRIMARY_STRENGTH);
+        define(
+                out,
+                "cable-y-raise",
+                SCAPULAR_CONTROL,
+                areas(SHOULDERS, UPPER_BACK),
+                areas(TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(CABLE_STATION, CABLE_HANDLE),
+                UNILATERAL);
+        define(
+                out,
+                "side-lying-dumbbell-external-rotation",
+                EXTERNAL_ROTATION,
+                areas(SHOULDERS),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(DUMBBELLS),
+                UNILATERAL,
+                ISOLATION);
+        define(
+                out,
+                "cable-internal-rotation",
+                INTERNAL_ROTATION,
+                areas(SHOULDERS),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(CABLE_STATION, CABLE_HANDLE),
+                UNILATERAL,
+                ISOLATION);
+
         var canonicalIds = new java.util.HashSet<String>();
         for (var definition : ExerciseCatalog.definitions())
             canonicalIds.add(definition.exercise().id());

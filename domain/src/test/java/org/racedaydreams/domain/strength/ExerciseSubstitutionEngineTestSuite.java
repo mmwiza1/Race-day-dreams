@@ -81,21 +81,21 @@ public final class ExerciseSubstitutionEngineTestSuite {
                 alternatives.size(),
                 "Busy flow is bounded to four genuine options when available");
         equal(
-                "machine-chest-press",
+                "dumbbell-floor-press",
                 alternatives.get(0).exercise().id(),
-                "A different machine setup avoids the busy barbell/bench/rack first");
+                "Floor press uses available dumbbells without the busy bench or rack");
+        equal(
+                "machine-chest-press",
+                alternatives.get(1).exercise().id(),
+                "A distinct machine setup also avoids the busy barbell/bench/rack");
         equal(
                 "knee-push-up",
-                alternatives.get(1).exercise().id(),
-                "The added beginner equipment-free option outranks shared setup");
+                alternatives.get(2).exercise().id(),
+                "The beginner equipment-free option remains available");
         equal(
                 "push-up",
-                alternatives.get(2).exercise().id(),
-                "The ordinary equipment-free push-up remains available");
-        equal(
-                "dumbbell-bench-press",
                 alternatives.get(3).exercise().id(),
-                "Dumbbell option shares only the bench and explains that limitation");
+                "Ordinary equipment-free push-up outranks a shared bench");
         for (var suggestion : alternatives) {
             ok(
                     suggestion.explanation().contains("Check that this setup is free"),

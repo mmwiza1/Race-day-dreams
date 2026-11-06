@@ -32,6 +32,8 @@ public final class ExerciseSubstitutionEngine {
         {"single-leg-calf-raise-bodyweight", "single-leg-calf-raise"}
     };
     private static final String[][] SUPPORT_PAIRS = {
+        {"wall-push-up", "incline-push-up"},
+        {"incline-push-up", "push-up"},
         {"wall-push-up", "knee-push-up"},
         {"wall-push-up", "push-up"},
         {"knee-push-up", "push-up"},

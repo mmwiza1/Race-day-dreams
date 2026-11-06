@@ -21,6 +21,7 @@ public final class CatalogueExpansionTestSuite {
         staticHoldsAndShoulderBladeControlAreDistinctTasks();
         carriesAndLoadedHoldsKeepTheirMeasurementEvidence();
         shoulderControlAndSmithSetupsAreSpecific();
+        newSetupsAndModalitiesRemainIndependent();
         System.out.println("CatalogueExpansionTestSuite: " + checks + " checks passed.");
     }
 
@@ -422,6 +423,101 @@ public final class CatalogueExpansionTestSuite {
             check(TechniqueIllustrations.forExercise(id).phases().size() == 2);
             check(ExpandedExerciseGuides.identities().contains(id));
         }
+    }
+
+    private static void newSetupsAndModalitiesRemainIndependent() {
+        var floor = ExerciseMetadataCatalog.require("dumbbell-floor-press");
+        check(floor.equipment().availableWith(Set.of(DUMBBELLS)));
+        check(!floor.equipment().availableWith(Set.of(KETTLEBELLS)));
+        check(
+                ExerciseMetadataCatalog.require("kettlebell-floor-press")
+                        .equipment()
+                        .availableWith(Set.of(KETTLEBELLS)));
+        check(
+                !ExerciseMetadataCatalog.require("kettlebell-floor-press")
+                        .equipment()
+                        .availableWith(Set.of(DUMBBELLS)));
+        check(
+                !ExerciseMetadataCatalog.require("incline-push-up")
+                        .equipment()
+                        .availableWith(Set.of()));
+        check(
+                ExerciseMetadataCatalog.require("incline-push-up")
+                        .equipment()
+                        .availableWith(Set.of(BENCH)));
+        for (var pair :
+                List.of(
+                        new String[] {"reverse-hyperextension", "REVERSE_HYPER_MACHINE"},
+                        new String[] {"glute-kickback-machine", "GLUTE_KICKBACK_MACHINE"},
+                        new String[] {
+                            "back-extension-forty-five-degree", "BACK_EXTENSION_BENCH"
+                        })) {
+            var requirement = ExerciseMetadataCatalog.require(pair[0]).equipment();
+            check(requirement.availableWith(Set.of(ExerciseMetadata.Equipment.valueOf(pair[1]))));
+            check(!requirement.availableWith(Set.of(LEG_PRESS_MACHINE)));
+            check(!requirement.availableWith(Set.of(BENCH)));
+        }
+        check(
+                ExerciseCatalog.definition("bear-crawl").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.DISTANCE);
+        check(
+                ExerciseCatalog.definition("bear-plank").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.DURATION);
+        check(
+                ExerciseCatalog.definition("side-plank-hip-lift").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.REPS_ONLY);
+        check(
+                ExerciseCatalog.definition("single-arm-overhead-carry").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.LOAD_DISTANCE);
+        check(
+                TechniqueGuide.forExercise("single-arm-overhead-carry")
+                        .movement()
+                        .contains("single dumbbell load"));
+        for (String id : List.of("single-leg-seated-leg-curl", "single-leg-leg-extension")) {
+            check(
+                    ExerciseMetadataCatalog.require(id)
+                            .roles()
+                            .contains(ExerciseMetadata.Role.UNILATERAL));
+            check(TechniqueGuide.forExercise(id).movement().contains("two-leg"));
+            check(!ExerciseCatalog.definition(id).exercise().estimateOneRepMax());
+        }
+        check(
+                ExerciseMetadataCatalog.require("reverse-nordic")
+                        .primaryAreas()
+                        .equals(Set.of(QUADS)));
+        check(
+                ExerciseMetadataCatalog.require("supported-hip-airplane").primaryRole()
+                        == ExerciseMetadata.Role.HIP_STABILITY);
+        var inward = ExerciseMetadataCatalog.require("cable-internal-rotation");
+        var outward = ExerciseMetadataCatalog.require("cable-external-rotation");
+        check(inward.primaryRole() == ExerciseMetadata.Role.INTERNAL_ROTATION);
+        check(outward.primaryRole() == ExerciseMetadata.Role.EXTERNAL_ROTATION);
+        check(!inward.roles().contains(outward.primaryRole()));
+        check(
+                TechniqueGuide.forExercise(inward.exerciseId())
+                        .setup()
+                        .contains("nearest the tower"));
+        check(TechniqueGuide.forExercise(outward.exerciseId()).setup().contains("furthest"));
+        check(
+                ExerciseMetadataCatalog.require("side-lying-dumbbell-external-rotation")
+                                .primaryRole()
+                        == outward.primaryRole());
+        var alternatives =
+                ExerciseSubstitutionEngine.rank(
+                        new ExerciseSubstitutionEngine.Context(
+                                ExerciseCatalog.definition(outward.exerciseId()).exercise(),
+                                GymProgramme.Goal.GENERAL,
+                                GymProgramme.Experience.BEGINNER,
+                                Set.of(DUMBBELLS, CABLE_STATION, CABLE_HANDLE),
+                                Set.of(),
+                                Set.of(),
+                                Set.of(),
+                                ExerciseSubstitutionEngine.Reason.EQUIPMENT_UNAVAILABLE),
+                        50);
+        check(alternatives.size() == 1);
+        check(alternatives.get(0).exercise().id().equals("side-lying-dumbbell-external-rotation"));
+        check(alternatives.get(0).explanation().contains("Previous loads do not transfer"));
+        check(alternatives.stream().noneMatch(a -> a.exercise().id().equals(inward.exerciseId())));
     }
 
     private static void check(boolean value) {

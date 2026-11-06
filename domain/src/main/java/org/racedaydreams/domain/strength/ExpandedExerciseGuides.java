@@ -402,7 +402,7 @@ public final class ExpandedExerciseGuides {
                         + " range",
                 "Using the near hand and pulling inward|Lifting the elbow away from the"
                         + " ribs|Rotating your trunk instead of the shoulder",
-                "Prone Y Raise|Face Pull",
+                "Side-Lying Dumbbell External Rotation",
                 "Far hand holds cable; elbow by ribs",
                 "Rotate forearm outward; controlled return");
         add(
@@ -475,6 +475,355 @@ public final class ExpandedExerciseGuides {
                 "Standing Calf Raise|Seated Dumbbell Calf Raise",
                 "Forefeet supported; heels free",
                 "Raise heels; lower under control");
+        add(
+                out,
+                "dumbbell-floor-press",
+                "press",
+                "Settle onto a mat with a manageable dumbbell in each hand, knees bent and feet"
+                    + " supported. Keep wrists above elbows and upper arms angled comfortably from"
+                    + " your trunk.",
+                "Press the dumbbells above your chest, then lower until the upper arms lightly meet"
+                        + " the floor. Keep head and shoulders supported and avoid bouncing. Record"
+                        + " total load across both dumbbells consistently; bench-press loads do not"
+                        + " transfer.",
+                "Chest, triceps and front shoulders",
+                "Keep wrists supported|Let upper arms meet the floor gently|Plan a controlled setup"
+                        + " and finish",
+                "Bouncing elbows off the floor|Arching the hips off the mat|Choosing weights you"
+                        + " cannot position or put down safely",
+                "Kettlebell Floor Press|Dumbbell Bench Press",
+                "Upper arms lightly on floor",
+                "Press above chest; controlled return");
+        add(
+                out,
+                "kettlebell-floor-press",
+                "press",
+                "Lie on a mat with knees bent and feet supported. Hold one kettlebell by its handle"
+                    + " in each hand, with the bell bodies resting comfortably against the backs of"
+                    + " your forearms and wrists steady.",
+                "Press both bells above the chest, then lower until upper arms gently reach the"
+                    + " floor. Keep the bells controlled and get help positioning them if needed."
+                    + " Record total load across both bells; do not copy a dumbbell or bench"
+                    + " reference.",
+                "Chest, triceps and front shoulders",
+                "Keep wrists comfortable|Control the bell bodies against the forearms|Lower gently"
+                        + " to the floor",
+                "Letting a bell roll towards the face|Bouncing the elbows|Using an unstable grip",
+                "Dumbbell Floor Press|Push-Up",
+                "Bells supported; upper arms on floor",
+                "Press both bells; lower smoothly");
+        add(
+                out,
+                "single-leg-hip-thrust",
+                "bridge",
+                "Secure a padded bench against sliding and support your upper back across its edge."
+                        + " Plant one foot in front, lift the other leg clear and use your arms for"
+                        + " balance on the bench.",
+                "Press through the planted foot to lift your hips into a controlled"
+                    + " shoulder-to-knee line, then lower smoothly. Keep your pelvis level and the"
+                    + " other leg lifted; change sides as prescribed without arching your lower"
+                    + " back.",
+                "Glutes with hamstring and trunk involvement",
+                "Secure the bench|Keep hips level|Keep the working foot planted",
+                "Letting the bench slide|Twisting the pelvis|Using back extension to lift higher",
+                "Single-Leg Glute Bridge|Glute Bridge",
+                "Upper back supported; one foot planted",
+                "Lift hips level; lower smoothly");
+        add(
+                out,
+                "lateral-step-down",
+                "split",
+                "Stand on a low stable step with one whole foot supported and the other leg hanging"
+                    + " over the side. Reach your arms forwards for balance and choose a height you"
+                    + " can control.",
+                "Bend the supporting hip and knee to lower the free heel gently towards the floor"
+                    + " beside the step, then rise through the foot on the step. Keep the tap light"
+                    + " rather than pushing off the floor; change sides as prescribed.",
+                "Quadriceps and glutes with trunk support",
+                "Keep the working foot supported|Keep your pelvis controlled|Let the working knee"
+                        + " follow its foot",
+                "Dropping quickly to the floor|Pushing mainly from the tapping foot|Using a step"
+                        + " too high to control",
+                "Step-Up|Bodyweight Reverse Lunge",
+                "One foot on low step",
+                "Lower free heel; rise through supporting leg");
+        add(
+                out,
+                "plank-shoulder-tap",
+                "core",
+                "Set up in a high plank with hands beneath your shoulders and feet slightly wider"
+                        + " for balance. Keep your head, trunk and hips aligned.",
+                "Lift one hand to touch the opposite shoulder, replace it and alternate sides while"
+                    + " keeping your hips steady. Count each shoulder touch as one repetition and"
+                    + " stop before your trunk starts twisting.",
+                "Trunk stabilisers with shoulder support",
+                "Keep the supporting hand stable|Widen your stance if helpful|Move one hand at a"
+                        + " time",
+                "Twisting the hips|Rushing the touches|Letting the lower back sag",
+                "Plank|Bear Plank",
+                "Stable high plank; feet apart",
+                "Touch opposite shoulder; alternate slowly");
+        add(
+                out,
+                "side-plank-hip-lift",
+                "core",
+                "Lie on your side with the lower elbow beneath your shoulder and the whole forearm"
+                    + " on a mat. Extend and stack your legs, with the upper hand resting on your"
+                    + " hip.",
+                "Lift your hips into a controlled shoulder-to-ankle line, then lower them gently"
+                    + " towards the mat. Keep forearm and feet supported, count one lift and lower"
+                    + " as one repetition, and change sides as prescribed.",
+                "Trunk stabilisers with shoulder and outer-hip involvement",
+                "Keep the forearm grounded|Lift without rolling forwards|Use a controlled range",
+                "Pushing from a fist instead of the forearm|Dropping the hips quickly|Twisting to"
+                        + " lift higher",
+                "Side Plank|Dead Bug",
+                "Forearm grounded; hips lowered",
+                "Lift to side-plank line; lower gently");
+        add(
+                out,
+                "single-arm-overhead-carry",
+                "carry",
+                "With clear overhead space and a clear walking path, bring one manageable dumbbell"
+                    + " into a steady overhead position. Keep the opposite hand empty and ribs over"
+                    + " your pelvis.",
+                "Walk with short controlled steps without leaning sideways or backwards, then lower"
+                        + " the dumbbell deliberately. Change arms as prescribed. Record the single"
+                        + " dumbbell load and distance, not the total used in a two-arm carry.",
+                "Shoulders and trunk, with grip and upper-back involvement",
+                "Keep the wrist above its shoulder|Keep the opposite arm relaxed|End before"
+                        + " overhead control fades",
+                "Leaning to balance excessive load|Walking beneath obstacles|Continuing with an"
+                        + " unstable arm or grip",
+                "Overhead Dumbbell Carry|Suitcase Carry",
+                "One dumbbell overhead; other hand empty",
+                "Walk steadily; change arms as prescribed");
+        add(
+                out,
+                "single-leg-seated-leg-curl",
+                "curl",
+                "Adjust the seated curl machine so the working knee is near its pivot and the thigh"
+                        + " restraint is secure. Rest only the working lower calf on the roller and"
+                        + " keep the other foot safely clear on its support or the floor.",
+                "Bend the working knee to draw the roller down and back, then extend slowly through"
+                    + " a comfortable range. Keep your back and thigh supported and change legs as"
+                    + " prescribed. Choose a fresh load rather than copying the two-leg setting.",
+                "Hamstrings",
+                "Keep the thigh restraint secure|Keep the other leg clear of the roller|Control"
+                        + " both directions",
+                "Pushing with both legs|Lifting your hips off the seat|Jerking the weight stack",
+                "Seated Leg Curl|Lying Leg Curl",
+                "One calf on roller; other foot clear",
+                "Bend working knee; return slowly");
+        add(
+                out,
+                "single-leg-leg-extension",
+                "extension",
+                "Sit against the leg-extension backrest with the working knee near the machine"
+                        + " pivot. Place the roller in front of that lower shin above the ankle and"
+                        + " keep the other foot clear of the roller.",
+                "Straighten the working knee to raise the pad, then lower smoothly without lifting"
+                    + " your hips. Change sides as prescribed and use a fresh single-leg load; the"
+                    + " two-leg reference does not transfer.",
+                "Quadriceps",
+                "Keep hips supported|Keep the other foot clear|Lift and lower smoothly",
+                "Kicking the roller|Lifting hips to finish|Assisting unnoticed with the other leg",
+                "Leg Extension|Lateral Step-Down",
+                "Working shin on roller; other foot clear",
+                "Extend one knee; lower under control");
+        add(
+                out,
+                "reverse-hyperextension",
+                "hip-extension",
+                "Use a dedicated reverse-hyper machine with the ankle strap securely attached to"
+                    + " its pendulum. Support your trunk on the pad with hips at its edge and grip"
+                    + " the handles; get help with mounting or the strap if needed.",
+                "Extend your hips to raise the legs only to a controlled line near your torso, then"
+                    + " lower slowly. Keep your trunk supported and avoid swinging or arching to"
+                    + " lift higher. Record the same machine and load convention for comparisons.",
+                "Glutes and hamstrings, with trunk support",
+                "Check the strap attachment|Keep your torso supported|Use a small controlled arc",
+                "Swinging the pendulum for height|Overarching the lower back|Using a loose ankle"
+                        + " attachment",
+                "Hip Thrust|Romanian Deadlift",
+                "Trunk supported; ankle strap secure",
+                "Lift legs to torso line; lower slowly");
+        add(
+                out,
+                "supported-single-leg-squat",
+                "squat",
+                "Hold a secure rack upright for balance, stand on one whole foot and lift the other"
+                    + " leg in front. Use the hand support and a range you can control rather than"
+                    + " aiming for a deep pistol squat.",
+                "Bend the supporting hip and knee to lower through a comfortable partial range,"
+                    + " then stand through the whole foot. Keep the free leg clear and change sides"
+                    + " as prescribed; avoid pulling forcefully on an unstable support.",
+                "Quadriceps and glutes with trunk support",
+                "Use a secure upright|Keep the working foot planted|Choose a manageable depth",
+                "Chasing depth before control|Letting the working knee collapse inwards|Using a"
+                        + " loose or rolling support",
+                "Chair Sit-to-Stand|Bodyweight Squat",
+                "Hold support; free leg forwards",
+                "Lower partially; rise through planted foot");
+        add(
+                out,
+                "supported-hip-airplane",
+                "hip-stability",
+                "Hold a secure rack upright for balance. Soften the supporting knee and hinge"
+                    + " forwards with the other leg reaching behind, keeping your trunk long and"
+                    + " pelvis initially facing the floor.",
+                "Gently open and close your pelvis over the supporting hip through a small range,"
+                        + " letting trunk and pelvis move together rather than twisting your lower"
+                        + " back. Count one open-and-return as one repetition and change sides as"
+                        + " prescribed.",
+                "Glutes and other hip-control muscles, with trunk and hamstring involvement",
+                "Keep hand support|Use a small controlled rotation|Keep the working foot stable",
+                "Twisting only through the lower back|Locking the supporting knee|Rotating farther"
+                        + " than balance allows",
+                "Side-Lying Hip Abduction|Single-Leg Glute Bridge",
+                "Supported hinge; pelvis faces floor",
+                "Open and close pelvis over supporting hip");
+        add(
+                out,
+                "reverse-nordic",
+                "extension",
+                "Kneel on a well-padded surface with shins supported, hips extended and arms"
+                    + " crossed at your chest. Keep a comfortable straight line from knees through"
+                    + " hips to shoulders.",
+                "Lean that whole line backwards a short distance by bending at the knees, then"
+                    + " return slowly. Keep hips extended rather than folding at the waist, and use"
+                    + " only a comfortable controllable range; stop if the knees are"
+                    + " uncomfortable.",
+                "Quadriceps with trunk support",
+                "Pad the knees|Begin with a small lean|Keep hips and trunk aligned",
+                "Leaning too far to return smoothly|Folding at the hips|Arching the lower back",
+                "Leg Extension|Chair Sit-to-Stand",
+                "Tall kneel; hips extended",
+                "Small backward lean from knees; return");
+        add(
+                out,
+                "bear-crawl",
+                "conditioning",
+                "Start on hands and toes with knees hovering just above the floor. Choose a clear"
+                        + " level path and keep your hands beneath your shoulders.",
+                "Take short opposite-hand-and-foot steps while keeping the knees low and trunk"
+                    + " steady. Stop before control fades. Record the distance actually crawled in"
+                    + " metres, not repetitions or an invented GPS distance.",
+                "Trunk and shoulders, with quadriceps involvement",
+                "Keep knees close to the floor|Take short controlled steps|Keep breathing steadily",
+                "Lifting the hips into a high pike|Rushing with large steps|Continuing after trunk"
+                        + " control fades",
+                "Bear Plank|Dead Bug",
+                "Low hover; hands beneath shoulders",
+                "Opposite hand and foot step; keep knees low");
+        add(
+                out,
+                "glute-kickback-machine",
+                "hip-extension",
+                "Adjust a dedicated standing kickback machine so your chest is supported and hands"
+                    + " can hold its handles. Place the working foot against its lever pad and keep"
+                    + " the other foot on the stable base.",
+                "Press the working foot back through a controlled range, allowing the working knee"
+                    + " to extend, then return slowly. Keep your trunk supported without arching"
+                    + " for height. Change legs as prescribed and compare loads only on the same"
+                    + " machine and setup.",
+                "Glutes, with hamstring, quadriceps and trunk involvement",
+                "Keep chest supported|Keep the standing foot planted|Press back without arching",
+                "Driving through an unsupported trunk|Swinging the lever|Copying a cable-cuff load"
+                        + " onto this machine",
+                "Cable Glute Kickback|Single-Leg Glute Bridge",
+                "Chest supported; working foot on lever pad",
+                "Press foot back; return under control");
+        add(
+                out,
+                "back-extension-forty-five-degree",
+                "hinge",
+                "Use a secure 45-degree back-extension bench. Set the upper pad just below your hip"
+                        + " crease and secure your feet and ankles against its supports. Cross your"
+                        + " arms over your chest.",
+                "Hinge at the hips to lower your trunk through a comfortable range, then extend the"
+                    + " hips only until shoulders, hips and ankles form one line. Keep the trunk"
+                    + " controlled rather than arching above that line. Ask for help adjusting or"
+                    + " mounting the bench if needed.",
+                "Glutes and hamstrings, with trunk support",
+                "Keep the hip crease free of the pad|Keep feet securely supported|Finish at the"
+                        + " body line",
+                "Arching above the leg line|Bouncing out of the bottom|Using an unsecured bench",
+                "Glute Bridge|Bodyweight Squat",
+                "Feet secured; hinge at hips",
+                "Return only to shoulder–hip–ankle line");
+        add(
+                out,
+                "incline-push-up",
+                "press",
+                "Place your hands on a stable bench that cannot slide or tip. Step back onto your"
+                        + " toes with shoulders, hips and ankles aligned and hands around shoulder"
+                        + " width.",
+                "Bend the elbows to lower your chest towards the bench, keeping them in a"
+                    + " comfortable diagonal rather than flared wide. Press back up as one"
+                    + " controlled body line. A higher secure support generally reduces the demand;"
+                    + " use the same height for comparisons.",
+                "Chest, with triceps, shoulder and trunk involvement",
+                "Check that the bench is stable|Keep the whole body aligned|Lower and press"
+                        + " smoothly",
+                "Using a rolling or unstable support|Letting the hips sag|Reaching the head"
+                        + " forwards instead of lowering the body",
+                "Wall Push-Up|Knee Push-Up|Push-Up",
+                "Hands on secure bench; body aligned",
+                "Lower chest towards bench; press away");
+        add(
+                out,
+                "cable-y-raise",
+                "shoulder-control",
+                "Stand side-on to a low cable with the handle in the hand furthest from the tower."
+                    + " Begin with that hand near the opposite hip and a small bend in the elbow.",
+                "Raise the arm diagonally out and up into a comfortable Y position with the thumb"
+                    + " facing upwards, then lower slowly. Let the shoulder blade move naturally"
+                    + " without forcing a shrug or leaning your trunk. Change arms as prescribed.",
+                "Shoulders and upper-back shoulder-blade muscles, with trunk support",
+                "Use a light controllable load|Keep the elbow softly extended|Keep the trunk still",
+                "Leaning to lift the stack|Forcing overhead range|Bending the elbow into a row",
+                "Prone Y Raise|Face Pull",
+                "Far hand near opposite hip; low cable",
+                "Raise diagonally into a Y; lower slowly");
+        add(
+                out,
+                "side-lying-dumbbell-external-rotation",
+                "shoulder-rotation",
+                "Lie on your side with knees comfortably bent. Hold a light dumbbell in the upper"
+                    + " hand, keep that elbow beside your ribs at roughly a right angle, and begin"
+                    + " with the forearm across your abdomen.",
+                "Rotate the upper forearm upwards through a comfortable range while keeping its"
+                    + " elbow beside your ribs, then lower slowly. Keep the upper arm and trunk"
+                    + " still rather than rolling backwards. Change sides as prescribed; choose a"
+                    + " fresh load for this setup.",
+                "Shoulder rotator muscles",
+                "Keep the upper elbow beside your ribs|Use a small controlled range|Keep the trunk"
+                        + " still",
+                "Lifting the whole upper arm|Rolling the trunk backwards|Using momentum or an"
+                        + " excessive load",
+                "Cable External Rotation",
+                "Upper elbow tucked; forearm across abdomen",
+                "Rotate forearm upwards; return slowly");
+        add(
+                out,
+                "cable-internal-rotation",
+                "shoulder-rotation",
+                "Set a cable handle near elbow height and stand side-on with the working arm"
+                        + " nearest the tower. Keep that elbow beside your ribs at roughly a right"
+                        + " angle and begin with the hand out towards the tower.",
+                "Rotate the working forearm inwards across your abdomen against the cable, then"
+                    + " return slowly. Keep the elbow beside your ribs and trunk still throughout a"
+                    + " comfortable range. Change arms as prescribed; inward and outward rotation"
+                    + " are different tasks with separate load evidence.",
+                "Shoulder rotator muscles",
+                "Use the arm nearest the tower|Keep the elbow beside your ribs|Rotate smoothly"
+                        + " without turning your trunk",
+                "Using the far arm and changing the task|Pulling the whole elbow across the"
+                        + " body|Turning the trunk to move more weight",
+                "Cable External Rotation",
+                "Near elbow tucked; hand towards tower",
+                "Rotate forearm inwards across abdomen");
         return Map.copyOf(out);
     }
 

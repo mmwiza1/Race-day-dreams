@@ -35,7 +35,54 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
-### LATEST —200complete guides and API28 display-fixture correction
+### ACTIVE CHECKPOINT —220complete guides; final Android/visual delivery pending
+
+This section supersedes the archived checkpoints below. AllM1–5 and the three six-month
+simulations are implemented. M6 now has220complete canonical guides +14routine movements,
+46useful additions,223original WebPs/11634030bytes. The original174 definitions are unchanged.
+Twenty newest entries include floor presses, supported single-leg tasks, unilateral machines,
+reverse hyper, dedicated45-degree bench, crawling, shoulder taps/hip lifts, one-arm overhead
+carry and distinct inward/outward shoulder rotations. New stable bench ID is
+`back-extension-forty-five-degree`. All46 have original reviewed art, exact setup/roles,
+measurement profiles, alternatives, complete instructions and accessibility copy. No generic
+fallback or text-only addition. Specific machine capabilities and shoulder roles prevent
+unrelated substitutions. Busy-equipment first4 now correctly includes dumbbell floor press
+before machine chest press/knee/ordinary push-ups; exact ranking/explanation tests retained.
+
+Actual local complete Gradle gate PASS79tasks/1m25sec,700107checks/47suites,
+CatalogueExpansion239,4226six-month simulation checks.75schema,9release,17capture-validator,
+11route-source and14artwork tests and strict220/220+14/14guidance pass.223asset hashes verified.
+Final fixture correction and three real200%guide-tail assertions/captures also PASS actual
+whole Gradle gate79tasks/46sec in catalogue220-final-android.log. Pinned formatting check
+passes after the last edits:97Kotlin/158Java. Offline sh domain runner also passes all47suites.
+No schema/dependency/permission changes in M6. Stillcode15/schema19/root13/retention1/raw3/complete1.
+
+200guide source2cc10d0 workflow42139333738 FAILED overall:API28and36 each508tests/296captures
+PASS. API35 ran508with exactly ONE failure, the new unset-font restoration regression:
+after deleting font_scale, actual AND stored remained2.0 instead of1.0. Allother507passed.
+This is measured fixture behaviour, not a production defect. Following fix explicitly writes
+normal1.0 for an unset/invalid original, then still awaits actual application configuration and
+asserts normal navigation. No assertion weakened, timeout increased or arbitrary sleep added.
+Older17b API28failure and unsafe raw-null writes remain fixed. No blindrerun/canonical adoption.
+
+NEXT: complete current local checks, commit/push this coherent220+fixture source toPR18;
+run full API28/35/36 matrix (expected508methods and359captures EACH). Fix actual failures.
+Download finalAPI35PNG/APK artifacts, verify SHA/source fingerprints, inspect all46new guides
+in light/dark/200% and the new storage confirmation/disclosure views. Final comparable APK
+size, screenshot publication and release documentation are still required. Final source must
+pass whole gate; do not infer acceptance from earlier M5e39 or200partial matrix. KeepPR18draft.
+Then exactfinalhead allgreen+visual/sourcealigned→authorised squash merge; fetch actualmain,
+verify postmergefullCI and rollingLatestDevelopmentAPKversion15/source/SHA. No stabletag/0.12.
+AllGalaxyS24hardware acceptance including0.10.1GPS remains UNPERFORMED.
+
+Sources are committed with this checkpoint; inspect actualHEAD/status/log. Original generated
+PNGs remain in /workspace/generated_images; only reviewed1200x800q84WebPs ship. Assetmanifest
+contains all223hashes. Scratchlogs/artifacts under /workspace/scratch/rdd011. Previous e39API35
+CI APK baseline52750085bytes; use finalCI APK, not different localincrementalDEXlayout, fordelta.
+
+### Archived200-guide checkpoint
+
+
 
 Current200guide source includes26complete additions,203reviewed original assets/10557886bytes,
 strict200/200canonical+14/14routines. Added8beyond192:side-lying-hip-adduction,scapular-pull-up,
@@ -92,7 +139,7 @@ Use load art_<underscore_id>.output_hint or generated_images files; no huge base
 133 (four core/carry) and136 (four machine movements) still running when recorded; resume/wait,
 review all outputs before integrating. Eight200checkpoint art mappings are safely written in
 scratch/rdd011/generated-catalogue-drafts.json and are already bundled; DO NOT add them twice.
-Then finish final220source whole gate (508methods/356captures expected), direct all new visual
+Then finish final220source whole gate (508methods/359captures expected), direct all new visual
 reviews, final APKsize/docs and only then authorised squash merge/mainCI/rollingAPK+SHA.
 No0.12/stabletag. AllS24physical checks including0.10.1outdoorGPS remain UNPERFORMED.
 

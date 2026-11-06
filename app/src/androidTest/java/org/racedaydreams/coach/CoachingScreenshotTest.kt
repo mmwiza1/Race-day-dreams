@@ -1154,6 +1154,27 @@ class CoachingScreenshotTest {
                     await("Overview")
                     click("How to do it")
                     capture("exercise-$id-howto$suffix")
+                    if (
+                        suffix == "-large-font" &&
+                            id in
+                                setOf(
+                                    "side-lying-dumbbell-external-rotation",
+                                    "back-extension-forty-five-degree",
+                                    "glute-kickback-machine",
+                                )
+                    ) {
+                        compose
+                            .onNodeWithText("Common mistakes")
+                            .performScrollTo()
+                            .assertIsDisplayed()
+                        capture("exercise-$id-howto-details$suffix", "Common mistakes")
+                        compose
+                            .onNodeWithText(
+                                "Alternatives: ${org.racedaydreams.domain.strength.TechniqueGuide.forExercise(id)!!.alternatives().joinToString()}"
+                            )
+                            .performScrollTo()
+                            .assertIsDisplayed()
+                    }
                     back()
                     await("Search exercises or aliases")
                 }
@@ -2605,11 +2626,12 @@ class CoachingScreenshotTest {
     }
 
     private fun restoreFontScale(original: String) {
-        val scale = original.toFloatOrNull()?.takeIf { it.isFinite() && it > 0f }
-        // An unset Settings value is returned as the literal "null". That is not a valid
-        // font-scale value; writing it can leave the previous large scale active on API28.
-        if (scale == null) shell("settings delete system font_scale")
-        else shell("settings put system font_scale $scale")
+        // An unset value means the normal scale, not a literal "null" to write. Deleting
+        // the setting after a large-text capture is not a portable configuration reset:
+        // API35 was observed retaining/re-persisting 2.0 after that delete. Write the
+        // explicit effective default and still await the actual application configuration.
+        val scale = original.toFloatOrNull()?.takeIf { it.isFinite() && it > 0f } ?: 1f
+        shell("settings put system font_scale $scale")
     }
 
     private fun shell(command: String): String {

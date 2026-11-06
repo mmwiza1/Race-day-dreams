@@ -1,3 +1,19 @@
+# 220-guide source checkpoint — final Android and visual gate required
+
+Local full Gradle domain/debug/lint/instrumentation compilation PASS79tasks/1m25sec;
+700107domain checks/47suites, including4226six-month simulations and239new-catalogue checks.
+Strict220canonical/14routine guides,223original artwork hashes/11634030bytes,
+75schema,9release,17capture-validator,11route-source and14artwork checks pass.
+Final fixture correction and three new real200%guide-tail captures also PASS the complete
+Gradle gate79tasks/46sec. No pending Android runtime result is claimed.
+
+200guide source2cc10d0 workflow42139333738:API28and36 EACH508tests/296captures PASS;
+API35exactlyonefailure/507passed: unset font restoration delete left actual+storedscale2.0.
+Following fixture explicitly restores effective default1.0 and preserves actual configuration/
+navigation assertions. Final220source expected508tests/359captures/API remains REQUIRED.
+All software/visual gates, finalAPKsize and authorised merge/postmerge publication remain pending.
+NoS24physical acceptance is claimed. Historical source-specific evidence follows.
+
 #200-guide checkpoint and API28 display-state correction — runtime verification required
 
 17b42c4 workflow42135690419 FAILED overall:API35/36 each507tests and248captures PASS;

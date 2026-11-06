@@ -29,9 +29,10 @@ behaviour only; the complete agreed release is not yet ready for review.
   distinguish raw payload bytes from physical database files; compatible raw backups can restore
   proven original detail.
 
-- Twenty-six fully illustrated catalogue additions cover hip machines, cable hip work, beginner
+- Forty-six fully illustrated catalogue additions cover hip machines, cable hip work, beginner
   pushing, chair sit-to-stand, timed core/inner-thigh holds, shoulder-blade control, unilateral
-  bridges, a distance-based overhead carry and specific Smith-machine/shoulder-control options. Support-based
+  bridges, a distance-based overhead carry and specific Smith-machine/shoulder-control options, floor presses, supported single-leg work,
+  crawling, dedicated posterior-chain machines and distinct shoulder rotation tasks. Support-based
   substitutions explain changed leverage; loads never transfer between different exercises.
 
 ## Improvements
@@ -47,7 +48,8 @@ behaviour only; the complete agreed release is not yet ready for review.
 ## Known limitations
 
 - This is an incomplete development checkpoint. New retention cleanup/restore/UI require their
-  current-source Android and visual gate. Catalogue and final athlete simulations remain to finish.
+  current-source Android and visual gate. Final220-catalogue Android screenshots and visual review remain to finish; three six-month
+  athlete simulations already pass4226domain assertions.
   This is not a software-complete0.11 release.
 - Android may delay optional rest notifications during sleep/battery saving. A reboot or
   cross-device restore interrupts timer continuity and requires explicit review.
@@ -67,31 +69,17 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 ## Verification
 
-- The unchanged0.10.1 baseline was tested before implementation and its history is preserved.
-- Recovery/body source7dc0b56 passed [complete Android verification](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42115688372):486tests and203authentic captures EACH API28/35/36.
-  All203API35original PNG identities match canonical6a3eb10. Recovery/body and refreshed
-  records/milestones were directly reviewed in light/dark/200% text.
-- Following read-only inventory and consent-expiry safeguards pass658601domain checks across
-  45suites,72schema/migration tests,9release-note,15capture-validator,11route-source and14artwork
-  tests, pinned formatting and strict174exercise/14routine guidance checks. Actual Android debug
-  build, lint and instrumentation compilation pass locally. The four new database tests require
-  the following full490/API runtime gate before their acceptance.
-- The verified intermediate API35 debug APK is available in [workflow artifacts](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42115688372/artifacts/13457712005).
-  It is52,618,954bytes (+1.230% versus0.10.1), with SHA256
-  `8fd6c063f413e851d0f7c79380141f35ae390acc4538ed71cb5409dcd7815388`.
-  This is not the final0.11 delivery. No physical-device acceptance is claimed.
-
-- Pre-retention workflow42120919432 passed490tests/API28/35/36 and203captures/API. Following
-  retention source passes local658610domain checks,75schema,9release,16capture-validator,
-  formatting and actual debug build/lint/test compilation. Its506test/215capture Android matrix
-  is still required; no cleanup runtime or visual acceptance is implied by compilation.
-
-- Three deterministic six-month athlete histories now pass4226integration assertions using
-  production domain calculations (662836total/46suites). They validate unknown evidence,
-  conservative advice, user choice and history/retention semantics, not physiological outcomes.
-  See ATHLETE_SIMULATIONS_0_11.md; final catalogue and Android/visual release gates remain pending.
-
-- Retention workflow42125758697 executed506tests/API with three test-contract/capture failures
-  each; all11new repository and4storage component cases passed. Corrected source preserves strict
-  navigation/version/data assertions and uses the real Settings action. Full corrected Android/
-  215capture acceptance remains pending; catalogue expansion is still unfinished.
+- Local220-guide source passes700107domain checks across47suites,75schema/migration tests,
+  9release-note tests,17capture-validator tests,11route-source tests and14artwork tests.
+  Strict220/220canonical and14/14routine guidance and all223original asset hashes pass.
+- Three deterministic six-month athlete histories pass4226integration assertions using
+  production domain calculations. They validate missing evidence, conservative advice,
+  explicit user choice and retained history; they do not claim physiological outcomes.
+  See ATHLETE_SIMULATIONS_0_11.md.
+- The complete retention implementation passed506tests and215captures on each API28/35/36
+  at sourcee39a308 (workflow42133056947). Source2cc10d0 passed508tests/296captures on API28
+  and36; API35had one font-fixture restoration failure, now corrected with an explicit normal
+  scale. No assertion or production training rule was relaxed.
+- Final220-source508/API Android gate,359captures/API, direct visual review, comparable APK
+  size and final rolling development artifact remain pending. Earlier checkpoints do not
+  establish final release acceptance. Physical GalaxyS24 checks remain unperformed.

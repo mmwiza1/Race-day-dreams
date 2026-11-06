@@ -29,6 +29,7 @@ class CaptureValidationTest(unittest.TestCase):
         identities = set(re.findall(r'add\(\s*out,\s*"([^"]+)"', guide_source))
         self.assertEqual(identities, set(captures.CATALOGUE_EXPANSION_IDS))
         expected = {f'exercise-{identity}-howto{suffix}.png' for identity in identities for suffix in ('', '-dark', '-large-font')}
+        expected |= {f'exercise-{identity}-howto-details-large-font.png' for identity in ('side-lying-dumbbell-external-rotation', 'back-extension-forty-five-degree', 'glute-kickback-machine')}
         self.assertEqual(expected, set(captures.CATALOGUE_EXPANSION_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
 
@@ -46,7 +47,7 @@ class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(296, len(captures.REQUIRED))
+        self.assertEqual(359, len(captures.REQUIRED))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):
