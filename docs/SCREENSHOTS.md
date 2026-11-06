@@ -6,7 +6,7 @@ privacy-page views. Required names and strict PNG validation are in
 scripts/verify-dream-screenshots.py; the validator has19 regression tests.
 
 The protected same-repo branch publication rule targets feature/material3-expressive-ui,
-retaining exact-head and source-fingerprint checks. Seven CI-shell helper tests cover the
+retaining exact-head and source-fingerprint checks. Nine CI-shell helper tests cover the
 runner's diagnostic/cleanup and virtual-device setup behaviour; they do not certify app rendering.
 The complete supported gate expects517 instrumentation cases and383 captures perAPI28/35/36.
 

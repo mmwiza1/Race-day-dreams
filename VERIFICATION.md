@@ -1,3 +1,20 @@
+# Material UI — isolated supported-renderer verification pending
+
+The37.2.13-only candidate ae833a0/workflow42263888656 still failed API36's fast guard.
+The confirmed blocking window now names **Application Not Responding: com.android.launcher3**.
+No invalid-ColorBuffer warning appears in this run; those earlier warnings do not establish
+this hang's cause. API28/35 were still running when the renderer follow-up was prepared and
+must not be called passed. The complete API36 suite correctly remained blocked by its guard.
+
+The next isolated CI correction retains37.2.13/build16740729 and replaces the action's deprecated
+swiftshader_indirect default with explicit **-gpu software**, preserving no-window/no-snapshot/
+noaudio/no-boot-anim. [Google's graphics guidance](https://developer.android.com/studio/run/emulator-acceleration)
+documents this supported backend. All APIs, dimensions, focus assertions, nine guard cases,
+full517 cases,383 captures and method/step budgets remain. No automatic retry or ANR dismissal.
+The diagnostic whitelist now accepts only SystemUI/Launcher identity+reason and excludes other
+app content. **Nine** actual-process runner-helper tests and **nine** release-note tests pass;
+shell syntax/diff checks pass. This is not a claimed runtime resolution. Fresh matrix required.
+
 # Material UI — SystemUI infrastructure failure and targeted patch
 
 Source3343a20/workflow42261726118 API36 failed its fast guard before the full suite.

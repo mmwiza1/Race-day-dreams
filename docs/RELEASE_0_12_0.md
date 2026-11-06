@@ -40,6 +40,6 @@ the existing launcher icon, offline operation and account-free model are preserv
 
 The release gate requires517 instrumentation cases and383 authentic captures on each supported
 API28/35/36: all359 previous captures plus24 additional UI views. It also includes19 capture-validator
-and7 CI-shell helper tests. These are gate requirements, not a claim that final-source verification
+and9 CI-shell helper tests. These are gate requirements, not a claim that final-source verification
 or publication has passed. Consult [observed verification](../VERIFICATION.md) for actual results.
 Physical-device and human accessibility checks remain separate.

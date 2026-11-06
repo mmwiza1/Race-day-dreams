@@ -15,10 +15,10 @@ rdd_cleanup() {
         # from app layout. Bound diagnostics and retain the original test exit status.
         timeout 10 adb shell dumpsys power | awk '/mWakefulness=|mInteractive=|Display Power/' || true
         timeout 10 adb shell dumpsys window | awk '/mCurrentFocus=|mFocusedApp=|mShowingLockscreen=/' || true
-        # Only SystemUI's public ANR identity/reason, never a general application log dump.
+        # Only platform UI ANR identity/reason, never a general application log dump.
         timeout 10 adb shell dumpsys activity lastanr | awk '
-            /^[[:space:]]*ANR in com\.android\.systemui/ { systemui = 1; print; next }
-            systemui && /^[[:space:]]*(Reason:|Subject:)/ { print; exit }
+            /^[[:space:]]*ANR in com\.android\.(systemui|launcher3)([[:space:]]|$)/ { platformui = 1; print; next }
+            platformui && /^[[:space:]]*(Reason:|Subject:)/ { print; exit }
         ' || true
     fi
     if [ -n "$rdd_test_log_pid" ]; then

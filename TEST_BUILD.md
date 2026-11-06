@@ -6,7 +6,7 @@ API28/35/36, visual/screenshot and APK acceptance are pending; no stable/public-
 is implied. Use only an APK whose source, version and checksum match the verified release.
 
 The expanded software gate requires517 instrumentation cases and383 authentic captures perAPI,
-retaining all359 older frames and adding24 UI views. It includes19 capture-validator and7 CI-shell
+retaining all359 older frames and adding24 UI views. It includes19 capture-validator and9 CI-shell
 helper tests. Counts alone do not prove that the latest source passed or that bars render correctly.
 
 The existing native goal and Health Connect privacy screens retain their entry, draft and Close

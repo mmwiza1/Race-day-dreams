@@ -60,7 +60,7 @@ if Path(sys.argv[0]).name == 'adb':
         print('mCurrentFocus=synthetic-test-window')
     elif args == ['shell', 'dumpsys', 'activity', 'lastanr']:
         event('systemui-anr')
-        print('ANR in com.android.systemui')
+        print('ANR in ' + os.environ.get('RDD_GATE_TEST_ANR_PROCESS', 'com.android.systemui'))
         print('Reason: synthetic input dispatch timeout')
         print('unrelated-synthetic-details-must-not-be-printed')
     elif args[:2] == ['logcat', '-d']:
@@ -162,6 +162,27 @@ class AndroidGateTest(unittest.TestCase):
         self.assertNotIn('verify', self.events())
         self.assert_reader_stopped()
 
+    def test_launcher_reason_is_bounded_without_hiding_the_test_failure(self):
+        code, stdout, stderr = self.run_gate(
+            RDD_GATE_TEST_GUARD_EXIT='17', RDD_GATE_TEST_ANR_PROCESS='com.android.launcher3',
+        )
+        self.assertEqual(17, code, stderr)
+        self.assertIn('ANR in com.android.launcher3', stdout)
+        self.assertIn('Reason: synthetic input dispatch timeout', stdout)
+        self.assertNotIn('unrelated-synthetic-details', stdout)
+        self.assertNotIn('gradle-full', self.events())
+        self.assert_reader_stopped()
+
+    def test_non_platform_anr_content_is_not_printed(self):
+        code, stdout, stderr = self.run_gate(
+            RDD_GATE_TEST_GUARD_EXIT='17', RDD_GATE_TEST_ANR_PROCESS='org.racedaydreams',
+        )
+        self.assertEqual(17, code, stderr)
+        self.assertNotIn('ANR in org.racedaydreams', stdout)
+        self.assertNotIn('Reason:', stdout)
+        self.assertNotIn('unrelated-synthetic-details', stdout)
+        self.assert_reader_stopped()
+
     def test_verification_failure_keeps_its_exit_and_reaps_reader(self):
         code, _, stderr = self.run_gate(RDD_GATE_TEST_VERIFY_EXIT='23')
         self.assertEqual(23, code, stderr)
@@ -186,6 +207,7 @@ class AndroidGateTest(unittest.TestCase):
         self.assertIn('timeout-minutes: 30', workflow)
         self.assertIn('profile: pixel_2', workflow)
         self.assertIn('emulator-build: 16740729', workflow)
+        self.assertIn('emulator-options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim', workflow)
         self.assertNotIn('rdd_test_log_pid', workflow)
 
 
