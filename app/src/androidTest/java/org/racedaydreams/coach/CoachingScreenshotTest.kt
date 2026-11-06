@@ -1165,15 +1165,26 @@ class CoachingScreenshotTest {
                                     "glute-kickback-machine",
                                 )
                     ) {
-                        alignHeading("Common mistakes")
+                        val mistakes =
+                            TechniqueGuide.forExercise(id)!!.mistakes().joinToString("\n") {
+                                "• $it"
+                            }
+                        val body = compose.onNodeWithText(mistakes)
+                        // This is near the page end: max scroll may prevent an arbitrary
+                        // upper heading position. Require the complete actual content instead.
+                        body.performScrollTo().assertIsDisplayed()
                         compose.onNodeWithText("Common mistakes").assertIsDisplayed()
-                        compose
-                            .onNodeWithText(
-                                TechniqueGuide.forExercise(id)!!.mistakes().joinToString("\n") {
-                                    "• $it"
-                                }
-                            )
-                            .assertIsDisplayed()
+                        val viewport =
+                            compose
+                                .onNode(hasScrollAction() and hasAnyDescendant(hasText(mistakes)))
+                                .fetchSemanticsNode()
+                        val detail = body.fetchSemanticsNode()
+                        Assert.assertTrue(
+                            "Complete mistakes text must fit the scroll viewport for $id",
+                            detail.positionInRoot.y >= viewport.positionInRoot.y - 1f &&
+                                detail.positionInRoot.y + detail.size.height <=
+                                    viewport.positionInRoot.y + viewport.size.height + 1f,
+                        )
                         capture("exercise-$id-howto-details$suffix", "Common mistakes")
                         compose
                             .onNodeWithText(

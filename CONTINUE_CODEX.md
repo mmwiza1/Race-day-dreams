@@ -35,6 +35,28 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
+### LATEST — bounded end-of-page capture visibility correction
+
+b3f4ec1 workflow42145898695 API28and36 EACH finished508tests:507passed/ONE failure in the
+new catalogue-tail capture. API35also finished508with the SAME one failure at417px. The
+strengthened three-cycle font regression PASSED on ALL THREE; actual full logs inspected.
+The system broadcast barrier fixed the observed rapid-write race. Do not blindly rerun b3.
+
+The only observed failure was the helper's fixed upper heading band: Common mistakes reached
+max scroll at431px(API28)/417px(API36), outside100–300 though its content can be displayed.
+The following test scrolls the entire mistakes TEXT into view, requires its heading, and asserts
+unclipped text position+full height inside the actual scroll viewport. Existing alignHeading and
+all its assertions elsewhere are UNCHANGED. All359captures remain required; no fake padding,
+font shrinking, longer timeout, removed body check or screenshot editing. This is a correction
+to an invalid near-page-end capture assumption, not relaxing product accessibility.
+
+Current source complete Gradle gate PASSED79tasks/29sec in
+catalogue220-full-tail-visibility.log. Domain remains700108/47,240catalogue/4226simulation checks.
+Only this capture helper and accurate recovery/visual documentation change since b3. Preserve
+all220guides/223original assets/M1–5/schema19/root13/raw3. Push this coherent fix and inspect
+next whole508/API28/35/36 and359capture matrix. Final-source canonical/visual/APK/docs/merge
+and postmerge publication remain REQUIRED. KeepPR18draft. No physical S24 pass/0.12/stabletag.
+
 ### Current visual-capture refinement
 
 3a13db7 is pushed; its matrix42145400078 began but is superseded by this concrete capture fix.

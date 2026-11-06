@@ -1,3 +1,13 @@
+# End-of-page guide capture correction — final runtime gate required
+
+b3f4ec1 workflow42145898695 API28/36 each507passed of508; their ONLYfailure was a fixed capture
+heading-position assumption at max scroll (431/417px). The three-cycle rapid-font restoration
+regression now PASSES on all three. API35also507passed/one identical417px heading failure.
+Actual full logs inspected. Current complete Gradle gate PASS79tasks/29sec. Following capture requires
+complete mistakes text inside its actual scroll viewport, plus the heading. All original global
+heading assertions and359required images remain. No production UI/engine change or claim of
+final acceptance. See CONTINUE_CODEX.md for exact next tasks and historical evidence below.
+
 # Current220-guide / configuration-broadcast barrier — runtime gate pending
 
 Actual complete Gradle domain/debug/lint/instrumentation compilation PASS79tasks/34sec;

@@ -1,3 +1,43 @@
+# End-of-page capture follow-up — all font transitions verified
+
+b3f4ec1 matrix42145898695 ran508tests EACH API28/35/36:507passed/one identical catalogue-tail
+capture failure each. All three passed the strengthened three-cycle real font restoration and
+normal navigation regression. The fixed upper heading band was unsuitable near max scroll:
+431px(API28)/417px(API35/36). Following capture requires the complete actual mistakes text inside
+its real scroll viewport and its heading visible; global heading checks remain untouched.
+Actual app layout/scrolling is unchanged. Final current-source359capture runtime/visual gate
+remains required; no screenshot acceptance is inferred solely from PNG integrity.
+
+# Current 220-guide visual review — final-source gate pending
+
+Source89ff744 API36 passed508tests and359actual captures; workflow42142524174 failed overall
+only because API28/35 each failed the rapid-font fixture. Artifact13470030718 SHA256
+`108b986232d24317a89bfd213dd0d624629b851f6a24e9fccd50b1c9cf274858` was downloaded,
+hashed and extracted without changing its PNGs. Strict359-file integrity/dimensions pass.
+
+Directly opened all46new guide light views from that API36set. Reviewed representative dark
+shoulder/Smith guides,200%long exercise names/machine/static-hold views and all3scrolled guide
+tails. Also opened timer,warm-up,superset and storage confirmation in all3modes, plus scrolled
+large confirmation,large retention choices and dark storage inventory. Original art/proportions,
+resistance direction, equipment contact and movement phases are recognizable. Text wraps;
+large controls stack without horizontal scrolling. Dark surfaces retain readable foregrounds.
+The semantic rounded cards/blue actions/instruction-first hierarchy follow the approved0.10.1
+written design direction and existing genuine captures. No separate0.10.1reference bitmap exists;
+no invented pixel comparison is claimed. Older reference JPEGs remain separate and unmodified.
+
+Visual review found the guide-tail captures only exposed a bottom-edge Common mistakes heading.
+Current b3f4ec1 reuses the real alignHeading scroll helper and requires the complete mistakes text
+before capture. It changes test framing, not production scrolling. The font fixture also now
+awaits Android's system configuration broadcast after queued persistence, plus actual settings/
+resources, before rapid next transitions. Final b3source full matrix and fresh guide tails remain
+REQUIRED. Earlier89images do not establish final-source fingerprint/canonical acceptance.
+Also reopened strength trends,actual-versus-estimated records,milestones,recovery and body/protein
+primary screens in all3modes. Actual65kg×6 and approximate78kg remain in separate cards; unknown
+or incomplete weeks are labelled as recorded history. Optional protein shows chosen87kg/source,
+and recovery offers keep/preview without claiming activation. No additional layout defect was
+observed. These are source89observations; final revised-source comparison is still required.
+No physical S24/human TalkBack result is claimed. Historical milestone reviews follow.
+
 # 0.11 visual review — in progress
 
 ## Verified gym checkpoint
