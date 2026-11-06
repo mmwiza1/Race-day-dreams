@@ -30,6 +30,7 @@ legacy MainActivity is not a migration target; no new UI is built there.
 
 - [Material 3 in Compose](https://developer.android.com/develop/ui/compose/designsystems/material3)
 - [Adaptive navigation](https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation)
+- [Edge-to-edge and three-button navigation](https://developer.android.com/develop/ui/compose/system/setup-e2e)
 - [Material motion](https://m3.material.io/styles/motion/overview/how-it-works)
 - [Material3 release notes](https://developer.android.com/jetpack/androidx/releases/compose-material3)
 

@@ -2893,6 +2893,12 @@ class CoachingScreenshotTest {
         val dark: Boolean,
         val lightStatusBarAppearance: Boolean,
         val lightNavigationBarAppearance: Boolean,
+        val focused: Boolean,
+        val navigationInsets: String,
+        val legacyVisibility: Int,
+        val windowFlags: Int,
+        val imeVisible: Boolean?,
+        val navigationContrastEnforced: Boolean?,
     ) {
         val decorWidthDp: Float
             get() = if (density.isFinite() && density > 0f) decorWidth / density else 0f
@@ -2904,6 +2910,9 @@ class CoachingScreenshotTest {
             val configuration = activity.resources.configuration
             val decor = activity.window.decorView
             val bars = androidx.core.view.WindowCompat.getInsetsController(activity.window, decor)
+            val insets = androidx.core.view.ViewCompat.getRootWindowInsets(decor)
+            val navigation =
+                insets?.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())
             snapshot =
                 MaterialWindowSnapshot(
                     configuration.screenWidthDp,
@@ -2916,27 +2925,37 @@ class CoachingScreenshotTest {
                         android.content.res.Configuration.UI_MODE_NIGHT_YES,
                     bars.isAppearanceLightStatusBars,
                     bars.isAppearanceLightNavigationBars,
+                    decor.hasWindowFocus(),
+                    navigation.toString(),
+                    decor.systemUiVisibility,
+                    activity.window.attributes.flags,
+                    insets?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()),
+                    if (android.os.Build.VERSION.SDK_INT >= 29)
+                        activity.window.isNavigationBarContrastEnforced
+                    else null,
                 )
         }
         return snapshot
     }
 
-    private fun awaitMaterialSystemBars(dark: Boolean) {
+    private fun awaitMaterialSystemBars(dark: Boolean, point: String = "home") {
         var last: MaterialWindowSnapshot? = null
         try {
             compose.waitUntil(20000) {
                 last = actualMaterialWindow()
                 last?.let {
                     it.dark == dark &&
+                        it.focused &&
+                        it.navigationContrastEnforced != true &&
                         it.lightStatusBarAppearance == !dark &&
                         it.lightNavigationBarAppearance == !dark
                 } == true
             }
-            android.util.Log.i("RddGate", "MATERIAL_SYSTEM_BARS_READY $last")
+            android.util.Log.i("RddGate", "MATERIAL_SYSTEM_BARS_READY $point $last")
         } catch (failure: Throwable) {
             android.util.Log.i(
                 "RddGate",
-                "MATERIAL_SYSTEM_BARS_FAILURE expectedDark=$dark actual=$last",
+                "MATERIAL_SYSTEM_BARS_FAILURE $point expectedDark=$dark actual=$last",
             )
             throw failure
         }
@@ -3305,8 +3324,15 @@ class CoachingScreenshotTest {
         // frame reach SurfaceFlinger before capturing the actual Android screen.
         compose.waitForIdle()
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-        android.os.SystemClock.sleep(200)
-        val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        if (name.contains("-material-") && !name.startsWith("live-material-finish-")) {
+            val window = checkNotNull(actualMaterialWindow())
+            awaitMaterialSystemBars(window.dark, name)
+        }
+        // The app looper is only one window. Await the real system-window event stream too,
+        // rather than assuming a fixed delay means SystemUI finished a configuration update.
+        automation.waitForIdle(200, 20000)
+        val bitmap = automation.takeScreenshot()
         Assert.assertNotNull(bitmap)
         val dir = File(context.getExternalFilesDir(null), "screenshots")
         dir.mkdirs()

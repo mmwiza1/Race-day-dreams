@@ -124,6 +124,9 @@ fun RaceDayTheme(
                 .firstOrNull()
         SideEffect {
             activity?.let {
+                // The outer Surface paints behind the navigation inset. Use the documented
+                // transparent three-button treatment instead of an independent AUTO scrim.
+                if (Build.VERSION.SDK_INT >= 29) it.window.isNavigationBarContrastEnforced = false
                 androidx.core.view.WindowCompat.getInsetsController(it.window, view).apply {
                     isAppearanceLightStatusBars = !darkTheme
                     isAppearanceLightNavigationBars = !darkTheme

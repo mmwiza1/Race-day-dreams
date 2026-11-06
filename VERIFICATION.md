@@ -1,60 +1,54 @@
-# Material UI modernisation — 0.12.0-test1 verification in progress
+# Material UI modernisation — 0.12.0-test1
 
-Branch `feature/material3-expressive-ui`, draft [PR #19](https://github.com/mmwiza1/Race-day-dreams/pull/19), baselinee6037e1. Previous0.11 is merged and published; historical pending wording below is archived.
+UI source **df35cf2beab51a33851c9b2198c00d23a4678ef1** passed the complete
+[42241394212 workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42241394212).
+The subsequent system-bar presentation follow-up requires its own runtime/visual gate before merge.
 
-Source **88f74538be1341d6a2605fc0278550e05c569c81**, workflow
-[42231796054](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42231796054):
-
-| Gate | Observed result |
+| Gate | Observed result for df35cf2 |
 | --- | --- |
-| API35 | 516 instrumentation tests passed;379 authentic captures validated |
-| API36 | 516 instrumentation tests passed;379 authentic captures validated |
-| API28 | All516 ran;515passed, one wide-window screenshot configuration timeout |
-| Offline checks | 700108domain checks/47suites;75schema/migration;9release-note |
-| Guidance | 220canonical/14routine guides;223exact asset hashes |
-| Formatting | 110Kotlin/159Java;14formatter-tool tests |
-| Other checks | 18capture-validator,11route-source,14Dream-artwork,6CI-shell lifecycle tests |
-| Android build/lint | Passed locally and in all three CI jobs |
+| API28 / API35 / API36 | **516 instrumentation tests and379 authentic captures passed on EACH API** |
+| Domain | 700108 checks /47suites |
+| Schema/migrations | 75tests; formats unchanged |
+| Guidance | 220canonical /14routine guides;223exact asset hashes |
+| Formatting | 110Kotlin /159Java;14formatter-tool tests |
+| Other checks | 9release-note,18capture-validator,11route-source,14artwork,6CI-shell tests |
+| Android | Domain/check, debug APK, lint and instrumentation compilation pass |
 
-Follow-on b0de1af/workflow[42235931661](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42235931661)
-FAILED overall: API36passed516tests/379captures; API35had7capture-fixture SQLite failures and
-API28had2failures (incomplete fixture deletion and wide-window timeout). Actual diagnostics now
-show API28physical320x640, forced640x1280 after requesting1400x1800. Android9's forced-size
-clamp explains the failed wide precondition. The workflow now explicitly uses pixel_2 initial
-hardware instead. The Activity/window>=840dp/480dp,200% and exact379capture assertions remain.
+All three complete job conclusions/logs were inspected. API28now uses an explicit Pixel2virtual
+profile: actual capture windows are1400x1800 and1400x720; short-wide200% viewport is1018dp by524dp.
+This fixes the demonstrated old320x640default-profile clamp without weakening840dp/480dp or
+379capture assertions. Native Continue now stays at the1137px safe boundary. The test-only
+lifecycle barrier joins actual window and ViewModel work before synthetic fixture deletion;
+all former SQLite deletion, analytics and dialog failures pass. No production persistence change.
 
-The test-only follow-up joins actual Activity ViewModel/lifecycle and tracked window-recomposer
-work before deleting synthetic fixture files, including destroyed owners from recreation. It
-excludes the test rule's own recomposer and blocks further reset if bounded20s shutdown fails.
-Production persistence/reset is unchanged. Original authored-review errors retain cleanup errors.
-The real Settings colour toggle is now exercised; six-mode captures require actual window
-light/dark appearance flags. A theme effect keeps icon appearance aligned with current dark
-state while enableEdgeToEdge retains layout/scrims. API36light navigation buttons were faint
-in genuine0.11and88f captures; new screenshots must verify the visible result, not just flags.
+Canonical bot816000e was safely fast-forwarded. All379rawAPI35PNGs from artifact13515864653
+match committed bytes exactly. Fingerprint
+`e60eb348849df71c83019c1e9bdb47e1baa2c6e5c0258de2aae352fde7672d92`
+matches that UI/capture source. API35ZIP SHA256
+`829b4a6795d6ed8c9416ab8b5f739adc399c05b02b7c9a176cf8ce3c159e0a27`.
+Actual build images reviewed across Home/live, native forms, Plan/calendar/history/trends,
+strength/progression/GymNow, health/recovery/body/storage, device/branded/light/dark/200%/wide.
+No blocking app-content overlap, horizontal clipping or unreadable controls was found.
 
-Local full domain/debug/lint/instrumentation compilation passed79tasks/35s after the lifecycle
-helper. Final formatter/runtime/visual gates remain required. No current full-green release,
-canonical0.12 adoption, merge or publication is claimed.
+**Visual gate still open:** API36light Home shows contrasting navigation buttons, but some
+live/large-text images retain faint white buttons. Correct Home appearance flags do not prove
+later rendered system-bar contrast. A small follow-up uses Google's documented transparent
+three-button navigation treatment onAPI29+, retaining the opaque themed Surface and light/dark
+icon requests. Capture checks now cover focused live/native/wide windows, navigation insets,
+legacy flags, IME and contrast state. Global system-window idleness replaces the old fixed200ms
+sleep. This is a targeted presentation experiment, not a claimed resolved platform cause.
+Local follow-up domain/debug/lint/instrumentation compilation passes79tasks/1m5s. Its full
+516case/379capture matrix, new fingerprint and actual bar screenshots remain required.
 
-The native Continue defect is now demonstrated and corrected: its centre previously fell in
-system navigation because AndroidView did not clip native visibility to the allocated viewport.
-The native ScrollView now clips to its real bounds; API35/36 logs show the button ending exactly
-at the1137px safe boundary, and every original onboarding flow passes. Large-text analytics and
-previously failing API28 alternatives/history dialog cases also pass. The main-thread lifecycle
-fixture and removal of optional new size animation retain all assertions; no single unproven
-animation cause is claimed.
+Verified df35cf2 API35APK artifact13517359333: **55,348,650bytes**,0.12.0-test1/code16, SHA256
+`5a44b97683dfdfa7f9c7fb0ad63da837c201169a6371f7e5332e4e38a7ce1656`.
+APKZIP SHA `1b4bdaad6665157954ca62af7e84945f6a90f89e46bbe3caf9bf7a038228356f`.
+Compared with verified0.11CIAPK55,250,287bytes: +98,363bytes /+0.1780%. No new artwork.
+Actual packaged permissions inspected: **no INTERNET**. This is not a final follow-up/main APK.
 
-Source88f API36 artifact13510259807 was downloaded to scratch/material-preview/clip36; all379
-raw PNGs pass strict validation. ZIP SHA256
-`b4ef0e70edaaf65eb20e343733105423e5f2b35140f93f481ca8b84ea07beea6`.
-Earlier actual API35 previews were inspected across running/strength/health/recovery/storage,
-light/dark/200%; latest native/rail and final-source visual review remain required.
-Source88f API35/36 APKs are55,332,266bytes; final identity/checksum review remains pending.
-
-Version0.12.0-test1/code16. No runtime dependency, manifest permission, launcher icon, engine,
-schema or backup-format change: schema19/rootJSON13/raw3/complete1. Local appearance choice is
-not part of portable training backups. Physical Galaxy/Pixel/Xiaomi, human TalkBack, outdoorGPS,
-providers/OEM/audio checks remain **UNPERFORMED**. No0.12 publication is claimed.
+No dependency, launcher icon, engine, schema or backup-format change: schema19/rootJSON13/
+raw3/complete1. Physical Galaxy/Pixel/Xiaomi, human TalkBack, outdoorGPS and provider/OEM/audio
+checks remain **UNPERFORMED**. PR19remains draft; no0.12 merge or publication is claimed.
 
 # 0.11.0-test1 — verified software and visual checkpoint
 
