@@ -491,6 +491,10 @@ public final class CatalogueExpansionTestSuite {
         var inward = ExerciseMetadataCatalog.require("cable-internal-rotation");
         var outward = ExerciseMetadataCatalog.require("cable-external-rotation");
         check(inward.primaryRole() == ExerciseMetadata.Role.INTERNAL_ROTATION);
+        check(
+                TechniqueGuide.forExercise(inward.exerciseId())
+                        .alternatives()
+                        .equals(List.of("Unweighted inward-rotation practice")));
         check(outward.primaryRole() == ExerciseMetadata.Role.EXTERNAL_ROTATION);
         check(!inward.roles().contains(outward.primaryRole()));
         check(

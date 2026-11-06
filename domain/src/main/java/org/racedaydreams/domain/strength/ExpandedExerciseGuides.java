@@ -821,7 +821,7 @@ public final class ExpandedExerciseGuides {
                         + " without turning your trunk",
                 "Using the far arm and changing the task|Pulling the whole elbow across the"
                         + " body|Turning the trunk to move more weight",
-                "Cable External Rotation",
+                "Unweighted inward-rotation practice",
                 "Near elbow tucked; hand towards tower",
                 "Rotate forearm inwards across abdomen");
         return Map.copyOf(out);

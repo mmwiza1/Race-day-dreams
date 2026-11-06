@@ -177,7 +177,8 @@ article text, images, commercial nutrition database or official branding is redi
 
 ## 0.11 original catalogue additions
 
-The additional instructional WebPs and movement copy are original project contributions,
+The220canonical guides include46new exercises with original movement copy and artwork;
+all223local instructional WebPs are original project contributions,
 generated from original movement specifications and individually reviewed for framing,
 equipment, limb placement and resistance direction. No stock image, scraped exercise art or
 commercial guide was used. Artwork is contributed under MIT; exact file hashes, sizes and

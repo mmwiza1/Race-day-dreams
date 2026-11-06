@@ -1,14 +1,18 @@
 ## Active 0.11.0-test1 — Gym, Health & Recovery Intelligence
 
-One draft PR18, feature/0.11-gym-health-recovery-intelligence. No automatic merge or stable tag.
-Gym execution, recorded strength intelligence, recovery/hybrid previews and optional body/protein
-guidance are implemented in development checkpoints;
-Android/visual hardening is still in progress. Remaining major implementation: acknowledged
-safe raw-detail retention/storage; complete selective catalogue additions, three six-month athlete
-simulations and final release gates. CONTINUE_CODEX.md contains exact commits and observed results.
-No remaining milestone is silently deferred. Historical plans below describe their own releases.
+PR18, feature/0.11-gym-health-recovery-intelligence, remains draft until the complete software
+and visual gate passes. Owner authorises automatic squash merge only after that gate, followed
+by actual main/post-merge CI and rolling development APK/checksum verification. No stable tag.
 
-# Active0.10 — Strength Programming 2.0
+All six implementation milestones are now present: optional gym timer/warm-up/superset tools;
+recorded strength trends/records/milestones; reviewed recovery/hybrid proposals; optional body/
+protein guidance; acknowledged transactional raw-detail retention/storage/compatible restore;
+and220fully illustrated canonical exercises plus three genuine six-month athlete simulations.
+Final-source Android/visual/artifact acceptance remains required. CONTINUE_CODEX.md and
+VERIFICATION.md record the exact observed boundary; no software or hardware pass is assumed.
+No0.12work is started. The following sections describe historical releases, not active backlogs.
+
+# Completed0.10 — Strength Programming 2.0
 
 PR15 / feature/0.10-strength-programming implements the agreed full0.10 software scope:
 manual/custom authoring,9editable templates, goal/experience-specific blocks, exact previews,
@@ -18,8 +22,7 @@ captures. Refined large-text progression passed actual visual review; existing0.
 typed schema15/rootJSON9 durability and one native gym engine remain preserved.
 Final documentation-only CI must be inspected before PR readiness/merge. Galaxy S24/TalkBack
 physical acceptance is still unperformed. No additional0.10feature backlog remains.
-0.11 nutrition/analytics/PB redesign/achievements/deload/advanced hybrid/rest timers/
-warm-up generation/supersets/catalogue-for-breadth remain explicitly deferred.
+Those0.11features were deferred from0.10 and are tracked by the active0.11section above.
 
 The following sections retain earlier release history.
 

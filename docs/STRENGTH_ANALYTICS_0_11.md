@@ -63,7 +63,7 @@ never changes running plans, strength programming, completed sets or coaching de
 Schema 16 introduced typed advisory rest state. Additive schema 17 introduces milestone headers,
 ordered source references and an opt-in celebration preference. Root JSON 11 requires its strict
 versioned achievement section and retains readers for older supported backups through 10; missing
-older achievement data restores to empty recognition/celebrations off. Raw archive 2 and complete
-package 1 are unchanged. Restore validates before replacement and uses the existing shared SQLite
+older achievement data restores to empty recognition/celebrations off. The later retention milestone advances the current root to13 and raw archive to3; complete
+package1 stays unchanged. These earlier milestone formats remain supported readers. Restore validates before replacement and uses the existing shared SQLite
 transaction. These new screens still require the final-source API 28/35/36 and authentic visual gate;
 consult `CONTINUE_CODEX.md` and `VERIFICATION.md` for observed results rather than assuming passes.

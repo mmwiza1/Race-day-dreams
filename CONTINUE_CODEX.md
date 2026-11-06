@@ -35,6 +35,43 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
+### CURRENT RECOVERY —220catalogue complete; Android font transition barrier under verification
+
+AllM1–6 implementation and six-month simulations are present. This checkpoint preserves89ff744
+and adds only a small guide correction, final documentation preparation and a stricter screenshot
+font-transition barrier. Inward-rotation alternatives now say unweighted INWARD practice rather
+than outward rotation; the engine already kept those roles distinct. CatalogueExpansion240checks;
+whole domain700108/47. Actual complete Gradle gate PASS79tasks/34sec in
+scratch/rdd011/catalogue220-configuration-barrier.log.220/220guides+14/14routines;223art assets.
+No production recording/progression/persistence/dependency/permission change.
+
+89ff744 workflow42142524174 FAILED overall. API36 PASSED508tests/359captures (full log inspected).
+API28and35 EACH507passed/ONE failure: restoresUnsetFontAfterLargeTextBeforeNormalNavigation.
+Even explicit put1.0 was overwritten to stored+actual2.0. No other case failed. Canonical skipped.
+API36screens artifact13470030718 ZIP SHA108b986232d24317a89bfd213dd0d624629b851f6a24e9fccd50b1c9cf274858;
+APK13470180014 ZIP SHA5e6edc3f7e2024495e3dbb1c7b90ac90531c1c4c4d88171e5aa00f25db615f6e,
+APK55250287bytes. Download/review these actual images, but final revised-source gate still required.
+
+Root investigation: Android9 AMS and15 ATMS send app configuration BEFORE their queued persistent
+settings write. The configuration-change broadcast follows that persistence message. Waiting only
+for app resources allowed rapid2→1 transitions to be overwritten by queued2. The test fixture now
+registers a protected system CONFIGURATION_CHANGED receiver before changing scale, awaits that
+acknowledgement plus actual Settings and app resources (same20sec timeout), then unregisters it.
+No-op scales do not require a broadcast. The original normal-navigation regression now repeats
+three rapid200%→normal cycles, strengthening coverage. No assertion removed/timeout increased,
+no arbitrary sleep, reissued writes or test-only Compose density. Test APK only; no new app permission.
+AOSP references inspected (no source copied): android-9.0.0_r1 ActivityManagerService.java,
+updateGlobalConfigurationLocked/MainHandler; android-15.0.0_r1 ActivityTaskManagerService.java,
+updateGlobalConfigurationLocked/sendPutConfigurationForUserMsg, pinned tags on android.googlesource.com.
+
+NEXT: push this tested checkpoint; inspect full508/API28/35/36 and359capture/API matrix.
+Do not blindly rerun89ff. If any failure, inspect its actual diagnostics/root cause. Final direct
+light/dark/200% review, source/PNG/hash verification, comparable CI APK size and final release notes
+remain required. Current prepared documentation is not final acceptance. KeepPR18draft.
+After exactfinalhead wholegreen+visual/sourcealigned: authorised squash merge; fetch actualmain,
+verify postmergefullCI and rollingLatestDevelopmentAPKversion15/source/SHA. No stabletag/0.12.
+AllS24physical tests remain UNPERFORMED. Preserve generated originals and all local artifacts.
+
 ### ACTIVE CHECKPOINT —220complete guides; final Android/visual delivery pending
 
 This section supersedes the archived checkpoints below. AllM1–5 and the three six-month

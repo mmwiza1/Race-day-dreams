@@ -1105,10 +1105,12 @@ class CoachingScreenshotTest {
     @Test
     fun restoresUnsetFontAfterLargeTextBeforeNormalNavigation() {
         shell("settings delete system font_scale")
-        shell("settings put system font_scale 2.0")
-        Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
-        restoreFontScale("null")
-        Assert.assertEquals(1f, context.resources.configuration.fontScale, .01f)
+        repeat(3) {
+            shell("settings put system font_scale 2.0")
+            Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+            restoreFontScale("null")
+            Assert.assertEquals(1f, context.resources.configuration.fontScale, .01f)
+        }
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         awaitHomeReady(false)
         compose.onNodeWithText("Plan").assertIsDisplayed()
@@ -2635,15 +2637,6 @@ class CoachingScreenshotTest {
     }
 
     private fun shell(command: String): String {
-        val output =
-            InstrumentationRegistry.getInstrumentation()
-                .uiAutomation
-                .executeShellCommand(command)
-                .use { descriptor ->
-                    java.io.FileInputStream(descriptor.fileDescriptor).use {
-                        it.readBytes().toString(Charsets.UTF_8)
-                    }
-                }
         val expectedScale =
             when {
                 command.startsWith("settings put system font_scale ") ->
@@ -2651,29 +2644,82 @@ class CoachingScreenshotTest {
                 command == "settings delete system font_scale" -> 1f
                 else -> null
             }
-        if (expectedScale != null) {
-            // SettingsProvider returning does not prove ActivityThread has applied configuration.
-            // Await the actual app resource state; never replace real large text with a test
-            // override.
-            try {
-                compose.waitUntil(20000) {
-                    kotlin.math.abs(context.resources.configuration.fontScale - expectedScale) <
-                        .01f
+        val alreadyApplied =
+            expectedScale == null ||
+                kotlin.math.abs(context.resources.configuration.fontScale - expectedScale) < .01f
+        val acknowledged = java.util.concurrent.atomic.AtomicBoolean(alreadyApplied)
+        val receiver =
+            if (expectedScale != null && !alreadyApplied)
+                object : android.content.BroadcastReceiver() {
+                    override fun onReceive(
+                        receivingContext: Context,
+                        intent: android.content.Intent,
+                    ) {
+                        if (
+                            intent.action == android.content.Intent.ACTION_CONFIGURATION_CHANGED &&
+                                kotlin.math.abs(
+                                    context.resources.configuration.fontScale - expectedScale
+                                ) < .01f
+                        ) {
+                            acknowledged.set(true)
+                        }
+                    }
                 }
-            } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
-                throw AssertionError(
-                    "Font configuration after $command: expected $expectedScale, actual ${context.resources.configuration.fontScale}, stored ${shell("settings get system font_scale").trim()}",
-                    failure,
-                )
-            }
-            Assert.assertEquals(
-                "Applied font scale after $command",
-                expectedScale,
-                context.resources.configuration.fontScale,
-                .01f,
+            else null
+        if (receiver != null) {
+            androidx.core.content.ContextCompat.registerReceiver(
+                context,
+                receiver,
+                android.content.IntentFilter(android.content.Intent.ACTION_CONFIGURATION_CHANGED),
+                androidx.core.content.ContextCompat.RECEIVER_EXPORTED,
             )
         }
-        return output
+        try {
+            val output =
+                InstrumentationRegistry.getInstrumentation()
+                    .uiAutomation
+                    .executeShellCommand(command)
+                    .use { descriptor ->
+                        java.io.FileInputStream(descriptor.fileDescriptor).use {
+                            it.readBytes().toString(Charsets.UTF_8)
+                        }
+                    }
+            if (expectedScale != null) {
+                // Android sends the app's configuration callback before its queued persistent
+                // settings write. A rapid next write can otherwise be overwritten by that old
+                // configuration. The system configuration broadcast follows the persistence
+                // message (AMS on28, ATMS on35); await it AND real settings/resources.
+                try {
+                    compose.waitUntil(20000) {
+                        acknowledged.get() &&
+                            kotlin.math.abs(
+                                context.resources.configuration.fontScale - expectedScale
+                            ) < .01f &&
+                            kotlin.math.abs(
+                                android.provider.Settings.System.getFloat(
+                                    context.contentResolver,
+                                    android.provider.Settings.System.FONT_SCALE,
+                                    1f,
+                                ) - expectedScale
+                            ) < .01f
+                    }
+                } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
+                    throw AssertionError(
+                        "Font configuration after $command: expected $expectedScale, actual ${context.resources.configuration.fontScale}, stored ${shell("settings get system font_scale").trim()}, broadcast ${acknowledged.get()}",
+                        failure,
+                    )
+                }
+                Assert.assertEquals(
+                    "Applied font scale after $command",
+                    expectedScale,
+                    context.resources.configuration.fontScale,
+                    .01f,
+                )
+            }
+            return output
+        } finally {
+            if (receiver != null) context.unregisterReceiver(receiver)
+        }
     }
 
     private fun back() {

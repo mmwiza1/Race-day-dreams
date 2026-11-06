@@ -68,8 +68,8 @@ Additive schema18 contains normalized height observations, chronological index a
 preferences. Existing weights retain their original owner through a typed adapter; new height or
 nutrition data is not placed in a miscellaneous JSON table. Root JSON12 requires bodyMeasurements
 v1, reads supported roots1–11 and restores their missing body data to guidance off/empty heights.
-All sections validate before the shared replacement transaction. Raw archive2/complete package1
-remain unchanged. Large export limits fail explicitly instead of truncating records.
+All sections validate before the shared replacement transaction. The later retention milestone advances current root JSON to13/raw archive3; complete package1
+stays unchanged, and older supported body readers remain. Large export limits fail explicitly instead of truncating records.
 
 Domain, schema, repository, UI and production-capture cases are defined. Consult VERIFICATION.md
 for observed results. New current-source API28/35/36, screenshots and physical S24 body-provider

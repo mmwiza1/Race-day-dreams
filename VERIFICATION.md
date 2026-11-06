@@ -1,3 +1,17 @@
+# Current220-guide / configuration-broadcast barrier — runtime gate pending
+
+Actual complete Gradle domain/debug/lint/instrumentation compilation PASS79tasks/34sec;
+700108checks/47suites,240catalogue checks,4226six-month simulation assertions. All220canonical
+and14routine guides remain complete;223art assets/11634030bytes. No production engine change.
+
+89ff744 workflow42142524174:API36 PASSED508tests/359captures. API28and35 EACH507passed with
+one font-fixture restoration regression. Explicit settings writes alone were still overwritten.
+AOSP9/15 confirm app callbacks precede queued persistence and the later configuration broadcast.
+Following fixture waits for that system acknowledgement AND settings/resources, and strengthens
+the same test to three rapid large→normal cycles. No weakened assertion, longer timeout or sleep.
+The following full508/API/359capture matrix and final-source visual/artifact acceptance remain
+REQUIRED. No merge/publication/S24physical success is claimed. Historical evidence follows.
+
 # 220-guide source checkpoint — final Android and visual gate required
 
 Local full Gradle domain/debug/lint/instrumentation compilation PASS79tasks/1m25sec;

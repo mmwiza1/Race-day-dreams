@@ -69,7 +69,7 @@ behaviour only; the complete agreed release is not yet ready for review.
 
 ## Verification
 
-- Local220-guide source passes700107domain checks across47suites,75schema/migration tests,
+- Local220-guide source passes700108domain checks across47suites,75schema/migration tests,
   9release-note tests,17capture-validator tests,11route-source tests and14artwork tests.
   Strict220/220canonical and14/14routine guidance and all223original asset hashes pass.
 - Three deterministic six-month athlete histories pass4226integration assertions using
@@ -83,3 +83,7 @@ behaviour only; the complete agreed release is not yet ready for review.
 - Final220-source508/API Android gate,359captures/API, direct visual review, comparable APK
   size and final rolling development artifact remain pending. Earlier checkpoints do not
   establish final release acceptance. Physical GalaxyS24 checks remain unperformed.
+
+Current220source89ff744 passed508tests/359captures on API36; API28/35 each had one rapid font
+restoration failure. The following fixture synchronises on the system configuration broadcast
+and real settings/resources; its strengthened three-cycle regression and full matrix are pending.
