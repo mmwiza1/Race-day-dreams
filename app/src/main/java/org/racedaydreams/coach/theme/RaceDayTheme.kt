@@ -112,12 +112,19 @@ fun RaceDayTheme(
         preferences.registerOnSharedPreferenceChangeListener(listener)
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
-    val scheme =
-        when {
-            (dynamicColour ?: useDynamic) && Build.VERSION.SDK_INT >= 31 ->
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            darkTheme -> Dark
-            else -> Light
-        }
+    val scheme = raceDayColourScheme(context, darkTheme, dynamicColour ?: useDynamic)
     MaterialTheme(colorScheme = scheme, typography = Type, shapes = Form, content = content)
 }
+
+/** The retained public permission View uses the same roles without introducing a second theme. */
+fun raceDayColourScheme(
+    context: android.content.Context,
+    darkTheme: Boolean,
+    dynamicColour: Boolean,
+): ColorScheme =
+    when {
+        dynamicColour && Build.VERSION.SDK_INT >= 31 ->
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        darkTheme -> Dark
+        else -> Light
+    }

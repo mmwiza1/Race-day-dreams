@@ -8,12 +8,16 @@ Observed local baseline: 700108 domain checks/47 suites, schema75, release-note9
 and full Gradle domain/debug/lint/instrumentation compilation PASS79tasks/34s.
 Foundation sourcef6326cd builds/lints/compiles instrumentation locally (75tasks/3m26s),
 pinned formatting103Kotlin/158Java and formatter-tool14 tests pass. Its runtime workflow
-42209685248 is an intermediate run, not final-head release evidence.
+42209685248 was superseded/cancelled; API35 failures identified obsolete Settings selectors,
+corrected without weakening assertions. This is not final-head evidence.
 
 Integrated core and retained-View changes compiled/linted with full Gradle gate PASS79tasks/2m18s;
 updated Settings action tests then passed the same gate79tasks/43s. The final Home recent-run
 presentation addition also passed the same full gate79tasks/1m34s. Capture validator18, schema75,
 release-note9, route-source11, artwork14 and strict223 guidance asset hashes pass locally.
+Follow-on palette/GPS/window-restoration candidate passes full Gradle79tasks/1m11s and
+format108Kotlin/159Java. Its actual packaged version0.12.0-test1/code16 and noINTERNET
+were checked with aapt.
 All220canonical/14routine guidance is retained. New theme/disclosure/recording-control tests
 and375required actual captures (all359previous +16colour/large-text/wide cases) still need the
 complete API28/35/36 runtime matrix and visual review. No new screenshot, merge or publication

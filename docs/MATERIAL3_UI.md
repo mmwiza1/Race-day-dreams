@@ -23,7 +23,7 @@ larger. Insets are consumed after Scaffold padding so nested IME padding does no
 system bars twice. Large-text compact navigation retains the established semantic labels.
 
 The active goal editor remains an AndroidView, with its data entry and draft behaviour
-preserved. The permission rationale is also a real Android View screen. The unexported
+preserved. The permission rationale is also a real Android View screen and resolves the same colour roles, including device colours, without migrating its lifecycle. The unexported
 legacy MainActivity is not a migration target; no new UI is built there.
 
 ## Official guidance consulted

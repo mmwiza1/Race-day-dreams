@@ -44,6 +44,7 @@ fun SettingsScreen(
     healthContext: () -> Unit = {},
     storage: (() -> Unit)? = null,
 ) = CoachPage {
+    CoachHeading("Settings")
     AppearanceSettings()
     SchedulePreferences()
     DreamPreferences()
@@ -51,7 +52,6 @@ fun SettingsScreen(
     val context = LocalContext.current
     var showLicence by rememberSaveable { mutableStateOf(false) }
     var noticeAsset by rememberSaveable { mutableStateOf<String?>(null) }
-    CoachHeading("Settings")
     storage?.let {
         OutlinedButton(it, Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
             Text("Storage & recording detail")

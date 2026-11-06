@@ -2663,6 +2663,7 @@ class CoachingScreenshotTest {
 
     @Test
     fun capturesWideWindowNavigationAndBoundedContent() {
+        val originalWidth = context.resources.configuration.screenWidthDp
         val size = shell("wm size")
         val originalOverride =
             Regex("Override size: ([0-9]+x[0-9]+)").find(size)?.groupValues?.get(1)
@@ -2680,6 +2681,9 @@ class CoachingScreenshotTest {
             scenario?.close()
             scenario = null
             shell("wm size ${originalOverride ?: "reset"}")
+            compose.waitUntil(20000) {
+                context.resources.configuration.screenWidthDp == originalWidth
+            }
         }
     }
 

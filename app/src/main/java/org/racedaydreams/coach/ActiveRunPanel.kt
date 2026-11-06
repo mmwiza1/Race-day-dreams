@@ -45,6 +45,17 @@ fun ActiveRunPanel(
                     } ?: "Recording",
                 style = MaterialTheme.typography.headlineMedium,
             )
+            Text(
+                s.gps(),
+                modifier =
+                    Modifier.semantics {
+                        // Ordinary quality fluctuations stay readable without repeated speech.
+                        if (!s.paused() && s.gps().contains("temporarily lost"))
+                            liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+                    },
+            )
+            if (s.gps() == "GPS signal weak")
+                Text("Your pace may be temporarily inaccurate. Continue by effort.")
             if (w != null && !w.complete()) {
                 Text(
                     w.current()?.kind()?.name?.lowercase()?.replace('_', ' ') ?: "Run",
@@ -112,17 +123,6 @@ fun ActiveRunPanel(
                     )
             }
             hr?.let { RunMetric("Heart rate", "${it.toInt()} bpm") }
-            Text(
-                s.gps(),
-                modifier =
-                    Modifier.semantics {
-                        // Ordinary quality fluctuations stay readable without repeated speech.
-                        if (!s.paused() && s.gps().contains("temporarily lost"))
-                            liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
-                    },
-            )
-            if (s.gps() == "GPS signal weak")
-                Text("Your pace may be temporarily inaccurate. Continue by effort.")
             notice?.let { Text(it) }
             var details by remember { mutableStateOf(false) }
             TextButton(
