@@ -43,6 +43,21 @@ if Path(sys.argv[0]).name == 'adb':
         sys.exit(int(os.environ.get('RDD_GATE_TEST_SETUP_EXIT', '0')))
     elif args[:3] == ['shell', 'wm', 'density']:
         event('density:' + args[3])
+    elif args == ['shell', 'svc', 'power', 'stayon', 'true']:
+        event('keep-awake')
+        sys.exit(int(os.environ.get('RDD_GATE_TEST_AWAKE_EXIT', '0')))
+    elif args == ['shell', 'input', 'keyevent', 'KEYCODE_WAKEUP']:
+        event('wake')
+    elif args == ['shell', 'settings', 'put', 'system', 'screen_off_timeout', '1800000']:
+        event('display-timeout')
+    elif args == ['shell', 'wm', 'dismiss-keyguard']:
+        event('unlock')
+    elif args == ['shell', 'dumpsys', 'power']:
+        event('power-state')
+        print('mWakefulness=Awake')
+    elif args == ['shell', 'dumpsys', 'window']:
+        event('window-focus')
+        print('mCurrentFocus=synthetic-test-window')
     elif args[:2] == ['logcat', '-d']:
         event('fixture-log')
     elif args[:1] == ['pull']:
@@ -110,7 +125,7 @@ class AndroidGateTest(unittest.TestCase):
         code, _, stderr = self.run_gate()
         self.assertEqual(0, code, stderr)
         self.assertEqual(
-            ['size:540x1200', 'density:210', 'reader-start', 'gradle-guard', 'gradle-full', 'fixture-log', 'pull', 'verify', 'reader-stop'],
+            ['size:540x1200', 'density:210', 'keep-awake', 'display-timeout', 'wake', 'unlock', 'reader-start', 'gradle-guard', 'gradle-full', 'fixture-log', 'pull', 'verify', 'reader-stop'],
             self.events(),
         )
         self.assertEqual([
@@ -126,6 +141,8 @@ class AndroidGateTest(unittest.TestCase):
         self.assertIn('gradle-guard', self.events())
         self.assertNotIn('gradle-full', self.events())
         self.assertNotIn('pull', self.events())
+        self.assertIn('power-state', self.events())
+        self.assertIn('window-focus', self.events())
         self.assert_reader_stopped()
 
     def test_gradle_failure_keeps_its_exit_and_skips_exports_but_reaps_reader(self):
@@ -146,6 +163,12 @@ class AndroidGateTest(unittest.TestCase):
         code, _, stderr = self.run_gate(RDD_GATE_TEST_SETUP_EXIT='31')
         self.assertEqual(31, code, stderr)
         self.assertEqual(['size:540x1200'], self.events())
+        self.assertFalse((self.state / 'reader.pid').exists())
+
+    def test_awake_setup_failure_never_starts_reader_or_tests(self):
+        code, _, stderr = self.run_gate(RDD_GATE_TEST_AWAKE_EXIT='29')
+        self.assertEqual(29, code, stderr)
+        self.assertEqual(['size:540x1200', 'density:210', 'keep-awake'], self.events())
         self.assertFalse((self.state / 'reader.pid').exists())
 
     def test_action_calls_one_shell_without_changing_the_timeout(self):

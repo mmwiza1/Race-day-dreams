@@ -10,6 +10,12 @@ rdd_test_log_pid=
 rdd_cleanup() {
     rdd_gate_status=$?
     trap - 0 1 2 15
+    if [ "$rdd_gate_status" -ne 0 ] && [ -n "$rdd_test_log_pid" ]; then
+        # Public CI-device state only, so an overlay/keyguard failure is distinguishable
+        # from app layout. Bound diagnostics and retain the original test exit status.
+        timeout 10 adb shell dumpsys power | awk '/mWakefulness=|mInteractive=|Display Power/' || true
+        timeout 10 adb shell dumpsys window | awk '/mCurrentFocus=|mFocusedApp=|mShowingLockscreen=/' || true
+    fi
     if [ -n "$rdd_test_log_pid" ]; then
         kill "$rdd_test_log_pid" 2>/dev/null || true
         wait "$rdd_test_log_pid" 2>/dev/null || true
@@ -23,6 +29,12 @@ trap 'exit 143' 15
 
 adb shell wm size 540x1200
 adb shell wm density 210
+# UI capture requires an awake, unlocked virtual device. This changes CI setup only;
+# it is not evidence that locked-screen recording has been physically accepted.
+adb shell svc power stayon true
+adb shell settings put system screen_off_timeout 1800000
+adb shell input keyevent KEYCODE_WAKEUP
+adb shell wm dismiss-keyguard
 # Test-only identities and bounded stacks; never dump private application logs.
 adb logcat -v raw -s RddGate:I '*:S' &
 rdd_test_log_pid=$!

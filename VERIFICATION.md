@@ -56,6 +56,13 @@ anouterFrameLayout, givingtheScrollViewits actual safeviewport. Existingreal scr
 assertions remain andnowrequire100%buttonvisibility/fullglobalbounds. Localcomplete domain/
 debug/lint/testcompilepasses79tasks/1m8s. Its newruntime/visualgate ispending.
 
+4a5b6e1/API36job128017108362 subsequently failedatbootstrap: thefirstonboarding andevery
+laterActivityroot lackedwindowfocus; theappwindowdidnothaveNOT_FOCUSABLE. Theexactowner
+ofthatfocuswasnotcaptured. TheCI-onlyfollow-up establishesawake/unlockedvirtual-device
+preconditions andbounds publicpower/focus failurediagnostics. Itpreserves allfocusassertions,
+method/stepbudgets andoriginalfailureexit. Sevenreal-processhelpertests andshellsyntaxpass.
+Thisdoesnotconstitutephysical locked-screenrecordingverification. Newmatrix remainsrequired.
+
 Verified df35cf2 API35APK artifact13517359333: **55,348,650bytes**,0.12.0-test1/code16, SHA256
 `5a44b97683dfdfa7f9c7fb0ad63da837c201169a6371f7e5332e4e38a7ce1656`.
 APKZIP SHA `1b4bdaad6665157954ca62af7e84945f6a90f89e46bbe3caf9bf7a038228356f`.
