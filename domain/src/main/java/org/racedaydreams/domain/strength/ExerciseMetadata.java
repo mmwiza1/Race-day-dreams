@@ -37,6 +37,7 @@ public record ExerciseMetadata(
         CARRY("Carry"),
         GRIP("Grip"),
         SCAPULAR_CONTROL("Shoulder-blade control"),
+        EXTERNAL_ROTATION("Shoulder outward rotation"),
         CONDITIONING("Conditioning"),
         POWER("Power"),
         ISOLATION("Isolation");

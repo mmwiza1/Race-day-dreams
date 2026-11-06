@@ -20,6 +20,7 @@ public final class CatalogueExpansionTestSuite {
         cableAlternativesNeedTheAttachmentAndKeepHipDirection();
         staticHoldsAndShoulderBladeControlAreDistinctTasks();
         carriesAndLoadedHoldsKeepTheirMeasurementEvidence();
+        shoulderControlAndSmithSetupsAreSpecific();
         System.out.println("CatalogueExpansionTestSuite: " + checks + " checks passed.");
     }
 
@@ -78,7 +79,12 @@ public final class CatalogueExpansionTestSuite {
                         "cable-hip-abduction",
                         "cable-hip-adduction",
                         "cable-glute-kickback",
-                        "seated-dumbbell-calf-raise")) {
+                        "seated-dumbbell-calf-raise",
+                        "cable-external-rotation",
+                        "smith-romanian-deadlift",
+                        "smith-split-squat",
+                        "smith-incline-bench-press",
+                        "smith-standing-calf-raise")) {
             var exercise = ExerciseCatalog.definition(id).exercise();
             var working = new StrengthSession.SetEntry("working", 12, 25, 7.0, false);
             var warmup = new StrengthSession.SetEntry("warmup", 8, 30, 5.0, true);
@@ -123,8 +129,10 @@ public final class CatalogueExpansionTestSuite {
                         Set.of(),
                         ExerciseSubstitutionEngine.Reason.EQUIPMENT_UNAVAILABLE);
         var suggestions = ExerciseSubstitutionEngine.rank(context, 50);
-        check(suggestions.size() == 1);
+        check(suggestions.size() == 2);
         check(suggestions.get(0).exercise().id().equals("cable-hip-adduction"));
+        check(suggestions.get(1).exercise().id().equals("side-lying-hip-adduction"));
+        check(suggestions.get(1).measurementChanged());
         check(suggestions.get(0).explanation().contains("Previous loads do not transfer"));
         check(
                 !TechniqueIllustrations.forExercise("cable-hip-abduction")
@@ -335,6 +343,85 @@ public final class CatalogueExpansionTestSuite {
                 TechniqueGuide.forExercise("overhead-dumbbell-carry")
                         .movement()
                         .contains("total load across both"));
+    }
+
+    private static void shoulderControlAndSmithSetupsAreSpecific() {
+        check(
+                ExerciseMetadataCatalog.require("cable-external-rotation").primaryRole()
+                        == ExerciseMetadata.Role.EXTERNAL_ROTATION);
+        check(
+                ExerciseMetadataCatalog.require("side-lying-hip-adduction")
+                        .primaryAreas()
+                        .equals(Set.of(HIP_ADDUCTORS)));
+        check(
+                TechniqueGuide.forExercise("side-lying-hip-adduction")
+                        .movement()
+                        .contains("lower straight leg"));
+        check(
+                ExerciseMetadataCatalog.require("scapular-pull-up")
+                        .equipment()
+                        .availableWith(Set.of(PULL_UP_BAR)));
+        check(
+                !ExerciseMetadataCatalog.require("scapular-pull-up")
+                        .equipment()
+                        .availableWith(Set.of()));
+        check(
+                TechniqueGuide.forExercise("scapular-pull-up")
+                        .movement()
+                        .contains("elbows straight"));
+        check(ExerciseMetadataCatalog.require("prone-y-raise").equipment().equipmentFree());
+        check(
+                ExerciseCatalog.definition("prone-y-raise").exercise().measurement()
+                        == StrengthExercise.MeasurementProfile.REPS_ONLY);
+        var incline = ExerciseMetadataCatalog.require("smith-incline-bench-press");
+        check(!incline.equipment().availableWith(Set.of(SMITH_MACHINE, BENCH)));
+        check(incline.equipment().availableWith(Set.of(SMITH_MACHINE, ADJUSTABLE_BENCH)));
+        check(
+                !ExerciseMetadataCatalog.require("smith-standing-calf-raise")
+                        .equipment()
+                        .availableWith(Set.of(SMITH_MACHINE)));
+        check(
+                ExerciseMetadataCatalog.require("smith-standing-calf-raise")
+                        .equipment()
+                        .availableWith(Set.of(SMITH_MACHINE, STABLE_STEP)));
+        check(
+                !ExerciseMetadataCatalog.require("smith-romanian-deadlift")
+                        .equipment()
+                        .availableWith(Set.of(BARBELL)));
+        check(
+                ExerciseMetadataCatalog.require("smith-split-squat")
+                        .roles()
+                        .contains(ExerciseMetadata.Role.UNILATERAL));
+        check(
+                TechniqueGuide.forExercise("smith-split-squat")
+                        .setup()
+                        .contains("neither foot is raised on a bench"));
+        var context =
+                new ExerciseSubstitutionEngine.Context(
+                        ExerciseCatalog.definition("lateral-raise").exercise(),
+                        GymProgramme.Goal.GENERAL,
+                        GymProgramme.Experience.BEGINNER,
+                        java.util.EnumSet.allOf(ExerciseMetadata.Equipment.class),
+                        Set.of(),
+                        Set.of(),
+                        Set.of(),
+                        ExerciseSubstitutionEngine.Reason.ALTERNATIVES);
+        check(
+                ExerciseSubstitutionEngine.rank(context, 50).stream()
+                        .noneMatch(c -> c.exercise().id().equals("cable-external-rotation")));
+        for (String id :
+                List.of(
+                        "side-lying-hip-adduction",
+                        "scapular-pull-up",
+                        "prone-y-raise",
+                        "cable-external-rotation",
+                        "smith-romanian-deadlift",
+                        "smith-split-squat",
+                        "smith-incline-bench-press",
+                        "smith-standing-calf-raise")) {
+            check(TechniqueIllustrations.forExercise(id).phases().size() == 2);
+            check(ExpandedExerciseGuides.identities().contains(id));
+        }
     }
 
     private static void check(boolean value) {

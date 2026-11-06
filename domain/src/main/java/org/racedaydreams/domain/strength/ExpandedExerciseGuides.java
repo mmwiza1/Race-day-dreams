@@ -338,6 +338,143 @@ public final class ExpandedExerciseGuides {
                 "Farmer’s Carry|Front Rack Carry",
                 "Stable two-dumbbell overhead support",
                 "Walk steadily; lower deliberately");
+        add(
+                out,
+                "side-lying-hip-adduction",
+                "hip-adduction",
+                "Lie on your side with your head supported and the lower leg straight. Bend the"
+                        + " upper leg and plant its foot in front of your lower knee, keeping hips"
+                        + " stacked.",
+                "Lift the lower straight leg a short distance from the mat, then lower slowly. Keep"
+                        + " the upper foot supported and avoid rolling your pelvis; change sides as"
+                        + " prescribed.",
+                "Inner-thigh muscles with trunk support",
+                "Lift the lower leg|Keep the upper foot supported|Use a small controlled range",
+                "Lifting the upper leg instead|Rolling backwards|Swinging the lower leg",
+                "Hip Adductor Machine|Cable Hip Adduction",
+                "Lower leg straight; upper foot planted",
+                "Lift lower leg; return slowly");
+        add(
+                out,
+                "scapular-pull-up",
+                "scapular-control",
+                "Take an overhand grip on a secure pull-up bar and begin in a comfortable"
+                    + " controlled hang. Use a stable step to reach or leave the bar if needed.",
+                "Keeping elbows straight, draw your shoulders gently away from your ears so your"
+                        + " body rises a few centimetres. Return slowly without swinging. This is a"
+                        + " small shoulder-blade movement, not a full pull-up.",
+                "Upper-back muscles controlling the shoulder blades, with shoulder and grip"
+                        + " support",
+                "Keep elbows straight|Keep legs still|Use a small controlled rise",
+                "Bending elbows into a full pull-up|Kipping or swinging|Hanging through shoulder"
+                        + " discomfort",
+                "Dead Hang|Prone Y Raise",
+                "Controlled hang; elbows straight",
+                "Draw shoulders down; small body rise");
+        add(
+                out,
+                "prone-y-raise",
+                "scapular-control",
+                "Lie face down on a mat with legs relaxed, neck comfortably aligned and arms"
+                        + " reaching diagonally forwards into a Y. Point your thumbs upwards.",
+                "Lift your hands and arms a small distance while keeping chest and pelvis"
+                    + " supported, then lower slowly. Avoid shrugging or lifting your whole trunk"
+                    + " to create extra range.",
+                "Upper-back and shoulder muscles controlling the shoulder blades",
+                "Use a small lift|Keep the neck comfortable|Keep chest and pelvis supported",
+                "Arching into a back extension|Shrugging towards the ears|Throwing the arms"
+                        + " upwards",
+                "Scapular Push-Up|Face Pull",
+                "Arms in a Y; trunk supported",
+                "Lift arms slightly; lower smoothly");
+        add(
+                out,
+                "cable-external-rotation",
+                "external-rotation",
+                "Stand side-on to a pulley near elbow height. Hold the handle in the hand furthest"
+                    + " from the tower, with that upper arm beside your ribs and elbow bent to a"
+                    + " right angle; start with the forearm across your abdomen.",
+                "Rotate the forearm outwards away from your abdomen while keeping elbow beside your"
+                    + " ribs, then return slowly. Keep your trunk still, use a light controllable"
+                    + " load and change sides as prescribed.",
+                "Shoulder muscles controlling outward rotation",
+                "Use the far hand|Keep the upper arm beside your ribs|Choose a small comfortable"
+                        + " range",
+                "Using the near hand and pulling inward|Lifting the elbow away from the"
+                        + " ribs|Rotating your trunk instead of the shoulder",
+                "Prone Y Raise|Face Pull",
+                "Far hand holds cable; elbow by ribs",
+                "Rotate forearm outward; controlled return");
+        add(
+                out,
+                "smith-romanian-deadlift",
+                "hinge",
+                "Check the Smith bar release and safety stops with a light setup. Stand with feet"
+                        + " stable and hold the bar at arm length near your thighs with softly bent"
+                        + " knees.",
+                "Push your hips back while the bar follows the rails close to your legs, then stand"
+                        + " through the hips. Stop at a depth you can control without changing your"
+                        + " back position. Compare loads only with the same machine and loading"
+                        + " convention.",
+                "Hamstrings and glutes, with trunk and upper-back support",
+                "Hinge from the hips|Keep the bar close|Set the stops before lifting",
+                "Turning the hinge into a squat|Leaning backwards at the finish|Assuming every"
+                        + " Smith bar has the same starting weight",
+                "Romanian Deadlift|Cable Pull-Through",
+                "Bar near thighs; knees soft",
+                "Hips back; follow rails under control");
+        add(
+                out,
+                "smith-split-squat",
+                "split",
+                "Check the Smith bar release and set its safety stops. Support the bar across your"
+                    + " upper back and take a staggered stance with the front foot flat and rear"
+                    + " toes on the floor; neither foot is raised on a bench.",
+                "Bend both knees to lower under control while the bar follows the rails, then rise"
+                    + " through the front foot. Keep both feet in place, use a comfortable depth"
+                    + " and change sides as prescribed.",
+                "Quadriceps and glutes, with hamstring and trunk involvement",
+                "Keep the front foot supported|Keep the rear toes on the floor|Set the stops for"
+                        + " your range",
+                "Using an unstable foot position|Bouncing the rear knee off the floor|Relying on an"
+                        + " unfamiliar locking mechanism",
+                "Reverse Lunge|Bodyweight Reverse Lunge",
+                "Floor-supported staggered stance",
+                "Lower both knees; rise through front foot");
+        add(
+                out,
+                "smith-incline-bench-press",
+                "press",
+                "Secure an adjustable inclined bench beneath the Smith bar and set its safety"
+                    + " stops. Support your back and head, plant your feet and practise releasing"
+                    + " and re-engaging the hooks with a light setup.",
+                "Lower the bar towards your upper chest along its rails, then press smoothly"
+                        + " without lifting off the bench. Use a comfortable incline and bar path;"
+                        + " compare recorded loads only on the same machine and setup.",
+                "Chest, triceps and front shoulders",
+                "Check bench and rail alignment|Keep feet planted|Re-engage the hooks deliberately",
+                "Bouncing at the chest|Pressing without safety stops|Forcing an uncomfortable fixed"
+                        + " path",
+                "Incline Dumbbell Press|Incline Bench Press",
+                "Supported incline; bar near upper chest",
+                "Press along rails; controlled return");
+        add(
+                out,
+                "smith-standing-calf-raise",
+                "calf",
+                "Set the Smith safety stops and support its bar across your upper back, not your"
+                    + " neck. Place both forefeet securely on a low stable step with heels clear of"
+                    + " the edge and grip the bar.",
+                "Raise your heels while keeping knees steady, then lower slowly through a"
+                    + " comfortable range. Keep the step stable and practise the locking mechanism"
+                    + " first; use the same machine and loading convention when comparing actuals.",
+                "Calves",
+                "Keep forefeet secure|Keep knees steady|Control both directions",
+                "Pushing through repeated knee bends|Using an unstable step|Assuming the bar weight"
+                        + " matches another machine",
+                "Standing Calf Raise|Seated Dumbbell Calf Raise",
+                "Forefeet supported; heels free",
+                "Raise heels; lower under control");
         return Map.copyOf(out);
     }
 

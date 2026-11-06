@@ -35,7 +35,68 @@ This instruction supersedes all historical no-auto-merge wording below.
   Current M5 source: schema19/rootJSON13/retention1/raw3/complete1, passed full506/API matrix on e39.
   Earlier16/17/18 migrations are immutable; new19 is additive and preserves all old readers.
 
-### Current192-guide continuation checkpoint
+### LATEST —200complete guides and API28 display-fixture correction
+
+Current200guide source includes26complete additions,203reviewed original assets/10557886bytes,
+strict200/200canonical+14/14routines. Added8beyond192:side-lying-hip-adduction,scapular-pull-up,
+prone-y-raise,cable-external-rotation,smith-romanian-deadlift,smith-split-squat,
+smith-incline-bench-press,smith-standing-calf-raise. External-rotation draft corrected from
+near-arm inward motion to far-arm outward rotation before bundling. Distinct external-rotation
+role prevents lateral-raise substitutions. Specific machine/bench/step/cable capabilities tested.
+CatalogueExpansionTestSuite201checks; whole domain685765checks/47suites. Actual frozen Gradle
+full domain/debug/lint/instrumentation compile PASS79tasks/1m2sec in
+catalogue-twohundred-font-fix-android.log. Following diagnostic-only actual full Gradle gate also PASS79tasks/28sec in
+catalogue-twohundred-ready-android.log. No schema/dependency/permission change.
+
+17b42c4 workflow42135690419 FAILED overall:API35and36 EACH507tests/248captures PASS;API28
+507tests with15failures (492passed), beginning with main capture missing Plan text and later
+independent navigation tests missing Plan/Calendar/Strength/Progress; one substitution copy
+not visible. All old assertions preserved. Canonical publication SKIPPED, no new bot to adopt.
+Do not blindly rerun17b or claim full green. Sourcee39 remains latest FULL green506/API/215frames.
+
+Code inspection found unsafe test restoration: newer capture finally blocks wrote raw CLI
+originalFont, which can be literal null for an unset setting. API28 rejects invalid font values;
+large text intentionally hides bottom-nav text and uses semantic icons instead, matching observed
+missing-label failures. Exact initial raw font value was not logged in failed run, so do not
+claim it was observed. Corrected fixture validates original value (unset→delete/default), awaits
+actual application font configuration after every set/delete, restores even on cleanup failure,
+and adds a real unset→200%→normal navigation regression. Diagnostic timeout reports expected,
+actual and stored font. No label assertions removed, no production nav rewrite/test density
+override, no sleep added. Next whole runtime expected508methods/API and296captures/API.
+
+API35ZIP13465693888 SHA28767f2510f3f41e5967004c56e9899fbcc66a140f1b5a4b269a7d4ecd24f804
+saved/extracted as scratch/rdd011/guides-17b-api35. API28HTML report artifact13466403561 SHA
+f281b6ffe20170420d661a1865ec8ca56f4a254ebad368fe6248f930debb5113 saved as guides-17b-failed28.
+All artifacts SHA-verified. Actual new warning-first200%confirmation and its scrolled tail opened:
+backup/undo warning is visible first and both real actions remain available. First two new guide
+light captures opened; remaining new guide light/dark/200%views still require direct review.
+Successful17b API35APK53311409bytes versus e39API35baseline52750085:561324bytes/+1.0641% for
+first10 additions, not the final release size. No publication/physical acceptance claim.
+
+Preceding192checkpoint9cfed83 is committed. This section accompanies the tested200guide+font
+correction commit; inspect actual HEAD/log/status for its SHA rather than resetting.
+KeepPR18draft; latest remote17b lacks the API28correction. Push tested fix/current catalogue,
+inspect next508/API matrix, diagnose real failures without weakening tests.
+
+Remaining selective additions to220:20 genuine tasks (no new durable model needed):
+dumbbell-floor-press,kettlebell-floor-press,single-leg-hip-thrust,lateral-step-down;
+bear-crawl,plank-shoulder-tap,side-plank-hip-lift,single-arm-overhead-carry;
+single-leg-seated-leg-curl,single-leg-leg-extension,reverse-hyperextension,glute-kickback-machine;
+incline-push-up,supported-single-leg-squat,supported-hip-airplane,reverse-nordic,
+back-extension-45-degree,cable-y-raise,side-lying-dumbbell-external-rotation,cable-internal-rotation.
+Each needs its own reviewed art, complete metadata/copy/aliases/measurement/tests/provenance;
+do not add text-only names or unrelated-pose fallbacks. Existing200is complete independent of drafts.
+
+Original draft cells117and133/136:117 completed4 and all4reviewed acceptable, still UNBUNDLED.
+Use load art_<underscore_id>.output_hint or generated_images files; no huge base64 printing.
+133 (four core/carry) and136 (four machine movements) still running when recorded; resume/wait,
+review all outputs before integrating. Eight200checkpoint art mappings are safely written in
+scratch/rdd011/generated-catalogue-drafts.json and are already bundled; DO NOT add them twice.
+Then finish final220source whole gate (508methods/356captures expected), direct all new visual
+reviews, final APKsize/docs and only then authorised squash merge/mainCI/rollingAPK+SHA.
+No0.12/stabletag. AllS24physical checks including0.10.1outdoorGPS remain UNPERFORMED.
+
+### Archived192-guide continuation checkpoint
 
 Following17b42c4 is COMMITTED/PUSHED (184guides plus warning-first confirmation). Its full
 workflow42135690419 is IN PROGRESS; inspect actual result, expected507cases/248captures/API.

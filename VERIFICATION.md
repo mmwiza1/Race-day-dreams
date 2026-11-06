@@ -1,3 +1,22 @@
+#200-guide checkpoint and API28 display-state correction — runtime verification required
+
+17b42c4 workflow42135690419 FAILED overall:API35/36 each507tests and248captures PASS;
+API28ran507cases with15failures/492passes. First missing Plan label followed by independent
+missing nav labels and one non-visible substitution explanation. Actual three job logs inspected.
+No canonical publication. Sourcee39 remains latest full matrix green.
+
+Screenshot finally blocks could write literal null for an unset font setting. The correction
+validates/restores the original font, waits for actual app resource configuration, restores in
+cleanup even on failure, and adds unset→200%→normal navigation regression. The original failed
+run did not log its raw font setting; observed missing labels are consistent with large text,
+not proof of its initial raw value. No old assertions removed or weakened, no extra sleeps,
+no production navigation changes. Next whole gate508cases/API,296captures for200guide source.
+
+Current local685765domain checks/47suites, strict200/200+14/14guides,203original assets/
+10557886bytes,17capture-validator tests; actual Gradle build/lint/test compile79tasks/1m2sec.
+All source-specific final gates/captures still required. Catalogue growth to220 and final release
+remain incomplete. No merge, new development publication or S24 acceptance is claimed.
+
 # Current192-guide checkpoint — local gates green, runtime pending
 
 Actual complete Gradle domain/debug/lint/instrumentation compilation PASS79tasks/1min in

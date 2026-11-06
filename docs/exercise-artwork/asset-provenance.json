@@ -149,6 +149,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_cable_external_rotation.webp",
+      "bytes": 57906,
+      "sha256": "13bcf66ef92daf4d067d64dd0380f8e40d5f88990fb53eea33975cb1be58cbe4",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_cable_fly.webp",
       "bytes": 68718,
       "sha256": "6d3d01f1b7bf218050b9826fb916880f77203988d75542f423a592186bdf0069",
@@ -870,6 +877,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_prone_y_raise.webp",
+      "bytes": 32692,
+      "sha256": "ae2f678b981d0ba2c9eff1adc5c72422c01b9d2f140c882aa19ab294b4e9ab2c",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_pull_up.webp",
       "bytes": 44250,
       "sha256": "d0398fd70fab5f75d779d4b67e1332c0e2b656b9654928d0b993dacadcc61053",
@@ -975,6 +989,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_scapular_pull_up.webp",
+      "bytes": 48002,
+      "sha256": "96486329e1fc08ec1252fdb98489467057eb65efa8c04ac0f6a901035f4f98e8",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_scapular_push_up.webp",
       "bytes": 25154,
       "sha256": "3c9589a8cd642f3aa286ccb287b64b84b2e6fdf60ca7ba070c1979776a8d71f6",
@@ -1028,6 +1049,13 @@
       "bytes": 29368,
       "sha256": "f4cfae140883ff5e1d037bd808a024b0850c8ff827cd14fd333e1a196f271820",
       "creation": "Original project image generation, 5-6 November 2026; two movement states reviewed for full-body framing, setup, limb placement and movement direction; resized to 1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_side_lying_hip_adduction.webp",
+      "bytes": 79548,
+      "sha256": "709633df338aa466fa1f209cd763cf3152994ccf49217e33d3ff76cd5829aa61",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {
@@ -1108,6 +1136,13 @@
       "licence": "MIT project contribution"
     },
     {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_incline_bench_press.webp",
+      "bytes": 81410,
+      "sha256": "024c4c22f42b330e834e8f53a0d2f7f2d1ede55505e465e13be814222714959a",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
       "file": "app/src/main/res/drawable-nodpi/guide_smith_machine_bench_press.webp",
       "bytes": 74784,
       "sha256": "4fc3ed073262bb46c8fb2ecae42498a3e0b3853619cfbbf01f862a9314f67079",
@@ -1119,6 +1154,27 @@
       "bytes": 70788,
       "sha256": "7388d52aaf030f8f729ee5546f360ace13004a5cb4e3f01e35a0d5346d3b8e98",
       "creation": "Original project image generation, 23 October 2026; reviewed movement, equipment, full framing and corrected drafts before bundling",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_romanian_deadlift.webp",
+      "bytes": 78674,
+      "sha256": "b3819bfb856dc209052823d9b62c35299c24dc525ee262a27b488421ebe324c8",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_split_squat.webp",
+      "bytes": 72310,
+      "sha256": "f7274cb7a291a927e48d4216387cb1773bbcc1ec477d9d757fbd5817221337de",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
+      "licence": "MIT project contribution"
+    },
+    {
+      "file": "app/src/main/res/drawable-nodpi/guide_smith_standing_calf_raise.webp",
+      "bytes": 79546,
+      "sha256": "fb0e76279c57b5ec276cae503afe7d57003dc38806656957fea757c2ab4bb209",
+      "creation": "Original project image generation,6 November2026; full-body/equipment and both movement states reviewed; external rotation corrected to far-arm outward motion; resized1200x800 WebP quality84",
       "licence": "MIT project contribution"
     },
     {

@@ -1370,6 +1370,76 @@ public final class ExerciseMetadataCatalog {
                 INTERMEDIATE,
                 setup(DUMBBELLS));
 
+        define(
+                out,
+                "side-lying-hip-adduction",
+                ISOLATION,
+                areas(HIP_ADDUCTORS),
+                areas(TRUNK),
+                BEGINNER_FRIENDLY,
+                setup(),
+                UNILATERAL);
+        define(
+                out,
+                "scapular-pull-up",
+                SCAPULAR_CONTROL,
+                areas(UPPER_BACK),
+                areas(SHOULDERS, FOREARMS),
+                INTERMEDIATE,
+                setup(PULL_UP_BAR));
+        define(
+                out,
+                "prone-y-raise",
+                SCAPULAR_CONTROL,
+                areas(UPPER_BACK, SHOULDERS),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup());
+        define(
+                out,
+                "cable-external-rotation",
+                EXTERNAL_ROTATION,
+                areas(SHOULDERS),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(CABLE_STATION, CABLE_HANDLE),
+                UNILATERAL,
+                ISOLATION);
+        define(
+                out,
+                "smith-romanian-deadlift",
+                HINGE,
+                areas(HAMSTRINGS, GLUTES),
+                areas(TRUNK, UPPER_BACK),
+                INTERMEDIATE,
+                setup(SMITH_MACHINE));
+        define(
+                out,
+                "smith-split-squat",
+                UNILATERAL,
+                areas(QUADS, GLUTES),
+                areas(HAMSTRINGS, TRUNK),
+                INTERMEDIATE,
+                setup(SMITH_MACHINE),
+                SQUAT);
+        define(
+                out,
+                "smith-incline-bench-press",
+                HORIZONTAL_PUSH,
+                areas(CHEST),
+                areas(TRICEPS, SHOULDERS),
+                BEGINNER_FRIENDLY,
+                setup(SMITH_MACHINE, ADJUSTABLE_BENCH),
+                PRIMARY_STRENGTH);
+        define(
+                out,
+                "smith-standing-calf-raise",
+                CALF,
+                areas(CALVES),
+                areas(),
+                BEGINNER_FRIENDLY,
+                setup(SMITH_MACHINE, STABLE_STEP));
+
         var canonicalIds = new java.util.HashSet<String>();
         for (var definition : ExerciseCatalog.definitions())
             canonicalIds.add(definition.exercise().id());

@@ -66,9 +66,11 @@ class CoachingScreenshotTest {
         get() = ApplicationProvider.getApplicationContext()
 
     private var scenario: ActivityScenario<CoachActivity>? = null
+    private var fixtureFontScale: String? = null
 
     @Before
     fun seed() {
+        fixtureFontScale = shell("settings get system font_scale").trim()
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
         val today = LocalDate.now()
@@ -395,7 +397,11 @@ class CoachingScreenshotTest {
         org.racedaydreams.recording.RunRecordingService.status.value = null
         org.racedaydreams.recording.RunRecordingService.workoutState.value = null
         org.racedaydreams.recording.RunRecordingService.savedActivity.value = null
-        scenario?.close()
+        try {
+            scenario?.close()
+        } finally {
+            fixtureFontScale?.let { restoreFontScale(it) }
+        }
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
     }
@@ -798,9 +804,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -892,9 +896,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1000,7 +1002,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            shell("settings put system font_scale $originalFont")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1095,9 +1097,23 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            shell("settings put system font_scale $originalFont")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
+    }
+
+    @Test
+    fun restoresUnsetFontAfterLargeTextBeforeNormalNavigation() {
+        shell("settings delete system font_scale")
+        shell("settings put system font_scale 2.0")
+        Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+        restoreFontScale("null")
+        Assert.assertEquals(1f, context.resources.configuration.fontScale, .01f)
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        awaitHomeReady(false)
+        compose.onNodeWithText("Plan").assertIsDisplayed()
+        compose.onNodeWithText("Calendar").assertIsDisplayed()
+        compose.onNodeWithText("Progress").assertIsDisplayed()
     }
 
     @Test
@@ -1147,7 +1163,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            shell("settings put system font_scale $originalFont")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1229,7 +1245,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            shell("settings put system font_scale $originalFont")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1339,7 +1355,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            shell("settings put system font_scale $originalFont")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1450,7 +1466,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            shell("settings put system font_scale $originalFont")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1670,9 +1686,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1818,9 +1832,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -1961,9 +1973,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -2079,9 +2089,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -2193,9 +2201,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -2521,9 +2527,7 @@ class CoachingScreenshotTest {
         } finally {
             scenario?.close()
             scenario = null
-            if (originalFont.matches(Regex("[0-9.]+")))
-                shell("settings put system font_scale $originalFont")
-            else shell("settings delete system font_scale")
+            restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
         }
     }
@@ -2600,15 +2604,55 @@ class CoachingScreenshotTest {
         awaitGymReady { it.view?.accepted()?.execution()?.status() == GymExecution.Status.ACTIVE }
     }
 
-    private fun shell(command: String): String =
-        InstrumentationRegistry.getInstrumentation()
-            .uiAutomation
-            .executeShellCommand(command)
-            .use { descriptor ->
-                java.io.FileInputStream(descriptor.fileDescriptor).use {
-                    it.readBytes().toString(Charsets.UTF_8)
+    private fun restoreFontScale(original: String) {
+        val scale = original.toFloatOrNull()?.takeIf { it.isFinite() && it > 0f }
+        // An unset Settings value is returned as the literal "null". That is not a valid
+        // font-scale value; writing it can leave the previous large scale active on API28.
+        if (scale == null) shell("settings delete system font_scale")
+        else shell("settings put system font_scale $scale")
+    }
+
+    private fun shell(command: String): String {
+        val output =
+            InstrumentationRegistry.getInstrumentation()
+                .uiAutomation
+                .executeShellCommand(command)
+                .use { descriptor ->
+                    java.io.FileInputStream(descriptor.fileDescriptor).use {
+                        it.readBytes().toString(Charsets.UTF_8)
+                    }
                 }
+        val expectedScale =
+            when {
+                command.startsWith("settings put system font_scale ") ->
+                    command.substringAfterLast(' ').toFloat()
+                command == "settings delete system font_scale" -> 1f
+                else -> null
             }
+        if (expectedScale != null) {
+            // SettingsProvider returning does not prove ActivityThread has applied configuration.
+            // Await the actual app resource state; never replace real large text with a test
+            // override.
+            try {
+                compose.waitUntil(20000) {
+                    kotlin.math.abs(context.resources.configuration.fontScale - expectedScale) <
+                        .01f
+                }
+            } catch (failure: androidx.compose.ui.test.ComposeTimeoutException) {
+                throw AssertionError(
+                    "Font configuration after $command: expected $expectedScale, actual ${context.resources.configuration.fontScale}, stored ${shell("settings get system font_scale").trim()}",
+                    failure,
+                )
+            }
+            Assert.assertEquals(
+                "Applied font scale after $command",
+                expectedScale,
+                context.resources.configuration.fontScale,
+                .01f,
+            )
+        }
+        return output
+    }
 
     private fun back() {
         androidx.test.espresso.Espresso.closeSoftKeyboard()
