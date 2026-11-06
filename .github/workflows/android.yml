@@ -70,8 +70,9 @@ jobs:
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          #37.2.12.0 passed all supported APIs; avoid a moving latest binary.
-          emulator-build: 16428233
+          #37.2.13 fixes leaked GLES contexts/surfaces/framebuffers on process exit.
+          # Pin the official stable patch rather than a moving latest binary.
+          emulator-build: 16740729
           # API28 limits forced dimensions to twice the initial display size. A real
           # 1080px device profile permits the mandatory1400px expanded-window captures.
           profile: pixel_2

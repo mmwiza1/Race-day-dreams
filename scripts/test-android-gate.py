@@ -58,6 +58,11 @@ if Path(sys.argv[0]).name == 'adb':
     elif args == ['shell', 'dumpsys', 'window']:
         event('window-focus')
         print('mCurrentFocus=synthetic-test-window')
+    elif args == ['shell', 'dumpsys', 'activity', 'lastanr']:
+        event('systemui-anr')
+        print('ANR in com.android.systemui')
+        print('Reason: synthetic input dispatch timeout')
+        print('unrelated-synthetic-details-must-not-be-printed')
     elif args[:2] == ['logcat', '-d']:
         event('fixture-log')
     elif args[:1] == ['pull']:
@@ -136,13 +141,17 @@ class AndroidGateTest(unittest.TestCase):
         self.assert_reader_stopped()
 
     def test_native_guard_failure_blocks_full_suite_and_exports(self):
-        code, _, stderr = self.run_gate(RDD_GATE_TEST_GUARD_EXIT='17')
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_GUARD_EXIT='17')
         self.assertEqual(17, code, stderr)
         self.assertIn('gradle-guard', self.events())
         self.assertNotIn('gradle-full', self.events())
         self.assertNotIn('pull', self.events())
         self.assertIn('power-state', self.events())
         self.assertIn('window-focus', self.events())
+        self.assertIn('systemui-anr', self.events())
+        self.assertIn('ANR in com.android.systemui', stdout)
+        self.assertIn('Reason: synthetic input dispatch timeout', stdout)
+        self.assertNotIn('unrelated-synthetic-details', stdout)
         self.assert_reader_stopped()
 
     def test_gradle_failure_keeps_its_exit_and_skips_exports_but_reaps_reader(self):
@@ -176,6 +185,7 @@ class AndroidGateTest(unittest.TestCase):
         self.assertIn('script: sh scripts/run-android-gate.sh', workflow)
         self.assertIn('timeout-minutes: 30', workflow)
         self.assertIn('profile: pixel_2', workflow)
+        self.assertIn('emulator-build: 16740729', workflow)
         self.assertNotIn('rdd_test_log_pid', workflow)
 
 

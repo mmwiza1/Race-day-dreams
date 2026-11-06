@@ -1,3 +1,20 @@
+# Material UI — SystemUI infrastructure failure and targeted patch
+
+Source3343a20/workflow42261726118 API36 failed its fast guard before the full suite.
+Bounded diagnostics identify the focus owner as **Application Not Responding: com.android.systemui**
+while the virtual device is awake. The app's window flags request focus normally. This is
+separate from the prior asynchronous route-capture lookup; that readiness correction is retained.
+API28/35 results were pending when this follow-up was prepared, not assumed successful.
+
+CI now pins emulator37.2.13/build16740729. [Google's release notes](https://developer.android.com/studio/releases/emulator)
+document its host GLES graphics-resource cleanup fix. The official stable-channel SDK XML
+identifies the Linux ZIP as349658551bytes/SHA1f41f9e31eb5ca64926603c03265c50bbc0ff4172.
+This upstream defect is relevant to the rendering failures, but is not proven to be the cause
+of this particular SystemUI ANR. The renderer is unchanged to isolate the patch. Narrow failure
+diagnostics retain only SystemUI's public ANR identity/reason, not a general app log dump.
+Seven process-lifecycle helper tests, nine release-note tests and shell/diff checks pass.
+No test is weakened, no ANR dialog is dismissed and no runtime pass is claimed for this patch.
+
 # Material UI — latest runtime checkpoint, final gate pending
 
 Source `9b9bf8775c672d7275d921be22cc837d85e41fd4`,
