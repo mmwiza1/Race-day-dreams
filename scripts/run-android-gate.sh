@@ -10,16 +10,16 @@ rdd_test_log_pid=
 rdd_cleanup() {
     rdd_gate_status=$?
     trap - 0 1 2 15
-    if [ "$rdd_gate_status" -ne 0 ] && [ -n "$rdd_test_log_pid" ]; then
+    if [ "$rdd_gate_status" -ne 0 ]; then
         # Public CI-device state only, so an overlay/keyguard failure is distinguishable
         # from app layout. Bound diagnostics and retain the original test exit status.
         timeout 10 adb shell dumpsys power | awk '/mWakefulness=|mInteractive=|Display Power/' || true
         timeout 10 adb shell dumpsys window | awk '/mCurrentFocus=|mFocusedApp=|mShowingLockscreen=/' || true
-        # Only platform UI ANR identity/reason, never a general application log dump.
-        timeout 10 adb shell dumpsys activity lastanr | awk '
-            /^[[:space:]]*ANR in com\.android\.(systemui|launcher3)([[:space:]]|$)/ { platformui = 1; print; next }
-            platformui && /^[[:space:]]*(Reason:|Subject:)/ { print; exit }
-        ' || true
+        # The lastanr dump has a Reason but no leading process identity on these APIs.
+        # Use real AMS events instead: exact platform process identity and reason, capped
+        # at five. Never print other application events or an unfiltered lastanr dump.
+        timeout 10 adb logcat -b events -d -v brief -s am_anr '*:S' |
+            awk '/\[[[:space:]]*[0-9]+,[[:space:]]*[0-9]+,[[:space:]]*com\.android\.(systemui|launcher3),/ { print }' | tail -n 5 || true
     fi
     if [ -n "$rdd_test_log_pid" ]; then
         kill "$rdd_test_log_pid" 2>/dev/null || true
@@ -32,8 +32,14 @@ trap 'exit 129' 1
 trap 'exit 130' 2
 trap 'exit 143' 15
 
+# sys.boot_completed precedes outstanding system broadcasts. Drain actual delivery
+# before changing display configuration and between its independent size/density updates.
+# This supported API28+ barrier is bounded; it is not an arbitrary settling sleep.
+timeout 20 adb shell am wait-for-broadcast-idle
 adb shell wm size 540x1200
+timeout 20 adb shell am wait-for-broadcast-idle
 adb shell wm density 210
+timeout 20 adb shell am wait-for-broadcast-idle
 # UI capture requires an awake, unlocked virtual device. This changes CI setup only;
 # it is not evidence that locked-screen recording has been physically accepted.
 adb shell svc power stayon true

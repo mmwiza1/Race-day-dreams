@@ -1,3 +1,30 @@
+# Latest delivery gate — external startup failure, sequencing follow-up pending
+
+The documentation-only head5d4e4d2/workflow42276183081 failed API36's nine-method guard:
+four focus-dependent cases failed and the517-case suite correctly did not run. Actual focus
+was held by **Application Not Responding: com.android.systemui**. The same UI/capture source
+previously passed the complete bed9a81 matrix recorded below. This new failed head is not
+merge-ready; API28/35 were still running when the follow-up was prepared.
+
+AOSP28/35/36 show that the lastanr dump emits Reason without a leading process identity, so
+the previous identity-gated parser missed it. Diagnostics now use only real am_anr event tuples
+whose process field is exactly SystemUI or Launcher, capped at five. Other app events/reasons
+are excluded, including annotations that merely mention SystemUI. Original failure exits and
+reader cleanup remain, including failures during preparation.
+
+The following CI-only correction drains actual broadcast queues before display setup and
+between independent size/density updates via the supported `am wait-for-broadcast-idle`, each
+bounded at20seconds. There is no fixed settling sleep, retry, ANR dismissal or test-budget
+increase. Queue idleness does not prove focus/render readiness or exclude late posted broadcasts;
+all existing real focus/dimension/visibility assertions remain mandatory. The internal cause of
+the platform ANR is still unproven; no runtime fix is claimed before verification.
+
+Ten actual-process runner-helper tests, nine release-note tests, shell syntax and diff checks
+pass. No application source, dependency, permission, recording, data or backup change. A fresh
+complete API28/35/36 and source-fingerprint/capture gate remains required before merge.
+AOSP references: [portable command](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-9.0.0_r1/services/core/java/com/android/server/am/ActivityManagerShellCommand.java),
+[ANR event schema](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-16.0.0_r1/services/core/java/com/android/server/am/EventLogTags.logtags).
+
 # Material UI — 0.12.0-test1 verified software and visual source
 
 UI/capture source **bed9a81a611cc9793ab4bf96314604b668e97c5b** passed the complete

@@ -43,6 +43,9 @@ if Path(sys.argv[0]).name == 'adb':
         sys.exit(int(os.environ.get('RDD_GATE_TEST_SETUP_EXIT', '0')))
     elif args[:3] == ['shell', 'wm', 'density']:
         event('density:' + args[3])
+    elif args == ['shell', 'am', 'wait-for-broadcast-idle']:
+        event('broadcast-idle')
+        sys.exit(int(os.environ.get('RDD_GATE_TEST_BROADCAST_EXIT', '0')))
     elif args == ['shell', 'svc', 'power', 'stayon', 'true']:
         event('keep-awake')
         sys.exit(int(os.environ.get('RDD_GATE_TEST_AWAKE_EXIT', '0')))
@@ -58,13 +61,14 @@ if Path(sys.argv[0]).name == 'adb':
     elif args == ['shell', 'dumpsys', 'window']:
         event('window-focus')
         print('mCurrentFocus=synthetic-test-window')
-    elif args == ['shell', 'dumpsys', 'activity', 'lastanr']:
-        event('systemui-anr')
-        print('ANR in ' + os.environ.get('RDD_GATE_TEST_ANR_PROCESS', 'com.android.systemui'))
-        print('Reason: synthetic input dispatch timeout')
-        print('unrelated-synthetic-details-must-not-be-printed')
     elif args[:2] == ['logcat', '-d']:
         event('fixture-log')
+    elif args[:4] == ['logcat', '-b', 'events', '-d']:
+        event('platform-anr-events')
+        process = os.environ.get('RDD_GATE_TEST_ANR_PROCESS', 'com.android.systemui')
+        print('I/am_anr: [0,123,' + process + ',1,synthetic platform dispatch timeout]')
+        print('I/am_anr: [0,456,org.racedaydreams,1,unrelated-synthetic-private-reason]')
+        print('I/am_anr: [0,456,org.racedaydreams,1,mentions,com.android.systemui,unrelated-synthetic-private-reason]')
     elif args[:1] == ['pull']:
         event('pull')
     else:
@@ -130,7 +134,7 @@ class AndroidGateTest(unittest.TestCase):
         code, _, stderr = self.run_gate()
         self.assertEqual(0, code, stderr)
         self.assertEqual(
-            ['size:540x1200', 'density:210', 'keep-awake', 'display-timeout', 'wake', 'unlock', 'reader-start', 'gradle-guard', 'gradle-full', 'fixture-log', 'pull', 'verify', 'reader-stop'],
+            ['broadcast-idle', 'size:540x1200', 'broadcast-idle', 'density:210', 'broadcast-idle', 'keep-awake', 'display-timeout', 'wake', 'unlock', 'reader-start', 'gradle-guard', 'gradle-full', 'fixture-log', 'pull', 'verify', 'reader-stop'],
             self.events(),
         )
         self.assertEqual([
@@ -148,10 +152,10 @@ class AndroidGateTest(unittest.TestCase):
         self.assertNotIn('pull', self.events())
         self.assertIn('power-state', self.events())
         self.assertIn('window-focus', self.events())
-        self.assertIn('systemui-anr', self.events())
-        self.assertIn('ANR in com.android.systemui', stdout)
-        self.assertIn('Reason: synthetic input dispatch timeout', stdout)
-        self.assertNotIn('unrelated-synthetic-details', stdout)
+        self.assertIn('platform-anr-events', self.events())
+        self.assertIn('[0,123,com.android.systemui,1,', stdout)
+        self.assertIn('synthetic platform dispatch timeout', stdout)
+        self.assertNotIn('unrelated-synthetic-private-reason', stdout)
         self.assert_reader_stopped()
 
     def test_gradle_failure_keeps_its_exit_and_skips_exports_but_reaps_reader(self):
@@ -167,9 +171,9 @@ class AndroidGateTest(unittest.TestCase):
             RDD_GATE_TEST_GUARD_EXIT='17', RDD_GATE_TEST_ANR_PROCESS='com.android.launcher3',
         )
         self.assertEqual(17, code, stderr)
-        self.assertIn('ANR in com.android.launcher3', stdout)
-        self.assertIn('Reason: synthetic input dispatch timeout', stdout)
-        self.assertNotIn('unrelated-synthetic-details', stdout)
+        self.assertIn('[0,123,com.android.launcher3,1,', stdout)
+        self.assertIn('synthetic platform dispatch timeout', stdout)
+        self.assertNotIn('unrelated-synthetic-private-reason', stdout)
         self.assertNotIn('gradle-full', self.events())
         self.assert_reader_stopped()
 
@@ -178,9 +182,9 @@ class AndroidGateTest(unittest.TestCase):
             RDD_GATE_TEST_GUARD_EXIT='17', RDD_GATE_TEST_ANR_PROCESS='org.racedaydreams',
         )
         self.assertEqual(17, code, stderr)
-        self.assertNotIn('ANR in org.racedaydreams', stdout)
-        self.assertNotIn('Reason:', stdout)
-        self.assertNotIn('unrelated-synthetic-details', stdout)
+        self.assertNotIn('[0,123,org.racedaydreams,1,', stdout)
+        self.assertNotIn('synthetic platform dispatch timeout', stdout)
+        self.assertNotIn('unrelated-synthetic-private-reason', stdout)
         self.assert_reader_stopped()
 
     def test_verification_failure_keeps_its_exit_and_reaps_reader(self):
@@ -192,14 +196,21 @@ class AndroidGateTest(unittest.TestCase):
     def test_setup_failure_never_starts_reader_or_training_tests(self):
         code, _, stderr = self.run_gate(RDD_GATE_TEST_SETUP_EXIT='31')
         self.assertEqual(31, code, stderr)
-        self.assertEqual(['size:540x1200'], self.events())
+        self.assertEqual(['broadcast-idle', 'size:540x1200', 'power-state', 'window-focus', 'platform-anr-events'], self.events())
         self.assertFalse((self.state / 'reader.pid').exists())
 
     def test_awake_setup_failure_never_starts_reader_or_tests(self):
         code, _, stderr = self.run_gate(RDD_GATE_TEST_AWAKE_EXIT='29')
         self.assertEqual(29, code, stderr)
-        self.assertEqual(['size:540x1200', 'density:210', 'keep-awake'], self.events())
+        self.assertEqual(['broadcast-idle', 'size:540x1200', 'broadcast-idle', 'density:210', 'broadcast-idle', 'keep-awake', 'power-state', 'window-focus', 'platform-anr-events'], self.events())
         self.assertFalse((self.state / 'reader.pid').exists())
+
+    def test_broadcast_barrier_failure_preserves_exit_and_never_starts_tests(self):
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_BROADCAST_EXIT='27')
+        self.assertEqual(27, code, stderr)
+        self.assertEqual(['broadcast-idle', 'power-state', 'window-focus', 'platform-anr-events'], self.events())
+        self.assertFalse((self.state / 'reader.pid').exists())
+        self.assertNotIn('unrelated-synthetic-private-reason', stdout)
 
     def test_action_calls_one_shell_without_changing_the_timeout(self):
         workflow = (ROOT / '.github/workflows/android.yml').read_text()
