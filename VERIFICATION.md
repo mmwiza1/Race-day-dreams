@@ -1,3 +1,49 @@
+# 0.12.0-test1 — merged-main and published-download verification
+
+[PR #19](https://github.com/mmwiza1/Race-day-dreams/pull/19) is merged at
+**8269162a5a2f2d5ddbccfc74f81836ae227993e8**. Its tree exactly equals the final tested
+PR head `0d4b474daa67b593dc36f921f3e69c982683a030`.
+Both [exact-head CI](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42521362347)
+and [post-merge main CI](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42525301777)
+completed **SUCCESS**, including rolling development publication.
+
+Each API28/35/36 passed actual Settings/Launcher window focus, 13 runner-helper checks,
+nine fast guard methods, all **517 full instrumentation tests and383 authentic captures**.
+The guards also run in the unfiltered suite; they are not nine additional unique cases.
+Domain **700,108 checks/47 unique suites**, schema/migrations **75**, build/lint, pinned
+formatting, release/source/artwork and strict220canonical/14routine guidance passed.
+
+Main's initial API36 runner failed before app testing because SystemUI failed startup and
+an ANR held focus. Preparation correctly failed closed. One isolated fresh-runner retry
+of API36 and its dependent publication, same source and unchanged assertions, passed the
+full gate. API28/35 passes were retained. This is not evidence of universal emulator or
+physical-device reliability.
+
+The [rolling Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+now identifies **0.12.0-test1/code16**, the main SHA above and workflow42525301777.
+Both public APK and checksum were downloaded. Actual APK bytes match verified main API35
+artifact13636305201 exactly: **55,348,650bytes**, SHA256
+`2bba626610890bcee7ba949efd21b380f938bed02bb509dba6c13c89fee03219`.
+The checksum names the correct file; packaged version/code and absence of INTERNET were
+verified with aapt. Development tag and live main both point8269162; no stable tag was created.
+The artifact ZIP is29,676,146bytes, SHA256
+`d5c04d4176e68653f2cf88b1ae4fb5a71f49b48ec1764297bc9e15f36fdb9d54`.
+
+Exact-main API35 screenshot artifact13636185609 was downloaded and passed strict383 capture
+validation. ZIP53,266,408bytes, SHA256
+`42cabdc940d8faa223b08f9a87c84848716bdc5a6047b87f8f5d674e191a7e3c`.
+Actual main light Home, dark live run and200% live run were opened; earlier complete
+current-source pixel review and canonical/source equality remain valid.
+
+All software delivery is complete. Schema19/rootJSON13/raw3/complete1, runtime dependencies,
+permissions, launcher icon and authoritative engines are unchanged. Experimental newer
+Expressive motion/loading APIs remain intentionally omitted. The synthetic short-wide blank
+platform navigation strip and all real GalaxyS24/Pixel/Xiaomi, human TalkBack, outdoorGPS,
+providers/OEM/rotation/background/audio/battery acceptance remain documented limitations.
+No physical testing is claimed. Earlier source-specific evidence follows as history.
+This final delivery record is local documentation; the merged PR description records the
+same confirmed main/publication evidence publicly.
+
 # Material UI — 0.12.0-test1 verified software and visual source
 
 Source **5d2814331af3f189f38f97d72974b242e398afe8** passed complete
