@@ -3,10 +3,10 @@
 Material You / Material 3 Expressive modernisation only. Shared dynamic/branded themes,
 tonal surfaces, typography, adaptive navigation, running Home/live hierarchy and retained
 native form/privacy-page presentation are implemented on feature/material3-expressive-ui/PR19.
-Sourcebed9a81 passed full workflow42265222799: each API28/35/36 passed nine guard methods,
+Source `5d28143` passed full workflow42518618237: each API28/35/36 passed nine guard methods,
 517full instrumentation cases and383authentic captures. Domain700,108checks/47suites,
 75schema tests, build/lint/formatting and source/artwork/guidance gates passed. Canonical
-bot862117f carries the fresh gallery, preserving all prior required captures.
+bot `e0bb250` carries the fresh gallery, preserving all prior required captures.
 
 Raw-artifact/source matching, actual API35/36 visual review and candidate APK checks passed,
 with the documented forced short-wide platform-strip limitation. Exact delivery-head checks

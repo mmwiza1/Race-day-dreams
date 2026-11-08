@@ -41,15 +41,15 @@ the existing launcher icon, offline operation and account-free model are preserv
 
 ## Verification
 
-Source `bed9a81a611cc9793ab4bf96314604b668e97c5b` passed the complete
-[workflow42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799).
+Source `5d2814331af3f189f38f97d72974b242e398afe8` passed the complete
+[workflow42518618237](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42518618237).
 Each API28/35/36 passed nine guard methods,517 full instrumentation cases and383 authentic
 captures, retaining all359 previous captures plus24 additional UI views. Build, lint,
 700,108domain checks/47suites,75schema tests, pinned formatting, strict220canonical/14routine
 guidance and source/artwork gates passed. Focused checks include19capture-validator,
-9CI-shell helper,14formatter-tool and9release-note tests.
+13 CI-shell helper,14formatter-tool and9release-note tests.
 
-Canonical commit862117f contains the fresh API35 gallery and source fingerprint. All383PNG
+Canonical commit `e0bb250` contains the fresh API35 gallery and source fingerprint. All383PNG
 bytes match the verified raw artifact; current API35/36 pixel review and candidate APK identity/
 permission/size checks passed. Consult [observed verification](../VERIFICATION.md) for hashes and
 the exact delivery head. No final-main publication is claimed here. GalaxyS24/Pixel/Xiaomi

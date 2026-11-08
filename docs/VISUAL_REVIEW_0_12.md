@@ -6,13 +6,13 @@ support the review; neither replaces inspection of the rendered page.
 
 ## Observed checkpoint
 
-Source `bed9a81a611cc9793ab4bf96314604b668e97c5b`, complete workflow42265222799:
-517 full cases and383 authentic captures on each API28/35/36. Canonical862117f preserves all
-API35 originals. Every383 PNG byte matches downloaded artifact13528616131; ZIP SHA256:
-`73bebd47fd56a53344c12c474a009fdd09efec0d3c98e912be1f01edc8fe30d7`.
-Fingerprint `a88c2576b4908314f161f9a46c2df81ffa949f05a7c7ba934dd8e567407ef92c`
-matches actual source. API36 artifact13528298057 contains383 valid captures, ZIP SHA256
-`d4513989f49c117ed02409bf3dd44821c4d0b5243f59c124a0a7ee75a3b8b6d9`.
+Source `5d2814331af3f189f38f97d72974b242e398afe8`, complete workflow42518618237:
+517 full cases and383 authentic captures on each API28/35/36. Canonical `e0bb250` preserves all
+API35 originals. Every383 PNG byte matches downloaded artifact13632724252; ZIP SHA256:
+`f9f832bcd00dcd3608cbc26cd1b1d2bf366ad569e5693fa066f08041e2c119c7`.
+Fingerprint `c1ad95aadd1098d4db00b44e739e8f3150936d859cebc55fc29abe5a1e7d6faf`
+matches actual source. API36 artifact13632414462 contains383 valid captures, ZIP SHA256
+`71198d99512b989d25f239b599b92e551c77f165ecb04036a2d0b4bc60bf59a5`.
 No image editing, replacement mockup or test-only substitute screen is used.
 
 Direct inspection covered:

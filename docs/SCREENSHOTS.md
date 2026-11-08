@@ -1,23 +1,23 @@
 # Material UI — 0.12 current-source capture gate
 
-Source `bed9a81a611cc9793ab4bf96314604b668e97c5b` passed complete
-[workflow42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799).
+Source `5d2814331af3f189f38f97d72974b242e398afe8` passed complete
+[workflow42518618237](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42518618237).
 Each supported API28/35/36 passed nine guard methods,517 full instrumentation cases and383
 authentic captures. The set retains all359 prior captures and adds24 device/branded,
 light/dark/200% Home/live/finish-confirmation, wide-window navigation and native Health
 Connect privacy-page views. Required names and strict PNG validation remain in
 scripts/verify-dream-screenshots.py, with19 validator regression tests.
 
-Canonical bot `862117f` was safely fetched after that successful matrix. The committed
+Canonical bot `e0bb250` was safely fetched after that successful matrix. The committed
 gallery identifies this exact source and fingerprint:
-`a88c2576b4908314f161f9a46c2df81ffa949f05a7c7ba934dd8e567407ef92c`.
+`c1ad95aadd1098d4db00b44e739e8f3150936d859cebc55fc29abe5a1e7d6faf`.
 These are current0.12production-screen renders, not old gallery images or mockups.
-All383PNG bytes match raw API35 artifact13528616131 exactly. Final API35/36 pixel review and
+All383PNG bytes match raw API35 artifact13632724252 exactly. Final API35/36 pixel review and
 candidate APK checks passed, with the forced short-wide platform-strip limitation recorded in
 VERIFICATION.md and VISUAL_REVIEW_0_12.md. A passing PNG validator does not establish visual fidelity.
 
 Same-repository canonical publication retains the exact-head/source-fingerprint rule for
-feature/material3-expressive-ui. Nine CI-shell helper tests cover runner setup, bounded
+feature/material3-expressive-ui. Thirteen CI-shell helper tests cover runner setup, bounded
 diagnostics and cleanup; they do not certify rendering. Final documentation-head checks,
 main merge/post-merge CI and the matching rolling download remain distinct delivery gates.
 Inspect content and actual bars, including native large-text Close and short-wide

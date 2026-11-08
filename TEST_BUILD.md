@@ -2,14 +2,14 @@
 
 Export a complete backup before changing debug-signing builds. Do not uninstall a live
 installation casually. Current observed results are in VERIFICATION.md. Final exact-source
-software CI passed on API28/35/36 at sourcebed9a81 in workflow42265222799. Source-bound
+software CI passed on API28/35/36 at source `5d28143` in workflow42518618237. Source-bound
 visual review and candidate APK checks passed; exact documentation-head checks, main CI and
 rolling publication remain separate delivery gates. No stable/public-store release is implied. Use only an APK whose source,
 version and checksum match the intended verified build; a branch APK is not a main release.
 
 Each supported API passed nine guard methods,517 full instrumentation cases and383 authentic
 captures, retaining all359 older frames and adding24 UI views. Focused checks pass19capture-
-validator and9CI-shell helper tests. Canonical862117f retains this source's API35 gallery.
+validator and13 CI-shell helper tests. Canonical `e0bb250` retains this source's API35 gallery.
 Counts and appearance flags alone do not establish actual bar contrast or physical usability.
 
 The0.12branch artifacts use `Race-Day-Dreams-0.12.0-test1-debug-api-35` and

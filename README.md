@@ -121,10 +121,10 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
 data, not UI mockups. The current **383-image 0.12 gallery** was captured from source
-`bed9a81a611cc9793ab4bf96314604b668e97c5b` after
-[workflow 42265222799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42265222799)
+`5d2814331af3f189f38f97d72974b242e398afe8` after
+[workflow 42518618237](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42518618237)
 passed on API 28, 35 and 36: nine guard methods, 517 full instrumentation cases and 383
-captures on each API. Canonical commit `862117f` retains those production-screen renders
+captures on each API. Canonical commit `e0bb250` retains those production-screen renders
 and their source fingerprint. Image/source integrity, direct visual inspection and APK
 acceptance remain distinct gates; their current results are in [VERIFICATION.md](VERIFICATION.md)
 and [the visual review](docs/VISUAL_REVIEW_0_12.md). No physical S24 or human TalkBack result
