@@ -11,6 +11,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -2864,7 +2865,7 @@ class CoachingScreenshotTest {
     fun capturesRefinedRunningRecordsTrendsHeartRateAndRunSummaries() {
         withRefinementCaptureModes { suffix ->
             assertOriginalBottomNavigationOrder()
-            click("Progress")
+            clickOriginalNavigationTab("Progress")
             await("Running PBs")
             click("Running PBs")
             await("How PBs are calculated")
@@ -2873,6 +2874,12 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("running-record-10k-2").assertExists()
             compose.onNodeWithTag("running-record-10k-3").assertExists()
             capture("running-records-refined$suffix")
+            if (suffix == "-large-font") {
+                val third = compose.onNodeWithTag("running-record-10k-3")
+                third.performScrollTo()
+                assertFullyVisibleInScroll(third, "running-record-10k-3")
+                capture("running-records-third-large-font")
+            }
             back()
             click("Training trends")
             await("Weekly recorded distance")
@@ -2897,12 +2904,19 @@ class CoachingScreenshotTest {
             compose.onNodeWithText("Average heart rate").assertExists()
             compose.onNodeWithText("Maximum heart rate").assertExists()
             capture("running-heart-rate$suffix")
+            if (suffix == "-large-font") {
+                val chart = compose.onNodeWithTag("running-heart-rate-chart")
+                chart.performScrollTo()
+                alignHeading("Recent recorded readings")
+                assertFullyVisibleInScroll(chart, "running-heart-rate-chart")
+                capture("running-heart-rate-chart-large-font")
+            }
             compose.onNodeWithText("View earlier run").performScrollTo().performClick()
             await("No heart-rate measurements recorded for this run.")
             alignHeading("Recorded heart rate")
             capture("running-heart-rate-empty$suffix")
             back()
-            click("Calendar")
+            clickOriginalNavigationTab("Calendar")
             await("Activity calendar")
             compose.waitUntil(20000) {
                 compose
@@ -2928,9 +2942,160 @@ class CoachingScreenshotTest {
                         "Selected split",
                     )
                 )
-            alignHeading("Distance splits")
+            val selectedSplit = compose.onNodeWithTag("run-split-2")
+            selectedSplit.performScrollTo()
+            assertFullyVisibleInScroll(selectedSplit, "run-split-2")
             capture("run-splits-refined$suffix")
         }
+    }
+
+    @Test
+    fun capturesNarrowLongElapsedAtDoubleTextWithCompleteControlsAndParagraph() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        val originalWidth = context.resources.configuration.screenWidthDp
+        val originalSize =
+            Regex("Override size: ([0-9]+x[0-9]+)").find(shell("wm size"))?.groupValues?.get(1)
+        // Keep the existing density. At the CI210dpi this is420x945 physical pixels,
+        // exercising a real320dp phone rather than pretending540 pixels means540dp.
+        val density = context.resources.displayMetrics.density
+        val narrowWidth = kotlin.math.round(320f * density).toInt()
+        val narrowHeight = kotlin.math.round(720f * density).toInt()
+        try {
+            closeScenario()
+            scenario = null
+            clearRefinementLiveState()
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false).commit()
+            shell("wm size ${narrowWidth}x${narrowHeight}")
+            shell("cmd uimode night no")
+            shell("settings put system font_scale 2.0")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            compose.waitUntil(20000) {
+                actualMaterialWindow()?.let { window ->
+                    window.widthDp in 319..321 &&
+                        window.decorWidthDp in 319f..321f &&
+                        window.fontScale >= 1.99f &&
+                        window.focused
+                } == true
+            }
+            awaitMaterialSystemBars(false, "narrow200")
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                org.racedaydreams.recording.RunRecordingService.status.value =
+                    org.racedaydreams.domain.recording.RunMetricsEngine.Status(
+                        42195.0,
+                        Duration.ofHours(10).plusMinutes(28).plusSeconds(14).toMillis(),
+                        Duration.ofHours(4).plusMinutes(23).toMillis(),
+                        375.0,
+                        "GPS ready",
+                        false,
+                    )
+                org.racedaydreams.recording.RunRecordingService.heartRate.value = 153.0
+            }
+            openRefinementRecording()
+            val statistics = compose.onNodeWithTag("live-statistics-tab")
+            statistics.performScrollTo().assertIsSelected()
+            assertFullyVisibleInScroll(statistics, "live-statistics-tab")
+            val route = compose.onNodeWithTag("live-route-tab")
+            route.performScrollTo().assertIsNotSelected()
+            assertFullyVisibleInScroll(route, "live-route-tab")
+            val statisticsBounds = statistics.fetchSemanticsNode()
+            val routeBounds = route.fetchSemanticsNode()
+            Assert.assertTrue(
+                "Narrow large-text mode controls must have distinct, non-overlapping hit areas",
+                statisticsBounds.positionInRoot.y + statisticsBounds.size.height <=
+                    routeBounds.positionInRoot.y + 1f,
+            )
+            val clock = compose.onNodeWithText("10:28:14", useUnmergedTree = true)
+            clock.performScrollTo()
+            val paragraphs = mutableListOf<TextLayoutResult>()
+            clock.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { action ->
+                Assert.assertTrue(action(paragraphs))
+            }
+            val paragraph = paragraphs.single()
+            Assert.assertEquals("10:28:14", paragraph.layoutInput.text.text)
+            Assert.assertFalse(
+                "Long elapsed time must not overflow horizontally",
+                paragraph.didOverflowWidth,
+            )
+            Assert.assertFalse(
+                "Long elapsed time must not overflow vertically",
+                paragraph.didOverflowHeight,
+            )
+            Assert.assertTrue(paragraph.lineCount >= 1)
+            Assert.assertEquals(8, paragraph.getLineEnd(paragraph.lineCount - 1, visibleEnd = true))
+            compose
+                .onAllNodes(
+                    SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange)
+                )
+                .assertCountEquals(0)
+            alignHeading("Elapsed time")
+            assertFullyVisibleInScroll(clock, "live-elapsed")
+            assertNarrowLiveControlsFullyVisible()
+            capture("live-refined-narrow-large-font")
+            compose.onNodeWithText("Distance").performScrollTo()
+            alignHeading("Distance")
+            compose.onNodeWithText("42.20 km").assertExists()
+            assertNarrowLiveControlsFullyVisible()
+            capture("live-refined-narrow-metrics-large-font")
+        } finally {
+            closeScenario()
+            scenario = null
+            clearRefinementLiveState()
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("wm size ${originalSize ?: "reset"}")
+            shell("cmd uimode night $night")
+            compose.waitUntil(20000) {
+                context.resources.configuration.screenWidthDp == originalWidth
+            }
+        }
+    }
+
+    private fun clickOriginalNavigationTab(label: String) {
+        compose
+            .onNode((hasText(label) or hasContentDescription(label)) and hasClickAction())
+            .assertIsDisplayed()
+            .performClick()
+        compose.waitForIdle()
+    }
+
+    private fun assertFullyVisibleInScroll(node: SemanticsNodeInteraction, descendantTag: String) {
+        node.assertIsDisplayed()
+        val viewport =
+            compose
+                .onNode(hasScrollAction() and hasAnyDescendant(hasTestTag(descendantTag)))
+                .fetchSemanticsNode()
+        assertFullyInside(node, viewport.boundsInRoot)
+    }
+
+    private fun assertNarrowLiveControlsFullyVisible() {
+        val panel = compose.onNodeWithTag("live-running-panel").fetchSemanticsNode()
+        listOf("Pause", "Finish & save").forEach { label ->
+            val control = compose.onNodeWithText(label).assertIsDisplayed()
+            assertFullyInside(control, panel.boundsInRoot)
+        }
+    }
+
+    private fun assertFullyInside(
+        node: SemanticsNodeInteraction,
+        viewport: androidx.compose.ui.geometry.Rect,
+    ) {
+        val target = node.fetchSemanticsNode()
+        val origin = target.positionInRoot
+        Assert.assertTrue(
+            "Complete content must fit its actual viewport: $origin / ${target.size} in $viewport",
+            origin.x >= viewport.left - 1f &&
+                origin.y >= viewport.top - 1f &&
+                origin.x + target.size.width <= viewport.right + 1f &&
+                origin.y + target.size.height <= viewport.bottom + 1f,
+        )
     }
 
     private fun openRefinementRecording() {

@@ -1,3 +1,20 @@
+# Focused running refinement — 0.12.1 capture gate pending
+
+Required421actual-build frames retain all383baseline and add38focused views: liveStatistics/
+Route/Paused/empty, recordedPBs, distance/pace/time, actual/missingHR, summaries/splits,320dp/
+200%longelapsed+metrics and meaningful large-text thirdPB/HRchart tails. Validator21tests pass.
+Firstsource157d0c8 failed only a new large-font navigation selector on allAPIs; it produced
+no accepted417image artifact. The corrective selectors preserve existing nav semantics.
+
+Publication remains confined to feature/material3-running-performance-refinement and retains
+exact verified-head/source-fingerprint requirements. Open current actual light/dark/200%
+captures directly against the three owner inline references; field presence or PNG integrity
+alone is not visual acceptance. References are not app screenshots and remain separate.
+
+Record actual source/run/artifact identities and comparison outcomes in VISUAL_REVIEW_0_12_1.md
+and VERIFICATION.md after capture. The baseline gallery below is historical until current
+source-bound captures exist. Hardware/humanTalkBack acceptance remains unperformed.
+
 # Material UI — 0.12 current-source capture gate
 
 Source `5d2814331af3f189f38f97d72974b242e398afe8` passed complete

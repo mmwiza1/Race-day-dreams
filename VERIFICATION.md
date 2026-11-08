@@ -1,19 +1,25 @@
-# 0.12.1-test1 — focused refinement in progress
+# 0.12.1-test1 — corrective checkpoint, full gate pending
 
-Baseline main8269162/0.12.0-test1 was fetched and verified green. The new feature branch is
-`feature/material3-running-performance-refinement`, version0.12.1-test1/code17.
-Local domain700,108/47suites,75schema tests,9release-note checks,11route-source, artwork,
-guidance,13runner-helper,20capture-validator and14formatter-tool checks passed. The stable
-serialized Gradle gate passed79tasks in2m51s: domain:check, debug APK, instrumentation APK
-and lintDebug. Pinned formatting checks120Kotlin/159Java files. An early mid-authoring
-helper compile and lint module lookup were resolved once all source files were complete;
-no analysis or test was disabled. No Android instrumentation, new screenshot or final
-visual pass is claimed yet.
+Initial source157d0c8/workflow42533549896 completed all532cases on EACH API28/35/36:
+**531passed /1failed**. The sole failure was the new capture's text-only Progress selector
+at200%, where existing navigation retains its accessible label. Actualfocus and9guards
+passed; all13new component/presentation cases passed. Canonical/publication correctly skipped.
+This is a failed release gate, not a pass; no successful417artifact is claimed.
 
-The reviewed navigation shell and manifest/domain/data/service paths have no diff from main.
-The final patch must pass all original tests and new interaction/presentation/capture checks,
-then exact-head/main CI and published APK identity verification. Earlier results below belong
-to their explicitly named source, not the unfinished patch.
+The corrective checkpoint preserves navigation and fixes only new selectors, adds meaningful
+large-text tails and native320dp/200%longelapsed coverage. Existing typography adapts to width
+while full systemfontscale remains applied; narrowlarge-text view controls stack. Required421
+captures retain383previous frames. Expected533fullcases require actual runtime verification.
+
+Local corrected debugAPK, instrumentationAPK and lint passed75tasks/2m36s. Initial fullGradle
+withdomain:check passed79tasks. Pinnedformat120Kotlin/159Java, domain700108/47unique suites,
+75schema,9release,13runnerhelper,21capturevalidator,14formatter and source/art/guidance checks
+pass. No analysis/test was disabled. No accepted current-source screenshots or final visual
+pass is claimed. Manifest/domain/data/services/CoachActivity navigation have no diff from main.
+
+Exact-head/main CI, authentic reference comparison and matching publishedAPK verification
+remain required. All physical acceptance is unperformed. Earlier evidence below belongs to
+its named baseline, not the unfinished patch.
 
 # 0.12.0-test1 — merged-main and published-download verification
 

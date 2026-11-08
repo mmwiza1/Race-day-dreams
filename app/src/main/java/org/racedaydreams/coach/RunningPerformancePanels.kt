@@ -140,7 +140,7 @@ internal fun RunningHeartRatePanel(activities: List<ActivityRecord>, state: Coac
                 HeartRateMetric("Maximum heart rate", selected.maxHeartRate())
             }
             Text(
-                "Source: ${selected.source().provider()}. These are this run's saved values, not a range-wide average.",
+                "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(selected.source())}. These are this run's saved values, not a range-wide average.",
                 style = MaterialTheme.typography.bodySmall,
             )
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

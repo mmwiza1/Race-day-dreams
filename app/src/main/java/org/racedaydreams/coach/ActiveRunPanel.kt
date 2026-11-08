@@ -15,7 +15,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import java.time.Duration
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
@@ -36,7 +35,9 @@ fun ActiveRunPanel(
     var routeView by rememberSaveable { mutableStateOf(false) }
     val largeText = LocalDensity.current.fontScale >= 1.5f
     Column(
-        Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
+        Modifier.fillMaxSize()
+            .testTag("live-running-panel")
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Column(
@@ -63,23 +64,49 @@ fun ActiveRunPanel(
             )
             if (s.gps() == "GPS signal weak")
                 Text("Your pace may be temporarily inaccurate. Continue by effort.")
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                SegmentedButton(
-                    selected = !routeView,
-                    onClick = { routeView = false },
-                    shape = SegmentedButtonDefaults.itemShape(0, 2),
-                    modifier =
-                        Modifier.weight(1f).heightIn(min = 48.dp).testTag("live-statistics-tab"),
-                ) {
-                    Text("Statistics")
-                }
-                SegmentedButton(
-                    selected = routeView,
-                    onClick = { routeView = true },
-                    shape = SegmentedButtonDefaults.itemShape(1, 2),
-                    modifier = Modifier.weight(1f).heightIn(min = 48.dp).testTag("live-route-tab"),
-                ) {
-                    Text("Route")
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                if (largeText && maxWidth < 360.dp) {
+                    Column(
+                        Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        listOf(false to "Statistics", true to "Route").forEach { (route, label) ->
+                            FilterChip(
+                                selected = routeView == route,
+                                onClick = { routeView = route },
+                                label = { Text(label) },
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .heightIn(min = 48.dp)
+                                        .testTag(
+                                            if (route) "live-route-tab" else "live-statistics-tab"
+                                        ),
+                            )
+                        }
+                    }
+                } else {
+                    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                        SegmentedButton(
+                            selected = !routeView,
+                            onClick = { routeView = false },
+                            shape = SegmentedButtonDefaults.itemShape(0, 2),
+                            modifier =
+                                Modifier.weight(1f)
+                                    .heightIn(min = 48.dp)
+                                    .testTag("live-statistics-tab"),
+                        ) {
+                            Text("Statistics")
+                        }
+                        SegmentedButton(
+                            selected = routeView,
+                            onClick = { routeView = true },
+                            shape = SegmentedButtonDefaults.itemShape(1, 2),
+                            modifier =
+                                Modifier.weight(1f).heightIn(min = 48.dp).testTag("live-route-tab"),
+                        ) {
+                            Text("Route")
+                        }
+                    }
                 }
             }
             if (routeView) {
@@ -103,16 +130,26 @@ fun ActiveRunPanel(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text("Elapsed time", style = MaterialTheme.typography.labelLarge)
-                        Text(
-                            PaceCalculator.formatTime(Duration.ofMillis(s.elapsedMillis())),
-                            style =
-                                MaterialTheme.typography.displayLarge.copy(
-                                    fontSize = 56.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFeatureSettings = "tnum",
-                                ),
-                            textAlign = TextAlign.Center,
-                        )
+                        BoxWithConstraints(Modifier.fillMaxWidth()) {
+                            // Select an existing type role for the available width. Android's
+                            // requested font scale still applies in full to every role.
+                            val timeStyle =
+                                when {
+                                    maxWidth < 300.dp -> MaterialTheme.typography.headlineLarge
+                                    maxWidth < 400.dp -> MaterialTheme.typography.displayMedium
+                                    else -> MaterialTheme.typography.displayLarge
+                                }
+                            Text(
+                                PaceCalculator.formatTime(Duration.ofMillis(s.elapsedMillis())),
+                                modifier = Modifier.fillMaxWidth(),
+                                style =
+                                    timeStyle.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontFeatureSettings = "tnum",
+                                    ),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
                         Text(
                             "Active ${PaceCalculator.formatTime(Duration.ofMillis(s.movingMillis()))}",
                             style = MaterialTheme.typography.bodyMedium,
@@ -353,7 +390,7 @@ private fun LiveMetricCard(
             Text(
                 value,
                 style =
-                    if (prominent) MaterialTheme.typography.headlineLarge
+                    if (prominent) MaterialTheme.typography.headlineMedium
                     else MaterialTheme.typography.headlineSmall,
                 color =
                     if (prominent) MaterialTheme.colorScheme.primary
