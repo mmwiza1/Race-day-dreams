@@ -1,3 +1,11 @@
+# Active focused patch — 0.12.1-test1
+
+Refine live-running hierarchy, optional accepted-route presentation and recorded performance
+charts on the completed0.12 foundation. Preserve navigation identity, engines and data.
+Implementation is in progress on a dedicated branch; original/API28/35/36 and authentic
+light/dark/200% screenshot gates remain mandatory. See docs/MATERIAL3_RUNNING_REFINEMENT.md
+and CONTINUE_CODEX.md. No architecture expansion or unrelated feature work is authorised.
+
 # Active UI release — 0.12.0-test1
 
 Material You / Material 3 Expressive modernisation only. Shared dynamic/branded themes,

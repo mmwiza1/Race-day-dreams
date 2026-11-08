@@ -1,3 +1,15 @@
+# Focused running refinement — 0.12.1-test1 acceptance
+
+Software/runtime/visual gates are in progress. Do not treat a locally assembled candidate
+as a verified published build. Preserve all0.12 hardware checks below.
+
+Additional owner checks (all UNPERFORMED): safely alternate Statistics/Route while a real
+run records; verify locked-screen recording continues; inspect long elapsed times, large
+fonts, real GPS gaps and pause/resume/Finish confirmation. Inspect Progress ranges,
+selected weeks, ranked result sources, missing HR, run summaries and splits with TalkBack.
+Route is an offline accepted-evidence outline, not street-map navigation. No configured
+personal zone boundaries means no zone-duration or zone-pace claim.
+
 # Material UI acceptance — 0.12.0-test1
 
 Export a complete backup before changing debug-signing builds. Do not uninstall a live

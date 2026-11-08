@@ -7,7 +7,24 @@ A free, open-source, account-free Android running and strength coach.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.12.0-test1 — Material You / Material 3 Expressive UI
+## 0.12.1-test1 — Running and performance visual refinement
+
+Live running leads with elapsed time, prominent distance/pace, optional heart rate and
+real workout progress. Statistics and an offline accepted-route outline are alternative
+views of the same recorder; pause/resume and Finish confirmation retain their controls.
+
+Progress adds selectable four/eight/twelve-week distance, elapsed-pace and time charts,
+ranked recorded results and saved per-run heart-rate summaries. Missing measurements and
+unrecorded weeks stay distinct. Individual heart-rate zones are unavailable without
+supported boundaries and sample evidence; no zone totals are fabricated.
+
+Run summaries, qualified splits and history gain clearer hierarchy and large-text layouts.
+Existing bottom navigation icons, labels, order, destinations, branding, engines and data
+formats are preserved. No new dependency or permission. See [focused scope](docs/MATERIAL3_RUNNING_REFINEMENT.md)
+and [patch notes](docs/RELEASE_0_12_1.md). Software and new screenshot gates are in progress;
+the verified baseline gallery below is not a claim that patch acceptance has passed.
+
+## Preserved 0.12.0-test1 — Material You / Material 3 Expressive UI
 
 A shared adaptive theme brings device colours (Android 12+), a branded blue fallback,
 clearer typography, rounded tonal cards and wide-window navigation to the existing app.
@@ -109,8 +126,8 @@ API-35 package. Publication waits for the full API 28/35/36 matrix and canonical
 No permanent stable release is created by merging this test update.
 
 These are **debug-signed test APKs**, not Play Store production packages. Actions
-artifacts for this candidate are named `Race-Day-Dreams-0.12.0-test1-debug-api-35`
-and contain `Race-Day-Dreams-0.12.0-test1-debug.apk`. The rolling download follows the
+artifacts for this candidate are named `Race-Day-Dreams-0.12.1-test1-debug-api-35`
+and contain `Race-Day-Dreams-0.12.1-test1-debug.apk`. The rolling download follows the
 latest verified main and identifies its own version/commit; a branch candidate is not
 silently published as main. Check [VERIFICATION.md](VERIFICATION.md) and export a complete
 local backup before upgrading.

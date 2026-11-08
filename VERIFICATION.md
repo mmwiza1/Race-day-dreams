@@ -1,3 +1,20 @@
+# 0.12.1-test1 — focused refinement in progress
+
+Baseline main8269162/0.12.0-test1 was fetched and verified green. The new feature branch is
+`feature/material3-running-performance-refinement`, version0.12.1-test1/code17.
+Local domain700,108/47suites,75schema tests,9release-note checks,11route-source, artwork,
+guidance,13runner-helper,20capture-validator and14formatter-tool checks passed. The stable
+serialized Gradle gate passed79tasks in2m51s: domain:check, debug APK, instrumentation APK
+and lintDebug. Pinned formatting checks120Kotlin/159Java files. An early mid-authoring
+helper compile and lint module lookup were resolved once all source files were complete;
+no analysis or test was disabled. No Android instrumentation, new screenshot or final
+visual pass is claimed yet.
+
+The reviewed navigation shell and manifest/domain/data/service paths have no diff from main.
+The final patch must pass all original tests and new interaction/presentation/capture checks,
+then exact-head/main CI and published APK identity verification. Earlier results below belong
+to their explicitly named source, not the unfinished patch.
+
 # 0.12.0-test1 — merged-main and published-download verification
 
 [PR #19](https://github.com/mmwiza1/Race-day-dreams/pull/19) is merged at

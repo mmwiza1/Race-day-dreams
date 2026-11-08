@@ -27,14 +27,26 @@ class CaptureValidationTest(unittest.TestCase):
         expected = {f'{scene}-material-{mode}.png' for scene in ('home','live') for mode in ('brand-light','device-light','brand-dark','device-dark','brand-large-font','device-large-font')}
         expected.update(('onboarding-material-dark.png','onboarding-material-large-font.png','home-material-wide.png','plan-material-wide.png','home-material-wide-large-font.png','plan-material-wide-large-font.png','live-material-finish-brand-large-font.png','live-material-finish-device-large-font.png'))
         self.assertEqual(expected, set(captures.MATERIAL_REQUIRED))
-        self.assertEqual(359, len(set(captures.REQUIRED) - expected - set(captures.PERMISSION_REQUIRED)))
+        self.assertEqual(359, len(set(captures.REQUIRED) - expected - set(captures.PERMISSION_REQUIRED) - set(captures.RUNNING_REFINEMENT_REQUIRED)))
         self.assertTrue(expected.issubset(captures.REQUIRED))
 
     def test_native_permission_surface_requires_modes_and_large_text_actions(self):
         expected = {'permission-rationale-light.png', 'permission-rationale-dark.png', 'permission-rationale-large-font.png', 'permission-rationale-actions-large-font.png'}
         self.assertEqual(expected, set(captures.PERMISSION_REQUIRED))
-        self.assertEqual(379, len(set(captures.REQUIRED) - expected))
+        self.assertEqual(379, len(set(captures.REQUIRED) - expected - set(captures.RUNNING_REFINEMENT_REQUIRED)))
         self.assertTrue(expected.issubset(captures.REQUIRED))
+
+    def test_running_refinement_requires_actual_statistics_route_analytics_and_missing_states(self):
+        scenes = ('live-refined-statistics', 'live-refined-route', 'live-refined-paused',
+                  'running-records-refined', 'running-trends-distance', 'running-trends-pace',
+                  'running-trends-time', 'running-heart-rate', 'running-heart-rate-empty',
+                  'run-summary-refined', 'run-splits-refined')
+        expected = {f'{scene}{suffix}.png' for scene in scenes for suffix in ('', '-dark', '-large-font')}
+        expected.add('live-refined-route-empty-large-font.png')
+        self.assertEqual(34, len(expected))
+        self.assertEqual(expected, set(captures.RUNNING_REFINEMENT_REQUIRED))
+        self.assertTrue(expected.issubset(captures.REQUIRED))
+        self.assertEqual(383, len(set(captures.REQUIRED) - expected))
 
     def test_catalogue_expansion_has_every_display_mode(self):
         import re
@@ -60,7 +72,8 @@ class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(383, len(captures.REQUIRED))
+        self.assertEqual(417, len(captures.REQUIRED))
+        self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.RUNNING_REFINEMENT_REQUIRED)))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):

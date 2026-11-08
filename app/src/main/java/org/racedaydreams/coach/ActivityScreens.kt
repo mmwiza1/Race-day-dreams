@@ -7,6 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -132,7 +134,15 @@ fun ActivityHistoryScreen(
                     )
                 }
                 items(activities, key = { it.id() }) { activity ->
-                    Card(onClick = { open(activity.id()) }, Modifier.fillMaxWidth()) {
+                    Card(
+                        onClick = { open(activity.id()) },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
+                        shape = MaterialTheme.shapes.large,
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                            ),
+                    ) {
                         Column(
                             Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -147,7 +157,10 @@ fun ActivityHistoryScreen(
                                     ?: "Distance unavailable",
                                 style = MaterialTheme.typography.headlineSmall,
                             )
-                            Text("Elapsed: ${PaceCalculator.formatTime(activity.elapsedTime())}")
+                            Text(
+                                "Elapsed: ${PaceCalculator.formatTime(activity.elapsedTime())}",
+                                style = MaterialTheme.typography.titleMedium,
+                            )
                             Text(
                                 "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
                             )
@@ -175,12 +188,14 @@ fun ActivityHistoryScreen(
                                             .score()
                                 }
                             score?.let { Text("Run Score $it/10") }
-                            activity
-                                .distanceMetres()
-                                ?.takeIf { it > 0 }
+                            recordedElapsedPace(
+                                    activity,
+                                    state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
+                                )
                                 ?.let {
                                     Text(
-                                        "${formatPaceSeconds(activity.elapsedTime().toMillis()/1000.0/(it/1000))}/km"
+                                        "Elapsed average pace: $it",
+                                        style = MaterialTheme.typography.bodyMedium,
                                     )
                                 }
                             Text("Completed · tap for details")
@@ -247,15 +262,6 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
         }
     CoachPage {
         CoachHeading(if (assessment != null) "Assessment run" else "Run detail")
-        RecordedRouteCard(activity)
-        SpontaneousAssociation(state, model, activity)
-        if (activity.shoeId() != null)
-            CheckRow(
-                "I noted discomfort while wearing this shoe (no cause inferred)",
-                activity.id() in state.shoeDiscomfort,
-            ) {
-                model.runningEvidence.shoeDiscomfort(activity.id(), it)
-            }
         Text(
             activity
                 .start()
@@ -271,28 +277,18 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             Text(
                 "The source did not provide a time-zone offset; this time is shown explicitly in UTC."
             )
+        RecordedRunSummary(activity, state)
+        RecordedHeartRateSummary(activity)
+        RecordedRouteCard(activity)
+        SpontaneousAssociation(state, model, activity)
+        if (activity.shoeId() != null)
+            CheckRow(
+                "I noted discomfort while wearing this shoe (no cause inferred)",
+                activity.id() in state.shoeDiscomfort,
+            ) {
+                model.runningEvidence.shoeDiscomfort(activity.id(), it)
+            }
         CoachCard {
-            activity.distanceMetres()?.let {
-                Text(formatDistance(it, state), style = MaterialTheme.typography.headlineMedium)
-            } ?: Text("Distance unavailable")
-            Text(
-                "Elapsed time: ${PaceCalculator.formatTime(activity.elapsedTime())}",
-                style = MaterialTheme.typography.titleLarge,
-            )
-            activity.movingTime()?.let { Text("Moving time: ${PaceCalculator.formatTime(it)}") }
-            activity
-                .distanceMetres()
-                ?.takeIf { it > 0 }
-                ?.let { metres ->
-                    val unitMetres =
-                        if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) 1609.344
-                        else 1000.0
-                    Text(
-                        "Calculated elapsed average pace: ${formatPaceSeconds(activity.elapsedTime().toMillis() / 1000.0 / (metres / unitMetres))}/${if (unitMetres > 1000) "mi" else "km"}"
-                    )
-                }
-            activity.averageHeartRate()?.let { Text("Average recorded HR: ${decimal(it)} bpm") }
-            activity.maxHeartRate()?.let { Text("Maximum recorded HR: ${decimal(it)} bpm") }
             activity.elevationGainMetres()?.let {
                 Text("Recorded elevation gain: ${decimal(it)} m")
             }
@@ -368,27 +364,76 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                     "Reliable distance/time samples are unavailable. Splits have not been invented from average pace."
                 )
             splitAnalysis.reasons().forEach { Text(it) }
+            var selectedSplit by
+                rememberSaveable(activity.id(), splitUnits) { mutableIntStateOf(1) }
+            val fastestPace = splitAnalysis.splits().minOfOrNull { it.secondsPerKilometre() }
+            if (splitAnalysis.splits().isNotEmpty())
+                Text(
+                    "Tap a split to highlight it · a longer bar means a faster recorded pace",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             splitAnalysis.splits().forEach { split ->
-                CoachCard {
-                    Text(
-                        "Split ${split.number()}${if (split.partial()) " · partial" else ""}",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    val length =
-                        if (imperial) split.distanceMetres() / 1609.344
-                        else split.distanceMetres() / 1000.0
-                    val pace = split.secondsPerKilometre() * if (imperial) 1.609344 else 1.0
-                    Text(
-                        "${decimal(length)} ${if (imperial) "mi" else "km"} · ${PaceCalculator.formatTime(split.duration())} · ${formatPaceSeconds(pace)}/${if (imperial) "mi" else "km"}",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    split.averageHeartRate()?.let {
-                        Text("Available-sample HR: ${decimal(it)} bpm")
+                val selected = selectedSplit == split.number()
+                Card(
+                    onClick = { selectedSplit = split.number() },
+                    modifier =
+                        Modifier.fillMaxWidth().testTag("run-split-${split.number()}").semantics {
+                            stateDescription = if (selected) "Selected split" else "Recorded split"
+                        },
+                    shape = MaterialTheme.shapes.large,
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor =
+                                if (selected) MaterialTheme.colorScheme.secondaryContainer
+                                else MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
+                ) {
+                    Column(
+                        Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            "Split ${split.number()}${if (split.partial()) " · partial" else ""}",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        if (selected)
+                            Text(
+                                "Selected",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        val length =
+                            if (imperial) split.distanceMetres() / 1609.344
+                            else split.distanceMetres() / 1000.0
+                        val pace = split.secondsPerKilometre() * if (imperial) 1.609344 else 1.0
+                        Text(
+                            "${decimal(length)} ${if (imperial) "mi" else "km"} · ${PaceCalculator.formatTime(split.duration())} · ${formatPaceSeconds(pace)}/${if (imperial) "mi" else "km"}",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        split.averageHeartRate()?.let {
+                            Text("Available-sample HR: ${decimal(it)} bpm")
+                        }
+                        split.elevationChangeMetres()?.let {
+                            Text("Elevation change: ${decimal(it)} m")
+                        }
+                        split.cadence()?.let { Text("Cadence: ${decimal(it)} steps/min") }
+                        LinearProgressIndicator(
+                            progress = {
+                                ((fastestPace ?: split.secondsPerKilometre()) /
+                                        split.secondsPerKilometre())
+                                    .toFloat()
+                                    .coerceIn(0f, 1f)
+                            },
+                            modifier =
+                                Modifier.fillMaxWidth().height(12.dp).clearAndSetSemantics {},
+                            color =
+                                if (selected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.outline,
+                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            gapSize = 0.dp,
+                            drawStopIndicator = {},
+                        )
                     }
-                    split.elevationChangeMetres()?.let {
-                        Text("Elevation change: ${decimal(it)} m")
-                    }
-                    split.cadence()?.let { Text("Cadence: ${decimal(it)} steps/min") }
                 }
             }
         }
