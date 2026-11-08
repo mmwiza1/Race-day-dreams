@@ -55,12 +55,31 @@ if Path(sys.argv[0]).name == 'adb':
         event('display-timeout')
     elif args == ['shell', 'wm', 'dismiss-keyguard']:
         event('unlock')
+    elif args == ['shell', 'am', 'start', '-W', '-a', 'android.settings.SETTINGS']:
+        event('platform-settings')
+        (state / 'foreground').write_text('com.android.settings')
+        sys.exit(int(os.environ.get('RDD_GATE_TEST_PLATFORM_START_EXIT', '0')))
+    elif args == ['shell', 'input', 'keyevent', 'KEYCODE_HOME']:
+        event('platform-home')
+        (state / 'foreground').write_text('com.android.launcher3')
     elif args == ['shell', 'dumpsys', 'power']:
         event('power-state')
         print('mWakefulness=Awake')
     elif args == ['shell', 'dumpsys', 'window']:
         event('window-focus')
-        print('mCurrentFocus=synthetic-test-window')
+        foreground = state / 'foreground'
+        if os.environ.get('RDD_GATE_TEST_PLATFORM_ANR') == '1':
+            print('mCurrentFocus=Window{1 u0 Application Not Responding: com.android.systemui}')
+        elif foreground.exists():
+            package = foreground.read_text()
+            if os.environ.get('RDD_GATE_TEST_FOCUS_DELAY') == '1' and not (state / 'focus-polled').exists():
+                (state / 'focus-polled').touch()
+                print('mCurrentFocus=null')
+                print('mFocusedApp=ActivityRecord{' + package + '/.SyntheticPlatformWindow}')
+            else:
+                print('mCurrentFocus=Window{1 u0 ' + package + '/.SyntheticPlatformWindow}')
+        else:
+            print('mCurrentFocus=synthetic-test-window')
     elif args[:2] == ['logcat', '-d']:
         event('fixture-log')
     elif args[:4] == ['logcat', '-b', 'events', '-d']:
@@ -134,7 +153,7 @@ class AndroidGateTest(unittest.TestCase):
         code, _, stderr = self.run_gate()
         self.assertEqual(0, code, stderr)
         self.assertEqual(
-            ['broadcast-idle', 'size:540x1200', 'broadcast-idle', 'density:210', 'broadcast-idle', 'keep-awake', 'display-timeout', 'wake', 'unlock', 'reader-start', 'gradle-guard', 'gradle-full', 'fixture-log', 'pull', 'verify', 'reader-stop'],
+            ['broadcast-idle', 'size:540x1200', 'broadcast-idle', 'density:210', 'broadcast-idle', 'keep-awake', 'display-timeout', 'wake', 'unlock', 'platform-settings', 'window-focus', 'platform-home', 'window-focus', 'reader-start', 'gradle-guard', 'gradle-full', 'fixture-log', 'pull', 'verify', 'reader-stop'],
             self.events(),
         )
         self.assertEqual([
@@ -211,6 +230,31 @@ class AndroidGateTest(unittest.TestCase):
         self.assertEqual(['broadcast-idle', 'power-state', 'window-focus', 'platform-anr-events'], self.events())
         self.assertFalse((self.state / 'reader.pid').exists())
         self.assertNotIn('unrelated-synthetic-private-reason', stdout)
+
+    def test_existing_platform_anr_blocks_preparation_without_dismissing_it(self):
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_PLATFORM_ANR='1')
+        self.assertEqual(1, code, stderr)
+        self.assertIn('PLATFORM_FOCUS_BLOCKED', stdout)
+        self.assertNotIn('PLATFORM_FOCUS_READY', stdout)
+        self.assertNotIn('platform-home', self.events())
+        self.assertNotIn('gradle-guard', self.events())
+        self.assertFalse((self.state / 'reader.pid').exists())
+
+    def test_focused_app_is_not_accepted_until_its_actual_window_has_focus(self):
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_FOCUS_DELAY='1')
+        self.assertEqual(0, code, stderr)
+        self.assertEqual(3, self.events().count('window-focus'))
+        self.assertIn('PLATFORM_FOCUS_READY com.android.settings', stdout)
+        self.assertIn('PLATFORM_FOCUS_READY com.android.launcher3', stdout)
+        self.assert_reader_stopped()
+
+    def test_platform_launch_failure_preserves_exit_and_never_starts_tests(self):
+        code, _, stderr = self.run_gate(RDD_GATE_TEST_PLATFORM_START_EXIT='25')
+        self.assertEqual(25, code, stderr)
+        self.assertIn('platform-settings', self.events())
+        self.assertNotIn('platform-home', self.events())
+        self.assertNotIn('gradle-guard', self.events())
+        self.assertFalse((self.state / 'reader.pid').exists())
 
     def test_action_calls_one_shell_without_changing_the_timeout(self):
         workflow = (ROOT / '.github/workflows/android.yml').read_text()

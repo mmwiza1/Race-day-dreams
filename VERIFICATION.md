@@ -1,29 +1,30 @@
-# Latest delivery gate — external startup failure, sequencing follow-up pending
+# Latest delivery gate — platform focus preparation requires runtime verification
 
-The documentation-only head5d4e4d2/workflow42276183081 failed API36's nine-method guard:
-four focus-dependent cases failed and the517-case suite correctly did not run. Actual focus
-was held by **Application Not Responding: com.android.systemui**. The same UI/capture source
-previously passed the complete bed9a81 matrix recorded below. This new failed head is not
-merge-ready; API28/35 were still running when the follow-up was prepared.
+On8November the actual branch/remote state was recovered without discarding the local handoff.
+Head956f4bb/workflow42278529695 completed: API28 and35 each passed9guard methods,517full
+instrumentation tests and383captures. API36 executed9guard methods with4focus-related failures;
+the complete517-case suite and capture publication correctly did not run.
 
-AOSP28/35/36 show that the lastanr dump emits Reason without a leading process identity, so
-the previous identity-gated parser missed it. Diagnostics now use only real am_anr event tuples
-whose process field is exactly SystemUI or Launcher, capped at five. Other app events/reasons
-are excluded, including annotations that merely mention SystemUI. Original failure exits and
-reader cleanup remain, including failures during preparation.
+The exact platform event is:
+`[0,1395,com.android.launcher3,885767749,Input dispatching timed out (Application does not have a focused window).]`
+Actual mCurrentFocus was the Launcher ANR dialog, while mFocusedApp named Launcher. All three
+broadcast barriers had reported idle. These establish the immediate platform focus blocker,
+not its internal cause; neither queue idleness nor a focusedApp alone proves an input window.
+No exact-head success or merge is claimed from the earlier complete bed9a81 source below.
 
-The following CI-only correction drains actual broadcast queues before display setup and
-between independent size/density updates via the supported `am wait-for-broadcast-idle`, each
-bounded at20seconds. There is no fixed settling sleep, retry, ANR dismissal or test-budget
-increase. Queue idleness does not prove focus/render readiness or exclude late posted broadcasts;
-all existing real focus/dimension/visibility assertions remain mandatory. The internal cause of
-the platform ANR is still unproven; no runtime fix is claimed before verification.
+The following CI-only preparation now launches real Android Settings with am start-W, checks
+its actual mCurrentFocus component, returns HOME, and checks the actual Launcher window before
+starting app tests. Each focus condition is bounded20seconds and polls the observed state;
+existing ANR dialogs fail preparation without dismissal, forced platform restarts or test retries.
+Launch completion alone is not accepted as focus. All existing app-focus, geometry, visibility,
+timeout and complete-suite assertions remain mandatory. A passing preflight would establish
+usable focus at preparation time, not prove the underlying ANR eliminated or later tests passed.
 
-Ten actual-process runner-helper tests, nine release-note tests, shell syntax and diff checks
-pass. No application source, dependency, permission, recording, data or backup change. A fresh
-complete API28/35/36 and source-fingerprint/capture gate remains required before merge.
-AOSP references: [portable command](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-9.0.0_r1/services/core/java/com/android/server/am/ActivityManagerShellCommand.java),
-[ANR event schema](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-16.0.0_r1/services/core/java/com/android/server/am/EventLogTags.logtags).
+Thirteen real-process helper tests pass, including existing-ANR rejection, launch failure,
+focusedApp-without-window rejection, original exits, reader cleanup and private-event exclusion.
+Shell syntax and diff checks pass. App source, dependencies, permissions, data/schema/backup
+formats and the accepted UI are unchanged. The new completeAPI28/35/36 matrix and fresh
+source-bound canonical captures remain required. PR19 remains draft; no0.12publication.
 
 # Material UI — 0.12.0-test1 verified software and visual source
 

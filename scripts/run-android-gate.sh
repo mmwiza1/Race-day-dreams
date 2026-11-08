@@ -46,6 +46,35 @@ adb shell svc power stayon true
 adb shell settings put system screen_off_timeout 1800000
 adb shell input keyevent KEYCODE_WAKEUP
 adb shell wm dismiss-keyguard
+
+rdd_wait_for_platform_focus() {
+    # Activity launch/broadcast completion does not prove an actual input window exists.
+    # Poll the real focused window within a fixed bound; do not accept mFocusedApp alone.
+    timeout 20 sh -c '
+        set -eu
+        while :; do
+            focus=$(timeout 5 adb shell dumpsys window | awk "/mCurrentFocus=/")
+            case "$focus" in
+                *"Application Not Responding:"*)
+                    printf "%s\n" "PLATFORM_FOCUS_BLOCKED $focus"
+                    exit 1
+                    ;;
+                *"$1/"*)
+                    printf "%s\n" "PLATFORM_FOCUS_READY $1"
+                    exit 0
+                    ;;
+            esac
+            sleep 0.1
+        done
+    ' sh "$1"
+}
+
+# Warm a real platform window, then return to the default AOSP launcher. Existing ANR
+# dialogs prevent these checks from passing; none is dismissed or force-stopped here.
+timeout 20 adb shell am start -W -a android.settings.SETTINGS
+rdd_wait_for_platform_focus com.android.settings
+adb shell input keyevent KEYCODE_HOME
+rdd_wait_for_platform_focus com.android.launcher3
 # Test-only identities and bounded stacks; never dump private application logs.
 adb logcat -v raw -s RddGate:I '*:S' &
 rdd_test_log_pid=$!
