@@ -1,3 +1,67 @@
+# Material UI — 0.12.0-test1 verified software and visual source
+
+Source **5d2814331af3f189f38f97d72974b242e398afe8** passed complete
+[workflow42518618237](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42518618237).
+All three completed Android logs and job conclusions were independently inspected.
+Final documentation-head checks and actual-main publication remain separate delivery checks.
+
+| Gate | Observed result |
+| --- | --- |
+| API28 / API35 / API36 | **Each:9 guard methods,517 full instrumentation tests,383 authentic captures** |
+| Domain | **700,108 checks /47 unique suites**, including4,226 six-month athlete assertions |
+| Schema/migrations/backups | **75 schema tests**; existing old/current backup, rollback and history instrumentation pass |
+| Guidance | **220 canonical /14 routine guides;223 exact asset hashes** |
+| Formatting | **110 Kotlin /159 Java;14 formatter-tool tests** |
+| Other checks | **9 release-note,13 runner-helper,19 capture-validator,11 map-source,14 artwork tests** |
+| Android | Domain/check, debug APK, lint, instrumentation compilation and dependency inventory pass |
+
+The complete suite remains unfiltered after its fast guard. No assertion, API, required capture
+or method/step budget was removed. On all three APIs the preflight logs prove actual Settings
+and Launcher window focus before app tests. Earlier SystemUI/Launcher ANR attempts were failed
+gates, not app passes. Broadcast-idle alone had not established window focus. The bounded
+preflight rejects existing ANRs without dismissal or forced platform restarts and does not
+prove their internal cause eliminated or hardware acceptance. Emulator37.2.13/build16740729
+uses the documented software backend; nonblocking emulator texture warnings remain possible.
+
+## Authentic screenshots and direct visual review
+
+Canonical bot **e0bb25032782b1b82194394056196f74c1f3b655** was safely fast-forwarded.
+Fingerprint **c1ad95aadd1098d4db00b44e739e8f3150936d859cebc55fc29abe5a1e7d6faf**
+matches current code/capture source and metadata. All383 committed PNGs match rawAPI35
+artifact13632724252 byte-for-byte. ZIP53,225,255bytes, SHA256:
+`f9f832bcd00dcd3608cbc26cd1b1d2bf366ad569e5693fa066f08041e2c119c7`.
+API36 artifact13632414462 also passes strict383-name/PNG validation. ZIP53,147,323bytes, SHA256:
+`71198d99512b989d25f239b599b92e551c77f165ecb04036a2d0b4bc60bf59a5`.
+
+All24new API35 UI variants and17representative current-source progression/gym/analytics/
+recovery/body/storage/history/trends/shoes/race/health captures were opened. Root independently
+opened API36 light live,200%Home/live, dark live, native privacy footer and short-wide views.
+No blocking app-owned clipping, overlap, unreadable contrast or missing primary action was
+found. Phone system icons contrast in actual light/dark pixels; native Close remains fully
+visible at200%. References remain separate and unedited. See docs/VISUAL_REVIEW_0_12.md.
+
+**Retained synthetic limitation:** forced1400x720/200% captures show a blank reserved platform
+navigation strip. App rail destinations remain reachable in the instrumented navigation tests
+and content scrolls; normal phone/tall-wide captures show system buttons. This is not claimed
+fixed or hidden by cropping. Real rotation/navigation/OEM checks remain in TEST_BUILD.md.
+
+## Verified candidate APK and preserved contracts
+
+API35 artifact13633272205 contains **Race-Day-Dreams-0.12.0-test1-debug.apk**, version0.12.0-test1,
+code16, **55,348,650bytes**, SHA256:
+`344434110b1b8e0cac1c6d7b1dad00eb19d869ecd9640ac420cf5f315665b1c8`.
+Its ZIP SHA256 is `b2847635622b1ff21ae0af4e51ae2b5fdb9a4a266d5e2408acad4d2d608d02a1`.
+Actual package inspection confirms **no INTERNET permission**. Compared with verified0.11CI
+55,250,287bytes: +98,363bytes/**0.1780%**. No artwork or runtime dependency was added.
+This branch candidate is not a main release; final rolling APK must match actual main CI.
+
+No launcher icon, domain, recording, persistence, manifest permission or data-format change:
+**schema19 / rootJSON13 / raw3 / complete1**. Existing actuals, revisions, backups, retention,
+Health Connect and authoritative engines retain their contracts. All three UI milestones are
+complete. Exact-head delivery, authorised merge and main publication must be checked separately.
+Physical GalaxyS24/Pixel/Xiaomi, human TalkBack, outdoorGPS, providers, OEM/background/audio/
+locked-screen/battery checks remain **UNPERFORMED**. Earlier results below are historical.
+
 # 0.11.0-test1 — verified software and visual checkpoint
 
 Source `ee760bf33356092dc7559738b90b1d089bf45521` passed the complete [Android workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42148419418).

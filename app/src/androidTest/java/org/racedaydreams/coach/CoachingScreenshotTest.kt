@@ -3,6 +3,7 @@ package org.racedaydreams.coach
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Looper
+import androidx.compose.runtime.Recomposer
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.platform.WindowRecomposerFactory
 import androidx.compose.ui.platform.WindowRecomposerPolicy
@@ -10,7 +11,11 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.pressBack
@@ -19,6 +24,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
 import java.time.*
 import java.util.EnumSet
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
@@ -40,6 +48,16 @@ import org.racedaydreams.reminders.EveningReminders
 @OptIn(InternalComposeUiApi::class)
 class CoachingScreenshotTest {
     private val compose = createEmptyComposeRule()
+    // Track only actual Activity/Dialog windows created by our LifecycleAware delegate.
+    // The outer test rule owns a different, long-lived recomposer and must never be joined here.
+    private val windowRecomposers = mutableMapOf<Lifecycle, MutableList<Recomposer>>()
+
+    private data class ClosingHost(val jobs: List<Job>, val windows: List<Recomposer>)
+
+    private companion object {
+        // A failed barrier must also prevent the following fixture from deleting a live DB.
+        val pendingHostShutdown = mutableListOf<ClosingHost>()
+    }
 
     // These captures launch real production Activities, including lifecycle/AndroidView work.
     // Keep their normal Android UI dispatcher and Choreographer instead of an unconfined
@@ -55,7 +73,13 @@ class CoachingScreenshotTest {
                         override fun evaluate() {
                             val mainWindows = WindowRecomposerFactory { view ->
                                 Assert.assertSame(Looper.getMainLooper(), Looper.myLooper())
-                                WindowRecomposerFactory.LifecycleAware.createRecomposer(view)
+                                val lifecycle =
+                                    checkNotNull(view.findViewTreeLifecycleOwner()).lifecycle
+                                WindowRecomposerFactory.LifecycleAware.createRecomposer(view).also {
+                                    windowRecomposers
+                                        .getOrPut(lifecycle) { mutableListOf() }
+                                        .add(it)
+                                }
                             }
                             WindowRecomposerPolicy.withFactory(mainWindows) { base.evaluate() }
                         }
@@ -70,6 +94,7 @@ class CoachingScreenshotTest {
 
     @Before
     fun seed() {
+        awaitClosedHosts()
         fixtureFontScale = shell("settings get system font_scale").trim()
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
@@ -398,10 +423,12 @@ class CoachingScreenshotTest {
         org.racedaydreams.recording.RunRecordingService.workoutState.value = null
         org.racedaydreams.recording.RunRecordingService.savedActivity.value = null
         try {
-            scenario?.close()
+            dismissCaptureDialogs()
+            closeScenario()
         } finally {
             fixtureFontScale?.let { restoreFontScale(it) }
         }
+        awaitClosedHosts()
         EveningReminders(context, FeatureStore(context)).cancelAllScheduled()
         SqliteUserPreferencesRepository(context).clear()
     }
@@ -470,6 +497,11 @@ class CoachingScreenshotTest {
         compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
         compose.onAllNodesWithText("Recorded run")[0].performClick()
         await("Run detail")
+        // The detail title is available before the retained GPS projection is published.
+        // Wait for the real route/story content, as in the long-route flow below, before
+        // capturing or scrolling its merged semantics. Do not capture a loading frame.
+        await("Route story")
+        await("Your recorded route")
         capture("activity-detail")
         alignHeading("Your recorded route")
         capture("post-run-route")
@@ -659,8 +691,8 @@ class CoachingScreenshotTest {
         compose.waitForIdle()
         capture("gym-strength-first")
         back()
-        click("⚙ Settings")
-        await("Settings")
+        click("Settings")
+        await("Activity data source")
         capture("settings")
         alignHeading("Activity data source")
         capture("data-sources")
@@ -742,18 +774,18 @@ class CoachingScreenshotTest {
         capture("exercise-static-stretch")
         back()
         back()
-        click("⚙ Settings")
-        await("Settings")
+        click("Settings")
+        await("Activity data source")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle()
         capture("onboarding")
         back()
-        click("⚙ Settings")
-        await("Settings")
+        click("Settings")
+        await("Activity data source")
         compose.onNodeWithText("Shoes and mileage").performScrollTo().performClick()
         await("Your shoes")
         capture("shoes")
-        scenario?.close()
+        closeScenario()
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         await("How am I doing?")
         compose.onNodeWithText("View activity history").performScrollTo().performClick()
@@ -766,7 +798,7 @@ class CoachingScreenshotTest {
                 if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
             }
         try {
-            scenario?.close()
+            closeScenario()
             scenario = null
             shell("cmd uimode night yes")
             scenario = ActivityScenario.launch(CoachActivity::class.java)
@@ -791,7 +823,7 @@ class CoachingScreenshotTest {
             await("How am I doing?")
             // Font changes already recreate Android activities. Close first so the
             // capture does not race recreate() against an automatically destroyed instance.
-            scenario?.close()
+            closeScenario()
             scenario = null
             shell("settings put system font_scale 2.0")
             scenario = ActivityScenario.launch(CoachActivity::class.java)
@@ -802,7 +834,7 @@ class CoachingScreenshotTest {
             await("This week")
             capture("plan-large-font")
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -875,7 +907,7 @@ class CoachingScreenshotTest {
             await("Your strength training")
             capture("strength-home")
             compose.onAllNodesWithText("How am I doing?").assertCountEquals(0)
-            scenario?.close()
+            closeScenario()
             scenario = null
             shell("cmd uimode night yes")
             scenario = ActivityScenario.launch(CoachActivity::class.java)
@@ -886,7 +918,7 @@ class CoachingScreenshotTest {
                     android.content.res.Configuration.UI_MODE_NIGHT_MASK,
             )
             capture("strength-home-dark")
-            scenario?.close()
+            closeScenario()
             scenario = null
             shell("settings put system font_scale 2.0")
             scenario = ActivityScenario.launch(CoachActivity::class.java)
@@ -894,7 +926,7 @@ class CoachingScreenshotTest {
             Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
             capture("strength-home-large-font")
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -996,11 +1028,11 @@ class CoachingScreenshotTest {
                         context.resources.configuration.uiMode and
                             android.content.res.Configuration.UI_MODE_NIGHT_MASK,
                     )
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -1056,7 +1088,7 @@ class CoachingScreenshotTest {
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
-                click("⚙ Settings")
+                click("Settings")
                 await("Storage & recording detail")
                 compose
                     .onNodeWithText("Storage & recording detail")
@@ -1091,11 +1123,11 @@ class CoachingScreenshotTest {
                 compose.onNodeWithText("Keep my recording detail").performClick()
                 Assert.assertEquals(engine.points(), store.points("retention-capture"))
                 Assert.assertNull(retention.removal("retention-capture"))
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -1196,11 +1228,11 @@ class CoachingScreenshotTest {
                     back()
                     await("Search exercises or aliases")
                 }
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -1278,11 +1310,11 @@ class CoachingScreenshotTest {
                 capture("body-measurements$suffix")
                 Assert.assertEquals(weight, body.weights().first { it.id() == weight.id() })
                 Assert.assertTrue(body.preferences().basis().matches(weight))
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -1388,11 +1420,11 @@ class CoachingScreenshotTest {
                 compose.onNodeWithText("Keep my current programme").performScrollTo().performClick()
                 await("Your current programme is unchanged.")
                 Assert.assertEquals(before, CoachingStore(context).strength().toSet())
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -1503,7 +1535,7 @@ class CoachingScreenshotTest {
                 pauseGymForRelaunch()
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -1723,7 +1755,7 @@ class CoachingScreenshotTest {
             )
             Assert.assertEquals(actual, CoachingStore(context).strength().single())
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -1737,7 +1769,7 @@ class CoachingScreenshotTest {
             // Closing during a pending frame is not the configuration scenario being captured.
             compose.waitForIdle()
             InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-            scenario?.close()
+            closeScenario()
             scenario = null
             // ActivityScenario.close waits for DESTROYED, not Compose test-root unregister.
             // Do not let the next launch/query adopt a departing window's empty semantics root.
@@ -1854,14 +1886,14 @@ class CoachingScreenshotTest {
                 capture("$captureName-landmarks", "Key landmarks on this route")
             }
             val london = org.racedaydreams.domain.support.DreamRoutes.routes().first()
-            scenario?.close()
+            closeScenario()
             scenario = null
             shell("cmd uimode night yes")
             openCity(london)
             capture("dream-route-dark")
             alignHeading("Key landmarks on this route")
             capture("dream-route-dark-landmarks", "Key landmarks on this route")
-            scenario?.close()
+            closeScenario()
             scenario = null
             shell("settings put system font_scale 2.0")
             openCity(london)
@@ -1869,7 +1901,7 @@ class CoachingScreenshotTest {
             alignHeading("Key landmarks on this route")
             capture("dream-route-large-font-landmarks", "Key landmarks on this route")
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -2006,11 +2038,11 @@ class CoachingScreenshotTest {
                 }
                 Assert.assertNull(SqliteStrengthProgrammingRepository(context).currentReference())
                 Assert.assertTrue(CoachingStore(context).strength().isEmpty())
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -2122,11 +2154,11 @@ class CoachingScreenshotTest {
                 capture("strength-template-settings$suffix")
                 Assert.assertNull(SqliteStrengthProgrammingRepository(context).currentReference())
                 Assert.assertTrue(CoachingStore(context).strength().isEmpty())
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -2234,11 +2266,11 @@ class CoachingScreenshotTest {
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))
                 Assert.assertTrue(CoachingStore(context).strength().isEmpty())
-                scenario?.close()
+                closeScenario()
                 scenario = null
             }
         } finally {
-            scenario?.close()
+            closeScenario()
             scenario = null
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
@@ -2331,6 +2363,7 @@ class CoachingScreenshotTest {
             shell("cmd uimode night").let {
                 if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
             }
+        var originalFailure: Throwable? = null
         try {
             listOf("", "-dark", "-large-font").forEach { suffix ->
                 shell(
@@ -2560,15 +2593,95 @@ class CoachingScreenshotTest {
                 Assert.assertEquals(1, repository.currentReference()!!.revision())
                 Assert.assertEquals(programme, repository.programme(programme.id(), 1))
                 Assert.assertEquals(actuals.toSet(), CoachingStore(context).strength().toSet())
-                scenario?.close()
+                dismissCaptureDialogs()
+                closeScenario()
                 scenario = null
             }
+        } catch (failure: Throwable) {
+            originalFailure = failure
+            android.util.Log.i("RddGate", "CAPTURE_FAILURE $kind ${failure.javaClass.name}")
+            failure.stackTrace.take(16).forEach { android.util.Log.i("RddGate", "  at $it") }
+            throw failure
         } finally {
-            scenario?.close()
-            scenario = null
-            restoreFontScale(originalFont)
-            shell("cmd uimode night $originalNight")
+            try {
+                dismissCaptureDialogs()
+                closeScenario()
+                restoreFontScale(originalFont)
+                shell("cmd uimode night $originalNight")
+            } catch (cleanupFailure: Throwable) {
+                val primary = originalFailure
+                if (primary != null) primary.addSuppressed(cleanupFailure) else throw cleanupFailure
+            }
         }
+    }
+
+    /** Closing an Activity cancels its scopes; joining proves their blocking IO has returned. */
+    private fun closeScenario() {
+        val host = scenario
+        if (host != null) {
+            var closing: ClosingHost? = null
+            host.onActivity { activity ->
+                val coach = ViewModelProvider(activity)[CoachViewModel::class.java]
+                // Configuration recreation destroys the old window while retaining its
+                // ViewModel. Its composition-owned IO must finish before fixture reset too.
+                val lifecycles =
+                    windowRecomposers.keys.filter {
+                        it == activity.lifecycle || it.currentState == Lifecycle.State.DESTROYED
+                    }
+                val windows = lifecycles.flatMap { windowRecomposers.remove(it).orEmpty() }
+                closing =
+                    ClosingHost(
+                        listOfNotNull(
+                            coach.viewModelScope.coroutineContext[Job],
+                            activity.lifecycleScope.coroutineContext[Job],
+                        ),
+                        windows,
+                    )
+            }
+            synchronized(pendingHostShutdown) { pendingHostShutdown.add(checkNotNull(closing)) }
+            try {
+                host.close()
+            } finally {
+                scenario = null
+            }
+        }
+        awaitClosedHosts()
+    }
+
+    private fun awaitClosedHosts() {
+        val closing = synchronized(pendingHostShutdown) { pendingHostShutdown.toList() }
+        if (closing.isEmpty()) return
+        runBlocking {
+            withTimeout(20000) {
+                closing.forEach { host ->
+                    host.jobs.forEach { it.join() }
+                    host.windows.forEach { it.join() }
+                }
+            }
+        }
+        synchronized(pendingHostShutdown) { pendingHostShutdown.removeAll(closing.toSet()) }
+    }
+
+    /** Dismiss actual popup windows before synchronously destroying their host renderer. */
+    private fun dismissCaptureDialogs() {
+        if (scenario == null) return
+        repeat(3) {
+            val count =
+                compose
+                    .onAllNodes(isDialog(), useUnmergedTree = true)
+                    .fetchSemanticsNodes(atLeastOneRootRequired = false)
+                    .size
+            if (count == 0) return
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            androidx.test.espresso.Espresso.pressBack()
+            compose.waitUntil(20000) {
+                compose
+                    .onAllNodes(isDialog(), useUnmergedTree = true)
+                    .fetchSemanticsNodes(atLeastOneRootRequired = false)
+                    .size < count
+            }
+        }
+        compose.onAllNodes(isDialog(), useUnmergedTree = true).assertCountEquals(0)
     }
 
     private fun gymNowModel(): GymNowViewModel {
@@ -2577,6 +2690,441 @@ class CoachingScreenshotTest {
             result = ViewModelProvider(activity)[GymNowViewModel::class.java]
         }
         return result
+    }
+
+    @Test
+    fun capturesMaterialDeviceAndBrandColoursWithAccessibleLiveControls() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val originalDynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, dynamic, night, scale) in
+                listOf(
+                    MaterialCapture("brand-light", false, "no", 1f),
+                    MaterialCapture("device-light", true, "no", 1f),
+                    MaterialCapture("brand-dark", false, "yes", 1f),
+                    MaterialCapture("device-dark", true, "yes", 1f),
+                    MaterialCapture("brand-large-font", false, "no", 2f),
+                    MaterialCapture("device-large-font", true, "yes", 2f),
+                )) {
+                closeScenario()
+                scenario = null
+                prefs
+                    .edit()
+                    .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic)
+                    .commit()
+                shell("cmd uimode night $night")
+                shell("settings put system font_scale $scale")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                if (suffix == "brand-light" && android.os.Build.VERSION.SDK_INT >= 31) {
+                    // Exercise the real preference control, not only fixture writes.
+                    click("Settings")
+                    await("Appearance")
+                    val deviceColours = compose.onNodeWithText("Use device colours")
+                    deviceColours.performScrollTo().performClick()
+                    compose.waitUntil(20000) {
+                        prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false)
+                    }
+                    deviceColours.performClick()
+                    compose.waitUntil(20000) {
+                        !prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+                    }
+                    back()
+                    awaitHomeReady(false)
+                }
+                awaitMaterialSystemBars(dark = night == "yes")
+                capture("home-material-$suffix")
+                compose
+                    .onNode(hasText("Run now") and hasClickAction())
+                    .performScrollTo()
+                    .performClick()
+                await("Custom workout")
+                compose.onNodeWithText("Free run").performScrollTo().performClick()
+                await("Start GPS recording")
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    org.racedaydreams.recording.RunRecordingService.status.value =
+                        org.racedaydreams.domain.recording.RunMetricsEngine.Status(
+                            5020.0,
+                            1694000,
+                            1694000,
+                            337.0,
+                            "GPS ready",
+                            false,
+                        )
+                }
+                await("Distance")
+                compose.onNodeWithText("Pause").assertIsDisplayed()
+                compose.onNodeWithText("Finish & save").assertIsDisplayed()
+                capture("live-material-$suffix")
+                if (scale == 2f) {
+                    compose.onNodeWithText("Finish & save").performClick()
+                    await("Finish this run?")
+                    capture("live-material-finish-$suffix")
+                    compose.onNodeWithText("Keep recording").performClick()
+                }
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    org.racedaydreams.recording.RunRecordingService.status.value = null
+                }
+            }
+        } finally {
+            closeScenario()
+            scenario = null
+            prefs
+                .edit()
+                .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, originalDynamic)
+                .commit()
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesRetainedGoalFormInDarkAndLargeText() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for (mode in
+                listOf(
+                    MaterialCapture("dark", false, "yes", 1f),
+                    MaterialCapture("large-font", false, "no", 2f),
+                )) {
+                closeScenario()
+                scenario = null
+                prefs
+                    .edit()
+                    .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false)
+                    .commit()
+                shell("cmd uimode night ${mode.night}")
+                shell("settings put system font_scale ${mode.scale}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                click("Settings")
+                await("Activity data source")
+                compose
+                    .onNodeWithText("Edit race goal and availability")
+                    .performScrollTo()
+                    .performClick()
+                androidx.test.espresso.Espresso.onView(
+                        androidx.test.espresso.matcher.ViewMatchers.withText(
+                            org.racedaydreams.R.string.onboarding_edit_title
+                        )
+                    )
+                    .check(
+                        androidx.test.espresso.assertion.ViewAssertions.matches(
+                            androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+                        )
+                    )
+                capture("onboarding-material-${mode.suffix}")
+            }
+        } finally {
+            closeScenario()
+            scenario = null
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("cmd uimode night $night")
+        }
+    }
+
+    private data class MaterialCapture(
+        val suffix: String,
+        val dynamic: Boolean,
+        val night: String,
+        val scale: Float,
+    )
+
+    @Test
+    fun capturesPublicPermissionRationaleInLightDarkAndLargeText() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        val heading = "Your health data stays on this device"
+        try {
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false).commit()
+            for (mode in
+                listOf(
+                    MaterialCapture("light", false, "no", 1f),
+                    MaterialCapture("dark", false, "yes", 1f),
+                    MaterialCapture("large-font", false, "no", 2f),
+                )) {
+                shell("cmd uimode night ${mode.night}")
+                shell("settings put system font_scale ${mode.scale}")
+                val native =
+                    ActivityScenario.launch(
+                        org.racedaydreams.health.HealthPermissionRationaleActivity::class.java
+                    )
+                try {
+                    compose.waitUntil(20000) {
+                        var ready = false
+                        native.onActivity { activity ->
+                            val dark =
+                                activity.resources.configuration.uiMode and
+                                    android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+                                    android.content.res.Configuration.UI_MODE_NIGHT_YES
+                            val bars =
+                                androidx.core.view.WindowCompat.getInsetsController(
+                                    activity.window,
+                                    activity.window.decorView,
+                                )
+                            ready =
+                                activity.window.decorView.hasWindowFocus() &&
+                                    dark == (mode.night == "yes") &&
+                                    activity.resources.configuration.fontScale >=
+                                        mode.scale - .01f &&
+                                    bars.isAppearanceLightStatusBars == !dark &&
+                                    bars.isAppearanceLightNavigationBars == !dark
+                        }
+                        ready
+                    }
+                    // A native Activity must be checked through its real View hierarchy.
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(heading)
+                        )
+                        .perform(androidx.test.espresso.action.ViewActions.scrollTo())
+                        .check(
+                            androidx.test.espresso.assertion.ViewAssertions.matches(
+                                androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+                            )
+                        )
+                    native.onActivity { activity ->
+                        val root =
+                            activity
+                                .findViewById<android.view.ViewGroup>(android.R.id.content)
+                                .getChildAt(0)
+                        val surface =
+                            (root.background as android.graphics.drawable.ColorDrawable).color
+                        if (android.os.Build.VERSION.SDK_INT < 35) {
+                            Assert.assertEquals(
+                                "Native navigation background must match its page",
+                                surface,
+                                activity.window.navigationBarColor,
+                            )
+                            Assert.assertEquals(
+                                "Native status background must match its page",
+                                surface,
+                                activity.window.statusBarColor,
+                            )
+                        }
+                    }
+                    captureNativePermission("permission-rationale-${mode.suffix}")
+                    val close =
+                        androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText("Close")
+                        )
+                    close
+                        .perform(androidx.test.espresso.action.ViewActions.scrollTo())
+                        .check(
+                            androidx.test.espresso.assertion.ViewAssertions.matches(
+                                androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed()
+                            )
+                        )
+                        .check { view, missing ->
+                            if (missing != null) throw missing
+                            val button = checkNotNull(view)
+                            val visible = android.graphics.Rect()
+                            Assert.assertTrue(button.getGlobalVisibleRect(visible))
+                            Assert.assertEquals(button.height, visible.height())
+                            Assert.assertEquals(button.width, visible.width())
+                            android.util.Log.i(
+                                "RddGate",
+                                "NATIVE_PERMISSION_CLOSE ${mode.suffix} full=$visible button=${button.width}x${button.height}",
+                            )
+                        }
+                    if (mode.scale == 2f)
+                        captureNativePermission("permission-rationale-actions-large-font")
+                    close.perform(androidx.test.espresso.action.ViewActions.click())
+                    compose.waitUntil(20000) { native.state == Lifecycle.State.DESTROYED }
+                } finally {
+                    native.close()
+                }
+            }
+        } finally {
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("cmd uimode night $night")
+        }
+    }
+
+    private fun captureNativePermission(name: String) {
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        automation.waitForIdle(200, 20000)
+        val bitmap = automation.takeScreenshot()
+        Assert.assertNotNull(bitmap)
+        saveCapture(name, bitmap)
+    }
+
+    @Test
+    fun capturesWideWindowNavigationAndBoundedContent() {
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalWidth = context.resources.configuration.screenWidthDp
+        val size = shell("wm size")
+        val originalOverride =
+            Regex("Override size: ([0-9]+x[0-9]+)").find(size)?.groupValues?.get(1)
+        try {
+            shell("wm size 1400x1800")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            awaitMaterialWideWindow()
+            compose.onNodeWithText("Calendar").assertIsDisplayed()
+            capture("home-material-wide")
+            click("Plan")
+            await("This week")
+            capture("plan-material-wide")
+            closeScenario()
+            scenario = null
+            shell("settings put system font_scale 2.0")
+            shell("wm size 1400x720")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            awaitMaterialWideWindow(minimumFontScale = 1.99f)
+            // Every destination remains reachable when enlarged labels exceed the rail viewport.
+            compose.onNodeWithText("Strength").performScrollTo().assertIsDisplayed().performClick()
+            await("Log workout")
+            compose.onNodeWithText("Home").performScrollTo().performClick()
+            awaitHomeReady(false)
+            capture("home-material-wide-large-font")
+            compose.onNodeWithText("Plan").performScrollTo().performClick()
+            await("This week")
+            capture("plan-material-wide-large-font")
+        } finally {
+            closeScenario()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("wm size ${originalOverride ?: "reset"}")
+            compose.waitUntil(20000) {
+                context.resources.configuration.screenWidthDp == originalWidth
+            }
+        }
+    }
+
+    private data class MaterialWindowSnapshot(
+        val widthDp: Int,
+        val heightDp: Int,
+        val fontScale: Float,
+        val density: Float,
+        val decorWidth: Int,
+        val decorHeight: Int,
+        val dark: Boolean,
+        val lightStatusBarAppearance: Boolean,
+        val lightNavigationBarAppearance: Boolean,
+        val focused: Boolean,
+        val navigationInsets: String,
+        val legacyVisibility: Int,
+        val windowFlags: Int,
+        val imeVisible: Boolean?,
+        val navigationContrastEnforced: Boolean?,
+    ) {
+        val decorWidthDp: Float
+            get() = if (density.isFinite() && density > 0f) decorWidth / density else 0f
+    }
+
+    private fun actualMaterialWindow(): MaterialWindowSnapshot? {
+        var snapshot: MaterialWindowSnapshot? = null
+        scenario?.onActivity { activity ->
+            val configuration = activity.resources.configuration
+            val decor = activity.window.decorView
+            val bars = androidx.core.view.WindowCompat.getInsetsController(activity.window, decor)
+            val insets = androidx.core.view.ViewCompat.getRootWindowInsets(decor)
+            val navigation =
+                insets?.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())
+            snapshot =
+                MaterialWindowSnapshot(
+                    configuration.screenWidthDp,
+                    configuration.screenHeightDp,
+                    configuration.fontScale,
+                    activity.resources.displayMetrics.density,
+                    decor.width,
+                    decor.height,
+                    configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES,
+                    bars.isAppearanceLightStatusBars,
+                    bars.isAppearanceLightNavigationBars,
+                    decor.hasWindowFocus(),
+                    navigation.toString(),
+                    decor.systemUiVisibility,
+                    activity.window.attributes.flags,
+                    insets?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()),
+                    if (android.os.Build.VERSION.SDK_INT >= 29)
+                        activity.window.isNavigationBarContrastEnforced
+                    else null,
+                )
+        }
+        return snapshot
+    }
+
+    private fun awaitMaterialSystemBars(dark: Boolean, point: String = "home") {
+        var last: MaterialWindowSnapshot? = null
+        try {
+            compose.waitUntil(20000) {
+                last = actualMaterialWindow()
+                last?.let {
+                    it.dark == dark &&
+                        it.focused &&
+                        it.navigationContrastEnforced != true &&
+                        it.lightStatusBarAppearance == !dark &&
+                        it.lightNavigationBarAppearance == !dark
+                } == true
+            }
+            android.util.Log.i("RddGate", "MATERIAL_SYSTEM_BARS_READY $point $last")
+        } catch (failure: Throwable) {
+            android.util.Log.i(
+                "RddGate",
+                "MATERIAL_SYSTEM_BARS_FAILURE $point expectedDark=$dark actual=$last",
+            )
+            throw failure
+        }
+    }
+
+    private fun awaitMaterialWideWindow(minimumFontScale: Float? = null) {
+        var last: MaterialWindowSnapshot? = null
+        try {
+            compose.waitUntil(20000) {
+                last = actualMaterialWindow()
+                last?.let { window ->
+                    window.widthDp >= 840 &&
+                        window.heightDp >= 480 &&
+                        window.decorWidthDp >= 840f &&
+                        window.decorHeight > 0 &&
+                        (minimumFontScale == null || window.fontScale >= minimumFontScale)
+                } == true
+            }
+            android.util.Log.i("RddGate", "MATERIAL_WINDOW_READY $last")
+        } catch (failure: Throwable) {
+            // Production uses this Activity's LocalConfiguration, not the application context.
+            // Keep the original failure and expose public window/configuration values only.
+            val app = context.resources.configuration
+            android.util.Log.i(
+                "RddGate",
+                "MATERIAL_WINDOW_FAILURE expectedWidthDp>=840 expectedHeightDp>=480 " +
+                    "minimumFontScale=$minimumFontScale actual=$last " +
+                    "app=${app.screenWidthDp}x${app.screenHeightDp} font=${app.fontScale}",
+            )
+            runCatching {
+                android.util.Log.i(
+                    "RddGate",
+                    "MATERIAL_WINDOW_DISPLAY size=${shell("wm size").replace('\n', ' ').take(180)} " +
+                        "density=${shell("wm density").replace('\n', ' ').take(180)}",
+                )
+            }
+            throw failure
+        }
     }
 
     private fun awaitGymReady(predicate: (GymNowState) -> Boolean = { true }) {
@@ -2621,7 +3169,7 @@ class CoachingScreenshotTest {
     private fun pauseGymForRelaunch() {
         compose.onNodeWithText("Pause workout").performScrollTo().performClick()
         awaitGymReady { it.view?.accepted()?.execution()?.status() == GymExecution.Status.PAUSED }
-        scenario?.close()
+        closeScenario()
         scenario = null
     }
 
@@ -2885,6 +3433,7 @@ class CoachingScreenshotTest {
         val semantics =
             if (
                 name == "gym-equipment-alternatives" ||
+                    name.startsWith("live-material-finish-") ||
                     name.startsWith("storage-confirmation") ||
                     name.startsWith("strength-programme-alternatives") ||
                     name.startsWith("strength-programme-progression") ||
@@ -2906,9 +3455,20 @@ class CoachingScreenshotTest {
         // frame reach SurfaceFlinger before capturing the actual Android screen.
         compose.waitForIdle()
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-        android.os.SystemClock.sleep(200)
-        val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        if (name.contains("-material-") && !name.startsWith("live-material-finish-")) {
+            val window = checkNotNull(actualMaterialWindow())
+            awaitMaterialSystemBars(window.dark, name)
+        }
+        // The app looper is only one window. Await the real system-window event stream too,
+        // rather than assuming a fixed delay means SystemUI finished a configuration update.
+        automation.waitForIdle(200, 20000)
+        val bitmap = automation.takeScreenshot()
         Assert.assertNotNull(bitmap)
+        saveCapture(name, bitmap)
+    }
+
+    private fun saveCapture(name: String, bitmap: Bitmap) {
         val dir = File(context.getExternalFilesDir(null), "screenshots")
         dir.mkdirs()
         File(dir, "$name.png").outputStream().use {

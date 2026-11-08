@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -161,10 +162,72 @@ private fun RunningTodayScreen(
                 }
             }
     }
-    SemanticCard(Tile.Planned) {
+    state.profile
+        ?.raceGoal()
+        ?.takeIf { it.raceDate() != null }
+        ?.let { goal ->
+            SemanticCard(Tile.Race) {
+                Text(
+                    goal.raceName().ifBlank { goal.distance().label() },
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                Text(
+                    "${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),goal.raceDate())} days · ${friendlyDate(goal.raceDate())}"
+                )
+                TextButton(onClick = race) { Text("Race preparation") }
+            }
+        }
+    state.profile
+        ?.raceGoal()
+        ?.takeIf { it.raceDate() == null }
+        ?.let { goal ->
+            SemanticCard(Tile.Race) {
+                Text("Current goal", style = MaterialTheme.typography.titleMedium)
+                Text(goal.distance().label(), style = MaterialTheme.typography.titleLarge)
+                Text(goal.mode().label())
+            }
+        }
+    val upcoming =
+        state.currentPlan
+            ?.plan()
+            ?.workouts()
+            .orEmpty()
+            .filter { it.date().isAfter(java.time.LocalDate.now()) }
+            .sortedBy { it.date() }
+            .take(2)
+    if (upcoming.isNotEmpty()) {
+        CoachHeading("Coming up")
+        upcoming.forEach { next ->
+            Card(
+                onClick = { workout(next.id()) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
+            ) {
+                ListItem(
+                    headlineContent = {
+                        Text(
+                            workoutName(next.category()),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    },
+                    supportingContent = { Text(shortDate(next.date())) },
+                    colors =
+                        ListItemDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
+                    trailingContent = { Text("›", modifier = Modifier.clearAndSetSemantics {}) },
+                )
+            }
+        }
+    }
+    CoachCard {
         Text("Run now", style = MaterialTheme.typography.titleLarge)
         Text("Not on the plan? Record a spontaneous run anytime.")
-        CoachButton("Run now", record)
+        OutlinedButton(record, Modifier.fillMaxWidth().heightIn(min = 56.dp)) { Text("Run now") }
     }
     val summary = org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
     SemanticCard(Tile.Progress) {
@@ -189,21 +252,6 @@ private fun RunningTodayScreen(
             )
             TextButton(onClick = weekly) { Text("Review choices") }
         }
-    state.profile
-        ?.raceGoal()
-        ?.takeIf { it.raceDate() != null }
-        ?.let { goal ->
-            SemanticCard(Tile.Race) {
-                Text(
-                    goal.raceName().ifBlank { goal.distance().label() },
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Text(
-                    "${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),goal.raceDate())} days · ${friendlyDate(goal.raceDate())}"
-                )
-                TextButton(onClick = race) { Text("Race preparation") }
-            }
-        }
     if (
         state.profile?.preferences()?.strategy() ==
             org.racedaydreams.domain.TrainingStrategy.PERFORMANCE && !state.performanceEligible
@@ -213,16 +261,27 @@ private fun RunningTodayScreen(
                 "Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed."
             )
         }
-    state.profile
-        ?.raceGoal()
-        ?.takeIf { it.raceDate() == null }
-        ?.let { goal ->
-            SemanticCard(Tile.Race) {
-                Text("Current goal", style = MaterialTheme.typography.titleMedium)
-                Text(goal.distance().label(), style = MaterialTheme.typography.titleLarge)
-                Text(goal.mode().label())
-            }
+    if (state.activities.isNotEmpty()) {
+        CoachHeading("Recent progress")
+        CoachCard {
+            state.activities
+                .maxByOrNull { it.start() }
+                ?.let { recent ->
+                    Text("Most recent run", style = MaterialTheme.typography.titleMedium)
+                    Text(displayActivityDate(recent), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        recent.distanceMetres()?.let { formatDistance(it, state) }
+                            ?: "Distance unavailable",
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    TextButton(onClick = { quick("activity/${Uri.encode(recent.id())}") }) {
+                        Text("View recorded run")
+                    }
+                }
+            TextButton(onClick = { quick("progress/trends") }) { Text("Training trends") }
+            TextButton(onClick = { quick("achievements") }) { Text("Recorded milestones") }
         }
+    }
     CoachHeading("Quick actions")
     CoachButton("Log strength") { quick("strength/log") }
     OutlinedButton(

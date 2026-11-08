@@ -13,11 +13,18 @@ import java.time.ZoneOffset
 
 @Composable
 fun CoachPage(content: @Composable ColumnScope.() -> Unit) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        content = content,
-    )
+    Box(Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.TopCenter) {
+        Column(
+            Modifier.fillMaxHeight()
+                .widthIn(max = 840.dp)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            content = content,
+        )
+    }
 }
 
 @Composable
@@ -31,14 +38,19 @@ fun CoachHeading(text: String) {
 
 @Composable
 fun CoachButton(text: String, onClick: () -> Unit) {
-    Button(onClick, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(text) }
+    Button(onClick, Modifier.fillMaxWidth().heightIn(min = 56.dp)) { Text(text) }
 }
 
 @Composable
 fun CoachCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(Modifier.fillMaxWidth()) {
+    Card(
+        Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors =
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
         Column(
-            Modifier.padding(16.dp),
+            Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             content = content,
         )

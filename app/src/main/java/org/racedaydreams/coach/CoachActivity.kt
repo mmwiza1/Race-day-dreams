@@ -8,13 +8,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -45,26 +45,7 @@ class CoachActivity : ComponentActivity() {
         enableEdgeToEdge()
         model = ViewModelProvider(this)[CoachViewModel::class.java]
         setContent {
-            val dark = isSystemInDarkTheme()
-            MaterialTheme(
-                colorScheme =
-                    if (dark)
-                        darkColorScheme(
-                            primary = Color(0xFF9ACAFF),
-                            background = Color(0xFF101923),
-                            surface = Color(0xFF15202C),
-                            onSurface = Color(0xFFE8F0FA),
-                            onBackground = Color(0xFFE8F0FA),
-                        )
-                    else
-                        lightColorScheme(
-                            primary = Color(0xFF086AD8),
-                            background = Color(0xFFF6F9FD),
-                            surface = Color(0xFFFCFDFF),
-                            onSurface = Color(0xFF14243B),
-                            onBackground = Color(0xFF14243B),
-                        )
-            ) {
+            org.racedaydreams.coach.theme.RaceDayTheme {
                 Surface(Modifier.fillMaxSize()) {
                     CoachApp(model, { gymModel }, { programmeModel })
                 }
@@ -193,143 +174,164 @@ private fun CoachApp(
             "progress" to "Progress",
             "strength" to "Strength",
         )
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val useRail = configuration.screenWidthDp >= 840 && configuration.screenHeightDp >= 480
+    val showNavigation = route in (tabs.map { it.first } + "strength?date={date}")
+    val selectTab: (String) -> Unit = { destination ->
+        nav.navigate(destination) {
+            popUpTo("home")
+            launchSingleTop = true
+        }
+    }
+    Row(Modifier.fillMaxSize()) {
+        if (useRail && showNavigation) {
+            NavigationRail(
+                Modifier.fillMaxHeight()
+                    .width(
                         if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f)
-                            "RDD"
-                        else "Race Day Dreams",
-                        maxLines = 1,
-                        modifier = Modifier.semantics { contentDescription = "Race Day Dreams" },
+                            144.dp
+                        else 80.dp
                     )
-                },
-                navigationIcon = {
-                    if (
-                        route != null &&
-                            route !in tabs.map { it.first } &&
-                            route != "strength?date={date}" &&
-                            route != "goals"
-                    ) {
-                        TextButton(
-                            onClick = {
-                                if (route == "gym-workout") {
-                                    model.refresh()
-                                    if (!nav.popBackStack("gym-now", false)) nav.navigate("gym-now")
-                                } else if (!nav.popBackStack()) nav.navigate("home")
-                            }
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState()),
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                tabs.forEach { (destination, label) ->
+                    NavigationRailItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        selected =
+                            route == destination ||
+                                destination == "strength" && route?.startsWith("strength") == true,
+                        onClick = { selectTab(destination) },
+                        icon = { DestinationIcon(destination) },
+                        label = { Text(label) },
+                    )
+                }
+            }
+        }
+        Scaffold(
+            modifier = Modifier.weight(1f),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f)
+                                "RDD"
+                            else "Race Day Dreams",
+                            maxLines = 1,
+                            modifier = Modifier.semantics { contentDescription = "Race Day Dreams" },
+                        )
+                    },
+                    navigationIcon = {
+                        if (
+                            route != null &&
+                                route !in tabs.map { it.first } &&
+                                route != "strength?date={date}" &&
+                                route != "goals"
                         ) {
-                            Text("Back")
+                            TextButton(
+                                onClick = {
+                                    if (route == "gym-workout") {
+                                        model.refresh()
+                                        if (!nav.popBackStack("gym-now", false))
+                                            nav.navigate("gym-now")
+                                    } else if (!nav.popBackStack()) nav.navigate("home")
+                                }
+                            ) {
+                                Text("Back")
+                            }
+                        }
+                    },
+                    actions = {
+                        TextButton(onClick = { nav.navigate("settings") }) { Text("Settings") }
+                    },
+                )
+            },
+            bottomBar = {
+                if (!useRail && showNavigation) {
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainerLow) {
+                        tabs.forEach { (destination, label) ->
+                            val largeFont =
+                                androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f
+                            NavigationBarItem(
+                                modifier =
+                                    if (largeFont) Modifier.semantics { contentDescription = label }
+                                    else Modifier,
+                                selected =
+                                    route == destination ||
+                                        destination == "strength" &&
+                                            route?.startsWith("strength") == true,
+                                icon = { DestinationIcon(destination) },
+                                label =
+                                    if (largeFont) null
+                                    else ({ Text(label, maxLines = 1, softWrap = false) }),
+                                onClick = { selectTab(destination) },
+                            )
                         }
                     }
-                },
-                actions = {
-                    TextButton(onClick = { nav.navigate("settings") }) { Text("⚙ Settings") }
-                },
-            )
-        },
-        bottomBar = {
-            if (route in (tabs.map { it.first } + "strength?date={date}")) {
-                NavigationBar {
-                    tabs.forEach { (destination, label) ->
-                        val largeFont =
-                            androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f
-                        val navLabel: (@Composable () -> Unit)? =
-                            if (largeFont) null
-                            else ({ Text(label, maxLines = 1, softWrap = false) })
-                        NavigationBarItem(
-                            modifier =
-                                if (largeFont) Modifier.semantics { contentDescription = label }
-                                else Modifier,
-                            selected =
-                                route == destination ||
-                                    destination == "strength" &&
-                                        route?.startsWith("strength") == true,
-                            icon = {
-                                Icon(
-                                    androidx.compose.ui.res.painterResource(
-                                        when (destination) {
-                                            "home" -> org.racedaydreams.R.drawable.ic_nav_home
-                                            "plan" -> org.racedaydreams.R.drawable.ic_nav_plan
-                                            "calendar" ->
-                                                org.racedaydreams.R.drawable.ic_nav_calendar
-                                            "progress" ->
-                                                org.racedaydreams.R.drawable.ic_nav_progress
-                                            else -> org.racedaydreams.R.drawable.ic_nav_strength
-                                        }
-                                    ),
-                                    contentDescription = null,
-                                )
-                            },
-                            label = navLabel,
-                            onClick = {
-                                nav.navigate(destination) {
-                                    popUpTo("home")
-                                    launchSingleTop = true
-                                }
-                            },
-                        )
+                }
+            },
+            snackbarHost = { SnackbarHost(snackbars) },
+        ) { padding ->
+            Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
+                if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+                if (state.error != null && state.profile == null && state.activities.isEmpty()) {
+                    Text(state.error!!, Modifier.padding(16.dp))
+                    Row(Modifier.padding(horizontal = 16.dp)) {
+                        TextButton(onClick = { model.refresh() }) { Text("Try again") }
+                        TextButton(onClick = { resetDialog = true }) { Text("Delete local data") }
                     }
                 }
-            }
-        },
-        snackbarHost = { SnackbarHost(snackbars) },
-    ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
-            if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            if (state.error != null && state.profile == null && state.activities.isEmpty()) {
-                Text(state.error!!, Modifier.padding(16.dp))
-                Row(Modifier.padding(horizontal = 16.dp)) {
-                    TextButton(onClick = { model.refresh() }) { Text("Try again") }
-                    TextButton(onClick = { resetDialog = true }) { Text("Delete local data") }
+                NavHost(
+                    navController = nav,
+                    startDestination = startDestination,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    homeGraph({ state }, model, nav)
+                    runningGraph(
+                        { state },
+                        model,
+                        nav,
+                        { runSnapshot },
+                        startSpontaneous = { snapshot ->
+                            runSnapshot = snapshot
+                            nav.navigate("spontaneous-run")
+                        },
+                        connect = connect,
+                        providerUpdate = providerUpdate,
+                    )
+                    strengthGraph({ state }, model, nav, gymModel, programmeModel)
+                    progressGraph(
+                        { state },
+                        model,
+                        nav,
+                        requestBodyPermissions = {
+                            permissions.launch(HealthConnectGateway.BODY_PERMISSIONS)
+                        },
+                    )
+                    settingsGraph(
+                        { state },
+                        model,
+                        nav,
+                        connect,
+                        providerUpdate,
+                        providerSettings,
+                        exportBackup = { export.launch("race-day-dreams-backup.json") },
+                        restoreBackup = {
+                            restore.launch(
+                                arrayOf(
+                                    "application/json",
+                                    "text/plain",
+                                    "application/octet-stream",
+                                )
+                            )
+                        },
+                        requestReset = { resetDialog = true },
+                        requestWeightPermission = {
+                            permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION))
+                        },
+                    )
                 }
-            }
-            NavHost(
-                navController = nav,
-                startDestination = startDestination,
-                modifier = Modifier.weight(1f),
-            ) {
-                homeGraph({ state }, model, nav)
-                runningGraph(
-                    { state },
-                    model,
-                    nav,
-                    { runSnapshot },
-                    startSpontaneous = { snapshot ->
-                        runSnapshot = snapshot
-                        nav.navigate("spontaneous-run")
-                    },
-                    connect = connect,
-                    providerUpdate = providerUpdate,
-                )
-                strengthGraph({ state }, model, nav, gymModel, programmeModel)
-                progressGraph(
-                    { state },
-                    model,
-                    nav,
-                    requestBodyPermissions = {
-                        permissions.launch(HealthConnectGateway.BODY_PERMISSIONS)
-                    },
-                )
-                settingsGraph(
-                    { state },
-                    model,
-                    nav,
-                    connect,
-                    providerUpdate,
-                    providerSettings,
-                    exportBackup = { export.launch("race-day-dreams-backup.json") },
-                    restoreBackup = {
-                        restore.launch(
-                            arrayOf("application/json", "text/plain", "application/octet-stream")
-                        )
-                    },
-                    requestReset = { resetDialog = true },
-                    requestWeightPermission = {
-                        permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION))
-                    },
-                )
             }
         }
     }
@@ -376,4 +378,20 @@ private fun CoachApp(
             },
             dismissButton = { TextButton(onClick = { restoreUri = null }) { Text("Cancel") } },
         )
+}
+
+@Composable
+private fun DestinationIcon(destination: String) {
+    Icon(
+        androidx.compose.ui.res.painterResource(
+            when (destination) {
+                "home" -> org.racedaydreams.R.drawable.ic_nav_home
+                "plan" -> org.racedaydreams.R.drawable.ic_nav_plan
+                "calendar" -> org.racedaydreams.R.drawable.ic_nav_calendar
+                "progress" -> org.racedaydreams.R.drawable.ic_nav_progress
+                else -> org.racedaydreams.R.drawable.ic_nav_strength
+            }
+        ),
+        contentDescription = null,
+    )
 }

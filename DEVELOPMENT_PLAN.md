@@ -1,17 +1,38 @@
-## Active 0.11.0-test1 — Gym, Health & Recovery Intelligence
+# Active UI release — 0.12.0-test1
 
-PR18, feature/0.11-gym-health-recovery-intelligence, remains draft until the complete software
-and visual gate passes. Owner authorises automatic squash merge only after that gate, followed
-by actual main/post-merge CI and rolling development APK/checksum verification. No stable tag.
+Material You / Material 3 Expressive modernisation only. Shared dynamic/branded themes,
+tonal surfaces, typography, adaptive navigation, running Home/live hierarchy and retained
+native form/privacy-page presentation are implemented on feature/material3-expressive-ui/PR19.
+Source `5d28143` passed full workflow42518618237: each API28/35/36 passed nine guard methods,
+517full instrumentation cases and383authentic captures. Domain700,108checks/47suites,
+75schema tests, build/lint/formatting and source/artwork/guidance gates passed. Canonical
+bot `e0bb250` carries the fresh gallery, preserving all prior required captures.
 
-All six implementation milestones are now present: optional gym timer/warm-up/superset tools;
-recorded strength trends/records/milestones; reviewed recovery/hybrid proposals; optional body/
-protein guidance; acknowledged transactional raw-detail retention/storage/compatible restore;
-and220fully illustrated canonical exercises plus three genuine six-month athlete simulations.
-Sourceee760bf passed all508tests/359captures EACH API28/35/36 and actual-source visual/artifact
-acceptance. Final metadata-head CI, authorised merge and main publication remain. CONTINUE_CODEX.md and
-VERIFICATION.md record the exact observed boundary; no software or hardware pass is assumed.
-No0.12work is started. The following sections describe historical releases, not active backlogs.
+Raw-artifact/source matching, actual API35/36 visual review and candidate APK checks passed,
+with the documented forced short-wide platform-strip limitation. Exact delivery-head checks
+remain; observed results and hashes are recorded in VERIFICATION.md.
+Then follow the authorised ready/merge/main-CI/rolling-publication sequence. A successful
+branch matrix alone is not a published-main result. All real GalaxyS24/Pixel/Xiaomi and
+human TalkBack checks remain unperformed.
+
+Version0.12.0-test1/code16 preserves schema19/rootJSON13/raw3/complete1, engine behaviour,
+retention, history and all existing features. No dependency, permission, launcher-icon or
+data-format change is required. Existing official Material3 components provide the UI;
+new experimental Expressive motion/loading APIs were deliberately not introduced. No
+deferred intelligence feature or engine rewrite belongs to this scope;0.11is merged.
+Historical plans follow and do not reopen completed release work. See CONTINUE_CODEX.md.
+
+## Completed 0.11.0-test1 — Gym, Health & Recovery Intelligence
+
+PR18 is merged at `f96733a23a44b3d86cdf9a31eb19d95820142e86`. The subsequent main
+checkpoint `e6037e1b919eecdbe1d720fd8c3a0c88534cbbb8` passed workflow42205982831 and
+published the rolling0.11 development APK. Do not repeat its completed merge or milestones.
+
+The preserved implementation includes optional gym timer/warm-up/superset tools; recorded
+strength trends/records/milestones; reviewed recovery/hybrid proposals; optional body/protein
+guidance; acknowledged transactional raw-detail retention/storage/compatible restore;220
+illustrated canonical exercises; and three deterministic six-month athlete simulations.
+Hardware acceptance remains separate and unperformed. Earlier release plans follow as history.
 
 # Completed0.10 — Strength Programming 2.0
 
