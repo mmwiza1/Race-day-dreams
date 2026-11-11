@@ -1,8 +1,10 @@
 # Focused running refinement — 0.12.1-test1 acceptance
 
-The reviewed52774f61 checkpoint passed533full tests and421captures on EACH API28/35/36.
-A visual marker correction requires a fresh matrix/canonical review. Do not treat a branch
-artifact as a published-main build. Preserve all0.12 hardware checks below.
+Sourcefd3f1af passed533full tests and421captures on EACH API28/35/36. Canonical1743a7b
+matches the reviewed API35rawartifact byte-for-byte. All38newviews and six retained views
+were opened; light/dark/200% loop markers are visibly corrected. Exact delivery-head/mainCI
+and rolling download checks are tracked separately. Do not treat a branch artifact as a
+published-main build. Preserve all0.12 hardware checks below.
 
 Additional owner checks (all UNPERFORMED): safely alternate Statistics/Route while a real
 run records; verify locked-screen recording continues; inspect long elapsed times, large

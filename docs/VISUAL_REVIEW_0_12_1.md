@@ -1,51 +1,59 @@
 # Running refinement visual review — 0.12.1-test1
 
-## Reviewed source and reference comparison
+**Visual/source gate PASS**,11November2026, source
+`fd3f1afbc046e0706e911484331f718d8677ba43`.
+All38new API35 frames were opened in labelled contact sheets; light/dark/200% route frames
+were additionally opened at native size. Six retained views were reopened: device-lightHome,
+Progress, History, monthCalendar, branded200%Home and darkStrengthHome.
 
-On 11 November, all **38** new API35 captures from source
-`52774f61e32d3b0fe08c6bcb1d60321b864e56ea` were opened in labelled contact sheets, with
-native-size inspection of dark live statistics and the narrow 200% long clock. Six retained
-views were also opened: device-light Home, Progress, History, month Calendar, branded
-200% Home and dark Strength Home. These are genuine production screens with test-only data.
+## Comparison with the owner's references
 
-Compared directly with the owner's three inline references:
+The three original inline references remain separate from actual app captures. Their targets
+are Expressive prominent statistics/rounded selected charts, immersive time-led live Stats/Map,
+and ranked recorded results/trends/HR. Their branding, icons, navigation and colours are not copied.
 
-- Live statistics lead with elapsed time, then real workout progress and legible distance,
-  pace and optional HR. Paused state explicitly changes the action to Resume. Fixed Finish
-  remains separate and confirmation is retained. Dark surfaces and semantic colours follow
-  the existing theme rather than copying the reference's pink.
-- Route mode prioritises the saved outline and keeps safe recording controls accessible.
-  Missing sections remain blank; the view explicitly says it has no street map. It does
-  not invent the reference's streets or require remote tiles.
-- Trends use rounded selected bars, labelled axes, visible values and date ranges. Pace
-  uses a labelled line; recorded zero, missing values and no-run weeks are distinguished.
-  Ranked results show times, pace, dates and source. HR uses recorded per-run summaries;
-  unsupported personal zones are honestly unavailable rather than fabricated.
-- At 200%, cards stack and scroll, long times remain intact, selected splits and the third
-  ranked result are reachable, and HR chart labels remain readable. Partial content at a
-  viewport edge is scrollable, not a clipped fixed-height field. Navigation retains the
-  Home, Plan, Calendar, Progress and Strength icons/order; source is unchanged.
+- Live Statistics leads with elapsed time, then real workout progress and readable distance,
+  pace and optional HR. Paused state clearly changes the action to Resume. Fixed Finish is
+  separate and retains confirmation. Dark surfaces and semantic dynamic/branded colours are
+  cohesive with the existing app; the reference's pink is not copied.
+- Route mode emphasises genuine saved geometry, with blank GPS gaps and distinct start/latest
+  shapes. It honestly labels the offline outline as having no street map. No streets, tiles or
+  coordinates are fabricated to imitate the reference. Recording controls remain accessible.
+- Trends use rounded selected bars, axes, dates, visible values and week selection. Pace has a
+  labelled line. Recorded zero, unknown data and no-run weeks remain distinct. Ranked records
+  expose times, pace, dates and source; recorded actuals are not estimates. HR shows saved
+  per-run summaries and missing-data states, without invented personal zones or zone pace.
+- At200%, cards stack and scroll naturally. The320dp long10:28:14 clock remains intact and
+  controls remain within the viewport. Third-ranked result, HR chart tail and selected split
+  have meaningful captures. Content at a viewport edge is scrollable rather than truncated
+  inside a fixed field. No blocking horizontal overflow or inaccessible fixed action was found.
+- Retained Home/Plan/Calendar/Progress/Strength icons and ordering match the existing shell.
+  CoachActivity/navigation source is byte-identical to main. No unrelated navigation is copied.
 
-**Issue found and corrected:** at coincident start/latest coordinates on the loop fixture,
-  the latest ring hid the start square. The drawing now uses a larger outlined square drawn
-  after the latest ring, without displacing coordinates or changing stored data. New-source
-  runtime captures must verify this correction before final visual acceptance.
+## Found issue and verified correction
 
-## Capture and artifact integrity
+The prior52774f61 loop capture exposed a real presentation issue: the latest-point ring hid
+  the start square when coordinates coincided. The start outline now surrounds and is drawn
+  after the latest ring. Native corrected light/dark/200% frames show both shapes clearly,
+  with no coordinate displacement, stored-data change or recorder command.
+No further blocking layout, contrast or missing-primary-action issue was found in the reviewed set.
 
-[Workflow42536379762](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42536379762)
-passed API28/35/36: each **533** full instrumentation tests and **421** authentic frames.
-Canonical bot `9ecc396` was safely fast-forwarded. All421 committed PNGs match the downloaded
-API35 artifact13639819995 byte-for-byte; strict PNG validation passes. ZIP55,892,858bytes,
-SHA256 `ef9bda72487a245e1cd5719f84bc3a025eec0aa1788e8a8779a2934ea2cacce6`.
-Fingerprint `fd96516246f0867287503ba96c2b8654bc8e69693788cc39c17cf6690ff122f8`.
-This is the reviewed pre-marker source; the small correction requires a fresh full matrix,
-new canonical fingerprint and final route-image review. **Final acceptance remains pending.**
+## Capture integrity and coverage
 
-The reviewed names are every `live-refined-*`, `run-summary-refined*`, `run-splits-refined*`,
-`running-records-*`, `running-trends-*` and `running-heart-rate*` frame: 38 in total.
-References remain the owner's original inline images, separate from app captures.
+[Workflow43110530782](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43110530782)
+passed EACH API28/35/36:533full tests and421authentic frames. The API36 pre-test Launcher ANR
+failed closed; one investigated fresh-runner retry passed with unchanged source/assertions.
+Canonical bot1743a7b carries421PNGs matching reviewed rawAPI35artifact13897288491 byte-for-byte.
+Strict PNG validation passes. ZIP56,027,725bytes, SHA256
+`4ec003cd83dcf13bd66c3c74dbb9b135ad48be91bb6d59e415eda7364c967f03`.
+Source fingerprint `b6b0545d473fda91f629ef3907f998724451f83b6c48002d03921173bcfd3e89`.
 
-Real GalaxyS24/Pixel/Xiaomi, humanTalkBack, realGPS/provider/locked-screen/audio/battery and
-rotation/system-navigation acceptance remain unperformed. The baseline synthetic short-wide
+Reviewed new names: every `live-refined-*`, `run-summary-refined*`, `run-splits-refined*`,
+`running-records-*`, `running-trends-*` and `running-heart-rate*` frame:38total. This includes
+normal/dark/200%, empty route/HR, paused, selected split, narrow clock/metrics and large-text tails.
+Source equality and a passing validator are integrity checks; the direct pixel/reference review
+above is the separate design gate. Exact delivery-head/mainCI/publication remain delivery checks.
+
+Real GalaxyS24/Pixel/Xiaomi, humanTalkBack, realGPS/provider/BLE/locked-screen/audio/battery and
+rotation/system-navigation acceptance remain unperformed. The existing synthetic short-wide
 blank platform navigation strip remains a documented physical/rotation acceptance limitation.

@@ -25,7 +25,7 @@ Material You design. Development/test build.
 
 ## Known limitations
 
-- Final route-marker capture verification and delivery checks remain in progress.
+- The live route is an offline outline of accepted saved GPS evidence, not street-map navigation.
 - Heart-rate zones require supported individual boundaries and qualified sample evidence. They are not inferred from a run average or copied from a design reference.
 - Galaxy S24, Pixel, Xiaomi, outdoor GPS and human TalkBack acceptance require hardware; none is claimed.
 
@@ -39,5 +39,5 @@ Existing navigation icons, labels, ordering, destinations, branding and launcher
 
 The reviewed patch checkpoint passed 533 full instrumentation tests and 421 authentic captures
 on each API28/35/36, plus domain, schema, backup, lint, formatting and guidance checks.
-A route-marker visual correction requires fresh source-bound verification before delivery.
+The loop-marker correction is source-bound and visually verified in light/dark/200% captures.
 Real-device acceptance remains unperformed. See VERIFICATION.md.

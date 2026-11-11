@@ -1,39 +1,66 @@
-# 0.12.1-test1 — verified matrix and visual correction
+# 0.12.1-test1 — verified software and visual source
 
-Source **52774f61e32d3b0fe08c6bcb1d60321b864e56ea** passed complete
-[workflow42536379762](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42536379762).
-All three completed Android logs were inspected: EACH API28/35/36 ran **533 full tests**,
-passed build/lint and strict **421 screenshot** validation. The nine preflight guard methods
-also run in the full suite and are not additional unique cases. Formatting/guidance and
-canonical publication succeeded; development publication correctly skipped on a PR.
+Source **fd3f1afbc046e0706e911484331f718d8677ba43** passed complete
+[workflow43110530782](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43110530782).
+Completed logs prove EACH API28/35/36 passed **533 full instrumentation tests** and strict
+**421 authentic screenshot** validation, build/lint and the original focus/guard checks.
+The nine guard methods also run in the full suite; they are not extra unique tests.
+Formatting, guidance and canonical publication succeeded. PR publication correctly skipped.
 
-Local gates: domain700,108/47 unique suites, schema75, release9, runner-helper13,
-capture-validator21, formatter14, pinnedformat120Kotlin/159Java and source/art/guidance pass.
-No test, API, assertion or timeout was weakened. The first matrix's new200% text-only
-navigation selector failure was fixed using the existing accessible label, without changing
-production navigation. All engine/domain/data/manifest and CoachActivity navigation sources
-remain unchanged from main. Schema19/rootJSON13/raw3/complete1 remain unchanged.
+| Gate | Observed result |
+| --- | --- |
+| Domain | **700,108 checks /47 unique suites**, including4,226 six-month athlete assertions |
+| Schema/migrations | **75**; old/current backup, rollback, history and retention instrumentation retained |
+| Formatting | **120 Kotlin /159 Java**,14 formatter-tool tests |
+| Other checks | **9 release-note,13 runner-helper,21 capture-validator,11 map-source** checks |
+| Guidance/artwork | **220 canonical /14 routine guides;223 exact guidance asset hashes**, existing Dream artwork checks |
+| Local full Gradle | **79 tasks /4m14s**, domain/check, debugAPK, instrumentation compilation and lint; zero lint errors |
 
-Canonical bot9ecc396 carries421 PNGs matching raw API35 artifact13639819995 byte-for-byte.
-ZIP55,892,858bytes; SHA256
-`ef9bda72487a245e1cd5719f84bc3a025eec0aa1788e8a8779a2934ea2cacce6`.
-Fingerprint `fd96516246f0867287503ba96c2b8654bc8e69693788cc39c17cf6690ff122f8`.
-API35 candidate artifact13640845250 ZIP29,767,509bytes/SHA256
-`4124742fdcb8cb3c9376d9e15c7bcc2c41a33b9d7df2460441d446f818a53580`;
-actual APK55,578,026bytes/SHA256
-`2690d459f7c5ef6903e0540b74866fabd4e1dc4d849e85d670c75a2cde2bf93a`.
-This is a branch candidate, not a published-main release.
+The initial API36 runner failed BEFORE app tests because Launcher ANR held platform focus
+(input dispatch timeout,22:23:45UTC). The guard correctly failed closed despite broadcast-idle.
+One investigated isolated fresh-runner retry, unchanged source/assertions, passed actual
+Settings/Launcher focus and the full533-case suite. API28/35 successful results were retained.
+This does not prove universal emulator reliability or physical-device acceptance. No test,
+assertion, API, capture requirement or timeout was weakened. An earlier52774f61 matrix also
+passed533/421 on each API after correcting only new200% accessible navigation selectors.
 
-All38new frames and six retained representative views were opened and compared with the
-owner's inline references. One visible issue required correction: coincident start/latest
-route markers obscured the start square. Its outline is now drawn outside/after the latest
-ring, preserving coordinates and all recorder behaviour. Its local fullGradle/domain/debug/
-instrumentationAPK/lint gate passed79tasks in4m14s (zero lint errors). A fresh matrix and canonical captures
-are required for that source before final visual acceptance. See docs/VISUAL_REVIEW_0_12_1.md.
+## Authentic screenshots and direct comparison
 
-Exact final-head checks, authorised merge, mainCI and matching publishedAPK verification remain
-pending. Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack, realGPS/provider/BLE/OEM/rotation/
-locked-screen/audio/battery acceptance remains UNPERFORMED. Earlier records follow as history.
+Canonical bot **1743a7b** was safely fast-forwarded, preserving local documentation.
+Source metadata names fd3f1af above; actual source fingerprint equals the recorded value:
+`b6b0545d473fda91f629ef3907f998724451f83b6c48002d03921173bcfd3e89`.
+All **421** canonical PNGs match raw API35 artifact **13897288491** byte-for-byte.
+ZIP **56,027,725bytes**, SHA256
+`4ec003cd83dcf13bd66c3c74dbb9b135ad48be91bb6d59e415eda7364c967f03`.
+
+All38new frames were opened again from this exact source, plus six retained representative
+Home/Progress/History/Calendar/200%Home/darkStrength views. Native light/dark/200% route views
+confirm both markers remain visible on a loop. The earlier hidden-start-square issue is fixed
+by drawing its outline outside/after the latest ring; coordinates and recording are unchanged.
+No further blocking clipping, overlap, contrast or control issue was observed. The owner's
+three inline references remain separate; no mockup is labelled an app capture. Detailed
+comparison and meaningful scroll/selection states are in docs/VISUAL_REVIEW_0_12_1.md.
+
+## Candidate APK and preserved contracts
+
+API35 artifact **13897906583** verified ZIP **29,767,677bytes**, SHA256
+`f28058c313372a8cf286e08383cffabf8003eac932dc09a74832d47c4072b4fb`.
+Actual APK **55,578,026bytes**, SHA256
+`126fecb62d8fcb898091b424b069186a0d411bac936d7008b256b3203325c737`.
+aapt confirms **0.12.1-test1 /code17 /minAPI28**, with no INTERNET permission.
+This verified branch candidate is not itself proof of published-main delivery.
+
+CoachActivity/navigation is byte-identical to main, SHA256
+`98d80b3c3194d441e4ba31b52293bd92d38326aa434f6d3383cc06af0ad899fa`.
+No domain, recording, persistence, HealthConnect, backup, retention, manifest, launcher-icon
+or runtime dependency change. Schema19/rootJSON13/raw3/complete1 remain unchanged.
+Exact final documentation-head checks, authorised merge, mainCI and matching rolling public
+APK/source/version/checksum are separate delivery gates tracked in CONTINUE_CODEX.md/PR20.
+
+All GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE/OEM/rotation/
+locked-screen/audio/battery checks remain **UNPERFORMED**. The existing synthetic short-wide
+blank platform navigation strip remains a documented physical/rotation limitation.
+Earlier named-source records below are historical, not unfinished patch work.
 
 # 0.12.0-test1 — merged-main and published-download verification
 

@@ -1,15 +1,19 @@
-# Focused running refinement — 421 authentic captures
+# Focused running refinement —421 verified authentic captures
 
-Source52774f61 passed workflow42536379762 on API28/35/36:533full tests and421frames each.
-Canonical9ecc396 was fast-forwarded safely. All421PNGbytes match verified API35 artifact
-13639819995; strict validation passes. They retain383baseline and add38focused views.
-All38newframes and six retainedviews were opened against the owner's separate inline
-references. See VISUAL_REVIEW_0_12_1.md and VERIFICATION.md for identities and findings.
+Current canonical1743a7b identifies sourcefd3f1afbc046e0706e911484331f718d8677ba43 and
+fingerprint `b6b0545d473fda91f629ef3907f998724451f83b6c48002d03921173bcfd3e89`.
+Workflow43110530782 passed533fulltests/421captures EACH API28/35/36, including one investigated
+API36 fresh-runner retry after a pre-test Launcher ANR. No assertions or guards were weakened.
 
-Review found one loop-route marker overlap; the drawing correction requires a fresh full
-matrix/canonical source and route-image inspection. Current PNGs are the reviewed pre-fix
-source, not proof that the new marker has passed. Exact-head fingerprint publication rules
-remain mandatory. Hardware and humanTalkBack checks remain unperformed.
+All421canonicalPNGs match downloaded rawAPI35artifact13897288491 byte-for-byte; strict PNG
+validation passes. The set retains383baseline+38refinement frames. All38newframes and six
+retained views were opened from this exact source against the separate owner references.
+The loop-marker overlap found in the prior source is corrected and visibly verified in light,
+dark and200%. See VISUAL_REVIEW_0_12_1.md/VERIFICATION.md for review findings and artifact hashes.
+
+Canonical publication retains exact-head/source-fingerprint rules. No app capture replaces a
+reference. Physical devices and humanTalkBack remain unperformed. Earlier capture records below
+are historical and superseded by the source-bound current gallery above.
 
 # Material UI — 0.12 current-source capture gate
 

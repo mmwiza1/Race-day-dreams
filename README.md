@@ -21,8 +21,8 @@ supported boundaries and sample evidence; no zone totals are fabricated.
 Run summaries, qualified splits and history gain clearer hierarchy and large-text layouts.
 Existing bottom navigation icons, labels, order, destinations, branding, engines and data
 formats are preserved. No new dependency or permission. See [focused scope](docs/MATERIAL3_RUNNING_REFINEMENT.md)
-and [patch notes](docs/RELEASE_0_12_1.md). The reviewed patch checkpoint passed533tests and421captures perAPI28/35/36. A loop-route
-marker correction still requires fresh capture verification before final delivery.
+and [patch notes](docs/RELEASE_0_12_1.md). The patch passed533tests and421captures perAPI28/35/36, with source-bound light/dark/200%
+visual review. Exact delivery-head/mainCI and publication are tracked in VERIFICATION.md.
 
 ## Preserved 0.12.0-test1 — Material You / Material 3 Expressive UI
 
@@ -33,10 +33,8 @@ separates distance, time and pace, keeps controls accessible at large text sizes
 before finishing. Recorded evidence, coaching calculations and all data formats are preserved.
 
 See [design scope](docs/MATERIAL3_UI.md), [release notes](docs/RELEASE_0_12_0.md) and
-[observed verification](VERIFICATION.md). The current development source passed the complete
-API 28/35/36 software gate; the gallery below contains its authentic 0.12 captures.
-Source-bound visual/APK acceptance passed; exact delivery-head checks and main publication
-are tracked separately.
+[observed verification](VERIFICATION.md). The0.12baseline is merged through PR19 and published
+from8269162. The gallery below now shows the0.12.1refinement.
 This remains a test build. The existing Material 3 components are retained; newer experimental
 Expressive motion/loading APIs are not included, and no runtime dependency upgrade is required.
 
@@ -138,13 +136,13 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
 data, not UI mockups. The current **421-image 0.12.1 gallery** was captured from source
-`52774f61e32d3b0fe08c6bcb1d60321b864e56ea` after
-[workflow 42536379762](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42536379762)
+`fd3f1afbc046e0706e911484331f718d8677ba43` after
+[workflow 43110530782](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43110530782)
 passed on API 28, 35 and 36: nine guard methods, 533 full instrumentation cases and 421
-captures on each API. Canonical commit `9ecc396` retains those production-screen renders
+captures on each API. Canonical commit `1743a7b` retains those production-screen renders
 and their source fingerprint. Image/source integrity, direct visual inspection and APK
 acceptance remain distinct gates; their current results are in [VERIFICATION.md](VERIFICATION.md)
-and [the visual review](docs/VISUAL_REVIEW_0_12_1.md). A route-marker refinement awaits fresh captures. No physical S24 or human TalkBack result
+and [the visual review](docs/VISUAL_REVIEW_0_12_1.md). The loop-marker refinement is captured and visually verified. No physical S24 or human TalkBack result
 is inferred from emulator captures.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
