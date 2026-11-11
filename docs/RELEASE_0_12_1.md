@@ -21,6 +21,7 @@ Material You design. Development/test build.
 - Keep workout-history filters within the scrolling viewport at large text sizes.
 - Honour the selected distance units when displaying history pace.
 - Keep start and latest-point markers visible when a recorded route returns to its start.
+- Keep confirmed local-data reset locked against concurrent database opens through file verification.
 - No GPS, coaching or historical-data recalculation is introduced.
 
 ## Known limitations
@@ -37,7 +38,9 @@ Existing navigation icons, labels, ordering, destinations, branding and launcher
 
 ## Verification
 
-The reviewed patch checkpoint passed 533 full instrumentation tests and 421 authentic captures
+The reviewed visual checkpoint passed 533 full instrumentation tests and 421 authentic captures
 on each API28/35/36, plus domain, schema, backup, lint, formatting and guidance checks.
 The loop-marker correction is source-bound and visually verified in light/dark/200% captures.
-Real-device acceptance remains unperformed. See VERIFICATION.md.
+A later final-head gate exposed a reset race; its focused concurrency correction and new
+regression require fresh Android verification before delivery. Real-device acceptance remains
+unperformed. See VERIFICATION.md.

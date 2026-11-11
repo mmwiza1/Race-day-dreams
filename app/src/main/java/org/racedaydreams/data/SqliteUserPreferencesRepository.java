@@ -236,16 +236,20 @@ public final class SqliteUserPreferencesRepository
         requireIoThread();
         // This is the explicitly confirmed reset, not a read-error recovery path. Deleting the
         // closed database also works when corruption prevents SQLite from opening it at all.
-        helper.close();
-        File database = context.getDatabasePath(ProfileDatabase.NAME);
-        boolean databaseExisted = database.exists();
-        boolean deleted = context.deleteDatabase(ProfileDatabase.NAME);
-        if (!deleted && databaseExisted) {
-            throw new SQLiteException("Your local data could not be deleted.");
-        }
-        for (String suffix : new String[]{"", "-journal", "-wal", "-shm"}) {
-            if (new File(database.getPath() + suffix).exists()) {
-                throw new SQLiteException("Your local data could not be completely deleted.");
+        // SQLiteOpenHelper serializes database opens on this same monitor. Keep it held
+        // through deletion/verification so a concurrent reader cannot reopen between them.
+        synchronized (helper) {
+            helper.close();
+            File database = context.getDatabasePath(ProfileDatabase.NAME);
+            boolean databaseExisted = database.exists();
+            boolean deleted = context.deleteDatabase(ProfileDatabase.NAME);
+            if (!deleted && databaseExisted) {
+                throw new SQLiteException("Your local data could not be deleted.");
+            }
+            for (String suffix : new String[]{"", "-journal", "-wal", "-shm"}) {
+                if (new File(database.getPath() + suffix).exists()) {
+                    throw new SQLiteException("Your local data could not be completely deleted.");
+                }
             }
         }
     }

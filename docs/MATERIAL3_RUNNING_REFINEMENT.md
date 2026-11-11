@@ -43,3 +43,11 @@ CONTINUE_CODEX.md and VERIFICATION.md; do not label pending captures as passed.
 
 Real GalaxyS24/Pixel/Xiaomi, human TalkBack, outdoorGPS, providers, locked-screen/OEM/audio/
 battery acceptance remains unperformed.
+
+## Release-gate reliability correction
+
+The final-head onboarding guard exposed an existing confirmed-reset race: a shared database
+helper could reopen between close and file verification. The narrow correction serializes
+those reset steps with helper opens; a deterministic realSQLite concurrency regression covers
+the boundary. Failure checks, schema, backups, actual history and recording calculations are
+unchanged. This correction requires its own complete Android/source-bound release gate.

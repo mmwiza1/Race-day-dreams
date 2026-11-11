@@ -1,3 +1,24 @@
+# Final-head hardening — confirmed-reset regression under verification
+
+Final documentation head4ecc498/workflow43117792685 API35 job130850156831 failed the first
+onboarding guard at23:15:33UTC: clearFixture/SqliteUserPreferencesRepository.clear reported
+“Your local data could not be completely deleted.” Settings/Launcher focus passed. This is
+an app-side reset failure, not the earlier emulator ANR; it is not being blindly retried.
+
+Code inspection establishes an open race window between helper.close() and database file
+verification, since concurrent helper opens use its monitor while deletion did not hold it.
+The focused local correction holds that monitor through close/delete/checks. A new realSQLite
+instrumentation test forces a reader attempt after deletion/before verification. It requires
+reset to finish, the concurrent reader to see no old profile/draft and later saves to work.
+The actual concurrent CI actor remains unidentified; no specific receiver/thread is claimed.
+No deletion/error assertion is removed, and no schema/backup/recording calculation changes.
+
+New expected unfiltered suite **534**, unchanged9guards/421frames. Local fullGradle/domain/
+debugAPK/testAPK/lint PASS79tasks/4m23s; schema75/release9 and pinnedformat120Kotlin/159Java
+pass. Fingerprint `765334f98d672074212b81c873477c7d2be82e78c2ac81f4d41674e172b0d378`.
+Android regression verification for this correction is pending. The previously accepted source and
+visual evidence below remain valid for their named source, not an automatic pass for the fix.
+
 # 0.12.1-test1 — verified software and visual source
 
 Source **fd3f1afbc046e0706e911484331f718d8677ba43** passed complete
