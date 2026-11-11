@@ -21,8 +21,8 @@ supported boundaries and sample evidence; no zone totals are fabricated.
 Run summaries, qualified splits and history gain clearer hierarchy and large-text layouts.
 Existing bottom navigation icons, labels, order, destinations, branding, engines and data
 formats are preserved. No new dependency or permission. See [focused scope](docs/MATERIAL3_RUNNING_REFINEMENT.md)
-and [patch notes](docs/RELEASE_0_12_1.md). Software and new screenshot gates are in progress;
-the verified baseline gallery below is not a claim that patch acceptance has passed.
+and [patch notes](docs/RELEASE_0_12_1.md). The reviewed patch checkpoint passed533tests and421captures perAPI28/35/36. A loop-route
+marker correction still requires fresh capture verification before final delivery.
 
 ## Preserved 0.12.0-test1 — Material You / Material 3 Expressive UI
 
@@ -137,14 +137,14 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The current **383-image 0.12 gallery** was captured from source
-`5d2814331af3f189f38f97d72974b242e398afe8` after
-[workflow 42518618237](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42518618237)
-passed on API 28, 35 and 36: nine guard methods, 517 full instrumentation cases and 383
-captures on each API. Canonical commit `e0bb250` retains those production-screen renders
+data, not UI mockups. The current **421-image 0.12.1 gallery** was captured from source
+`52774f61e32d3b0fe08c6bcb1d60321b864e56ea` after
+[workflow 42536379762](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42536379762)
+passed on API 28, 35 and 36: nine guard methods, 533 full instrumentation cases and 421
+captures on each API. Canonical commit `9ecc396` retains those production-screen renders
 and their source fingerprint. Image/source integrity, direct visual inspection and APK
 acceptance remain distinct gates; their current results are in [VERIFICATION.md](VERIFICATION.md)
-and [the visual review](docs/VISUAL_REVIEW_0_12.md). No physical S24 or human TalkBack result
+and [the visual review](docs/VISUAL_REVIEW_0_12_1.md). A route-marker refinement awaits fresh captures. No physical S24 or human TalkBack result
 is inferred from emulator captures.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
@@ -152,7 +152,11 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
 | Today | Weekly Plan | Live running | Dream Route |
 | --- | --- | --- | --- |
-| ![Today](docs/screenshots/home-material-brand-light.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live running](docs/screenshots/live-material-brand-light.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
+| ![Today](docs/screenshots/home-material-brand-light.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live running](docs/screenshots/live-refined-statistics.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
+
+| Recorded route | Ranked results | Weekly distance | Recorded heart rate |
+| --- | --- | --- | --- |
+| ![Offline recorded route](docs/screenshots/live-refined-route.png) | ![Ranked retained results](docs/screenshots/running-records-refined.png) | ![Weekly recorded distance](docs/screenshots/running-trends-distance.png) | ![Recorded heart rate](docs/screenshots/running-heart-rate.png) |
 
 | Strength Today | Programme templates | Dated programme preview | Workout suggestion |
 | --- | --- | --- | --- |

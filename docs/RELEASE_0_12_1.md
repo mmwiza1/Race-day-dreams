@@ -20,11 +20,12 @@ Material You design. Development/test build.
 - Preserve the existing authoritative best when several results have identical times.
 - Keep workout-history filters within the scrolling viewport at large text sizes.
 - Honour the selected distance units when displaying history pace.
+- Keep start and latest-point markers visible when a recorded route returns to its start.
 - No GPS, coaching or historical-data recalculation is introduced.
 
 ## Known limitations
 
-- Implementation and verification are in progress; no final screenshot or software pass is claimed.
+- Final route-marker capture verification and delivery checks remain in progress.
 - Heart-rate zones require supported individual boundaries and qualified sample evidence. They are not inferred from a run average or copied from a design reference.
 - Galaxy S24, Pixel, Xiaomi, outdoor GPS and human TalkBack acceptance require hardware; none is claimed.
 
@@ -36,5 +37,7 @@ Existing navigation icons, labels, ordering, destinations, branding and launcher
 
 ## Verification
 
-The merged 0.12 baseline passed its supported software matrix. This patch must pass the full
-required software and authentic screenshot gates before delivery. See VERIFICATION.md.
+The reviewed patch checkpoint passed 533 full instrumentation tests and 421 authentic captures
+on each API28/35/36, plus domain, schema, backup, lint, formatting and guidance checks.
+A route-marker visual correction requires fresh source-bound verification before delivery.
+Real-device acceptance remains unperformed. See VERIFICATION.md.

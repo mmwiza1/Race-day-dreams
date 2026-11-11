@@ -1,25 +1,39 @@
-# 0.12.1-test1 — corrective checkpoint, full gate pending
+# 0.12.1-test1 — verified matrix and visual correction
 
-Initial source157d0c8/workflow42533549896 completed all532cases on EACH API28/35/36:
-**531passed /1failed**. The sole failure was the new capture's text-only Progress selector
-at200%, where existing navigation retains its accessible label. Actualfocus and9guards
-passed; all13new component/presentation cases passed. Canonical/publication correctly skipped.
-This is a failed release gate, not a pass; no successful417artifact is claimed.
+Source **52774f61e32d3b0fe08c6bcb1d60321b864e56ea** passed complete
+[workflow42536379762](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42536379762).
+All three completed Android logs were inspected: EACH API28/35/36 ran **533 full tests**,
+passed build/lint and strict **421 screenshot** validation. The nine preflight guard methods
+also run in the full suite and are not additional unique cases. Formatting/guidance and
+canonical publication succeeded; development publication correctly skipped on a PR.
 
-The corrective checkpoint preserves navigation and fixes only new selectors, adds meaningful
-large-text tails and native320dp/200%longelapsed coverage. Existing typography adapts to width
-while full systemfontscale remains applied; narrowlarge-text view controls stack. Required421
-captures retain383previous frames. Expected533fullcases require actual runtime verification.
+Local gates: domain700,108/47 unique suites, schema75, release9, runner-helper13,
+capture-validator21, formatter14, pinnedformat120Kotlin/159Java and source/art/guidance pass.
+No test, API, assertion or timeout was weakened. The first matrix's new200% text-only
+navigation selector failure was fixed using the existing accessible label, without changing
+production navigation. All engine/domain/data/manifest and CoachActivity navigation sources
+remain unchanged from main. Schema19/rootJSON13/raw3/complete1 remain unchanged.
 
-Local corrected debugAPK, instrumentationAPK and lint passed75tasks/2m36s. Initial fullGradle
-withdomain:check passed79tasks. Pinnedformat120Kotlin/159Java, domain700108/47unique suites,
-75schema,9release,13runnerhelper,21capturevalidator,14formatter and source/art/guidance checks
-pass. No analysis/test was disabled. No accepted current-source screenshots or final visual
-pass is claimed. Manifest/domain/data/services/CoachActivity navigation have no diff from main.
+Canonical bot9ecc396 carries421 PNGs matching raw API35 artifact13639819995 byte-for-byte.
+ZIP55,892,858bytes; SHA256
+`ef9bda72487a245e1cd5719f84bc3a025eec0aa1788e8a8779a2934ea2cacce6`.
+Fingerprint `fd96516246f0867287503ba96c2b8654bc8e69693788cc39c17cf6690ff122f8`.
+API35 candidate artifact13640845250 ZIP29,767,509bytes/SHA256
+`4124742fdcb8cb3c9376d9e15c7bcc2c41a33b9d7df2460441d446f818a53580`;
+actual APK55,578,026bytes/SHA256
+`2690d459f7c5ef6903e0540b74866fabd4e1dc4d849e85d670c75a2cde2bf93a`.
+This is a branch candidate, not a published-main release.
 
-Exact-head/main CI, authentic reference comparison and matching publishedAPK verification
-remain required. All physical acceptance is unperformed. Earlier evidence below belongs to
-its named baseline, not the unfinished patch.
+All38new frames and six retained representative views were opened and compared with the
+owner's inline references. One visible issue required correction: coincident start/latest
+route markers obscured the start square. Its outline is now drawn outside/after the latest
+ring, preserving coordinates and all recorder behaviour. Its local fullGradle/domain/debug/
+instrumentationAPK/lint gate passed79tasks in4m14s (zero lint errors). A fresh matrix and canonical captures
+are required for that source before final visual acceptance. See docs/VISUAL_REVIEW_0_12_1.md.
+
+Exact final-head checks, authorised merge, mainCI and matching publishedAPK verification remain
+pending. Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack, realGPS/provider/BLE/OEM/rotation/
+locked-screen/audio/battery acceptance remains UNPERFORMED. Earlier records follow as history.
 
 # 0.12.0-test1 — merged-main and published-download verification
 

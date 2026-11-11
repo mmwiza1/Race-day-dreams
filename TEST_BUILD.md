@@ -1,7 +1,8 @@
 # Focused running refinement — 0.12.1-test1 acceptance
 
-Software/runtime/visual gates are in progress. Do not treat a locally assembled candidate
-as a verified published build. Preserve all0.12 hardware checks below.
+The reviewed52774f61 checkpoint passed533full tests and421captures on EACH API28/35/36.
+A visual marker correction requires a fresh matrix/canonical review. Do not treat a branch
+artifact as a published-main build. Preserve all0.12 hardware checks below.
 
 Additional owner checks (all UNPERFORMED): safely alternate Statistics/Route while a real
 run records; verify locked-screen recording continues; inspect long elapsed times, large

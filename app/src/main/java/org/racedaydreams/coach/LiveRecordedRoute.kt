@@ -163,13 +163,15 @@ private fun LiveRouteDrawing(prepared: LiveRouteProjection) {
         }
         val first = position(prepared.xy.first())
         val last = position(prepared.xy.last())
-        val startHalf = 8.dp.toPx()
+        // A loop can finish at its start. Keep the square outside the latest-point ring
+        // so both markers remain visible without displacing either recorded coordinate.
+        val startHalf = 16.dp.toPx()
         val startCorner = first - Offset(startHalf, startHalf)
         val startSize = Size(startHalf * 2, startHalf * 2)
         drawRect(surface, startCorner, startSize)
-        drawRect(start, startCorner, startSize, style = Stroke(3.dp.toPx()))
         drawCircle(routeHalo, 13.dp.toPx(), last)
         drawCircle(route, 8.dp.toPx(), last)
         drawCircle(surface, 3.dp.toPx(), last)
+        drawRect(start, startCorner, startSize, style = Stroke(3.dp.toPx()))
     }
 }

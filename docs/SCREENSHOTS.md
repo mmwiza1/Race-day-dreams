@@ -1,19 +1,15 @@
-# Focused running refinement — 0.12.1 capture gate pending
+# Focused running refinement — 421 authentic captures
 
-Required421actual-build frames retain all383baseline and add38focused views: liveStatistics/
-Route/Paused/empty, recordedPBs, distance/pace/time, actual/missingHR, summaries/splits,320dp/
-200%longelapsed+metrics and meaningful large-text thirdPB/HRchart tails. Validator21tests pass.
-Firstsource157d0c8 failed only a new large-font navigation selector on allAPIs; it produced
-no accepted417image artifact. The corrective selectors preserve existing nav semantics.
+Source52774f61 passed workflow42536379762 on API28/35/36:533full tests and421frames each.
+Canonical9ecc396 was fast-forwarded safely. All421PNGbytes match verified API35 artifact
+13639819995; strict validation passes. They retain383baseline and add38focused views.
+All38newframes and six retainedviews were opened against the owner's separate inline
+references. See VISUAL_REVIEW_0_12_1.md and VERIFICATION.md for identities and findings.
 
-Publication remains confined to feature/material3-running-performance-refinement and retains
-exact verified-head/source-fingerprint requirements. Open current actual light/dark/200%
-captures directly against the three owner inline references; field presence or PNG integrity
-alone is not visual acceptance. References are not app screenshots and remain separate.
-
-Record actual source/run/artifact identities and comparison outcomes in VISUAL_REVIEW_0_12_1.md
-and VERIFICATION.md after capture. The baseline gallery below is historical until current
-source-bound captures exist. Hardware/humanTalkBack acceptance remains unperformed.
+Review found one loop-route marker overlap; the drawing correction requires a fresh full
+matrix/canonical source and route-image inspection. Current PNGs are the reviewed pre-fix
+source, not proof that the new marker has passed. Exact-head fingerprint publication rules
+remain mandatory. Hardware and humanTalkBack checks remain unperformed.
 
 # Material UI — 0.12 current-source capture gate
 
