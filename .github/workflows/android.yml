@@ -4,6 +4,8 @@ on:
     branches: [main]
     tags: ['v*']
   pull_request:
+    # Draft pushes are fast; marking a PR ready or updating a ready PR runs the full matrix.
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
 
 permissions:
   contents: read
@@ -13,7 +15,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  draft-check:
+    # Keep draft iteration inexpensive: no emulators or screenshot publication here.
+    # A draft-check success is NOT approval for merge; ready PRs still run the full matrix.
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install compile SDK
+        run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - name: Fast source/domain/schema/release checks
+        run: |
+          sh scripts/test-domain.sh
+          python3 scripts/test-schema.py
+          python3 scripts/test-release-notes.py
+          python3 scripts/test-android-gate.py
+          cmp THIRD_PARTY.md app/src/main/assets/third_party.md
+          java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java
+      - name: Compile and lint Android and instrumentation
+        run: ./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
+
   build:
+    # Full gate on ready PRs, merged main and permanent release tags only.
+    # This is intentionally absent for intermediate draft pushes.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -152,6 +186,8 @@ jobs:
           PYFORMAT
 
   guidance-completeness:
+    # Drafts run the exercise audit in draft-check; final candidates rerun it here.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
