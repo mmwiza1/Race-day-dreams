@@ -16,7 +16,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -36,6 +35,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.util.Locale
+import org.racedaydreams.coach.CoachFilterChip
+import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
 import org.racedaydreams.domain.strength.ExerciseMetadata
@@ -91,9 +92,12 @@ fun GymSubstitutionSheet(model: GymNowViewModel) {
                         Text("${gymSwapReason(swap.reason)} · Change reason")
                     }
                     if (reasonExpanded)
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                        ) {
                             ExerciseSubstitutionEngine.Reason.values().forEach { reason ->
-                                FilterChip(
+                                CoachFilterChip(
                                     selected = swap.reason == reason,
                                     onClick = {
                                         chosenId = null

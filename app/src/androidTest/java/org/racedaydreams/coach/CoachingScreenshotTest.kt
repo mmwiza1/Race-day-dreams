@@ -570,12 +570,12 @@ class CoachingScreenshotTest {
         back()
         back()
         compose.onNodeWithText("Exercises").performScrollTo().performClick()
-        await("Search exercises or aliases")
+        awaitExerciseSearch()
         capture("exercise-browse")
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("de")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("de")
         compose.waitForIdle()
         capture("exercise-search")
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("RDL")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("RDL")
         compose.onNodeWithText("Romanian Deadlift").performClick()
         await("Overview")
         capture("exercise-rdl")
@@ -583,10 +583,15 @@ class CoachingScreenshotTest {
         click("Exclude exercise")
         await("Restore exercise")
         back()
-        await("Search exercises or aliases")
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("")
+        awaitExerciseSearch()
+        compose.onNodeWithTag("exercise-search").performTextReplacement("")
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithTag("exercise-shortcut-Excluded").performScrollTo().performClick()
+        // This mode's title is the real library header. Bring the lazy header into view
+        // rather than expecting a redundant body title to remain composed at any scroll.
+        compose
+            .onNodeWithTag("exercise-browser-list")
+            .performScrollToNode(hasText("Excluded exercises"))
         await("Excluded exercises")
         alignHeading("Excluded exercises")
         capture("exercise-excluded")
@@ -596,32 +601,27 @@ class CoachingScreenshotTest {
         }
         // Restore removes the only Excluded row; leave that explicit filter before searching.
         compose.onNodeWithTag("exercise-shortcut-For you").performScrollTo().performClick()
-        compose
-            .onNodeWithText("Search exercises or aliases")
-            .performScrollTo()
-            .performTextReplacement("RDL")
+        compose.onNodeWithTag("exercise-search").performScrollTo().performTextReplacement("RDL")
         compose.onNodeWithTag("exercise-row-romanian-deadlift").performScrollTo().performClick()
         await("Overview")
         click("How to do it")
         compose.waitForIdle()
         capture("exercise-rdl-howto")
         back()
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Bench")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("Bench")
         compose.onNodeWithText("Bench Press").performClick()
         await("Overview")
         click("How to do it")
         capture("exercise-bench-howto")
         back()
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("BSS")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("BSS")
         compose.onNodeWithText("Bulgarian Split Squat").performClick()
         await("Overview")
         capture("exercise-bulgarian-split-squat")
         click("How to do it")
         capture("exercise-bulgarian-howto")
         back()
-        compose
-            .onNodeWithText("Search exercises or aliases")
-            .performTextReplacement("Seated Cable Row")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("Seated Cable Row")
         compose
             .onNode(hasText("Seated Cable Row") and hasClickAction() and !hasSetTextAction())
             .performClick()
@@ -642,7 +642,7 @@ class CoachingScreenshotTest {
                 "Cable Crunch" to "exercise-cable-crunch-howto",
                 "Clean & Jerk" to "exercise-clean-jerk-howto",
             )) {
-            compose.onNodeWithText("Search exercises or aliases").performTextReplacement(exercise)
+            compose.onNodeWithTag("exercise-search").performTextReplacement(exercise)
             compose
                 .onNode(hasText(exercise) and hasClickAction() and !hasSetTextAction())
                 .performClick()
@@ -651,7 +651,7 @@ class CoachingScreenshotTest {
             capture(filename)
             back()
         }
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("Plank")
         compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick()
         await("Overview")
         click("How to do it")
@@ -664,7 +664,7 @@ class CoachingScreenshotTest {
         alignHeading("Last time")
         capture("strength-log-previous")
         compose.onNodeWithText("Back Squat").performScrollTo().performClick()
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Plank")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("Plank")
         compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick()
         compose
             .onNodeWithText("Duration (seconds or m:ss)")
@@ -676,7 +676,7 @@ class CoachingScreenshotTest {
             .onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction())
             .performScrollTo()
             .performClick()
-        compose.onNodeWithText("Search exercises or aliases").performTextReplacement("Farmer")
+        compose.onNodeWithTag("exercise-search").performTextReplacement("Farmer")
         compose.onNodeWithText("Farmer’s Carry").performClick()
         compose.onNodeWithText("Distance (metres)").performScrollTo().performTextReplacement("60")
         compose.waitForIdle()
@@ -1195,11 +1195,11 @@ class CoachingScreenshotTest {
                     .performClick()
                 await("Log workout")
                 compose.onNodeWithText("Exercises").performScrollTo().performClick()
-                await("Search exercises or aliases")
+                awaitExerciseSearch()
                 for (id in ExpandedExerciseGuides.identities().sorted()) {
                     val exercise = ExerciseCatalog.definition(id).exercise()
                     compose
-                        .onNodeWithText("Search exercises or aliases")
+                        .onNodeWithTag("exercise-search")
                         .performScrollTo()
                         .performTextReplacement(exercise.name())
                     androidx.test.espresso.Espresso.closeSoftKeyboard()
@@ -1245,7 +1245,7 @@ class CoachingScreenshotTest {
                             .assertIsDisplayed()
                     }
                     back()
-                    await("Search exercises or aliases")
+                    awaitExerciseSearch()
                 }
                 closeScenario()
                 scenario = null
@@ -3131,6 +3131,79 @@ class CoachingScreenshotTest {
             tabs.zipWithNext().all { (a, b) -> a.boundsInRoot.center.x < b.boundsInRoot.center.x },
         )
         Assert.assertTrue(tabs.first().config[SemanticsProperties.Selected])
+    }
+
+    @Test
+    fun capturesCompactLibraryFiltersAndRealDetailTabsInAllModes() {
+        val originalWidth = context.resources.configuration.screenWidthDp
+        val originalSize =
+            Regex("Override size: ([0-9]+x[0-9]+)").find(shell("wm size"))?.groupValues?.get(1)
+        val density = context.resources.displayMetrics.density
+        try {
+            withRefinementCaptureModes { suffix ->
+                if (suffix == "-large-font") {
+                    closeScenario()
+                    scenario = null
+                    shell(
+                        "wm size ${kotlin.math.round(320f * density).toInt()}x${kotlin.math.round(720f * density).toInt()}"
+                    )
+                    scenario = ActivityScenario.launch(CoachActivity::class.java)
+                    awaitHomeReady(false)
+                    compose.waitUntil(20000) {
+                        actualMaterialWindow()?.let {
+                            it.widthDp in 319..321 &&
+                                it.decorWidthDp in 319f..321f &&
+                                it.fontScale >= 1.99f &&
+                                it.focused
+                        } == true
+                    }
+                    awaitMaterialSystemBars(false, "library-narrow200")
+                }
+                clickOriginalNavigationTab("Strength")
+                compose.onNodeWithText("Exercises").performScrollTo().performClick()
+                awaitExerciseSearch()
+                capture("exercise-library-refined$suffix")
+                compose.onNodeWithTag("exercise-filters").performScrollTo().performClick()
+                compose.onNodeWithTag("exercise-browse-Body area").performScrollTo().performClick()
+                compose.onNodeWithTag("exercise-area-CHEST").performScrollTo().performClick()
+                capture("exercise-filters-refined$suffix")
+                compose
+                    .onNodeWithTag("exercise-search")
+                    .performScrollTo()
+                    .performTextReplacement("Bench Press")
+                androidx.test.espresso.Espresso.closeSoftKeyboard()
+                compose
+                    .onNodeWithTag("exercise-browser-list")
+                    .performScrollToNode(hasTestTag("exercise-row-bench-press"))
+                compose.waitUntil(20000) {
+                    compose
+                        .onAllNodesWithTag(
+                            "exercise-thumbnail-ready-bench-press",
+                            useUnmergedTree = true,
+                        )
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+                }
+                capture("exercise-library-rows-refined$suffix")
+                compose.onNodeWithTag("exercise-row-bench-press").performClick()
+                await("Overview")
+                capture("exercise-detail-tabs-refined$suffix")
+            }
+        } finally {
+            closeScenario()
+            scenario = null
+            shell("wm size ${originalSize ?: "reset"}")
+            compose.waitUntil(20000) {
+                context.resources.configuration.screenWidthDp == originalWidth
+            }
+        }
+    }
+
+    private fun awaitExerciseSearch() {
+        compose.waitUntil(20000) {
+            compose.onAllNodesWithTag("exercise-search").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.waitForIdle()
     }
 
     private fun withRefinementCaptureModes(block: (String) -> Unit) {

@@ -10,7 +10,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.strength.*
@@ -104,9 +103,12 @@ fun CustomStrengthExerciseScreen(
                     Text("No equipment required")
                 }
             }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
                 ExerciseMetadata.Equipment.values().forEach { item ->
-                    FilterChip(
+                    CoachFilterChip(
                         item.name in equipment,
                         {
                             equipmentFree = false
@@ -187,9 +189,12 @@ private fun CustomMetadataChoice(
         Text("$title · ${options.firstOrNull { it.first == selected }?.second ?: "Choose"}")
     }
     if (expanded) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
             options.forEach { (id, label) ->
-                FilterChip(
+                CoachFilterChip(
                     id == selected,
                     {
                         select(id)

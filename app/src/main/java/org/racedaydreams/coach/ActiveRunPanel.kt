@@ -71,7 +71,7 @@ fun ActiveRunPanel(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         listOf(false to "Statistics", true to "Route").forEach { (route, label) ->
-                            FilterChip(
+                            CoachFilterChip(
                                 selected = routeView == route,
                                 onClick = { routeView = route },
                                 label = { Text(label) },

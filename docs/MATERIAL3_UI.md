@@ -48,3 +48,38 @@ The complete0.12source `5d28143` passed517full cases/383captures on each support
 An existing Material3 dependency is not proof of design fidelity. Final-source actual
 screenshots, including light/dark/device colours/branded colours/200%/wide windows,
 require inspection before release. Hardware and human TalkBack checks remain separate.
+
+## Shared layout and library standard — 0.12.2
+
+Use `CoachSpace`: 4dp small details; 8dp chip/related gaps in both axes; 12dp card gaps;
+16dp screen/card insets; 24dp major sections. Use intrinsic content heights and at least
+48dp interactive targets. Do not squeeze or shrink text to fit a fixed card.
+
+Use `CoachFilterChip` for real selectable filters: official Material3 selection semantics,
+small rounded shape, theme-derived tint/outline and a selected checkmark. Wrap filter groups
+with 8dp gaps in both axes. Deliberate horizontal browse strips must remain scrollable and
+reachable by keyboard/TalkBack; they are not a horizontally scrolling page.
+
+Library rows use surfaceContainerLow/onSurface/onSurfaceVariant and outlineVariant, rather
+than large saturated strength tiles. Reuse bundled licensed artwork in small rounded thumbnails;
+unknown/custom artwork receives the same neutral movement placeholder, never an unrelated pose.
+Decode only visible thumbnails off-main, downsampled, in a bounded cache. Navigation chevrons
+open actual details. Overview/technique/history/PBs use real Material scrollable tabs, retaining
+full large-text labels and existing actions. Do not use decorative disclosure indicators.
+
+The owner's two reference images remain separate from genuine captures. Review compactness,
+spacing, hierarchy, selected states and full functionality against them in light/dark/200%,
+with dynamic and branded colours and narrow windows. Visual integrity is not visual acceptance.
+
+Keep the initial library focused on search, coarse categories and scannable rows. Put advanced
+metadata controls behind an actual Filters disclosure with explicit expanded/collapsed state.
+Keep personal filters and management actions easy to reach. Default subtitles describe broad
+body/movement groups; reveal full equipment/setup context when searching or refining, and keep
+it accessible in details. Avoid ranking-algorithm explanation above every result list.
+
+Use `CoachExerciseSearch` in exercise browsing/selection: concise visible Search label,
+name/alias placeholder, full accessible description and a normal Search keyboard action.
+Never shrink accessibility text or add hidden text merely to satisfy an old test selector;
+UI tests should operate the actual tagged editable field while preserving functional checks.
+Use a real primary heading for distinct modes such as Excluded exercises, rather than a
+redundant body heading and artificial whitespace to position it for a capture.

@@ -1,3 +1,83 @@
+# 0.12.2-test1 — verified software and visual source
+
+[PR #21](https://github.com/mmwiza1/Race-day-dreams/pull/21), branch
+`feature/material3-library-spacing-refinement`, version **0.12.2-test1 / code 18**.
+Source `f33fbfc5902ff0b2be8136ebb7ef491cd3fa51e4` passed the complete
+[workflow 43249755986](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43249755986)
+on its first attempt. Each API **28, 35 and 36** passed **538 full tests and 433 authentic
+captures**. All 13 guard cases also run inside the full suite; they are not extra unique tests.
+All three completed logs were inspected. No assertion, platform-focus guard or timeout was weakened.
+
+Other passing checks: **700,108 domain checks across 47 unique suites**, 75 schema tests,
+9 release-note tests, 22 capture-validator tests, 13 runner-helper tests, 14 formatter-tool tests,
+11 map/source tests, debug/test APK builds, lint, and pinned formatting for 123 Kotlin/159 Java files.
+Strict guidance covers 220 canonical exercises and 14 routine movements; all 223 original artwork
+hashes verified. Existing backup, migration, recording, running and strength regressions passed.
+The Gradle check repeats the domain suites; they are counted once above.
+
+Canonical commit `681df68` was safely fast-forwarded. All 433 PNGs exactly match downloaded
+API 35 artifact **13961106593**: ZIP **58,140,133 bytes**, SHA-256
+`15cf4ffe9806e69cf4090949c0c26b2bf6aad158843604d3037e16197c8ad50f`.
+App/capture fingerprint:
+`3e71fa3be7d1f592f9ddee403ecf75acf20ab791759eeadcb28f2e246d714d80`.
+All 12 new library/filter/detail views were opened natively and 48 representative active-area
+frames reviewed on labelled sheets, directly against both separate owner references. The initial
+crowded design was rejected and corrected. See [visual findings](docs/VISUAL_REVIEW_0_12_2.md).
+
+Downloaded candidate API 35 APK artifact **13959403841**: **55,643,562 bytes**, SHA-256
+`dc238132457f0559712fce6266bf0d2c3f486ff87aed7084823dd877ebb9a7f4`.
+aapt confirms version 0.12.2-test1, code 18, minimum API 28 and no INTERNET permission.
+This is a tested PR artifact, not a claim of merged-main publication.
+
+Data formats remain **schema 19 / root JSON 13 / raw archive 3 / complete package 1**.
+Navigation source is byte-identical to main `59be2b3`, SHA-256
+`98d80b3c3194d441e4ba31b52293bd92d38326aa434f6d3383cc06af0ad899fa`.
+
+Remaining delivery gates: exact final documentation-head CI, authorised squash merge,
+actual merged-main tree/version/post-merge CI, then public rolling APK/source/checksum verification.
+No merge or 0.12.2 publication is claimed yet. Physical Galaxy S24/Pixel/Xiaomi, human TalkBack,
+real GPS/Health Connect/BLE and OEM background/audio/rotation checks remain unperformed.
+Forced-narrow emulator captures retain a partly clipped platform navigation icon at the far right;
+app controls remain reachable. This does not establish physical OEM/navigation acceptance.
+
+# 0.12.1-test1 — merged-main and published-download verification
+
+[PR20](https://github.com/mmwiza1/Race-day-dreams/pull/20) is merged at
+**59be2b347d2a789a56448a35b845bccd1af56c7a**. Fetched main tree exactly equals final tested
+PR head **afdb0e89fcac15f075b7994de9e28d3a42f1274e**.
+[Exact-head CI43190025361](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43190025361)
+and [post-merge main CI43194915439](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43194915439)
+completed SUCCESS. EACH API28/35/36 passed534full tests/421validated actual screenshots;
+all completed logs inspected, including rendered chartcontrast and SQLite reset concurrency.
+Domain700,108checks/47unique suites,75schema tests and all backup/formatting/lint/build/
+guidance/source gates passed. Main publication succeeded normally; no bypass or stabletag.
+
+The public rolling [Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+and development tag identify this exactmain. Maintained release notes, buildcommit/run and
+version0.12.1-test1/code17 agree. Downloaded public APK and checksum exactly match mainAPI35
+artifact13934321434; aapt confirms minAPI28 and noINTERNET permission.
+
+| Verified item | Value |
+| --- | --- |
+| APK | [Race-Day-Dreams-0.12.1-test1.apk](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-0.12.1-test1.apk) |
+| APK bytes | 55,578,026 |
+| APK SHA-256 | `26e5b4fd9b77678253a3b763e5fd724aa6f0b3ea337a946de13f1de5f2aa2943` |
+| Main artifact ZIP bytes | 29,767,896 |
+| Main artifact ZIP SHA-256 | `03fa9d0e63337ae79980c6b02cb98e2ca5115a5c77501ec2445d332dd06c89a4` |
+| Data formats | schema19/rootJSON13/raw3/complete1 unchanged |
+
+Final app/capture fingerprint remains the revieweddd728source below. Canonical source7c4f534
+and botf2d501b remain truthful; documentation-only finalhead and squashmerge did not alter
+app/source bytes. All38new and six retained views were reviewed against separate ownerrefs,
+including native light/dark/200% charts and routes. Main produced421fresh validated captures
+perAPI; canonical publication is correctly skipped on pushmain, with fingerprint rechecked
+before APK publication. Main API35 screenshot artifact:13934386170.
+
+Real GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, HealthConnect/BLE, OEMrotation,
+locked-screen/audio/battery acceptance remains **UNPERFORMED**. Synthetic short-wide blank
+platform navigation-strip limitation remains documented. Software completion does not imply
+hardware acceptance. No further software scope is pending; do not start another release.
+
 # 0.12.1-test1 — verified software and visual source
 
 Source **7c4f534e8a02083848807132a88fd3bffc53313d** passed complete

@@ -6,9 +6,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -244,8 +246,11 @@ class ExerciseBrowseScreenTest {
             .assertIsDisplayed()
         compose
             .onNodeWithTag("exercise-browser-list")
-            .performScrollToNode(hasText("Add custom exercise"))
-        compose.onNodeWithText("Add custom exercise").performClick()
+            .performScrollToNode(hasContentDescription("Add custom exercise"))
+        compose
+            .onNodeWithContentDescription("Add custom exercise")
+            .assertIsDisplayed()
+            .performClick()
         compose.onNodeWithText("Exercise name").performTextInput("My new carry")
         compose.onNodeWithTag("custom-measurement-LOAD_DISTANCE").performScrollTo().performClick()
         compose.onNodeWithTag("custom-region-LOWER").performScrollTo().performClick()
@@ -452,8 +457,21 @@ class ExerciseBrowseScreenTest {
     private fun exercises(vararg ids: String) = ids.map(::exercise)
 
     private fun clickTag(tag: String) {
+        if (tag.startsWith("exercise-browse-")) {
+            compose
+                .onNodeWithTag("exercise-browser-list")
+                .performScrollToNode(hasTestTag("exercise-filters"))
+            val filters = compose.onNodeWithTag("exercise-filters").performScrollTo()
+            if (
+                filters
+                    .fetchSemanticsNode()
+                    .config[androidx.compose.ui.semantics.SemanticsProperties.StateDescription] ==
+                    "Collapsed"
+            )
+                filters.performClick()
+        }
         compose.onNodeWithTag("exercise-browser-list").performScrollToNode(hasTestTag(tag))
-        compose.onNodeWithTag(tag).performClick()
+        compose.onNodeWithTag(tag).performScrollTo().assertIsDisplayed().performClick()
     }
 
     private fun summary(text: String) {

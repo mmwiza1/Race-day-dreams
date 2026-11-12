@@ -237,6 +237,9 @@
     "app/src/androidTest/java/org/racedaydreams/coach/RunSummaryPresentationTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/RunningPerformancePresentationTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/RunningPerformanceUiTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/LiveRunningRefinementTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/LiveRunningRefinementTest.kt",
+    "app/src/main/java/org/racedaydreams/coach/CoachDesign.kt",
+    "app/src/main/java/org/racedaydreams/coach/ExerciseLibraryComponents.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/ExerciseLibraryDesignTest.kt"
   ]
 }

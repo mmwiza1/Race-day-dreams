@@ -82,7 +82,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                                         Text("›",style=MaterialTheme.typography.titleLarge)
                                     }
                                     val warm=org.racedaydreams.domain.support.RunningRoutines.warmup(workout.category(),version.goalSnapshot().raceGoal().distance().kilometres())
-                                    androidx.compose.foundation.layout.FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                                    androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip), verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
                                         WarmupSupportLink(warm,workout.id()){routine(warm,workout.id())}
                                         if(workout.category()==WorkoutCategory.LONG_RUN||AdaptiveCoachingEngine.isQuality(workout.category())||workout.category()==WorkoutCategory.RACE)TextButton(onClick={routine("cool-demanding",workout.id())},contentPadding=PaddingValues(0.dp)){Text("Cool-down · 6 min",style=MaterialTheme.typography.labelMedium)}
                                     }

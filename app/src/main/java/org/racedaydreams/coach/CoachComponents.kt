@@ -20,8 +20,8 @@ fun CoachPage(content: @Composable ColumnScope.() -> Unit) {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .imePadding()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(CoachSpace.Screen),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Card),
             content = content,
         )
     }
@@ -50,8 +50,8 @@ fun CoachCard(content: @Composable ColumnScope.() -> Unit) {
             CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         Column(
-            Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.padding(CoachSpace.Inset),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Related),
             content = content,
         )
     }

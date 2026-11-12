@@ -14,7 +14,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.time.*
 import java.time.format.*
@@ -179,7 +178,10 @@ fun StrengthGenerationScreen(
                         }
                     }
                 }
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                ) {
                     if (state.page > 0)
                         TextButton(onClick = { model.page(-1) }, enabled = enabled) {
                             Text("Previous previews")
@@ -347,7 +349,11 @@ fun StrengthGenerationScreen(
                                     ) {
                                         Text("Edit ${slot.exercise().name()}")
                                     }
-                                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    FlowRow(
+                                        horizontalArrangement =
+                                            Arrangement.spacedBy(CoachSpace.Chip),
+                                        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                    ) {
                                         if (index > 0)
                                             TextButton(
                                                 onClick = {
@@ -617,9 +623,12 @@ private fun ColumnScope.GenerationConfiguration(
     } else Text("${template.frequency()} workouts per programme week · template structure")
     GenerationField(minutes, { minutes = it }, "Usual session length · minutes", enabled, true)
     Text("Available days · choose at least $frequency")
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+    ) {
         DayOfWeek.values().forEach { day ->
-            FilterChip(
+            CoachFilterChip(
                 day.value in days,
                 { days = if (day.value in days) days - day.value else days + day.value },
                 enabled = enabled,
@@ -634,9 +643,12 @@ private fun ColumnScope.GenerationConfiguration(
         "Bodyweight needs no checkbox. Select the equipment you can actually use; unavailable setups will not be prescribed."
     )
     if (showEquipment)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
             ExerciseMetadata.Equipment.values().forEach { item ->
-                FilterChip(
+                CoachFilterChip(
                     item.name in equipment,
                     {
                         equipment =
@@ -736,9 +748,12 @@ private fun GenerationChoices(
     enabled: Boolean,
     choose: (String) -> Unit,
 ) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+    ) {
         options.forEach { value ->
-            FilterChip(
+            CoachFilterChip(
                 value == selected,
                 { choose(value) },
                 enabled = enabled,

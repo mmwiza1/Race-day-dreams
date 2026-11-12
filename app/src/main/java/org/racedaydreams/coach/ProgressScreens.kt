@@ -74,7 +74,7 @@ fun ProgressScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 listOf("Training trends", "Heart rate").forEach { title ->
-                    FilterChip(
+                    CoachFilterChip(
                         selected = trendSection == title,
                         onClick = { trendSection = title },
                         label = { Text(title) },
@@ -87,7 +87,7 @@ fun ProgressScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 listOf(4, 8, 12).forEach { count ->
-                    FilterChip(
+                    CoachFilterChip(
                         selected = weekCount == count,
                         onClick = { weekCount = count },
                         label = { Text("$count weeks") },
@@ -107,7 +107,7 @@ fun ProgressScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         RunningTrendMetric.entries.forEach { metric ->
-                            FilterChip(
+                            CoachFilterChip(
                                 selected = trendMetric == metric,
                                 onClick = { trendMetric = metric },
                                 label = { Text(metric.label) },

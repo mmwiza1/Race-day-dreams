@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -31,8 +30,10 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import org.racedaydreams.coach.CoachFilterChip
 import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
+import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
 import org.racedaydreams.domain.strength.GymNowWorkouts
@@ -317,7 +318,10 @@ fun GymNowScreen(
                         }
                     }
                 }
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                ) {
                     if (state.favouritePage > 0)
                         OutlinedButton(onClick = { model.favouritePage(-1) }, enabled = mutable) {
                             Text("Previous favourites")
@@ -451,9 +455,12 @@ private fun OneOffWorkoutPicker(
         "A one-off prescription for today. It will not change your programme or complete a planned session."
     )
     Text("Available time", style = MaterialTheme.typography.titleMedium)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+    ) {
         listOf(30, 45, 60, 75).forEach { value ->
-            FilterChip(
+            CoachFilterChip(
                 selected = minutes == value,
                 onClick = {
                     minutes = value
@@ -465,9 +472,12 @@ private fun OneOffWorkoutPicker(
         }
     }
     Text("Equipment available", style = MaterialTheme.typography.titleMedium)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+    ) {
         GYM_EQUIPMENT.forEach { value ->
-            FilterChip(
+            CoachFilterChip(
                 selected = value in equipment,
                 onClick = {
                     equipment = if (value in equipment) equipment - value else equipment + value
@@ -479,9 +489,12 @@ private fun OneOffWorkoutPicker(
         }
     }
     Text("Focus", style = MaterialTheme.typography.titleMedium)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+    ) {
         GymNowWorkouts.Focus.values().forEach { value ->
-            FilterChip(
+            CoachFilterChip(
                 selected = focus == value.name,
                 onClick = {
                     focus = value.name
@@ -494,9 +507,12 @@ private fun OneOffWorkoutPicker(
     }
     if (!quick) {
         Text("Goal", style = MaterialTheme.typography.titleMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
             GymProgramme.Goal.values().forEach { value ->
-                FilterChip(
+                CoachFilterChip(
                     selected = goal == value.name,
                     onClick = {
                         goal = value.name
@@ -508,9 +524,12 @@ private fun OneOffWorkoutPicker(
             }
         }
         Text("Experience", style = MaterialTheme.typography.titleMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
             GymProgramme.Experience.values().forEach { value ->
-                FilterChip(
+                CoachFilterChip(
                     selected = experience == value.name,
                     onClick = {
                         experience = value.name
@@ -522,9 +541,12 @@ private fun OneOffWorkoutPicker(
             }
         }
         Text("Training priority", style = MaterialTheme.typography.titleMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
             GymProgramme.Priority.values().forEach { value ->
-                FilterChip(
+                CoachFilterChip(
                     selected = priority == value.name,
                     onClick = {
                         priority = value.name
@@ -536,9 +558,12 @@ private fun OneOffWorkoutPicker(
             }
         }
         Text("Effort guidance", style = MaterialTheme.typography.titleMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
             GymProgramme.Effort.values().forEach { value ->
-                FilterChip(
+                CoachFilterChip(
                     selected = effort == value.name,
                     onClick = {
                         effort = value.name

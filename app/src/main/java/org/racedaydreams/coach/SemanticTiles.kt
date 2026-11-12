@@ -5,7 +5,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 enum class Tile {
     Planned,
@@ -53,8 +52,8 @@ fun SemanticCard(tile: Tile, content: @Composable ColumnScope.() -> Unit) {
             ),
     ) {
         Column(
-            Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            Modifier.padding(CoachSpace.Inset),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Related),
             content = content,
         )
     }
