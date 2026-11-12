@@ -143,7 +143,10 @@ internal fun RunningHeartRatePanel(activities: List<ActivityRecord>, state: Coac
                 "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(selected.source())}. These are this run's saved values, not a range-wide average.",
                 style = MaterialTheme.typography.bodySmall,
             )
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
                 OutlinedButton(
                     onClick = { selectedId = records[selectedIndex - 1].id() },
                     enabled = selectedIndex > 0,

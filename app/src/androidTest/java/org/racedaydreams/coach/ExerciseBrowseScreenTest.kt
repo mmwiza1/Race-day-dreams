@@ -453,7 +453,7 @@ class ExerciseBrowseScreenTest {
 
     private fun clickTag(tag: String) {
         compose.onNodeWithTag("exercise-browser-list").performScrollToNode(hasTestTag(tag))
-        compose.onNodeWithTag(tag).performClick()
+        compose.onNodeWithTag(tag).performScrollTo().assertIsDisplayed().performClick()
     }
 
     private fun summary(text: String) {

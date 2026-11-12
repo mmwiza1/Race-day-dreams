@@ -123,7 +123,7 @@ internal fun GymRestCard(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 listOf(0, 60, 90, 120, 180, 300).forEach { value ->
-                    FilterChip(
+                    CoachFilterChip(
                         selected = prefs.defaultSeconds() == value,
                         enabled = enabled,
                         onClick = {

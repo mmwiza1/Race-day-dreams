@@ -215,7 +215,10 @@ fun StrengthProgrammeBuilderScreen(
                         Text(
                             "${block.weeks()} programme weeks · ${programmeLabel(block.phase().name)}"
                         )
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                        ) {
                             TextButton(
                                 onClick = { blockForm = block.id() to block },
                                 enabled = enabled,
@@ -261,7 +264,10 @@ fun StrengthProgrammeBuilderScreen(
                             }
                             if (expandedDay == day.id()) {
                                 day.notes()?.let { Text(it) }
-                                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                FlowRow(
+                                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                ) {
                                     TextButton(
                                         onClick = { dayForm = block.id() to day },
                                         enabled = enabled,
@@ -289,7 +295,11 @@ fun StrengthProgrammeBuilderScreen(
                                     Text(gymTargetDescription(slot))
                                     if (slot.supersetGroup() != null)
                                         Text("Superset · repeat exercises in order, then rest")
-                                    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    FlowRow(
+                                        horizontalArrangement =
+                                            Arrangement.spacedBy(CoachSpace.Chip),
+                                        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                    ) {
                                         if (slot.supersetGroup() != null) {
                                             TextButton(
                                                 onClick = {
@@ -664,9 +674,12 @@ private fun ProgrammeSettingsDialog(
             KeyboardType.Number,
         )
         Text("Available days")
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
             DayOfWeek.values().forEach { day ->
-                FilterChip(
+                CoachFilterChip(
                     day.value in days,
                     { days = if (day.value in days) days - day.value else days + day.value },
                     label = { Text(day.getDisplayName(TextStyle.SHORT, Locale.UK)) },
@@ -678,9 +691,12 @@ private fun ProgrammeSettingsDialog(
         }
         if (showEquipment) {
             Text("Select complete setups. Bodyweight movements need no equipment checkbox.")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
                 ExerciseMetadata.Equipment.values().forEach { item ->
-                    FilterChip(
+                    CoachFilterChip(
                         item.name in equipment,
                         {
                             equipment =
@@ -772,9 +788,12 @@ private fun ProgrammeField(
 
 @Composable
 private fun ProgrammeChips(options: List<String>, selected: String, choose: (String) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+    ) {
         options.forEach { option ->
-            FilterChip(
+            CoachFilterChip(
                 option == selected,
                 { choose(option) },
                 label = { Text(programmeLabel(option)) },

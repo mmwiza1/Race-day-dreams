@@ -179,9 +179,12 @@ fun BodyMeasurementsContent(
             if (measurements) {
                 Text("Record a measurement", style = MaterialTheme.typography.titleMedium)
                 Text("Manual entry is recorded now · ${friendlyDate(LocalDate.now())}")
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                ) {
                     HeightUnit.values().forEach { value ->
-                        FilterChip(
+                        CoachFilterChip(
                             heightUnit == value,
                             {
                                 height = ""
@@ -206,9 +209,12 @@ fun BodyMeasurementsContent(
                 ) {
                     Text("Save height measurement")
                 }
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                ) {
                     MassUnit.values().forEach { value ->
-                        FilterChip(
+                        CoachFilterChip(
                             unit == value,
                             {
                                 weight = ""

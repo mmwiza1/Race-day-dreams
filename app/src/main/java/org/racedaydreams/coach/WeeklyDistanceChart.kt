@@ -275,7 +275,10 @@ internal fun WeeklyRunningChart(
         Text(shortDate(weeks.first().weekStart()), style = MaterialTheme.typography.labelSmall)
         Text(shortDate(weeks.last().weekStart()), style = MaterialTheme.typography.labelSmall)
     }
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+    ) {
         OutlinedButton(
             onClick = { selectedWeek = weeks[selected - 1].weekStart().toString() },
             enabled = selected > 0,

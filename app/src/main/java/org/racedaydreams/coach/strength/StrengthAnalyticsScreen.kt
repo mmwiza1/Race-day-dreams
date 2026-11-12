@@ -73,9 +73,12 @@ fun StrengthAnalyticsScreen(
             }
             SemanticCard(Tile.Progress) {
                 Text("Recorded working sets by week", style = MaterialTheme.typography.titleLarge)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                ) {
                     listOf(8, 26, 52).forEach { count ->
-                        FilterChip(
+                        CoachFilterChip(
                             selected = window == count,
                             onClick = { window = count },
                             label = { Text("$count weeks") },

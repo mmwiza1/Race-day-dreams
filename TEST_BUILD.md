@@ -1,3 +1,17 @@
+# Material3 layout and library refinement — 0.12.2-test1
+
+Current candidate verification is tracked in VERIFICATION.md and CONTINUE_CODEX.md.
+Do not infer actual screenshots or runtime passes from successful compilation. Published main
+remains0.12.1 until this PR completes the full gate and normal publication.
+
+Owner physical checks (UNPERFORMED): exercise name/alias search; category strips; personal
+ForYou/Favourites/Recent/InMyProgramme/Excluded; body/movement/equipment combinations; restore
+excluded exercise without losing history/PBs; compact thumbnail rows; all four detail tabs and
+existing favourite/logging/programme actions. Check dynamic/branded light/dark and200%/small
+windows, keyboard/TalkBack/focus/touch/scrolling. Check representative running/live controls,
+calendar/history, settings/native goal/HealthConnect and gym execution. Preserve the following
+existing hardware acceptance tasks; no outdoorGPS or physical acceptance is claimed.
+
 # Focused running refinement — 0.12.1-test1 acceptance
 
 Source7c4f534 passed534full tests and421captures on EACH API28/35/36. Canonicalf2d501b

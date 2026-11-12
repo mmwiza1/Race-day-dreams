@@ -124,8 +124,8 @@ API-35 package. Publication waits for the full API 28/35/36 matrix and canonical
 No permanent stable release is created by merging this test update.
 
 These are **debug-signed test APKs**, not Play Store production packages. Actions
-artifacts for this candidate are named `Race-Day-Dreams-0.12.1-test1-debug-api-35`
-and contain `Race-Day-Dreams-0.12.1-test1-debug.apk`. The rolling download follows the
+artifacts for this candidate are named `Race-Day-Dreams-0.12.2-test1-debug-api-35`
+and contain `Race-Day-Dreams-0.12.2-test1-debug.apk`. The rolling download follows the
 latest verified main and identifies its own version/commit; a branch candidate is not
 silently published as main. Check [VERIFICATION.md](VERIFICATION.md) and export a complete
 local backup before upgrading.

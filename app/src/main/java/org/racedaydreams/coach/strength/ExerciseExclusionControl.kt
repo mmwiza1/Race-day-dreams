@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import org.racedaydreams.coach.CoachFilterChip
 import org.racedaydreams.domain.strength.ExerciseExclusionRepository.Reason
 
 /** Explicit programming preference, independent of visibility, logging and medical advice. */
@@ -54,7 +55,7 @@ fun ExerciseExclusionControl(
                         "This changes future selection only. Existing prescriptions and recorded evidence stay intact. You can restore the exercise at any time."
                     )
                     Reason.values().forEach { value ->
-                        FilterChip(
+                        CoachFilterChip(
                             selected = reason == value,
                             onClick = { reason = value },
                             label = {

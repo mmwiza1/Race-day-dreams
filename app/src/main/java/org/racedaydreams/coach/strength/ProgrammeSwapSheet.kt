@@ -63,9 +63,12 @@ internal fun ProgrammeSwapSheet(model: StrengthGenerationViewModel) {
                         Text("${gymSwapReason(review.reason)} · Change reason")
                     }
                     if (showReasons)
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                        ) {
                             ExerciseSubstitutionEngine.Reason.values().forEach { reason ->
-                                FilterChip(
+                                CoachFilterChip(
                                     reason == review.reason,
                                     {
                                         selectedId = null

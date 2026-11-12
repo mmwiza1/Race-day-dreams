@@ -21,7 +21,7 @@ import org.racedaydreams.domain.strength.*
     CoachPage{
         CoachHeading("Strength")
         Text("Your strength training, records and progression.")
-        Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->FilterChip(selected=state.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
+        Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->CoachFilterChip(selected=state.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
         if(plannedDate!=null)Text("Planned strength · ${friendlyDate(plannedDate)}. Log what you actually did.")
         if(section=="log" && !logging) {
             val today=LocalDate.now()
@@ -135,7 +135,7 @@ private fun ExercisePicker(state: CoachUiState, selected: String, onSelect: (Str
     var enteredUnit by rememberSaveable{mutableStateOf(s.massUnit.name)}
     LaunchedEffect(s.massUnit){if(enteredUnit!=s.massUnit.name){kg=kg.toDoubleOrNull()?.let{s.massUnit.fromKilograms(org.racedaydreams.domain.body.MassUnit.valueOf(enteredUnit).toKilograms(it)).toString()}?:kg;enteredUnit=s.massUnit.name}}
     CoachCard{Text("Historical strength PB");ExercisePicker(s,exercise,{next->if(s.exercises.first{it.id()==exercise}.measurement()!=s.exercises.first{it.id()==next}.measurement()){reps="";kg=""};exercise=next});val selected=s.exercises.first{it.id()==exercise};val profile=selected.measurement();if(profile.usesLoad())CoachInput("Load (${s.massUnit.name.lowercase()}; added load for weighted bodyweight)",kg,{kg=it},true);if(profile.usesReps())CoachInput("Reps",reps,{reps=it},true);if(profile.usesDuration())CoachInput("Duration (seconds or m:ss)",reps,{reps=it});if(profile.usesDistance())CoachInput("Distance (metres)",reps,{reps=it},true)
-        HistoricalStrengthRecord.DatePrecision.values().forEach{p->FilterChip(selected=precision==p.name,onClick={precision=p.name},label={Text(p.name.lowercase())})};if(precision!="UNKNOWN")DateInput("PB date",date,{date=it});CoachInput("Notes (optional)",notes,{notes=it});error?.let{Text(it)}
+        HistoricalStrengthRecord.DatePrecision.values().forEach{p->CoachFilterChip(selected=precision==p.name,onClick={precision=p.name},label={Text(p.name.lowercase())})};if(precision!="UNKNOWN")DateInput("PB date",date,{date=it});CoachInput("Notes (optional)",notes,{notes=it});error?.let{Text(it)}
         CoachButton("Save historical PB",{try{model.strength.saveHistorical(HistoricalStrengthRecord(existing?.id()?:UUID.randomUUID().toString(),s.exercises.first{it.id()==exercise},if(profile.usesLoad())s.massUnit.toKilograms(kg.toDouble())else 0.0,if(profile.usesReps())reps.toInt()else 0,if(precision=="UNKNOWN")null else LocalDate.parse(date),HistoricalStrengthRecord.DatePrecision.valueOf(precision),notes,if(profile.usesDuration())StrengthMeasurements.seconds(reps)else null,if(profile.usesDistance())reps.toDouble()else null),done)}catch(e:Exception){error=e.message?:"Check record values."}})
     }
 }
@@ -160,7 +160,7 @@ private fun ExercisePicker(state: CoachUiState, selected: String, onSelect: (Str
         if(profile.usesReps())CoachInput("Reps",reps,{reps=it},true)
         if(profile.usesDuration())CoachInput("Duration (seconds or m:ss)",seconds,{seconds=it})
         if(profile.usesDistance())CoachInput(if(s.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL)"Distance (yards)"else "Distance (metres)",metres,{metres=it},true)
-        if(profile.usesReps())Row{listOf("RPE","RIR").forEach{mode->FilterChip(selected=effortMode==mode,onClick={effortMode=mode;effort=""},label={Text(mode)})}}
+        if(profile.usesReps())Row{listOf("RPE","RIR").forEach{mode->CoachFilterChip(selected=effortMode==mode,onClick={effortMode=mode;effort=""},label={Text(mode)})}}
         val usingRir=profile.usesReps()&&effortMode=="RIR"
         CoachInput(if(usingRir)"Reps in reserve (optional)"else "Set RPE 0–10 (optional)",effort,{effort=it},true)
         CheckRow("Warm-up set",warmUp,{warmUp=it})

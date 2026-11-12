@@ -3133,6 +3133,68 @@ class CoachingScreenshotTest {
         Assert.assertTrue(tabs.first().config[SemanticsProperties.Selected])
     }
 
+    @Test
+    fun capturesCompactLibraryFiltersAndRealDetailTabsInAllModes() {
+        val originalWidth = context.resources.configuration.screenWidthDp
+        val originalSize =
+            Regex("Override size: ([0-9]+x[0-9]+)").find(shell("wm size"))?.groupValues?.get(1)
+        val density = context.resources.displayMetrics.density
+        try {
+            withRefinementCaptureModes { suffix ->
+                if (suffix == "-large-font") {
+                    closeScenario()
+                    scenario = null
+                    shell(
+                        "wm size ${kotlin.math.round(320f * density).toInt()}x${kotlin.math.round(720f * density).toInt()}"
+                    )
+                    scenario = ActivityScenario.launch(CoachActivity::class.java)
+                    awaitHomeReady(false)
+                    compose.waitUntil(20000) {
+                        actualMaterialWindow()?.let {
+                            it.widthDp in 319..321 &&
+                                it.decorWidthDp in 319f..321f &&
+                                it.fontScale >= 1.99f &&
+                                it.focused
+                        } == true
+                    }
+                    awaitMaterialSystemBars(false, "library-narrow200")
+                }
+                clickOriginalNavigationTab("Strength")
+                compose.onNodeWithText("Exercises").performScrollTo().performClick()
+                await("Search exercises or aliases")
+                capture("exercise-library-refined$suffix")
+                compose.onNodeWithTag("exercise-browse-Body area").performScrollTo().performClick()
+                compose.onNodeWithTag("exercise-area-CHEST").performScrollTo().performClick()
+                capture("exercise-filters-refined$suffix")
+                compose
+                    .onNodeWithTag("exercise-search")
+                    .performScrollTo()
+                    .performTextReplacement("Bench Press")
+                androidx.test.espresso.Espresso.closeSoftKeyboard()
+                compose
+                    .onNodeWithTag("exercise-browser-list")
+                    .performScrollToNode(hasTestTag("exercise-row-bench-press"))
+                compose.waitUntil(20000) {
+                    compose
+                        .onAllNodesWithTag("exercise-thumbnail-ready-bench-press")
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+                }
+                capture("exercise-library-rows-refined$suffix")
+                compose.onNodeWithTag("exercise-row-bench-press").performClick()
+                await("Overview")
+                capture("exercise-detail-tabs-refined$suffix")
+            }
+        } finally {
+            closeScenario()
+            scenario = null
+            shell("wm size ${originalSize ?: "reset"}")
+            compose.waitUntil(20000) {
+                context.resources.configuration.screenWidthDp == originalWidth
+            }
+        }
+    }
+
     private fun withRefinementCaptureModes(block: (String) -> Unit) {
         val prefs =
             context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
