@@ -81,13 +81,13 @@ fun GymNowScreen(
         state.notice?.let { message -> SemanticCard(Tile.Insight) { Text(message) } }
         if (state.view?.pending() != null || state.association?.pending() != null) {
             SemanticCard(Tile.Warning) {
-                Text("Save needs acknowledgement", style = MaterialTheme.typography.titleLarge)
+                Text("Confirm your saved action", style = MaterialTheme.typography.titleLarge)
                 Text(
-                    "Your entered values are retained. Retry the same write before changing this workout."
+                    "Your entered values are kept, but saving has not been confirmed. Retry the same action before changing this workout."
                 )
                 Button(onClick = model::retry, enabled = !state.busy) { Text("Retry saved action") }
                 TextButton(onClick = { confirmReload = true }, enabled = !state.busy) {
-                    Text("Review saved evidence instead")
+                    Text("Review saved workout instead")
                 }
             }
         }
@@ -136,13 +136,13 @@ fun GymNowScreen(
                         Text("Start open workout")
                     }
                     Text(
-                        "Choose exercises as you go. No prescribed sets or loads.",
+                        "Choose exercises as you go. You choose the sets and weights.",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
                 EntryButton(
                     "Start planned workout",
-                    "Use the exact retained programme session",
+                    "Follow the session saved in your programme",
                     mutable,
                 ) {
                     section = "Planned workouts"
@@ -396,7 +396,7 @@ fun GymNowScreen(
             title = { Text("Reload saved evidence?") },
             text = {
                 Text(
-                    "This leaves the unacknowledged action and loads what is actually stored. Your form values remain available to review. A saved interrupted workout requires explicit recovery."
+                    "This stops waiting for confirmation and loads what is actually stored. Your form values remain available to review. A saved interrupted workout requires explicit recovery."
                 )
             },
             confirmButton = {
@@ -612,7 +612,7 @@ private fun OneOffWorkoutPicker(
                 Text(suggestion.explanation())
                 suggestion.definition().slots().forEach { slot ->
                     Text(slot.exercise().name(), style = MaterialTheme.typography.titleMedium)
-                    Text(gymTargetDescription(slot))
+                    PlainWorkoutTarget(slot)
                 }
                 suggestion.limitations().forEach { limitation -> Text(limitation) }
                 Text(

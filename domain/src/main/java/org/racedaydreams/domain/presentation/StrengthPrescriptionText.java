@@ -209,6 +209,13 @@ public final class StrengthPrescriptionText {
         return minutes == 0 ? s : remainder == 0 ? m : m + " and " + s;
     }
 
+    /** The same display scale used by structured strength instructions; no RIR conversion. */
+    public static String effortDescription(double value) {
+        return Double.isFinite(value) && value >= 1 && value <= 10
+                ? effortWord(value)
+                : "no effort target available";
+    }
+
     private static String effortWord(double value) {
         if (value <= 2) return "very light";
         if (value <= 4) return "light";

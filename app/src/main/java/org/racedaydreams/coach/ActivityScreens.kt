@@ -355,6 +355,9 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             }
         }
         CoachHeading("Distance splits")
+        Text(
+            "See the time and pace for each completed kilometre or mile. A final shorter section is shown separately when recorded."
+        )
         CheckRow("Show mile splits instead of kilometre splits", imperial) { imperial = it }
         val splitAnalysis = analysis
         if (splitAnalysis == null) Text("Analysing retained samples…")

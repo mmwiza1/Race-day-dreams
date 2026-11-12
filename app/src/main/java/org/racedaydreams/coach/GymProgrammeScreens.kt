@@ -62,7 +62,7 @@ private fun prescription(e:GymProgramme.Prescription,effort:GymProgramme.Effort)
         session.exercises().forEach { exercise ->
             CoachCard {
                 Text(ExerciseCatalog.definition(exercise.exerciseId())?.exercise()?.name() ?: exercise.exerciseId(), style=MaterialTheme.typography.titleLarge)
-                Text(prescription(exercise,p.settings().effort()))
+                Text("Complete ${exercise.sets()} sets of ${if(exercise.minimumReps()>0)"${exercise.minimumReps()}–${exercise.maximumReps()} repetitions" else exercise.seconds()?.let{org.racedaydreams.domain.presentation.StrengthPrescriptionText.duration(it.toLong())}?:"${exercise.metres()} metres"}. Rest for ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.duration(exercise.restSeconds().toLong())} between sets.");WhyDetails(prescription(exercise,p.settings().effort()),"Exact training target")
                 exercise.referenceLoadKg()?.let { kg ->
                     Text("Your optional load reference: ${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}")
                 }

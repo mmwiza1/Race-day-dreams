@@ -165,6 +165,8 @@ class AndroidGateTest(unittest.TestCase):
         selected = next(arg for arg in guards if arg.startswith('-Pandroid.testInstrumentationRunnerArguments.class='))
         self.assertIn('org.racedaydreams.coach.ExerciseLibraryDesignTest', selected)
         self.assertIn('CoachingScreenshotTest#capturesCompactLibraryFiltersAndRealDetailTabsInAllModes', selected)
+        self.assertIn('org.racedaydreams.coach.PlainEnglishUiTest', selected)
+        self.assertIn('CoachingScreenshotTest#capturesPlainBackupExplanationInAllModes', selected)
         self.assertIn('CoachOnboardingTest#canContinueWithoutHealthAndSaveGoalThroughExistingForm', selected)
         self.assertIn('CoachingScreenshotTest#capturesPublicPermissionRationaleInLightDarkAndLargeText', selected)
         self.assert_reader_stopped()

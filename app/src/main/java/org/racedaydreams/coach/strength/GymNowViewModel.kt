@@ -693,7 +693,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
             mutable.update {
                 it.copy(
                     notice =
-                        "Saved evidence reloaded. Unacknowledged entry values remain in the form; review before saving again."
+                        "Saved workout reloaded. Your last entry is still in the form; check it before saving again."
                 )
             }
         }

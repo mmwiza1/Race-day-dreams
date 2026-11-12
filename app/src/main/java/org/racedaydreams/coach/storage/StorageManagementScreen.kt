@@ -49,7 +49,9 @@ fun StorageManagementContent(
     CoachPage {
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
         CoachHeading("Storage & recording detail")
-        Text("Keep your training history. Choose how much detailed recording evidence to retain.")
+        Text(
+            "Keep your training history. Choose how long to keep detailed GPS and sensor recordings."
+        )
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         state.error?.let {
             Text(
@@ -111,11 +113,11 @@ fun StorageManagementContent(
                     "Database and working files: about ${storageBytes(inventory.usage().databaseFileBytes())}"
                 )
                 Text(
-                    "Raw recording payload: about ${storageBytes(inventory.usage().detailPayloadBytes())}"
+                    "Detailed GPS and sensor data: about ${storageBytes(inventory.usage().detailPayloadBytes())}"
                 )
                 Text("${inventory.usage().activityRows()} activity summaries retained")
                 Text(
-                    "Payload bytes exclude indexes and database overhead. Deleting rows does not necessarily shrink SQLite files or reclaim device storage immediately."
+                    "This is the size of the stored recording content, not the whole database. Removing detail may not immediately free the same amount of device storage."
                 )
                 TextButton(
                     onClick = { details = !details },
@@ -131,7 +133,7 @@ fun StorageManagementContent(
                         "${inventory.usage().pointRows()} GPS/sensor points · ${inventory.usage().eventRows()} recording events"
                     )
                     Text(
-                        "Activity-summary payload: about ${storageBytes(inventory.usage().activityPayloadBytes())}. Other programme, gym and health records are additional retained data; this is not a whole-device storage scan."
+                        "Activity-summary data: about ${storageBytes(inventory.usage().activityPayloadBytes())}. Other programme, gym and health records are additional retained data; this is not a whole-device storage scan."
                     )
                     Text(
                         "Database file estimate includes the database, write-ahead log and shared-memory files. Cache, bundled artwork and exported files held by other apps are not included."
@@ -159,7 +161,7 @@ fun StorageManagementContent(
                 Text("Cleanup preview", style = MaterialTheme.typography.titleLarge)
                 preview.policy().cutoff(preview.inspectedAt())?.let { cutoff ->
                     Text(
-                        "Eligibility cutoff: " +
+                        "Detail recorded before: " +
                             java.time.format.DateTimeFormatter.ofPattern(
                                     "d MMMM uuuu 'at' HH:mm 'UTC'",
                                     Locale.UK,

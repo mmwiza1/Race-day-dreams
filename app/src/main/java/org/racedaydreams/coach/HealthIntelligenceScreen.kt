@@ -24,15 +24,17 @@ import java.time.LocalDate
         val summary=org.racedaydreams.domain.presentation.HealthContextSummary.of(t)
         GuidanceCard {
             Text(summary.title(),style=MaterialTheme.typography.titleMedium)
+            if(t.metric()==HealthIntelligence.Metric.HRV_RMSSD)Text("The gaps between heartbeats vary. Look at patterns from the same source, rather than one reading.")
             Text(summary.value(),style=MaterialTheme.typography.headlineMedium)
             if(t.recent()!=null)Text("Recent daily average",style=MaterialTheme.typography.labelSmall)
             Text(summary.context())
             WhyDetails("Recent: ${t.recent()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"} · Reference: ${t.baseline()?.let{String.format(java.util.Locale.UK,"%.1f",it)}?:"Unavailable"}\n${t.recentDays()}/7 recent days · ${t.referenceDays()}/28 reference days\nSource: ${t.source()}\n${t.limitation()}" + if(t.metric()==HealthIntelligence.Metric.SLEEP_MINUTES)"\nSleep-session duration may include awake time; sleep stages are not used." else "", "View evidence & sources")
+            if(t.metric()==HealthIntelligence.Metric.HRV_RMSSD)WhyDetails("HRV means heart-rate variability. These readings use RMSSD, measured in milliseconds (ms). Different devices or methods may not be comparable. Missing or old readings do not establish how recovered you are.","About this measurement")
         }
     }
-    WhyDetails("Choose only the optional signals you want. HRV remains source-comparable; steps use provider-priority aggregation. Permissions can be denied or revoked without blocking training. No information leaves your device.","About optional permissions")
+    WhyDetails("Choose only the optional signals you want. Heart-rate variability compares readings from the same source. It describes changes in the gaps between heartbeats, not a diagnosis or a readiness score. Step totals respect your chosen provider priority. Permissions can be denied or revoked without blocking training. No information leaves your device.","About optional permissions")
     Button(onClick={launcher.launch(HealthIntelligenceGateway.permissions)},enabled=!busy&&available){Text("Choose optional health permissions")}
     OutlinedButton(onClick={refresh()},enabled=!busy&&available){Text("Refresh health context")}
     message?.let{Text(it)}
-    Text("Consumer health measurements provide context, not diagnoses. Sleep stages are not used. One unusual measurement is not a reason to restructure training.")
+    Text("Consumer health measurements provide context, not diagnoses. Sleep stages are not used. Missing or old readings limit what can be concluded. One unusual measurement is not a reason to restructure training.")
 }

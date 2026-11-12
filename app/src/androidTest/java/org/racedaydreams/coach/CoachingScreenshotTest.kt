@@ -3199,6 +3199,24 @@ class CoachingScreenshotTest {
         }
     }
 
+    @Test
+    fun capturesPlainBackupExplanationInAllModes() {
+        withRefinementCaptureModes { suffix ->
+            click("Settings")
+            await("Local backup and restore")
+            compose.onNodeWithText("Local backup and restore").performScrollTo()
+            capture("settings-backup-plain$suffix")
+            compose.onNodeWithText("Choose backup to restore").performScrollTo().assertIsDisplayed()
+            compose
+                .onNodeWithText(
+                    "Restore validates the file before replacing local app data. Merge restore is not currently supported."
+                )
+                .performScrollTo()
+                .assertIsDisplayed()
+            capture("settings-backup-actions-plain$suffix")
+        }
+    }
+
     private fun awaitExerciseSearch() {
         compose.waitUntil(20000) {
             compose.onAllNodesWithTag("exercise-search").fetchSemanticsNodes().isNotEmpty()

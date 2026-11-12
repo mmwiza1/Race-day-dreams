@@ -113,6 +113,7 @@ fun StrengthAnalyticsScreen(
             SemanticCard(Tile.Insight) {
                 Text("Primary areas this week", style = MaterialTheme.typography.titleLarge)
                 Text("An approximate breakdown of your recorded working sets.")
+                Text(org.racedaydreams.domain.presentation.AthleteLanguage.WORKING_SETS)
                 current.primarySetShares().forEach { (area, shares) ->
                     Text("${area.label()} · ${decimal(shares)} set shares")
                 }
@@ -178,7 +179,7 @@ fun StrengthAnalyticsScreen(
                             Text("${decimal(exercise.metres())} m recorded distance")
                         exercise.loadRepetitions()?.let {
                             Text(
-                                "${decimal(it)} kg × repetitions · this exact external-load exercise only"
+                                "${decimal(it)} kg × repetitions · total recorded weight across repetitions for this exercise only"
                             )
                         }
                     }

@@ -89,9 +89,7 @@ fun SettingsScreen(
     ReminderSettings(state, model)
     CoachCard {
         Text("Local backup and restore", style = MaterialTheme.typography.titleLarge)
-        Text(
-            "A backup preserves your app-specific goals, manual entries, shoes, notes and results in an inspectable JSON file. Also use Record a run → Back up raw recordings to preserve GPS coordinates, sensor observations and unfinished runs in a checksummed archive. Raw Health Connect records are omitted; they can be imported again. Your chosen file provider controls where the file is stored."
-        )
+        Text(org.racedaydreams.domain.presentation.AthleteLanguage.BACKUP)
         Button(
             export,
             enabled = !state.busy,

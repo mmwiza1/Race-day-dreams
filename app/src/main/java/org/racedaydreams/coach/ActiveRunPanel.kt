@@ -197,7 +197,7 @@ fun ActiveRunPanel(
                 else
                     step.rpe()?.let {
                         Text(
-                            "Aim for a perceived effort of ${decimal(it)}/10. Use how hard running feels to guide you."
+                            "Aim for a ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)} effort. Use how hard running feels to guide you."
                         )
                     }
             }
@@ -219,6 +219,14 @@ fun ActiveRunPanel(
                 Text(if (details) "Hide details" else "Workout details / controls")
             }
             if (details) {
+                Text(
+                    "Current pace reflects recent reliable GPS movement. Average pace summarises the run using the timing shown. Weak GPS can make current pace unavailable; no missing movement is invented."
+                )
+                w?.current()?.rpe()?.let {
+                    Text(
+                        "RPE (rating of perceived effort): ${decimal(it)}/10. This is how hard the planned section should feel."
+                    )
+                }
                 val dream by
                     org.racedaydreams.recording.RunRecordingService.dreamRoute.collectAsState()
                 dream?.let { route ->

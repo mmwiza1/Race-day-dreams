@@ -109,7 +109,9 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
             if (!pending) {
                 SemanticCard(Tile.Insight) {
                     Text("Choose a workout or recover saved evidence in Gym Now.")
-                    Text("A new app process never restarts a workout clock automatically.")
+                    Text(
+                        "After an interruption, review the saved workout before restarting its timer."
+                    )
                 }
             }
         } else if (terminal) {
@@ -200,7 +202,7 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                 SemanticCard(Tile.Planned) {
                     Text(slot.exercise().name(), style = MaterialTheme.typography.headlineSmall)
                     Text(gymExerciseContext(slot.exercise()))
-                    Text(gymTargetDescription(slot))
+                    PlainWorkoutTarget(slot)
                     val working = currentSets.count { !it.actual().warmUp() }
                     Text(
                         if (slot.target() == null) "$working working sets saved"
@@ -242,6 +244,9 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                     if (slot.supersetGroup() != null)
                         SemanticCard(Tile.Strength) {
                             Text("Superset", style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                "Work through these exercises in order, then repeat the round. You can rest or skip a movement when needed."
+                            )
                             val next =
                                 org.racedaydreams.domain.strength.GymSupersets.next(execution)
                             Text(
@@ -311,6 +316,11 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
 
                 SemanticCard(Tile.Strength) {
                     Text("Current set", style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        org.racedaydreams.domain.presentation.AthleteLanguage.measurement(
+                            slot.exercise()
+                        )
+                    )
                     val profile = slot.exercise().measurement()
                     if (
                         profile.usesLoad() &&
@@ -368,6 +378,12 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                             }
                         }
                     }
+                    Text(
+                        if (state.form.rir && profile.usesReps())
+                            "RIR counts how many more repetitions you could have completed. Leave it blank if you do not know."
+                        else
+                            "RPE is how hard the set felt, from 1 to 10. Leave it blank if you do not know."
+                    )
                     GymActualField(
                         state.form.effort,
                         { value -> model.updateForm { it.copy(effort = value) } },
@@ -564,7 +580,7 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
 internal fun GymPendingWriteCard(model: GymNowViewModel, enabled: Boolean) {
     var confirmReload by rememberSaveable { mutableStateOf(false) }
     SemanticCard(Tile.Warning) {
-        Text("Save acknowledgement pending", style = MaterialTheme.typography.titleMedium)
+        Text("Saving not yet confirmed", style = MaterialTheme.typography.titleMedium)
         Text(
             "Your entered values are retained. Retry the same save before another action; it may already be safely stored."
         )
@@ -589,7 +605,7 @@ internal fun GymPendingWriteCard(model: GymNowViewModel, enabled: Boolean) {
             title = { Text("Reload the saved workout?") },
             text = {
                 Text(
-                    "Use this if an exact retry keeps reporting a conflict. Unacknowledged values stay in the form, but are not claimed as saved. An unfinished workout will require an explicit resume; completed association choices are reloaded without restarting execution."
+                    "Use this if an exact retry keeps reporting a conflict. Values whose save has not been confirmed stay in the form; they are not presented as saved. An unfinished workout will require an explicit resume; completed association choices are reloaded without restarting execution."
                 )
             },
             confirmButton = {

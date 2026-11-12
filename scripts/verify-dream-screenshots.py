@@ -10,6 +10,7 @@ CITIES = ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"
 DREAM_REQUIRED = tuple(f"dream-route-{city}{suffix}.png" for city in CITIES for suffix in ("", "-landmarks"))
 # Preserve every established whole-app capture when adding the seven lower Dream panels.
 OTHER_REQUIRED = (
+
     'activity-detail.png',
     'body-weight.png',
     'calendar-month.png',
@@ -121,7 +122,8 @@ PERMISSION_REQUIRED = ('permission-rationale-light.png', 'permission-rationale-d
 RUNNING_REFINEMENT_REQUIRED = tuple(f"{scene}{suffix}.png" for scene in ("live-refined-statistics", "live-refined-route", "live-refined-paused", "running-records-refined", "running-trends-distance", "running-trends-pace", "running-trends-time", "running-heart-rate", "running-heart-rate-empty", "run-summary-refined", "run-splits-refined") for suffix in ("", "-dark", "-large-font")) + ("live-refined-route-empty-large-font.png",)
 RUNNING_REFINEMENT_DETAIL_REQUIRED = ("live-refined-narrow-large-font.png", "live-refined-narrow-metrics-large-font.png", "running-records-third-large-font.png", "running-heart-rate-chart-large-font.png")
 LIBRARY_REFINEMENT_REQUIRED = tuple(f"{scene}{suffix}.png" for scene in ("exercise-library-refined", "exercise-library-rows-refined", "exercise-filters-refined", "exercise-detail-tabs-refined") for suffix in ("", "-dark", "-large-font"))
-REQUIRED = tuple(sorted(LIBRARY_REFINEMENT_REQUIRED + RUNNING_REFINEMENT_DETAIL_REQUIRED + RUNNING_REFINEMENT_REQUIRED + PERMISSION_REQUIRED + MATERIAL_REQUIRED + CATALOGUE_EXPANSION_REQUIRED + STORAGE_REQUIRED + BODY_REQUIRED + RECOVERY_REQUIRED + STRENGTH_INTELLIGENCE_REQUIRED + GYM_TOOLS_REQUIRED + PROGRAMME_REVIEW_REQUIRED + PROGRAMME_SWAP_REQUIRED + REVISION_REQUIRED + TEMPLATE_REQUIRED + OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED + GYM_REQUIRED + PROGRAMMING_REQUIRED))
+PLAIN_LANGUAGE_REQUIRED = tuple(f"{scene}{suffix}.png" for scene in ("settings-backup-plain", "settings-backup-actions-plain") for suffix in ("", "-dark", "-large-font"))
+REQUIRED = tuple(sorted(PLAIN_LANGUAGE_REQUIRED + LIBRARY_REFINEMENT_REQUIRED + RUNNING_REFINEMENT_DETAIL_REQUIRED + RUNNING_REFINEMENT_REQUIRED + PERMISSION_REQUIRED + MATERIAL_REQUIRED + CATALOGUE_EXPANSION_REQUIRED + STORAGE_REQUIRED + BODY_REQUIRED + RECOVERY_REQUIRED + STRENGTH_INTELLIGENCE_REQUIRED + GYM_TOOLS_REQUIRED + PROGRAMME_REVIEW_REQUIRED + PROGRAMME_SWAP_REQUIRED + REVISION_REQUIRED + TEMPLATE_REQUIRED + OTHER_REQUIRED + DREAM_REQUIRED + STRENGTH_REQUIRED + GYM_REQUIRED + PROGRAMMING_REQUIRED))
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_FILE_BYTES = 16 * 1024 * 1024
 MAX_DECODED_BYTES = 42 * 1024 * 1024
