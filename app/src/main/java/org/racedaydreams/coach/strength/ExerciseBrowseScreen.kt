@@ -240,7 +240,11 @@ fun ExerciseBrowseScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
             ) {
-                Column(Modifier.weight(1f)) { CoachHeading("Exercise Library") }
+                Column(Modifier.weight(1f)) {
+                    CoachHeading(
+                        if (shortcut == "Excluded") "Excluded exercises" else "Exercise Library"
+                    )
+                }
                 IconButton(
                     onClick = {
                         if (onCreateClassifiedCustom != null) onCreateClassifiedCustom()
@@ -395,7 +399,6 @@ fun ExerciseBrowseScreen(
             }
             if (shortcut == "Excluded")
                 item(key = "exclusion-explanation") {
-                    Text("Excluded exercises", style = MaterialTheme.typography.headlineSmall)
                     Text(
                         "Excluded exercises are not selected for new programmes or alternatives. Existing workouts, favourites and PBs remain. Restore an exercise to make it eligible again."
                     )

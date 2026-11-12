@@ -587,6 +587,11 @@ class CoachingScreenshotTest {
         compose.onNodeWithText("Search exercises or aliases").performTextReplacement("")
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithTag("exercise-shortcut-Excluded").performScrollTo().performClick()
+        // This mode's title is the real library header. Bring the lazy header into view
+        // rather than expecting a redundant body title to remain composed at any scroll.
+        compose
+            .onNodeWithTag("exercise-browser-list")
+            .performScrollToNode(hasText("Excluded exercises"))
         await("Excluded exercises")
         alignHeading("Excluded exercises")
         capture("exercise-excluded")

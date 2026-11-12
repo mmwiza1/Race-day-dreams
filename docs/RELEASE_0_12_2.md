@@ -16,6 +16,7 @@ A cohesive Material You refinement, with compact illustrated exercise browsing a
 ## Fixes
 
 - Separate wrapped filter rows with consistent horizontal and vertical gaps.
+- Give Excluded exercises a clear primary heading while preserving restore and retained history.
 - Stack exercise-card content at large text sizes while retaining the illustration and complete labels.
 
 ## Known limitations

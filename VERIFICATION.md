@@ -22,6 +22,14 @@ actualbitmap readiness and20s bound; the existing newUIcase now also asserts tha
 thumbnail is displayed. TestAPK/lint PASS57tasks/2m25s for this test-only correction.
 No full suite or visual pass is inferred from the partial run.
 
+At8c72c5f, API28/35 passed13guards then ran538full tests with1failureeach:
+legacy Excluded-exercises capture could not align its body heading high enough in the now
+compact list (361/382px, original100..300band). The production fix makes Excludedexercises
+the real primary mode heading, removes the duplicate body title, and scrolls to that actual
+lazy header before the unchanged viewport assertion. NewUIcase verifies its heading semantics.
+Debug/testAPK/lint75tasks/4m11s and finaltestAPK/lint57tasks/3m9s pass. API36 at8c failed
+SystemUI startup before tests; no old-head retry while this real app fix is required.
+
 Expected runtime gate:538full instrumentation tests/API (534retained plus3newUI regressions
 and1production-capture method),433authentic screenshots/API. These are expectations, not
 observed passes. Inspect complete logs and actual images before accepting/merging. See

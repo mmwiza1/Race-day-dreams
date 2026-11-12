@@ -94,6 +94,20 @@ class ExerciseLibraryDesignTest {
         compose
             .onNodeWithTag("exercise-thumbnail-ready-bench-press", useUnmergedTree = true)
             .assertIsDisplayed()
+        compose.onNodeWithTag("exercise-search").performScrollTo().performTextReplacement("")
+        compose.onNodeWithTag("exercise-shortcut-Excluded").performScrollTo().performClick()
+        compose
+            .onNodeWithTag("exercise-browser-list")
+            .performScrollToNode(hasText("Excluded exercises"))
+        compose
+            .onNodeWithText("Excluded exercises")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .assert(
+                SemanticsMatcher.keyIsDefined(
+                    androidx.compose.ui.semantics.SemanticsProperties.Heading
+                )
+            )
     }
 
     @Test
