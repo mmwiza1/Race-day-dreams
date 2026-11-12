@@ -21,7 +21,7 @@ supported boundaries and sample evidence; no zone totals are fabricated.
 Run summaries, qualified splits and history gain clearer hierarchy and large-text layouts.
 Existing bottom navigation icons, labels, order, destinations, branding, engines and data
 formats are preserved. No new dependency or permission. See [focused scope](docs/MATERIAL3_RUNNING_REFINEMENT.md)
-and [patch notes](docs/RELEASE_0_12_1.md). The patch passed533tests and421captures perAPI28/35/36, with source-bound light/dark/200%
+and [patch notes](docs/RELEASE_0_12_1.md). The patch passed 534 tests and 421 captures per API28/35/36, with source-bound light/dark/200%
 visual review. Exact delivery-head/mainCI and publication are tracked in VERIFICATION.md.
 
 ## Preserved 0.12.0-test1 — Material You / Material 3 Expressive UI
@@ -136,10 +136,10 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
 data, not UI mockups. The current **421-image 0.12.1 gallery** was captured from source
-`fd3f1afbc046e0706e911484331f718d8677ba43` after
-[workflow 43110530782](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43110530782)
-passed on API 28, 35 and 36: nine guard methods, 533 full instrumentation cases and 421
-captures on each API. Canonical commit `1743a7b` retains those production-screen renders
+`ffeb91a5afbe8a30682442600623b1551dff0f52` after
+[workflow 43120014729](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43120014729)
+passed on API 28, 35 and 36: nine guard methods, 534 full instrumentation cases and 421
+captures on each API. Canonical commit `908a389` retains those production-screen renders
 and their source fingerprint. Image/source integrity, direct visual inspection and APK
 acceptance remain distinct gates; their current results are in [VERIFICATION.md](VERIFICATION.md)
 and [the visual review](docs/VISUAL_REVIEW_0_12_1.md). The loop-marker refinement is captured and visually verified. No physical S24 or human TalkBack result

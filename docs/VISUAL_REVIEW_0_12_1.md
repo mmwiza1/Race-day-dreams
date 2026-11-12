@@ -1,7 +1,7 @@
 # Running refinement visual review — 0.12.1-test1
 
 **Visual/source gate PASS**,11November2026, source
-`fd3f1afbc046e0706e911484331f718d8677ba43`.
+`ffeb91a5afbe8a30682442600623b1551dff0f52`.
 All38new API35 frames were opened in labelled contact sheets; light/dark/200% route frames
 were additionally opened at native size. Six retained views were reopened: device-lightHome,
 Progress, History, monthCalendar, branded200%Home and darkStrengthHome.
@@ -40,13 +40,14 @@ No further blocking layout, contrast or missing-primary-action issue was found i
 
 ## Capture integrity and coverage
 
-[Workflow43110530782](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43110530782)
-passed EACH API28/35/36:533full tests and421authentic frames. The API36 pre-test Launcher ANR
-failed closed; one investigated fresh-runner retry passed with unchanged source/assertions.
-Canonical bot1743a7b carries421PNGs matching reviewed rawAPI35artifact13897288491 byte-for-byte.
-Strict PNG validation passes. ZIP56,027,725bytes, SHA256
-`4ec003cd83dcf13bd66c3c74dbb9b135ad48be91bb6d59e415eda7364c967f03`.
-Source fingerprint `b6b0545d473fda91f629ef3907f998724451f83b6c48002d03921173bcfd3e89`.
+[Workflow43120014729](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43120014729)
+passed EACH API28/35/36:534full tests and421authentic frames on the first attempt for this
+source, including the new reset concurrency case. Earlier source-specific failures and fixes
+are recorded in VERIFICATION.md.
+Canonical bot908a389 carries421PNGs matching reviewed rawAPI35artifact13901258037 byte-for-byte.
+Strict PNG validation passes. ZIP55,838,361bytes, SHA256
+`b0c60a4d826f4f52c4b403776ee56296439610a34e5b04562ecc501be049d140`.
+Source fingerprint `765334f98d672074212b81c873477c7d2be82e78c2ac81f4d41674e172b0d378`.
 
 Reviewed new names: every `live-refined-*`, `run-summary-refined*`, `run-splits-refined*`,
 `running-records-*`, `running-trends-*` and `running-heart-rate*` frame:38total. This includes

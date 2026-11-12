@@ -38,9 +38,8 @@ Existing navigation icons, labels, ordering, destinations, branding and launcher
 
 ## Verification
 
-The reviewed visual checkpoint passed 533 full instrumentation tests and 421 authentic captures
+The final implementation source passed 534 full instrumentation tests and 421 authentic captures
 on each API28/35/36, plus domain, schema, backup, lint, formatting and guidance checks.
 The loop-marker correction is source-bound and visually verified in light/dark/200% captures.
-A later final-head gate exposed a reset race; its focused concurrency correction and new
-regression require fresh Android verification before delivery. Real-device acceptance remains
-unperformed. See VERIFICATION.md.
+The confirmed-reset concurrency regression passed on all three APIs without weakening file
+verification or other assertions. Real-device acceptance remains unperformed. See VERIFICATION.md.

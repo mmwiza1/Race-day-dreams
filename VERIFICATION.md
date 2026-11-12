@@ -1,32 +1,13 @@
-# Final-head hardening — confirmed-reset regression under verification
-
-Final documentation head4ecc498/workflow43117792685 API35 job130850156831 failed the first
-onboarding guard at23:15:33UTC: clearFixture/SqliteUserPreferencesRepository.clear reported
-“Your local data could not be completely deleted.” Settings/Launcher focus passed. This is
-an app-side reset failure, not the earlier emulator ANR; it is not being blindly retried.
-
-Code inspection establishes an open race window between helper.close() and database file
-verification, since concurrent helper opens use its monitor while deletion did not hold it.
-The focused local correction holds that monitor through close/delete/checks. A new realSQLite
-instrumentation test forces a reader attempt after deletion/before verification. It requires
-reset to finish, the concurrent reader to see no old profile/draft and later saves to work.
-The actual concurrent CI actor remains unidentified; no specific receiver/thread is claimed.
-No deletion/error assertion is removed, and no schema/backup/recording calculation changes.
-
-New expected unfiltered suite **534**, unchanged9guards/421frames. Local fullGradle/domain/
-debugAPK/testAPK/lint PASS79tasks/4m23s; schema75/release9 and pinnedformat120Kotlin/159Java
-pass. Fingerprint `765334f98d672074212b81c873477c7d2be82e78c2ac81f4d41674e172b0d378`.
-Android regression verification for this correction is pending. The previously accepted source and
-visual evidence below remain valid for their named source, not an automatic pass for the fix.
-
 # 0.12.1-test1 — verified software and visual source
 
-Source **fd3f1afbc046e0706e911484331f718d8677ba43** passed complete
-[workflow43110530782](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43110530782).
-Completed logs prove EACH API28/35/36 passed **533 full instrumentation tests** and strict
-**421 authentic screenshot** validation, build/lint and the original focus/guard checks.
-The nine guard methods also run in the full suite; they are not extra unique tests.
-Formatting, guidance and canonical publication succeeded. PR publication correctly skipped.
+Source **ffeb91a5afbe8a30682442600623b1551dff0f52** passed complete
+[workflow 43120014729](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43120014729).
+Each API **28 /35 /36** passed **534 full instrumentation tests** and strict **421 authentic
+captures**, with the original platform-focus checks and nine guard methods. The guards also
+run in the unfiltered suite; they are not additional unique cases. All three completed logs
+were inspected, including START/END for the new confirmed-reset concurrency regression.
+Build, lint, formatting, guidance and canonical publication passed on the first attempt for
+this source. Development publication correctly skipped on a PR.
 
 | Gate | Observed result |
 | --- | --- |
@@ -35,46 +16,57 @@ Formatting, guidance and canonical publication succeeded. PR publication correct
 | Formatting | **120 Kotlin /159 Java**,14 formatter-tool tests |
 | Other checks | **9 release-note,13 runner-helper,21 capture-validator,11 map-source** checks |
 | Guidance/artwork | **220 canonical /14 routine guides;223 exact guidance asset hashes**, existing Dream artwork checks |
-| Local full Gradle | **79 tasks /4m14s**, domain/check, debugAPK, instrumentation compilation and lint; zero lint errors |
+| Local corrected Gradle | **79 tasks /4m23s**, domain/check, debugAPK, instrumentation compilation and lint |
 
-The initial API36 runner failed BEFORE app tests because Launcher ANR held platform focus
-(input dispatch timeout,22:23:45UTC). The guard correctly failed closed despite broadcast-idle.
-One investigated isolated fresh-runner retry, unchanged source/assertions, passed actual
-Settings/Launcher focus and the full533-case suite. API28/35 successful results were retained.
-This does not prove universal emulator reliability or physical-device acceptance. No test,
-assertion, API, capture requirement or timeout was weakened. An earlier52774f61 matrix also
-passed533/421 on each API after correcting only new200% accessible navigation selectors.
+## Failures investigated and corrected
+
+The earlier final-docs head4ecc498/workflow43117792685 failed API35's onboarding fixture clear:
+SQLite reported that files remained after confirmed deletion. Platform focus passed; it was
+not the prior Launcher ANR. Inspection exposed a reopen window between helper.close() and
+file verification. Confirmed reset now holds the shared helper monitor through close, deletion
+and checks, serializing those steps with helper opens. All failure checks remain intact.
+
+The new realSQLite test forces a reader attempt after deletion/before verification, then
+requires reset completion, no old profile/draft and a successful later save. It passed on all
+three APIs. The actual concurrent actor in the original CI failure is unidentified; no specific
+receiver/thread is claimed. There is no schema change, migration or historical recalculation.
+No failing test was weakened or blindly rerun. This is the only persistence-code correction.
+
+Earlier UI sourcefd3f1af passed533/421 on each API after one investigated API36 fresh-runner
+retry for a pre-test Launcher ANR/focus block. That failed-closed infrastructure event remains
+historical; it does not establish universal emulator or hardware reliability. The current
+534-case source passed its first full matrix. No API, assertion, capture or timeout was removed.
 
 ## Authentic screenshots and direct comparison
 
-Canonical bot **1743a7b** was safely fast-forwarded, preserving local documentation.
-Source metadata names fd3f1af above; actual source fingerprint equals the recorded value:
-`b6b0545d473fda91f629ef3907f998724451f83b6c48002d03921173bcfd3e89`.
-All **421** canonical PNGs match raw API35 artifact **13897288491** byte-for-byte.
-ZIP **56,027,725bytes**, SHA256
-`4ec003cd83dcf13bd66c3c74dbb9b135ad48be91bb6d59e415eda7364c967f03`.
+Canonical bot **908a389** was safely fast-forwarded, preserving local documentation.
+Metadata names ffeb91a above; actual and recorded source fingerprints match:
+`765334f98d672074212b81c873477c7d2be82e78c2ac81f4d41674e172b0d378`.
+All **421** canonical PNGs match reviewed raw API35 artifact **13901258037** byte-for-byte.
+ZIP **55,838,361bytes**, SHA256
+`b0c60a4d826f4f52c4b403776ee56296439610a34e5b04562ecc501be049d140`.
 
-All38new frames were opened again from this exact source, plus six retained representative
+All38new frames were reopened from this exact source, plus six retained representative
 Home/Progress/History/Calendar/200%Home/darkStrength views. Native light/dark/200% route views
-confirm both markers remain visible on a loop. The earlier hidden-start-square issue is fixed
-by drawing its outline outside/after the latest ring; coordinates and recording are unchanged.
-No further blocking clipping, overlap, contrast or control issue was observed. The owner's
-three inline references remain separate; no mockup is labelled an app capture. Detailed
-comparison and meaningful scroll/selection states are in docs/VISUAL_REVIEW_0_12_1.md.
+confirm both markers remain visible on a loop. The hidden-start-square issue is corrected
+without moving coordinates. No further blocking clipping, overlap, contrast or missing action
+was observed. The three owner references remain separate and unmodified. See
+[the visual review](docs/VISUAL_REVIEW_0_12_1.md) for comparison and meaningful scroll states.
 
 ## Candidate APK and preserved contracts
 
-API35 artifact **13897906583** verified ZIP **29,767,677bytes**, SHA256
-`f28058c313372a8cf286e08383cffabf8003eac932dc09a74832d47c4072b4fb`.
+API35 artifact **13901343053** verified ZIP **29,767,758bytes**, SHA256
+`28dc41680a003be94527f965178aedfa668b2b1cf13163d2a9e2480fab518078`.
 Actual APK **55,578,026bytes**, SHA256
-`126fecb62d8fcb898091b424b069186a0d411bac936d7008b256b3203325c737`.
+`b70fba236a4e0ef708c0d6d00461a6401728dcfa16696f81ff1a1462119bb1a1`.
 aapt confirms **0.12.1-test1 /code17 /minAPI28**, with no INTERNET permission.
-This verified branch candidate is not itself proof of published-main delivery.
+This branch candidate is not itself proof of published-main delivery.
 
 CoachActivity/navigation is byte-identical to main, SHA256
 `98d80b3c3194d441e4ba31b52293bd92d38326aa434f6d3383cc06af0ad899fa`.
-No domain, recording, persistence, HealthConnect, backup, retention, manifest, launcher-icon
-or runtime dependency change. Schema19/rootJSON13/raw3/complete1 remain unchanged.
+Navigation identity, launcher icon, domain calculations, recording, HealthConnect, backups,
+retention and runtime dependencies remain unchanged. The narrow confirmed-reset lock is
+recorded above. Schema19/rootJSON13/raw3/complete1 remain unchanged.
 Exact final documentation-head checks, authorised merge, mainCI and matching rolling public
 APK/source/version/checksum are separate delivery gates tracked in CONTINUE_CODEX.md/PR20.
 

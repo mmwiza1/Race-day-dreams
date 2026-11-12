@@ -1,11 +1,11 @@
 # Focused running refinement —421 verified authentic captures
 
-Current canonical1743a7b identifies sourcefd3f1afbc046e0706e911484331f718d8677ba43 and
-fingerprint `b6b0545d473fda91f629ef3907f998724451f83b6c48002d03921173bcfd3e89`.
-Workflow43110530782 passed533fulltests/421captures EACH API28/35/36, including one investigated
-API36 fresh-runner retry after a pre-test Launcher ANR. No assertions or guards were weakened.
+Current canonical908a389 identifies sourceffeb91a5afbe8a30682442600623b1551dff0f52 and
+fingerprint `765334f98d672074212b81c873477c7d2be82e78c2ac81f4d41674e172b0d378`.
+Workflow43120014729 passed534fulltests/421captures EACH API28/35/36, including the new confirmed-reset
+concurrency regression; all three current-source jobs passed on their first attempt. No assertions or guards were weakened.
 
-All421canonicalPNGs match downloaded rawAPI35artifact13897288491 byte-for-byte; strict PNG
+All421canonicalPNGs match downloaded rawAPI35artifact13901258037 byte-for-byte; strict PNG
 validation passes. The set retains383baseline+38refinement frames. All38newframes and six
 retained views were opened from this exact source against the separate owner references.
 The loop-marker overlap found in the prior source is corrected and visibly verified in light,

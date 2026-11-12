@@ -50,4 +50,5 @@ The final-head onboarding guard exposed an existing confirmed-reset race: a shar
 helper could reopen between close and file verification. The narrow correction serializes
 those reset steps with helper opens; a deterministic realSQLite concurrency regression covers
 the boundary. Failure checks, schema, backups, actual history and recording calculations are
-unchanged. This correction requires its own complete Android/source-bound release gate.
+unchanged. This correction passed the full534-test/421-capture API28/35/36 gate in
+workflow43120014729; its dedicated concurrency regression ran on every API.
