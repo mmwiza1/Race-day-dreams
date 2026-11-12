@@ -1,3 +1,18 @@
+# Focused running refinement — 0.12.1-test1 acceptance
+
+Source7c4f534 passed534full tests and421captures on EACH API28/35/36. Canonicalf2d501b
+matches the reviewed API35rawartifact byte-for-byte. All38newviews and six retained views
+were opened; light/dark/200% loop markers are visibly corrected. Exact delivery-head/mainCI
+and rolling download checks are tracked separately. Do not treat a branch artifact as a
+published-main build. Preserve all0.12 hardware checks below.
+
+Additional owner checks (all UNPERFORMED): safely alternate Statistics/Route while a real
+run records; verify locked-screen recording continues; inspect long elapsed times, large
+fonts, real GPS gaps and pause/resume/Finish confirmation. Inspect Progress ranges,
+selected weeks, ranked result sources, missing HR, run summaries and splits with TalkBack.
+Route is an offline accepted-evidence outline, not street-map navigation. No configured
+personal zone boundaries means no zone-duration or zone-pace claim.
+
 # Material UI acceptance — 0.12.0-test1
 
 Export a complete backup before changing debug-signing builds. Do not uninstall a live

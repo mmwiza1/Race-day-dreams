@@ -7,7 +7,24 @@ A free, open-source, account-free Android running and strength coach.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.12.0-test1 — Material You / Material 3 Expressive UI
+## 0.12.1-test1 — Running and performance visual refinement
+
+Live running leads with elapsed time, prominent distance/pace, optional heart rate and
+real workout progress. Statistics and an offline accepted-route outline are alternative
+views of the same recorder; pause/resume and Finish confirmation retain their controls.
+
+Progress adds selectable four/eight/twelve-week distance, elapsed-pace and time charts,
+ranked recorded results and saved per-run heart-rate summaries. Missing measurements and
+unrecorded weeks stay distinct. Individual heart-rate zones are unavailable without
+supported boundaries and sample evidence; no zone totals are fabricated.
+
+Run summaries, qualified splits and history gain clearer hierarchy and large-text layouts.
+Existing bottom navigation icons, labels, order, destinations, branding, engines and data
+formats are preserved. No new dependency or permission. See [focused scope](docs/MATERIAL3_RUNNING_REFINEMENT.md)
+and [patch notes](docs/RELEASE_0_12_1.md). The patch passed 534 tests and 421 captures per API28/35/36, with source-bound light/dark/200%
+visual review. Exact delivery-head/mainCI and publication are tracked in VERIFICATION.md.
+
+## Preserved 0.12.0-test1 — Material You / Material 3 Expressive UI
 
 A shared adaptive theme brings device colours (Android 12+), a branded blue fallback,
 clearer typography, rounded tonal cards and wide-window navigation to the existing app.
@@ -16,10 +33,8 @@ separates distance, time and pace, keeps controls accessible at large text sizes
 before finishing. Recorded evidence, coaching calculations and all data formats are preserved.
 
 See [design scope](docs/MATERIAL3_UI.md), [release notes](docs/RELEASE_0_12_0.md) and
-[observed verification](VERIFICATION.md). The current development source passed the complete
-API 28/35/36 software gate; the gallery below contains its authentic 0.12 captures.
-Source-bound visual/APK acceptance passed; exact delivery-head checks and main publication
-are tracked separately.
+[observed verification](VERIFICATION.md). The0.12baseline is merged through PR19 and published
+from8269162. The gallery below now shows the0.12.1refinement.
 This remains a test build. The existing Material 3 components are retained; newer experimental
 Expressive motion/loading APIs are not included, and no runtime dependency upgrade is required.
 
@@ -109,8 +124,8 @@ API-35 package. Publication waits for the full API 28/35/36 matrix and canonical
 No permanent stable release is created by merging this test update.
 
 These are **debug-signed test APKs**, not Play Store production packages. Actions
-artifacts for this candidate are named `Race-Day-Dreams-0.12.0-test1-debug-api-35`
-and contain `Race-Day-Dreams-0.12.0-test1-debug.apk`. The rolling download follows the
+artifacts for this candidate are named `Race-Day-Dreams-0.12.1-test1-debug-api-35`
+and contain `Race-Day-Dreams-0.12.1-test1-debug.apk`. The rolling download follows the
 latest verified main and identifies its own version/commit; a branch candidate is not
 silently published as main. Check [VERIFICATION.md](VERIFICATION.md) and export a complete
 local backup before upgrading.
@@ -120,14 +135,14 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The current **383-image 0.12 gallery** was captured from source
-`5d2814331af3f189f38f97d72974b242e398afe8` after
-[workflow 42518618237](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42518618237)
-passed on API 28, 35 and 36: nine guard methods, 517 full instrumentation cases and 383
-captures on each API. Canonical commit `e0bb250` retains those production-screen renders
+data, not UI mockups. The current **421-image 0.12.1 gallery** was captured from source
+`7c4f534e8a02083848807132a88fd3bffc53313d` after
+[workflow 43182469277](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43182469277)
+passed on API 28, 35 and 36: nine guard methods, 534 full instrumentation cases and 421
+captures on each API. Canonical commit `f2d501b` retains those production-screen renders
 and their source fingerprint. Image/source integrity, direct visual inspection and APK
 acceptance remain distinct gates; their current results are in [VERIFICATION.md](VERIFICATION.md)
-and [the visual review](docs/VISUAL_REVIEW_0_12.md). No physical S24 or human TalkBack result
+and [the visual review](docs/VISUAL_REVIEW_0_12_1.md). The loop-marker refinement is captured and visually verified. No physical S24 or human TalkBack result
 is inferred from emulator captures.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
@@ -135,7 +150,11 @@ after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
 | Today | Weekly Plan | Live running | Dream Route |
 | --- | --- | --- | --- |
-| ![Today](docs/screenshots/home-material-brand-light.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live running](docs/screenshots/live-material-brand-light.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
+| ![Today](docs/screenshots/home-material-brand-light.png) | ![Weekly Plan](docs/screenshots/training-plan.png) | ![Live running](docs/screenshots/live-refined-statistics.png) | ![Dream Route · London](docs/screenshots/dream-route-london.png) |
+
+| Recorded route | Ranked results | Weekly distance | Recorded heart rate |
+| --- | --- | --- | --- |
+| ![Offline recorded route](docs/screenshots/live-refined-route.png) | ![Ranked retained results](docs/screenshots/running-records-refined.png) | ![Weekly recorded distance](docs/screenshots/running-trends-distance.png) | ![Recorded heart rate](docs/screenshots/running-heart-rate.png) |
 
 | Strength Today | Programme templates | Dated programme preview | Workout suggestion |
 | --- | --- | --- | --- |

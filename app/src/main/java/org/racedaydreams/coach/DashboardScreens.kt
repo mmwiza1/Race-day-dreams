@@ -31,8 +31,27 @@ import org.racedaydreams.domain.UnitSystem
 }
 @Composable fun ProgressDashboard(state:CoachUiState,open:(String)->Unit)=CoachPage{
     CoachHeading("Progress")
-    DestinationCard("Running PBs","Your results and progression"){open("progress/pbs")}
-    DestinationCard("Training trends","Running volume and workload context"){open("progress/trends")}
+    val week = remember(state.activities) {
+        org.racedaydreams.domain.activity.ActivityAnalytics.weekly(
+            state.activities, java.time.LocalDate.now(), java.time.ZoneId.systemDefault(), 1,
+        ).lastOrNull()
+    }
+    SemanticCard(Tile.Progress) {
+        Text("Your recorded week", style = MaterialTheme.typography.titleMedium)
+        week?.let { recorded ->
+            Text("${shortDate(recorded.weekStart())} onwards · this week is in progress", style = MaterialTheme.typography.bodyMedium)
+            if (recorded.activityCount() == 0) {
+                Text("No runs recorded this week yet", style = MaterialTheme.typography.headlineSmall)
+                Text("Your history will build as you record or import runs.")
+            } else {
+                Text(recorded.distanceMetres()?.let { formatDistance(it, state) } ?: "Distance unavailable", style = MaterialTheme.typography.displaySmall)
+                Text("${recorded.activityCount()} recorded ${if (recorded.activityCount() == 1) "run" else "runs"}")
+                if (recorded.missingDistanceCount() > 0) Text("Distance is missing from ${recorded.missingDistanceCount()} recorded runs; only known distance is shown.")
+            }
+        }
+    }
+    DestinationCard("Running PBs","Ranked retained results, dates and recorded pace"){open("progress/pbs")}
+    DestinationCard("Training trends","Distance, pace, time and recorded heart rate"){open("progress/trends")}
     DestinationCard("Recorded milestones","Running and strength evidence, with optional in-app celebrations"){open("achievements")}
     DestinationCard("Body weight","Recorded measurements, without judgement"){open("progress/weight")}
     DestinationCard("Weekly coaching review","Evidence, recommendations and your decisions"){open("weekly")}

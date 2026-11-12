@@ -1,3 +1,20 @@
+# Focused running refinement —421 verified authentic captures
+
+Current canonicalf2d501b identifies source7c4f534e8a02083848807132a88fd3bffc53313d and
+fingerprint `dd72813b42f73e07b1e291bef014bda72361950bb6d9f34d3a03d50a5addd91a`.
+Workflow43182469277 passed534fulltests/421captures EACH API28/35/36, including the new confirmed-reset
+concurrency regression; all three current-source jobs passed on their first attempt. No assertions or guards were weakened.
+
+All421canonicalPNGs match downloaded rawAPI35artifact13926919951 byte-for-byte; strict PNG
+validation passes. The set retains383baseline+38refinement frames. All38newframes and six
+retained views were opened from this exact source against the separate owner references.
+The loop-marker overlap found in the prior source is corrected and visibly verified in light,
+dark and200%. See VISUAL_REVIEW_0_12_1.md/VERIFICATION.md for review findings and artifact hashes.
+
+Canonical publication retains exact-head/source-fingerprint rules. No app capture replaces a
+reference. Physical devices and humanTalkBack remain unperformed. Earlier capture records below
+are historical and superseded by the source-bound current gallery above.
+
 # Material UI — 0.12 current-source capture gate
 
 Source `5d2814331af3f189f38f97d72974b242e398afe8` passed complete

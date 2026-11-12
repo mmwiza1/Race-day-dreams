@@ -1,6 +1,8 @@
 package org.racedaydreams.data;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteException;
@@ -231,6 +233,64 @@ public final class SqliteUserPreferencesRepositoryTest extends AndroidTestCase {
         repository.clear(); // An already absent database is a successful reset too.
         assertFalse(repository.load().isPresent());
         assertFalse(repository.loadDraft().isPresent());
+        repository.save(halfMarathon());
+        assertEquals(halfMarathon(), repository.load().get());
+    }
+
+    public void testConfirmedClearCannotBeReopenedBeforeFileVerification() throws Exception {
+        repository.save(halfMarathon());
+        repository.saveDraft("{\"version\":1}");
+        SqliteUserPreferencesRepository reader = new SqliteUserPreferencesRepository(getContext());
+        CountDownLatch attemptingRead = new CountDownLatch(1);
+        CountDownLatch readFinished = new CountDownLatch(1);
+        AtomicReference<UserProfile> observed = new AtomicReference<>();
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        Thread concurrentRead = new Thread(() -> {
+            attemptingRead.countDown();
+            try {
+                observed.set(reader.load().orElse(null));
+            } catch (Throwable error) {
+                failure.set(error);
+            } finally {
+                readFinished.countDown();
+            }
+        }, "reset-concurrent-reader");
+        Context deletionBoundary = new ContextWrapper(getContext()) {
+            @Override public Context getApplicationContext() { return this; }
+
+            @Override public boolean deleteDatabase(String name) {
+                boolean deleted = super.deleteDatabase(name);
+                // Force a real reader to attempt reopening AFTER deletion but BEFORE clear's
+                // file checks. Before the fix it completes and recreates the database here;
+                // with an atomic reset it blocks until verification releases the helper.
+                concurrentRead.start();
+                try {
+                    assertTrue(attemptingRead.await(5, TimeUnit.SECONDS));
+                    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                    while (readFinished.getCount() != 0
+                            && concurrentRead.getState() != Thread.State.BLOCKED
+                            && System.nanoTime() < deadline) {
+                        Thread.yield();
+                    }
+                    assertTrue("Reader must reach the deletion boundary, not an arbitrary delay",
+                            readFinished.getCount() == 0
+                                    || concurrentRead.getState() == Thread.State.BLOCKED);
+                    return deleted;
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError(interrupted);
+                }
+            }
+        };
+        try {
+            new SqliteUserPreferencesRepository(deletionBoundary).clear();
+        } finally {
+            assertTrue("Concurrent reader must finish after reset", readFinished.await(5, TimeUnit.SECONDS));
+            concurrentRead.join(5000);
+        }
+        assertNull("Concurrent reopen must not fail", failure.get());
+        assertNull("Confirmed reset must remove the old profile", observed.get());
+        assertFalse(reader.loadDraft().isPresent());
         repository.save(halfMarathon());
         assertEquals(halfMarathon(), repository.load().get());
     }

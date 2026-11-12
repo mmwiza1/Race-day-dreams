@@ -227,6 +227,16 @@
     "app/src/main/java/org/racedaydreams/ui/OnboardingView.java",
     "app/src/main/java/org/racedaydreams/health/HealthPermissionRationaleActivity.kt",
     "app/src/androidTest/java/org/racedaydreams/ui/OnboardingPaletteTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/GateProgressListener.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/GateProgressListener.kt",
+    "app/src/main/java/org/racedaydreams/coach/LiveRecordedRoute.kt",
+    "app/src/main/java/org/racedaydreams/coach/RunSummaryMetrics.kt",
+    "app/src/main/java/org/racedaydreams/coach/RunningPerformancePanels.kt",
+    "app/src/main/java/org/racedaydreams/coach/WeeklyDistanceChart.kt",
+    "app/src/main/java/org/racedaydreams/coach/ProgressScreens.kt",
+    "app/src/main/java/org/racedaydreams/coach/WorkoutHistoryScreen.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/RunSummaryPresentationTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/RunningPerformancePresentationTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/RunningPerformanceUiTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/LiveRunningRefinementTest.kt"
   ]
 }

@@ -1,3 +1,130 @@
+# 0.12.1-test1 — verified software and visual source
+
+Source **7c4f534e8a02083848807132a88fd3bffc53313d** passed complete
+[workflow 43182469277](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43182469277).
+Each API **28 /35 /36** passed **534 full instrumentation tests** and strict **421 authentic
+captures**, with the original platform-focus checks and nine guard methods. The guards also
+run in the unfiltered suite; they are not additional unique cases. All three completed logs
+were inspected, including START/END for confirmed-reset concurrency and the rendered light/dark chart-contrast regression.
+Build, lint, formatting, guidance and canonical publication passed on the first attempt for
+this source. Development publication correctly skipped on a PR.
+
+| Gate | Observed result |
+| --- | --- |
+| Domain | **700,108 checks /47 unique suites**, including4,226 six-month athlete assertions |
+| Schema/migrations | **75**; old/current backup, rollback, history and retention instrumentation retained |
+| Formatting | **120 Kotlin /159 Java**,14 formatter-tool tests |
+| Other checks | **9 release-note,13 runner-helper,21 capture-validator,11 map-source** checks |
+| Guidance/artwork | **220 canonical /14 routine guides;223 exact guidance asset hashes**, existing Dream artwork checks |
+| Local corrected Gradle | **79 tasks /4m23s**, domain/check, debugAPK, instrumentation compilation and lint |
+
+## Failures investigated and corrected
+
+The earlier final-docs head4ecc498/workflow43117792685 failed API35's onboarding fixture clear:
+SQLite reported that files remained after confirmed deletion. Platform focus passed; it was
+not the prior Launcher ANR. Inspection exposed a reopen window between helper.close() and
+file verification. Confirmed reset now holds the shared helper monitor through close, deletion
+and checks, serializing those steps with helper opens. All failure checks remain intact.
+
+The new realSQLite test forces a reader attempt after deletion/before verification, then
+requires reset completion, no old profile/draft and a successful later save. It passed on all
+three APIs. The actual concurrent actor in the original CI failure is unidentified; no specific
+receiver/thread is claimed. There is no schema change, migration or historical recalculation.
+No failing test was weakened or blindly rerun. This is the only persistence-code correction.
+
+Earlier UI sourcefd3f1af passed533/421 on each API after one investigated API36 fresh-runner
+retry for a pre-test Launcher ANR/focus block. That failed-closed infrastructure event remains
+historical; it does not establish universal emulator or hardware reliability. The current
+534-case source passed its first full matrix. No API, assertion, capture or timeout was removed.
+
+## Authentic screenshots and direct comparison
+
+Canonical bot **f2d501b** was safely fast-forwarded, preserving local documentation.
+Metadata names 7c4f534 above; actual and recorded source fingerprints match:
+`dd72813b42f73e07b1e291bef014bda72361950bb6d9f34d3a03d50a5addd91a`.
+All **421** canonical PNGs match reviewed raw API35 artifact **13926919951** byte-for-byte.
+ZIP **56,038,884bytes**, SHA256
+`b9c2f49ab9659209f693fc0b8177cc2ef670413eea1649005e89a86b1f62f7c4`.
+
+All38new frames were reopened from this exact source, plus six retained representative
+Home/Progress/History/Calendar/200%Home/darkStrength views. Native light/dark/200% route views
+confirm both markers remain visible on a loop. The hidden-start-square issue is corrected
+without moving coordinates. A measured follow-up found weak unselected weekly-bar contrast in the preceding765source
+(light1.17:1/dark1.84:1), correcting the earlier subjective acceptance. The final source uses
+theme secondary foreground; the existing interaction test also asserts rendered >=3:1
+light/dark contrast. Actual final screenshot bar/surface pairs measure5.85:1 light,
+10.11:1 dark and5.73:1 branded200%. Native chart frames and all38new/six retained views
+were inspected; no remaining blocking clipping, overlap or missing action was observed. The three owner references remain separate and unmodified. See
+[the visual review](docs/VISUAL_REVIEW_0_12_1.md) for comparison and meaningful scroll states.
+
+## Candidate APK and preserved contracts
+
+API35 artifact **13928510669** verified ZIP **29,767,895bytes**, SHA256
+`b986fd0a7d55e1fd03cb5cf927b36dd4689fc53c0fca683d77726ae717219b30`.
+Actual APK **55,578,026bytes**, SHA256
+`680877000d53aa2a6fba384b703a5f8ec310fb0126c42423141889033e852b90`.
+aapt confirms **0.12.1-test1 /code17 /minAPI28**, with no INTERNET permission.
+This branch candidate is not itself proof of published-main delivery.
+
+CoachActivity/navigation is byte-identical to main, SHA256
+`98d80b3c3194d441e4ba31b52293bd92d38326aa434f6d3383cc06af0ad899fa`.
+Navigation identity, launcher icon, domain calculations, recording, HealthConnect, backups,
+retention and runtime dependencies remain unchanged. The narrow confirmed-reset lock is
+recorded above. Schema19/rootJSON13/raw3/complete1 remain unchanged.
+Exact final documentation-head checks, authorised merge, mainCI and matching rolling public
+APK/source/version/checksum are separate delivery gates tracked in CONTINUE_CODEX.md/PR20.
+
+All GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE/OEM/rotation/
+locked-screen/audio/battery checks remain **UNPERFORMED**. The existing synthetic short-wide
+blank platform navigation strip remains a documented physical/rotation limitation.
+Earlier named-source records below are historical, not unfinished patch work.
+
+# 0.12.0-test1 — merged-main and published-download verification
+
+[PR #19](https://github.com/mmwiza1/Race-day-dreams/pull/19) is merged at
+**8269162a5a2f2d5ddbccfc74f81836ae227993e8**. Its tree exactly equals the final tested
+PR head `0d4b474daa67b593dc36f921f3e69c982683a030`.
+Both [exact-head CI](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42521362347)
+and [post-merge main CI](https://github.com/mmwiza1/Race-day-dreams/actions/runs/42525301777)
+completed **SUCCESS**, including rolling development publication.
+
+Each API28/35/36 passed actual Settings/Launcher window focus, 13 runner-helper checks,
+nine fast guard methods, all **517 full instrumentation tests and383 authentic captures**.
+The guards also run in the unfiltered suite; they are not nine additional unique cases.
+Domain **700,108 checks/47 unique suites**, schema/migrations **75**, build/lint, pinned
+formatting, release/source/artwork and strict220canonical/14routine guidance passed.
+
+Main's initial API36 runner failed before app testing because SystemUI failed startup and
+an ANR held focus. Preparation correctly failed closed. One isolated fresh-runner retry
+of API36 and its dependent publication, same source and unchanged assertions, passed the
+full gate. API28/35 passes were retained. This is not evidence of universal emulator or
+physical-device reliability.
+
+The [rolling Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+now identifies **0.12.0-test1/code16**, the main SHA above and workflow42525301777.
+Both public APK and checksum were downloaded. Actual APK bytes match verified main API35
+artifact13636305201 exactly: **55,348,650bytes**, SHA256
+`2bba626610890bcee7ba949efd21b380f938bed02bb509dba6c13c89fee03219`.
+The checksum names the correct file; packaged version/code and absence of INTERNET were
+verified with aapt. Development tag and live main both point8269162; no stable tag was created.
+The artifact ZIP is29,676,146bytes, SHA256
+`d5c04d4176e68653f2cf88b1ae4fb5a71f49b48ec1764297bc9e15f36fdb9d54`.
+
+Exact-main API35 screenshot artifact13636185609 was downloaded and passed strict383 capture
+validation. ZIP53,266,408bytes, SHA256
+`42cabdc940d8faa223b08f9a87c84848716bdc5a6047b87f8f5d674e191a7e3c`.
+Actual main light Home, dark live run and200% live run were opened; earlier complete
+current-source pixel review and canonical/source equality remain valid.
+
+All software delivery is complete. Schema19/rootJSON13/raw3/complete1, runtime dependencies,
+permissions, launcher icon and authoritative engines are unchanged. Experimental newer
+Expressive motion/loading APIs remain intentionally omitted. The synthetic short-wide blank
+platform navigation strip and all real GalaxyS24/Pixel/Xiaomi, human TalkBack, outdoorGPS,
+providers/OEM/rotation/background/audio/battery acceptance remain documented limitations.
+No physical testing is claimed. Earlier source-specific evidence follows as history.
+This final delivery record is local documentation; the merged PR description records the
+same confirmed main/publication evidence publicly.
+
 # Material UI — 0.12.0-test1 verified software and visual source
 
 Source **5d2814331af3f189f38f97d72974b242e398afe8** passed complete

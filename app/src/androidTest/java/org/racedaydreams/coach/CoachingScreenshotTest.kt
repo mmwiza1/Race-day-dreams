@@ -11,6 +11,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -364,6 +365,7 @@ class CoachingScreenshotTest {
         val trace = org.racedaydreams.domain.recording.RunMetricsEngine(0, now.minusSeconds(4000))
         for (i in 0..1800) {
             val angle = i * 2 * Math.PI / 1800
+            trace.heartRate(150.0 + (i % 60) / 4.0, i * 1000L)
             trace.accept(
                 org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
                     now.minusSeconds(4000).plusSeconds(i.toLong()),
@@ -389,6 +391,22 @@ class CoachingScreenshotTest {
             "ACTIVE",
         )
         recordings.finish(recordings.unfinished()!!, 1800000, recovered = false)
+        // Retained, independently entered results exercise real ranking/source presentation.
+        // These records exist only in the instrumentation fixture, never in production startup.
+        listOf(3380L, 3250L, 3160L).forEachIndexed { index, seconds ->
+            store.saveResult(
+                RecordedResult(
+                    "demo-ranked-10k-$index",
+                    PerformanceDistance.TEN_K,
+                    Duration.ofSeconds(seconds),
+                    today.minusDays(45L - index * 14L),
+                    "Riverside 10K",
+                    if (index == 2) ResultSource.OFFICIAL_CHIP else ResultSource.MANUAL,
+                    null,
+                    "Deterministic test-only entered result; not independently verified",
+                )
+            )
+        }
         // Fix only the test assignment; production still randomly assigns and persists once.
         store.activitySummaries().forEachIndexed { i, a ->
             a.distanceMetres()
@@ -422,6 +440,7 @@ class CoachingScreenshotTest {
         org.racedaydreams.recording.RunRecordingService.status.value = null
         org.racedaydreams.recording.RunRecordingService.workoutState.value = null
         org.racedaydreams.recording.RunRecordingService.savedActivity.value = null
+        org.racedaydreams.recording.RunRecordingService.heartRate.value = null
         try {
             dismissCaptureDialogs()
             closeScenario()
@@ -2690,6 +2709,468 @@ class CoachingScreenshotTest {
             result = ViewModelProvider(activity)[GymNowViewModel::class.java]
         }
         return result
+    }
+
+    @Test
+    fun capturesRefinedLiveStatisticsRouteAndPausedStatesWithoutChangingEvidence() {
+        val store = RecordingStore(context)
+        withRefinementCaptureModes { suffix ->
+            val sessionId = "refinement-live-$suffix"
+            val started = Instant.now().minusSeconds(1800)
+            val engine = org.racedaydreams.domain.recording.RunMetricsEngine(0, started)
+            for (second in 0..1800) {
+                if (second in 850..900) {
+                    if (second == 850)
+                        engine.missingFix(second * 1000L, started.plusSeconds(second.toLong()))
+                    continue
+                }
+                val angle = second * 2 * Math.PI / 1800
+                engine.heartRate(150.0 + second % 12, second * 1000L)
+                engine.accept(
+                    org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
+                        started.plusSeconds(second.toLong()),
+                        second * 1000L,
+                        51.5 + .01 * kotlin.math.sin(angle),
+                        -.1 + .017 * kotlin.math.cos(angle),
+                        3.0,
+                        null,
+                        null,
+                        3.0,
+                    )
+                )
+            }
+            val originalPoints = engine.points().toList()
+            Assert.assertTrue(originalPoints.any { it.discontinuity() })
+            store.start(sessionId, started, 0)
+            store.flush(sessionId, engine.points(), engine.events(), 0, 0, 1800000, "ACTIVE")
+            try {
+                val status = engine.status(1800000)
+                val workout =
+                    org.racedaydreams.domain.execution
+                        .WorkoutExecutionEngine(
+                            listOf(
+                                org.racedaydreams.domain.execution.WorkoutExecutionEngine.Step(
+                                    "Steady run",
+                                    WorkoutSegment.Kind.RUN,
+                                    8000.0,
+                                    null,
+                                    null,
+                                    null,
+                                    4.0,
+                                )
+                            )
+                        )
+                        .update(
+                            org.racedaydreams.domain.execution.WorkoutExecutionEngine.Input(
+                                status.metres(),
+                                status.elapsedMillis(),
+                                status.movingMillis(),
+                                status.secondsPerKm(),
+                                true,
+                                false,
+                            )
+                        )
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    org.racedaydreams.recording.RunRecordingService.status.value = status
+                    org.racedaydreams.recording.RunRecordingService.workoutState.value = workout
+                    org.racedaydreams.recording.RunRecordingService.heartRate.value = 150.0
+                }
+                openRefinementRecording()
+                compose.onNodeWithTag("live-elapsed").performScrollTo().assertIsDisplayed()
+                compose.onNodeWithText("Pause").assertIsDisplayed()
+                compose.onNodeWithText("Finish & save").assertIsDisplayed()
+                capture("live-refined-statistics$suffix")
+
+                compose.onNodeWithTag("live-route-tab").performScrollTo().performClick()
+                compose.waitUntil(20000) {
+                    compose
+                        .onAllNodesWithTag("live-route-canvas")
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+                }
+                compose.onNodeWithTag("live-route-canvas").performScrollTo().assertIsDisplayed()
+                compose.onNodeWithText("GPS gaps remain blank.").assertExists()
+                compose.onNodeWithText("Pause").assertIsDisplayed()
+                compose.onNodeWithText("Finish & save").assertIsDisplayed()
+                capture("live-refined-route$suffix")
+                Assert.assertEquals(originalPoints, store.points(sessionId))
+                Assert.assertEquals("ACTIVE", store.unfinished()!!.state)
+
+                compose.onNodeWithTag("live-statistics-tab").performScrollTo().performClick()
+                val previousEvents = engine.events().size
+                engine.pause(1800000, started.plusSeconds(1800))
+                store.flush(
+                    sessionId,
+                    engine.points(),
+                    engine.events(),
+                    originalPoints.size,
+                    previousEvents,
+                    1800000,
+                    "PAUSED",
+                )
+                InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                    org.racedaydreams.recording.RunRecordingService.status.value =
+                        engine.status(1800000)
+                }
+                await("PAUSED")
+                compose.onNodeWithText("Resume").assertIsDisplayed()
+                compose.onNodeWithText("Finish & save").assertIsDisplayed()
+                compose.onNodeWithTag("live-elapsed").performScrollTo()
+                capture("live-refined-paused$suffix")
+                Assert.assertEquals(originalPoints, store.points(sessionId))
+            } finally {
+                closeScenario()
+                scenario = null
+                clearRefinementLiveState()
+                store.discardUnfinished(sessionId)
+            }
+            if (suffix == "-large-font") {
+                val emptyId = "refinement-live-empty"
+                store.start(emptyId, Instant.now(), 0)
+                try {
+                    scenario = ActivityScenario.launch(CoachActivity::class.java)
+                    awaitHomeReady(false)
+                    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                        org.racedaydreams.recording.RunRecordingService.status.value =
+                            org.racedaydreams.domain.recording.RunMetricsEngine.Status(
+                                0.0,
+                                60000,
+                                60000,
+                                null,
+                                "Waiting for GPS",
+                                false,
+                            )
+                    }
+                    openRefinementRecording()
+                    compose.onNodeWithTag("live-route-tab").performScrollTo().performClick()
+                    await(
+                        "Your route will appear after two usable GPS observations have been saved."
+                    )
+                    alignHeading("Your recorded route")
+                    compose.onNodeWithText("Pause").assertIsDisplayed()
+                    compose.onNodeWithText("Finish & save").assertIsDisplayed()
+                    capture("live-refined-route-empty-large-font")
+                    Assert.assertTrue(store.points(emptyId).isEmpty())
+                } finally {
+                    closeScenario()
+                    scenario = null
+                    clearRefinementLiveState()
+                    store.discardUnfinished(emptyId)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun capturesRefinedRunningRecordsTrendsHeartRateAndRunSummaries() {
+        withRefinementCaptureModes { suffix ->
+            assertOriginalBottomNavigationOrder()
+            clickOriginalNavigationTab("Progress")
+            await("Running PBs")
+            click("Running PBs")
+            await("How PBs are calculated")
+            alignHeading("10K")
+            compose.onNodeWithTag("running-record-10k-1").assertExists()
+            compose.onNodeWithTag("running-record-10k-2").assertExists()
+            compose.onNodeWithTag("running-record-10k-3").assertExists()
+            capture("running-records-refined$suffix")
+            if (suffix == "-large-font") {
+                val third = compose.onNodeWithTag("running-record-10k-3")
+                third.performScrollTo()
+                assertFullyVisibleInScroll(third, "running-record-10k-3")
+                capture("running-records-third-large-font")
+            }
+            back()
+            click("Training trends")
+            await("Weekly recorded distance")
+            compose.onNodeWithText("4 weeks").performScrollTo().performClick().assertIsSelected()
+            alignHeading("Weekly recorded distance")
+            capture("running-trends-distance$suffix")
+            compose.onNodeWithText("Pace").performScrollTo().performClick().assertIsSelected()
+            await("Weekly elapsed average pace")
+            alignHeading("Weekly elapsed average pace")
+            capture("running-trends-pace$suffix")
+            compose
+                .onNodeWithText("Training time")
+                .performScrollTo()
+                .performClick()
+                .assertIsSelected()
+            await("Weekly recorded running time")
+            alignHeading("Weekly recorded running time")
+            capture("running-trends-time$suffix")
+            compose.onNodeWithText("Heart rate").performScrollTo().performClick()
+            await("Recorded heart rate")
+            alignHeading("Recorded heart rate")
+            compose.onNodeWithText("Average heart rate").assertExists()
+            compose.onNodeWithText("Maximum heart rate").assertExists()
+            capture("running-heart-rate$suffix")
+            if (suffix == "-large-font") {
+                val chart = compose.onNodeWithTag("running-heart-rate-chart")
+                chart.performScrollTo()
+                alignHeading("Recent recorded readings")
+                assertFullyVisibleInScroll(chart, "running-heart-rate-chart")
+                capture("running-heart-rate-chart-large-font")
+            }
+            compose.onNodeWithText("View earlier run").performScrollTo().performClick()
+            await("No heart-rate measurements recorded for this run.")
+            alignHeading("Recorded heart rate")
+            capture("running-heart-rate-empty$suffix")
+            back()
+            clickOriginalNavigationTab("Calendar")
+            await("Activity calendar")
+            compose.waitUntil(20000) {
+                compose
+                    .onAllNodes(hasStateDescription("Recorded history ready"))
+                    .fetchSemanticsNodes()
+                    .isNotEmpty()
+            }
+            compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Recorded run"))
+            compose.onAllNodesWithText("Recorded run")[0].performClick()
+            await("Run detail")
+            await("Your recorded route")
+            alignHeading("Recorded summary")
+            compose.onNodeWithTag("run-summary-metrics").assertIsDisplayed()
+            capture("run-summary-refined$suffix")
+            alignHeading("Distance splits")
+            compose
+                .onNodeWithTag("run-split-2")
+                .performScrollTo()
+                .performClick()
+                .assert(
+                    SemanticsMatcher.expectValue(
+                        SemanticsProperties.StateDescription,
+                        "Selected split",
+                    )
+                )
+            val selectedSplit = compose.onNodeWithTag("run-split-2")
+            selectedSplit.performScrollTo()
+            assertFullyVisibleInScroll(selectedSplit, "run-split-2")
+            capture("run-splits-refined$suffix")
+        }
+    }
+
+    @Test
+    fun capturesNarrowLongElapsedAtDoubleTextWithCompleteControlsAndParagraph() {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        val originalWidth = context.resources.configuration.screenWidthDp
+        val originalSize =
+            Regex("Override size: ([0-9]+x[0-9]+)").find(shell("wm size"))?.groupValues?.get(1)
+        // Keep the existing density. At the CI210dpi this is420x945 physical pixels,
+        // exercising a real320dp phone rather than pretending540 pixels means540dp.
+        val density = context.resources.displayMetrics.density
+        val narrowWidth = kotlin.math.round(320f * density).toInt()
+        val narrowHeight = kotlin.math.round(720f * density).toInt()
+        try {
+            closeScenario()
+            scenario = null
+            clearRefinementLiveState()
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false).commit()
+            shell("wm size ${narrowWidth}x${narrowHeight}")
+            shell("cmd uimode night no")
+            shell("settings put system font_scale 2.0")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            compose.waitUntil(20000) {
+                actualMaterialWindow()?.let { window ->
+                    window.widthDp in 319..321 &&
+                        window.decorWidthDp in 319f..321f &&
+                        window.fontScale >= 1.99f &&
+                        window.focused
+                } == true
+            }
+            awaitMaterialSystemBars(false, "narrow200")
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                org.racedaydreams.recording.RunRecordingService.status.value =
+                    org.racedaydreams.domain.recording.RunMetricsEngine.Status(
+                        42195.0,
+                        Duration.ofHours(10).plusMinutes(28).plusSeconds(14).toMillis(),
+                        Duration.ofHours(4).plusMinutes(23).toMillis(),
+                        375.0,
+                        "GPS ready",
+                        false,
+                    )
+                org.racedaydreams.recording.RunRecordingService.heartRate.value = 153.0
+            }
+            openRefinementRecording()
+            val statistics = compose.onNodeWithTag("live-statistics-tab")
+            statistics.performScrollTo().assertIsSelected()
+            assertFullyVisibleInScroll(statistics, "live-statistics-tab")
+            val route = compose.onNodeWithTag("live-route-tab")
+            route.performScrollTo().assertIsNotSelected()
+            assertFullyVisibleInScroll(route, "live-route-tab")
+            val statisticsBounds = statistics.fetchSemanticsNode()
+            val routeBounds = route.fetchSemanticsNode()
+            Assert.assertTrue(
+                "Narrow large-text mode controls must have distinct, non-overlapping hit areas",
+                statisticsBounds.positionInRoot.y + statisticsBounds.size.height <=
+                    routeBounds.positionInRoot.y + 1f,
+            )
+            val clock = compose.onNodeWithText("10:28:14", useUnmergedTree = true)
+            clock.performScrollTo()
+            val paragraphs = mutableListOf<TextLayoutResult>()
+            clock.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { action ->
+                Assert.assertTrue(action(paragraphs))
+            }
+            val paragraph = paragraphs.single()
+            Assert.assertEquals("10:28:14", paragraph.layoutInput.text.text)
+            Assert.assertFalse(
+                "Long elapsed time must not overflow horizontally",
+                paragraph.didOverflowWidth,
+            )
+            Assert.assertFalse(
+                "Long elapsed time must not overflow vertically",
+                paragraph.didOverflowHeight,
+            )
+            Assert.assertTrue(paragraph.lineCount >= 1)
+            Assert.assertEquals(8, paragraph.getLineEnd(paragraph.lineCount - 1, visibleEnd = true))
+            compose
+                .onAllNodes(
+                    SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange)
+                )
+                .assertCountEquals(0)
+            alignHeading("Elapsed time")
+            assertFullyVisibleInScroll(clock, "live-elapsed")
+            assertNarrowLiveControlsFullyVisible()
+            capture("live-refined-narrow-large-font")
+            compose.onNodeWithText("Distance").performScrollTo()
+            alignHeading("Distance")
+            compose.onNodeWithText("42.20 km").assertExists()
+            assertNarrowLiveControlsFullyVisible()
+            capture("live-refined-narrow-metrics-large-font")
+        } finally {
+            closeScenario()
+            scenario = null
+            clearRefinementLiveState()
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("wm size ${originalSize ?: "reset"}")
+            shell("cmd uimode night $night")
+            compose.waitUntil(20000) {
+                context.resources.configuration.screenWidthDp == originalWidth
+            }
+        }
+    }
+
+    private fun clickOriginalNavigationTab(label: String) {
+        compose
+            .onNode((hasText(label) or hasContentDescription(label)) and hasClickAction())
+            .assertIsDisplayed()
+            .performClick()
+        compose.waitForIdle()
+    }
+
+    private fun assertFullyVisibleInScroll(node: SemanticsNodeInteraction, descendantTag: String) {
+        node.assertIsDisplayed()
+        val viewport =
+            compose
+                .onNode(hasScrollAction() and hasAnyDescendant(hasTestTag(descendantTag)))
+                .fetchSemanticsNode()
+        assertFullyInside(node, viewport.boundsInRoot)
+    }
+
+    private fun assertNarrowLiveControlsFullyVisible() {
+        val panel = compose.onNodeWithTag("live-running-panel").fetchSemanticsNode()
+        listOf("Pause", "Finish & save").forEach { label ->
+            val control = compose.onNodeWithText(label).assertIsDisplayed()
+            assertFullyInside(control, panel.boundsInRoot)
+        }
+    }
+
+    private fun assertFullyInside(
+        node: SemanticsNodeInteraction,
+        viewport: androidx.compose.ui.geometry.Rect,
+    ) {
+        val target = node.fetchSemanticsNode()
+        val origin = target.positionInRoot
+        Assert.assertTrue(
+            "Complete content must fit its actual viewport: $origin / ${target.size} in $viewport",
+            origin.x >= viewport.left - 1f &&
+                origin.y >= viewport.top - 1f &&
+                origin.x + target.size.width <= viewport.right + 1f &&
+                origin.y + target.size.height <= viewport.bottom + 1f,
+        )
+    }
+
+    private fun openRefinementRecording() {
+        compose.onNode(hasText("Run now") and hasClickAction()).performScrollTo().performClick()
+        await("Custom workout")
+        compose.onNodeWithText("Free run").performScrollTo().performClick()
+        await("Elapsed time")
+    }
+
+    private fun clearRefinementLiveState() {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            org.racedaydreams.recording.RunRecordingService.status.value = null
+            org.racedaydreams.recording.RunRecordingService.workoutState.value = null
+            org.racedaydreams.recording.RunRecordingService.heartRate.value = null
+        }
+    }
+
+    private fun assertOriginalBottomNavigationOrder() {
+        val role =
+            SemanticsMatcher.expectValue(
+                SemanticsProperties.Role,
+                androidx.compose.ui.semantics.Role.Tab,
+            )
+        val tabs =
+            listOf("Home", "Plan", "Calendar", "Progress", "Strength").map { label ->
+                compose
+                    .onNode(role and (hasText(label) or hasContentDescription(label)))
+                    .assertIsDisplayed()
+                    .fetchSemanticsNode()
+            }
+        Assert.assertTrue(
+            "Established bottom destinations retain their order",
+            tabs.zipWithNext().all { (a, b) -> a.boundsInRoot.center.x < b.boundsInRoot.center.x },
+        )
+        Assert.assertTrue(tabs.first().config[SemanticsProperties.Selected])
+    }
+
+    private fun withRefinementCaptureModes(block: (String) -> Unit) {
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for ((suffix, useDynamic, uiNight, scale) in
+                listOf(
+                    MaterialCapture("", true, "no", 1f),
+                    MaterialCapture("-dark", true, "yes", 1f),
+                    MaterialCapture("-large-font", false, "no", 2f),
+                )) {
+                closeScenario()
+                scenario = null
+                clearRefinementLiveState()
+                prefs
+                    .edit()
+                    .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, useDynamic)
+                    .commit()
+                shell("cmd uimode night $uiNight")
+                shell("settings put system font_scale $scale")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                awaitHomeReady(false)
+                awaitMaterialSystemBars(uiNight == "yes")
+                block(suffix)
+            }
+        } finally {
+            closeScenario()
+            scenario = null
+            clearRefinementLiveState()
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("cmd uimode night $night")
+        }
     }
 
     @Test
