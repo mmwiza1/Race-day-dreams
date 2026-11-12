@@ -3,7 +3,7 @@
 Presentation only. Preserve structured targets, stored record keys, calculations, permission,
 consent and activation rules. British English; concise instructions first, optional detail next.
 
-| Area inspected | Finding / planned action | Boundary |
+| Area inspected | Finding / implemented presentation | Boundary |
 | --- | --- | --- |
 | Onboarding/goals | Explain easy-effort/Zone 2 choice without inventing heart-rate boundaries | Preserve goal IDs and distances |
 | Running Home/plan | Explain session purpose and structured effort in ordinary words | Preserve every segment/pace/RPE value |
@@ -37,3 +37,20 @@ checks for disclosures/reference meanings and 200% scrolling; documentation/imag
 Retain all existing assertions and captures. Run full API28/35/36 gate and direct light/dark/200%
 visual review before merging. Verify public alias/versioned APK and checksums after main publication.
 Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS/HC/BLE/OEM checks remain unperformed.
+
+## Representative implemented changes
+
+| Before | After | Reason |
+| --- | --- | --- |
+| Measurement: load reps | Record the weight you use and how many repetitions you complete. | Covers lifts, machines and moved loads; added weight remains explicit for weighted bodyweight. |
+| 3 × 5–8 reps · RIR 1.5–3.5 · 80 kg reference | Complete 3 sets of 5–8 repetitions; explain repetitions left, then offer exact unchanged targets and optional reference details. | Preserve fractional effort and reference meaning without assuming a recorded lift. |
+| Target effort ~4/10 | Aim for a light effort; exact saved RPE remains in workout details. | Task first; completed sessions label this as planned effort rather than actual effort. |
+| HRV / insufficient | Heart-rate variability / Not enough comparable readings. | Explain missing evidence without suggesting a diagnosis or readiness score. |
+| Estimated 1RM | Estimated maximum for one repetition. | Display label only; historical category keys and recorded evidence remain unchanged. |
+| Eligibility cutoff | Detail recorded before | Keep the exact date/time while explaining deletion eligibility in ordinary language. |
+
+The c3d4ef9 presentation checkpoint passed542tests/439captures on each supported API. The next
+source adds genuine three-mode health/plan/disclosure views and better backup-capture alignment;
+its543-test/451-frame acceptance is separate. GitHub showcase tests validate all image/document
+paths and adjacent downloads. Public aliases were verified against successful main14f8adf before
+advertising them; current results and remaining final release gates are in VERIFICATION.md.

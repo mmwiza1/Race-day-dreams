@@ -33,6 +33,14 @@ Source c3d bootstrap/public downloads matched successful d0ac973 main:versioned+
 checksums use their own filenames. New main14f8adf policy work is preserved; its old publisher may
 remove aliases, so final alias/publication proof must be refreshed after that run completes.
 
+Main14f workflow43296993191 subsequently completed SUCCESS. Its old publisher removed the
+aliases; rerunning ONLY the bootstrap job (attempt2/job131475972177) verified that new main’s
+API35artifact13981886999 before restoring the pair. Independent public downloads now match:
+55,643,562bytes/SHA256`2023f9addc512d43f474add6d864a7a93f75f8e6d0834a37ad1b388e71d7ca88`
+for BOTH names, with correct own-filename checksums, version18/minAPI28/noINTERNET. No older
+publisher remains active. The source-bound 0.12.3 showcase candidate can now advertise this
+verified rolling link. The0.12.3 APK remains gated until actual final-main acceptance.
+
 No final543/451pass, final-head merge, new0.12.3public APK or physical acceptance is claimed yet.
 GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE and OEM audio/battery/
 background/rotation checks remain unperformed. Older records below are historical checkpoints.

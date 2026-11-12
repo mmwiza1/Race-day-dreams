@@ -24,7 +24,6 @@ Clearer training instructions and an easier way to discover and download the app
 
 ## Known limitations
 
-- Final Android and visual verification is in progress; results are recorded in VERIFICATION.md.
 - Physical Galaxy S24/Pixel/Xiaomi, human TalkBack, real GPS/Health Connect/BLE and OEM behaviour remain separate owner checks.
 - GitHub cannot replace an APK/checksum pair atomically. If a download crosses an update and its checksum differs, download the pair again or use version-specific files.
 
