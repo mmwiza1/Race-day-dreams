@@ -11,13 +11,11 @@ import org.racedaydreams.domain.strength.GymWorkoutDefinition
 internal fun PlainWorkoutTarget(slot: GymWorkoutDefinition.Slot) {
     StrengthPrescriptionText.instructions(slot).forEach { Text(it) }
     WhyDetails(
-        (listOf(gymTargetDescription(slot)) +
-                StrengthPrescriptionText.weight(slot, null) +
-                listOfNotNull(
-                    slot.target()?.effort()?.let(StrengthPrescriptionText::effortDetails)
-                ))
-            .joinToString("\n\n"),
         if (slot.exercise().measurement().usesLoad()) "Training targets and weight reference"
-        else "Exact training targets",
-    )
+        else "Exact training targets"
+    ) {
+        Text(gymTargetDescription(slot))
+        StrengthPrescriptionText.weight(slot, null).forEach { Text(it) }
+        slot.target()?.effort()?.let { Text(StrengthPrescriptionText.effortDetails(it)) }
+    }
 }

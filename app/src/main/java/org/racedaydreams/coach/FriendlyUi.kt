@@ -20,6 +20,11 @@ fun shortDate(date: LocalDate): String =
 
 @Composable
 fun WhyDetails(text: String, title: String = "Why?") {
+    WhyDetails(title) { Text(text, style = MaterialTheme.typography.bodyMedium) }
+}
+
+@Composable
+fun WhyDetails(title: String, content: @Composable ColumnScope.() -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth()) {
         ListItem(
@@ -47,7 +52,11 @@ fun WhyDetails(text: String, title: String = "Why?") {
                     },
         )
         if (expanded)
-            Text(text, Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
+            Column(
+                Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                content = content,
+            )
     }
 }
 

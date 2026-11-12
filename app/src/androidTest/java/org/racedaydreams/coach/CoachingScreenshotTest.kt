@@ -2465,10 +2465,16 @@ class CoachingScreenshotTest {
                             )
                         compose.onNodeWithText("Here's what to do").assertIsDisplayed()
                         compose
-                            .onNodeWithText("Complete 2 sets of 4–6 repetitions.")
+                            .onNode(
+                                hasText("Complete 2 sets of 4–6 repetitions.") and
+                                    hasAnyAncestor(hasTestTag("progression-review"))
+                            )
                             .assertIsDisplayed()
                         compose
-                            .onNodeWithText("Rest for 3 minutes between sets.")
+                            .onNode(
+                                hasText("Rest for 3 minutes between sets.") and
+                                    hasAnyAncestor(hasTestTag("progression-review"))
+                            )
                             .assertIsDisplayed()
                         capture("strength-programme-progression-instructions$suffix")
                         compose
