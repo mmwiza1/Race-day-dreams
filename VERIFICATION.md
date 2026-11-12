@@ -1,3 +1,32 @@
+# 0.12.2-test1 — merged, verified and published
+
+PR #21 merged as **e4d5753513ef69c5c4c17560238be23e59caf923**. Fetched main exactly equals final tested PR tree
+`01e2e79d997b62014936363aaa19f87fe030482f`.
+[Final-head CI43256007882](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43256007882)
+and [main CI43262272308](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43262272308)
+completed SUCCESS: **538 full tests and 433 validated captures EACH API28/35/36**.
+All completed logs inspected; 13 guards retained. Domain700,108/47unique suites, schema75,
+backup, build, lint, formatting, guidance, source and release gates passed. No weakened checks.
+
+Rolling development tag/release identifies this exact main/run. Public APK and checksum
+downloaded and exactly matched mainAPI35artifact13965048944:
+
+- [0.12.2-test1 APK](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-0.12.2-test1.apk), **55,643,562 bytes**.
+- SHA-256: `144bb095ce2447b1b193e4db2a2b62a01c5940ee28b57842bc337d71146b791d`.
+- Artifact ZIP:29,790,207bytes; SHA256`5dc24ac6c45f0171ae8d62432f0cb05fb6a882bb24c23b8f124099ae109c0150`.
+- aapt:0.12.2-test1/code18/minAPI28/noINTERNET. Schema19/JSON13/raw3/complete1 unchanged.
+
+App/capture fingerprint remains3e71fa3be7d1f592f9ddee403ecf75acf20ab791759eeadcb28f2e246d714d80.
+Canonical681df68 exactly matches all433 reviewed raw API35images from sourcef33fbfc.
+Final documentation head and squash merge changed no app/capture bytes. Main produced433
+fresh captures/API; mainAPI35screenshot artifact13964664956. All12new light/dark/real320dp200%
+views plus48representative active-area frames were reviewed against separate ownerrefs.
+
+**Software delivery complete.** No stable tag. Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack,
+outdoorGPS, realHealthConnect/BLE and OEMrotation/background/locked-screen/audio/battery
+checks remain UNPERFORMED. The documented forced-narrow platform navigation-icon edge crop
+remains a hardware/rotation limitation; app controls remain reachable. No hardware pass inferred.
+
 # 0.12.2-test1 — verified software and visual source
 
 [PR #21](https://github.com/mmwiza1/Race-day-dreams/pull/21), branch
@@ -33,9 +62,7 @@ Data formats remain **schema 19 / root JSON 13 / raw archive 3 / complete packag
 Navigation source is byte-identical to main `59be2b3`, SHA-256
 `98d80b3c3194d441e4ba31b52293bd92d38326aa434f6d3383cc06af0ad899fa`.
 
-Remaining delivery gates: exact final documentation-head CI, authorised squash merge,
-actual merged-main tree/version/post-merge CI, then public rolling APK/source/checksum verification.
-No merge or 0.12.2 publication is claimed yet. Physical Galaxy S24/Pixel/Xiaomi, human TalkBack,
+Those delivery gates are now complete and verified above. Physical Galaxy S24/Pixel/Xiaomi, human TalkBack,
 real GPS/Health Connect/BLE and OEM background/audio/rotation checks remain unperformed.
 Forced-narrow emulator captures retain a partly clipped platform navigation icon at the far right;
 app controls remain reachable. This does not establish physical OEM/navigation acceptance.
