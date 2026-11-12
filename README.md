@@ -7,7 +7,21 @@ A free, open-source, account-free Android running and strength coach.
 The app works locally and without Health Connect. It has no Internet permission,
 advertising, analytics, subscriptions, backend or LLM dependency.
 
-## 0.12.1-test1 — Running and performance visual refinement
+## 0.12.2-test1 — Cohesive Material 3 layout and exercise discovery
+
+Exercise Library now has compact neutral illustrated cards, rounded name/alias search,
+horizontal categories and personal filters, and a real advanced-filter disclosure.
+Overview, technique, history and PBs use cohesive Material tabs. Existing favourites,
+exclusions/restore, archived/custom exercises and programme/logging actions remain.
+
+Shared 4/8dp spacing tokens, selected checkmarks, 48dp touch targets and consistent page/card
+insets refine controls across running, gym, statistics, calendar, settings and health.
+Dynamic colours, branded light/dark, navigation identity and all data/engines are preserved.
+The software source passed 538 tests/433 captures on each API 28/35/36 and direct light/dark/200%
+visual review. See [release notes](docs/RELEASE_0_12_2.md), [visual review](docs/VISUAL_REVIEW_0_12_2.md)
+and [delivery verification](VERIFICATION.md). Main publication is verified separately.
+
+## Preserved 0.12.1-test1 — Running and performance visual refinement
 
 Live running leads with elapsed time, prominent distance/pace, optional heart rate and
 real workout progress. Statistics and an offline accepted-route outline are alternative
@@ -34,7 +48,7 @@ before finishing. Recorded evidence, coaching calculations and all data formats 
 
 See [design scope](docs/MATERIAL3_UI.md), [release notes](docs/RELEASE_0_12_0.md) and
 [observed verification](VERIFICATION.md). The0.12baseline is merged through PR19 and published
-from8269162. The gallery below now shows the0.12.1refinement.
+from8269162. The gallery below now shows the0.12.2refinement.
 This remains a test build. The existing Material 3 components are retained; newer experimental
 Expressive motion/loading APIs are not included, and no runtime dependency upgrade is required.
 
@@ -135,18 +149,22 @@ GitHub artifact downloads require GitHub sign-in; the app requires no account.
 ## App Preview
 
 Screenshots are real emulator renders of production UI with instrumentation-only demo
-data, not UI mockups. The current **421-image 0.12.1 gallery** was captured from source
-`7c4f534e8a02083848807132a88fd3bffc53313d` after
-[workflow 43182469277](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43182469277)
-passed on API 28, 35 and 36: nine guard methods, 534 full instrumentation cases and 421
-captures on each API. Canonical commit `f2d501b` retains those production-screen renders
-and their source fingerprint. Image/source integrity, direct visual inspection and APK
-acceptance remain distinct gates; their current results are in [VERIFICATION.md](VERIFICATION.md)
-and [the visual review](docs/VISUAL_REVIEW_0_12_1.md). The loop-marker refinement is captured and visually verified. No physical S24 or human TalkBack result
-is inferred from emulator captures.
+data, not UI mockups. The current **433-image 0.12.2 gallery** was captured from source
+`f33fbfc5902ff0b2be8136ebb7ef491cd3fa51e4` after
+[workflow 43249755986](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43249755986)
+passed on APIs 28, 35 and 36: 13 guards, 538 full tests and 433 captures each. Guards also run
+inside the full suite and are not extra unique tests. Canonical commit `681df68` matches the
+SHA-verified API 35 artifact byte-for-byte. All 12 new views and 48 representative retained
+views were inspected against the separate owner references. See [verification](VERIFICATION.md)
+and [visual review](docs/VISUAL_REVIEW_0_12_2.md). No physical-device or human TalkBack pass
+is inferred from emulator screenshots.
 Canonical API-35 images and their source fingerprint are in
 [docs/screenshots](docs/screenshots). Capture automation commits images only
 after all three API jobs pass; see [SCREENSHOTS.md](docs/SCREENSHOTS.md).
+
+| Exercise Library · dark | Advanced filters | Large-text results | Exercise tabs |
+| --- | --- | --- | --- |
+| ![Compact illustrated library](docs/screenshots/exercise-library-refined-dark.png) | ![Selected and wrapping filters](docs/screenshots/exercise-filters-refined.png) | ![Stacked large-text results](docs/screenshots/exercise-library-rows-refined-large-font.png) | ![Real exercise section tabs](docs/screenshots/exercise-detail-tabs-refined.png) |
 
 | Today | Weekly Plan | Live running | Dream Route |
 | --- | --- | --- | --- |

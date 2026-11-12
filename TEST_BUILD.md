@@ -1,15 +1,16 @@
-# Material3 layout and library refinement — 0.12.2-test1
+# Material 3 layout and library refinement — 0.12.2-test1
 
-Current candidate verification is tracked in VERIFICATION.md and CONTINUE_CODEX.md.
-Do not infer actual screenshots or runtime passes from successful compilation. Published main
-remains0.12.1 until this PR completes the full gate and normal publication.
+Source f33fbfc passed538full tests/433 captures each API 28/35/36 and direct light/dark/real 320dp at 200%
+visual review. Canonical 681df68 matches its verifiedAPI 35artifact. Exact final documentation-head,
+merge and public download verification remain tracked in VERIFICATION.md/CONTINUE_CODEX.md.
+Do not treat a PR artifact as a published-main build. Physical checks below remain unperformed.
 
 Owner physical checks (UNPERFORMED): exercise name/alias search; category strips; personal
 ForYou/Favourites/Recent/InMyProgramme/Excluded; body/movement/equipment combinations; restore
 excluded exercise without losing history/PBs; compact thumbnail rows; all four detail tabs and
 existing favourite/logging/programme actions. Check dynamic/branded light/dark and200%/small
 windows, keyboard/TalkBack/focus/touch/scrolling. Check representative running/live controls,
-calendar/history, settings/native goal/HealthConnect and gym execution. Preserve the following
+calendar/history, settings/native goal/Health Connect and gym execution. Preserve the following
 existing hardware acceptance tasks; no outdoorGPS or physical acceptance is claimed.
 
 # Focused running refinement — 0.12.1-test1 acceptance

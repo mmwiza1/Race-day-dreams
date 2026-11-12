@@ -1,50 +1,44 @@
-# 0.12.2-test1 — current refinement verification in progress
+# 0.12.2-test1 — verified software and visual source
 
-Branch feature/material3-library-spacing-refinement starts at verified main59be2b3.
-No current-source Android runtime or visual pass is claimed yet. Implementation reuses the
-existing theme, domain and storage; data formats19/13/3/1 and permissions remain unchanged.
+[PR #21](https://github.com/mmwiza1/Race-day-dreams/pull/21), branch
+`feature/material3-library-spacing-refinement`, version **0.12.2-test1 / code 18**.
+Source `f33fbfc5902ff0b2be8136ebb7ef491cd3fa51e4` passed the complete
+[workflow 43249755986](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43249755986)
+on its first attempt. Each API **28, 35 and 36** passed **538 full tests and 433 authentic
+captures**. All 13 guard cases also run inside the full suite; they are not extra unique tests.
+All three completed logs were inspected. No assertion, platform-focus guard or timeout was weakened.
 
-Local completed checks:700,108domain checks/47suites;75schema tests;22capture-validator tests
-(including preservation of all421oldframes plus12newones);9release-note tests;220canonical/
-14routine guidance and223asset hashes. Shared design/filter/library implementation compiled
-and lint passed75tasks/2m59s on the stable formatted checkpoint. The final spacing/real320dp200%capture candidate also passed debugAPK/testAPK/lint
-75tasks/2m18s. Pinned formatting covers123Kotlin/159Java files. Runnerhelper13/formatter14/map-source11 also pass.
+Other passing checks: **700,108 domain checks across 47 unique suites**, 75 schema tests,
+9 release-note tests, 22 capture-validator tests, 13 runner-helper tests, 14 formatter-tool tests,
+11 map/source tests, debug/test APK builds, lint, and pinned formatting for 123 Kotlin/159 Java files.
+Strict guidance covers 220 canonical exercises and 14 routine movements; all 223 original artwork
+hashes verified. Existing backup, migration, recording, running and strength regressions passed.
+The Gradle check repeats the domain suites; they are counted once above.
 
-Follow-up header/custom/archived accessibility and search-surface refinement passed a fresh
-no-daemon/dedicated-cache build:75tasks/5m25s, all executed. Existing functional assertions
-remain. NewUI/capture guard additions retain all9original guards;13guard cases also run in
-the full suite and are not extraunique tests. Firstsource API36 had a confirmed SystemUI
-startup ANR before any app test; focus guard failed closed. No assertion or timeout removed.
+Canonical commit `681df68` was safely fast-forwarded. All 433 PNGs exactly match downloaded
+API 35 artifact **13961106593**: ZIP **58,140,133 bytes**, SHA-256
+`15cf4ffe9806e69cf4090949c0c26b2bf6aad158843604d3037e16197c8ad50f`.
+App/capture fingerprint:
+`3e71fa3be7d1f592f9ddee403ecf75acf20ab791759eeadcb28f2e246d714d80`.
+All 12 new library/filter/detail views were opened natively and 48 representative active-area
+frames reviewed on labelled sheets, directly against both separate owner references. The initial
+crowded design was rejected and corrected. See [visual findings](docs/VISUAL_REVIEW_0_12_2.md).
 
-The4d2099e matrix ran13guards perAPI:12passed, the new capture failed its merged-tree
-thumbnail-ready lookup. Corrected lookup uses the unmerged decorative child while retaining
-actualbitmap readiness and20s bound; the existing newUIcase now also asserts that loaded
-thumbnail is displayed. TestAPK/lint PASS57tasks/2m25s for this test-only correction.
-No full suite or visual pass is inferred from the partial run.
+Downloaded candidate API 35 APK artifact **13959403841**: **55,643,562 bytes**, SHA-256
+`dc238132457f0559712fce6266bf0d2c3f486ff87aed7084823dd877ebb9a7f4`.
+aapt confirms version 0.12.2-test1, code 18, minimum API 28 and no INTERNET permission.
+This is a tested PR artifact, not a claim of merged-main publication.
 
-At8c72c5f, API28/35 passed13guards then ran538full tests with1failureeach:
-legacy Excluded-exercises capture could not align its body heading high enough in the now
-compact list (361/382px, original100..300band). The production fix makes Excludedexercises
-the real primary mode heading, removes the duplicate body title, and scrolls to that actual
-lazy header before the unchanged viewport assertion. NewUIcase verifies its heading semantics.
-Debug/testAPK/lint75tasks/4m11s and finaltestAPK/lint57tasks/3m9s pass. API36 at8c failed
-SystemUI startup before tests; no old-head retry while this real app fix is required.
+Data formats remain **schema 19 / root JSON 13 / raw archive 3 / complete package 1**.
+Navigation source is byte-identical to main `59be2b3`, SHA-256
+`98d80b3c3194d441e4ba31b52293bd92d38326aa434f6d3383cc06af0ad899fa`.
 
-Source6e97b4a subsequently passed13guards/538fulltests/433validated captures EACH on API35
-and36; completed logs confirm the legacyExcluded capture now passes. API28 ran0cases after
-ddmlib failed to install-write the testAPK (underlying cause unspecified). Actual API35PNG
-archive verified and opened: the default library remains too control-heavy versus mandatory
-refs and the200%searchlabel occupies3lines. This is not finaldesignacceptance. Currentlocal
-visual correction adds realadvancedFilters disclosure, compactdefaultsubtitles/fulltechnical
-setup on demand, and a shared shortSearch label/aliasplaceholder/accessible description in
-library/loggingPicker. Final local debugAPK/testAPK/lint passes75tasks/4m21s; pinned123Kotlin/159Java and release9 pass. See docs/VISUAL_REVIEW_0_12_2.md. Newsource runtime/captures pending.
-
-The final audit also found7zero-gap control groups in gym available days/equipment and RunNow. They now use shared8dp inbothaxes; labels/actions unchanged. Final local debug/testAPK/lint PASS75tasks/4m21s, formatting123Kotlin/159Java. Source fingerprint3e71fa3be7d1f592f9ddee403ecf75acf20ab791759eeadcb28f2e246d714d80. New exact-head runtime pending.
-
-Expected runtime gate:538full instrumentation tests/API (534retained plus3newUI regressions
-and1production-capture method),433authentic screenshots/API. These are expectations, not
-observed passes. Inspect complete logs and actual images before accepting/merging. See
-CONTINUE_CODEX.md and docs/DESIGN_REFINEMENT_0_12_2.md. Physical checks remain unperformed.
+Remaining delivery gates: exact final documentation-head CI, authorised squash merge,
+actual merged-main tree/version/post-merge CI, then public rolling APK/source/checksum verification.
+No merge or 0.12.2 publication is claimed yet. Physical Galaxy S24/Pixel/Xiaomi, human TalkBack,
+real GPS/Health Connect/BLE and OEM background/audio/rotation checks remain unperformed.
+Forced-narrow emulator captures retain a partly clipped platform navigation icon at the far right;
+app controls remain reachable. This does not establish physical OEM/navigation acceptance.
 
 # 0.12.1-test1 — merged-main and published-download verification
 

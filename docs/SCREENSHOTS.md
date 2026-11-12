@@ -1,3 +1,17 @@
+# Material 3 library and layout refinement —433verified authentic captures
+
+Source`f33fbfc5902ff0b2be8136ebb7ef491cd3fa51e4` passed complete [workflow 43249755986](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43249755986):
+538full tests/433 captures each API 28/35/36, retaining all421 previous frames plus12 new views.
+Canonical 681df68 matches API 35artifact 13961106593 byte-for-byte; ZIP SHA256
+`15cf4ffe9806e69cf4090949c0c26b2bf6aad158843604d3037e16197c8ad50f`.
+Fingerprint`3e71fa3be7d1f592f9ddee403ecf75acf20ab791759eeadcb28f2e246d714d80` matches app/capture source.
+All12 new light/dark/real 320dp at 200% views were opened natively and48 representative active-area
+frames reviewed against separate owner references. See VISUAL_REVIEW_0_12_2.md for findings,
+including corrected density and the retained forced-narrow platform navigation-strip limitation.
+Source integrity is not a substitute for visual review. No physical or human TalkBack pass claimed.
+Exact final-head/main/publication results are tracked separately in VERIFICATION.md.
+Earlier entries below are historical capture checkpoints.
+
 # Focused running refinement —421 verified authentic captures
 
 Current canonicalf2d501b identifies source7c4f534e8a02083848807132a88fd3bffc53313d and

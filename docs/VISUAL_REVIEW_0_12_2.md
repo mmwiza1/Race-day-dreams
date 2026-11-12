@@ -1,14 +1,14 @@
-# Material3 refinement visual review — 0.12.2-test1
+# Material 3 refinement visual review — 0.12.2-test1
 
-## First actual-build review — source6e97b4a, not final acceptance
+## First actual-build review — source 6e97b4a, not final acceptance
 
-API35/36 each passed538full tests and433captures. API28 ran0tests because the emulator's
+API 35/36 each passed538full tests and433 captures. API 28 ran0tests because the emulator's
 instrumentation APK install-write failed. Do not call the whole matrix green.
 
-Downloaded API35 screenshot artifact13956740828:58,123,347bytes, ZIP SHA256
+Downloaded API 35 screenshot artifact13956740828:58,123,347bytes, ZIP SHA256
 `48cf4c886749559f58d53271ffb60898c0d96d8e8dfb7c7bbb734c010064a62b`.
 Safe extraction/digest/source checks and strict433PNG validation passed. The actual dark
-library/top/results, real320dp200%library and dark detail-tabs frames were opened natively.
+library/top/results, real 320dp at 200%library and dark detail-tabs frames were opened natively.
 The owner's two original inline references remain separate and unedited.
 
 The first review found successful components but rejected default-page density:
@@ -34,9 +34,46 @@ The broader actual6e contact sheets (48 representative frames) were also reviewe
 
 New-source runtime/captures and direct reference comparison remain PENDING. Do not substitute
 the6eimages, contact-sheet resizes or a passing validator for final-source pixel acceptance.
-Review light/dark/dynamic/branded, real320dp200%, opened/closed controls, result rows, detailtabs
+Review light/dark/dynamic/branded, real 320dp at 200%, opened/closed controls, result rows, detailtabs
 and representative active running/gym/statistics/calendar/history/settings/onboarding/health
-screens. Keep all421previous captures plus12new frames. Record findings after actual review.
+screens. Keep all421 previous captures plus12 new frames. Record findings after actual review.
 
-Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack and realGPS/HealthConnect/BLE/OEM tests remain
+Physical Galaxy S24/Pixel/Xiaomi, human TalkBack and real GPS/Health Connect/BLE/OEM tests remain
 unperformed. No hardware acceptance is inferred from emulator evidence.
+
+## Final implementation review — source f33fbfc, accepted for software delivery
+
+Complete workflow 43249755986 passed538 tests/433 captures each API 28/35/36 on the first attempt.
+API 35artifact 13961106593:58,140,133bytes, SHA256
+`15cf4ffe9806e69cf4090949c0c26b2bf6aad158843604d3037e16197c8ad50f`.
+All433canonical PNGs in681df68 exactly match this archive. Source fingerprint:
+`3e71fa3be7d1f592f9ddee403ecf75acf20ab791759eeadcb28f2e246d714d80`.
+
+Opened every new library/default/results/filter/detail frame in light, dark and real 320dp at 200%
+at native resolution. Also opened48 representative final-source frames on labelled review
+sheets covering every area listed above. Original screenshots were neither edited nor replaced
+with review sheets; the two owner references remain separate inline design targets.
+
+- Reference1: filters use soft rounded outlines, restrained theme tint/checkmarks, consistent8dp
+  two-axis spacing and readable grouped controls. Gym day/equipment and Run Now groups now share
+  that rhythm. Advanced metadata opens and closes through an actual accessible control.
+- Reference2: the default dark library has rounded search, horizontal categories, compact neutral
+  outlined rows with original thumbnails at left, prominent names, short subtitles and genuine
+  navigation chevrons. Four complete programme-context rows fit beneath the retained global header
+  and personal strip. The first card begins around524px rather than635px on the same1200px view.
+  No saturated result backgrounds or decorative dropdowns remain. Race Day Dreams colours and its
+  global navigation are preserved rather than copying the reference's green or navigation.
+- Search results retain full equipment setup when it matters. At200%, the Search label is short;
+  exercise name/thumbnail/chevron remain together and long context stacks below without truncation.
+  Scrolled captures naturally crop off-screen content; no fixed text height or page-wide horizontal
+  layout is used. Category strips and detail tabs intentionally scroll horizontally, with full labels.
+- Real tabs preserve overview/technique/history/PBs. Existing illustration, exclusion/restore,
+  favourite/custom/archive and programme/logging actions remain; all functional regressions pass.
+- Home/live, running and strength analytics, calendar/history, settings/native onboarding/permissions,
+  body/health/recovery/storage, Race Day and shoes remain coherent and readable. Dynamic light/dark
+  and branded200% variants retain semantic colours, safe app controls and natural scrolling.
+
+The known forced-narrow emulator platform navigation icon at the far-right screen edge remains
+partially cropped. App controls remain reachable; no physical OEM/navigation claim is inferred.
+Human TalkBack, Galaxy S24/Pixel/Xiaomi, real GPS/Health Connect/BLE, rotation/locked-screen/audio/battery
+checks remain UNPERFORMED. Exact final-head and main/publication checks are in VERIFICATION.md.

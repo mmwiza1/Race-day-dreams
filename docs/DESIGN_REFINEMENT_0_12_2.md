@@ -1,4 +1,4 @@
-# Material3 refinement audit — 0.12.2-test1
+# Material 3 refinement audit — 0.12.2-test1
 
 The supplied light filter-spacing reference and dark ExerciseLibrary reference are mandatory
 visual targets. They remain separate from genuine actual-build captures. Keep app navigation,
@@ -23,11 +23,13 @@ card gaps12dp, related/chip gaps8dp and major sections24dp form the reusable sta
 
 ## Verification boundary
 
-Implementation and screenshot tests are in progress. No new-source screenshot acceptance or
-API matrix pass is claimed here. Capture all421retained frames plus12new frames; inspect actual
-library/card density, source illustrations, filter wrapping/selection and detail tabs against
-both owner references. New large-font library/filter/detail captures use a real320dp/200% window. Check dynamic/branded light/dark, narrow width and200% text. Do not
-weaken existing assertions to make the new layout pass. Record actual findings below.
+Source f33fbfc passed538full tests/433 captures each API 28/35/36 in workflow 43249755986.
+Canonical 681df68 exactly matches the SHA-verified API 35archive. All12 new views were opened
+natively;48 representative active-area frames were reviewed on labelled sheets. Direct comparison
+with both separate owner references accepted the corrected density, neutral illustrated cards,
+selected/wrapping filters, progressive disclosure and real detail tabs. The initial6e crowded
+layout was rejected and refined before acceptance. See VISUAL_REVIEW_0_12_2.md and VERIFICATION.md
+for exact source/artifact identities and remaining delivery checks. No test assertions weakened.
 
-Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack, realGPS/HealthConnect/BLE and OEM acceptance
+Physical Galaxy S24/Pixel/Xiaomi, human TalkBack, real GPS/Health Connect/BLE and OEM acceptance
 remain unperformed. No schema, backup, domain, permission, recording or navigation change.
