@@ -39,6 +39,8 @@ visual correction adds realadvancedFilters disclosure, compactdefaultsubtitles/f
 setup on demand, and a shared shortSearch label/aliasplaceholder/accessible description in
 library/loggingPicker. Final local debugAPK/testAPK/lint passes75tasks/4m21s; pinned123Kotlin/159Java and release9 pass. See docs/VISUAL_REVIEW_0_12_2.md. Newsource runtime/captures pending.
 
+The final audit also found7zero-gap control groups in gym available days/equipment and RunNow. They now use shared8dp inbothaxes; labels/actions unchanged. Final local debug/testAPK/lint PASS75tasks/4m21s, formatting123Kotlin/159Java. Source fingerprint3e71fa3be7d1f592f9ddee403ecf75acf20ab791759eeadcb28f2e246d714d80. New exact-head runtime pending.
+
 Expected runtime gate:538full instrumentation tests/API (534retained plus3newUI regressions
 and1production-capture method),433authentic screenshots/API. These are expectations, not
 observed passes. Inspect complete logs and actual images before accepting/merging. See

@@ -30,6 +30,8 @@ The first review found successful components but rejected default-page density:
   search/advanced browsing/custom definitions and the existing details. Do not shrink text.
 - Remove ranking implementation copy from above the first card; keep meaningful result counts.
 
+The broader actual6e contact sheets (48 representative frames) were also reviewed across Home/live, gym/programmes/logging, strength/running analytics, calendar/history, settings/onboarding, health/body/recovery/storage, Race Day and shoes. One further systemic gap was visible: zero-gap available-day/equipment rows in gym setup. All seven remaining zero-gap FlowRows in gym setup and Run Now now use the same8dp two-axis token. No action, label or selection logic changed.
+
 New-source runtime/captures and direct reference comparison remain PENDING. Do not substitute
 the6eimages, contact-sheet resizes or a passing validator for final-source pixel acceptance.
 Review light/dark/dynamic/branded, real320dp200%, opened/closed controls, result rows, detailtabs

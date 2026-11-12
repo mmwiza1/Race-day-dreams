@@ -33,8 +33,8 @@ import org.racedaydreams.coach.strength.AuthoredProgrammeWorkout
             Text("Priority");ChoiceChips(GymProgramme.Priority.values().map{it.name},priority){priority=it}
             Text("Experience");ChoiceChips(GymProgramme.Experience.values().map{it.name},experience){experience=it}
             Text("Sessions per week");ChoiceChips((1..6).map{it.toString()},frequency.toString()){frequency=it.toInt()}
-            Text("Available gym days");FlowRow{DayOfWeek.values().forEach{day->CoachFilterChip(selected=day.value in days,onClick={days=if(day.value in days)days-day.value else days+day.value},label={Text(day.getDisplayName(java.time.format.TextStyle.SHORT,java.util.Locale.UK))})}}
-            Text("Equipment");FlowRow{listOf("bodyweight","dumbbells","barbell","squat rack","bench","machines","cables","kettlebells","pull-up bar","trap bar","sled","full gym").forEach{e->CoachFilterChip(selected=e in equipment,onClick={equipment=if(e in equipment)equipment-e else equipment+e},label={Text(e)})}}
+            Text("Available gym days");FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip), verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip)){DayOfWeek.values().forEach{day->CoachFilterChip(selected=day.value in days,onClick={days=if(day.value in days)days-day.value else days+day.value},label={Text(day.getDisplayName(java.time.format.TextStyle.SHORT,java.util.Locale.UK))})}}
+            Text("Equipment");FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip), verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip)){listOf("bodyweight","dumbbells","barbell","squat rack","bench","machines","cables","kettlebells","pull-up bar","trap bar","sled","full gym").forEach{e->CoachFilterChip(selected=e in equipment,onClick={equipment=if(e in equipment)equipment-e else equipment+e},label={Text(e)})}}
             Text("Session length");ChoiceChips(listOf("30","45","60","75"),minutes.toString()){minutes=it.toInt()}
             Text("Effort guidance");ChoiceChips(listOf("RPE","RIR"),effort){effort=it}
             error?.let{Text(it)}
