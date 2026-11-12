@@ -48,6 +48,12 @@ API36 was blocked before tests by a confirmed com.android.systemui startup ANR; 
 platform-focus assertion remains intact. No arbitrary wait, assertion removal or timeout change.
 Corrected-source runtime acceptance remains mandatory; the unchanged README browser proof stands.
 
+The next candidate3f74285/workflow43306126703 passed24of25guards on EACH API but the same new
+capture still selected Plan by visible text at200%, when navigation intentionally uses accessible
+icon labels. It now reuses clickOriginalNavigationTab, the existing visible/clickable text-or-content-
+description helper. All other guards passed; no app/navigation, timeout or assertion changes.
+Local corrected instrumentation compilation passed27tasks/2m6s. Fresh runtime acceptance remains required.
+
 No final543/451pass, final-head merge, new0.12.3public APK or physical acceptance is claimed yet.
 GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE and OEM audio/battery/
 background/rotation checks remain unperformed. Older records below are historical checkpoints.

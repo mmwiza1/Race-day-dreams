@@ -3246,7 +3246,7 @@ class CoachingScreenshotTest {
             back()
             back()
             awaitHomeReady(false)
-            click("Plan")
+            clickOriginalNavigationTab("Plan")
             await("This week")
             compose
                 .onAllNodesWithContentDescription("View workout and purpose")[0]
