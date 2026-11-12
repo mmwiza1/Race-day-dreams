@@ -3210,7 +3210,7 @@ class CoachingScreenshotTest {
         withRefinementCaptureModes { suffix ->
             click("Settings")
             await("Local backup and restore")
-            compose.onNodeWithText("Local backup and restore").performScrollTo()
+            alignHeading("Local backup and restore")
             capture("settings-backup-plain$suffix")
             compose.onNodeWithText("Choose backup to restore").performScrollTo().assertIsDisplayed()
             compose
@@ -3220,6 +3220,44 @@ class CoachingScreenshotTest {
                 .performScrollTo()
                 .assertIsDisplayed()
             capture("settings-backup-actions-plain$suffix")
+        }
+    }
+
+    @Test
+    fun capturesPlainHealthAndRunningInstructionsInAllModes() {
+        withRefinementCaptureModes { suffix ->
+            click("Settings")
+            compose.onNodeWithText("Personal health context").performScrollTo().performClick()
+            await("Heart-rate variability")
+            alignHeading("Heart-rate variability")
+            capture("health-context-plain$suffix")
+            compose
+                .onNodeWithText("About this measurement")
+                .performScrollTo()
+                .assert(
+                    SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed")
+                )
+                .performClick()
+            compose
+                .onNode(hasText("HRV means heart-rate variability.", substring = true))
+                .performScrollTo()
+                .assertIsDisplayed()
+            capture("health-measurement-plain$suffix")
+            back()
+            click("Plan")
+            await("This week")
+            compose
+                .onAllNodesWithContentDescription("View workout and purpose")[0]
+                .performScrollTo()
+                .performClick()
+            await("Workout structure")
+            capture("running-task-plain$suffix")
+            compose.onAllNodesWithText("Exact effort target")[0].performScrollTo().performClick()
+            compose
+                .onNode(hasText("This is the effort target saved in this plan.", substring = true))
+                .performScrollTo()
+                .assertIsDisplayed()
+            capture("running-target-plain$suffix")
         }
     }
 

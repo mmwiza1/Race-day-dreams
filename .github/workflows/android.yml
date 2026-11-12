@@ -41,6 +41,7 @@ jobs:
           python3 scripts/test-schema.py
           python3 scripts/test-release-notes.py
           python3 scripts/test-development-assets.py
+          python3 scripts/test-showcase.py
           python3 scripts/test-android-gate.py
           cmp THIRD_PARTY.md app/src/main/assets/third_party.md
           python3 scripts/generate-berlin-geometry.py --check

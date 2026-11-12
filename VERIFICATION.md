@@ -1,3 +1,42 @@
+# 0.12.3-test1 — verified presentation checkpoint, final showcase gate pending
+
+PR #22, branch `feature/0.12.3-plain-language-github-showcase`, version0.12.3-test1/code19.
+[Workflow43295666206](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43295666206)
+completed SUCCESS at source`c3d4ef9ebb7e9de15cf20892cb2819514ee3d0bd`.
+Each API28/35/36 passed24early guard cases, all542unique instrumentation cases and439authentic
+captures. The guards are repeated within the unfiltered suite, not extra unique tests.
+All three completed job logs were inspected. Earlier failures were corrected without removing
+numeric/effort/history/cleanup assertions or adding delays: separate exact-target disclosure
+rows, modal-specific screenshot selectors and updated complete caption/date expectations.
+
+Local domain700,189checks/48unique suites (81new presentation checks), schema75, release10,
+publisher7, capturevalidator23, runner13, pinned125Kotlin/161Java formatting and build/lint passed.
+All220canonical and14routine exercise guides remain complete. Schema19/rootJSON13/raw3/package1,
+algorithms, actuals, history, permissions, navigation and icon remain unchanged.
+
+Canonical1c39338 safely preserves all439API35PNGs byte-for-byte from artifact13980697835:
+58,762,193bytes, SHA256`c84b57bdd258b253932e4de644e3bf9aae6de42f1f8af4318cd7784ef186ed9d`.
+API36artifact13979809634 was independently downloaded/verified:58,708,351bytes,
+SHA256`6a69eab9ffe4a7fc31523845e21582acf65165380028d82e8a1a63b05850980b`.
+Eighteen exercise/gym/analytics/storage/backup/Home light/dark/200% frames were opened on labelled
+sheets, plus native large-text detail/target/backup views. Text wraps and controls remain readable;
+long sections scroll. The first backup capture showed the heading at the bottom: its next capture
+now aligns to the real heading. Existing forced-narrow platform navigation-strip clipping remains
+a hardware/rotation limitation, not a claimed physical pass.
+
+The local final showcase candidate adds12actual health/plan/disclosure frames, for expected451
+captures and543tests/API; its runtime/visual verification is still pending. Compilation/lint passed
+75tasks/3m4s, then backup-alignment test compilation/lint57tasks/3m6s. Five local showcase tests pass.
+README is held until public alias verification survives the concurrent owner main publication.
+Source c3d bootstrap/public downloads matched successful d0ac973 main:versioned+stable APKs both
+55,643,562bytes/SHA256`bf9baebfe6b0fdb81a82acf42d1b2264fbd104283d01b2eb1209d3cf08a4df62`;
+checksums use their own filenames. New main14f8adf policy work is preserved; its old publisher may
+remove aliases, so final alias/publication proof must be refreshed after that run completes.
+
+No final543/451pass, final-head merge, new0.12.3public APK or physical acceptance is claimed yet.
+GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE and OEM audio/battery/
+background/rotation checks remain unperformed. Older records below are historical checkpoints.
+
 # 0.12.2-test1 — verified software and visual source
 
 [PR #21](https://github.com/mmwiza1/Race-day-dreams/pull/21), branch

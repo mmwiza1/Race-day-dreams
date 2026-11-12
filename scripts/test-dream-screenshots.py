@@ -24,7 +24,7 @@ def png(width=320, height=640, pixels=None):
 
 class CaptureValidationTest(unittest.TestCase):
     def test_plain_backup_keeps_all433_existing_frames_and_requires_three_modes(self):
-        expected = {f'{scene}{suffix}.png' for scene in ('settings-backup-plain', 'settings-backup-actions-plain') for suffix in ('', '-dark', '-large-font')}
+        expected = {f'{scene}{suffix}.png' for scene in ('settings-backup-plain', 'settings-backup-actions-plain', 'health-context-plain', 'health-measurement-plain', 'running-task-plain', 'running-target-plain') for suffix in ('', '-dark', '-large-font')}
         self.assertEqual(expected, set(captures.PLAIN_LANGUAGE_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
         self.assertEqual(433, len(set(captures.REQUIRED) - expected))
@@ -92,7 +92,7 @@ class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(439, len(captures.REQUIRED))
+        self.assertEqual(451, len(captures.REQUIRED))
         self.assertEqual(417, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
         self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))

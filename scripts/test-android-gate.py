@@ -171,6 +171,7 @@ class AndroidGateTest(unittest.TestCase):
         self.assertIn('AuthoredGymNowScreenTest#authoredTodayAndDetailsAreUsableInDarkModeAtTwoHundredPercent', selected)
         self.assertIn('org.racedaydreams.coach.StorageManagementScreenTest', selected)
         self.assertIn('CoachingScreenshotTest#capturesOptionalProgressionInLightDarkAndLargeText', selected)
+        self.assertIn('CoachingScreenshotTest#capturesPlainHealthAndRunningInstructionsInAllModes', selected)
         self.assertIn('CoachOnboardingTest#canContinueWithoutHealthAndSaveGoalThroughExistingForm', selected)
         self.assertIn('CoachingScreenshotTest#capturesPublicPermissionRationaleInLightDarkAndLargeText', selected)
         self.assert_reader_stopped()

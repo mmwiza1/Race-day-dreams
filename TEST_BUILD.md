@@ -1,3 +1,18 @@
+# Plain-English and GitHub showcase — 0.12.3-test1
+
+Current source-bound results and final delivery gates are in VERIFICATION.md and CONTINUE_CODEX.md.
+The c3d4ef9 checkpoint passed542tests/439captures on each API28/35/36. The final expanded451-frame
+candidate is not yet runtime-accepted. Do not treat a PR APK as a published-main build.
+
+Owner physical checks remain UNPERFORMED: read exercise tasks and exact target disclosures;
+log actual sets with RPE or repetitions-left inputs; compare reference versus actual weights;
+review planned running effort versus recorded pace/timing; open health measurement explanations;
+read complete-backup/JSON distinctions and permanent-loss cleanup warnings. Check light/dark,
+device/branded colours,200%/narrow windows, TalkBack/focus/keyboard/scrolling. Verify stable APK and
+versioned APK/checksums agree before installing; make a complete backup before a signing-conflict
+reinstall. All existing outdoorGPS, realHealthConnect/BLE, audio/background/battery/OEM checks below
+remain separate physical tasks. No emulator run establishes those results.
+
 # Material 3 layout and library refinement — 0.12.2-test1
 
 Source f33fbfc passed538full tests/433 captures each API 28/35/36 and direct light/dark/real 320dp at 200%
