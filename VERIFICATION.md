@@ -1,3 +1,17 @@
+# Final contrast refinement — verification pending
+
+Additional rendered-pixel analysis found weak unselected weekly-bar contrast in the previously
+verified765source: light barRGB221,226,249/surface244,243,250 is1.17:1; dark bar65,70,89/
+surface26,27,33 is1.84:1. This corrects the earlier subjective no-contrast-issue review.
+The local refinement uses the theme secondary foreground role in place of secondaryContainer.
+The existing chart selection/keyboard/TalkBack test now also checks actual rendered unselected
+bar/surface contrast >=3:1 in light/dark themes, without hard-coded palette colours. Existing
+assertions remain; expected534tests/421captures is unchanged. Local debugAPK/testAPK/lint
+passed75tasks/3m29s; pinnedformat120Kotlin159Java and release9 pass. Fingerprint
+`dd72813b42f73e07b1e291bef014bda72361950bb6d9f34d3a03d50a5addd91a`. A fresh full API28/35/36/canonical/pixel-review gate is required before
+accepting this source or merging.
+Prior named-source passes below remain valid for those sources, not this local refinement.
+
 # 0.12.1-test1 — verified software and visual source
 
 Source **ffeb91a5afbe8a30682442600623b1551dff0f52** passed complete

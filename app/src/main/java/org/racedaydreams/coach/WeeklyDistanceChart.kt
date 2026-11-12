@@ -61,7 +61,7 @@ internal fun WeeklyRunningChart(
     val minimum = if (metric == RunningTrendMetric.PACE) (values.minOrNull() ?: 0.0) * .9 else 0.0
     val upper = if (metric == RunningTrendMetric.PACE) maximum * 1.1 else maximum
     val primary = MaterialTheme.colorScheme.primary
-    val normal = MaterialTheme.colorScheme.secondaryContainer
+    val normal = MaterialTheme.colorScheme.secondary
     val contrast = MaterialTheme.colorScheme.onPrimary
     val outline = MaterialTheme.colorScheme.outline
     val grid = MaterialTheme.colorScheme.outlineVariant

@@ -11,7 +11,7 @@ Material You design. Development/test build.
 ## Improvements
 
 - Larger live time and distance, readable pace/optional heart rate, real workout-step progress and existing pause/resume/Finish confirmation.
-- Rounded selectable charts, keyboard-friendly week controls and clear missing-data states.
+- Rounded selectable charts, higher-contrast unselected bars, keyboard-friendly week controls and clear missing-data states.
 - Ranked retained running results preserve dates and source precedence; run summaries and splits gain clearer hierarchy.
 - Existing navigation icons, labels, destinations and order remain unchanged.
 
@@ -38,8 +38,10 @@ Existing navigation icons, labels, ordering, destinations, branding and launcher
 
 ## Verification
 
-The final implementation source passed 534 full instrumentation tests and 421 authentic captures
+The previously verified implementation source passed 534 full instrumentation tests and 421 authentic captures
 on each API28/35/36, plus domain, schema, backup, lint, formatting and guidance checks.
 The loop-marker correction is source-bound and visually verified in light/dark/200% captures.
 The confirmed-reset concurrency regression passed on all three APIs without weakening file
-verification or other assertions. Real-device acceptance remains unperformed. See VERIFICATION.md.
+verification or other assertions. A final bar-contrast refinement requires fresh source-bound
+software and pixel verification before delivery. Real-device acceptance remains unperformed.
+See VERIFICATION.md.

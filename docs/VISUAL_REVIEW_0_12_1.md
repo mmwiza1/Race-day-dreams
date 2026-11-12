@@ -1,6 +1,11 @@
 # Running refinement visual review — 0.12.1-test1
 
-**Visual/source gate PASS**,11November2026, source
+**Prior qualitative review; final contrast gate pending.** Additional pixel analysis found
+unselected weekly bars below3:1 against their chart surfaces (light1.17:1/dark1.84:1).
+The secondary foreground refinement and rendered-pixel regression require new actual captures
+and measured light/dark/200% review. The comparison below is retained for the named765source.
+
+Previously inspected source
 `ffeb91a5afbe8a30682442600623b1551dff0f52`.
 All38new API35 frames were opened in labelled contact sheets; light/dark/200% route frames
 were additionally opened at native size. Six retained views were reopened: device-lightHome,
