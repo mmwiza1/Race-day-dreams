@@ -16,6 +16,12 @@ remain. NewUI/capture guard additions retain all9original guards;13guard cases a
 the full suite and are not extraunique tests. Firstsource API36 had a confirmed SystemUI
 startup ANR before any app test; focus guard failed closed. No assertion or timeout removed.
 
+The4d2099e matrix ran13guards perAPI:12passed, the new capture failed its merged-tree
+thumbnail-ready lookup. Corrected lookup uses the unmerged decorative child while retaining
+actualbitmap readiness and20s bound; the existing newUIcase now also asserts that loaded
+thumbnail is displayed. TestAPK/lint PASS57tasks/2m25s for this test-only correction.
+No full suite or visual pass is inferred from the partial run.
+
 Expected runtime gate:538full instrumentation tests/API (534retained plus3newUI regressions
 and1production-capture method),433authentic screenshots/API. These are expectations, not
 observed passes. Inspect complete logs and actual images before accepting/merging. See

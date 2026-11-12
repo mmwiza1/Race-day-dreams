@@ -83,6 +83,17 @@ class ExerciseLibraryDesignTest {
             .performScrollToNode(hasTestTag("exercise-row-bench-press"))
         compose.onNodeWithTag("exercise-row-bench-press").assertIsDisplayed().performClick()
         compose.runOnIdle { assertEquals("bench-press", opened) }
+        // The clickable card merges its name/context. Its decorative image readiness tag
+        // deliberately lives in the unmerged tree; require the actual bundled bitmap.
+        compose.waitUntil(20000) {
+            compose
+                .onAllNodesWithTag("exercise-thumbnail-ready-bench-press", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        compose
+            .onNodeWithTag("exercise-thumbnail-ready-bench-press", useUnmergedTree = true)
+            .assertIsDisplayed()
     }
 
     @Test

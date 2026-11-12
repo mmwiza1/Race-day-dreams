@@ -3176,7 +3176,10 @@ class CoachingScreenshotTest {
                     .performScrollToNode(hasTestTag("exercise-row-bench-press"))
                 compose.waitUntil(20000) {
                     compose
-                        .onAllNodesWithTag("exercise-thumbnail-ready-bench-press")
+                        .onAllNodesWithTag(
+                            "exercise-thumbnail-ready-bench-press",
+                            useUnmergedTree = true,
+                        )
                         .fetchSemanticsNodes()
                         .isNotEmpty()
                 }
