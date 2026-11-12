@@ -13,7 +13,7 @@ public final class AthleteLanguage {
         String weight =
                 exercise.mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT
                         ? "the extra weight you add"
-                        : "the weight you lift";
+                        : "the weight you use";
         return switch (exercise.measurement()) {
             case LOAD_REPS -> "Record " + weight + " and how many repetitions you complete.";
             case REPS_ONLY ->
@@ -22,7 +22,7 @@ public final class AthleteLanguage {
             case DURATION -> "Record how long you hold or perform the exercise.";
             case LOAD_DURATION -> "Record " + weight + " and how long you perform the exercise.";
             case DISTANCE -> "Record how far you travel during the exercise.";
-            case LOAD_DISTANCE -> "Record " + weight + " and how far you carry it.";
+            case LOAD_DISTANCE -> "Record " + weight + " and how far you move it.";
         };
     }
 

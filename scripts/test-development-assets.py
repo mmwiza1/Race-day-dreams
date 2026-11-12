@@ -60,13 +60,15 @@ class DevelopmentAssetsTest(unittest.TestCase):
     def test_bootstrap_rejects_failing_or_unrelated_sources(self):
         import copy
         source = 'a' * 40
-        body = f'- Version: 0.12.2-test1 / versionCode 18\n- Commit: `{source}`\nhttps://github.com/mmwiza1/Race-day-dreams/actions/runs/123'
+        body = f'## Build information\n- Version: 0.12.2-test1 / versionCode 18\n- Commit: `{source}`\nhttps://github.com/mmwiza1/Race-day-dreams/actions/runs/123'
         release = {'body': body, 'tag_name': 'development', 'draft': False, 'prerelease': True}
         run = {'head_sha': source, 'id': 123, 'status': 'completed', 'conclusion': 'success', 'event': 'push', 'head_branch': 'main'}
         tag = {'object': {'sha': source}}
         spec = importlib.util.spec_from_file_location('bootstrap', ROOT / 'scripts/bootstrap-development-alias.py')
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
+        self.assertEqual(('0.12.2-test1', source, 123), module.identity(release, run, tag, 'mmwiza1/Race-day-dreams'))
+        release['body'] = 'Earlier PR evidence: https://github.com/mmwiza1/Race-day-dreams/actions/runs/999\n\n' + release['body']
         self.assertEqual(('0.12.2-test1', source, 123), module.identity(release, run, tag, 'mmwiza1/Race-day-dreams'))
         for field, value in [('conclusion','failure'), ('status','in_progress'), ('event','pull_request'), ('head_branch','feature'), ('head_sha','b'*40)]:
             bad = copy.deepcopy(run)

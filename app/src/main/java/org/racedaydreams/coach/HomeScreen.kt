@@ -86,7 +86,14 @@ private fun RunningTodayScreen(
                 .segments()
                 .firstOrNull { it.kind() == org.racedaydreams.domain.WorkoutSegment.Kind.RUN }
                 ?.let { segment ->
-                    segment.rpe()?.let { Text("Target effort ~${decimal(it)}/10") }
+                    segment.rpe()?.let {
+                        Text(
+                            if (completed)
+                                "Planned effort: ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)}."
+                            else
+                                "Aim for a ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)} effort."
+                        )
+                    }
                     if (
                         segment.minimumSecondsPerKm() != null &&
                             segment.maximumSecondsPerKm() != null

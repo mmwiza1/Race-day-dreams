@@ -19,7 +19,7 @@ spec.loader.exec_module(assets)
 def identity(release, run, tag, repository):
     if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repository):
         raise ValueError('Repository required')
-    body = release['body']
+    body = release['body'].rsplit('## Build information', 1)[-1]
     version = re.search(r'^- Version: (\d+\.\d+\.\d+-test\d+) / versionCode (\d+)\s*$', body, re.M)
     source = re.search(r'^- Commit: `([0-9a-f]{40})`\s*$', body, re.M)
     evidence = re.search(r'https://github.com/' + re.escape(repository) + r'/actions/runs/(\d+)', body)
@@ -45,7 +45,7 @@ def main():
         return json.loads(subprocess.check_output(['gh', 'api', f'repos/{repository}/{path}'], text=True))
 
     release = api('releases/tags/development')
-    match = re.search(r'https://github.com/' + re.escape(repository) + r'/actions/runs/(\d+)', release['body'])
+    match = re.search(r'https://github.com/' + re.escape(repository) + r'/actions/runs/(\d+)', release['body'].rsplit('## Build information', 1)[-1])
     if not match:
         raise ValueError('Missing workflow evidence')
     run = api('actions/runs/' + match.group(1))

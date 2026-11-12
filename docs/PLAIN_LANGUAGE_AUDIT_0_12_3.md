@@ -13,7 +13,7 @@ consent and activation rules. British English; concise instructions first, optio
 | Strength Home/programmes | Explain repetitions/sets and reference weights using existing structured prescription helper | No generator or progression changes |
 | Gym Now/recovery | “Save needs acknowledgement” → “Confirm your saved action”; explain retry without developer write terminology | Same retry/reload transaction |
 | Live gym logging | Plain task and optional weight-reference explanation before exact target details | Actual input remains separate |
-| Exercise library/details | “Measurement: load reps” → “Record the weight you lift and how many repetitions you complete” | Map all six measurement types; weighted bodyweight is added weight |
+| Exercise library/details | “Measurement: load reps” → “Record the weight you use and how many repetitions you complete” | Map all six measurement types; weighted bodyweight is added weight |
 | Exercise technique | Add concise set/repetition terminology explanation, preserve licensed instructions/art | No fabricated custom technique |
 | Warm-up/rest/superset | Explain practice sets and grouped exercise rounds, keep optional controls | Warm-ups stay excluded from records/progression |
 | Progression suggestions | Existing task-first and collapsed advanced details already correct | Retain reviewed-draft/freshness/evidence rules |

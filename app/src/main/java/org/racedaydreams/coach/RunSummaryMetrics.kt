@@ -58,7 +58,7 @@ internal fun RecordedRunSummary(activity: ActivityRecord, state: CoachUiState) {
                 )
             }
             Text(
-                "Elapsed time includes pauses. Average pace uses that whole time and your recorded distance; moving time, when available, counts movement separately.",
+                "Elapsed time includes pauses. Average pace uses the whole elapsed time and recorded distance. Moving time, when available, is reported separately by the recording or provider.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
