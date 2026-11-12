@@ -30,6 +30,17 @@ Small repository-maintenance/documentation updates may be made directly by the r
 
 When `CONTINUE_CODEX.md` is present, treat its generic continuation rules as permanent and its active-release section as the authoritative current scope. Always inspect live repository state before following checkpoint SHAs or version numbers recorded there.
 
+## Efficient implementation and validation — standing owner policy
+
+**Use the smallest safe workflow for the actual request.** Follow [docs/DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md) for scope tiers, targeted development testing, CI staging and prompt conventions. It applies to future Codex sessions, including resumes. The latest explicit owner instruction overrides a default tier.
+
+- **Small** (copy, labels, README, narrowly scoped spacing): inspect affected files and nearby tests, make one focused change, run relevant fast validation. Do not expand into an app-wide audit, version bump, new APK release, screenshot regeneration or exhaustive device matrix unless the requested deliverable, code impact or final release gate genuinely requires it.
+- **Medium** (one screen or contained feature): test the affected flow and dependencies first; review changed screens and accessibility. Expand scope only for discovered coupling or failures.
+- **Major/risky** (GPS, training rules, Health Connect, persistence/migration, backup/retention, permissions, concurrent operations, iOS architecture): use checkpoints, targeted regression suites and the full established release matrix.
+- Avoid repeatedly rereading the entire codebase, rerunning unchanged successful tests, or pushing frequent intermediate commits that each start expensive CI. Prefer one coherent implementation pass and focused local fixes. After an expensive failure, reproduce the specific failing tests before launching the matrix again.
+- **Never trade away safety or source integrity:** exact-head required CI, schema/backup checks where applicable, real screenshot/source validation for modified UI, and green post-merge release validation remain mandatory for owner-authorised releases. The existing CI workflow may still run on every PR push until its separate optimization is safely implemented; wording alone does not change GitHub Actions.
+- **Do not bundle unrelated tasks** simply to fill out a release. An ordinary small change is not automatically a new test APK release. Group small fixes into an explicitly requested patch when practical. Preserve the established owner-authorised PR merge/publish policy when a release is requested.
+
 ## Release notes
 
 All GitHub releases — the rolling `development` release and permanent version tags —
