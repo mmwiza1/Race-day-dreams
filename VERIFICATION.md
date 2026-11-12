@@ -41,6 +41,13 @@ for BOTH names, with correct own-filename checksums, version18/minAPI28/noINTERN
 publisher remains active. The source-bound 0.12.3 showcase candidate can now advertise this
 verified rolling link. The0.12.3 APK remains gated until actual final-main acceptance.
 
+The first expanded-capture gate43303095755 failed before its full suite. API28/35 each passed24of25
+guards; the new capture navigated from health back only to Settings, then attempted Plan. The test
+now follows the actual second Back to Home and its existing readiness before selecting Plan.
+API36 was blocked before tests by a confirmed com.android.systemui startup ANR; the original
+platform-focus assertion remains intact. No arbitrary wait, assertion removal or timeout change.
+Corrected-source runtime acceptance remains mandatory; the unchanged README browser proof stands.
+
 No final543/451pass, final-head merge, new0.12.3public APK or physical acceptance is claimed yet.
 GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE and OEM audio/battery/
 background/rotation checks remain unperformed. Older records below are historical checkpoints.

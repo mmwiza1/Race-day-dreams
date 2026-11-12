@@ -3244,6 +3244,8 @@ class CoachingScreenshotTest {
                 .assertIsDisplayed()
             capture("health-measurement-plain$suffix")
             back()
+            back()
+            awaitHomeReady(false)
             click("Plan")
             await("This week")
             compose
