@@ -71,6 +71,7 @@ class ExerciseLibraryDesignTest {
                 }
             }
         }
+        compose.onNodeWithContentDescription("Add custom exercise").assertIsDisplayed()
         compose
             .onNodeWithTag("exercise-category-Chest")
             .performScrollTo()

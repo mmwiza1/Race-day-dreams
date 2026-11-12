@@ -10,6 +10,12 @@ Local completed checks:700,108domain checks/47suites;75schema tests;22capture-va
 and lint passed75tasks/2m59s on the stable formatted checkpoint. The final spacing/real320dp200%capture candidate also passed debugAPK/testAPK/lint
 75tasks/2m18s. Pinned formatting covers123Kotlin/159Java files. Runnerhelper13/formatter14/map-source11 also pass.
 
+Follow-up header/custom/archived accessibility and search-surface refinement passed a fresh
+no-daemon/dedicated-cache build:75tasks/5m25s, all executed. Existing functional assertions
+remain. NewUI/capture guard additions retain all9original guards;13guard cases also run in
+the full suite and are not extraunique tests. Firstsource API36 had a confirmed SystemUI
+startup ANR before any app test; focus guard failed closed. No assertion or timeout removed.
+
 Expected runtime gate:538full instrumentation tests/API (534retained plus3newUI regressions
 and1production-capture method),433authentic screenshots/API. These are expectations, not
 observed passes. Inspect complete logs and actual images before accepting/merging. See

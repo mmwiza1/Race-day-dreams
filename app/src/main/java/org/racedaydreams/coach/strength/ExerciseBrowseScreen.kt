@@ -21,10 +21,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,6 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -230,7 +234,31 @@ fun ExerciseBrowseScreen(
         contentPadding = PaddingValues(CoachSpace.Screen),
         verticalArrangement = Arrangement.spacedBy(CoachSpace.Card),
     ) {
-        item(key = "heading") { CoachHeading("Exercise Library") }
+        item(key = "heading") {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+            ) {
+                Column(Modifier.weight(1f)) { CoachHeading("Exercise Library") }
+                IconButton(
+                    onClick = {
+                        if (onCreateClassifiedCustom != null) onCreateClassifiedCustom()
+                        else custom = true
+                    },
+                    modifier =
+                        Modifier.size(CoachSpace.Touch).semantics {
+                            contentDescription = "Add custom exercise"
+                        },
+                ) {
+                    Text(
+                        "+",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.clearAndSetSemantics {},
+                    )
+                }
+            }
+        }
 
         item(key = "search") {
             OutlinedTextField(
@@ -244,6 +272,11 @@ fun ExerciseBrowseScreen(
                 singleLine = true,
                 shape = MaterialTheme.shapes.extraLarge,
                 leadingIcon = { LibrarySearchIcon() },
+                colors =
+                    OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
             )
         }
         item(key = "quick-categories") {
@@ -351,6 +384,13 @@ fun ExerciseBrowseScreen(
                                         .testTag("exercise-shortcut-$value"),
                             )
                         }
+                    if (query.isBlank())
+                        CoachFilterChip(
+                            selected = showArchived,
+                            onClick = { showArchived = !showArchived },
+                            label = { Text("Show archived") },
+                            modifier = Modifier.testTag("exercise-archived"),
+                        )
                 }
             }
             if (shortcut == "Excluded")
@@ -599,29 +639,6 @@ fun ExerciseBrowseScreen(
                     }
                     if (LocalDensity.current.fontScale < 1.5f) LibraryOpenIcon()
                 }
-            }
-        }
-        item(key = "management") {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            ) {
-                TextButton(
-                    onClick = {
-                        if (onCreateClassifiedCustom != null) onCreateClassifiedCustom()
-                        else custom = true
-                    },
-                    modifier = Modifier.heightIn(min = 48.dp),
-                ) {
-                    Text("Add custom exercise")
-                }
-                if (query.isBlank())
-                    CoachFilterChip(
-                        selected = showArchived,
-                        onClick = { showArchived = !showArchived },
-                        label = { Text("Show archived") },
-                        modifier = Modifier.heightIn(min = 48.dp),
-                    )
             }
         }
         item(key = "explore-all") {

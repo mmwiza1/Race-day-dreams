@@ -161,6 +161,12 @@ class AndroidGateTest(unittest.TestCase):
             '-Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000',
             '-Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener',
         ], json.loads((self.state / 'gradle-args.json').read_text()))
+        guards = json.loads((self.state / 'guard-args.json').read_text())
+        selected = next(arg for arg in guards if arg.startswith('-Pandroid.testInstrumentationRunnerArguments.class='))
+        self.assertIn('org.racedaydreams.coach.ExerciseLibraryDesignTest', selected)
+        self.assertIn('CoachingScreenshotTest#capturesCompactLibraryFiltersAndRealDetailTabsInAllModes', selected)
+        self.assertIn('CoachOnboardingTest#canContinueWithoutHealthAndSaveGoalThroughExistingForm', selected)
+        self.assertIn('CoachingScreenshotTest#capturesPublicPermissionRationaleInLightDarkAndLargeText', selected)
         self.assert_reader_stopped()
 
     def test_native_guard_failure_blocks_full_suite_and_exports(self):
