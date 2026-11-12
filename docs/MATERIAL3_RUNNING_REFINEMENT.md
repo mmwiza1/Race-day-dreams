@@ -52,3 +52,13 @@ those reset steps with helper opens; a deterministic realSQLite concurrency regr
 the boundary. Failure checks, schema, backups, actual history and recording calculations are
 unchanged. This correction passed the full534-test/421-capture API28/35/36 gate in
 workflow43120014729; its dedicated concurrency regression ran on every API.
+
+## Final contrast and visual verification
+
+Source 7c4f534 passed workflow43182469277: each API28/35/36 passed534 full tests and421
+captures, including rendered-pixel light/dark chart contrast and the reset concurrency case.
+Unselected weekly bars use the theme secondary foreground rather than secondaryContainer.
+Actual API35 screenshots measured5.85:1 light,10.11:1 dark and5.73:1 branded200% against
+chart surfaces. Selection also has an outline/dot and a labelled selected-week summary.
+All38refinement frames and six retained views were inspected against the owner's separate
+references. Details and exact source/artifact hashes are in VERIFICATION.md and the visual review.

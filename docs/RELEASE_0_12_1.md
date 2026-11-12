@@ -38,10 +38,11 @@ Existing navigation icons, labels, ordering, destinations, branding and launcher
 
 ## Verification
 
-The previously verified implementation source passed 534 full instrumentation tests and 421 authentic captures
+Implementation source 7c4f534 passed 534 full instrumentation tests and 421 authentic captures
 on each API28/35/36, plus domain, schema, backup, lint, formatting and guidance checks.
 The loop-marker correction is source-bound and visually verified in light/dark/200% captures.
 The confirmed-reset concurrency regression passed on all three APIs without weakening file
-verification or other assertions. A final bar-contrast refinement requires fresh source-bound
-software and pixel verification before delivery. Real-device acceptance remains unperformed.
+verification or other assertions. Rendered unselected weekly bars exceed 3:1 contrast in
+light/dark regression tests; actual light/dark/200% captures were inspected.
+Real-device acceptance remains unperformed.
 See VERIFICATION.md.

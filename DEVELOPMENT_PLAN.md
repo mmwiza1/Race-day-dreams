@@ -2,7 +2,7 @@
 
 Refine live-running hierarchy, optional accepted-route presentation and recorded performance
 charts on the completed0.12 foundation. Preserve navigation identity, engines and data.
-Implemented on the dedicated PR20 branch. Sourceffeb91a passed534tests and421
+Implemented on the dedicated PR20 branch. Source7c4f534 passed534tests and421
 captures perAPI28/35/36; all38newframes plus six retained views were inspected, and corrected
 light/dark/200% loop markers are verified.
 Exact-head/main/publication checks remain mandatory. See docs/MATERIAL3_RUNNING_REFINEMENT.md

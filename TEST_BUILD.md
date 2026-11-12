@@ -1,6 +1,6 @@
 # Focused running refinement — 0.12.1-test1 acceptance
 
-Sourceffeb91a passed534full tests and421captures on EACH API28/35/36. Canonical908a389
+Source7c4f534 passed534full tests and421captures on EACH API28/35/36. Canonicalf2d501b
 matches the reviewed API35rawartifact byte-for-byte. All38newviews and six retained views
 were opened; light/dark/200% loop markers are visibly corrected. Exact delivery-head/mainCI
 and rolling download checks are tracked separately. Do not treat a branch artifact as a

@@ -1,25 +1,11 @@
-# Final contrast refinement — verification pending
-
-Additional rendered-pixel analysis found weak unselected weekly-bar contrast in the previously
-verified765source: light barRGB221,226,249/surface244,243,250 is1.17:1; dark bar65,70,89/
-surface26,27,33 is1.84:1. This corrects the earlier subjective no-contrast-issue review.
-The local refinement uses the theme secondary foreground role in place of secondaryContainer.
-The existing chart selection/keyboard/TalkBack test now also checks actual rendered unselected
-bar/surface contrast >=3:1 in light/dark themes, without hard-coded palette colours. Existing
-assertions remain; expected534tests/421captures is unchanged. Local debugAPK/testAPK/lint
-passed75tasks/3m29s; pinnedformat120Kotlin159Java and release9 pass. Fingerprint
-`dd72813b42f73e07b1e291bef014bda72361950bb6d9f34d3a03d50a5addd91a`. A fresh full API28/35/36/canonical/pixel-review gate is required before
-accepting this source or merging.
-Prior named-source passes below remain valid for those sources, not this local refinement.
-
 # 0.12.1-test1 — verified software and visual source
 
-Source **ffeb91a5afbe8a30682442600623b1551dff0f52** passed complete
-[workflow 43120014729](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43120014729).
+Source **7c4f534e8a02083848807132a88fd3bffc53313d** passed complete
+[workflow 43182469277](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43182469277).
 Each API **28 /35 /36** passed **534 full instrumentation tests** and strict **421 authentic
 captures**, with the original platform-focus checks and nine guard methods. The guards also
 run in the unfiltered suite; they are not additional unique cases. All three completed logs
-were inspected, including START/END for the new confirmed-reset concurrency regression.
+were inspected, including START/END for confirmed-reset concurrency and the rendered light/dark chart-contrast regression.
 Build, lint, formatting, guidance and canonical publication passed on the first attempt for
 this source. Development publication correctly skipped on a PR.
 
@@ -53,26 +39,30 @@ historical; it does not establish universal emulator or hardware reliability. Th
 
 ## Authentic screenshots and direct comparison
 
-Canonical bot **908a389** was safely fast-forwarded, preserving local documentation.
-Metadata names ffeb91a above; actual and recorded source fingerprints match:
-`765334f98d672074212b81c873477c7d2be82e78c2ac81f4d41674e172b0d378`.
-All **421** canonical PNGs match reviewed raw API35 artifact **13901258037** byte-for-byte.
-ZIP **55,838,361bytes**, SHA256
-`b0c60a4d826f4f52c4b403776ee56296439610a34e5b04562ecc501be049d140`.
+Canonical bot **f2d501b** was safely fast-forwarded, preserving local documentation.
+Metadata names 7c4f534 above; actual and recorded source fingerprints match:
+`dd72813b42f73e07b1e291bef014bda72361950bb6d9f34d3a03d50a5addd91a`.
+All **421** canonical PNGs match reviewed raw API35 artifact **13926919951** byte-for-byte.
+ZIP **56,038,884bytes**, SHA256
+`b9c2f49ab9659209f693fc0b8177cc2ef670413eea1649005e89a86b1f62f7c4`.
 
 All38new frames were reopened from this exact source, plus six retained representative
 Home/Progress/History/Calendar/200%Home/darkStrength views. Native light/dark/200% route views
 confirm both markers remain visible on a loop. The hidden-start-square issue is corrected
-without moving coordinates. No further blocking clipping, overlap, contrast or missing action
-was observed. The three owner references remain separate and unmodified. See
+without moving coordinates. A measured follow-up found weak unselected weekly-bar contrast in the preceding765source
+(light1.17:1/dark1.84:1), correcting the earlier subjective acceptance. The final source uses
+theme secondary foreground; the existing interaction test also asserts rendered >=3:1
+light/dark contrast. Actual final screenshot bar/surface pairs measure5.85:1 light,
+10.11:1 dark and5.73:1 branded200%. Native chart frames and all38new/six retained views
+were inspected; no remaining blocking clipping, overlap or missing action was observed. The three owner references remain separate and unmodified. See
 [the visual review](docs/VISUAL_REVIEW_0_12_1.md) for comparison and meaningful scroll states.
 
 ## Candidate APK and preserved contracts
 
-API35 artifact **13901343053** verified ZIP **29,767,758bytes**, SHA256
-`28dc41680a003be94527f965178aedfa668b2b1cf13163d2a9e2480fab518078`.
+API35 artifact **13928510669** verified ZIP **29,767,895bytes**, SHA256
+`b986fd0a7d55e1fd03cb5cf927b36dd4689fc53c0fca683d77726ae717219b30`.
 Actual APK **55,578,026bytes**, SHA256
-`b70fba236a4e0ef708c0d6d00461a6401728dcfa16696f81ff1a1462119bb1a1`.
+`680877000d53aa2a6fba384b703a5f8ec310fb0126c42423141889033e852b90`.
 aapt confirms **0.12.1-test1 /code17 /minAPI28**, with no INTERNET permission.
 This branch candidate is not itself proof of published-main delivery.
 

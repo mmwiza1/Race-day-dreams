@@ -1,15 +1,13 @@
 # Running refinement visual review — 0.12.1-test1
 
-**Prior qualitative review; final contrast gate pending.** Additional pixel analysis found
-unselected weekly bars below3:1 against their chart surfaces (light1.17:1/dark1.84:1).
-The secondary foreground refinement and rendered-pixel regression require new actual captures
-and measured light/dark/200% review. The comparison below is retained for the named765source.
+**Final source visual review completed, 12 November 2026.**
 
-Previously inspected source
-`ffeb91a5afbe8a30682442600623b1551dff0f52`.
-All38new API35 frames were opened in labelled contact sheets; light/dark/200% route frames
-were additionally opened at native size. Six retained views were reopened: device-lightHome,
-Progress, History, monthCalendar, branded200%Home and darkStrengthHome.
+Reviewed source `7c4f534e8a02083848807132a88fd3bffc53313d`.
+All38new API35 frames were reopened in labelled contact sheets, including light/dark/200%
+statistics, route, paused, summaries, splits, ranked records, trends and HR/empty states.
+Distance-chart light/dark/200% frames were also opened at native size. Six retained views
+were reopened: device-lightHome, Progress, History, monthCalendar, branded200%Home and
+darkStrengthHome. Contact sheets are review aids; the canonical PNGs remain unedited.
 
 ## Comparison with the owner's references
 
@@ -41,18 +39,35 @@ The prior52774f61 loop capture exposed a real presentation issue: the latest-poi
   the start square when coordinates coincided. The start outline now surrounds and is drawn
   after the latest ring. Native corrected light/dark/200% frames show both shapes clearly,
   with no coordinate displacement, stored-data change or recorder command.
-No further blocking layout, contrast or missing-primary-action issue was found in the reviewed set.
+A subsequent measured check found unselected weekly bars too pale in source765:
+light1.17:1/dark1.84:1. This corrected the earlier subjective contrast acceptance. The final
+source uses the dynamic theme secondary foreground; the existing interaction test now also
+requires actual rendered-pixel contrast >=3:1 in light and dark without weakening other assertions.
+
+Final screenshot pixels show:
+
+| Mode | Unselected bar RGB | Surface RGB | Contrast |
+| --- | --- | --- | --- |
+| Light | 88,94,113 | 244,243,250 | 5.85:1 |
+| Dark | 192,198,221 | 26,27,33 | 10.11:1 |
+| Branded200% | 83,96,120 | 242,243,250 | 5.73:1 |
+
+These are measured solid fills from actual captures, not a universal guarantee for every
+wallpaper palette. Selection remains identifiable by dot/outline and the labelled summary.
+Against the references, the time hero, persistent controls, rounded charts and ranked results
+provide the intended hierarchy. No blocking clipping, overlap or inaccessible action was
+observed in this reviewed set. Scroll-edge content remains reachable by real scrolling.
 
 ## Capture integrity and coverage
 
-[Workflow43120014729](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43120014729)
+[Workflow43182469277](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43182469277)
 passed EACH API28/35/36:534full tests and421authentic frames on the first attempt for this
-source, including the new reset concurrency case. Earlier source-specific failures and fixes
+source, including reset concurrency and the rendered chart-contrast assertions. Earlier source-specific failures and fixes
 are recorded in VERIFICATION.md.
-Canonical bot908a389 carries421PNGs matching reviewed rawAPI35artifact13901258037 byte-for-byte.
-Strict PNG validation passes. ZIP55,838,361bytes, SHA256
-`b0c60a4d826f4f52c4b403776ee56296439610a34e5b04562ecc501be049d140`.
-Source fingerprint `765334f98d672074212b81c873477c7d2be82e78c2ac81f4d41674e172b0d378`.
+Canonical botf2d501b carries421PNGs matching reviewed rawAPI35artifact13926919951 byte-for-byte.
+Strict PNG validation passes. ZIP56,038,884bytes, SHA256
+`b9c2f49ab9659209f693fc0b8177cc2ef670413eea1649005e89a86b1f62f7c4`.
+Source fingerprint `dd72813b42f73e07b1e291bef014bda72361950bb6d9f34d3a03d50a5addd91a`.
 
 Reviewed new names: every `live-refined-*`, `run-summary-refined*`, `run-splits-refined*`,
 `running-records-*`, `running-trends-*` and `running-heart-rate*` frame:38total. This includes
