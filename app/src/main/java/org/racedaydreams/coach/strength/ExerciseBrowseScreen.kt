@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,16 +42,17 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 import java.util.UUID
+import org.racedaydreams.coach.CoachExerciseSearch
 import org.racedaydreams.coach.CoachFilterChip
 import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.CoachUiState
 import org.racedaydreams.coach.ExerciseLibraryThumbnail
 import org.racedaydreams.coach.LibraryOpenIcon
-import org.racedaydreams.coach.LibrarySearchIcon
 import org.racedaydreams.domain.strength.CustomStrengthExercise
 import org.racedaydreams.domain.strength.ExerciseMetadata
 import org.racedaydreams.domain.strength.ExerciseMetadataCatalog
@@ -164,7 +164,8 @@ fun ExerciseBrowseScreen(
                 .take(12)
                 .toSet()
         }
-    val metadataFilter = area != null || role != null || equipment != null || quickCategory != "All"
+    val advancedMetadataFilter = area != null || role != null || equipment != null
+    val metadataFilter = advancedMetadataFilter || quickCategory != "All"
     val rows =
         remember(
             state.exercises,
@@ -265,22 +266,12 @@ fun ExerciseBrowseScreen(
         }
 
         item(key = "search") {
-            OutlinedTextField(
+            CoachExerciseSearch(
                 query,
                 {
                     query = it
                     refineSearch = false
                 },
-                label = { Text("Search exercises or aliases") },
-                modifier = Modifier.fillMaxWidth().testTag("exercise-search"),
-                singleLine = true,
-                shape = MaterialTheme.shapes.extraLarge,
-                leadingIcon = { LibrarySearchIcon() },
-                colors =
-                    OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
             )
         }
         item(key = "quick-categories") {
@@ -309,10 +300,15 @@ fun ExerciseBrowseScreen(
                     verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
                 ) {
                     CoachFilterChip(
-                        selected = refineSearch,
+                        selected = refineSearch || metadataFilter,
                         onClick = { refineSearch = !refineSearch },
                         label = { Text("Refine search") },
-                        modifier = Modifier.heightIn(min = 48.dp),
+                        modifier =
+                            Modifier.heightIn(min = CoachSpace.Touch)
+                                .testTag("exercise-filters")
+                                .semantics {
+                                    stateDescription = if (refineSearch) "Expanded" else "Collapsed"
+                                },
                     )
                     CoachFilterChip(
                         selected = showArchived,
@@ -369,6 +365,16 @@ fun ExerciseBrowseScreen(
                     Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
                 ) {
+                    if (query.isBlank())
+                        CoachFilterChip(
+                            selected = refineSearch || metadataFilter,
+                            onClick = { refineSearch = !refineSearch },
+                            label = { Text("Filters") },
+                            modifier =
+                                Modifier.testTag("exercise-filters").semantics {
+                                    stateDescription = if (refineSearch) "Expanded" else "Collapsed"
+                                },
+                        )
                     listOf("For you", "Favourites", "Recent", "In my programme", "Excluded")
                         .forEach { value ->
                             CoachFilterChip(
@@ -403,128 +409,131 @@ fun ExerciseBrowseScreen(
                         "Excluded exercises are not selected for new programmes or alternatives. Existing workouts, favourites and PBs remain. Restore an exercise to make it eligible again."
                     )
                 }
-            item(key = "browse") {
-                Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                    ) {
-                        listOf("Body area", "Movement", "Equipment").forEach { value ->
-                            CoachFilterChip(
-                                selected = category == value,
-                                onClick = { category = if (category == value) null else value },
-                                label = { Text(value) },
-                                modifier =
-                                    Modifier.heightIn(min = 48.dp).testTag("exercise-browse-$value"),
-                            )
-                        }
-                    }
-                    when (category) {
-                        "Body area" -> {
-                            Text(
-                                "Primary involvement · broad training categories",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                            ) {
-                                areas.forEach { value ->
-                                    CoachFilterChip(
-                                        selected = area == value.name,
-                                        onClick = {
-                                            area = if (area == value.name) null else value.name
-                                            quickCategory = "All"
-                                        },
-                                        label = { Text(value.label()) },
-                                        modifier =
-                                            Modifier.heightIn(min = 48.dp)
-                                                .testTag("exercise-area-${value.name}"),
-                                    )
-                                }
-                            }
-                        }
-                        "Movement" ->
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                            ) {
-                                roles.forEach { value ->
-                                    CoachFilterChip(
-                                        selected = role == value.name,
-                                        onClick = {
-                                            role = if (role == value.name) null else value.name
-                                        },
-                                        label = { Text(value.label()) },
-                                        modifier =
-                                            Modifier.heightIn(min = 48.dp)
-                                                .testTag("exercise-role-${value.name}"),
-                                    )
-                                }
-                            }
-                        "Equipment" -> {
-                            Text(
-                                "Uses this equipment. A complete setup may also need the other items shown on each exercise.",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                            ) {
-                                if (hasBodyweight)
-                                    CoachFilterChip(
-                                        selected = equipment == "BODYWEIGHT",
-                                        onClick = {
-                                            equipment =
-                                                if (equipment == "BODYWEIGHT") null
-                                                else "BODYWEIGHT"
-                                        },
-                                        label = { Text("Bodyweight") },
-                                        modifier =
-                                            Modifier.heightIn(min = 48.dp)
-                                                .testTag("exercise-equipment-BODYWEIGHT"),
-                                    )
-                                equipmentGroups.forEach { value ->
-                                    CoachFilterChip(
-                                        selected = equipment == value.name,
-                                        onClick = {
-                                            equipment =
-                                                if (equipment == value.name) null else value.name
-                                        },
-                                        label = { Text(browseEnum(value.name)) },
-                                        modifier =
-                                            Modifier.heightIn(min = 48.dp)
-                                                .testTag("exercise-equipment-${value.name}"),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    if (metadataFilter) {
-                        Text(
-                            listOfNotNull(
-                                    area?.let { ExerciseMetadata.BodyArea.valueOf(it).label() },
-                                    role?.let { ExerciseMetadata.Role.valueOf(it).label() },
-                                    equipment?.let {
-                                        if (it == "BODYWEIGHT") "Bodyweight" else browseEnum(it)
-                                    },
-                                )
-                                .joinToString(" · ")
-                        )
-                        TextButton(
-                            onClick = {
-                                area = null
-                                role = null
-                                equipment = null
-                                quickCategory = "All"
-                            },
-                            modifier = Modifier.heightIn(min = 48.dp),
+            if (refineSearch)
+                item(key = "browse") {
+                    Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
                         ) {
-                            Text("Clear category filters")
+                            listOf("Body area", "Movement", "Equipment").forEach { value ->
+                                CoachFilterChip(
+                                    selected = category == value,
+                                    onClick = { category = if (category == value) null else value },
+                                    label = { Text(value) },
+                                    modifier =
+                                        Modifier.heightIn(min = 48.dp)
+                                            .testTag("exercise-browse-$value"),
+                                )
+                            }
+                        }
+                        when (category) {
+                            "Body area" -> {
+                                Text(
+                                    "Primary involvement · broad training categories",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                                FlowRow(
+                                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                ) {
+                                    areas.forEach { value ->
+                                        CoachFilterChip(
+                                            selected = area == value.name,
+                                            onClick = {
+                                                area = if (area == value.name) null else value.name
+                                                quickCategory = "All"
+                                            },
+                                            label = { Text(value.label()) },
+                                            modifier =
+                                                Modifier.heightIn(min = 48.dp)
+                                                    .testTag("exercise-area-${value.name}"),
+                                        )
+                                    }
+                                }
+                            }
+                            "Movement" ->
+                                FlowRow(
+                                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                ) {
+                                    roles.forEach { value ->
+                                        CoachFilterChip(
+                                            selected = role == value.name,
+                                            onClick = {
+                                                role = if (role == value.name) null else value.name
+                                            },
+                                            label = { Text(value.label()) },
+                                            modifier =
+                                                Modifier.heightIn(min = 48.dp)
+                                                    .testTag("exercise-role-${value.name}"),
+                                        )
+                                    }
+                                }
+                            "Equipment" -> {
+                                Text(
+                                    "Uses this equipment. A complete setup may also need the other items shown on each exercise.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                                FlowRow(
+                                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                ) {
+                                    if (hasBodyweight)
+                                        CoachFilterChip(
+                                            selected = equipment == "BODYWEIGHT",
+                                            onClick = {
+                                                equipment =
+                                                    if (equipment == "BODYWEIGHT") null
+                                                    else "BODYWEIGHT"
+                                            },
+                                            label = { Text("Bodyweight") },
+                                            modifier =
+                                                Modifier.heightIn(min = 48.dp)
+                                                    .testTag("exercise-equipment-BODYWEIGHT"),
+                                        )
+                                    equipmentGroups.forEach { value ->
+                                        CoachFilterChip(
+                                            selected = equipment == value.name,
+                                            onClick = {
+                                                equipment =
+                                                    if (equipment == value.name) null
+                                                    else value.name
+                                            },
+                                            label = { Text(browseEnum(value.name)) },
+                                            modifier =
+                                                Modifier.heightIn(min = 48.dp)
+                                                    .testTag("exercise-equipment-${value.name}"),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        if (metadataFilter) {
+                            Text(
+                                listOfNotNull(
+                                        area?.let { ExerciseMetadata.BodyArea.valueOf(it).label() },
+                                        role?.let { ExerciseMetadata.Role.valueOf(it).label() },
+                                        equipment?.let {
+                                            if (it == "BODYWEIGHT") "Bodyweight" else browseEnum(it)
+                                        },
+                                    )
+                                    .joinToString(" · ")
+                            )
+                            TextButton(
+                                onClick = {
+                                    area = null
+                                    role = null
+                                    equipment = null
+                                    quickCategory = "All"
+                                },
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) {
+                                Text("Clear category filters")
+                            }
                         }
                     }
                 }
-            }
         }
         item(key = "result-summary") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -535,11 +544,6 @@ fun ExerciseBrowseScreen(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.semantics { heading() },
                 )
-                if (query.isBlank())
-                    Text(
-                        "Search relevance comes first; favourites and recent use break ties.",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
                 if (hasFilters && query.isBlank())
                     TextButton(
                         onClick = {
@@ -612,8 +616,16 @@ fun ExerciseBrowseScreen(
                             }
                         } else Text(exercise.name(), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            exerciseBrowseContext(exercise, customMetadata[exercise.id()]),
-                            style = MaterialTheme.typography.bodySmall,
+                            if (
+                                query.isNotBlank() ||
+                                    advancedMetadataFilter ||
+                                    refineSearch ||
+                                    customMetadata[exercise.id()] != null ||
+                                    ExerciseMetadataCatalog.find(exercise.id()) == null
+                            )
+                                exerciseBrowseContext(exercise, customMetadata[exercise.id()])
+                            else exerciseCompactContext(exercise),
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         val status =
@@ -831,4 +843,10 @@ internal fun libraryCategoryMatches(
         "Core" -> "TRUNK" in names
         else -> true
     }
+}
+
+internal fun exerciseCompactContext(exercise: StrengthExercise): String {
+    val metadata =
+        ExerciseMetadataCatalog.find(exercise.id()) ?: return exerciseBrowseContext(exercise)
+    return "${metadata.primaryAreas().joinToString(" & ") { it.label() }} · ${metadata.primaryRole().label()}"
 }

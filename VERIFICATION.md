@@ -30,6 +30,15 @@ lazy header before the unchanged viewport assertion. NewUIcase verifies its head
 Debug/testAPK/lint75tasks/4m11s and finaltestAPK/lint57tasks/3m9s pass. API36 at8c failed
 SystemUI startup before tests; no old-head retry while this real app fix is required.
 
+Source6e97b4a subsequently passed13guards/538fulltests/433validated captures EACH on API35
+and36; completed logs confirm the legacyExcluded capture now passes. API28 ran0cases after
+ddmlib failed to install-write the testAPK (underlying cause unspecified). Actual API35PNG
+archive verified and opened: the default library remains too control-heavy versus mandatory
+refs and the200%searchlabel occupies3lines. This is not finaldesignacceptance. Currentlocal
+visual correction adds realadvancedFilters disclosure, compactdefaultsubtitles/fulltechnical
+setup on demand, and a shared shortSearch label/aliasplaceholder/accessible description in
+library/loggingPicker. Final local debugAPK/testAPK/lint passes75tasks/4m21s; pinned123Kotlin/159Java and release9 pass. See docs/VISUAL_REVIEW_0_12_2.md. Newsource runtime/captures pending.
+
 Expected runtime gate:538full instrumentation tests/API (534retained plus3newUI regressions
 and1production-capture method),433authentic screenshots/API. These are expectations, not
 observed passes. Inspect complete logs and actual images before accepting/merging. See

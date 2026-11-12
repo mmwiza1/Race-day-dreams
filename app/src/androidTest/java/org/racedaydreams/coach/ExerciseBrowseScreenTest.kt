@@ -457,6 +457,19 @@ class ExerciseBrowseScreenTest {
     private fun exercises(vararg ids: String) = ids.map(::exercise)
 
     private fun clickTag(tag: String) {
+        if (tag.startsWith("exercise-browse-")) {
+            compose
+                .onNodeWithTag("exercise-browser-list")
+                .performScrollToNode(hasTestTag("exercise-filters"))
+            val filters = compose.onNodeWithTag("exercise-filters").performScrollTo()
+            if (
+                filters
+                    .fetchSemanticsNode()
+                    .config[androidx.compose.ui.semantics.SemanticsProperties.StateDescription] ==
+                    "Collapsed"
+            )
+                filters.performClick()
+        }
         compose.onNodeWithTag("exercise-browser-list").performScrollToNode(hasTestTag(tag))
         compose.onNodeWithTag(tag).performScrollTo().assertIsDisplayed().performClick()
     }

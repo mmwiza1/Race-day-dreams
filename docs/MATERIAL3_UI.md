@@ -70,3 +70,16 @@ full large-text labels and existing actions. Do not use decorative disclosure in
 The owner's two reference images remain separate from genuine captures. Review compactness,
 spacing, hierarchy, selected states and full functionality against them in light/dark/200%,
 with dynamic and branded colours and narrow windows. Visual integrity is not visual acceptance.
+
+Keep the initial library focused on search, coarse categories and scannable rows. Put advanced
+metadata controls behind an actual Filters disclosure with explicit expanded/collapsed state.
+Keep personal filters and management actions easy to reach. Default subtitles describe broad
+body/movement groups; reveal full equipment/setup context when searching or refining, and keep
+it accessible in details. Avoid ranking-algorithm explanation above every result list.
+
+Use `CoachExerciseSearch` in exercise browsing/selection: concise visible Search label,
+name/alias placeholder, full accessible description and a normal Search keyboard action.
+Never shrink accessibility text or add hidden text merely to satisfy an old test selector;
+UI tests should operate the actual tagged editable field while preserving functional checks.
+Use a real primary heading for distinct modes such as Excluded exercises, rather than a
+redundant body heading and artificial whitespace to position it for a capture.

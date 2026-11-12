@@ -109,7 +109,7 @@ private fun ExercisePicker(state: CoachUiState, selected: String, onSelect: (Str
         title = { Text("Choose exercise") },
         text = {
             Column {
-                CoachInput("Search exercises or aliases", query, { query = it })
+                CoachExerciseSearch(query, { query = it })
                 val rows = exerciseMatches(state, query)
                 Text("${rows.size} matching exercises")
                 androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max = 320.dp)) {

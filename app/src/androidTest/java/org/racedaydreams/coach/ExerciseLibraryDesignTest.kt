@@ -73,6 +73,32 @@ class ExerciseLibraryDesignTest {
         }
         compose.onNodeWithContentDescription("Add custom exercise").assertIsDisplayed()
         compose
+            .onNodeWithTag("exercise-search")
+            .assertContentDescriptionEquals("Search exercises by name or alias")
+        val filters = compose.onNodeWithTag("exercise-filters").performScrollTo()
+        filters.assert(
+            SemanticsMatcher.expectValue(
+                androidx.compose.ui.semantics.SemanticsProperties.StateDescription,
+                "Collapsed",
+            )
+        )
+        filters
+            .performClick()
+            .assert(
+                SemanticsMatcher.expectValue(
+                    androidx.compose.ui.semantics.SemanticsProperties.StateDescription,
+                    "Expanded",
+                )
+            )
+        filters
+            .performClick()
+            .assert(
+                SemanticsMatcher.expectValue(
+                    androidx.compose.ui.semantics.SemanticsProperties.StateDescription,
+                    "Collapsed",
+                )
+            )
+        compose
             .onNodeWithTag("exercise-category-Chest")
             .performScrollTo()
             .performClick()

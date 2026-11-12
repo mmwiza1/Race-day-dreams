@@ -10,6 +10,8 @@ A cohesive Material You refinement, with compact illustrated exercise browsing a
 
 - Shared spacing tokens, rounded filter chips with selected checkmarks and accessible touch targets.
 - Compact, subtly outlined exercise cards with existing offline illustrations and clear navigation affordances.
+- Compact default library subtitles and a real advanced-filter disclosure retain full setup context when searching or refining.
+- Short, accessible exercise search labels stay readable at 200% without changing name/alias matching.
 - Rounded exercise search and cohesive scrollable tabs for overview, technique, history and PBs.
 - Shared page/card insets and naturally spaced wrapping controls across existing running, strength, health and settings screens.
 
