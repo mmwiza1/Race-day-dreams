@@ -45,15 +45,20 @@ fun StrengthRecordsScreen(
                 )
             }
         else {
+            // progression() produces these rows only from complete retained source actuals.
             val best = remember(points) { StrengthRecords.best(points) }
             val groups =
                 remember(best) {
                     best
                         .groupBy {
-                            Triple(it.key().exerciseId(), it.key().mode(), it.key().measurement())
+                            Triple(
+                                it.key()!!.exerciseId(),
+                                it.key()!!.mode(),
+                                it.key()!!.measurement(),
+                            )
                         }
                         .entries
-                        .sortedByDescending { entry -> entry.value.maxOf { it.at() } }
+                        .sortedByDescending { entry -> entry.value.maxOf { it.at()!! } }
                 }
             val historyByKey = remember(points) { points.groupBy { it.key() } }
             var exerciseLimit by rememberSaveable { mutableIntStateOf(12) }
@@ -61,13 +66,13 @@ fun StrengthRecordsScreen(
                 val primary =
                     records.filter {
                         !it.estimated() &&
-                            it.key().kind() != StrengthRecords.Kind.EXACT_REPETITIONS_LOAD &&
-                            it.key().kind() != StrengthRecords.Kind.REPETITIONS_AT_LOAD
+                            it.key()!!.kind() != StrengthRecords.Kind.EXACT_REPETITIONS_LOAD &&
+                            it.key()!!.kind() != StrengthRecords.Kind.REPETITIONS_AT_LOAD
                     }
                 var details by rememberSaveable(identity.toString()) { mutableStateOf(false) }
                 SemanticCard(Tile.Strength) {
                     Text(
-                        records.first().exercise().name(),
+                        records.first().exercise()!!.name(),
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     Text("Recorded performance", style = MaterialTheme.typography.titleMedium)
@@ -98,10 +103,10 @@ fun StrengthRecordsScreen(
                             )
                             val progression = historyByKey[record.key()].orEmpty()
                             var historyCount by
-                                rememberSaveable(record.key().toString()) { mutableIntStateOf(8) }
+                                rememberSaveable(record.key()!!.toString()) { mutableIntStateOf(8) }
                             progression.takeLast(historyCount).forEach { previous ->
                                 Text(
-                                    "${friendlyDate(previous.date())} · ${recordValue(previous,unit)}"
+                                    "${friendlyDate(requireNotNull(previous.date()))} · ${recordValue(previous,unit)}"
                                 )
                                 LinearProgressIndicator(
                                     progress = {
@@ -117,7 +122,9 @@ fun StrengthRecordsScreen(
                                 TextButton(onClick = { historyCount += 20 }) {
                                     Text("Show earlier improvements")
                                 }
-                            TextButton(onClick = { onWorkout(record.workoutId()) }) {
+                            TextButton(
+                                onClick = { onWorkout(requireNotNull(record.workoutId())) }
+                            ) {
                                 Text("View supporting workout")
                             }
                         }
@@ -136,7 +143,7 @@ fun StrengthRecordsScreen(
                     ?.let { estimate ->
                         SemanticCard(Tile.Insight) {
                             Text(
-                                "${estimate.exercise().name()} · estimated single-repetition maximum",
+                                "${estimate.exercise()!!.name()} · estimated single-repetition maximum",
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             Text(
@@ -146,15 +153,19 @@ fun StrengthRecordsScreen(
                             Text(
                                 "A calculation of a possible single-repetition maximum, not a recorded lift or a training-weight suggestion."
                             )
-                            Text("Source: recorded ${friendlyDate(estimate.date())}")
                             Text(
-                                "Based on ${estimate.actual().reps()} recorded repetitions at ${recordMass(estimate.actual().kilograms(),unit)}."
+                                "Source: recorded ${friendlyDate(requireNotNull(estimate.date()))}"
+                            )
+                            Text(
+                                "Based on ${estimate.actual()!!.reps()} recorded repetitions at ${recordMass(estimate.actual()!!.kilograms(),unit)}."
                             )
                             WhyDetails(
                                 StrengthRecords.estimateExplanation(),
                                 "How is this estimated?",
                             )
-                            TextButton(onClick = { onWorkout(estimate.workoutId()) }) {
+                            TextButton(
+                                onClick = { onWorkout(requireNotNull(estimate.workoutId())) }
+                            ) {
                                 Text("View estimate's source workout")
                             }
                         }
@@ -189,9 +200,9 @@ private fun RecordResult(
 ) {
     Text(recordLabel(record, unit), style = MaterialTheme.typography.titleSmall)
     Text(recordValue(record, unit), style = MaterialTheme.typography.titleLarge)
-    Text("Recorded ${friendlyDate(record.date())}")
+    Text("Recorded ${friendlyDate(requireNotNull(record.date()))}")
     TextButton(
-        onClick = { onWorkout(record.workoutId()) },
+        onClick = { onWorkout(requireNotNull(record.workoutId())) },
         modifier = Modifier.heightIn(min = 48.dp),
     ) {
         Text("View supporting workout")
@@ -202,32 +213,32 @@ private fun recordMass(kg: Double, unit: MassUnit) =
     "${decimal(unit.fromKilograms(kg))} ${unit.name.lowercase()}"
 
 private fun recordLabel(record: StrengthRecords.Point, unit: MassUnit): String =
-    when (record.key().kind()) {
+    when (record.key()!!.kind()!!) {
         StrengthRecords.Kind.HEAVIEST_LOAD ->
-            if (record.exercise().mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT)
+            if (record.exercise()!!.mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT)
                 "Heaviest recorded added load"
             else "Heaviest recorded working set"
         StrengthRecords.Kind.EXACT_REPETITIONS_LOAD ->
-            "Best recorded load for ${record.key().repetitions()} repetitions"
+            "Best recorded load for ${record.key()!!.repetitions()} repetitions"
         StrengthRecords.Kind.REPETITIONS_AT_LOAD ->
-            "Most recorded repetitions at ${recordMass(record.key().load()!!,unit)}"
+            "Most recorded repetitions at ${recordMass(record.key()!!.load()!!,unit)}"
         StrengthRecords.Kind.BODYWEIGHT_REPETITIONS -> "Most recorded bodyweight repetitions"
         StrengthRecords.Kind.DURATION ->
             "Longest recorded hold" +
-                (record.key().load()?.let { " at ${recordMass(it,unit)}" } ?: "")
+                (record.key()!!.load()?.let { " at ${recordMass(it,unit)}" } ?: "")
         StrengthRecords.Kind.DISTANCE ->
             "Furthest recorded distance" +
-                (record.key().load()?.let { " at ${recordMass(it,unit)}" } ?: "")
+                (record.key()!!.load()?.let { " at ${recordMass(it,unit)}" } ?: "")
         StrengthRecords.Kind.ESTIMATED_ONE_REP_MAX -> "Estimated one-repetition maximum"
     }
 
 private fun recordValue(record: StrengthRecords.Point, unit: MassUnit): String =
-    when (record.key().kind()) {
+    when (record.key()!!.kind()!!) {
         StrengthRecords.Kind.HEAVIEST_LOAD,
         StrengthRecords.Kind.EXACT_REPETITIONS_LOAD ->
-            "${recordMass(record.actual().kilograms(),unit)} for ${record.actual().reps()} repetitions"
+            "${recordMass(record.actual()!!.kilograms(),unit)} for ${record.actual()!!.reps()} repetitions"
         StrengthRecords.Kind.REPETITIONS_AT_LOAD,
-        StrengthRecords.Kind.BODYWEIGHT_REPETITIONS -> "${record.actual().reps()} repetitions"
+        StrengthRecords.Kind.BODYWEIGHT_REPETITIONS -> "${record.actual()!!.reps()} repetitions"
         StrengthRecords.Kind.DURATION -> StrengthMeasurements.duration(record.value().toLong())
         StrengthRecords.Kind.DISTANCE -> "${decimal(record.value())} m"
         StrengthRecords.Kind.ESTIMATED_ONE_REP_MAX ->

@@ -413,9 +413,9 @@ incomplete migration merely because a focused checkpoint passes.
   remaining engines/UI, cross-platform typed storage/backup/retention/services and actual iOS
   app host. No full iOS application exists yet. No release or merge until the full scope passes.
 
-### Fourteenth checkpoint — authored builder model and actual shared preview (in progress)
+### Fourteenth checkpoint — authored builder model and actual shared preview (`62e9867`)
 
-- Valid local batch on top of35d989e replaces SIX Java originals with common Kotlin:
+- COMMITTED/PUSHED `62e9867e88e46f44d10e3224ae3a2d66dccff36f` replaces SIX Java originals:
   GymWorkoutDefinition, StrengthProgramme, StrengthProgrammeDraft, CustomStrengthExercise,
   StrengthWorkoutBudget, ExerciseExclusionRepository. **146Java domain files remain**.
   Existing draft edit/duplicate/move/reorder/preview operations, concrete dated blocks, revision
@@ -446,18 +446,49 @@ incomplete migration merely because a focused checkpoint passes.
   Logs:`/workspace/scratch/kmp-authored-{format-check,release-check}.log`; diff check clean.
 - Experiment-only focused CI adds EXISTING builder8/custom-exercise4/repository15/JSON6/
   exclusion-repository5 tests, retaining prior128 and all default final gate assertions.
-  Those38 runtime tests are PENDING, not locally executed without KVM. Real Apple verification
-  of these newer authoring/date/UI changes also pending. Do not borrow35d989e success.
+  Actual CI43516659530 **SUCCESS on BOTH Android and Apple**. Android logs confirm166focused
+  tests including those38 new existing cases, zero skipped/failed, schema75/build/lint/legacy
+  domain. Real Apple authoring/date/UI tests/framework passed; NOT an iOS application.
+  Formatting43516659481 SUCCESS. All results confirmed at exact62e9867 before the next push.
 - Next safe action: inspect formatter/release result; fix errors; commit/push coherent batch
   to SAME draftPR24, update PR description and check exact Native/Android results. Then continue
   remaining engines/shared UI/orchestration/native storage/services/real iOS app host. No merge,
   release or version increment while full parity remains unfinished.
 
+### Fifteenth checkpoint — shared actual strength-record engine (locally verified)
+
+- Preserve the coherent local batch on top of62e9867: StrengthRecords.java replaced with actual
+  common engine/key/point models. **145Java domain files remain**. Original JVM StrengthAnalytics
+  estimatedOneRepMax API delegates to new common StrengthRecordPolicy; its other existing logic
+  remains Java (not counted as migrated). No duplicate estimate formula or prescription input.
+- Measured singles/records stay distinct from bounded2–10rep Epley estimates, warm-ups excluded,
+  same exercise/mode/measurement keys, six-decimal ties-to-even load keys and original1e-7
+  improvement tolerance. Exact source set/workout/date retained; duplicates idempotent/conflicts
+  rejected; future evidence filtered by explicit as-of. Source offset, not current timezone,
+  defines recorded date. Unvalidated raw point/key DTO optional fields remain nullable.
+- CalendarDates.atOffset uses original java.time on JVM and checked epoch-day conversion on
+  Native, retaining full calendar ranges/offset-second semantics. No zone database or clock guess.
+- Existing records-screen algorithm/text/actions unchanged: checked required keys/source actuals
+  from progression() output, no fake missing values. Experiment CI adds existing three-case
+  StrengthRecordsScreenTest (expected169focused total; actual result must be checked).
+- **93shared-domain JVM +14shared-health JVM tests**, zero failures/errors/skips; five new common
+  record-policy tests plus a JVM differential checking70063offset-date cases and10007bounded
+  load-rounding fixtures. Original/new26-line records/estimate output **cmp MATCH** at scratch
+  kmp-{original,shared}-strength-records.log. Original StrengthRecords34 and Release05Domain253
+  checks PASS. Actual working sets/reference distinctions and retained exercise definitions stay.
+- Final `/workspace/scratch/kmp-record-final-build.log` BUILD SUCCESSFUL,117tasks/2m17s,
+  APK+testAPK. Earlier kmp-record-policy-build.log exposed nullable Java-interop UI reads, fixed
+  before final verification. Formatter --check --patch-output PASS406files (266Kotlin/140Java),
+  kmp-record-format-check.log. Git diff check clean.
+- Next: finish formatter result, record/commit/push coherent batch to SAME draftPR24, inspect
+  exact new Native/Android/format verification. Do not borrow62e9867 success. Then continue
+  remaining shared engines/UI/orchestration/native storage/services and actual iOS app host.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The authored-programme/
-   draft/preview batch is locally built and tested, not yet committed/pushed.35d989e passed
-   Android/Apple/formatting. Check the newer exact head after preserving this batch.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The strength-record
+   batch is locally built/tested, not yet committed/pushed.62e9867 passed Android166, real
+   Apple tests/framework and formatting. Preserve the newer batch and inspect its exact CI.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown

@@ -30,9 +30,7 @@ public final class StrengthAnalytics {
     }
     /** Epley estimate restricted to 2–10 working reps; measured singles are not estimates. */
     public static Double estimatedOneRepMax(StrengthExercise exercise, StrengthSession.SetEntry set) {
-        if (set.reps() < 2 || !exercise.estimateOneRepMax() || exercise.mode() != StrengthExercise.Mode.WEIGHTED
-                || set.warmUp() || set.reps() > 10 || set.kilograms() <= 0) return null;
-        return set.kilograms() * (1 + set.reps() / 30.0);
+        return StrengthRecordPolicy.estimatedOneRepMax(exercise, set);
     }
     public static List<Record> progression(List<StrengthSession> sessions) {
         var sorted = new ArrayList<>(sessions);

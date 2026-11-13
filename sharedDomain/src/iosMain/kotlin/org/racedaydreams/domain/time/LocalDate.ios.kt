@@ -34,6 +34,11 @@ internal constructor(private val year: Int, private val month: Int, private val 
 }
 
 actual object CalendarDates {
+    actual fun atOffset(instant: Instant, offset: ZoneOffset): LocalDate =
+        ofEpochDay(
+            checkedAdd(instant.getEpochSecond(), offset.getTotalSeconds().toLong()).floorDiv(86400)
+        )
+
     actual fun ofEpochDay(epochDay: Long): LocalDate {
         val parts = IsoCalendar.parts(epochDay)
         return of(parts.year, parts.month, parts.day)

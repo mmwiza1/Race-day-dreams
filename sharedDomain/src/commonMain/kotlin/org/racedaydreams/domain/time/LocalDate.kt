@@ -25,6 +25,8 @@ expect object CalendarDates {
     fun of(year: Int, month: Int, day: Int): LocalDate
 
     fun ofEpochDay(epochDay: Long): LocalDate
+
+    fun atOffset(instant: Instant, offset: ZoneOffset): LocalDate
 }
 
 /**
