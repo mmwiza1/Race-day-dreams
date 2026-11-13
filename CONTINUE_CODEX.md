@@ -164,10 +164,9 @@ incomplete migration merely because a focused checkpoint passes.
   Actual workflow43451707710: Android and formatting SUCCESS at `92ff09d5502cf3509331c7c4d4edf7ffa1f9f0ee`;
   Apple stayed QUEUED in the arm64 runner pool. No Native pass is claimed for that queued run.
 
-### Current checkpoint — shared running goals, immutable plans and temporal identities
+### Seventh checkpoint — shared running goals and immutable plans (`865a0e1`)
 
-- Complete locally verified batch, being committed/pushed as `Share running goals and immutable
-  plans with exact cross-platform temporal identities`. Ten Java originals removed: DomainChecks,
+- COMMITTED/PUSHED `865a0e1a162d6e0b21c9a0af034ce08aa8c45fb6`. Ten Java originals removed: DomainChecks,
   RaceGoal, UserProfile, WorkoutSegment, TrainingPhase, PlannedWorkout, TrainingPlan, AdjustmentOption,
   RaceDates, OnboardingValidator. **183 Java domain files remain.** Schema/JSON formats unchanged.
 - `domain.time.LocalDate` / `Duration` expect types use actual JVM aliases to the ORIGINAL
@@ -204,19 +203,54 @@ incomplete migration merely because a focused checkpoint passes.
   as final proof; final stable-source build above supersedes it. Do not restart/repeat fixed work.
 - Experimental Apple CI now uses official **macos-26-intel** to avoid the sustained arm64 queue;
   official runner-images README inspected. Existing host-architecture tests/framework/assertions
-  retained, no skipped Native tests. Apple result for THIS batch is pending until actual CI.
+  retained. Actual CI43457885883 SUCCESS on BOTH Android and Apple; Intel job really compiled
+  and ran Native tests/framework. Android logs confirm **77 tests**, zero skipped/failed, plus
+  existing full legacy domain/schema/build/lint checks. Prior92ff Apple job was cancelled while
+  queued by the newer push, with zero compiler steps; not a demonstrated code failure.
   Focused Android CI additionally includes CoachOnboardingTest / CoachingInteractionTest /
   CoachCompletionStateTest / SqliteUserPreferencesRepositoryTest / CoachingStoreTest, covering
   actual goal/plan interaction, profile persistence, current/legacy backup and rollback.
 
+### Current checkpoint — exact body observations and shared provider conversion
+
+- Locally verified batch, being committed/pushed as `Share retained body observations and provider
+  mapping with exact timestamp provenance`. BodyWeight.java / BodyHeight.java replaced with common
+  Kotlin; **181 Java domain files remain**. Original source IDs/ASCII trim/validation/equality/text,
+  weight limits, height limits and unknown height offset/import time preserved. Legacy weights
+  retain their original permissive empty-provider/source behavior; no retroactive rejection.
+- `domain.time.Instant` / `ZoneOffset` use original java.time aliases on JVM and exact Native
+  representations. Full original ±1000000000-year instant bounds, nanoseconds, comparisons,
+  canonical ISO fractions and second-resolution offsets retained. Native kotlinx-datetime0.6.2
+  is limited to ±1000000 years and its fromEpochSeconds factory clamps beyond them (pinned
+  upstream implementation inspected). Do not silently clamp retained historical timestamps.
+  IsoCalendar gains a bounded inverse only for formatting these actual retained observations.
+- `sharedHealth/.../BodyEvidence.kt` owns the original conversion, now used by the actual Android
+  HealthConnectGateway. Height missing offset stays null; legacy weight UTC display fallback is
+  unchanged and is NOT proof of a provider-supplied local offset. Local IDs still supplied by
+  caller; provider/origin/source/timestamp/nanoseconds retained. Snapshot completeness, qualified
+  identities, permission/history recheck, IO lock, limits and final transaction are unchanged.
+  HealthKit can reuse the same mapper; it does not confer replacement/deletion authority.
+  sharedHealth now API-depends on sharedDomain because public mapping returns typed body records.
+- Final local `/workspace/scratch/kmp-body-final-build.log` **BUILD SUCCESSFUL, 114 tasks /2m25s**:
+  app + instrumentation APK; **45 shared-domain JVM tests /14 shared-health JVM tests**, zero
+  failures. Original BodyGuidanceTestSuite **1368** checks PASS; original versus converted body /
+  timestamp / provenance / error output **cmp MATCH** (11 lines) in scratch `kmp-{original,shared}-body-models.log`.
+  Native primitive references compare **70,056** instant/fraction fixtures and ALL **129,601**
+  permitted second-resolution offsets against JDK; common tests exercise actual platform models.
+  Pinned formatter **209 Kotlin /154 Java**, diff check PASS. No schema/backup/version change.
+- This body batch has NOT run Native/runtime CI yet. Do not borrow preceding865a success for it.
+  All implementation remains on SAME draft PR24. No new app host/demo, publication or merge.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect actual branch/status/log and remote PR #24. Preserve all valid work. The running-model
-   checkpoint above is locally verified and being committed/pushed; do not repeat successful
-   unchanged local checks or confuse prior CI success with its unverified Native bindings.
-2. Inspect this checkpoint's exact Android/Apple CI. Verify the Intel Apple job actually starts,
-   compiles real Native date/duration bindings and runs common tests. Fix genuine binding/runtime
-   failures, not assertions/timeouts. Keep PR draft and its description/recovery results accurate.
+1. Inspect actual branch/status/log and remote PR24. Preserve any surviving local changes. The
+   body-observation checkpoint above is locally verified and being committed/pushed; do not rerun
+   unchanged successful gates or confuse prior865a Native success with its new timestamp bindings.
+2. Inspect this body's exact Android/Apple CI, fix actual failures before continuing. Next coherent
+   health slice: move remaining ProteinGuidance/BodyMeasurementsRepository contracts and existing
+   health presentation/orchestration to common code, preserving original weight selection,
+   freshness/ranges/actual evidence and honest HealthKit read visibility. Do not invent a separate
+   app or alternate database; native storage/services and real iOS host are still required.
 3. Continue remaining Java-domain conversion and actual shared screens/navigation/state/data
    sources, cross-platform typed SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and an actual iOS app host with entitlements/usage strings.

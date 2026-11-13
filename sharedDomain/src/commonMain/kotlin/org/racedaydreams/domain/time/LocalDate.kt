@@ -42,12 +42,33 @@ internal object IsoCalendar {
 
     fun epochDay(year: Int, month: Int, day: Int): Long {
         validate(year, month, day)
-        val y = year.toLong()
-        // Gregorian leap days in complete years before this date; year zero is a leap year.
-        val beforeYear =
-            365 * y + (y + 3).floorDiv(4) - (y + 99).floorDiv(100) + (y + 399).floorDiv(400)
-        return beforeYear + monthStarts[month - 1] + day - 1 +
-            (if (month > 2 && leap(year)) 1 else 0) - 719528
+        return yearStart(year.toLong()) + monthStarts[month - 1] + day - 1 +
+            (if (month > 2 && leap(year)) 1 else 0)
+    }
+
+    private fun yearStart(year: Long): Long =
+        365 * year + (year + 3).floorDiv(4) - (year + 99).floorDiv(100) +
+            (year + 399).floorDiv(400) - 719528
+
+    /** UTC instant formatting includes the extra endpoint year permitted by java.time.Instant. */
+    fun parts(epochDay: Long): IsoDateParts {
+        require(epochDay >= yearStart(-1000000000L) && epochDay < yearStart(1000000001L)) {
+            "ISO day is outside the supported instant range."
+        }
+        var lower = -1000000000L
+        var upper = 1000000001L
+        while (lower + 1 < upper) {
+            val middle = (lower + upper).floorDiv(2)
+            if (yearStart(middle) <= epochDay) lower = middle else upper = middle
+        }
+        val year = lower.toInt()
+        val dayOfYear = (epochDay - yearStart(lower)).toInt()
+        var month = 1
+        while (
+            month < 12 && dayOfYear >= monthStarts[month] + if (month >= 2 && leap(year)) 1 else 0
+        ) month++
+        val first = monthStarts[month - 1] + if (month > 2 && leap(year)) 1 else 0
+        return IsoDateParts(year, month, dayOfYear - first + 1)
     }
 
     fun text(year: Int, month: Int, day: Int): String {
@@ -60,3 +81,5 @@ internal object IsoCalendar {
         return "$yearText-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
     }
 }
+
+internal data class IsoDateParts(val year: Int, val month: Int, val day: Int)

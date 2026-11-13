@@ -31,7 +31,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import org.json.JSONArray
 import org.json.JSONObject
@@ -40,11 +39,11 @@ import org.racedaydreams.data.SqliteBodyMeasurementsRepository
 import org.racedaydreams.domain.activity.ActivityLap
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.SourceIdentity
-import org.racedaydreams.domain.body.BodyHeight
 import org.racedaydreams.domain.body.BodyWeight
 import org.racedaydreams.domain.health.HealthImportPolicy
 import org.racedaydreams.domain.health.HealthImportRepository
 import org.racedaydreams.domain.health.HealthReadPolicy
+import org.racedaydreams.health.body.BodyEvidence
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.health.body.HealthConnectBodyReader
@@ -178,31 +177,13 @@ class HealthConnectGateway(context: Context, private val clock: Clock = Clock.sy
                 val heights =
                     if (BodyMetric.HEIGHT_METRES in metrics)
                         snapshot.recordsForReplacement(BodyMetric.HEIGHT_METRES).map { record ->
-                            BodyHeight(
-                                "hc-height:${record.sourceId}",
-                                record.value,
-                                record.at.toJavaInstant(),
-                                record.offsetSeconds?.let(ZoneOffset::ofTotalSeconds),
-                                PROVIDER,
-                                record.sourceId,
-                                record.origin,
-                                until,
-                            )
+                            BodyEvidence.height(record, "hc-height:${record.sourceId}", until)
                         }
                     else null
                 val weights =
                     if (BodyMetric.WEIGHT_KILOGRAMS in metrics)
                         snapshot.recordsForReplacement(BodyMetric.WEIGHT_KILOGRAMS).map { record ->
-                            BodyWeight(
-                                "hc-weight:${record.sourceId}",
-                                record.value,
-                                record.at.toJavaInstant(),
-                                record.offsetSeconds?.let(ZoneOffset::ofTotalSeconds)
-                                    ?: ZoneOffset.UTC,
-                                PROVIDER,
-                                record.sourceId,
-                                record.origin,
-                            )
+                            BodyEvidence.weight(record, "hc-weight:${record.sourceId}")
                         }
                     else null
                 val requiredAtCommit =
