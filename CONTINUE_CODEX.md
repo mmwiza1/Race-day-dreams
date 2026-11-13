@@ -95,9 +95,9 @@ incomplete migration merely because a focused checkpoint passes.
   **Actual CI [43442780709](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43442780709) SUCCESS
   on both Android and Apple**, plus formatting. Android passed 28 focused existing UI/health tests.
 
-### Current recovery batch — common timer, immutable evidence and more existing UI
+### Fifth checkpoint — common timer, immutable evidence and more existing UI
 
-- Six more Java originals removed/replaced: Immutable, PerformancePace, GymRestTimer,
+- **Committed/pushed `e672d31f8ae318d4da512e45e61003429beee9ec`.** Six more Java originals removed/replaced: Immutable, PerformancePace, GymRestTimer,
   StrengthMeasurements, TrainingMetrics and PlanRegressionPolicy. **194 Java domain files remain.**
 - `sharedDomain/.../coaching/Immutable.kt` is the original shallow immutable-list/set contract,
   with defensive copies/null rejection/no exposed mutation. Shared health snapshots reuse it,
@@ -133,14 +133,46 @@ incomplete migration merely because a focused checkpoint passes.
   An attempted sandboxed Gradle daemon lacked socket permission; retry with task network access
   started normally. This was not a source/test failure.
 
+- Actual CI [43449181442](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43449181442)
+  **SUCCESS on Android and Apple** for exact `e672d31`. Android logs confirm **41 focused tests**
+  completed with no failures/skips; build/lint/domain/schema passed. Downloaded Apple artifact
+  `14048494430` XML confirms **26 common-domain Native tests + 13 shared-health Native tests**,
+  zero failures/errors; real shared UI framework compiled. Artifact proof retained at
+  `/workspace/scratch/kmp-gym-apple-results.zip`. CLI artifact redirect was forbidden; connected
+  GitHub artifact download succeeded. This is not an infrastructure/compilation blocker.
+
+### Current recovery batch — shared training availability
+
+- `TrainingPreferences.java` replaced with actual common Kotlin. **193 Java domain files remain.**
+  Existing independent/overlapping running and gym days, optional long-run day, null rejection,
+  frequency validation, immutable snapshots, ISO EnumSet iteration order, equality/hash and
+  record text retained. No new scheduling rules or replacement planning engine.
+- `sharedDomain/.../time/DayOfWeek.kt` uses an expect enum with an actual JVM typealias to the
+  EXISTING `java.time.DayOfWeek`; Native implements the same seven stored names/ISO values.
+  This binding **compiled against every remaining Java domain caller**. It is a real production
+  availability migration, not a throwaway prototype or a proven binding for all java.time APIs.
+  Expected Kotlin expect/actual Beta warnings are visible, not suppressed or treated as failures.
+- Four new common tests cover weekday identities/values, original ordering, frozen independent
+  availability, missing/invalid data and structural equality/presentation. JVM shared-domain
+  **32 tests pass** and all **700,189 original checks / 48 suites pass**. Pinned formatter checks
+  **177 Kotlin / 156 Java** files. No schema/backup/version/permission change.
+- `scripts/screenshot-source.py` now includes `sharedDomain/src/iosMain`, so the Native weekday
+  implementation cannot be omitted from final screenshot/source provenance. No captures claimed.
+- Local APK + instrumentation APK BUILD SUCCESSFUL, **114 tasks / 3m20s**,
+  `/workspace/scratch/kmp-weekday-build.log`; all original suites passed. Capture-validator
+  fault tests also pass (**23**); these are not new app screenshots. Native/runtime verification
+  for THIS availability batch is pending. This batch is being committed/pushed as
+  `Share existing training availability with an ISO weekday platform binding`.
+
 ### Exact next safe actions and remaining full scope
 
-1. Current batch is locally verified and being committed/pushed coherently to SAME draft PR #24.
-   Inspect actual branch/status/remote and that exact head's Android/Apple workflow before
-   repeating anything. Previous checkpoint Native success is not a pass for newly changed
-   common code/UI. Fix real CI failures; keep the PR description accurate.
-2. Verify Native common tests/framework and the expanded existing Android UI/repository tests
-   for this checkpoint. No current-batch Native/runtime pass is claimed before GitHub confirms it.
+1. Inspect actual branch/status/log and remote PR #24. Preserve any surviving local changes.
+   The availability checkpoint has passed local validation and is being committed/pushed;
+   do not repeat its unchanged successful local gates or confuse earlier `e672d31` Native
+   success with this new availability code.
+2. Inspect the availability checkpoint's exact Android/Apple CI, particularly Native expect/actual
+   enum binding and common availability tests. Fix actual failures before continuing the
+   migration. Update the PR description/recovery record with actual results, not presumed passes.
 3. Continue remaining Java-domain conversion and actual shared screens/navigation/state/data
    sources, cross-platform typed SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and an actual iOS app host with entitlements/usage strings.
