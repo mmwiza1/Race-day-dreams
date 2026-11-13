@@ -110,7 +110,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
                 plan.phases().forEach { phase -> CoachCard {
                     Text(phase.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()},style=MaterialTheme.typography.titleMedium)
                     Text("${friendlyDate(phase.startDate())} – ${friendlyDate(phase.endDate())}")
-                    WhyDetails(phase.explanation())
+                    phase.explanation()?.let { WhyDetails(it) }
                 } }
                 OutlinedButton(onClick={confirm=true},modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)) { Text("Rebuild remaining programme…") }
                 CoachButton("Edit goal and routine", editGoal)
@@ -157,7 +157,9 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 Text("${index + 1}. ${segment.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}}", style = MaterialTheme.typography.titleMedium)
                 segment.distanceKm()?.let { Text(formatDistance(it * 1000, state)) }; segment.duration()?.let { Text("${it.toMinutes()} min") }
                 segment.rpe()?.let { Text("How hard it should feel: ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)}.");WhyDetails("RPE (rating of perceived effort): ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.number(it)}/10. This is the effort target saved in this plan.","Exact effort target") }
-                if (segment.minimumSecondsPerKm() != null && segment.maximumSecondsPerKm() != null) Text("Pace: ${formatPaceSeconds(segment.minimumSecondsPerKm() * paceFactor)}–${formatPaceSeconds(segment.maximumSecondsPerKm() * paceFactor)}/${if (imperial) "mi" else "km"}; effort takes precedence")
+                val minimumPace = segment.minimumSecondsPerKm()
+                val maximumPace = segment.maximumSecondsPerKm()
+                if (minimumPace != null && maximumPace != null) Text("Pace: ${formatPaceSeconds(minimumPace * paceFactor)}–${formatPaceSeconds(maximumPace * paceFactor)}/${if (imperial) "mi" else "km"}; effort takes precedence")
                 Text(segment.guidance() ?: "Adjust to conditions and how you feel.")
             } }
             CoachHeading("Why this workout?")

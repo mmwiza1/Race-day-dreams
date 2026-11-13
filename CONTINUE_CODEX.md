@@ -141,7 +141,7 @@ incomplete migration merely because a focused checkpoint passes.
   `/workspace/scratch/kmp-gym-apple-results.zip`. CLI artifact redirect was forbidden; connected
   GitHub artifact download succeeded. This is not an infrastructure/compilation blocker.
 
-### Current recovery batch — shared training availability
+### Sixth checkpoint — shared training availability (`92ff09d`)
 
 - `TrainingPreferences.java` replaced with actual common Kotlin. **193 Java domain files remain.**
   Existing independent/overlapping running and gym days, optional long-run day, null rejection,
@@ -160,19 +160,63 @@ incomplete migration merely because a focused checkpoint passes.
   implementation cannot be omitted from final screenshot/source provenance. No captures claimed.
 - Local APK + instrumentation APK BUILD SUCCESSFUL, **114 tasks / 3m20s**,
   `/workspace/scratch/kmp-weekday-build.log`; all original suites passed. Capture-validator
-  fault tests also pass (**23**); these are not new app screenshots. Native/runtime verification
-  for THIS availability batch is pending. This batch is being committed/pushed as
-  `Share existing training availability with an ISO weekday platform binding`.
+  fault tests also pass (**23**); these are not new app screenshots.
+  Actual workflow43451707710: Android and formatting SUCCESS at `92ff09d5502cf3509331c7c4d4edf7ffa1f9f0ee`;
+  Apple stayed QUEUED in the arm64 runner pool. No Native pass is claimed for that queued run.
+
+### Current checkpoint — shared running goals, immutable plans and temporal identities
+
+- Complete locally verified batch, being committed/pushed as `Share running goals and immutable
+  plans with exact cross-platform temporal identities`. Ten Java originals removed: DomainChecks,
+  RaceGoal, UserProfile, WorkoutSegment, TrainingPhase, PlannedWorkout, TrainingPlan, AdjustmentOption,
+  RaceDates, OnboardingValidator. **183 Java domain files remain.** Schema/JSON formats unchanged.
+- `domain.time.LocalDate` / `Duration` expect types use actual JVM aliases to the ORIGINAL
+  java.time classes, preserving Java source/binary signatures and direct persistence callers.
+  Native calendar retains ±999999999-year ISO identity; pinned kotlinx-datetime Native stops at
+  ±999999 years, so narrowing it would reject previously supported data. Original integer
+  Gregorian representation and canonical Long seconds/Int nanos retain range, fractions,
+  sign, ISO text and overflow checks. These are temporal compatibility primitives, not new
+  training rules. No whole java.time replacement or unneeded date API was introduced.
+- Existing PaceCalculator checks now common, replacing its JVM-only implementation. RaceDates
+  and OnboardingValidator retain thin original JVM Clock/zone boundaries and delegate to
+  RaceCalendar / GoalValidation. Constructors still accept historical past goals; only onboarding
+  applies the existing future-date rule. Nullable dates/pace/effort/distance remain unknown.
+- Common records retain exact validation ordering/messages, names/IDs/ASCII trim, record text,
+  structural equality and immutable snapshots. Programmes never create actual evidence. Original
+  binary versus converted record/temporal/validation output **cmp MATCH** at
+  `/workspace/scratch/kmp-{original,shared}-running-models.log` (22 lines).
+- Final local gate `/workspace/scratch/kmp-running-final-build.log`: **BUILD SUCCESSFUL, 113 tasks /
+  3m28s**, APK + instrumentation APK + **40 shared-domain JVM tests**, zero failures. Eight existing
+  domain suites passed **33,026 checks** in `/workspace/scratch/kmp-running-focused-domain.log`;
+  DomainTestSuite's151 were verified again after the final shared onboarding rule. Focused rather
+  than repeated full release testing, as authorised. Full legacy suites still run in CI.
+- Two differential JVM tests cover **139,704** full-range date/text fixtures plus invalid days,
+  **22,154** duration-normalisation/text/overflow pairs, and checked unit scaling against JDK.
+  Six common tests exercise the real platform bindings, fractional target rejection, unknown
+  prescriptions, preserved histories, explicit choices, local-day horizons and onboarding.
+  Pinned formatting **197 Kotlin / 156 Java**, release-note helper **10**, diff check PASS.
+- New nullable Kotlin APIs exposed unsafe reads in four Android files: HomeScreen, PlanScreens,
+  RaceScreen and ReviewAndWeightScreens. Checked local values preserve optional pace/date and
+  explanations, not zero/fabricated targets; no redesign. A review caught and removed an unintended
+  guard from the undated-goal card BEFORE final verification. Current goal card remains available.
+- Actual compile fixes were tested; `/workspace/scratch/kmp-running-app-compile.log` records the
+  initial nullable-call errors. Earlier compile overlapped formatting/new source and is NOT used
+  as final proof; final stable-source build above supersedes it. Do not restart/repeat fixed work.
+- Experimental Apple CI now uses official **macos-26-intel** to avoid the sustained arm64 queue;
+  official runner-images README inspected. Existing host-architecture tests/framework/assertions
+  retained, no skipped Native tests. Apple result for THIS batch is pending until actual CI.
+  Focused Android CI additionally includes CoachOnboardingTest / CoachingInteractionTest /
+  CoachCompletionStateTest / SqliteUserPreferencesRepositoryTest / CoachingStoreTest, covering
+  actual goal/plan interaction, profile persistence, current/legacy backup and rollback.
 
 ### Exact next safe actions and remaining full scope
 
-1. Inspect actual branch/status/log and remote PR #24. Preserve any surviving local changes.
-   The availability checkpoint has passed local validation and is being committed/pushed;
-   do not repeat its unchanged successful local gates or confuse earlier `e672d31` Native
-   success with this new availability code.
-2. Inspect the availability checkpoint's exact Android/Apple CI, particularly Native expect/actual
-   enum binding and common availability tests. Fix actual failures before continuing the
-   migration. Update the PR description/recovery record with actual results, not presumed passes.
+1. Inspect actual branch/status/log and remote PR #24. Preserve all valid work. The running-model
+   checkpoint above is locally verified and being committed/pushed; do not repeat successful
+   unchanged local checks or confuse prior CI success with its unverified Native bindings.
+2. Inspect this checkpoint's exact Android/Apple CI. Verify the Intel Apple job actually starts,
+   compiles real Native date/duration bindings and runs common tests. Fix genuine binding/runtime
+   failures, not assertions/timeouts. Keep PR draft and its description/recovery results accurate.
 3. Continue remaining Java-domain conversion and actual shared screens/navigation/state/data
    sources, cross-platform typed SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and an actual iOS app host with entitlements/usage strings.

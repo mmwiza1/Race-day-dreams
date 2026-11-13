@@ -41,7 +41,7 @@ jobs:
         timeout-minutes: 15
         uses: reactivecircus/android-emulator-runner@v2
         env:
-          RDD_FOCUSED_CLASSES: org.racedaydreams.coach.MaterialThemeTest,org.racedaydreams.coach.PlainEnglishUiTest,org.racedaydreams.coach.StrengthAnalyticsScreenTest,org.racedaydreams.health.HealthConnectGatewayTest,org.racedaydreams.data.BodyMeasurementsRepositoryTest,org.racedaydreams.coach.BodyMeasurementsScreenTest,org.racedaydreams.coach.GymNowScreenTest,org.racedaydreams.data.GymToolsRepositoryTest
+          RDD_FOCUSED_CLASSES: org.racedaydreams.coach.MaterialThemeTest,org.racedaydreams.coach.PlainEnglishUiTest,org.racedaydreams.coach.StrengthAnalyticsScreenTest,org.racedaydreams.health.HealthConnectGatewayTest,org.racedaydreams.data.BodyMeasurementsRepositoryTest,org.racedaydreams.coach.BodyMeasurementsScreenTest,org.racedaydreams.coach.GymNowScreenTest,org.racedaydreams.data.GymToolsRepositoryTest,org.racedaydreams.coach.CoachOnboardingTest,org.racedaydreams.coach.CoachingInteractionTest,org.racedaydreams.coach.CoachCompletionStateTest,org.racedaydreams.data.SqliteUserPreferencesRepositoryTest,org.racedaydreams.data.CoachingStoreTest
         with:
           emulator-build: 16740729
           emulator-options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim
@@ -66,7 +66,8 @@ jobs:
 
   apple-shared:
     if: github.head_ref == 'experiment/android-ios-kmp-compose' || github.event_name == 'workflow_dispatch'
-    runs-on: macos-latest
+    # macos-latest arm64 has sustained capacity queues; keep real Apple tests on the Intel pool.
+    runs-on: macos-26-intel
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5

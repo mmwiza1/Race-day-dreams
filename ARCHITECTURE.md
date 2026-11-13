@@ -134,17 +134,26 @@ Compose screens / retained onboarding View
                    ↓ user actions
 CoachViewModel + immutable StateFlow + SavedStateHandle
                    ↓
-Android-independent Java models, evidence/quality policies and calculators
+Shared Kotlin + remaining JVM models, evidence policies and calculators
                    ↓ repository contracts
 SQLite feature/profile repositories ← provider-neutral Health Connect adapter
                    ↓
 application-private local database
 ```
 
-The domain contains no Android, Compose, Health Connect or JSON imports. Kotlin
-is introduced at Android integration/presentation boundaries. Java domain logic
-is not rewritten for style. Disk work and provider reads run off the main thread;
-ViewModels own operation state across rotation. No training rule lives in a UI.
+The domain contains no Android, Compose, Health Connect or JSON imports. The active experimental
+Android/iOS migration (PR #24) moves existing models and rules into `sharedDomain` Kotlin, with
+remaining Java in `domain` until replaced. Android consumes the real shared Compose primitives;
+full shared-screen, persistence and iOS application migration is still incomplete. This is a
+platform port, not a training-rule rewrite. Disk/provider work stays off the main thread, and
+no training rule lives in a UI.
+
+Common running models use the small `domain.time` contracts. JVM actual aliases retain the original
+`java.time.LocalDate` and `Duration` APIs for existing repositories and callers; Native retains
+full ISO date identities and canonical seconds/nanoseconds. Do not replace these with narrowed
+date ranges or floating-point durations. Extend the contract only for actual migrated usage,
+with JVM reference parity and Native tests. Platform clocks select local today explicitly;
+common calendar rules do not infer a time zone. Schema and backup formats are unchanged.
 
 ## Coaching test-build layers
 
