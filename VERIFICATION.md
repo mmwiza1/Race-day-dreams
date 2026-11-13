@@ -1,3 +1,28 @@
+# 0.12.3-test1 — merged, verified and published
+
+PR22squashmerged as`0f866185beac51760a3459806ad725eeda10ac56`, identical tree to verifiedPRheadb80a1e0.
+FinalPR [43402640853](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43402640853)
+and post-main [43408133512](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43408133512)
+SUCCESS, including gatedpublisher. EACH API28/35/36 passed25guards/543unique fulltests/451captures;
+allcompletedlogs inspected. Domain700,189/48suites, schema75, backup/restore/retention,
+build/lint/format/guidance/release/download/source gates passed. Formats19/13/3/1 unchanged.
+
+MainAPI35artifact14028664266: ZIP29,797,604bytes/SHA256
+`0819dd866f690affd779afe8f27601ef0339f3ac34d2467b3b58265eff80d195` independently checked.
+Actual PUBLIC versioned+stableAPKs BOTH55,659,946bytes/SHA256
+`a8c0a335839e63aceb831f80ac1a2b4f3db1515bf6090202ea3cc0a5d13a4e68`, identical to mainartifact.
+Both own-filename SHAfiles pass; aaptversion0.12.3-test1/code19/minAPI28/noINTERNET. Releasebody,
+developmenttag, mainSHA and CIURL agree. Four pinnedpreviewPNGs fetched and match repositorybytes;
+valid0.12.2asset retained, no stableproductiontag. MainREADME/release actual1280/390/320px render:
+16/4images decode per mode, noarticleoverflow; introduction/features/downloads/install/previews
+visually opened. Proofs in`/workspace/scratch/plain-language/main0f-{api35-apk,public,release}`,
+`showcase-main-browser`, `release0f-browser`. Physicalacceptance remains UNPERFORMED.
+
+The final owner-authorised documentation-maintenance record may move main and trigger another
+debugsignature/checksum for identical appsource. Inspect that newer actualmainCI/currentrelease
+rather than treating this recorded mergecheckpoint SHA/digest as permanently latest. No remaining
+implementation. Older entries below record historical gates/failures and do not reopen completed work.
+
 # 0.12.3-test1 — software and visual acceptance verified
 
 [Workflow43397017353](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43397017353)

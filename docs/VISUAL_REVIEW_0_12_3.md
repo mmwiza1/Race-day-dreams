@@ -41,3 +41,12 @@ remain linked. Final main/release rendering and public APK bytes are separate de
 Screenshots and emulator assertions do not establish humanTalkBack, realGPS, HealthConnect/BLE,
 OEM audio/background/battery or GalaxyS24/Pixel/Xiaomi acceptance. Those checks remain UNPERFORMED
 in TEST_BUILD.md. No measured physiological outcome or real athlete result is claimed.
+
+## Published GitHub presentation
+
+Actual merged-mainREADME and rollingrelease rendered at1280/390/320px;16READMEimages and4release
+previews decoded per mode, noarticleoverflow. Opened desktop/mobile introduction/features/privacy,
+releaseDownload/install/preview sections. Long filenames wrap at320px; screenshots retain
+full-resolution links. Four releasepreviewURLs pinned to actualmain0f866185 match repositoryPNGbytes.
+Public versioned/stableAPK+ownSHA pairs match mainartifact. Exact proof in VERIFICATION.md; no
+physicaldevice acceptance implied.

@@ -1,3 +1,13 @@
+# 0.12.3-test1 — verified development download available
+
+PR22merged as0f866185; finalPR43402640853 and post-main43408133512 passed543unique tests/451captures
+EACH API28/35/36 and published matching versioned/latest-testAPK+ownSHA pairs. At that verified
+merge checkpoint bothAPKs were55,659,946bytes/SHA256a8c0a335839e63aceb831f80ac1a2b4f3db1515bf6090202ea3cc0a5d13a4e68,
+version0.12.3-test1/code19/min28/noINTERNET. Later verifieddocumentation builds may change debug
+signatures: use the CURRENT releasebodycommit/CIURL/checksum. Do not uninstall without a usable
+complete backup. Software/visual acceptance is complete; all physicalchecklists remain UNPERFORMED.
+See VERIFICATION.md/CONTINUE_CODEX.md for exact delivery evidence.
+
 # Plain-English and GitHub showcase — 0.12.3-test1
 
 Source47604dd/workflow43397017353 passed25guards/543unique fulltests/451authentic captures on
