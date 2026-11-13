@@ -90,7 +90,11 @@ class GymProgrammeOperationsTest {
         assertTrue(
             alternatives.all { it.measurement() == StrengthExercise.MeasurementProfile.LOAD_REPS }
         )
-        assertTrue(alternatives.all { requireNotNull(ExerciseCatalog.definition(it.id())).category() == "Chest" })
+        assertTrue(
+            alternatives.all {
+                requireNotNull(ExerciseCatalog.definition(it.id())).category() == "Chest"
+            }
+        )
         assertTrue(
             alternatives.all {
                 GymProgrammeGenerator.available(it.id(), original.settings().equipment())

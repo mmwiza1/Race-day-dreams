@@ -343,7 +343,7 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Twelfth checkpoint — canonical catalogue and actual strength evidence
 
-- Locally verified batch on top of bddce01 replaces THREE Java originals (commit in git log): StrengthExercise,
+- COMMITTED/PUSHED `ac34e2e3c36b76382126aded358328d1a5e13814` on top of bddce01 replaces THREE Java originals: StrengthExercise,
   ExerciseCatalog and StrengthSession. **156 Java domain files remain**. No added exercises:
   all220 original definitions/IDs/order/aliases/measurement/estimation flags remain shared.
   Existing recorded definitions, actual sets, warm-up flags, RPE versus RIR, duration/distance,
@@ -362,18 +362,60 @@ incomplete migration merely because a focused checkpoint passes.
 - Final `/workspace/scratch/kmp-strength-evidence-verified-build.log` BUILD SUCCESSFUL,
  108tasks/1m8s, both APKs. Earlier logs found nullable display/fixture calls, all corrected
   without changing assertions. Common66tests/383950legacy checks/parity remain valid;
-  formatter244Kotlin/149Java PASS and diff clean. No version/schema/backup change.
-- Next: commit/push this coherent batch to SAME PR24, inspect exact new Native/Android CI,
-  then continue programme/metadata models and remaining application scope. Not release-ready.
-- Future ONLY: `/workspace/scratch/StrengthProgrammeModelParity.java` and original228-line
+  formatter244Kotlin/149Java passed BEFORE the final fixture assertion edit; CI43476442298
+  correctly found one line requiring wrapping in GymProgrammeOperationsTest. That formatting
+  correction is applied in the next batch; no assertion change. No version/schema/backup change.
+- Actual CI43476442699 SUCCESS on BOTH Apple and Android: real Native tests/framework;
+  Android128focused tests (including11existing progression-clarity tests), full legacy domain/
+  schema/build/lint. Formatting remains red on ac34 until the pending wrapped-line fix is pushed.
+  No Native application or release-ready claim.
+- `/workspace/scratch/StrengthProgrammeModelParity.java` and original228-line
   `kmp-original-strength-programme-model.log` retain original programme and all220 canonical
-  metadata outputs. Programme/metadata types have NOT yet been migrated; don't duplicate work.
+  metadata outputs. Used successfully by the next local batch; preserve the original oracle.
+
+### Thirteenth checkpoint — shared programme/metadata contracts and actual exercise search
+
+- Locally verified batch on top of ac34e2e (commit identity in git log): four more Java originals removed/
+  replaced (GymProgramme, ExerciseMetadata, ExerciseMetadataCatalog, ExerciseSearch).
+  **152 Java domain files remain**. All original programme goals/experience/effort IDs,
+  prescription/set/rep/rest/load-reference validation,56-day original model limit, immutable
+  revision snapshots and no-actuals creation preserved. Empty remaining-programme versions stay
+  supported. No generation rules or six-week scheduling redesign.
+- All220 explicit canonical metadata classifications retained, with original60equipment IDs,
+  primary/secondary areas, reviewed setups/alternatives and suitability. Enum snapshots retain
+  original EnumSet ordinal iteration. Unknown/custom metadata remains unknown, not inferred.
+  Existing Immutable extended with copyMap: copied lookup index, canonical retained iteration,
+  no map/entry mutation escape. Actual schema/backup/permissions/versions unchanged.
+- Programme+metadata local gate `/workspace/scratch/kmp-programme-metadata-build.log` SUCCESS,
+ 117tasks/4m8s, both APKs; **74shared-domain +14shared-health JVM tests**. Original/new228-line
+  programme+ALL220metadata output cmp MATCH in kmp-shared-strength-programme-metadata.log.
+  Six original suites **438329checks**: GymProgramme25847, Allocation30390,
+  StrengthProgramme373245, Release05Domain253, StrengthVolume685, GymTools7909.
+  Earlier programme-only five suites429557 also passed, not additional unique checks.
+- Search now migrated locally; original ranking, aliases, exact/prefix/word relevance, favourite/
+  recent tie-breaks, excluded filter and original exercise instances retained. ASCII Java trim/
+  word boundaries preserved explicitly rather than adopting Native ICU whitespace. Common tests
+  include Unicode root-case and NBSP boundaries. Baseline30query/filter outputs saved BEFORE
+  port in kmp-original-exercise-search.log; shared30-case output cmp MATCH at kmp-shared-exercise-search.log.
+- Includes ac34 formatting correction with identical assertion. Final CI-style formatter
+  --check --patch-output PASS:398source files (251Kotlin/147Java); diff check PASS.
+  Final `/workspace/scratch/kmp-shared-search-build.log` **BUILD SUCCESSFUL**,117tasks/3m48s,
+  both APKs, **77shared-domain JVM +14shared-health JVM tests**, zero failures/skips/errors.
+  Legacy harness javap confirms actual Kotlin classes (not stale Java records) were loaded.
+- Four further original search/metadata/exclusion/substitution suites passed **138915checks**:
+  Foundation470, Metadata3173, Exclusion18212, Substitution117060. Original Release05Domain253
+  passed again; it is already included in438329above, not additional unique checks.
+- Commit/push this coherent batch to SAME PR24. Exact new Apple/Android/format verification
+  pending; previous ac34 success does not establish Native readiness for the newer classes.
+  Then continue typed exercise-exclusion/workout-definition/programme-draft contracts and
+  remaining engines/UI, cross-platform typed storage/backup/retention/services and actual iOS
+  app host. No full iOS application exists yet. No release or merge until the full scope passes.
 
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The strength evidence/
-   catalogue batch is locally verified and being committed/pushed. bddce01 Android117 and
-   Apple Native/framework passed; newer strength Native results are still pending. Preserve both.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The programme/metadata/
+   search batch is locally verified and being committed/pushed. ac34 Android128 and Apple
+   tests/framework passed; its formatting failure is fixed. Check exact NEW head before claiming green.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown
