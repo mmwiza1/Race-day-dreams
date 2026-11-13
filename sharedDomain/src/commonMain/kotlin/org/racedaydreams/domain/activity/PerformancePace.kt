@@ -1,5 +1,6 @@
 package org.racedaydreams.domain.activity
 
+import kotlin.jvm.JvmStatic
 import org.racedaydreams.domain.PacePolicy
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.time.Duration

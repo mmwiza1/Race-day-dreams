@@ -95,7 +95,7 @@ fun ProgressScreen(
                 }
             }
             Text(
-                "${friendlyDate(weeks.first().weekStart())} – ${friendlyDate(today)}",
+                "${friendlyDate(requireNotNull(weeks.first().weekStart()))} – ${friendlyDate(today)}",
                 style = MaterialTheme.typography.bodySmall,
             )
             if (trendSection == "Heart rate") {
@@ -295,8 +295,12 @@ fun ProgressScreen(
                     if (milestones.isEmpty())
                         Text("No qualifying milestones in the retained evidence yet.")
                     milestones.forEach { milestone ->
-                        Text("${milestone.label()} · ${friendlyDate(milestone.date())}")
-                        Text(milestone.explanation(), style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "${milestone.label()} · ${milestone.date()?.let(::friendlyDate) ?: "Date unavailable"}"
+                        )
+                        milestone.explanation()?.let {
+                            Text(it, style = MaterialTheme.typography.bodySmall)
+                        }
                         milestone
                             .activityId()
                             ?.takeIf { id -> state.activities.any { it.id() == id } }
@@ -548,91 +552,27 @@ fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
             Text("No shoes have been added. You can assign shoes to runs after adding them here.")
         state.shoes.forEach { shoe ->
             val summary = metrics.getValue(shoe.id())
-            CoachCard {
-                Text(
-                    "${shoe.brand()} ${shoe.model()}".trim(),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Text(
-                    when {
-                        shoe.retired() -> "Retired"
-                        shoe.defaultShoe() -> "Default for newly added runs"
-                        else -> "Active"
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                )
-                Text(
-                    summary.totalDistanceMetres()?.let { formatDistance(it, state) }
-                        ?: formatDistance(summary.recordedDistanceMetres(), state) + " recorded",
-                    style = MaterialTheme.typography.headlineMedium,
-                )
-                Text(
-                    "${summary.runCount()} runs" +
-                        (summary.ageDays()?.let { " · ${if(it<60)"$it days"else"${it/30} months"}" }
-                            ?: "")
-                )
-                Text(summary.wearGuidance())
-                var expanded by rememberSaveable(shoe.id()) { mutableStateOf(false) }
-                TextButton(onClick = { expanded = !expanded }) {
-                    Text(if (expanded) "Hide shoe details" else "View shoe details")
-                }
-                if (expanded) {
-                    Text(
-                        "Recorded distance: ${formatDistance(summary.recordedDistanceMetres(), state)}"
-                    )
-                    summary.totalDistanceMetres()?.let {
-                        Text(
-                            "Known mileage including entered starting mileage: ${formatDistance(it, state)}"
-                        )
-                    }
-                        ?: Text(
-                            "Earlier mileage was not supplied; recorded distance is a known lower bound, not lifetime shoe mileage."
-                        )
-                    Text(
-                        "${summary.runCount()} assigned runs · ${summary.runsWithKnownDistance()} with known distance"
-                    )
-                    if (summary.runsWithKnownDistance() < summary.runCount())
-                        Text(
-                            "Some assigned runs have no distance. Mileage totals include known distances only."
-                        )
-                    summary.averageRunDistanceMetres()?.let {
-                        Text("Average known run distance: ${formatDistance(it, state)}")
-                    }
-                    summary.longestRunMetres()?.let {
-                        Text("Longest assigned run: ${formatDistance(it, state)}")
-                    }
-                    summary.ageDays()?.let { Text("Age since entered purchase date: $it days") }
-                    summary.firstRecordedRun()?.let {
-                        Text(
-                            "First recorded run: ${friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate())} (device time zone)"
-                        )
-                    }
-                    if (summary.firstRecordedRun() == null) Text("No first recorded run yet.")
-                    Text(summary.wearGuidance())
+            org.racedaydreams.coach.activity.ShoeHistoryCard(
+                shoe = shoe,
+                summary = summary,
+                busy = state.busy,
+                formatDistance = { formatDistance(it, state) },
+                formatFirstRunDate = {
+                    friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate())
+                },
+                insights = {
                     org.racedaydreams.domain.polish.TrainingInsights.shoes(
-                            shoe,
-                            state.activities,
-                            java.time.Instant.now(),
-                            state.shoeDiscomfort,
-                        )
-                        .forEach { Text(it) }
-                    shoe.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
-                }
-                OutlinedButton(
-                    onClick = {
-                        editingId = shoe.id()
-                        showEditor = true
-                    },
-                    enabled = !state.busy,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                ) {
-                    Text("Edit shoes")
-                }
-                Text(
-                    "Assign or change these shoes from an individual run’s detail page.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
+                        shoe,
+                        state.activities,
+                        java.time.Instant.now(),
+                        state.shoeDiscomfort,
+                    )
+                },
+                onEdit = {
+                    editingId = shoe.id()
+                    showEditor = true
+                },
+            )
         }
     }
 }

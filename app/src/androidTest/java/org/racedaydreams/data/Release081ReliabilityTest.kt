@@ -29,7 +29,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
         val session=store.unfinished()!!;val id=store.finish(session,null)
         assertEquals(id,store.finish(session,null))
         assertEquals(1,FeatureStore(context).activitySummaries().size)
-        assertEquals(e.status(21000).metres(),FeatureStore(context).activityDetail(id).distanceMetres()!!,.00001)
+        assertEquals(e.status(21000).metres(),requireNotNull(FeatureStore(context).activityDetail(id)).distanceMetres()!!,.00001)
         try{store.flush("retry",e.points(),e.events(),0,0,22000,"ACTIVE");fail("Finished stage revived")}catch(_:IllegalStateException){}
         assertNull(store.unfinished())
     }
@@ -45,7 +45,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
         store.start("pause",wall,1000);store.flush("pause",e.points(),e.events(),0,0,182000,"PAUSED");store.recoverable()
         // A new repository represents process recreation; no current boot clock is used.
         val after=RecordingStore(context);val s=after.unfinished()!!;assertEquals(182000L,s.last);val retained=after.recoverySummary(s);assertTrue(retained.paused);assertEquals(21,retained.points);assertEquals(21000L,retained.activeMillis)
-        val id=after.finish(s,null);val a=FeatureStore(context).activityDetail(id)
+        val id=after.finish(s,null);val a=requireNotNull(FeatureStore(context).activityDetail(id))
         assertEquals(181000L,a.elapsedTime().toMillis());assertEquals(21000L,a.movingTime()!!.toMillis())
     }
     fun testTwoThousandHistoryRowsPageWithoutHydratingRetainedCoordinates() {

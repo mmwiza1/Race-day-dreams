@@ -124,7 +124,7 @@ class RecordingCoordinationStoreTest : AndroidTestCase() {
         val expectedEvents = snapshot().getJSONArray("events").toString()
         assertEquals("WORKOUT_FINISHED_EARLY", execution.events().last().type())
         val id = recording.finish()
-        val activity = FeatureStore(context).activityDetail(id)
+        val activity = requireNotNull(FeatureStore(context).activityDetail(id))
         assertEquals(100000L, activity.elapsedTime().toMillis())
         assertEquals(70000L, activity.movingTime()!!.toMillis())
         assertEquals(metrics.pointCount(), activity.samples().size)
@@ -142,7 +142,7 @@ class RecordingCoordinationStoreTest : AndroidTestCase() {
         CompleteBackup(context).exportTo(complete)
         SqliteUserPreferencesRepository(context).clear()
         CompleteBackup(context).restoreFrom(ByteArrayInputStream(complete.toByteArray()))
-        assertEquals(activity, FeatureStore(context).activityDetail(id))
+        assertEquals(activity, requireNotNull(FeatureStore(context).activityDetail(id)))
         assertEquals(
             expectedEvents,
             SupportStore(context)

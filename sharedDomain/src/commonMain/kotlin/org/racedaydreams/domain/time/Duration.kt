@@ -15,6 +15,8 @@ expect class Duration : Comparable<Duration> {
 
     fun isZero(): Boolean
 
+    fun minus(other: Duration): Duration
+
     override fun toString(): String
 }
 
@@ -36,6 +38,16 @@ expect object Durations {
 internal data class DurationParts(val seconds: Long, val nanos: Int) {
     init {
         require(nanos in 0..999999999)
+    }
+
+    /** Mirrors java.time's checked operations, including the Long.MIN_VALUE special case. */
+    fun minus(other: DurationParts): DurationParts =
+        if (other.seconds == Long.MIN_VALUE) plus(Long.MAX_VALUE, -other.nanos.toLong()).plus(1, 0)
+        else plus(-other.seconds, -other.nanos.toLong())
+
+    private fun plus(secondsToAdd: Long, nanosToAdd: Long): DurationParts {
+        val epochSeconds = checkedAdd(checkedAdd(seconds, secondsToAdd), nanosToAdd / 1000000000)
+        return ofSeconds(epochSeconds, nanos.toLong() + nanosToAdd % 1000000000)
     }
 
     fun text(): String {

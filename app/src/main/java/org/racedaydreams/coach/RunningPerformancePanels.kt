@@ -44,11 +44,13 @@ internal fun runningTrendPoints(
     zone: ZoneId,
 ): List<RunningTrendPoint> =
     weeks.map { week ->
+        val weekStart =
+            requireNotNull(week.weekStart()) { "Generated week must retain its calendar identity." }
         val runs =
             activities.filter {
                 val date = it.start().atZone(zone).toLocalDate()
-                !date.isBefore(week.weekStart()) &&
-                    date.isBefore(week.weekStart().plusWeeks(1)) &&
+                !date.isBefore(weekStart) &&
+                    date.isBefore(weekStart.plusWeeks(1)) &&
                     !date.isAfter(today)
             }
         when (metric) {

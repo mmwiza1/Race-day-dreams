@@ -14,6 +14,8 @@ actual class Duration internal constructor(private val value: DurationParts) :
 
     actual fun isZero(): Boolean = value.seconds == 0L && value.nanos == 0
 
+    actual fun minus(other: Duration): Duration = Duration(value.minus(other.value))
+
     override fun equals(other: Any?): Boolean = other is Duration && value == other.value
 
     override fun hashCode(): Int = value.hashCode()

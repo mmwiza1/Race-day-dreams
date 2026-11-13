@@ -275,7 +275,7 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Tenth checkpoint — shared activity/result/split models
 
-- Activity-model migration completed locally on top of `a7bad35`; commit identity is in git log. Eight Java originals
+- COMMITTED/PUSHED `c8bdab3407236ef3a4f9e240a5e292265ddbd9ae` on top of `a7bad35`. Eight Java originals
   removed/replaced: ActivityChecks, ActivitySources, ActivityRecord, ActivityLap, DistanceSample,
   RecordedResult, PersonalBestEntry and RunSplit. **172 Java domain files remain.** Previous
   Kotlin/JVM PerformancePace adapter now common; Java caller signatures remain unchanged.
@@ -300,15 +300,47 @@ incomplete migration merely because a focused checkpoint passes.
 - Experiment CI additionally targets existing FeatureStoreTest / ScopedRepositoriesTest /
   RunSummaryPresentationTest / ActivityHistoryReadinessTest for actual persisted evidence,
   provenance, summaries and history. Full release suite/assertions remain intact.
-- Push this verified coherent batch to SAME draft PR24. Inspect exact Native / Android CI
-  before assuming the new Duration comparators and activity models work on Apple. Then continue
-  remaining models/engines, shared screens, native persistence/services and actual iOS app host.
+- Actual CI43469946974: Android SUCCESS with114focused tests, zero failed/skipped, original
+  complete domain/schema/build/lint; Apple FAILED compilation because PerformancePace
+  relied on JVM default import for JvmStatic. Explicit kotlin.jvm.JvmStatic import is applied
+  in the next local history batch; do not rerun unchanged failing source or claim Native passed.
+
+### Eleventh checkpoint — personal-best/shoe policies and actual shared shoe card
+
+- Completed local batch on top of c8bdab3 (commit identity in git log): thirteen more Java originals removed/replaced,
+  now **159 Java domain files remain**. Common PB ordering/authority/daily-best rules, exact
+  improvements, shoe assignment arithmetic/unknown mileage, BestEffort/analysis snapshots,
+  RecordedWeek/Milestone summaries and typed activity/result/shoe/import contracts.
+- Only original JVM Clock/zone binding remains in ShoeMetricsCalculator.kt; common ShoeMileage
+  receives explicit local-today. Exact Duration.minus/overflow shared, retaining JVM alias.
+  Current test count is **61 shared-domain JVM tests**, including60,147 JDK duration
+  subtraction fixtures (20,049 pairs x3 nanosecond combinations). Shared-health14 tests pass.
+  Five unchanged activity/recording/refinement/live suites passed3218 checks. Wrong guessed suite
+  package paths returned class-not-found, corrected to domain.presentation / domain.execution;
+  actual existing suites then passed. No assertion removed or weakened.
+- Original/new history-policy output cmp MATCH (11lines) in scratch kmp-{original,shared}-history-policy.log.
+  Actual production ShoeHistoryCard extracted into sharedUi, existing Android screen binds
+  unit/date formatting, insights and edit action. No redesign/duplicate screen. Three new real
+  Compose card tests cover light/dark/200%, disclosure, evidence and edit; runtime PENDING.
+- Kotlin nullability exposes original missing-record contracts. UI checks generated week identity,
+  unknown milestone text omitted/honestly labelled; recording/restore fixtures use requireNotNull
+  to retain SAME assertions. No summaries/algorithms/schema/backup/permissions/version changed.
+- Includes explicit PerformancePace JvmStatic import correcting actual c8 Apple compiler error.
+  Final focused build `/workspace/scratch/kmp-history-fixed-build.log` BUILD SUCCESSFUL,
+ 117tasks/1m40s:61domain+14health JVM tests and both APKs. Earlier history compile logs
+  found nullable original fields/fixtures, corrected; not final proof. Formatter240Kotlin/149Java,
+  release-note10 and git diff check PASS. Native and three new Compose runtime cases await CI.
+- Next safe action: commit/push this coherent verified batch to SAME PR24. Verify real new Native/Android CI,
+  then continue remaining conversion/application scope; do not stop simply at this checkpoint.
+- A next-batch baseline ONLY (not migrated yet) is saved: StrengthEvidenceParity.java and
+  kmp-original-strength-evidence.log (229lines incl all220 catalogue definitions, original sets).
+  Do not overwrite original evidence before comparing the next strength port.
 
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The activity model
-   batch is locally verified and being committed/pushed; preceding a7bad35 success does not
-   verify its Native Duration/activity additions. Do not repeat completed fixes.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The personal-best/shoe
+   batch is locally verified and being committed/pushed. c8bdab3 Android passed; its Native
+   missing import is fixed in this batch but not yet reverified on Apple. Do not repeat completed fixes.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown

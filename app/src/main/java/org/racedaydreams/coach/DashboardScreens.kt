@@ -39,7 +39,7 @@ import org.racedaydreams.domain.UnitSystem
     SemanticCard(Tile.Progress) {
         Text("Your recorded week", style = MaterialTheme.typography.titleMedium)
         week?.let { recorded ->
-            Text("${shortDate(recorded.weekStart())} onwards · this week is in progress", style = MaterialTheme.typography.bodyMedium)
+            Text("${shortDate(requireNotNull(recorded.weekStart()))} onwards · this week is in progress", style = MaterialTheme.typography.bodyMedium)
             if (recorded.activityCount() == 0) {
                 Text("No runs recorded this week yet", style = MaterialTheme.typography.headlineSmall)
                 Text("Your history will build as you record or import runs.")
