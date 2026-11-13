@@ -32,3 +32,11 @@ Clearer training instructions and an easier way to discover and download the app
 No training calculation, recorded history, database/backup format, permission, navigation destination,
 icon or runtime dependency changes. MIT licensing and local/account-free/offline operation remain.
 The app still has no Internet permission, advertising, subscriptions, analytics or backend.
+
+## Software verification
+
+The implementation passed700,189domain checks across48suites,75schema tests and543unique
+instrumentation tests with451authentic captures on each API28/35/36. Backup/restore, lint,
+formatting, guidance and release/download validation passed. Actual light/dark/200% views and
+GitHub desktop/mobile layouts were reviewed. Final build identity is injected below by the
+publisher; physical-device acceptance remains separate.

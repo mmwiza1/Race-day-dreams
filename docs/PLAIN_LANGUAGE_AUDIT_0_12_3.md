@@ -49,8 +49,9 @@ Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS/HC/BLE/OEM checks rem
 | Estimated 1RM | Estimated maximum for one repetition. | Display label only; historical category keys and recorded evidence remain unchanged. |
 | Eligibility cutoff | Detail recorded before | Keep the exact date/time while explaining deletion eligibility in ordinary language. |
 
-The c3d4ef9 presentation checkpoint passed542tests/439captures on each supported API. The next
-source adds genuine three-mode health/plan/disclosure views and better backup-capture alignment;
-its543-test/451-frame acceptance is separate. GitHub showcase tests validate all image/document
-paths and adjacent downloads. Public aliases were verified against successful main14f8adf before
-advertising them; current results and remaining final release gates are in VERIFICATION.md.
+Final implementation source47604dd/workflow43397017353 passed543unique fulltests/451captures
+on EACH API28/35/36,700,189domainchecks/48suites and75schema tests. Actual light/dark/200%
+review includes task/target/reference, health, backup and cleanup wording; see VISUAL_REVIEW_0_12_3.md.
+GitHub showcase tests validate image/document paths and adjacent downloads. Public aliases were
+verified against successful main14f8adf before advertising them; final exact-head/main0.12.3
+publication and public byte verification remain distinct delivery gates in VERIFICATION.md.

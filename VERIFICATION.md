@@ -1,3 +1,37 @@
+# 0.12.3-test1 — software and visual acceptance verified
+
+[Workflow43397017353](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43397017353)
+completed SUCCESS at source`47604dde2fbb175ad3063a67c97666d29ddac584`.
+EACH API28/35/36 passed25early guards,543unique unfiltered instrumentation tests and451strict
+actual-build PNGs, with no skipped/failed tests. Guards are repeated in the full suite and are
+not additional unique tests. All completed build logs inspected. Domain700,189checks/48suites
+(including81presentation checks), schema75, backup/restore/retention, build/lint, formatting,
+release10, publisher7, showcase5, runner13 and capture-validator23 checks passed. All220canonical
+and14routine guides remain complete. Formats remain SQLite19/rootJSON13/raw3/package1.
+
+Canonical`a2b20ca` contains all451API35artifact PNGs byte-for-byte; source fingerprint
+`e2cfd08d05185f27e7889a0ed82b4e11e92b6f11ec244c313ed4581d123e57a9` matches actual app/capture source.
+All three artifactZIPs were independently downloaded, source/size/digest validated and extracted:
+
+| API | Artifact | ZIP bytes | SHA-256 |
+| --- | --- | --- | --- |
+|28|14024802042|194,659,864|8db3a1681904e7f9fd4614dd5ae7fbb00dc34b92352c504aac430b59a85e5df5|
+|35|14024788542|59,745,885|4e08df8c2ee77eb32b682da1d696f32f94740beb3f9e7d48bdbd26a635a05dc8|
+|36|14024607825|59,661,215|ec58bb8d02fd0162e09d94fa591553a621069e9e5e78c0bc703b08943dba16eb|
+
+Actual light/dark/200% review is documented in [VISUAL_REVIEW_0_12_3.md](docs/VISUAL_REVIEW_0_12_3.md).
+The API28crop and transient native statusglyph capture defects are fixed and verified in original
+full1080x1920frames. No screenshot repainting/cropping/rescaling, arbitrary delay, weaker test or
+production Activity change. README branch rendered at1280/390/320px;16real images decode per mode,
+all five feature groups have adjacent direct downloads and the article has no horizontal overflow.
+
+This is software/visual acceptance, not a claim of final-head merge/main publication. A final
+coherent documentation commit must pass exact-head CI before owner-authorised squashmerge;
+then actual merged-main CI, public0.12.3versioned/aliasAPK/SHA bytes and README/release rendering
+must be verified. Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, HealthConnect/BLE
+and OEM audio/background/battery/rotation remain UNPERFORMED. Older checkpoint notes below
+are historical; they do not reopen corrected failures or supersede current evidence.
+
 # 0.12.3 — API28 full-frame correction verified; final native contrast readiness pending
 
 Source3614780/workflow43335908577 passed543fulltests/451captures on API28/35. API36’s first

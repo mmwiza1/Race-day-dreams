@@ -1,8 +1,10 @@
 # Plain-English and GitHub showcase — 0.12.3-test1
 
-Current source-bound results and final delivery gates are in VERIFICATION.md and CONTINUE_CODEX.md.
-The c3d4ef9 checkpoint passed542tests/439captures on each API28/35/36. The final expanded451-frame
-candidate is not yet runtime-accepted. Do not treat a PR APK as a published-main build.
+Source47604dd/workflow43397017353 passed25guards/543unique fulltests/451authentic captures on
+EACH API28/35/36. Canonicala2b20ca matches all451verifiedAPI35artifact images. Actual light/dark/
+200% screenshots were reviewed, including full nativeAPI28geometry and readable statusglyphs.
+Current exact-head/main/publication evidence is in VERIFICATION.md/CONTINUE_CODEX.md; a PR APK
+is not a published-main build. See docs/VISUAL_REVIEW_0_12_3.md for scope and limitations.
 
 Owner physical checks remain UNPERFORMED: read exercise tasks and exact target disclosures;
 log actual sets with RPE or repetitions-left inputs; compare reference versus actual weights;

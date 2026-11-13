@@ -1,3 +1,13 @@
+# 0.12.3 —451 authentic source-verified captures
+
+Source47604dd/workflow43397017353 passed543fulltests/451captures EACH API28/35/36. Canonical
+commit a2b20ca matches all451API35artifact14024788542 PNGs byte-for-byte; fingerprint
+`e2cfd08d05185f27e7889a0ed82b4e11e92b6f11ec244c313ed4581d123e57a9` matches app/capture source.
+All433historic frames remain. The18new health/plan/backup frames and affected existing views
+were reviewed in light/dark/200%; API28full-frame nativepermission images are now legible.
+See [visual review](VISUAL_REVIEW_0_12_3.md) and ../VERIFICATION.md for exact artifact hashes,
+actual reviewed scenes and pending final-head/main publication gates. Earlier entries are history.
+
 # Capture geometry and visual acceptance
 
 A valid PNG and passing Compose bounds do not prove that the saved image contains the whole
