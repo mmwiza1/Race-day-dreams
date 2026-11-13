@@ -71,8 +71,8 @@ class AuthoredGymNowScreenTest {
         assertTrue(original.actualSets().isEmpty())
         assertEquals("", model.state.value.form.kilograms)
         assertEquals("", model.state.value.form.repetitions)
-        assertNull(original.slots().single().target().restSeconds())
-        assertEquals(1.5, original.slots().single().target().effort().minimum(), 0.0)
+        assertNull(original.slots().single().target()!!.restSeconds())
+        assertEquals(1.5, original.slots().single().target()!!.effort()!!.minimum(), 0.0)
         compose.runOnIdle {
             model.updateForm {
                 it.copy(kilograms = "60", repetitions = "6", effort = "3", rir = true)
@@ -131,7 +131,7 @@ class AuthoredGymNowScreenTest {
         await { execution()!!.slots().single().exercise() == replacement }
         val compatibleTarget = execution()!!.slots().single().target()
         assertNotNull(compatibleTarget)
-        assertEquals(original.slots().single().target().withoutLoadReference(), compatibleTarget)
+        assertEquals(original.slots().single().target()!!.withoutLoadReference(), compatibleTarget)
         assertNull(compatibleTarget!!.referenceLoadKg())
         compose.runOnIdle {
             model.openSubstitutions(ExerciseSubstitutionEngine.Reason.EQUIPMENT_BUSY)

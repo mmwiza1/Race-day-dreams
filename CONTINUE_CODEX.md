@@ -375,7 +375,7 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Thirteenth checkpoint — shared programme/metadata contracts and actual exercise search
 
-- Locally verified batch on top of ac34e2e (commit identity in git log): four more Java originals removed/
+- COMMITTED/PUSHED `35d989e62a2b6551d02e860fd2a9151b3bef4975`: four more Java originals removed/
   replaced (GymProgramme, ExerciseMetadata, ExerciseMetadataCatalog, ExerciseSearch).
   **152 Java domain files remain**. All original programme goals/experience/effort IDs,
   prescription/set/rep/rest/load-reference validation,56-day original model limit, immutable
@@ -405,17 +405,59 @@ incomplete migration merely because a focused checkpoint passes.
 - Four further original search/metadata/exclusion/substitution suites passed **138915checks**:
   Foundation470, Metadata3173, Exclusion18212, Substitution117060. Original Release05Domain253
   passed again; it is already included in438329above, not additional unique checks.
-- Commit/push this coherent batch to SAME PR24. Exact new Apple/Android/format verification
-  pending; previous ac34 success does not establish Native readiness for the newer classes.
+- Exact CI43479723201 **SUCCESS on BOTH Android and Apple**, confirmed on this resume.
+  Formatting43479722823 also SUCCESS. This verifies real Native programme/metadata/search
+  classes/tests/framework, not a complete iOS app. Existing Android release matrix remains a
+  final readiness requirement, not replaced by focused development coverage.
   Then continue typed exercise-exclusion/workout-definition/programme-draft contracts and
   remaining engines/UI, cross-platform typed storage/backup/retention/services and actual iOS
   app host. No full iOS application exists yet. No release or merge until the full scope passes.
 
+### Fourteenth checkpoint — authored builder model and actual shared preview (in progress)
+
+- Valid local batch on top of35d989e replaces SIX Java originals with common Kotlin:
+  GymWorkoutDefinition, StrengthProgramme, StrengthProgrammeDraft, CustomStrengthExercise,
+  StrengthWorkoutBudget, ExerciseExclusionRepository. **146Java domain files remain**.
+  Existing draft edit/duplicate/move/reorder/preview operations, concrete dated blocks, revision
+  lineage, frozen definitions, superset validation, unknown optional targets/rest/effort,
+  incompatible-reference safeguards and source IDs retained. Preview never creates actuals or
+  activates a programme. No schema/backup/version/permissions change.
+- LocalDate adds only original plusDays/plusWeeks/minusDays/getDayOfWeek and epoch-day factory
+  needed by actual authored programming. JVM remains java.time aliases; Native keeps full ISO
+  range and checked arithmetic. isJavaBlank retains original JDK whitespace boundary, including
+  NBSP being nonblank, rather than widening validation through Kotlin isBlank.
+- **87shared-domain JVM tests +14shared-health JVM tests PASS**:8new common authoring tests;
+  2JVM differential tests cover65536UTF16 whitespace units and2006full-range dates with9day/week
+  adjustments plus weekdays. Original Java/shared output **cmp MATCH**,23lines, in scratch
+  kmp-{original,shared}-authoring-models.log (only unordered settings sets are normalised).
+  Legacy javap confirms real Kotlin authoring classes loaded, not stale Java records.
+- Seven original affected suites passed **399742checks**: StrengthProgramme373245,
+  GymTools7909, GymWorkoutSource60, ExerciseExclusion18212, ConcreteDraft31,
+  ConcreteSubstitution44, GymWorkoutSessionCoordinator241. Full unchanged legacy suites run
+  in CI; no repeated full final platform gate at this partial migration stage.
+- Existing production ProgrammePreviewContent and CustomExerciseMetadataSummary moved into
+  sharedUi. Android binds original date/goal/target formatters; same text, disclosure,7-date
+  pagination and actions. No redesigned/demo screen. Two production nullable reads now use
+  checked locals. Instrumentation fixtures explicitly assert required target/effort fields;
+  same numeric/null assertions retained, no fake values or image edits.
+- Final `/workspace/scratch/kmp-authored-final-build.log` BUILD SUCCESSFUL,117tasks/56s,
+  both APKs. Earlier authored-compile/ui-build logs found Java-platform nullable assumptions,
+  fixed before final gate. Formatter --check --patch-output PASS403files (262Kotlin/141Java); release-note10 PASS.
+  Logs:`/workspace/scratch/kmp-authored-{format-check,release-check}.log`; diff check clean.
+- Experiment-only focused CI adds EXISTING builder8/custom-exercise4/repository15/JSON6/
+  exclusion-repository5 tests, retaining prior128 and all default final gate assertions.
+  Those38 runtime tests are PENDING, not locally executed without KVM. Real Apple verification
+  of these newer authoring/date/UI changes also pending. Do not borrow35d989e success.
+- Next safe action: inspect formatter/release result; fix errors; commit/push coherent batch
+  to SAME draftPR24, update PR description and check exact Native/Android results. Then continue
+  remaining engines/shared UI/orchestration/native storage/services/real iOS app host. No merge,
+  release or version increment while full parity remains unfinished.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The programme/metadata/
-   search batch is locally verified and being committed/pushed. ac34 Android128 and Apple
-   tests/framework passed; its formatting failure is fixed. Check exact NEW head before claiming green.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The authored-programme/
+   draft/preview batch is locally built and tested, not yet committed/pushed.35d989e passed
+   Android/Apple/formatting. Check the newer exact head after preserving this batch.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown

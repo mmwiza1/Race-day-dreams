@@ -132,10 +132,10 @@ class GymSubstitutionScreenTest {
 
         val replaced = execution().slots().single()
         assertEquals(slotId, replaced.id())
-        assertNull(replaced.target().referenceLoadKg())
-        assertEquals(3, replaced.target().sets())
+        assertNull(replaced.target()!!.referenceLoadKg())
+        assertEquals(3, replaced.target()!!.sets())
         assertEquals(frozen, execution().prescription())
-        assertEquals(80.0, frozen.slots().single().target().referenceLoadKg()!!, 0.0)
+        assertEquals(80.0, frozen.slots().single().target()!!.referenceLoadKg()!!, 0.0)
         assertEquals(listOf(firstActual), execution().actualSets())
         assertEquals("", model.state.value.form.kilograms)
         assertEquals("", model.state.value.form.repetitions)

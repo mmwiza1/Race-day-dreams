@@ -173,7 +173,7 @@ class GymNowScreenTest {
         await { model.state.value.favourites.size == 1 }
         val frozen = model.state.value.favourites.single()
         assertEquals("Bench practice", frozen.title())
-        assertEquals(80.0, frozen.slots().single().target().referenceLoadKg()!!, 0.0)
+        assertEquals(80.0, frozen.slots().single().target()!!.referenceLoadKg()!!, 0.0)
         click("Start this workout")
         await { execution()?.origin() == GymExecution.Origin.CUSTOM }
         assertTrue(execution()!!.actualSets().isEmpty())
@@ -222,7 +222,7 @@ class GymNowScreenTest {
         assertEquals("", model.state.value.form.kilograms)
         assertEquals(
             80.0,
-            execution()!!.prescription().slots().single().target().referenceLoadKg()!!,
+            execution()!!.prescription().slots().single().target()!!.referenceLoadKg()!!,
             0.0,
         )
         io { GymProgrammeStore(application).save(programme(2)) }

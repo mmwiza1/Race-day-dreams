@@ -10,11 +10,21 @@ expect class LocalDate {
 
     fun toEpochDay(): Long
 
+    fun plusDays(daysToAdd: Long): LocalDate
+
+    fun plusWeeks(weeksToAdd: Long): LocalDate
+
+    fun minusDays(daysToSubtract: Long): LocalDate
+
+    fun getDayOfWeek(): DayOfWeek
+
     override fun toString(): String
 }
 
 expect object CalendarDates {
     fun of(year: Int, month: Int, day: Int): LocalDate
+
+    fun ofEpochDay(epochDay: Long): LocalDate
 }
 
 /**

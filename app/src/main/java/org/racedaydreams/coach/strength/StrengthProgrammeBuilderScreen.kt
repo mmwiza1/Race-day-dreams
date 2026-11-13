@@ -875,35 +875,10 @@ private fun ProgrammeConfirmation(
 }
 
 @Composable
-internal fun ProgrammePreviewContent(programme: StrengthProgramme) {
-    Text(programme.name(), style = MaterialTheme.typography.headlineSmall)
-    Text(
-        "${programme.settings().frequency()} sessions/week · ${programme.blocks().sumOf { it.weeks() }} weeks · ${programmeLabel(programme.settings().goal().name)}"
+internal fun ProgrammePreviewContent(programme: StrengthProgramme) =
+    SharedProgrammePreviewContent(
+        programme,
+        ::friendlyDate,
+        ::programmeLabel,
+        ::gymTargetDescription,
     )
-    Text("Not activated. Review targets and trade-offs before choosing to use this programme.")
-    if (programme.tradeoffs().isNotEmpty())
-        WhyDetails(programme.tradeoffs().joinToString("\n"), "Programme trade-offs")
-    programme.blocks().forEach { block ->
-        SemanticCard(Tile.Strength) {
-            Text(block.name(), style = MaterialTheme.typography.titleLarge)
-            Text("${friendlyDate(block.start())} – ${friendlyDate(block.end())}")
-            WhyDetails(block.explanation(), "Block emphasis")
-            // Concrete dated prescriptions are shown as retained, never reconstructed from the
-            // first week.
-            var limit by remember(block.id()) { mutableIntStateOf(7) }
-            val chronological = remember(block) { block.workouts().sortedBy { it.date() } }
-            chronological.take(limit).forEach { workout ->
-                Text(
-                    "${friendlyDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min",
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                workout.definition().slots().forEach { slot ->
-                    Text("${slot.exercise().name()} · ${gymTargetDescription(slot)}")
-                }
-                workout.notes()?.let { Text(it) }
-            }
-            if (limit < block.workouts().size)
-                TextButton(onClick = { limit += 7 }) { Text("Show more dated workouts") }
-        }
-    }
-}

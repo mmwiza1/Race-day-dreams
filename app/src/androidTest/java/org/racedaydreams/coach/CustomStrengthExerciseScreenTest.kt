@@ -258,7 +258,14 @@ class CustomStrengthExerciseScreenTest {
         assertEquals(15.0, actual.exercises().single().sets().single().kilograms(), 0.0)
         assertEquals(
             20.0,
-            candidate.workouts().first().definition().slots().single().target().referenceLoadKg(),
+            candidate
+                .workouts()
+                .first()
+                .definition()
+                .slots()
+                .single()
+                .target()!!
+                .referenceLoadKg()!!,
             0.0,
         )
         io {

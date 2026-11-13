@@ -2362,10 +2362,10 @@ class CoachingScreenshotTest {
                             listOf(
                                 StrengthSession.ExerciseSets(
                                     slot.exercise(),
-                                    (1..slot.target().sets()).map { index ->
+                                    (1..slot.target()!!.sets()).map { index ->
                                         StrengthSession.SetEntry(
                                             "capture-set-$day-$index",
-                                            slot.target().maximumReps(),
+                                            slot.target()!!.maximumReps()!!,
                                             80.0,
                                             7.0,
                                             false,

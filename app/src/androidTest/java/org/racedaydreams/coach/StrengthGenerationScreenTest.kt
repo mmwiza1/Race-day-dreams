@@ -229,7 +229,7 @@ class StrengthGenerationScreenTest {
         await { model.state.value.draft!!.revision() == 2 }
         val edited = model.state.value.draft!!
         val changed = edited.programme().workouts().first()
-        assertEquals(1, changed.definition().slots().first().target().sets())
+        assertEquals(1, changed.definition().slots().first().target()!!.sets())
         assertEquals(
             StrengthWorkoutBudget.workoutMinutes(changed.definition().slots()),
             changed.expectedMinutes(),
@@ -422,7 +422,7 @@ class StrengthGenerationScreenTest {
         assertEquals("bench-press", proposed.substitutions().single().fromExerciseId())
         val changed = proposed.programme().workouts().first().definition().slots().first()
         assertEquals("dumbbell-bench-press", changed.exercise().id())
-        assertNull(changed.target().referenceLoadKg())
+        assertNull(changed.target()!!.referenceLoadKg())
         assertEquals(
             80.0,
             original
@@ -432,7 +432,7 @@ class StrengthGenerationScreenTest {
                 .definition()
                 .slots()
                 .first()
-                .target()
+                .target()!!
                 .referenceLoadKg()!!,
             0.0,
         )
@@ -534,8 +534,8 @@ class StrengthGenerationScreenTest {
         val replacement =
             model.state.value.draft!!.programme().workouts().first().definition().slots().first()
         assertEquals(suggestion.exercise(), replacement.exercise())
-        assertNull(replacement.target().referenceLoadKg())
-        assertEquals(5, replacement.target().minimumReps())
+        assertNull(replacement.target()!!.referenceLoadKg())
+        assertEquals(5, replacement.target()!!.minimumReps())
         assertEquals(1, io { programmes.currentReference()!!.revision() })
         assertTrue(io { CoachingStore(app).strength().isEmpty() })
     }
@@ -580,7 +580,7 @@ class StrengthGenerationScreenTest {
                     .definition()
                     .slots()
                     .first { it.id() == change.slotId() }
-            assertEquals(before.target().withoutLoadReference(), after.target())
+            assertEquals(before.target()!!.withoutLoadReference(), after.target())
         }
         assertEquals(1, io { programmes.currentReference()!!.revision() })
         assertEquals(
@@ -921,10 +921,10 @@ class StrengthGenerationScreenTest {
                     listOf(
                         StrengthSession.ExerciseSets(
                             slot.exercise(),
-                            (1..slot.target().sets()).map { set ->
+                            (1..slot.target()!!.sets()).map { set ->
                                 StrengthSession.SetEntry(
                                     "evidence-$day-$set",
-                                    slot.target().maximumReps(),
+                                    slot.target()!!.maximumReps()!!,
                                     80.0,
                                     effort,
                                     false,
@@ -944,7 +944,7 @@ class StrengthGenerationScreenTest {
         val workout = initial.programme().workouts().first()
         val slot = workout.definition().slots().first()
         assertEquals("bench-press", slot.exercise().id())
-        val target = slot.target()
+        val target = requireNotNull(slot.target())
         compose.runOnIdle {
             model.putSlot(
                 workout.id(),
@@ -954,8 +954,8 @@ class StrengthGenerationScreenTest {
                     sets = target.sets().toString(),
                     minimumReps = target.minimumReps().toString(),
                     maximumReps = target.maximumReps().toString(),
-                    minimumEffort = target.effort().minimum().toString(),
-                    maximumEffort = target.effort().maximum().toString(),
+                    minimumEffort = target.effort()!!.minimum().toString(),
+                    maximumEffort = target.effort()!!.maximum().toString(),
                     restSeconds = target.restSeconds().toString(),
                     referenceKilograms = "80",
                 ),

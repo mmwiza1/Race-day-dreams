@@ -87,7 +87,7 @@ class AuthoredGymAssociationScreenTest {
                     .authoredPrescription()
                     .definition()
                     .slots()[0]
-                    .target()
+                    .target()!!
                     .referenceLoadKg()!!,
                 0.0,
             )
