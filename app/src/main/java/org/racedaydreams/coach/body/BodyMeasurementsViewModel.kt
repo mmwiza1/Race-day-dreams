@@ -12,20 +12,6 @@ import org.racedaydreams.data.*
 import org.racedaydreams.domain.body.*
 import org.racedaydreams.health.*
 
-data class BodyMeasurementsState(
-    val busy: Boolean = true,
-    val heights: List<BodyHeight> = emptyList(),
-    val moreHeights: Boolean = false,
-    val weights: List<BodyWeight> = emptyList(),
-    val preferences: BodyMeasurementsRepository.Preferences =
-        BodyMeasurementsRepository.Preferences.defaults(),
-    val advice: ProteinGuidance.Advice? = null,
-    val available: Boolean = false,
-    val granted: Set<String> = emptySet(),
-    val error: String? = null,
-    val notice: String? = null,
-)
-
 /** Optional feature ownership: no training plan, body assessment or external account dependency. */
 class BodyMeasurementsViewModel(app: Application) : AndroidViewModel(app) {
     private val repository = SqliteBodyMeasurementsRepository(app)

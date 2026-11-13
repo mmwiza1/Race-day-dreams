@@ -57,7 +57,6 @@ fun BodyMeasurementsContent(
     onHeightUnit: (HeightUnit) -> Unit,
     onMoreHeights: () -> Unit,
 ) {
-    var details by rememberSaveable { mutableStateOf(false) }
     var measurements by rememberSaveable { mutableStateOf(false) }
     var height by rememberSaveable { mutableStateOf("") }
     var weight by rememberSaveable { mutableStateOf("") }
@@ -81,65 +80,23 @@ fun BodyMeasurementsContent(
         state.notice?.let {
             Text(it, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         }
-        SemanticCard(Tile.Insight) {
-            Text("General daily protein", style = MaterialTheme.typography.titleLarge)
-            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                Checkbox(
-                    state.preferences.proteinEnabled(),
-                    onCheckedChange = onProtein,
-                    enabled = !state.busy,
-                    modifier =
-                        Modifier.semantics { contentDescription = "Show optional protein guidance" },
-                )
-                Text(
-                    "Show optional protein guidance",
-                    modifier = Modifier.weight(1f).padding(vertical = 12.dp),
-                )
-            }
-            state.advice?.let { advice ->
-                Text(advice.instruction(), style = MaterialTheme.typography.titleMedium)
-                Text(advice.explanation())
-                advice.basis()?.let { basis ->
-                    Text(
-                        "Chosen basis: ${decimal(basis.kilograms())} kg · ${friendlyDate(basis.at().atOffset(basis.offset()).toLocalDate())}"
-                    )
-                    Text(bodySource(basis.provider(), basis.origin()))
-                    if (
-                        basis.provider() == "health-connect" &&
+        ProteinGuidanceCard(
+            state = state,
+            onProtein = onProtein,
+            onChooseWeight = { measurements = true },
+            formatNumber = ::decimal,
+            formatBasisDate = { friendlyDate(it.at().atOffset(it.offset()).toLocalDate()) },
+            basisAccessNote =
+                state.advice
+                    ?.basis()
+                    ?.takeIf {
+                        it.provider() == "health-connect" &&
                             HealthConnectGateway.WEIGHT_PERMISSION !in state.granted
-                    )
-                        Text(
-                            "Previously imported measurement; weight access is not currently granted."
-                        )
-                }
-                if (state.preferences.proteinEnabled()) {
-                    TextButton(onClick = { measurements = true }, enabled = !state.busy) {
-                        Text("Choose or record a weight")
                     }
-                    TextButton(
-                        onClick = { details = !details },
-                        modifier =
-                            Modifier.heightIn(min = 48.dp).semantics {
-                                stateDescription = if (details) "Expanded" else "Collapsed"
-                            },
-                    ) {
-                        Text(if (details) "Calculation & sources ▴" else "Calculation & sources ▾")
-                    }
-                    if (details) {
-                        if (advice.available())
-                            Text(
-                                "${decimal(advice.minimumPerKg()!!)}–${decimal(advice.maximumPerKg()!!)} grams per kilogram of the explicitly selected weight. Rounded to the nearest 5 grams; height is not used."
-                            )
-                        Text(ProteinGuidance.sources())
-                        Text(advice.limitation())
-                    }
-                }
-            }
-            Text(
-                "General guidance, not a medical prescription. Individual needs can differ.",
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
+                    ?.let {
+                        "Previously imported measurement; weight access is not currently granted."
+                    },
+        )
         SemanticCard(Tile.Neutral) {
             Text("Your measurements", style = MaterialTheme.typography.titleLarge)
             val latestHeight = state.heights.firstOrNull { !it.at().isAfter(Instant.now()) }
@@ -322,10 +279,6 @@ fun BodyMeasurementsContent(
         }
     }
 }
-
-private fun bodySource(provider: String, origin: String?): String =
-    if (provider == "manual") "Source: entered by you"
-    else "Source: $provider" + (origin?.takeIf { it.isNotBlank() }?.let { " · $it" } ?: "")
 
 private fun bodyHeightDate(row: BodyHeight): String =
     if (row.offset() == null)

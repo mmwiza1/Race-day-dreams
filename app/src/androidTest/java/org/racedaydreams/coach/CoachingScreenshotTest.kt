@@ -1328,7 +1328,7 @@ class CoachingScreenshotTest {
                 alignHeading("Record a measurement")
                 capture("body-measurements$suffix")
                 Assert.assertEquals(weight, body.weights().first { it.id() == weight.id() })
-                Assert.assertTrue(body.preferences().basis().matches(weight))
+                Assert.assertTrue(requireNotNull(body.preferences().basis()).matches(weight))
                 closeScenario()
                 scenario = null
             }

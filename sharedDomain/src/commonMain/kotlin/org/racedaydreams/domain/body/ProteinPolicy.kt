@@ -1,9 +1,8 @@
 package org.racedaydreams.domain.body
 
 import kotlin.math.floor
-import kotlin.time.Duration.Companion.days
-import kotlinx.datetime.Instant
 import org.racedaydreams.domain.settings.PrimaryFocus
+import org.racedaydreams.domain.time.Instant
 
 /** An exact evidence snapshot. Source metadata participates in duplicate/conflict comparisons. */
 data class ProteinWeightEvidence(
@@ -89,7 +88,7 @@ object ProteinPolicy {
             return unavailable(
                 "Your selected measurement is dated in the future. Review its date before using it."
             )
-        if (match.at < now - 90.days)
+        if (olderThanNinetyDays(match.at, now))
             return unavailable(
                 "Your selected weight is over 90 days old. Review a recent measurement before using a daily range."
             )
@@ -118,6 +117,13 @@ object ProteinPolicy {
             "Based on your chosen body weight and $emphasis focus. This is general guidance, not a requirement or a weight-loss programme.",
             limitation(),
         )
+    }
+
+    private fun olderThanNinetyDays(at: Instant, now: Instant): Boolean {
+        // The full supported instant span fits in Long seconds. Preserve the strict boundary
+        // without routing retained evidence through a narrower, saturating timestamp factory.
+        val seconds = now.getEpochSecond() - at.getEpochSecond()
+        return seconds > 90 * 86400L || seconds == 90 * 86400L && now.getNano() > at.getNano()
     }
 
     private fun unavailable(why: String) =

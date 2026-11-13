@@ -1,12 +1,12 @@
 package org.racedaydreams.domain.body
 
-import java.time.Instant
-import java.util.Objects
-import kotlinx.datetime.toKotlinInstant
+import kotlin.jvm.JvmStatic
 import org.racedaydreams.domain.settings.PrimaryFocus
+import org.racedaydreams.domain.time.Instant
 
 /**
- * Existing JVM API and original evidence objects; all guidance rules live in common ProteinPolicy.
+ * Existing API and original evidence objects on both platforms; guidance rules live only in
+ * ProteinPolicy.
  */
 object ProteinGuidance {
     data class Basis(
@@ -35,9 +35,7 @@ object ProteinGuidance {
         fun kilograms(): Double = selectedMass
 
         fun matches(weight: BodyWeight): Boolean =
-            id() == weight.id() &&
-                at() == weight.at() &&
-                java.lang.Double.compare(kilograms(), weight.kilograms()) == 0
+            id() == weight.id() && at() == weight.at() && kilograms() == weight.kilograms()
 
         override fun toString(): String = "Basis[id=${id()}, at=${at()}, kilograms=${kilograms()}]"
 
@@ -88,16 +86,16 @@ object ProteinGuidance {
         focus: PrimaryFocus?,
         now: Instant?,
     ): Advice {
-        val rows = Objects.requireNonNull(weights)!!
-        val at = Objects.requireNonNull(now)!!
+        val rows = weights ?: throw NullPointerException()
+        val at = now ?: throw NullPointerException()
         val evidence =
             if (enabled && selection != null)
                 rows.map { row ->
                     ProteinWeightEvidence(
                         row.id(),
-                        row.at().toKotlinInstant(),
+                        row.at(),
                         row.kilograms(),
-                        row.offset().totalSeconds,
+                        row.offset().getTotalSeconds(),
                         row.provider(),
                         row.sourceId(),
                         row.origin(),
@@ -107,12 +105,10 @@ object ProteinGuidance {
         val common =
             ProteinPolicy.evaluate(
                 enabled,
-                selection?.let {
-                    ProteinSelection(it.id(), it.at().toKotlinInstant(), it.kilograms())
-                },
+                selection?.let { ProteinSelection(it.id(), it.at(), it.kilograms()) },
                 evidence,
                 focus,
-                at.toKotlinInstant(),
+                at,
             )
         val original = common.basis?.let { selected -> rows.last { it.id() == selected.id } }
         return Advice(

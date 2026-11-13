@@ -211,10 +211,9 @@ incomplete migration merely because a focused checkpoint passes.
   CoachCompletionStateTest / SqliteUserPreferencesRepositoryTest / CoachingStoreTest, covering
   actual goal/plan interaction, profile persistence, current/legacy backup and rollback.
 
-### Current checkpoint — exact body observations and shared provider conversion
+### Eighth checkpoint — exact body observations (`7e973c7`)
 
-- Locally verified batch, being committed/pushed as `Share retained body observations and provider
-  mapping with exact timestamp provenance`. BodyWeight.java / BodyHeight.java replaced with common
+- COMMITTED/PUSHED `7e973c7be9d9eb729bbd7281daf2028bc9930fca`. BodyWeight.java / BodyHeight.java replaced with common
   Kotlin; **181 Java domain files remain**. Original source IDs/ASCII trim/validation/equality/text,
   weight limits, height limits and unknown height offset/import time preserved. Legacy weights
   retain their original permissive empty-provider/source behavior; no retroactive rejection.
@@ -238,19 +237,52 @@ incomplete migration merely because a focused checkpoint passes.
   Native primitive references compare **70,056** instant/fraction fixtures and ALL **129,601**
   permitted second-resolution offsets against JDK; common tests exercise actual platform models.
   Pinned formatter **209 Kotlin /154 Java**, diff check PASS. No schema/backup/version change.
-- This body batch has NOT run Native/runtime CI yet. Do not borrow preceding865a success for it.
-  All implementation remains on SAME draft PR24. No new app host/demo, publication or merge.
+- Actual workflow **43461801823 SUCCESS on Android AND Apple** for exact7e973c7, including real
+  Native timestamps/offsets/provider mapping and shared UI framework. Android retained focused
+  UI/persistence/health and complete legacy domain/schema/build/lint checks. No app-host or
+  physical-provider pass is implied. No publication or merge.
+
+### Current checkpoint — shared body guidance contracts and production protein card
+
+- Locally verified batch being committed/pushed as `Share body guidance contracts and the existing
+  protein card across platforms`. **180 Java domain files remain**: BodyMeasurementsRepository.java
+  replaced with its common typed interface/preferences; previous Kotlin/JVM ProteinGuidance adapter
+  replaced with common API. Java signatures retain java.time through actual aliases. Original
+  preferences defaults, nullable selection, advice accessors/text and captured evidence retained.
+- ProteinPolicy now consumes exact domain Instant instead of a narrower provider timestamp.
+  Same strict90-day boundary, future/stale rejection, explicit selection, conflict detection,
+  original30–250kg applicability, focus subranges and nearest5g rounding. Nanosecond age comparison
+  avoids materialising a clamped threshold; no new guidance calculation. Advice returns the
+  ORIGINAL BodyWeight instance. Existing six policy tests retain all assertions/boundaries;
+  only timestamp construction changed to equivalent epochs. Three new common contract tests
+  cover original-instance identity/defaults, nanosecond boundaries and extreme retained dates.
+- Domain no longer depends on kotlinx-datetime; sharedHealth still needs/pins0.6.2 for actual
+  platform adapters. Do NOT remove its licence/HealthKit NSDate conversions. No new dependencies.
+- Existing BodyMeasurementsState moved intact into sharedUi. Existing production protein card,
+  disclosure and source label moved to `sharedUi/.../body/ProteinGuidanceCard.kt` and are USED
+  by Android. Same layout/labels/controls/actions; platform supplies original number/date
+  formatting and known permission note. No fake permission state or alternative/demo screen.
+  Rest of health screen/orchestration/storage is still Android-specific; iOS host still absent.
+- Local proof: **48 shared-domain JVM tests +14 shared-health JVM tests**, zero failures;
+  original BodyGuidanceTestSuite **1368 checks** PASS after the exact-time policy port. Final
+  `/workspace/scratch/kmp-body-card-build.log` **BUILD SUCCESSFUL, 114tasks/2m49s**, both APKs.
+  Formatting **213Kotlin /153Java**, diff check PASS. APK code19/minAPI28/noINTERNET confirmed.
+- Earlier instrumentation compile found the screenshot fixture assuming a nullable preference
+  basis. `requireNotNull(...).matches(weight)` now explicitly preserves/strengthens that SAME
+  assertion; no capture/mock or assertion removal. Fixed instrumentation APK passed, then final
+  card build passed. Source-bound screenshots remain a final release task, not a claimed pass.
+- New Native/runtime CI is pending until this exact checkpoint is pushed and GitHub confirms it.
+  Keep SAME draft PR24; no version/schema/backup change, merge or release publication.
 
 ### Exact next safe actions and remaining full scope
 
-1. Inspect actual branch/status/log and remote PR24. Preserve any surviving local changes. The
-   body-observation checkpoint above is locally verified and being committed/pushed; do not rerun
-   unchanged successful gates or confuse prior865a Native success with its new timestamp bindings.
-2. Inspect this body's exact Android/Apple CI, fix actual failures before continuing. Next coherent
-   health slice: move remaining ProteinGuidance/BodyMeasurementsRepository contracts and existing
-   health presentation/orchestration to common code, preserving original weight selection,
-   freshness/ranges/actual evidence and honest HealthKit read visibility. Do not invent a separate
-   app or alternate database; native storage/services and real iOS host are still required.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The current body contract/card
+   batch is locally verified and being committed/pushed; preceding7e973c7 Native success does
+   not verify the newer common guidance/repository/state/card. Do not repeat completed fixes.
+2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
+   application work: portable activity/strength models/engines, actual shared screens and
+   orchestration, platform storage/services and real iOS app host. Preserve known/unknown
+   HealthKit read visibility; never use a visible-only snapshot for window replacement.
 3. Continue remaining Java-domain conversion and actual shared screens/navigation/state/data
    sources, cross-platform typed SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and an actual iOS app host with entitlements/usage strings.

@@ -149,7 +149,7 @@ platform port, not a training-rule rewrite. Disk/provider work stays off the mai
 no training rule lives in a UI.
 
 Common running models use the small `domain.time` contracts. JVM actual aliases retain the original
-`java.time.LocalDate` and `Duration` APIs for existing repositories and callers; Native retains
+`java.time.LocalDate`, `Duration`, `Instant` and `ZoneOffset` APIs for repositories/callers; Native retains
 full ISO date identities and canonical seconds/nanoseconds. Do not replace these with narrowed
 date ranges or floating-point durations. Extend the contract only for actual migrated usage,
 with JVM reference parity and Native tests. Platform clocks select local today explicitly;

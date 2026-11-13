@@ -1,14 +1,13 @@
 package org.racedaydreams.domain
 
 import kotlin.test.*
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.nanoseconds
-import kotlinx.datetime.Instant
 import org.racedaydreams.domain.body.*
 import org.racedaydreams.domain.settings.PrimaryFocus
+import org.racedaydreams.domain.time.Instant
+import org.racedaydreams.domain.time.Instants
 
 class ProteinPolicyTest {
-    private val now = Instant.parse("2026-11-05T12:00:00Z")
+    private val now = Instants.ofEpochSecond(1793880000)
 
     private fun weight(
         id: String = "manual",
@@ -38,7 +37,10 @@ class ProteinPolicyTest {
 
     @Test
     fun offOrUnselectedNeverChoosesANewerProviderWeight() {
-        val manual = weight(at = now - 1.days)
+        val manual =
+            weight(
+                at = Instants.ofEpochSecond(now.getEpochSecond() - 86400, now.getNano().toLong())
+            )
         val recent = weight("provider", provider = "health-connect", mass = 90.0)
         assertFalse(
             ProteinPolicy.evaluate(
@@ -71,9 +73,9 @@ class ProteinPolicyTest {
     fun exactNinetyDayAndFutureBoundariesKeepTheSameMeaning() {
         for ((at, allowed) in
             listOf(
-                now - 90.days to true,
-                now - 90.days - 1.nanoseconds to false,
-                now + 1.nanoseconds to false,
+                Instants.ofEpochSecond(now.getEpochSecond() - 90 * 86400) to true,
+                Instants.ofEpochSecond(now.getEpochSecond() - 90 * 86400, -1) to false,
+                Instants.ofEpochSecond(now.getEpochSecond(), 1) to false,
             )) {
             val row = weight(at = at)
             assertEquals(
