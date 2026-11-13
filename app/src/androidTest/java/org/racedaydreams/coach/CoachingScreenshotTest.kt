@@ -3583,9 +3583,7 @@ class CoachingScreenshotTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         automation.waitForIdle(200, 20000)
-        val bitmap = automation.takeScreenshot()
-        Assert.assertNotNull(bitmap)
-        saveCapture(name, bitmap)
+        saveCurrentScreen(name)
     }
 
     @Test
@@ -4081,18 +4079,48 @@ class CoachingScreenshotTest {
         // The app looper is only one window. Await the real system-window event stream too,
         // rather than assuming a fixed delay means SystemUI finished a configuration update.
         automation.waitForIdle(200, 20000)
-        val bitmap = automation.takeScreenshot()
-        Assert.assertNotNull(bitmap)
-        saveCapture(name, bitmap)
+        saveCurrentScreen(name)
     }
 
-    private fun saveCapture(name: String, bitmap: Bitmap) {
+    private fun saveCurrentScreen(name: String) {
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         val dir = File(context.getExternalFilesDir(null), "screenshots")
         dir.mkdirs()
-        File(dir, "$name.png").outputStream().use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+        val image = File(dir, "$name.png")
+        if (android.os.Build.VERSION.SDK_INT == 28) {
+            // Android9 UiAutomation crops to getRealSize(), which is the overridden logical
+            // size. On a letterboxed emulator this clips the physical compositor frame.
+            // Native screencap requests the entire physical frame. Preserve it unchanged,
+            // including real letterboxing; never rescale, crop or repaint the captured UI.
+            automation.executeShellCommand("screencap -p").use { descriptor ->
+                java.io.FileInputStream(descriptor.fileDescriptor).use { input ->
+                    image.outputStream().use { output -> input.copyTo(output) }
+                }
+            }
+            val bounds =
+                android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            android.graphics.BitmapFactory.decodeFile(image.absolutePath, bounds)
+            val physical =
+                checkNotNull(Regex("Physical size: ([0-9]+)x([0-9]+)").find(shell("wm size")))
+            val width = physical.groupValues[1].toInt()
+            val height = physical.groupValues[2].toInt()
+            Assert.assertTrue(
+                "API28 capture must contain the whole physical display, not an overridden crop: ${bounds.outWidth}x${bounds.outHeight}, physical ${width}x$height",
+                (bounds.outWidth == width && bounds.outHeight == height) ||
+                    (bounds.outWidth == height && bounds.outHeight == width),
+            )
+            android.util.Log.i(
+                "RddGate",
+                "CAPTURE_PHYSICAL_FRAME $name ${bounds.outWidth}x${bounds.outHeight}",
+            )
+        } else {
+            val bitmap = checkNotNull(automation.takeScreenshot())
+            try {
+                image.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            } finally {
+                bitmap.recycle()
+            }
         }
-        bitmap.recycle()
         // AGP uninstalls the APK after connected tests, removing app-specific files.
         // Copy with instrumentation's shell identity before teardown; production has no such path.
         val shell = InstrumentationRegistry.getInstrumentation().uiAutomation
@@ -4102,7 +4130,7 @@ class CoachingScreenshotTest {
         }
         shell
             .executeShellCommand(
-                "cp ${File(dir,"$name.png").absolutePath} /data/local/tmp/racedaydreams-screenshots/$name.png"
+                "cp ${image.absolutePath} /data/local/tmp/racedaydreams-screenshots/$name.png"
             )
             .use { descriptor ->
                 java.io.FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }

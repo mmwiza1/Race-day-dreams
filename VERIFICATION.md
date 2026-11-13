@@ -1,3 +1,29 @@
+# 0.12.3 — software gate green; API28 capture geometry blocks visual acceptance
+
+Source1a00372/workflow43330113881 passed25guards/543fulltests/451captures on EACH API28/35/36.
+All completed logs inspected; format/guidance/domain/schema/backup/build/lint/script gates green.
+Canonicalb8cb249 equals all451API35artifact13995658358 PNGs byte-for-byte (59,660,278bytes;
+SHA256cebb31820b1308c8a890040027ced3609b3d3ecf31860d9d3ae67562179d5c90), fingerprint
+39db8578fd78c85242ac2d76636a422249a9b62658433a0d1c277196459a6de7. Actual API35review opened36
+frames covering new health/plan/backup and existing exercise/gym/analytics/storage/recovery modes.
+
+API28artifact13996771151 ZIP verified at70,619,283bytes/SHA256
+62474a7096773c2b24ae8b5863093bc2505a080d7b5504f7d8efc1992f155abb. Native review found540x1200
+screens cropped from the letterboxed physical1080x1920display, with a108px black left strip and
+cut-off content. Software assertions and PNG integrity do not establish visual acceptance.
+Official Android9 UiAutomation requests getRealSize as a crop; native screencap requests the full
+compositor (AOSP android-9.0.0_r61 core/java/android/app/UiAutomation.java and
+cmds/screencap/screencap.cpp). A test-only API28 native-capture path now preserves the actual
+whole-frame PNG, asserts physical bounds and retains genuine letterboxing. No app/permission,
+layout/engine changes, no screenshot rescaling/repainting, no weaker assertions or delays.
+Corrected compilation, full gate and real API28pixel review are required before merge.
+
+Candidate API35APK artifact13996322582 verified against ZIPdigest
+450d0d47352dcb308aa74555ebc3bd8026c05076801e83cd6ea71bd72c1d8688:55,659,946APKbytes,
+SHA25686b56d008aed840d0a77614faff03e187646aa0a02de2de9bce278b56474bcc5. It is NOT published main.
+Physical testing remains unperformed; no merge/new0.12.3public APK is claimed. Earlier checkpoint
+entries below remain historical and do not override the API28visual blocker.
+
 # 0.12.3-test1 — verified presentation checkpoint, final showcase gate pending
 
 PR #22, branch `feature/0.12.3-plain-language-github-showcase`, version0.12.3-test1/code19.
