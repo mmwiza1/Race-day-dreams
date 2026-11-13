@@ -221,6 +221,10 @@ class AuthoredGymNowScreenTest {
         compose.onNodeWithText("View workout details").performScrollTo().performClick()
         compose.onNodeWithText("Bench Press").performScrollTo().assertIsDisplayed()
         compose
+            .onNodeWithText("Training targets and weight reference")
+            .performScrollTo()
+            .performClick()
+        compose
             .onNodeWithText("3 × 5–8 reps · RIR 1.5–3.5 · 80 kg reference")
             .performScrollTo()
             .assertIsDisplayed()

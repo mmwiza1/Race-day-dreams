@@ -23,23 +23,29 @@ def png(width=320, height=640, pixels=None):
 
 
 class CaptureValidationTest(unittest.TestCase):
+    def test_plain_backup_keeps_all433_existing_frames_and_requires_three_modes(self):
+        expected = {f'{scene}{suffix}.png' for scene in ('settings-backup-plain', 'settings-backup-actions-plain', 'health-context-plain', 'health-measurement-plain', 'running-task-plain', 'running-target-plain') for suffix in ('', '-dark', '-large-font')}
+        self.assertEqual(expected, set(captures.PLAIN_LANGUAGE_REQUIRED))
+        self.assertTrue(expected.issubset(captures.REQUIRED))
+        self.assertEqual(433, len(set(captures.REQUIRED) - expected))
+
     def test_library_refinement_preserves_all_421_frames_and_requires_new_modes(self):
         expected = {f'{scene}{suffix}.png' for scene in ('exercise-library-refined', 'exercise-library-rows-refined', 'exercise-filters-refined', 'exercise-detail-tabs-refined') for suffix in ('', '-dark', '-large-font')}
         self.assertEqual(expected, set(captures.LIBRARY_REFINEMENT_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
-        self.assertEqual(421, len(set(captures.REQUIRED) - expected))
+        self.assertEqual(421, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - expected))
 
     def test_material_variants_extend_the_existing_capture_set(self):
         expected = {f'{scene}-material-{mode}.png' for scene in ('home','live') for mode in ('brand-light','device-light','brand-dark','device-dark','brand-large-font','device-large-font')}
         expected.update(('onboarding-material-dark.png','onboarding-material-large-font.png','home-material-wide.png','plan-material-wide.png','home-material-wide-large-font.png','plan-material-wide-large-font.png','live-material-finish-brand-large-font.png','live-material-finish-device-large-font.png'))
         self.assertEqual(expected, set(captures.MATERIAL_REQUIRED))
-        self.assertEqual(359, len(set(captures.REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.PERMISSION_REQUIRED) - set(captures.RUNNING_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
+        self.assertEqual(359, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.PERMISSION_REQUIRED) - set(captures.RUNNING_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
         self.assertTrue(expected.issubset(captures.REQUIRED))
 
     def test_native_permission_surface_requires_modes_and_large_text_actions(self):
         expected = {'permission-rationale-light.png', 'permission-rationale-dark.png', 'permission-rationale-large-font.png', 'permission-rationale-actions-large-font.png'}
         self.assertEqual(expected, set(captures.PERMISSION_REQUIRED))
-        self.assertEqual(379, len(set(captures.REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.RUNNING_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
+        self.assertEqual(379, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.RUNNING_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
         self.assertTrue(expected.issubset(captures.REQUIRED))
 
     def test_running_refinement_requires_actual_statistics_route_analytics_and_missing_states(self):
@@ -52,15 +58,15 @@ class CaptureValidationTest(unittest.TestCase):
         self.assertEqual(34, len(expected))
         self.assertEqual(expected, set(captures.RUNNING_REFINEMENT_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
-        self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
+        self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
 
     def test_narrow_clock_and_large_text_tail_captures_extend_the_complete_417_set(self):
         expected = {'live-refined-narrow-large-font.png', 'live-refined-narrow-metrics-large-font.png',
                     'running-records-third-large-font.png', 'running-heart-rate-chart-large-font.png'}
         self.assertEqual(expected, set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
-        self.assertEqual(417, len(set(captures.REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected))
-        self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.RUNNING_REFINEMENT_REQUIRED)))
+        self.assertEqual(417, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected))
+        self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - expected - set(captures.RUNNING_REFINEMENT_REQUIRED)))
 
     def test_catalogue_expansion_has_every_display_mode(self):
         import re
@@ -86,9 +92,9 @@ class CaptureValidationTest(unittest.TestCase):
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))
         self.assertEqual(77, len(captures.OTHER_REQUIRED) + len(captures.DREAM_REQUIRED))
-        self.assertEqual(433, len(captures.REQUIRED))
-        self.assertEqual(417, len(set(captures.REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
-        self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
+        self.assertEqual(451, len(captures.REQUIRED))
+        self.assertEqual(417, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
+        self.assertEqual(383, len(set(captures.REQUIRED) - set(captures.PLAIN_LANGUAGE_REQUIRED) - set(captures.LIBRARY_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_REQUIRED) - set(captures.RUNNING_REFINEMENT_DETAIL_REQUIRED)))
         self.assertEqual(len(captures.REQUIRED), len(set(captures.REQUIRED)))
         self.assertEqual(63, len(captures.OTHER_REQUIRED))
         for city in ("london", "berlin", "paris", "tokyo", "new-york", "dark", "large-font"):

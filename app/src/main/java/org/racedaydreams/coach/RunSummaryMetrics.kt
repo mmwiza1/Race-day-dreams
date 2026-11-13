@@ -58,7 +58,7 @@ internal fun RecordedRunSummary(activity: ActivityRecord, state: CoachUiState) {
                 )
             }
             Text(
-                "Average pace is calculated from recorded distance and elapsed time, including pauses.",
+                "Elapsed time includes pauses. Average pace uses the whole elapsed time and recorded distance. Moving time, when available, is reported separately by the recording or provider.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -84,12 +84,12 @@ internal fun RecordedHeartRateSummary(activity: ActivityRecord) {
                     maxItemsInEachRow = if (LocalDensity.current.fontScale >= 1.5f) 1 else 2,
                 ) {
                     RunSummaryValue(
-                        "Average recorded HR",
+                        "Average recorded heart rate",
                         activity.averageHeartRate()?.let { "${decimal(it)} bpm" } ?: "Unavailable",
                         Modifier.weight(1f),
                     )
                     RunSummaryValue(
-                        "Maximum recorded HR",
+                        "Maximum recorded heart rate",
                         activity.maxHeartRate()?.let { "${decimal(it)} bpm" } ?: "Unavailable",
                         Modifier.weight(1f),
                     )

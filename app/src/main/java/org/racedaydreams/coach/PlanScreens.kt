@@ -103,7 +103,7 @@ fun TrainingPlanScreen(state: CoachUiState, model: CoachViewModel, open: (String
             TextButton(onClick={details=!details}) { Text(if(details)"Hide programme details"else"Programme details") }
             if(details) {
                 Text("${friendlyDate(plan.startDate())} – ${friendlyDate(plan.endDate())}")
-                Text("Immutable plan version ${version.version()} · ${state.planVersions.size} preserved versions")
+                Text("Saved plan version ${version.version()} · ${state.planVersions.size} preserved versions")
                 WhyDetails(version.reason(),"Why this plan version?")
                 WhyDetails(version.evidenceSnapshot(),"Evidence used for this plan")
                 if(state.profile!=version.goalSnapshot())Text("Your saved goal or availability has changed. This programme retains its original snapshot until you explicitly rebuild.")
@@ -151,11 +151,12 @@ fun PlannedWorkoutScreen(state: CoachUiState, model: CoachViewModel, id: String?
             val warm=org.racedaydreams.domain.support.RunningRoutines.warmup(workout.category(),version.goalSnapshot().raceGoal().distance().kilometres())
             WarmupSupportLink(warm,workout.id()){routine(warm,workout.id())}
             TextButton(onClick={routine(if(workout.category()==WorkoutCategory.LONG_RUN||org.racedaydreams.domain.coaching.AdaptiveCoachingEngine.isQuality(workout.category())||workout.category()==WorkoutCategory.RACE)"cool-demanding"else"cool-easy",workout.id())}){Text("View optional cool-down")}
+            Text(org.racedaydreams.domain.presentation.AthleteLanguage.runningPurpose(workout.category()))
             CoachHeading("Workout structure")
             workout.segments().forEachIndexed { index, segment -> CoachCard {
                 Text("${index + 1}. ${segment.kind().name.lowercase().replace('_',' ').replaceFirstChar{it.uppercase()}}", style = MaterialTheme.typography.titleMedium)
                 segment.distanceKm()?.let { Text(formatDistance(it * 1000, state)) }; segment.duration()?.let { Text("${it.toMinutes()} min") }
-                segment.rpe()?.let { Text("Intended RPE: approximately ${it.toInt()}/10") }
+                segment.rpe()?.let { Text("How hard it should feel: ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)}.");WhyDetails("RPE (rating of perceived effort): ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.number(it)}/10. This is the effort target saved in this plan.","Exact effort target") }
                 if (segment.minimumSecondsPerKm() != null && segment.maximumSecondsPerKm() != null) Text("Pace: ${formatPaceSeconds(segment.minimumSecondsPerKm() * paceFactor)}–${formatPaceSeconds(segment.maximumSecondsPerKm() * paceFactor)}/${if (imperial) "mi" else "km"}; effort takes precedence")
                 Text(segment.guidance() ?: "Adjust to conditions and how you feel.")
             } }

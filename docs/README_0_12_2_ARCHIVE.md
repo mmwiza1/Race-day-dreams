@@ -1,0 +1,282 @@
+# Historical README — 0.12.2
+
+Preserved from main `d0ac9739911380cd625393da51f10725b07d4555`. This is historical documentation; use the [current app showcase](../README.md) for current downloads and screenshots. Image/source links below are pinned to the historical source.
+
+# Race Day Dreams
+
+A free, open-source, account-free Android running and strength coach.
+
+**The app recommends. The athlete decides. The plan adapts.**
+
+The app works locally and without Health Connect. It has no Internet permission,
+advertising, analytics, subscriptions, backend or LLM dependency.
+
+## 0.12.2-test1 — Cohesive Material 3 layout and exercise discovery
+
+Exercise Library now has compact neutral illustrated cards, rounded name/alias search,
+horizontal categories and personal filters, and a real advanced-filter disclosure.
+Overview, technique, history and PBs use cohesive Material tabs. Existing favourites,
+exclusions/restore, archived/custom exercises and programme/logging actions remain.
+
+Shared 4/8dp spacing tokens, selected checkmarks, 48dp touch targets and consistent page/card
+insets refine controls across running, gym, statistics, calendar, settings and health.
+Dynamic colours, branded light/dark, navigation identity and all data/engines are preserved.
+The software source passed 538 tests/433 captures on each API 28/35/36 and direct light/dark/200%
+visual review. See [release notes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RELEASE_0_12_2.md), [visual review](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/VISUAL_REVIEW_0_12_2.md)
+and [delivery verification](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md). Main publication is verified separately.
+
+## Preserved 0.12.1-test1 — Running and performance visual refinement
+
+Live running leads with elapsed time, prominent distance/pace, optional heart rate and
+real workout progress. Statistics and an offline accepted-route outline are alternative
+views of the same recorder; pause/resume and Finish confirmation retain their controls.
+
+Progress adds selectable four/eight/twelve-week distance, elapsed-pace and time charts,
+ranked recorded results and saved per-run heart-rate summaries. Missing measurements and
+unrecorded weeks stay distinct. Individual heart-rate zones are unavailable without
+supported boundaries and sample evidence; no zone totals are fabricated.
+
+Run summaries, qualified splits and history gain clearer hierarchy and large-text layouts.
+Existing bottom navigation icons, labels, order, destinations, branding, engines and data
+formats are preserved. No new dependency or permission. See [focused scope](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/MATERIAL3_RUNNING_REFINEMENT.md)
+and [patch notes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RELEASE_0_12_1.md). The patch passed 534 tests and 421 captures per API28/35/36, with source-bound light/dark/200%
+visual review. Exact delivery-head/mainCI and publication are tracked in VERIFICATION.md.
+
+## Preserved 0.12.0-test1 — Material You / Material 3 Expressive UI
+
+A shared adaptive theme brings device colours (Android 12+), a branded blue fallback,
+clearer typography, rounded tonal cards and wide-window navigation to the existing app.
+Home emphasises today's session, the current goal and upcoming training. Live running
+separates distance, time and pace, keeps controls accessible at large text sizes and asks
+before finishing. Recorded evidence, coaching calculations and all data formats are preserved.
+
+See [design scope](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/MATERIAL3_UI.md), [release notes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RELEASE_0_12_0.md) and
+[observed verification](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md). The0.12baseline is merged through PR19 and published
+from8269162. The gallery below now shows the0.12.2refinement.
+This remains a test build. The existing Material 3 components are retained; newer experimental
+Expressive motion/loading APIs are not included, and no runtime dependency upgrade is required.
+
+## Preserved 0.11.0-test1 — Gym, Health & Recovery Intelligence
+
+Optional rest timing, evidence-based warm-up suggestions and supersets build on the existing
+Gym Now engine. Strength trends and records use actual working sets; measured results remain
+separate from estimates. Restrained milestones and recovery/Hybrid proposals explain their
+supporting evidence and leave changes under the athlete's control.
+
+Optional height/weight history and general protein guidance work with manual entry or Health
+Connect. Storage settings offer 24 months, five years or Keep forever for eligible raw recording
+detail. Existing users remain protected until informed acknowledgement; preview and confirmation
+precede cleanup. Summaries, PBs, actual sets and programme history remain.
+
+All 220 canonical exercises and 14 routine movements have illustrated guidance. The 46 additions
+cover useful beginner, machine, cable, unilateral, carry and shoulder-control gaps rather than
+padding the library with superficial variants. See [release notes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RELEASE_0_11_0.md),
+[verification](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md) and the [physical-device checklist](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/TEST_BUILD.md).
+
+## Preserved 0.10.1 — GPS Reliability & Coaching Clarity
+
+Native recording now rejects stale delivery before auto-pause, preserves honest GPS gaps,
+and avoids summing a bounded stationary jitter cluster as running distance. Large route
+renders preserve meaningful bends without altering stored observations. See the
+[GPS diagnosis](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/GPS_DIAGNOSIS_0_10_1.md) and
+[open-source comparison](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/GPS_ENGINE_REVIEW_0_10_1.md) for demonstrated fixes and limits.
+
+Workout suggestions explain the task first, then optional weight references and the reason.
+Advanced details compares only changed targets and groups unchanged facts. Full actual
+workout evidence has a separate disclosure. Saving a suggestion remains separate from programme activation.
+
+That release's software and visual gate passed on API28/35/36, with155authentic captures including
+33progression views. See [verification](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md), [the visual review](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/VISUAL_REVIEW_0_10_1.md)
+and [release notes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RELEASE_0_10_1.md). The rolling download below always identifies its
+own verified-main version. No physical Galaxy S24 acceptance is claimed.
+
+The merged0.10 Strength Programming foundation remains available: manual programmes,
+nine editable templates, goal/experience-aware blocks, future revisions and conservative
+progression. Historical prescriptions and actual sets stay separate. See
+[0.10 release notes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RELEASE_0_10_0.md). This remains a test build, not a store release.
+
+## Offline Dream Routes
+
+Dream Routes now pair original illustrated city panoramas with the full geographic
+course, a prominent blue equivalent section, clear progress and illustrated landmark
+cards. London, Berlin, Paris, Tokyo and New York share the same travel-inspired design.
+The accepted engine is preserved: annual Marathon de Paris 2026, stable saved assignments
+and offsets, exact equivalent-distance interpolation and local backups. All artwork works
+offline; no format, runtime dependency or permission changes are required. The 20 bundled
+WebPs total 1,472,726 bytes. Fresh canonical captures and source verification cover all
+five cities, dark mode and 200% text; see the recorded visual review and verification.
+See [0.8.2 release notes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RELEASE_0_8_2.md) and [Dream Routes](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/DREAM_ROUTES.md).
+
+Today, Run Now, one native recorder, custom/repeated workouts, Live Coach and race
+preparation retain their existing behaviour. Spontaneous runs stay independent unless
+you explicitly associate them with a plan.
+
+Strength and Progress use summary dashboards with dedicated detail screens. The
+local catalogue has 220 canonical exercises, live name/alias search, favourites,
+recents and hide/archive choices. Sets and PBs support repetitions, duration and
+distance without invented reps. Every canonical exercise has original illustrated guidance, movement-specific
+instructions, cues, mistakes and accessible descriptions. All220 entries are checked
+by strict catalogue and packaged-resource tests; assets work offline.
+
+Retained legacy six-week gym blocks support 1–6 days, equipment/time constraints,
+experience, goals and running/strength priority. Versions retain old prescriptions;
+moves, skips and reductions require runner choice. Actual workouts stay separate.
+Progression advice uses actual sets and effort rather than weekly automatic loading.
+
+Home reuses weekly evidence in “How am I doing?”. Run detail offers explainable
+comparison; planned workouts show contextual briefings and one-off-move warnings.
+Existing Calendar, running coaching, Health Connect, shoes, weight, reminders and
+local backups remain supported. Direct Samsung scaffolding and its setting are
+removed; legacy preferences normalize without deleting imported history.
+
+See [feature status](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/DEVELOPMENT_PLAN.md), [programming rules](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/STRENGTH_PROGRAMMING.md),
+[training engine](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/TRAINING_ENGINE.md) and [phone checks](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/TEST_BUILD.md).
+Actual build/CI results are recorded in [VERIFICATION.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md).
+
+## Install the test APK
+
+[Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+is the rolling prerelease download produced only after the main workflow passes.
+The download follows verified main; its release notes identify the exact commit and
+API-35 package. Publication waits for the full API 28/35/36 matrix and canonical checks.
+No permanent stable release is created by merging this test update.
+
+These are **debug-signed test APKs**, not Play Store production packages. Actions
+artifacts for this candidate are named `Race-Day-Dreams-0.12.2-test1-debug-api-35`
+and contain `Race-Day-Dreams-0.12.2-test1-debug.apk`. The rolling download follows the
+latest verified main and identifies its own version/commit; a branch candidate is not
+silently published as main. Check [VERIFICATION.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md) and export a complete
+local backup before upgrading.
+Debug keys can differ between clean CI runners; reinstall may require backup/restore.
+GitHub artifact downloads require GitHub sign-in; the app requires no account.
+
+## App Preview
+
+Screenshots are real emulator renders of production UI with instrumentation-only demo
+data, not UI mockups. The current **433-image 0.12.2 gallery** was captured from source
+`f33fbfc5902ff0b2be8136ebb7ef491cd3fa51e4` after
+[workflow 43249755986](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43249755986)
+passed on APIs 28, 35 and 36: 13 guards, 538 full tests and 433 captures each. Guards also run
+inside the full suite and are not extra unique tests. Canonical commit `681df68` matches the
+SHA-verified API 35 artifact byte-for-byte. All 12 new views and 48 representative retained
+views were inspected against the separate owner references. See [verification](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md)
+and [visual review](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/VISUAL_REVIEW_0_12_2.md). No physical-device or human TalkBack pass
+is inferred from emulator screenshots.
+Canonical API-35 images and their source fingerprint are in
+[docs/screenshots](https://github.com/mmwiza1/Race-day-dreams/tree/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots). Capture automation commits images only
+after all three API jobs pass; see [SCREENSHOTS.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/SCREENSHOTS.md).
+
+| Exercise Library · dark | Advanced filters | Large-text results | Exercise tabs |
+| --- | --- | --- | --- |
+| ![Compact illustrated library](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/exercise-library-refined-dark.png) | ![Selected and wrapping filters](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/exercise-filters-refined.png) | ![Stacked large-text results](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/exercise-library-rows-refined-large-font.png) | ![Real exercise section tabs](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/exercise-detail-tabs-refined.png) |
+
+| Today | Weekly Plan | Live running | Dream Route |
+| --- | --- | --- | --- |
+| ![Today](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/home-material-brand-light.png) | ![Weekly Plan](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/training-plan.png) | ![Live running](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/live-refined-statistics.png) | ![Dream Route · London](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/dream-route-london.png) |
+
+| Recorded route | Ranked results | Weekly distance | Recorded heart rate |
+| --- | --- | --- | --- |
+| ![Offline recorded route](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/live-refined-route.png) | ![Ranked retained results](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/running-records-refined.png) | ![Weekly recorded distance](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/running-trends-distance.png) | ![Recorded heart rate](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/running-heart-rate.png) |
+
+| Strength Today | Programme templates | Dated programme preview | Workout suggestion |
+| --- | --- | --- | --- |
+| ![Strength Today](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/strength-home.png) | ![Programme templates](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/strength-templates.png) | ![Programme preview](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/strength-generated-preview.png) | ![Workout suggestion](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/strength-programme-progression.png) |
+
+Gym Now, exercise guidance, race preparation and accessibility captures remain in the
+[full actual-build gallery](https://github.com/mmwiza1/Race-day-dreams/tree/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots).
+
+The route is drawn from retained observations on an offline canvas, not street tiles.
+Dream Routes use versioned sourced geographic lines and original city illustrations,
+not official maps or navigation. Paris uses the annual Marathon de Paris2026 street itinerary with ODbL OSM geometry. Old assignments retain their original drawings.
+Physical sensor/audio behaviour still requires the Galaxy S24 checklist.
+
+| Gym preparation | Recorded strength | Recovery guidance | Storage control |
+| --- | --- | --- | --- |
+| ![Optional rest guidance](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/gym-rest-timer.png) | ![Recorded working-set trends](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/strength-analytics.png) | ![Evidence-backed recovery guidance](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/training-recovery.png) | ![Storage and recording detail](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/storage-management.png) |
+
+## Build and tests
+
+Use JDK 17 or 21, Android SDK 36 and Android Studio with Kotlin 2.0 support.
+The minimum Android version is API 28. Gradle 8.11.1 / AGP 8.9.2 are pinned.
+Set `ANDROID_HOME` or an untracked `local.properties` with your SDK directory.
+
+```sh
+./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
+./gradlew :app:connectedDebugAndroidTest
+```
+
+The first Android build needs dependency downloads. Pure Java domain tests and
+actual schema-DDL checks can also run offline:
+
+```sh
+sh scripts/test-domain.sh
+python3 scripts/test-schema.py
+```
+
+GitHub Actions builds, lints and runs the Android tests on API 28, API 35 and API 36.
+Each job uploads a debug APK and device-test report. Exact verified results and
+remaining manual checks are recorded in [VERIFICATION.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/VERIFICATION.md).
+
+## Contributing and licensing
+
+Keep calculations independent of Android UI. Preserve planned and actual data,
+source identity and runner decisions. No commercial training schedules or GPL
+source are incorporated. Original code is [MIT](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/LICENSE); incorporated libraries
+and engineering references are tracked in [THIRD_PARTY.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/THIRD_PARTY.md).
+
+Read [ARCHITECTURE.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/ARCHITECTURE.md), [HEALTH_CONNECT.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/HEALTH_CONNECT.md),
+[TRAINING_ENGINE.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/TRAINING_ENGINE.md), [PRIVACY.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/PRIVACY.md),
+[TRAINING_SAFETY.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/TRAINING_SAFETY.md), and
+[LICENCES_AND_ATTRIBUTION.md](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/LICENCES_AND_ATTRIBUTION.md).
+
+## Health Intelligence + Run Engine test increment (0.6.0-test1)
+
+The current development branch adds optional personal sleep/RHR/HRV/steps context,
+a minimal foreground phone-GNSS recorder, real timestamped samples and interpolated
+splits, manual pause and optional conservative auto-pause, BLE HR/step-sensor cadence,
+GPX import/export and explicit Health Connect run-total write-back. No online map,
+voice coaching or account is required. See [recording and backup details](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/docs/RUN_ENGINE.md).
+
+Use both the normal app backup and **Back up raw recordings** ZIP before reinstall:
+standard JSON alone does not retain raw coordinates/events. Follow [phone checks](https://github.com/mmwiza1/Race-day-dreams/blob/d0ac9739911380cd625393da51f10725b07d4555/TEST_BUILD.md).
+Only a successful intended-commit Actions artifact is a verified installable build;
+0.6 artifacts are named `Race-Day-Dreams-0.6.0-test1-debug-api-35`. Preview images are
+regenerated by real instrumentation; no live GNSS/health evidence is fabricated.
+
+## Live Coach and race preparation (0.7.0-test1)
+
+Start a preserved planned workout with Live Coach. The same foreground recorder owns
+GPS, elapsed/active time and pause state for free, planned and race runs. Ordered
+distance/time segments transition deterministically, with optional offline Android
+speech and haptics. Pace guidance needs sustained smoothed evidence; it is suppressed
+while paused, unreliable, transitioning or using hilly effort-based race strategy.
+Finishing opens actual history; original prescriptions and per-step evidence remain.
+
+Race Day keeps your target distinct from an explainable estimated range. Predictions
+require multiple recent independent performances and distance-appropriate endurance.
+Official chip time can be entered separately from GPS totals. No goal is changed.
+
+Short original warm-ups/cool-downs and five mobility routines have text instructions
+and original bundled exercise illustrations. Completion is optional support, never a
+calendar workout or training-load/adherence target. Dream Routes preserve a stable
+marathon-equivalent segment of a versioned geographic course, with original decorative
+city artwork. They are independent visualisations, not official maps or navigation;
+no physical-location claim is made.
+
+Home → Record a run → Route files now offers a **complete backup** ZIP containing
+validated app JSON and checksummed raw recordings, restored in one SQLite transaction.
+Legacy JSON and raw archive readers remain supported. Export requires finishing or
+recovering any unfinished run; an emergency raw archive remains available separately.
+See TEST_BUILD.md and docs/LIVE_COACH.md for physical-device checks and explicit limits.
+
+| Live workout | Race preparation | Optional mobility |
+| --- | --- | --- |
+| ![Actual Live Coach UI using an instrumentation-only deterministic trace](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/live-coach.png) | ![Race goal and strategy](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/race-day.png) | ![Original movement support](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/mobility.png) |
+
+| Attached warm-up | Offline marathon equivalent |
+| --- | --- |
+| ![Warm-up guide](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/warm-up.png) | ![Dream Route · London](https://raw.githubusercontent.com/mmwiza1/Race-day-dreams/d0ac9739911380cd625393da51f10725b07d4555/docs/screenshots/dream-route-london.png) |
+
+The live-workout capture uses deterministic instrumentation-only engine input, not a
+claim of physical GPS testing. Dream city artwork is atmospheric; equivalent sections
+use the preserved geographic course rather than claiming the runner visited that city.

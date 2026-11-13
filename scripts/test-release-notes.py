@@ -63,6 +63,22 @@ class ReleaseNotesTest(unittest.TestCase):
         positions = [result.index(section) for section in ordered]
         self.assertEqual(positions, sorted(positions))
 
+    def test_previews_use_existing_commit_pinned_images_and_direct_download(self):
+        folder = self.root / 'docs/screenshots'
+        folder.mkdir()
+        for name in ('home-material-brand-light.png', 'exercise-library-refined-dark.png',
+                     'running-trends-distance.png', 'training-recovery.png'):
+            (folder / name).write_bytes(b'unit-test-image-path')
+        result = notes.render(self.root, self.sha, self.url, development=True)
+        self.assertEqual(4, result.count('<img '))
+        self.assertIn('/releases/download/development/Race-Day-Dreams-0.8.1-test1.apk', result)
+        self.assertIn('/' + self.sha + '/docs/screenshots/', result)
+        self.assertNotIn('src="docs/', result)
+        self.assertIn('synthetic demonstration records', result)
+        (folder / 'training-recovery.png').unlink()
+        with self.assertRaises(ValueError):
+            notes.render(self.root, self.sha, self.url, development=True)
+
     def test_tag_mismatch_is_rejected(self):
         for tag in ('v0.8.0-test1', 'main', 'development', 'v0.8.1', 'v0.8.1-test1;false'):
             with self.subTest(tag=tag), self.assertRaises(ValueError):

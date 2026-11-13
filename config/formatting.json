@@ -240,6 +240,10 @@
     "app/src/androidTest/java/org/racedaydreams/coach/LiveRunningRefinementTest.kt",
     "app/src/main/java/org/racedaydreams/coach/CoachDesign.kt",
     "app/src/main/java/org/racedaydreams/coach/ExerciseLibraryComponents.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/ExerciseLibraryDesignTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/ExerciseLibraryDesignTest.kt",
+    "domain/src/main/java/org/racedaydreams/domain/presentation/AthleteLanguage.java",
+    "app/src/main/java/org/racedaydreams/coach/strength/PlainWorkoutTarget.kt",
+    "domain/src/test/java/org/racedaydreams/domain/presentation/AthleteLanguageTestSuite.java",
+    "app/src/androidTest/java/org/racedaydreams/coach/PlainEnglishUiTest.kt"
   ]
 }

@@ -255,6 +255,9 @@ internal fun GymWarmupCard(
             Text(if (open) "Optional warm-up ▴" else "Optional warm-up ▾")
         }
         if (open && suggestion != null) {
+            Text(
+                "Warm-up sets are optional practice before your main sets. Use a comfortable movement and record only what you actually do."
+            )
             Text(suggestion.instruction())
             Text("These are practice ideas, not recorded sets. Review and edit them before saving.")
             suggestion.ramps().forEach { ramp ->

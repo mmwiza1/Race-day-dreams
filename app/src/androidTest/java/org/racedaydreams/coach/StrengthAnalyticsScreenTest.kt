@@ -107,7 +107,9 @@ class StrengthAnalyticsScreenTest {
         compose.onNodeWithText("View exercise evidence").performScrollTo().performClick()
         compose.onNodeWithText("6 recorded repetitions").performScrollTo().assertIsDisplayed()
         compose
-            .onNodeWithText("360.0 kg × repetitions · this exact external-load exercise only")
+            .onNodeWithText(
+                "360.0 kg × repetitions · total recorded weight across repetitions for this exercise only"
+            )
             .performScrollTo()
             .assertIsDisplayed()
         compose.onNodeWithText("Hide exercise evidence").performScrollTo().performClick()

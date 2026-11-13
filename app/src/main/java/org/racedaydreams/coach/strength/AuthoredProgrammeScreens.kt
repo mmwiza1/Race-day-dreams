@@ -65,7 +65,7 @@ internal fun AuthoredProgrammeWorkout(
             workout.definition().slots().forEach { slot ->
                 SemanticCard(Tile.Strength) {
                     Text(slot.exercise().name(), style = MaterialTheme.typography.titleLarge)
-                    Text(gymTargetDescription(slot))
+                    PlainWorkoutTarget(slot)
                 }
             }
             workout.notes()?.let { Text(it) }

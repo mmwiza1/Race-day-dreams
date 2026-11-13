@@ -1,3 +1,149 @@
+# 0.12.3-test1 — software and visual acceptance verified
+
+[Workflow43397017353](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43397017353)
+completed SUCCESS at source`47604dde2fbb175ad3063a67c97666d29ddac584`.
+EACH API28/35/36 passed25early guards,543unique unfiltered instrumentation tests and451strict
+actual-build PNGs, with no skipped/failed tests. Guards are repeated in the full suite and are
+not additional unique tests. All completed build logs inspected. Domain700,189checks/48suites
+(including81presentation checks), schema75, backup/restore/retention, build/lint, formatting,
+release10, publisher7, showcase5, runner13 and capture-validator23 checks passed. All220canonical
+and14routine guides remain complete. Formats remain SQLite19/rootJSON13/raw3/package1.
+
+Canonical`a2b20ca` contains all451API35artifact PNGs byte-for-byte; source fingerprint
+`e2cfd08d05185f27e7889a0ed82b4e11e92b6f11ec244c313ed4581d123e57a9` matches actual app/capture source.
+All three artifactZIPs were independently downloaded, source/size/digest validated and extracted:
+
+| API | Artifact | ZIP bytes | SHA-256 |
+| --- | --- | --- | --- |
+|28|14024802042|194,659,864|8db3a1681904e7f9fd4614dd5ae7fbb00dc34b92352c504aac430b59a85e5df5|
+|35|14024788542|59,745,885|4e08df8c2ee77eb32b682da1d696f32f94740beb3f9e7d48bdbd26a635a05dc8|
+|36|14024607825|59,661,215|ec58bb8d02fd0162e09d94fa591553a621069e9e5e78c0bc703b08943dba16eb|
+
+Actual light/dark/200% review is documented in [VISUAL_REVIEW_0_12_3.md](docs/VISUAL_REVIEW_0_12_3.md).
+The API28crop and transient native statusglyph capture defects are fixed and verified in original
+full1080x1920frames. No screenshot repainting/cropping/rescaling, arbitrary delay, weaker test or
+production Activity change. README branch rendered at1280/390/320px;16real images decode per mode,
+all five feature groups have adjacent direct downloads and the article has no horizontal overflow.
+
+This is software/visual acceptance, not a claim of final-head merge/main publication. A final
+coherent documentation commit must pass exact-head CI before owner-authorised squashmerge;
+then actual merged-main CI, public0.12.3versioned/aliasAPK/SHA bytes and README/release rendering
+must be verified. Physical GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, HealthConnect/BLE
+and OEM audio/background/battery/rotation remain UNPERFORMED. Older checkpoint notes below
+are historical; they do not reopen corrected failures or supersede current evidence.
+
+# 0.12.3 — API28 full-frame correction verified; final native contrast readiness pending
+
+Source3614780/workflow43335908577 passed543fulltests/451captures on API28/35. API36’s first
+attempt was blocked BEFORE tests by a confirmed com.android.launcher3 startup ANR; only that
+job was rerun on the unchanged head. Attempt2job131771715225 passed, and the workflow completed
+SUCCESS, with original platform-focus guards/timeouts retained. No app assertion was bypassed.
+Canonicalfe35c76 identifies fingerprint6df2b3cfa78bee60b5d774176ec06d051d83f22b0ac47044cc515bdcb0b02936.
+
+Native API28artifact13999120642 verified at194,824,075ZIPbytes/SHA256
+165d427aad0bd2c9df6cf4533e7d174bf31d118f63e117411939ad0fb63d7b9d. All451PNGs are whole physical
+1080x1920frames;18three-mode views and3expanded native originals were opened. The earlier severe
+crop is fixed: full text/control width and genuine letterboxing remain, with no editing/rescaling.
+API35artifact13999200525 metadata:59,833,148bytes/SHA256
+b099a0ccf43ae60110c7bed3bf1496bf6a62d2366c5e0c96d5a224597387fb33.
+
+Pixel review found one remaining capture-readiness issue: the FIRST large-text native-permission
+frame had white statusglyphs on a light surface, while its subsequent frame already had correct
+icons. A451-image scan found no other light-surface case. The test now awaits actual rendered
+native status contrast and matching surface within20s, retaining the genuine full PNG and all
+existing UI assertions. No arbitrary sleep/image manipulation. Speculative Activity changes were
+removed; production code is unchanged. Final-source local APK/testAPK/lint passed75tasks/3m32s. Capture-validator23, runner13, release10
+and pinned125Kotlin/161Java formatting checks pass. Runtime/visual acceptance remains pending.
+Earlier speculative-style build success is not validation of this final test-only fix.
+
+No merge or0.12.3public main APK is claimed. Physical-device acceptance remains unperformed.
+
+# 0.12.3 — software gate green; API28 capture geometry blocks visual acceptance
+
+Source1a00372/workflow43330113881 passed25guards/543fulltests/451captures on EACH API28/35/36.
+All completed logs inspected; format/guidance/domain/schema/backup/build/lint/script gates green.
+Canonicalb8cb249 equals all451API35artifact13995658358 PNGs byte-for-byte (59,660,278bytes;
+SHA256cebb31820b1308c8a890040027ced3609b3d3ecf31860d9d3ae67562179d5c90), fingerprint
+39db8578fd78c85242ac2d76636a422249a9b62658433a0d1c277196459a6de7. Actual API35review opened36
+frames covering new health/plan/backup and existing exercise/gym/analytics/storage/recovery modes.
+
+API28artifact13996771151 ZIP verified at70,619,283bytes/SHA256
+62474a7096773c2b24ae8b5863093bc2505a080d7b5504f7d8efc1992f155abb. Native review found540x1200
+screens cropped from the letterboxed physical1080x1920display, with a108px black left strip and
+cut-off content. Software assertions and PNG integrity do not establish visual acceptance.
+Official Android9 UiAutomation requests getRealSize as a crop; native screencap requests the full
+compositor (AOSP android-9.0.0_r61 core/java/android/app/UiAutomation.java and
+cmds/screencap/screencap.cpp). A test-only API28 native-capture path now preserves the actual
+whole-frame PNG, asserts physical bounds and retains genuine letterboxing. No app/permission,
+layout/engine changes, no screenshot rescaling/repainting, no weaker assertions or delays.
+Corrected compilation, full gate and real API28pixel review are required before merge.
+
+Candidate API35APK artifact13996322582 verified against ZIPdigest
+450d0d47352dcb308aa74555ebc3bd8026c05076801e83cd6ea71bd72c1d8688:55,659,946APKbytes,
+SHA25686b56d008aed840d0a77614faff03e187646aa0a02de2de9bce278b56474bcc5. It is NOT published main.
+Physical testing remains unperformed; no merge/new0.12.3public APK is claimed. Earlier checkpoint
+entries below remain historical and do not override the API28visual blocker.
+
+# 0.12.3-test1 — verified presentation checkpoint, final showcase gate pending
+
+PR #22, branch `feature/0.12.3-plain-language-github-showcase`, version0.12.3-test1/code19.
+[Workflow43295666206](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43295666206)
+completed SUCCESS at source`c3d4ef9ebb7e9de15cf20892cb2819514ee3d0bd`.
+Each API28/35/36 passed24early guard cases, all542unique instrumentation cases and439authentic
+captures. The guards are repeated within the unfiltered suite, not extra unique tests.
+All three completed job logs were inspected. Earlier failures were corrected without removing
+numeric/effort/history/cleanup assertions or adding delays: separate exact-target disclosure
+rows, modal-specific screenshot selectors and updated complete caption/date expectations.
+
+Local domain700,189checks/48unique suites (81new presentation checks), schema75, release10,
+publisher7, capturevalidator23, runner13, pinned125Kotlin/161Java formatting and build/lint passed.
+All220canonical and14routine exercise guides remain complete. Schema19/rootJSON13/raw3/package1,
+algorithms, actuals, history, permissions, navigation and icon remain unchanged.
+
+Canonical1c39338 safely preserves all439API35PNGs byte-for-byte from artifact13980697835:
+58,762,193bytes, SHA256`c84b57bdd258b253932e4de644e3bf9aae6de42f1f8af4318cd7784ef186ed9d`.
+API36artifact13979809634 was independently downloaded/verified:58,708,351bytes,
+SHA256`6a69eab9ffe4a7fc31523845e21582acf65165380028d82e8a1a63b05850980b`.
+Eighteen exercise/gym/analytics/storage/backup/Home light/dark/200% frames were opened on labelled
+sheets, plus native large-text detail/target/backup views. Text wraps and controls remain readable;
+long sections scroll. The first backup capture showed the heading at the bottom: its next capture
+now aligns to the real heading. Existing forced-narrow platform navigation-strip clipping remains
+a hardware/rotation limitation, not a claimed physical pass.
+
+The local final showcase candidate adds12actual health/plan/disclosure frames, for expected451
+captures and543tests/API; its runtime/visual verification is still pending. Compilation/lint passed
+75tasks/3m4s, then backup-alignment test compilation/lint57tasks/3m6s. Five local showcase tests pass.
+README is held until public alias verification survives the concurrent owner main publication.
+Source c3d bootstrap/public downloads matched successful d0ac973 main:versioned+stable APKs both
+55,643,562bytes/SHA256`bf9baebfe6b0fdb81a82acf42d1b2264fbd104283d01b2eb1209d3cf08a4df62`;
+checksums use their own filenames. New main14f8adf policy work is preserved; its old publisher may
+remove aliases, so final alias/publication proof must be refreshed after that run completes.
+
+Main14f workflow43296993191 subsequently completed SUCCESS. Its old publisher removed the
+aliases; rerunning ONLY the bootstrap job (attempt2/job131475972177) verified that new main’s
+API35artifact13981886999 before restoring the pair. Independent public downloads now match:
+55,643,562bytes/SHA256`2023f9addc512d43f474add6d864a7a93f75f8e6d0834a37ad1b388e71d7ca88`
+for BOTH names, with correct own-filename checksums, version18/minAPI28/noINTERNET. No older
+publisher remains active. The source-bound 0.12.3 showcase candidate can now advertise this
+verified rolling link. The0.12.3 APK remains gated until actual final-main acceptance.
+
+The first expanded-capture gate43303095755 failed before its full suite. API28/35 each passed24of25
+guards; the new capture navigated from health back only to Settings, then attempted Plan. The test
+now follows the actual second Back to Home and its existing readiness before selecting Plan.
+API36 was blocked before tests by a confirmed com.android.systemui startup ANR; the original
+platform-focus assertion remains intact. No arbitrary wait, assertion removal or timeout change.
+Corrected-source runtime acceptance remains mandatory; the unchanged README browser proof stands.
+
+The next candidate3f74285/workflow43306126703 passed24of25guards on EACH API but the same new
+capture still selected Plan by visible text at200%, when navigation intentionally uses accessible
+icon labels. It now reuses clickOriginalNavigationTab, the existing visible/clickable text-or-content-
+description helper. All other guards passed; no app/navigation, timeout or assertion changes.
+Local corrected instrumentation compilation passed27tasks/2m6s. Fresh runtime acceptance remains required.
+
+No final543/451pass, final-head merge, new0.12.3public APK or physical acceptance is claimed yet.
+GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE and OEM audio/battery/
+background/rotation checks remain unperformed. Older records below are historical checkpoints.
+
 # 0.12.2-test1 — verified software and visual source
 
 [PR #21](https://github.com/mmwiza1/Race-day-dreams/pull/21), branch

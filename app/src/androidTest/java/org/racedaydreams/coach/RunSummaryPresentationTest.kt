@@ -50,9 +50,9 @@ class RunSummaryPresentationTest {
         compose.onNodeWithText("0:10:00").assertExists()
         compose.onNodeWithText("10:00/km").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Moving time: 0:08:20").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("Average recorded HR").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Average recorded heart rate").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("140.0 bpm").assertExists()
-        compose.onNodeWithText("Maximum recorded HR").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Maximum recorded heart rate").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("160.0 bpm").assertExists()
         assertEquals(140.0, recorded.averageHeartRate()!!, 0.0)
     }
@@ -76,7 +76,7 @@ class RunSummaryPresentationTest {
             .performScrollTo()
             .assertIsDisplayed()
         compose.onNodeWithText("0 bpm").assertDoesNotExist()
-        compose.onNodeWithText("Maximum recorded HR").assertDoesNotExist()
+        compose.onNodeWithText("Maximum recorded heart rate").assertDoesNotExist()
     }
 
     private fun record(distance: Double?, average: Double?, maximum: Double?): ActivityRecord {

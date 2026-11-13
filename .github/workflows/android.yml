@@ -33,13 +33,15 @@ jobs:
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
       - name: Require current canonical screenshots on other branches
-        if: github.head_ref != 'feature/material3-library-spacing-refinement'
+        if: github.head_ref != 'feature/0.12.3-plain-language-github-showcase'
         run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
           sh scripts/test-domain.sh
           python3 scripts/test-schema.py
           python3 scripts/test-release-notes.py
+          python3 scripts/test-development-assets.py
+          python3 scripts/test-showcase.py
           python3 scripts/test-android-gate.py
           cmp THIRD_PARTY.md app/src/main/assets/third_party.md
           python3 scripts/generate-berlin-geometry.py --check
@@ -87,13 +89,13 @@ jobs:
       - name: Prepare named test APK
         run: |
           mkdir -p build/distributions
-          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.12.2-test1-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.12.3-test1-debug.apk
           stat --format='APK_BYTES=%s' app/build/outputs/apk/debug/app-debug.apk
       - name: Upload verified debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: Race-Day-Dreams-0.12.2-test1-debug-api-${{ matrix.api-level }}
-          path: build/distributions/Race-Day-Dreams-0.12.2-test1-debug.apk
+          name: Race-Day-Dreams-0.12.3-test1-debug-api-${{ matrix.api-level }}
+          path: build/distributions/Race-Day-Dreams-0.12.3-test1-debug.apk
       - name: Upload actual-build screenshots
         uses: actions/upload-artifact@v4
         with:
@@ -167,14 +169,14 @@ jobs:
   canonical-screenshots:
     needs: [build, formatting]
     # Capture publication is confined to this same-repository feature branch, never main.
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/material3-library-spacing-refinement' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request' && github.head_ref == 'feature/0.12.3-plain-language-github-showcase' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: feature/material3-library-spacing-refinement
+          ref: feature/0.12.3-plain-language-github-showcase
           fetch-depth: 1
       - uses: actions/download-artifact@v4
         with:
@@ -197,7 +199,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/screenshots
           git commit -m 'Capture canonical API 35 screenshots from verified test build'
-          git push origin HEAD:feature/material3-library-spacing-refinement
+          git push origin HEAD:feature/0.12.3-plain-language-github-showcase
       - name: Reviewable synthetic screenshot bytes
         # Text-only repository connectors can reconstruct these real PNGs for review.
         # Only instrumentation fixture renders are logged; no user data is available.
@@ -208,6 +210,32 @@ jobs:
           for image in sorted(Path('docs/screenshots').glob('*.png')):
               print('SCREENSHOT_REVIEW ' + json.dumps({'path': str(image), 'base64': base64.b64encode(image.read_bytes()).decode()}))
           PYSCREEN
+
+  bootstrap-verified-download-alias:
+    needs: [build, guidance-completeness, formatting]
+    # Same-repository owner branch only. Copies the already verified MAIN release, never PR APKs.
+    if: github.event_name == 'pull_request' && github.head_ref == 'feature/0.12.3-plain-language-github-showcase' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: release-publication
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify published main artifact and bootstrap only its download aliases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 scripts/bootstrap-development-alias.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-main-alias-bootstrap
+          path: build/alias-bootstrap/verification.json
+          if-no-files-found: error
 
   publish-test-release:
     needs: [build, guidance-completeness, formatting]
@@ -232,7 +260,7 @@ jobs:
           python3 scripts/verify-dream-screenshots.py docs/screenshots
       - uses: actions/download-artifact@v4
         with:
-          name: Race-Day-Dreams-0.12.2-test1-debug-api-35
+          name: Race-Day-Dreams-0.12.3-test1-debug-api-35
           path: build/verified-apk
       - name: Publish verified APK and maintained release notes
         env:
@@ -254,21 +282,27 @@ jobs:
             live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
             if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
             python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --development --output build/release-notes.md
-            if gh api "repos/$GH_REPO/git/ref/tags/development" >/dev/null 2>&1; then
-              gh api --method PATCH "repos/$GH_REPO/git/refs/tags/development" -f sha="$BUILD_SHA" -F force=true
-            else
-              gh api --method POST "repos/$GH_REPO/git/refs" -f ref='refs/tags/development' -f sha="$BUILD_SHA"
-            fi
+            alias='Race-Day-Dreams-latest-test.apk'
+            python3 scripts/development-assets.py --prepare "$apk" --version "$version" --directory build/public-assets
+            # Preserve the last verified version and any owner-managed release assets.
+            # Both aliases and versioned files come from this same gated API35 APK.
+            live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
+            if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
             if gh release view development >/dev/null 2>&1; then
-              gh release edit development --title 'Latest Development Build' --notes-file build/release-notes.md --prerelease --latest=false
-              gh release upload development "$apk" "$apk.sha256" --clobber
+              gh release upload development build/public-assets/* --clobber
             else
-              gh release create development "$apk" "$apk.sha256" --verify-tag --title 'Latest Development Build' --notes-file build/release-notes.md --prerelease --latest=false
+              if ! gh api "repos/$GH_REPO/git/ref/tags/development" >/dev/null 2>&1; then
+                gh api --method POST "repos/$GH_REPO/git/refs" -f ref='refs/tags/development' -f sha="$BUILD_SHA"
+              fi
+              gh release create development build/public-assets/* --verify-tag --title 'Latest Development Build' --notes-file build/release-notes.md --prerelease --latest=false
             fi
-            # Keep one rolling development release; leave immutable version releases alone.
-            gh api "repos/$GH_REPO/releases/tags/development" --jq ".assets[] | select(.name != \"$apk\" and .name != \"$apk.sha256\") | .id" | while read -r asset; do
-              gh api --method DELETE "repos/$GH_REPO/releases/assets/$asset"
-            done
+            gh release download development --pattern "$apk" --pattern "$apk.sha256" --pattern "$alias" --pattern "$alias.sha256" --dir build/published-check --clobber
+            expected=$(sha256sum "$apk" | cut -d ' ' -f1)
+            python3 scripts/development-assets.py --verify --version "$version" --directory build/published-check --expected-sha "$expected"
+            live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
+            if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
+            gh api --method PATCH "repos/$GH_REPO/git/refs/tags/development" -f sha="$BUILD_SHA" -F force=true
+            gh release edit development --title 'Latest Development Build' --notes-file build/release-notes.md --prerelease --latest=false
           else
             python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --tag "$BUILD_TAG" --output build/release-notes.md
             # Permanent tags/releases are never overwritten, including accidental retries.

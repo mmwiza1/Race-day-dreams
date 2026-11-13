@@ -1,3 +1,20 @@
+# Plain-English and GitHub showcase — 0.12.3-test1
+
+Source47604dd/workflow43397017353 passed25guards/543unique fulltests/451authentic captures on
+EACH API28/35/36. Canonicala2b20ca matches all451verifiedAPI35artifact images. Actual light/dark/
+200% screenshots were reviewed, including full nativeAPI28geometry and readable statusglyphs.
+Current exact-head/main/publication evidence is in VERIFICATION.md/CONTINUE_CODEX.md; a PR APK
+is not a published-main build. See docs/VISUAL_REVIEW_0_12_3.md for scope and limitations.
+
+Owner physical checks remain UNPERFORMED: read exercise tasks and exact target disclosures;
+log actual sets with RPE or repetitions-left inputs; compare reference versus actual weights;
+review planned running effort versus recorded pace/timing; open health measurement explanations;
+read complete-backup/JSON distinctions and permanent-loss cleanup warnings. Check light/dark,
+device/branded colours,200%/narrow windows, TalkBack/focus/keyboard/scrolling. Verify stable APK and
+versioned APK/checksums agree before installing; make a complete backup before a signing-conflict
+reinstall. All existing outdoorGPS, realHealthConnect/BLE, audio/background/battery/OEM checks below
+remain separate physical tasks. No emulator run establishes those results.
+
 # Material 3 layout and library refinement — 0.12.2-test1
 
 Source f33fbfc passed538full tests/433 captures each API 28/35/36 and direct light/dark/real 320dp at 200%

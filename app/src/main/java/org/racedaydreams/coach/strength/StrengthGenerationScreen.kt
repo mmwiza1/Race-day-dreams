@@ -315,7 +315,7 @@ fun StrengthGenerationScreen(
                                     "${index + 1}. ${slot.exercise().name()}",
                                     style = MaterialTheme.typography.titleLarge,
                                 )
-                                Text(gymTargetDescription(slot))
+                                PlainWorkoutTarget(slot)
                                 if (editable) {
                                     val retained =
                                         state.baseProgramme?.let {
