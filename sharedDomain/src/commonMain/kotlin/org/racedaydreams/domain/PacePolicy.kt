@@ -1,6 +1,7 @@
 package org.racedaydreams.domain
 
 import kotlin.math.floor
+import org.racedaydreams.domain.activity.PerformanceDistance
 
 /** Existing deterministic pace rules without java.time or platform locale dependencies. */
 object PacePolicy {
@@ -42,8 +43,27 @@ object PacePolicy {
             if (units == UnitSystem.METRIC) distance.kilometres()
             else distance.kilometres() / KILOMETRES_PER_MILE
         // Same rounding as Java Math.round for these bounded, positive inputs.
-        val secondsPerUnit = floor(seconds / unitsInRace + 0.5).toLong()
+        val secondsPerUnit = roundedSeconds(seconds / unitsInRace)
         return "${secondsPerUnit / 60}:${twoDigits(secondsPerUnit % 60)}/${if (units == UnitSystem.METRIC) "km" else "mi"}"
+    }
+
+    /**
+     * Same recorded-performance pace conversion, including second carries and overflow clamping.
+     */
+    fun performancePace(seconds: Double, distance: PerformanceDistance, units: UnitSystem): String {
+        require(seconds.isFinite() && seconds > 0) { "A pace needs positive elapsed time." }
+        val scale = if (units == UnitSystem.IMPERIAL) 1609.344 else 1000.0
+        val value = seconds * scale / distance.metres()
+        val rounded = roundedSeconds(value)
+        return "${rounded / 60}:${twoDigits(rounded % 60)}/${if (units == UnitSystem.IMPERIAL) "mi" else "km"}"
+    }
+
+    private fun roundedSeconds(value: Double): Long {
+        if (value >= Long.MAX_VALUE.toDouble()) return Long.MAX_VALUE
+        // Adding 0.5 first can round a just-below-half input up, or an already integral
+        // large Double to the next even integer. Compare the exact fractional part instead.
+        val whole = floor(value)
+        return whole.toLong() + if (value - whole >= 0.5) 1 else 0
     }
 
     private fun twoDigits(value: Long): String = value.toString().padStart(2, '0')

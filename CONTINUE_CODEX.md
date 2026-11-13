@@ -56,94 +56,114 @@ Existing official Material 3 APIs were reused without upgrading runtime dependen
 
 ## Active work — experimental shared Android/iOS application
 
-The owner's13November request authorises KotlinMultiplatform/ComposeMultiplatform migration,
-Java-domain replacement, sharedexistingUI, HealthConnect/HealthKit, platformstorage/services,
-functioningAndroid+iOS builds and eventual gatedmerge/testpublication. This supersedes the old
-"no iOS without new request" boundary. No versionbump or publication until cross-platformready.
-Do NOT merge this incomplete migration, even if its focused checkpoint checks pass.
+The owner's 13 November request authorises Kotlin Multiplatform / Compose Multiplatform,
+replacement of the Java domain implementation, shared existing UI, Health Connect / HealthKit,
+platform storage/services and functioning Android AND iOS builds. This supersedes the earlier
+no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
+incomplete migration merely because a focused checkpoint passes.
 
-- Branch`experiment/android-ios-kmp-compose`, from latestmain85e1c3903b61f1d45e444d120ba1a701ad3a2c36.
-  First verifiedbatch040ea9f801117bb96d54acbe4427c26943d80142 is committed/pushed; DRAFT [PR24](https://github.com/mmwiza1/Race-day-dreams/pull/24). Separate ownerCI PR23 untouched.
-  Versions0.12.3-test1/code19 and dataformats19/13/3/1 remain unchanged. No artifacts published.
-- Implemented actual Android-used sharedDomain/commonMain:14existing enums/bodyunit conversions
-  plus deterministicPacePolicy; original15Javafiles removed. ExistingJavaAPI PaceCalculator is
-  now a Kotlin/JVM timeadapter delegating only to commonpolicy.204Java domainfiles remain.
-- SharedUi/commonMain owns the EXISTING spacing/chips/tabs, CoachPage/cards/buttons/headings,
-  WhyDetails and brandedtheme/typography/shapes. Androidconsumes it directly, retainingAndroid
-  dynamiccolour/preferences/systembarintegration. No redesigned or alternative demoapp created.
-  Kotlin2.1.21/ComposeMultiplatform1.8.2 pinned; AGP8.9.2 retained. Formatting/sourcefingerprint
-  includes sharedpaths/buildinputs; third-party notices mirrored. No missing legacytest assertions.
-- Verified: baseline700,189domainchecks/48suites and schema75; afterconversion all700,189legacy
-  checks pass unchanged,3newcommonJVMtests pass. Final facadefix APK/testAPK/lint BUILD SUCCESSFUL
-  122tasks/5m32s (`/workspace/scratch/kmp-facade-build.log`); APK58,836,422bytes/noINTERNET.
-  Earlyrootpluginresolution failure was localGradle ignoring inheritedproxy; publicPOM200proved
-  available, localGRADLE_USER_HOME properties now use inheritedproxy/systemtrust (not committed).
-  Next compile exposed top-levelJVMfacadecollision: renamed commonfileSharedCoachComponents.kt;
-  instrumentation now compiles, no source/test functionality removed. RuntimeUI stillpendingCI.
-- Focused CI: new multiplatform.yml runs commonJVM/legacydomain/schema/Androidcompile/lint and
-  existingMaterialTheme/PlainEnglish/StrengthAnalytics API35tests; macOSrunner attempts actual
-  sharedNative simulator tests/framework for hostarchitecture. This is NOT an iOSapplication build.
-  ExperimentalDRAFT alone skips oldfullAndroidmatrix; READY PR/main retain fullgate. Existing
-  fullAndroid default guards/assertions/timeouts stay unchanged. OptionalRDD_FOCUSED_CLASSES is
-  used ONLY by experimentaljob;15runnerhelpertests pass including cleanup/exit/defaultfullflow.
-  Existing release10/capture23 pass. No final screenshots or hardware pass claimed.
-- First checkpointCI43431989080 SUCCESS on actualGitHubmacOS/Android: Xcode26.6/arm64 compiled
-  sharedUi iOSsimulator framework and ran sharedDomainNative tests; Android9focusedexisting
-  MaterialTheme/PlainEnglish/StrengthAnalytics instrumentation tests passed. Nativeframework is
-  NOT a completeiOSapp. No macOSinfrastructureblocker currently. Fullreleasegates not run yet.
-- Second batch COMMITTED/PUSHED afc8e4ea822f88b524f6d3709e1ea538d757fc53: newsharedHealth KMPmodule, kotlinx-datetime0.6.2 exacttimestamp
-  bridges, sharedtypedstaging/duplicate/conflict/authorization-window rules and11commonJVMtests.
-  AndroidHeight/Weightreading now delegates to realsharedHealthAndroidreader; existinggateway
-  retainslocking/historypermissionrecheck/DTOvalidation/transaction andweightmissingoffsetUTC.
-  NativeHealthKitBodyReader uses realreadonlyHKqueries, cancellableboundedreads andauthorization
-  sheet. AppleCOMPLETED doesnotmeanreadgranted; visible-onlyempty/nonempty snapshots CANNOT
-  replace/import-delete retainedwindows. NativeHealthKitcode has NOT compiled/beenprovider-tested
-  yet. No iOSapphost/entitlements/permissionusage strings yet. Preserve all uncommitted files.
-- Currentverification: final `/workspace/scratch/kmp-health-policy-build.log` PASS160tasks/4m48s:
-  11sharedHealthJVMtests, APK/testAPK/lint. Sixsnapshot and5pagedpermission/revocation/failure/
-  bounded-read tests preserve existingpartialgrant behavior; SDKdriver delegates to commonpolicy.
-  Body imports retain original1000pages/500records perpage limits, qualifiedsource IDs andUTC
-  weightfallback. HC historypermission stillrechecked in originalgateway beforetransaction.
-  FocusedAndroidCI nowincludes realBodyMeasurementsRepository/HealthConnectGateway/BodyMeasurements
-  UI tests alongside prior9UIchecks. NativeHealthKitcode is NOT yet compiled; commit/push the
-  coherent healthbatch toSAMEPR24 after fastchecks and inspect that exactCI, correcting real
-  AppleAPIbinding errors rather than skips. Priorbaseline/domain/sharedUI checks remainvalid.
-  Then continue remainingfullscope; no feasibility/demo substitute or prematuremerge/publication.
-- Latest actualCI43435064307: AndroidPASS28focusedtests inclbodyrepository/healthgateway/UI;
-  AppleFAIL only HealthKitBodyReaderNSDate constructors/category-propertybindings atlines131–137.
-  AllApplehealthquery APIs compiled up to that error; no infrastructureblocker. LOCALfix now
-  reuses existing kotlinx-datetimeDarwin toNSDate/toKotlinInstant instead of bespokeFoundation
-  calls;2realiosDateinteroperability tests added. Do not rerun unchangedafc8 or weaken tests.
-- Third batch LOCAL: SourceIdentity/PerformanceDistance converted to commonKotlin,2Java originals
-  removed (202remaining). Retains Javaaccessors/constants, originalrecordequality/hash/text,
-  exactwhitespace (validationdoesnotnormaliseIDs), immutableCORE order. OriginalJava versus
-  convertedJVM10line identity/distance parity output cmpMATCH; originalhashes testedincommon.
-  `/workspace/scratch/kmp-identities-build.log` PASS113tasks/2m47s:6sharedDomainJVMtests, all700,189
-  legacydomainchecks, APK/testAPKcompile. Three newidentity tests retain invalidinput assertions.
-  No lint/runtime/Nativepass yet for thisbatch. Preserve alluncommitted files.
-- Exactnext: review/commit the NativeDatefix+realidentityconversion to SAMEPR24 after localformat
-  checks; push and inspect new macOS/AndroidCI. UpdatePRbodyactualresults. Keepdraft until full
-  agreedappscope complete; sharedframework alone is not iOSapp. Continue actualdomain/UI/
-  storage/native-service migration after these concretecompilation failures are resolved.
-- Third checkpoint78805ecbea2df8174a42bc70e541eaa33bf4ec1d COMMITTED/PUSHED; actualCI43440356122
-  SUCCESS onAndroid andmacOS. Android28focusedtests passed; NativeHealthKitadapter/frame-work
-  compiled and bothcommonmodule suites plus2realNSDateinterop tests passed. NSDateissuefixed
-  by reusing kotlinx-datetimeDarwinadapters; no fakeSDKsurface or ignoredfailure. No physical
-  HealthKitpermission/provider tests or fulliOSappbuild claimed.
-- Fourth batch LOCAL: ProteinGuidance.java and PrimaryFocus.java replaced (200Javafiles remain).
-  Completeexistingproteineligibility/range/freshness/choice rules now common ProteinPolicy;
-  JVMProteinGuidance.kt retains existing accessor/factory APIs and returns originalBodyWeight
-  evidence objects. domain now mixedKotlin/JVM+remainingJava, sharingcommonpolicy; no duplicate
-  businessengine. CommonPrimaryFocus usesnullableparsing; JavaSQLrepository wrapsOptional at
-  its boundary and19existingfocus-test assertions retain originalOptionalexpectations.
-  `/workspace/scratch/kmp-protein-build.log` PASS114tasks/3m1s:12commonDomainJVMtests (6newprotein/
-  focus tests), all700,189legacychecks, APK/testAPKcompile. Nativeandlintpendingforthisbatch.
-  Preserveuncommitted files; formatcheck, commit/pushSAMEPR24, inspect newNative/AndroidCI.
-- Remaining fullscope:200Javafiles to sharedKotlin; remaining Android-bound screens/ViewModels/
-  navigation/data sources into one sharedapp; HealthKit and retainedHealthConnect adapters,
-  cross-platformSQLite/backup/retention/permissions/recording/BLE/notifications; iOSapphost,
-  genuine end-to-end feature parity and Android+iOSbuilds; final fullplatform/regression/visual
-  gates before any version/release/merge. Current foundation is incomplete, not ready to merge.
+### Branch, baseline and completed checkpoints
+
+- Continue `experiment/android-ios-kmp-compose`; DRAFT [PR #24](https://github.com/mmwiza1/Race-day-dreams/pull/24).
+  Live main fetched this session: `85e1c3903b61f1d45e444d120ba1a701ad3a2c36`.
+  Preserve separate owner CI PR #23. No resets, replacement PRs or force pushes.
+- Version stays **0.12.3-test1 / code 19**; SQLite **19**, root JSON **13**, raw archive **3**,
+  complete package **1** unchanged. No experimental artifacts have been publicly released.
+- `040ea9f801117bb96d54acbe4427c26943d80142`: actual Android-used shared enums/units/pace policy;
+  existing shared theme, typography, shapes, chips, pages, cards and disclosures. Kotlin 2.1.21 /
+  Compose Multiplatform 1.8.2; notices mirrored. Existing Android dynamic colour/system bars remain.
+  JVM facade collision fixed by naming common file `SharedCoachComponents.kt`.
+  CI [43431989080](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43431989080) passed Android
+  and real Apple simulator shared tests/framework. A framework is NOT a complete iOS application.
+- `afc8e4ea822f88b524f6d3709e1ea538d757fc53`: shared body-read staging, immutable provenance,
+  pagination, permission checks, qualified identities; real Health Connect and HealthKit readers.
+  Android retains its original lock/history-permission recheck/DTO validation/transaction,
+  1000-page / 500-record limits and missing-weight-offset UTC fallback (height stays unknown).
+  Apple authorization completion does NOT prove read permission: visible-only empty/nonempty
+  HealthKit snapshots cannot replace windows or establish deletion of retained history.
+- `78805ecbea2df8174a42bc70e541eaa33bf4ec1d`: use tested kotlinx-datetime Darwin timestamp
+  converters, not unsupported NSDate constructors/category properties; two real Foundation tests.
+  SourceIdentity / PerformanceDistance moved to common Kotlin, stable original IDs/whitespace,
+  record accessors/equality/hash/text and immutable core order retained. Original/new JVM parity
+  output matched. Both jobs in [43440356122](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43440356122)
+  succeeded, including compiling the real HealthKit adapter and framework. No provider/device pass.
+- `4521bce59c3d6f51577e740c2d53dcc19daa7ec1`: complete existing ProteinPolicy and PrimaryFocus
+  shared in Kotlin; JVM ProteinGuidance adapter retains the actual original BodyWeight evidence.
+  Selection/conflict/source freshness/ranges remain intact (including null-focus 1.2–2.0,
+  30–250 kg applicability and 90-day boundary). Existing Java focus assertions retain Optional at
+  their persistence boundary. Domain now mixed Kotlin/JVM + Java, not a second business engine.
+  **Actual CI [43442780709](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43442780709) SUCCESS
+  on both Android and Apple**, plus formatting. Android passed 28 focused existing UI/health tests.
+
+### Current recovery batch — common timer, immutable evidence and more existing UI
+
+- Six more Java originals removed/replaced: Immutable, PerformancePace, GymRestTimer,
+  StrengthMeasurements, TrainingMetrics and PlanRegressionPolicy. **194 Java domain files remain.**
+- `sharedDomain/.../coaching/Immutable.kt` is the original shallow immutable-list/set contract,
+  with defensive copies/null rejection/no exposed mutation. Shared health snapshots reuse it,
+  rather than retaining duplicate local snapshot implementations.
+- Recorded-performance pace arithmetic now common `PacePolicy.performancePace`; the JVM
+  `PerformancePace.kt` adapter retains java.time.Duration and required-null boundary checks.
+  Preserve original multiply/divide evaluation order and Math.round saturation/half-boundaries.
+  Verified original Java returns **7:59/mi at 479.5 seconds**, 8:00 at 479.6. Do not algebraically
+  cancel ratios or restore floor(value + 0.5), which differs at sub-half and huge-Double edges.
+  A JVM differential test checks **22,110** combinations against original Math.round/formatting;
+  original-binary versus current-adapter output also `cmp` MATCH.
+- `sharedDomain/.../strength/GymRestTimer.kt` owns the existing monotonic, immutable countdown
+  and settings. Epoch changes/backwards clocks interrupt; only explicit resume adopts a new
+  clock. Actuals/prescriptions remain separate. The optional prescribed rest is projected as
+  nullable seconds by the two Android callers; no duplicate workout model or execution engine.
+- `StrengthMeasurementPolicy` shares existing seconds parsing/limits/overflow errors/duration
+  wording. JVM `StrengthMeasurements.kt` retains existing record/locale formatting. Differential
+  tests include Unicode digits, signs, overflow and exact original errors; common tests also
+  exercise Arabic/full-width digits on Native. Missing TrainingMetrics remain null, not zero.
+- Existing semantic tiles/cards and production rest controls moved to `sharedUi/commonMain`:
+  `SemanticTiles.kt`, `strength/SharedGymRestControls.kt`. Existing labels, shapes, colours,
+  enabled states and disclosures retained. Android `GymRestCard` only binds existing ViewModel,
+  notification permission and platform alert explanation. No redesigned/demo screen.
+- Expanded experiment-only focused CI to include existing `GymNowScreenTest` and
+  `GymToolsRepositoryTest`, in addition to prior 28 tests. Full release gate/default Android
+  guards/assertions remain unchanged; no version, publication or final screenshot claim.
+- Verified current fast gates: **28 shared-domain JVM tests**, **11 shared-health JVM tests**,
+  all **700,189 legacy checks / 48 suites**, schema **75**, Android runner helper **15**,
+  release notes **10**, formatter-tool **14**, pinned formatter **172 Kotlin / 156 Java**;
+  `git diff --check` clean. **APK + instrumentation APK + lint BUILD SUCCESSFUL, 167 tasks /
+  6m33s**, `/workspace/scratch/kmp-gym-final-build.log`. APK inspection confirms code19, minAPI28,
+  no INTERNET permission. Earlier focused compile failure (Long != Int zero) fixed to 0L, not weakened tests.
+  An attempted sandboxed Gradle daemon lacked socket permission; retry with task network access
+  started normally. This was not a source/test failure.
+
+### Exact next safe actions and remaining full scope
+
+1. Current batch is locally verified and being committed/pushed coherently to SAME draft PR #24.
+   Inspect actual branch/status/remote and that exact head's Android/Apple workflow before
+   repeating anything. Previous checkpoint Native success is not a pass for newly changed
+   common code/UI. Fix real CI failures; keep the PR description accurate.
+2. Verify Native common tests/framework and the expanded existing Android UI/repository tests
+   for this checkpoint. No current-batch Native/runtime pass is claimed before GitHub confirms it.
+3. Continue remaining Java-domain conversion and actual shared screens/navigation/state/data
+   sources, cross-platform typed SQLite/backup/retention, permissions, full HealthKit integration,
+   recording/BLE/notifications and an actual iOS app host with entitlements/usage strings.
+   Full Android/iOS parity and actual app builds are still incomplete. Framework-only success
+   must never be described as an iOS application or grounds for merging.
+4. Final required platform/regression/screenshot gates only once implementation is ready.
+   No premature version increment, publication or merge. Physical HealthKit, Health Connect,
+   GPS/BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
+
+### Reproducible local tooling / Apple verification
+
+- Linux has JDK `/workspace/jdk17`, SDK `/workspace/android-sdk`, Gradle cache
+  `/workspace/gradle-cache`, Android user home `/workspace/android-user`, Konan `/workspace/konan`.
+  Use `JAVA_HOME`, `ANDROID_HOME`, `GRADLE_USER_HOME`, `ANDROID_USER_HOME`, `KONAN_DATA_DIR` with
+  those paths; `./gradlew --no-daemon --project-cache-dir /workspace/scratch/kmp-gradle-project-cache
+  -Dorg.gradle.workers.max=2 -Pkotlin.compiler.execution.strategy=in-process ...`.
+- Local Gradle cache properties use inherited proxy/system CA trust; do not commit/expose them.
+  Gradle needs socket/network access even for its daemon. No local Xcode/KVM, but actual GitHub
+  **macOS / Xcode 26.6 / arm64 works**. Do NOT claim unavailable macOS infrastructure: workflow
+  `multiplatform.yml` already compiled/tested real Native modules and shared UI frameworks.
+- `scripts/test-domain.sh` uses Gradle `:domain:prepareOfflineTests` to retain the original Java
+  main-suite/audit harness with shared Kotlin dependencies, not a weakened substitute.
+  Shared sources/build inputs are included in formatting and screenshot source fingerprints.
 
 ## End-of-session handoff
 

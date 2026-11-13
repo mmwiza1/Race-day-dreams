@@ -725,7 +725,10 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                             GymRestTimer.start(
                                 execution.id(),
                                 UUID.randomUUID().toString(),
-                                GymRestTimer.suggestedSeconds(slot, tools.preferences()),
+                                GymRestTimer.suggestedSeconds(
+                                    slot?.target()?.restSeconds(),
+                                    tools.preferences(),
+                                ),
                                 now,
                             )
                     "pause" -> requireNotNull(old).pause(now)

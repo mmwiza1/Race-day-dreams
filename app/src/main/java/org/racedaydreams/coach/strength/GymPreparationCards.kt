@@ -29,7 +29,6 @@ internal fun GymRestCard(
     val context = LocalContext.current
     val prefs = state.restPreferences
     val timer = state.restTimer
-    var details by rememberSaveable { mutableStateOf(false) }
     val notificationPermission =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             model.restPreferences(
@@ -44,192 +43,36 @@ internal fun GymRestCard(
                 }
             )
         }
-    SemanticCard(Tile.Progress) {
-        Text(
-            "Optional rest timer",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.semantics { heading() },
-        )
-        val seconds = GymRestTimer.suggestedSeconds(slot, prefs)
-        if (prefs.suggestAfterSet())
-            Text(
-                if (seconds > 0)
-                    "Rest for ${restDuration(seconds.toLong())} before your next set, or continue when ready."
-                else "No timed rest is prescribed. Continue when ready."
+    GymRestControls(
+        prefs = prefs,
+        timer = timer,
+        prescribedRestSeconds = slot.target()?.restSeconds(),
+        enabled = enabled,
+        notificationExplanation =
+            "Remaining time uses the device's monotonic clock. Android may delay notifications while locked or saving battery. Rest never blocks your next set. Alerts stay quiet during run recording; Android notification and audio settings also apply.",
+        onAction = model::restAction,
+        onPreferencesChange = model::restPreferences,
+        onNotificationsChange = { value ->
+            if (
+                value &&
+                    Build.VERSION.SDK_INT >= 33 &&
+                    context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) !=
+                        PackageManager.PERMISSION_GRANTED
             )
-        if (timer != null) {
-            Text(
-                when (timer.phase()) {
-                    GymRestTimer.Phase.RUNNING ->
-                        "${restDuration(timer.secondsRemaining())} remaining"
-                    GymRestTimer.Phase.PAUSED ->
-                        "Paused · ${restDuration(timer.secondsRemaining())} remaining"
-                    GymRestTimer.Phase.COMPLETE -> "Rest time complete — continue when ready"
-                    GymRestTimer.Phase.SKIPPED -> "Rest skipped"
-                    GymRestTimer.Phase.INTERRUPTED ->
-                        "Timer interrupted. Reset it or explicitly resume the retained remaining time."
-                },
-                style = MaterialTheme.typography.headlineSmall,
-            )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                if (timer.phase() == GymRestTimer.Phase.RUNNING)
-                    OutlinedButton(onClick = { model.restAction("pause") }, enabled = enabled) {
-                        Text("Pause rest")
-                    }
-                if (
-                    timer.phase() in
-                        listOf(GymRestTimer.Phase.PAUSED, GymRestTimer.Phase.INTERRUPTED)
-                )
-                    OutlinedButton(onClick = { model.restAction("resume") }, enabled = enabled) {
-                        Text("Resume rest")
-                    }
-                OutlinedButton(onClick = { model.restAction("reset") }, enabled = enabled) {
-                    Text("Reset rest")
-                }
-                OutlinedButton(onClick = { model.restAction("+30") }, enabled = enabled) {
-                    Text("Add 30 seconds")
-                }
-                OutlinedButton(onClick = { model.restAction("-30") }, enabled = enabled) {
-                    Text("Remove 30 seconds")
-                }
-                TextButton(onClick = { model.restAction("skip") }, enabled = enabled) {
-                    Text("Skip rest")
-                }
-            }
-        }
-        if (
-            timer == null ||
-                timer.phase() in listOf(GymRestTimer.Phase.COMPLETE, GymRestTimer.Phase.SKIPPED)
-        )
-            Button(onClick = { model.restAction("start") }, enabled = enabled) {
-                Text("Start rest timer")
-            }
-        TextButton(
-            onClick = { details = !details },
-            modifier =
-                Modifier.heightIn(min = 48.dp).semantics {
-                    stateDescription = if (details) "Expanded" else "Collapsed"
-                },
-        ) {
-            Text(if (details) "Timer settings ▴" else "Timer settings ▾")
-        }
-        if (details) {
-            Text("Default rest when no target is prescribed")
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                listOf(0, 60, 90, 120, 180, 300).forEach { value ->
-                    CoachFilterChip(
-                        selected = prefs.defaultSeconds() == value,
-                        enabled = enabled,
-                        onClick = {
-                            model.restPreferences(
-                                GymRestTimer.Preferences(
-                                    value,
-                                    prefs.suggestAfterSet(),
-                                    prefs.notifications(),
-                                    prefs.vibration(),
-                                    prefs.audio(),
-                                )
-                            )
-                        },
-                        label = { Text(restDuration(value.toLong())) },
-                    )
-                }
-            }
-            RestToggle("Show rest suggestions", prefs.suggestAfterSet(), enabled) {
-                model.restPreferences(
-                    GymRestTimer.Preferences(
-                        prefs.defaultSeconds(),
-                        it,
-                        prefs.notifications(),
-                        prefs.vibration(),
-                        prefs.audio(),
-                    )
-                )
-            }
-            RestToggle("Optional completion notifications", prefs.notifications(), enabled) { value
-                ->
-                if (
-                    value &&
-                        Build.VERSION.SDK_INT >= 33 &&
-                        context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) !=
-                            PackageManager.PERMISSION_GRANTED
-                )
-                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                else
-                    model.restPreferences(
-                        GymRestTimer.Preferences(
-                            prefs.defaultSeconds(),
-                            prefs.suggestAfterSet(),
-                            value,
-                            prefs.vibration(),
-                            prefs.audio(),
-                        )
-                    )
-            }
-            RestToggle(
-                "Vibrate at rest completion",
-                prefs.vibration(),
-                enabled && prefs.notifications(),
-            ) {
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            else
                 model.restPreferences(
                     GymRestTimer.Preferences(
                         prefs.defaultSeconds(),
                         prefs.suggestAfterSet(),
-                        prefs.notifications(),
-                        it,
+                        value,
+                        prefs.vibration(),
                         prefs.audio(),
                     )
                 )
-            }
-            RestToggle("Play a completion sound", prefs.audio(), enabled && prefs.notifications()) {
-                model.restPreferences(
-                    GymRestTimer.Preferences(
-                        prefs.defaultSeconds(),
-                        prefs.suggestAfterSet(),
-                        prefs.notifications(),
-                        prefs.vibration(),
-                        it,
-                    )
-                )
-            }
-            Text(
-                "Remaining time uses the device's monotonic clock. Android may delay notifications while locked or saving battery. Rest never blocks your next set. Alerts stay quiet during run recording; Android notification and audio settings also apply."
-            )
-        }
-    }
+        },
+    )
 }
-
-@Composable
-private fun RestToggle(
-    label: String,
-    checked: Boolean,
-    enabled: Boolean,
-    change: (Boolean) -> Unit,
-) {
-    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = change,
-            enabled = enabled,
-            modifier = Modifier.semantics { contentDescription = label },
-        )
-        Text(label, modifier = Modifier.weight(1f).padding(vertical = 12.dp))
-    }
-}
-
-internal fun restDuration(seconds: Long): String =
-    when {
-        seconds == 0L -> "0 seconds"
-        seconds < 60 -> "$seconds seconds"
-        seconds % 60 == 0L -> "${seconds / 60} ${if (seconds == 60L) "minute" else "minutes"}"
-        else -> "${seconds / 60} min ${seconds % 60} sec"
-    }
 
 @Composable
 internal fun GymWarmupCard(

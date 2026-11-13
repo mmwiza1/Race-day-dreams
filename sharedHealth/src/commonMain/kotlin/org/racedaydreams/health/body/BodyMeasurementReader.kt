@@ -1,6 +1,7 @@
 package org.racedaydreams.health.body
 
 import kotlinx.datetime.Instant
+import org.racedaydreams.domain.coaching.Immutable
 
 enum class BodyMetric {
     HEIGHT_METRES,
@@ -54,7 +55,7 @@ class BodyReadSnapshot(
     records: Collection<BodyObservation>,
     val completeness: ReadCompleteness,
 ) {
-    val metrics: Set<BodyMetric> = FrozenSet(metrics)
+    val metrics: Set<BodyMetric> = Immutable.copySet(metrics)
     val records: List<BodyObservation>
 
     init {
@@ -70,7 +71,7 @@ class BodyReadSnapshot(
             }
             unique[key] = record
         }
-        this.records = FrozenList(unique.values)
+        this.records = Immutable.copyList(unique.values)
     }
 
     fun recordsForReplacement(metric: BodyMetric): List<BodyObservation> {
@@ -78,24 +79,8 @@ class BodyReadSnapshot(
             "Visible-only health results cannot replace retained history or establish deletion."
         }
         require(metric in metrics) { "This measurement was not authorized in this snapshot." }
-        return FrozenList(records.filter { it.metric == metric })
+        return Immutable.copyList(records.filter { it.metric == metric })
     }
-}
-
-private class FrozenList<T>(source: Collection<T>) : AbstractList<T>() {
-    private val copy = source.toList()
-    override val size: Int
-        get() = copy.size
-
-    override fun get(index: Int): T = copy[index]
-}
-
-private class FrozenSet<T>(source: Set<T>) : AbstractSet<T>() {
-    private val copy = FrozenList(source)
-    override val size: Int
-        get() = copy.size
-
-    override fun iterator(): Iterator<T> = copy.iterator()
 }
 
 enum class HealthReadAuthorizationRequest {
