@@ -4,7 +4,9 @@ package org.racedaydreams.domain.time
  * Exact seconds/nanoseconds; JVM APIs still receive java.time.Duration, including fractional
  * values.
  */
-expect class Duration {
+expect class Duration : Comparable<Duration> {
+    override fun compareTo(other: Duration): Int
+
     fun getSeconds(): Long
 
     fun getNano(): Int
@@ -17,6 +19,8 @@ expect class Duration {
 }
 
 expect object Durations {
+    fun between(start: Instant, end: Instant): Duration
+
     fun ofSeconds(seconds: Long, nanoAdjustment: Long = 0): Duration
 
     fun ofMinutes(minutes: Long): Duration

@@ -242,10 +242,9 @@ incomplete migration merely because a focused checkpoint passes.
   UI/persistence/health and complete legacy domain/schema/build/lint checks. No app-host or
   physical-provider pass is implied. No publication or merge.
 
-### Current checkpoint — shared body guidance contracts and production protein card
+### Ninth checkpoint — shared body contracts/card (`a7bad35`)
 
-- Locally verified batch being committed/pushed as `Share body guidance contracts and the existing
-  protein card across platforms`. **180 Java domain files remain**: BodyMeasurementsRepository.java
+- COMMITTED/PUSHED `a7bad359686f29b7a95df7ed200d7ad92dd6954c`. **180 Java domain files remain**: BodyMeasurementsRepository.java
   replaced with its common typed interface/preferences; previous Kotlin/JVM ProteinGuidance adapter
   replaced with common API. Java signatures retain java.time through actual aliases. Original
   preferences defaults, nullable selection, advice accessors/text and captured evidence retained.
@@ -271,14 +270,45 @@ incomplete migration merely because a focused checkpoint passes.
   basis. `requireNotNull(...).matches(weight)` now explicitly preserves/strengthens that SAME
   assertion; no capture/mock or assertion removal. Fixed instrumentation APK passed, then final
   card build passed. Source-bound screenshots remain a final release task, not a claimed pass.
-- New Native/runtime CI is pending until this exact checkpoint is pushed and GitHub confirms it.
-  Keep SAME draft PR24; no version/schema/backup change, merge or release publication.
+- Actual workflow43466875693: BOTH Android and Apple SUCCESS, confirmed live (real shared
+  contracts/state/card Native framework and tests, Android existing integration suites). Keep SAME draft PR24; no version/schema/backup change, merge or publication.
+
+### Tenth checkpoint — shared activity/result/split models
+
+- Activity-model migration completed locally on top of `a7bad35`; commit identity is in git log. Eight Java originals
+  removed/replaced: ActivityChecks, ActivitySources, ActivityRecord, ActivityLap, DistanceSample,
+  RecordedResult, PersonalBestEntry and RunSplit. **172 Java domain files remain.** Previous
+  Kotlin/JVM PerformancePace adapter now common; Java caller signatures remain unchanged.
+- Common Duration gains only required comparison and exact between(Instant,Instant), retaining
+  JVM java.time types and Native canonical seconds/nanos. Original moving<=elapsed validation,
+  positive intervals/results/splits, optional offsets/HR/cadence/elevation/RPE/notes, IDs and
+  frozen samples/laps retained. Recorded totals are NOT recalculated; discontinuities preserved.
+  Actual PB evidence remains distinct from estimates and first PBs have no invented previous value.
+- Shared ActivityChecks retains original rounding-to-nanoseconds, including Math.round negative
+  halves, NaN and overflow saturation; regression oracle checks20,012 arbitrary Double/edge inputs.
+  Six new common/JVM tests bring **54 shared-domain JVM tests**, zero failures. Five existing
+  original suites passed **3218 checks**: ActivityDomain138, RunEngine1059, Refinement97,
+  RecordingCoordination74 and LiveCoach1850. Original Java versus converted output **cmp MATCH**
+  in scratch `kmp-{original,shared}-activity-models.log` (11 lines).
+- Java domain and ALL existing Java test sources compile. Android compiler exposed one distance
+  nullable read in RunComparisonScreen; now a checked local value, with the identical pace formula.
+  No recording/GPS/split/PB algorithm redesign. Original failed compile log:
+  `/workspace/scratch/kmp-activity-test-build.log`; that compile passed production code but found an instrumentation test assuming non-null
+  distance. `requireNotNull` preserves the original >300 assertion. Final coherent gate
+  `/workspace/scratch/kmp-activity-fixed-build.log` BUILD SUCCESSFUL,110tasks/58s, both APKs
+  and54shared-domain JVM tests. Formatting223Kotlin/153Java and diff check PASS.
+- Experiment CI additionally targets existing FeatureStoreTest / ScopedRepositoriesTest /
+  RunSummaryPresentationTest / ActivityHistoryReadinessTest for actual persisted evidence,
+  provenance, summaries and history. Full release suite/assertions remain intact.
+- Push this verified coherent batch to SAME draft PR24. Inspect exact Native / Android CI
+  before assuming the new Duration comparators and activity models work on Apple. Then continue
+  remaining models/engines, shared screens, native persistence/services and actual iOS app host.
 
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The current body contract/card
-   batch is locally verified and being committed/pushed; preceding7e973c7 Native success does
-   not verify the newer common guidance/repository/state/card. Do not repeat completed fixes.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The activity model
+   batch is locally verified and being committed/pushed; preceding a7bad35 success does not
+   verify its Native Duration/activity additions. Do not repeat completed fixes.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown

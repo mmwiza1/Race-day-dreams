@@ -31,7 +31,8 @@ import org.racedaydreams.domain.PaceCalculator
 }
 @Composable private fun ComparisonMetrics(a:ActivityRecord,s:CoachUiState){
     Text("${a.distanceMetres()?.let{formatDistance(it,s)}?:"Distance unavailable"} · ${PaceCalculator.formatTime(a.elapsedTime())}")
-    if(a.distanceMetres()!=null&&a.distanceMetres()>0)Text("${formatPaceSeconds(a.elapsedTime().seconds/(a.distanceMetres()/1000)*(if(s.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL)1.609344 else 1.0))}/${if(s.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL)"mi"else "km"} average")
+    val distance = a.distanceMetres()
+    if(distance!=null&&distance>0)Text("${formatPaceSeconds(a.elapsedTime().seconds/(distance/1000)*(if(s.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL)1.609344 else 1.0))}/${if(s.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL)"mi"else "km"} average")
     Text(a.averageHeartRate()?.let{"${decimal(it)} bpm average"}?:"Heart rate unavailable")
     Text(a.rpe()?.let{"RPE ${decimal(it)}"}?:"RPE not recorded")
     val durability=LongRunDurability.analyse(a);Text(durability.explanation())

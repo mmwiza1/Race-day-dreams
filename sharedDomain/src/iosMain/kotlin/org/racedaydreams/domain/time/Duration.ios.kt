@@ -1,6 +1,11 @@
 package org.racedaydreams.domain.time
 
-actual class Duration internal constructor(private val value: DurationParts) {
+actual class Duration internal constructor(private val value: DurationParts) :
+    Comparable<Duration> {
+    actual override fun compareTo(other: Duration): Int =
+        value.seconds.compareTo(other.value.seconds).takeIf { it != 0 }
+            ?: value.nanos.compareTo(other.value.nanos)
+
     actual fun getSeconds(): Long = value.seconds
 
     actual fun getNano(): Int = value.nanos
@@ -17,6 +22,12 @@ actual class Duration internal constructor(private val value: DurationParts) {
 }
 
 actual object Durations {
+    actual fun between(start: Instant, end: Instant): Duration =
+        ofSeconds(
+            end.getEpochSecond() - start.getEpochSecond(),
+            end.getNano().toLong() - start.getNano(),
+        )
+
     actual fun ofSeconds(seconds: Long, nanoAdjustment: Long): Duration =
         Duration(DurationParts.ofSeconds(seconds, nanoAdjustment))
 
