@@ -97,7 +97,7 @@ class AuthoredGymAssociationScreenTest {
 
     private fun proposal(): GymWorkoutAssociation.Proposal {
         val now = Instant.parse("2026-10-28T12:00:00Z")
-        val exercise = ExerciseCatalog.definition("bench-press").exercise()
+        val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         val actual =
             StrengthSession(
                 "actual",

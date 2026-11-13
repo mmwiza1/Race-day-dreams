@@ -85,7 +85,7 @@ class GymNowScreenTest {
 
         click("Add exercise")
         compose.onNodeWithText("Exercise name or alias").performTextInput("bench press")
-        click(ExerciseCatalog.definition("bench-press").exercise().name())
+        click(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise().name())
         await { execution()?.slots()?.size == 1 }
         val originalInputId = model.state.value.form.id
         assertEquals("", model.state.value.form.kilograms)
@@ -162,7 +162,7 @@ class GymNowScreenTest {
         enter("Workout name", "Bench practice")
         click("Add exercise")
         enter("Search by name or alias", "bench press")
-        click(ExerciseCatalog.definition("bench-press").exercise().name())
+        click(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise().name())
         // Keep the editor's three-set default. Targets remain separate from entered actuals.
         enter("Minimum repetitions", "5")
         enter("Maximum repetitions", "8")
@@ -266,7 +266,9 @@ class GymNowScreenTest {
         install(retained, largeDark = true)
         click("Start open workout")
         await { execution()?.origin() == GymExecution.Origin.FREE }
-        compose.runOnIdle { model.addExercise(ExerciseCatalog.definition("plank").exercise()) }
+        compose.runOnIdle {
+            model.addExercise(requireNotNull(ExerciseCatalog.definition("plank")).exercise())
+        }
         await { execution()?.slots()?.size == 1 }
         enter("Actual duration · seconds", "20")
         click("Save actual set")
@@ -334,7 +336,7 @@ class GymNowScreenTest {
         await { execution() != null }
         click("Add exercise")
         compose.onNodeWithText("Exercise name or alias").performTextInput("bench press")
-        click(ExerciseCatalog.definition("bench-press").exercise().name())
+        click(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise().name())
         await { execution()?.slots()?.size == 1 }
         assertTrue(execution()!!.actualSets().isEmpty())
         click("Optional warm-up ▾")

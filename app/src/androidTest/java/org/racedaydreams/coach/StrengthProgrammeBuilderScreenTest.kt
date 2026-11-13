@@ -109,7 +109,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 day.id(),
                 null,
-                ExerciseCatalog.definition("plank").exercise(),
+                requireNotNull(ExerciseCatalog.definition("plank")).exercise(),
                 GymSlotInput(seconds = "30"),
                 {},
             )
@@ -283,7 +283,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 block.days()[0].id(),
                 null,
-                ExerciseCatalog.definition("push-up").exercise(),
+                requireNotNull(ExerciseCatalog.definition("push-up")).exercise(),
                 GymSlotInput(minimumReps = "6", maximumReps = "10"),
                 {},
             )
@@ -294,7 +294,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 block.days()[1].id(),
                 null,
-                ExerciseCatalog.definition("plank").exercise(),
+                requireNotNull(ExerciseCatalog.definition("plank")).exercise(),
                 GymSlotInput(seconds = "30"),
                 {},
             )
@@ -326,7 +326,7 @@ class StrengthProgrammeBuilderScreenTest {
 
     @Test
     fun sharedTargetParserPreservesUnknownsAndRejectsInvalidNumericEvidence() {
-        val push = ExerciseCatalog.definition("push-up").exercise()
+        val push = requireNotNull(ExerciseCatalog.definition("push-up")).exercise()
         val input =
             GymSlotInput(
                 minimumReps = "6",
@@ -409,7 +409,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 day.id(),
                 null,
-                ExerciseCatalog.definition("push-up").exercise(),
+                requireNotNull(ExerciseCatalog.definition("push-up")).exercise(),
                 GymSlotInput(
                     minimumReps = "6",
                     maximumReps = "10",

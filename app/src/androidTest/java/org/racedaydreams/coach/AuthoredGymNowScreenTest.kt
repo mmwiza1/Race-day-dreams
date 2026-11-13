@@ -290,7 +290,7 @@ class AuthoredGymNowScreenTest {
             listOf(
                 GymWorkoutDefinition.Slot(
                     "bench",
-                    ExerciseCatalog.definition("bench-press").exercise(),
+                    requireNotNull(ExerciseCatalog.definition("bench-press")).exercise(),
                     target,
                     null,
                 )

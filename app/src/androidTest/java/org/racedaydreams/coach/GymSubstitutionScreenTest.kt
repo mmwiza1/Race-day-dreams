@@ -310,7 +310,8 @@ class GymSubstitutionScreenTest {
         assertNull("Gym swap failed: ${model.state.value.error}", model.state.value.error)
     }
 
-    private fun exerciseName(id: String) = ExerciseCatalog.definition(id).exercise().name()
+    private fun exerciseName(id: String) =
+        requireNotNull(ExerciseCatalog.definition(id)).exercise().name()
 
     private fun programme(): GymProgramme {
         val date = LocalDate.now()

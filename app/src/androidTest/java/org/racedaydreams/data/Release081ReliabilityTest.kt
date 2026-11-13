@@ -74,7 +74,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
     fun testMixedSameTimeSameIdPagesNeverSkipStrengthOrDuplicateRunning() {
         val a=ActivityRecord("same",SourceIdentity("manual","same",null),wall,wall.plusSeconds(60),ZoneOffset.UTC,ZoneOffset.UTC,100.0,null,null,null,null,null,null,null,emptyList(),emptyList(),null,null)
         FeatureStore(context).upsertManualActivity(a)
-        val e=ExerciseCatalog.definition("back-squat").exercise()
+        val e=requireNotNull(ExerciseCatalog.definition("back-squat")).exercise()
         CoachingStore(context).saveStrength(StrengthSession("same",wall,ZoneOffset.UTC,Duration.ofMinutes(30),7.0,"",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("set",5,40.0,7.0,false))))))
         val store=WorkoutHistoryStore(context)
         val first=store.page(WorkoutHistoryQuery.Kind.ALL,null,"",null,null,emptyList(),null,1)
@@ -100,7 +100,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
         assertEquals(first,coaching.versions().first{it.id()==first.id()})
     }
     fun testStrengthAliasAndDateFiltersRemainCorrectAcrossPages() {
-        val e=ExerciseCatalog.definition("romanian-deadlift").exercise()
+        val e=requireNotNull(ExerciseCatalog.definition("romanian-deadlift")).exercise()
         repeat(65){i->CoachingStore(context).saveStrength(StrengthSession("lift-$i",wall.minusSeconds(i*86400L),ZoneOffset.ofHours(2),Duration.ofMinutes(30),7.0,"",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("set",8,40.0,7.0,false))))))}
         val store=WorkoutHistoryStore(context)
         val first=store.page(WorkoutHistoryQuery.Kind.ALL,null,"RDL",null,null,emptyList(),null,30)

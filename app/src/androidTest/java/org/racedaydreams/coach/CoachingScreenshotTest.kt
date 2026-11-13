@@ -892,7 +892,7 @@ class CoachingScreenshotTest {
                     emptyList(),
                 )
         GymProgrammeStore(context).save(programme)
-        val exercise = ExerciseCatalog.definition("bench-press").exercise()
+        val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         val now = Instant.now()
         for (daysAgo in listOf(3L, 6L)) {
             val id = "strength-home-$daysAgo"
@@ -955,7 +955,7 @@ class CoachingScreenshotTest {
     @Test
     fun capturesRecordedStrengthTrendsAndMeasuredVersusEstimatedRecords() {
         val today = LocalDate.now()
-        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        val bench = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         for (week in 0..11) {
             if (week == 3) continue // An explicitly missing week, never interpolated training.
             CoachingStore(context)
@@ -1197,7 +1197,7 @@ class CoachingScreenshotTest {
                 compose.onNodeWithText("Exercises").performScrollTo().performClick()
                 awaitExerciseSearch()
                 for (id in ExpandedExerciseGuides.identities().sorted()) {
-                    val exercise = ExerciseCatalog.definition(id).exercise()
+                    val exercise = requireNotNull(ExerciseCatalog.definition(id)).exercise()
                     compose
                         .onNodeWithTag("exercise-search")
                         .performScrollTo()
@@ -1381,7 +1381,7 @@ class CoachingScreenshotTest {
             "recovery-capture-accept",
             emptyList(),
         )
-        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        val bench = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         for (days in listOf(1L, 5L, 8L)) CoachingStore(context)
             .saveStrength(
                 StrengthSession(
@@ -1483,7 +1483,7 @@ class CoachingScreenshotTest {
                         Assert.assertTrue(
                             model.builderPutSlot(
                                 null,
-                                ExerciseCatalog.definition("push-up").exercise(),
+                                requireNotNull(ExerciseCatalog.definition("push-up")).exercise(),
                                 GymSlotInput(
                                     sets = "2",
                                     minimumReps = "6",
@@ -1495,7 +1495,7 @@ class CoachingScreenshotTest {
                         Assert.assertTrue(
                             model.builderPutSlot(
                                 null,
-                                ExerciseCatalog.definition("plank").exercise(),
+                                requireNotNull(ExerciseCatalog.definition("plank")).exercise(),
                                 GymSlotInput(sets = "2", seconds = "30", restSeconds = "60"),
                             )
                         )
@@ -1587,7 +1587,7 @@ class CoachingScreenshotTest {
                 Assert.assertTrue(
                     model.builderPutSlot(
                         null,
-                        ExerciseCatalog.definition("bench-press").exercise(),
+                        requireNotNull(ExerciseCatalog.definition("bench-press")).exercise(),
                         GymSlotInput(
                             sets = "2",
                             minimumReps = "6",
@@ -1602,7 +1602,7 @@ class CoachingScreenshotTest {
                 Assert.assertTrue(
                     model.builderPutSlot(
                         null,
-                        ExerciseCatalog.definition("seated-cable-row").exercise(),
+                        requireNotNull(ExerciseCatalog.definition("seated-cable-row")).exercise(),
                         GymSlotInput(
                             sets = "2",
                             minimumReps = "10",
@@ -1938,7 +1938,7 @@ class CoachingScreenshotTest {
         fun slot(id: String, exercise: String, low: Int, high: Int) =
             GymWorkoutDefinition.Slot(
                 id,
-                ExerciseCatalog.definition(exercise).exercise(),
+                requireNotNull(ExerciseCatalog.definition(exercise)).exercise(),
                 GymWorkoutDefinition.Target(
                     3,
                     low,

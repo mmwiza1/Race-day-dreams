@@ -817,7 +817,7 @@ class StrengthGenerationScreenTest {
         }
         for (exerciseId in
             listOf("push-up", "weighted-pull-up", "plank", "weighted-plank", "farmers-carry")) {
-            val exercise = ExerciseCatalog.definition(exerciseId).exercise()
+            val exercise = requireNotNull(ExerciseCatalog.definition(exerciseId)).exercise()
             val before = model.state.value.draft!!
             val workout = before.programme().workouts().first()
             val slot = workout.definition().slots().first()

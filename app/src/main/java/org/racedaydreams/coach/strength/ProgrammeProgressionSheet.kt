@@ -248,14 +248,19 @@ internal fun ProgrammeProgressionContent(
                                             .sets()
                                             .filterNot { it.warmUp() }
                                             .forEach { set ->
+                                                val durationSeconds = set.durationSeconds()
+                                                val distanceMetres = set.distanceMetres()
+                                                val rpe = set.rpe()
+                                                val repetitionsInReserve =
+                                                    set.repetitionsInReserve()
                                                 val task =
                                                     when {
-                                                        set.durationSeconds() != null ->
+                                                        durationSeconds != null ->
                                                             StrengthPrescriptionText.duration(
-                                                                set.durationSeconds()
+                                                                durationSeconds
                                                             )
-                                                        set.distanceMetres() != null ->
-                                                            "${StrengthPrescriptionText.number(set.distanceMetres())} metres"
+                                                        distanceMetres != null ->
+                                                            "${StrengthPrescriptionText.number(distanceMetres)} metres"
                                                         else -> "${set.reps()} repetitions"
                                                     }
                                                 val load =
@@ -265,10 +270,10 @@ internal fun ProgrammeProgressionContent(
                                                 Text(load + task)
                                                 Text(
                                                     when {
-                                                        set.rpe() != null ->
-                                                            "Recorded perceived effort (RPE): ${StrengthPrescriptionText.number(set.rpe())}/10"
-                                                        set.repetitionsInReserve() != null ->
-                                                            "Recorded repetitions left before failure (RIR): ${StrengthPrescriptionText.number(set.repetitionsInReserve())}"
+                                                        rpe != null ->
+                                                            "Recorded perceived effort (RPE): ${StrengthPrescriptionText.number(rpe)}/10"
+                                                        repetitionsInReserve != null ->
+                                                            "Recorded repetitions left before failure (RIR): ${StrengthPrescriptionText.number(repetitionsInReserve)}"
                                                         else -> "Effort was not recorded."
                                                     },
                                                     style = MaterialTheme.typography.bodySmall,

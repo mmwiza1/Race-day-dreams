@@ -50,7 +50,7 @@ class GymAssociationScreenTest {
         compose.runOnIdle { model.startFree { shown.value = true } }
         await { execution()?.status() == GymExecution.Status.ACTIVE }
         compose.runOnIdle {
-            model.addExercise(ExerciseCatalog.definition("bench-press").exercise())
+            model.addExercise(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise())
         }
         await { execution()?.slots()?.size == 1 }
         compose.runOnIdle {

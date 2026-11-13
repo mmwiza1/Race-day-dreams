@@ -33,7 +33,7 @@ class ProgrammeProgressionClarityTest {
         currentLoad: Double? = 80.0,
         effort: Boolean = true,
     ): ProgrammeProgressionReview {
-        val exercise = ExerciseCatalog.definition(id).exercise()
+        val exercise = requireNotNull(ExerciseCatalog.definition(id)).exercise()
         val profile = exercise.measurement()
         val target =
             GymWorkoutDefinition.Target(

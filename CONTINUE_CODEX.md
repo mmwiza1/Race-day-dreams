@@ -307,7 +307,7 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Eleventh checkpoint — personal-best/shoe policies and actual shared shoe card
 
-- Completed local batch on top of c8bdab3 (commit identity in git log): thirteen more Java originals removed/replaced,
+- COMMITTED/PUSHED `bddce018614b52083e418b7df75b99b5ec281b42` on top of c8bdab3: thirteen more Java originals removed/replaced,
   now **159 Java domain files remain**. Common PB ordering/authority/daily-best rules, exact
   improvements, shoe assignment arithmetic/unknown mileage, BestEffort/analysis snapshots,
   RecordedWeek/Milestone summaries and typed activity/result/shoe/import contracts.
@@ -329,18 +329,51 @@ incomplete migration merely because a focused checkpoint passes.
   Final focused build `/workspace/scratch/kmp-history-fixed-build.log` BUILD SUCCESSFUL,
  117tasks/1m40s:61domain+14health JVM tests and both APKs. Earlier history compile logs
   found nullable original fields/fixtures, corrected; not final proof. Formatter240Kotlin/149Java,
-  release-note10 and git diff check PASS. Native and three new Compose runtime cases await CI.
+  release-note10 and git diff check PASS. CI43472233795 Android SUCCESS:117focused runtime tests, including all three new card cases,
+  original full legacy domain/schema/build/lint. Apple FAILED BEFORE compilation resolving
+  unchanged Google AGP8.9.2 plugin. One targeted retry of Apple accepted after Android completed
+  (earlier attempt403 was because the workflow was still running, not missing permissions).
+  Actual rerun attempt now BOTH SUCCESS: Apple job132053598802 and retained successful
+  Android117; confirmed compile/tests/framework. No assertion or compiler change for dependency retry.
 - Next safe action: commit/push this coherent verified batch to SAME PR24. Verify real new Native/Android CI,
   then continue remaining conversion/application scope; do not stop simply at this checkpoint.
 - A next-batch baseline ONLY (not migrated yet) is saved: StrengthEvidenceParity.java and
   kmp-original-strength-evidence.log (229lines incl all220 catalogue definitions, original sets).
   Do not overwrite original evidence before comparing the next strength port.
 
+### Twelfth checkpoint — canonical catalogue and actual strength evidence
+
+- Locally verified batch on top of bddce01 replaces THREE Java originals (commit in git log): StrengthExercise,
+  ExerciseCatalog and StrengthSession. **156 Java domain files remain**. No added exercises:
+  all220 original definitions/IDs/order/aliases/measurement/estimation flags remain shared.
+  Existing recorded definitions, actual sets, warm-up flags, RPE versus RIR, duration/distance,
+  unique set identities, immutable snapshots and validation ordering remain intact.
+- Common five new tests bring **66 shared-domain JVM tests**, zero failure/error/skip.
+  Original vs shared output **cmp MATCH** at kmp-{original,shared}-strength-evidence.log:
+ 229lines including ALL220 catalogue entries and original actual-session/validation output.
+  Eight unchanged focused strength suites passed **383,950 checks**: Release05Domain253,
+  StrengthRecords34, GymExecution173, StrengthVolume685, TechniqueGuidance1410,
+  StrengthProgramme373245, GymTools7909, GymWorkoutSessionCoordinator241.
+- Production ProgrammeProgressionSheet only captures checked nullable duration/distance/RPE/RIR
+  locals before displaying the SAME actual supporting evidence.32 existing test fixture lookups
+  now requireNotNull for their actual known canonical entry; no assertion/capture weakened.
+  Experiment CI additionally includes original ProgrammeProgressionClarityTest; full default
+  release gates unchanged.
+- Final `/workspace/scratch/kmp-strength-evidence-verified-build.log` BUILD SUCCESSFUL,
+ 108tasks/1m8s, both APKs. Earlier logs found nullable display/fixture calls, all corrected
+  without changing assertions. Common66tests/383950legacy checks/parity remain valid;
+  formatter244Kotlin/149Java PASS and diff clean. No version/schema/backup change.
+- Next: commit/push this coherent batch to SAME PR24, inspect exact new Native/Android CI,
+  then continue programme/metadata models and remaining application scope. Not release-ready.
+- Future ONLY: `/workspace/scratch/StrengthProgrammeModelParity.java` and original228-line
+  `kmp-original-strength-programme-model.log` retain original programme and all220 canonical
+  metadata outputs. Programme/metadata types have NOT yet been migrated; don't duplicate work.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The personal-best/shoe
-   batch is locally verified and being committed/pushed. c8bdab3 Android passed; its Native
-   missing import is fixed in this batch but not yet reverified on Apple. Do not repeat completed fixes.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The strength evidence/
+   catalogue batch is locally verified and being committed/pushed. bddce01 Android117 and
+   Apple Native/framework passed; newer strength Native results are still pending. Preserve both.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown
