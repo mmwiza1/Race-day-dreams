@@ -1,3 +1,29 @@
+# 0.12.3 — API28 full-frame correction verified; final native contrast readiness pending
+
+Source3614780/workflow43335908577 passed543fulltests/451captures on API28/35. API36’s first
+attempt was blocked BEFORE tests by a confirmed com.android.launcher3 startup ANR; only that
+job was rerun on the unchanged head. Attempt2job131771715225 passed, and the workflow completed
+SUCCESS, with original platform-focus guards/timeouts retained. No app assertion was bypassed.
+Canonicalfe35c76 identifies fingerprint6df2b3cfa78bee60b5d774176ec06d051d83f22b0ac47044cc515bdcb0b02936.
+
+Native API28artifact13999120642 verified at194,824,075ZIPbytes/SHA256
+165d427aad0bd2c9df6cf4533e7d174bf31d118f63e117411939ad0fb63d7b9d. All451PNGs are whole physical
+1080x1920frames;18three-mode views and3expanded native originals were opened. The earlier severe
+crop is fixed: full text/control width and genuine letterboxing remain, with no editing/rescaling.
+API35artifact13999200525 metadata:59,833,148bytes/SHA256
+b099a0ccf43ae60110c7bed3bf1496bf6a62d2366c5e0c96d5a224597387fb33.
+
+Pixel review found one remaining capture-readiness issue: the FIRST large-text native-permission
+frame had white statusglyphs on a light surface, while its subsequent frame already had correct
+icons. A451-image scan found no other light-surface case. The test now awaits actual rendered
+native status contrast and matching surface within20s, retaining the genuine full PNG and all
+existing UI assertions. No arbitrary sleep/image manipulation. Speculative Activity changes were
+removed; production code is unchanged. Final-source local APK/testAPK/lint passed75tasks/3m32s. Capture-validator23, runner13, release10
+and pinned125Kotlin/161Java formatting checks pass. Runtime/visual acceptance remains pending.
+Earlier speculative-style build success is not validation of this final test-only fix.
+
+No merge or0.12.3public main APK is claimed. Physical-device acceptance remains unperformed.
+
 # 0.12.3 — software gate green; API28 capture geometry blocks visual acceptance
 
 Source1a00372/workflow43330113881 passed25guards/543fulltests/451captures on EACH API28/35/36.

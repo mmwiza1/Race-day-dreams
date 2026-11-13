@@ -1,3 +1,19 @@
+# Capture geometry and visual acceptance
+
+A valid PNG and passing Compose bounds do not prove that the saved image contains the whole
+screen. Inspect actual API28/35/36 outputs in light/dark/200% modes. Do not copy another API’s
+images or crop/repaint captures to hide defects. Keep genuine emulator letterboxing visible.
+
+Android9 UiAutomation uses logical getRealSize as a physical crop when wm size is overridden.
+The test-only API28 path therefore uses native screencap’s full compositor PNG, without rescaling,
+and checks its dimensions against the physical display. Both Compose and native-permission
+screens use that path. Other APIs retain their verified UiAutomation capture. See
+[Android9 UiAutomation](https://android.googlesource.com/platform/frameworks/base/+/android-9.0.0_r61/core/java/android/app/UiAutomation.java)
+and [native screencap](https://android.googlesource.com/platform/frameworks/base/+/android-9.0.0_r61/cmds/screencap/screencap.cpp).
+Changes to capture code require fresh source-bound artifacts and pixel review before release.
+Current correction acceptance is tracked in VERIFICATION.md/CONTINUE_CODEX.md; older checkpoints
+below do not override an unresolved visual defect.
+
 # Material 3 library and layout refinement —433verified authentic captures
 
 Source`f33fbfc5902ff0b2be8136ebb7ef491cd3fa51e4` passed complete [workflow 43249755986](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43249755986):

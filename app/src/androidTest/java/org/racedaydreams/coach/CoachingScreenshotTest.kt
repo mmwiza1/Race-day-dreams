@@ -3520,6 +3520,7 @@ class CoachingScreenshotTest {
                                 androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
                             )
                         )
+                    var nativeSurface = 0
                     native.onActivity { activity ->
                         val root =
                             activity
@@ -3527,6 +3528,7 @@ class CoachingScreenshotTest {
                                 .getChildAt(0)
                         val surface =
                             (root.background as android.graphics.drawable.ColorDrawable).color
+                        nativeSurface = surface
                         if (android.os.Build.VERSION.SDK_INT < 35) {
                             Assert.assertEquals(
                                 "Native navigation background must match its page",
@@ -3540,7 +3542,7 @@ class CoachingScreenshotTest {
                             )
                         }
                     }
-                    captureNativePermission("permission-rationale-${mode.suffix}")
+                    captureNativePermission("permission-rationale-${mode.suffix}", nativeSurface)
                     val close =
                         androidx.test.espresso.Espresso.onView(
                             androidx.test.espresso.matcher.ViewMatchers.withText("Close")
@@ -3565,7 +3567,10 @@ class CoachingScreenshotTest {
                             )
                         }
                     if (mode.scale == 2f)
-                        captureNativePermission("permission-rationale-actions-large-font")
+                        captureNativePermission(
+                            "permission-rationale-actions-large-font",
+                            nativeSurface,
+                        )
                     close.perform(androidx.test.espresso.action.ViewActions.click())
                     compose.waitUntil(20000) { native.state == Lifecycle.State.DESTROYED }
                 } finally {
@@ -3579,11 +3584,68 @@ class CoachingScreenshotTest {
         }
     }
 
-    private fun captureNativePermission(name: String) {
+    private fun captureNativePermission(name: String, expectedSurface: Int) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         automation.waitForIdle(200, 20000)
-        saveCurrentScreen(name)
+        if (android.os.Build.VERSION.SDK_INT == 28) {
+            // Window flags settle before Android9 SystemUI necessarily renders new icons.
+            // Await the real contrast condition, not a fixed delay or an edited screenshot.
+            compose.waitUntil(20000) {
+                saveCurrentScreen(name)
+                nativeStatusBarReady(name, expectedSurface)
+            }
+        } else saveCurrentScreen(name)
+    }
+
+    private fun nativeStatusBarReady(name: String, expectedSurface: Int): Boolean {
+        val frame =
+            checkNotNull(
+                android.graphics.BitmapFactory.decodeFile(
+                    File(context.getExternalFilesDir(null), "screenshots/$name.png").absolutePath
+                )
+            )
+        try {
+            val logical = android.graphics.Point()
+            (context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager)
+                .defaultDisplay
+                .getRealSize(logical)
+            val scale = minOf(frame.width.toFloat() / logical.x, frame.height.toFloat() / logical.y)
+            val left = ((frame.width - logical.x * scale) / 2).toInt()
+            val top = ((frame.height - logical.y * scale) / 2).toInt()
+            val right = frame.width - left
+            val statusId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+            Assert.assertTrue("A real status-bar band is required", statusId != 0)
+            val bottom = top + (context.resources.getDimensionPixelSize(statusId) * scale).toInt()
+            val background = frame.getPixel(frame.width / 2, top + 2)
+            for (channel in
+                listOf<(Int) -> Int>(
+                    android.graphics.Color::red,
+                    android.graphics.Color::green,
+                    android.graphics.Color::blue,
+                )) {
+                if (kotlin.math.abs(channel(background) - channel(expectedSurface)) > 18)
+                    return false
+            }
+            var legiblePixels = 0
+            for (y in top + 2 until bottom - 2) for (x in left + 2 until right - 2) {
+                if (
+                    androidx.core.graphics.ColorUtils.calculateContrast(
+                        frame.getPixel(x, y),
+                        expectedSurface,
+                    ) >= 3.0
+                )
+                    legiblePixels++
+            }
+            if (legiblePixels < 20)
+                android.util.Log.i(
+                    "RddGate",
+                    "NATIVE_STATUS_NOT_READY $name foreground=$legiblePixels",
+                )
+            return legiblePixels >= 20
+        } finally {
+            frame.recycle()
+        }
     }
 
     @Test
