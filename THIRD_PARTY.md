@@ -13,7 +13,7 @@ Apache-2.0. Review that graph and this inventory when versions change.
 
 | Project / artifact | Version | Licence | Purpose / source / notices |
 | --- | --- | --- | --- |
-| Kotlin / Multiplatform, Android and Compose compiler plugins, standard library | 2.1.21 | Apache-2.0 | Android integration language; [source](https://github.com/JetBrains/kotlin/tree/v2.1.21). Licence retained in assets. |
+| Kotlin / Multiplatform, JVM, Android and Compose compiler plugins, standard library | 2.1.21 | Apache-2.0 | Android integration language; [source](https://github.com/JetBrains/kotlin/tree/v2.1.21). Licence retained in assets. |
 | Compose Multiplatform | 1.8.2 | Apache-2.0 | Shared existing Compose UI for Android/iOS; [source](https://github.com/JetBrains/compose-multiplatform/tree/v1.8.2). Apache terms retained in assets; platform libraries keep their own notices. |
 | kotlinx.coroutines Multiplatform/core/Android/test | 1.9.0 | Apache-2.0 | Off-main IO, structured concurrency and StateFlow; [source](https://github.com/Kotlin/kotlinx.coroutines/tree/1.9.0). Licence retained in assets. |
 | kotlinx-datetime | 0.6.2 | Apache-2.0 | Shared exact timestamps and JVM Instant adapters for optional health observations; [source](https://github.com/Kotlin/kotlinx-datetime/tree/v0.6.2). Apache terms retained in assets. |

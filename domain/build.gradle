@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 dependencies { api project(':sharedDomain') }
@@ -9,7 +10,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-// The same dependency-free test suite is usable without Android or Gradle.
+// Retained Java entry-point suites validate the shared Kotlin/JVM implementation.
 tasks.register('domainTest') {
     dependsOn testClasses
     doLast {
@@ -37,3 +38,5 @@ tasks.register('prepareOfflineTests', Sync) {
     from { configurations.testRuntimeClasspath.findAll { it.name.endsWith('.jar') }.collect { zipTree(it) } }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+kotlin { jvmToolchain(17) }

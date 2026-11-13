@@ -247,6 +247,8 @@
     "app/src/androidTest/java/org/racedaydreams/coach/PlainEnglishUiTest.kt",
     "sharedDomain/src/**/*.kt",
     "sharedUi/src/**/*.kt",
-    "sharedHealth/src/**/*.kt"
+    "sharedHealth/src/**/*.kt",
+    "domain/src/main/kotlin/**/*.kt",
+    "domain/src/test/java/org/racedaydreams/domain/settings/PrimaryFocusTestSuite.java"
   ]
 }

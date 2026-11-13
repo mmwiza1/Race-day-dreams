@@ -125,7 +125,21 @@ Do NOT merge this incomplete migration, even if its focused checkpoint checks pa
   checks; push and inspect new macOS/AndroidCI. UpdatePRbodyactualresults. Keepdraft until full
   agreedappscope complete; sharedframework alone is not iOSapp. Continue actualdomain/UI/
   storage/native-service migration after these concretecompilation failures are resolved.
-- Remaining fullscope:202Javafiles to sharedKotlin; remaining Android-bound screens/ViewModels/
+- Third checkpoint78805ecbea2df8174a42bc70e541eaa33bf4ec1d COMMITTED/PUSHED; actualCI43440356122
+  SUCCESS onAndroid andmacOS. Android28focusedtests passed; NativeHealthKitadapter/frame-work
+  compiled and bothcommonmodule suites plus2realNSDateinterop tests passed. NSDateissuefixed
+  by reusing kotlinx-datetimeDarwinadapters; no fakeSDKsurface or ignoredfailure. No physical
+  HealthKitpermission/provider tests or fulliOSappbuild claimed.
+- Fourth batch LOCAL: ProteinGuidance.java and PrimaryFocus.java replaced (200Javafiles remain).
+  Completeexistingproteineligibility/range/freshness/choice rules now common ProteinPolicy;
+  JVMProteinGuidance.kt retains existing accessor/factory APIs and returns originalBodyWeight
+  evidence objects. domain now mixedKotlin/JVM+remainingJava, sharingcommonpolicy; no duplicate
+  businessengine. CommonPrimaryFocus usesnullableparsing; JavaSQLrepository wrapsOptional at
+  its boundary and19existingfocus-test assertions retain originalOptionalexpectations.
+  `/workspace/scratch/kmp-protein-build.log` PASS114tasks/3m1s:12commonDomainJVMtests (6newprotein/
+  focus tests), all700,189legacychecks, APK/testAPKcompile. Nativeandlintpendingforthisbatch.
+  Preserveuncommitted files; formatcheck, commit/pushSAMEPR24, inspect newNative/AndroidCI.
+- Remaining fullscope:200Javafiles to sharedKotlin; remaining Android-bound screens/ViewModels/
   navigation/data sources into one sharedapp; HealthKit and retainedHealthConnect adapters,
   cross-platformSQLite/backup/retention/permissions/recording/BLE/notifications; iOSapphost,
   genuine end-to-end feature parity and Android+iOSbuilds; final fullplatform/regression/visual

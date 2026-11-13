@@ -26,7 +26,7 @@ class SettingsCoordinator(
         operations.submit(onSuccess = onSuccess) {
             require(path in listOf("record", "race", "hybrid"))
             settings.putSetting("starting.path", path)
-            focus.save(PrimaryFocus.fromLegacyStartingPath(path).get())
+            focus.save(requireNotNull(PrimaryFocus.fromLegacyStartingPath(path)))
         }
 
     fun primaryFocus(selected: PrimaryFocus, onSuccess: () -> Unit = {}) =
