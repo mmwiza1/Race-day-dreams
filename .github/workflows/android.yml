@@ -14,6 +14,8 @@ concurrency:
 
 jobs:
   build:
+    # Experimental drafts use focused KMP checks; ready PRs/main retain the complete gate.
+    if: github.head_ref != 'experiment/android-ios-kmp-compose' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,7 +35,7 @@ jobs:
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
       - name: Require current canonical screenshots on other branches
-        if: github.head_ref != 'feature/0.12.3-plain-language-github-showcase'
+        if: github.head_ref != 'feature/0.12.3-plain-language-github-showcase' && github.head_ref != 'experiment/android-ios-kmp-compose'
         run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
@@ -154,6 +156,7 @@ jobs:
           PYFORMAT
 
   guidance-completeness:
+    if: github.head_ref != 'experiment/android-ios-kmp-compose' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -169,14 +172,14 @@ jobs:
   canonical-screenshots:
     needs: [build, formatting]
     # Capture publication is confined to this same-repository feature branch, never main.
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/0.12.3-plain-language-github-showcase' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request' && (github.head_ref == 'feature/0.12.3-plain-language-github-showcase' || github.head_ref == 'experiment/android-ios-kmp-compose') && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: feature/0.12.3-plain-language-github-showcase
+          ref: ${{ github.head_ref }}
           fetch-depth: 1
       - uses: actions/download-artifact@v4
         with:
@@ -185,6 +188,7 @@ jobs:
       - name: Commit canonical captures when screenshot source changes
         env:
           VERIFIED_HEAD: ${{ github.event.pull_request.head.sha }}
+          CAPTURE_BRANCH: ${{ github.head_ref }}
         run: |
           test "$(git rev-parse HEAD)" = "$VERIFIED_HEAD" || exit 0
           python3 scripts/verify-dream-screenshots.py build/screenshots-api-35
@@ -199,7 +203,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/screenshots
           git commit -m 'Capture canonical API 35 screenshots from verified test build'
-          git push origin HEAD:feature/0.12.3-plain-language-github-showcase
+          git push origin "HEAD:$CAPTURE_BRANCH"
       - name: Reviewable synthetic screenshot bytes
         # Text-only repository connectors can reconstruct these real PNGs for review.
         # Only instrumentation fixture renders are logged; no user data is available.

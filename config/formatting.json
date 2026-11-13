@@ -244,6 +244,8 @@
     "domain/src/main/java/org/racedaydreams/domain/presentation/AthleteLanguage.java",
     "app/src/main/java/org/racedaydreams/coach/strength/PlainWorkoutTarget.kt",
     "domain/src/test/java/org/racedaydreams/domain/presentation/AthleteLanguageTestSuite.java",
-    "app/src/androidTest/java/org/racedaydreams/coach/PlainEnglishUiTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/PlainEnglishUiTest.kt",
+    "sharedDomain/src/**/*.kt",
+    "sharedUi/src/**/*.kt"
   ]
 }

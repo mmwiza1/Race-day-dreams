@@ -2,6 +2,8 @@ plugins {
     id 'java-library'
 }
 
+dependencies { api project(':sharedDomain') }
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -24,3 +26,14 @@ tasks.register('domainTest') {
 
 tasks.named('check') { dependsOn domainTest }
 tasks.named('test') { dependsOn domainTest }
+
+// Keep the existing command-line Java suites/audits usable while their dependencies migrate.
+// This is a build-only classpath directory, never packaged into the application.
+tasks.register('prepareOfflineTests', Sync) {
+    dependsOn testClasses, configurations.testRuntimeClasspath
+    into layout.buildDirectory.dir('offline-tests')
+    from sourceSets.main.output
+    from sourceSets.test.output
+    from { configurations.testRuntimeClasspath.findAll { it.name.endsWith('.jar') }.collect { zipTree(it) } }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

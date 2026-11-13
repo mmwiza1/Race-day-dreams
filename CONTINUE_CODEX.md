@@ -54,6 +54,49 @@ Existing official Material 3 APIs were reused without upgrading runtime dependen
 - **Proofs/tools:** `/workspace/scratch/plain-language/main0f-api35-apk/verification.json`, `main0f-public/verification.json`, `main0f-release/release-identity.json`, `showcase-main-browser/verification.json`, `release0f-browser/verification.json`, `476-api{28,35,36}-captures/verification.json`, `476-review/`. Helpers`verify_artifact.py`, `verify_public_pair.py`, `verify_release_identity.py` and GitHubbrowserreviewers validate actualsource/digests/safeZIP/public4files/aapt/pinnedpreviews/rendering. Refresh expired artifactURLs from connectedGitHubtools; never expose SAS or screenshotbase64logs. No localKVM; runtimeverification is GitHubActions.
 - **Physical checks UNPERFORMED:** GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE, OEM audio/background/battery/rotation. Known forced-narrow platformnavigationstrip remains a physical/rotation limitation. TEST_BUILD.md retains all hardwarechecklists. Software/emulator/browser success is not hardware acceptance.
 
+## Active work — experimental shared Android/iOS application
+
+The owner's13November request authorises KotlinMultiplatform/ComposeMultiplatform migration,
+Java-domain replacement, sharedexistingUI, HealthConnect/HealthKit, platformstorage/services,
+functioningAndroid+iOS builds and eventual gatedmerge/testpublication. This supersedes the old
+"no iOS without new request" boundary. No versionbump or publication until cross-platformready.
+Do NOT merge this incomplete migration, even if its focused checkpoint checks pass.
+
+- Branch`experiment/android-ios-kmp-compose`, from latestmain85e1c3903b61f1d45e444d120ba1a701ad3a2c36.
+  First verifiedbatch ready to commit/push and open DRAFT PR. Separate ownerCI PR23 untouched.
+  Versions0.12.3-test1/code19 and dataformats19/13/3/1 remain unchanged. No artifacts published.
+- Implemented actual Android-used sharedDomain/commonMain:14existing enums/bodyunit conversions
+  plus deterministicPacePolicy; original15Javafiles removed. ExistingJavaAPI PaceCalculator is
+  now a Kotlin/JVM timeadapter delegating only to commonpolicy.204Java domainfiles remain.
+- SharedUi/commonMain owns the EXISTING spacing/chips/tabs, CoachPage/cards/buttons/headings,
+  WhyDetails and brandedtheme/typography/shapes. Androidconsumes it directly, retainingAndroid
+  dynamiccolour/preferences/systembarintegration. No redesigned or alternative demoapp created.
+  Kotlin2.1.21/ComposeMultiplatform1.8.2 pinned; AGP8.9.2 retained. Formatting/sourcefingerprint
+  includes sharedpaths/buildinputs; third-party notices mirrored. No missing legacytest assertions.
+- Verified: baseline700,189domainchecks/48suites and schema75; afterconversion all700,189legacy
+  checks pass unchanged,3newcommonJVMtests pass. Final facadefix APK/testAPK/lint BUILD SUCCESSFUL
+  122tasks/5m32s (`/workspace/scratch/kmp-facade-build.log`); APK58,836,422bytes/noINTERNET.
+  Earlyrootpluginresolution failure was localGradle ignoring inheritedproxy; publicPOM200proved
+  available, localGRADLE_USER_HOME properties now use inheritedproxy/systemtrust (not committed).
+  Next compile exposed top-levelJVMfacadecollision: renamed commonfileSharedCoachComponents.kt;
+  instrumentation now compiles, no source/test functionality removed. RuntimeUI stillpendingCI.
+- Focused CI: new multiplatform.yml runs commonJVM/legacydomain/schema/Androidcompile/lint and
+  existingMaterialTheme/PlainEnglish/StrengthAnalytics API35tests; macOSrunner attempts actual
+  sharedNative simulator tests/framework for hostarchitecture. This is NOT an iOSapplication build.
+  ExperimentalDRAFT alone skips oldfullAndroidmatrix; READY PR/main retain fullgate. Existing
+  fullAndroid default guards/assertions/timeouts stay unchanged. OptionalRDD_FOCUSED_CLASSES is
+  used ONLY by experimentaljob;15runnerhelpertests pass including cleanup/exit/defaultfullflow.
+  Existing release10/capture23 pass. No final screenshots or hardware pass claimed.
+- Exact next: inspect finalfast/harness/format logs in `/workspace/scratch/kmp-*`, commit/push
+  coherent firstbatch/open draftPR. Inspect macOSCIactual Xcode/simulator outcome and fix concrete
+  native build errors; do not assume unavailablemac because localhostLinux lacksXcode. Then
+  continue remainingdomain/UI/platform implementation, not a feasibility or throwawayprototype.
+- Remaining fullscope:204Javafiles to sharedKotlin; remaining Android-bound screens/ViewModels/
+  navigation/data sources into one sharedapp; HealthKit and retainedHealthConnect adapters,
+  cross-platformSQLite/backup/retention/permissions/recording/BLE/notifications; iOSapphost,
+  genuine end-to-end feature parity and Android+iOSbuilds; final fullplatform/regression/visual
+  gates before any version/release/merge. Current foundation is incomplete, not ready to merge.
+
 ## End-of-session handoff
 
 Summarise what changed, file paths, branch/PR/commit, tests actually run and their results, remaining work, and any real-device checks still needed. If interrupted by a usage limit, leave a concise accurate checkpoint above so the one-line resume prompt works without guessing.
