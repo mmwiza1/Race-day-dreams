@@ -13,11 +13,13 @@ kotlin {
             baseName = 'RaceDayShared'
             isStatic = true
             export project(':sharedDomain')
+            export project(':sharedHealth')
         }
     }
     sourceSets {
         commonMain.dependencies {
             api project(':sharedDomain')
+            api project(':sharedHealth')
             api compose.runtime
             api compose.foundation
             api compose.material3

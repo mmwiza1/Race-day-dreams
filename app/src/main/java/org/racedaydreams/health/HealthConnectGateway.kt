@@ -31,6 +31,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toKotlinInstant
 import org.json.JSONArray
 import org.json.JSONObject
 import org.racedaydreams.data.DevelopmentStore
@@ -43,6 +45,10 @@ import org.racedaydreams.domain.body.BodyWeight
 import org.racedaydreams.domain.health.HealthImportPolicy
 import org.racedaydreams.domain.health.HealthImportRepository
 import org.racedaydreams.domain.health.HealthReadPolicy
+import org.racedaydreams.health.body.BodyMetric
+import org.racedaydreams.health.body.BodyReadWindow
+import org.racedaydreams.health.body.HealthConnectBodyReader
+import org.racedaydreams.health.body.ReadCompleteness
 
 /**
  * Read-only Health Connect adapter. Uses the official Android Health sample as an API reference;
@@ -156,94 +162,56 @@ class HealthConnectGateway(context: Context, private val clock: Clock = Clock.sy
                 val until = clock.instant()
                 val from =
                     until.minus(Duration.ofDays(if (HISTORY_PERMISSION in granted) 84 else 29))
+                val metrics = buildSet {
+                    if (HEIGHT_PERMISSION in authorized) add(BodyMetric.HEIGHT_METRES)
+                    if (WEIGHT_PERMISSION in authorized) add(BodyMetric.WEIGHT_KILOGRAMS)
+                }
+                val snapshot =
+                    HealthConnectBodyReader(client)
+                        .read(
+                            BodyReadWindow(from.toKotlinInstant(), until.toKotlinInstant()),
+                            metrics,
+                        )
+                check(snapshot.completeness == ReadCompleteness.AUTHORIZED_WINDOW) {
+                    "Incomplete health read; retained measurements are unchanged."
+                }
                 val heights =
-                    if (HEIGHT_PERMISSION in authorized) linkedMapOf<String, BodyHeight>() else null
+                    if (BodyMetric.HEIGHT_METRES in metrics)
+                        snapshot.recordsForReplacement(BodyMetric.HEIGHT_METRES).map { record ->
+                            BodyHeight(
+                                "hc-height:${record.sourceId}",
+                                record.value,
+                                record.at.toJavaInstant(),
+                                record.offsetSeconds?.let(ZoneOffset::ofTotalSeconds),
+                                PROVIDER,
+                                record.sourceId,
+                                record.origin,
+                                until,
+                            )
+                        }
+                    else null
                 val weights =
-                    if (WEIGHT_PERMISSION in authorized) linkedMapOf<String, BodyWeight>() else null
-                if (heights != null) {
-                    var page: String? = null
-                    var pages = 0
-                    do {
-                        check(++pages <= MAX_PAGES) {
-                            "Height history exceeds this import limit; retained measurements are unchanged."
-                        }
-                        val response =
-                            client.readRecords(
-                                ReadRecordsRequest(
-                                    recordType = HeightRecord::class,
-                                    timeRangeFilter = TimeRangeFilter.between(from, until),
-                                    pageSize = 500,
-                                    pageToken = page,
-                                )
+                    if (BodyMetric.WEIGHT_KILOGRAMS in metrics)
+                        snapshot.recordsForReplacement(BodyMetric.WEIGHT_KILOGRAMS).map { record ->
+                            BodyWeight(
+                                "hc-weight:${record.sourceId}",
+                                record.value,
+                                record.at.toJavaInstant(),
+                                record.offsetSeconds?.let(ZoneOffset::ofTotalSeconds)
+                                    ?: ZoneOffset.UTC,
+                                PROVIDER,
+                                record.sourceId,
+                                record.origin,
                             )
-                        response.records.forEach { record ->
-                            val value =
-                                BodyHeight(
-                                    "hc-height:${record.metadata.id}",
-                                    record.height.inMeters,
-                                    record.time,
-                                    record.zoneOffset,
-                                    PROVIDER,
-                                    record.metadata.id,
-                                    record.metadata.dataOrigin.packageName,
-                                    until,
-                                )
-                            val old = heights.putIfAbsent(value.id(), value)
-                            check(old == null || old == value) {
-                                "Height changed while importing. No measurements were replaced; refresh to review."
-                            }
                         }
-                        page = response.pageToken
-                    } while (page != null)
-                }
-                if (weights != null) {
-                    var page: String? = null
-                    var pages = 0
-                    do {
-                        check(++pages <= MAX_PAGES) {
-                            "Weight history exceeds this import limit; retained measurements are unchanged."
-                        }
-                        val response =
-                            client.readRecords(
-                                ReadRecordsRequest(
-                                    recordType = WeightRecord::class,
-                                    timeRangeFilter = TimeRangeFilter.between(from, until),
-                                    pageSize = 500,
-                                    pageToken = page,
-                                )
-                            )
-                        response.records.forEach { record ->
-                            val value =
-                                BodyWeight(
-                                    "hc-weight:${record.metadata.id}",
-                                    record.weight.inKilograms,
-                                    record.time,
-                                    record.zoneOffset ?: ZoneOffset.UTC,
-                                    PROVIDER,
-                                    record.metadata.id,
-                                    record.metadata.dataOrigin.packageName,
-                                )
-                            val old = weights.putIfAbsent(value.id(), value)
-                            check(old == null || old == value) {
-                                "Weight changed while importing. No measurements were replaced; refresh to review."
-                            }
-                        }
-                        page = response.pageToken
-                    } while (page != null)
-                }
+                    else null
                 val requiredAtCommit =
                     authorized +
                         if (HISTORY_PERMISSION in granted) setOf(HISTORY_PERMISSION) else emptySet()
                 check(grantedPermissions().containsAll(requiredAtCommit)) {
                     "Body or history permissions changed during import. Retained measurements are unchanged."
                 }
-                store.replaceImportedWindow(
-                    PROVIDER,
-                    from,
-                    until,
-                    heights?.values?.toList(),
-                    weights?.values?.toList(),
-                )
+                store.replaceImportedWindow(PROVIDER, from, until, heights, weights)
                 "Body measurements refreshed from the authorized ${if(HISTORY_PERMISSION in granted)84 else 29}-day window. Choose a weight explicitly before using protein guidance."
             }
         }

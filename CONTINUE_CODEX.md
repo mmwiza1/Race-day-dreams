@@ -63,7 +63,7 @@ functioningAndroid+iOS builds and eventual gatedmerge/testpublication. This supe
 Do NOT merge this incomplete migration, even if its focused checkpoint checks pass.
 
 - Branch`experiment/android-ios-kmp-compose`, from latestmain85e1c3903b61f1d45e444d120ba1a701ad3a2c36.
-  First verifiedbatch ready to commit/push and open DRAFT PR. Separate ownerCI PR23 untouched.
+  First verifiedbatch040ea9f801117bb96d54acbe4427c26943d80142 is committed/pushed; DRAFT [PR24](https://github.com/mmwiza1/Race-day-dreams/pull/24). Separate ownerCI PR23 untouched.
   Versions0.12.3-test1/code19 and dataformats19/13/3/1 remain unchanged. No artifacts published.
 - Implemented actual Android-used sharedDomain/commonMain:14existing enums/bodyunit conversions
   plus deterministicPacePolicy; original15Javafiles removed. ExistingJavaAPI PaceCalculator is
@@ -87,10 +87,28 @@ Do NOT merge this incomplete migration, even if its focused checkpoint checks pa
   fullAndroid default guards/assertions/timeouts stay unchanged. OptionalRDD_FOCUSED_CLASSES is
   used ONLY by experimentaljob;15runnerhelpertests pass including cleanup/exit/defaultfullflow.
   Existing release10/capture23 pass. No final screenshots or hardware pass claimed.
-- Exact next: inspect finalfast/harness/format logs in `/workspace/scratch/kmp-*`, commit/push
-  coherent firstbatch/open draftPR. Inspect macOSCIactual Xcode/simulator outcome and fix concrete
-  native build errors; do not assume unavailablemac because localhostLinux lacksXcode. Then
-  continue remainingdomain/UI/platform implementation, not a feasibility or throwawayprototype.
+- First checkpointCI43431989080 SUCCESS on actualGitHubmacOS/Android: Xcode26.6/arm64 compiled
+  sharedUi iOSsimulator framework and ran sharedDomainNative tests; Android9focusedexisting
+  MaterialTheme/PlainEnglish/StrengthAnalytics instrumentation tests passed. Nativeframework is
+  NOT a completeiOSapp. No macOSinfrastructureblocker currently. Fullreleasegates not run yet.
+- Current UNCOMMITTED secondbatch: newsharedHealth KMPmodule, kotlinx-datetime0.6.2 exacttimestamp
+  bridges, sharedtypedstaging/duplicate/conflict/authorization-window rules and11commonJVMtests.
+  AndroidHeight/Weightreading now delegates to realsharedHealthAndroidreader; existinggateway
+  retainslocking/historypermissionrecheck/DTOvalidation/transaction andweightmissingoffsetUTC.
+  NativeHealthKitBodyReader uses realreadonlyHKqueries, cancellableboundedreads andauthorization
+  sheet. AppleCOMPLETED doesnotmeanreadgranted; visible-onlyempty/nonempty snapshots CANNOT
+  replace/import-delete retainedwindows. NativeHealthKitcode has NOT compiled/beenprovider-tested
+  yet. No iOSapphost/entitlements/permissionusage strings yet. Preserve all uncommitted files.
+- Currentverification: final `/workspace/scratch/kmp-health-policy-build.log` PASS160tasks/4m48s:
+  11sharedHealthJVMtests, APK/testAPK/lint. Sixsnapshot and5pagedpermission/revocation/failure/
+  bounded-read tests preserve existingpartialgrant behavior; SDKdriver delegates to commonpolicy.
+  Body imports retain original1000pages/500records perpage limits, qualifiedsource IDs andUTC
+  weightfallback. HC historypermission stillrechecked in originalgateway beforetransaction.
+  FocusedAndroidCI nowincludes realBodyMeasurementsRepository/HealthConnectGateway/BodyMeasurements
+  UI tests alongside prior9UIchecks. NativeHealthKitcode is NOT yet compiled; commit/push the
+  coherent healthbatch toSAMEPR24 after fastchecks and inspect that exactCI, correcting real
+  AppleAPIbinding errors rather than skips. Priorbaseline/domain/sharedUI checks remainvalid.
+  Then continue remainingfullscope; no feasibility/demo substitute or prematuremerge/publication.
 - Remaining fullscope:204Javafiles to sharedKotlin; remaining Android-bound screens/ViewModels/
   navigation/data sources into one sharedapp; HealthKit and retainedHealthConnect adapters,
   cross-platformSQLite/backup/retention/permissions/recording/BLE/notifications; iOSapphost,

@@ -15,7 +15,8 @@ Apache-2.0. Review that graph and this inventory when versions change.
 | --- | --- | --- | --- |
 | Kotlin / Multiplatform, Android and Compose compiler plugins, standard library | 2.1.21 | Apache-2.0 | Android integration language; [source](https://github.com/JetBrains/kotlin/tree/v2.1.21). Licence retained in assets. |
 | Compose Multiplatform | 1.8.2 | Apache-2.0 | Shared existing Compose UI for Android/iOS; [source](https://github.com/JetBrains/compose-multiplatform/tree/v1.8.2). Apache terms retained in assets; platform libraries keep their own notices. |
-| kotlinx.coroutines Android/core | 1.9.0 | Apache-2.0 | Off-main IO, structured concurrency and StateFlow; [source](https://github.com/Kotlin/kotlinx.coroutines/tree/1.9.0). Licence retained in assets. |
+| kotlinx.coroutines Multiplatform/core/Android/test | 1.9.0 | Apache-2.0 | Off-main IO, structured concurrency and StateFlow; [source](https://github.com/Kotlin/kotlinx.coroutines/tree/1.9.0). Licence retained in assets. |
+| kotlinx-datetime | 0.6.2 | Apache-2.0 | Shared exact timestamps and JVM Instant adapters for optional health observations; [source](https://github.com/Kotlin/kotlinx-datetime/tree/v0.6.2). Apache terms retained in assets. |
 | AndroidX Compose BOM | 2025.07.00 | Apache-2.0 | Pins UI/runtime/foundation 1.8.3 and Material 3 1.3.2; [AndroidX](https://android.googlesource.com/platform/frameworks/support/). |
 | Compose UI, Foundation, Material 3, previews/tooling | BOM-managed | Apache-2.0 | Accessible declarative UI; AndroidX copyright/licence notices below. Tooling is debug-only. |
 | AndroidX Activity Compose | 1.9.3 | Apache-2.0 | Activity and result/permission integration; AndroidX. |

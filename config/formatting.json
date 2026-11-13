@@ -246,6 +246,7 @@
     "domain/src/test/java/org/racedaydreams/domain/presentation/AthleteLanguageTestSuite.java",
     "app/src/androidTest/java/org/racedaydreams/coach/PlainEnglishUiTest.kt",
     "sharedDomain/src/**/*.kt",
-    "sharedUi/src/**/*.kt"
+    "sharedUi/src/**/*.kt",
+    "sharedHealth/src/**/*.kt"
   ]
 }
