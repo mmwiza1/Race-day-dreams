@@ -91,7 +91,7 @@ Do NOT merge this incomplete migration, even if its focused checkpoint checks pa
   sharedUi iOSsimulator framework and ran sharedDomainNative tests; Android9focusedexisting
   MaterialTheme/PlainEnglish/StrengthAnalytics instrumentation tests passed. Nativeframework is
   NOT a completeiOSapp. No macOSinfrastructureblocker currently. Fullreleasegates not run yet.
-- Current UNCOMMITTED secondbatch: newsharedHealth KMPmodule, kotlinx-datetime0.6.2 exacttimestamp
+- Second batch COMMITTED/PUSHED afc8e4ea822f88b524f6d3709e1ea538d757fc53: newsharedHealth KMPmodule, kotlinx-datetime0.6.2 exacttimestamp
   bridges, sharedtypedstaging/duplicate/conflict/authorization-window rules and11commonJVMtests.
   AndroidHeight/Weightreading now delegates to realsharedHealthAndroidreader; existinggateway
   retainslocking/historypermissionrecheck/DTOvalidation/transaction andweightmissingoffsetUTC.
@@ -109,7 +109,23 @@ Do NOT merge this incomplete migration, even if its focused checkpoint checks pa
   coherent healthbatch toSAMEPR24 after fastchecks and inspect that exactCI, correcting real
   AppleAPIbinding errors rather than skips. Priorbaseline/domain/sharedUI checks remainvalid.
   Then continue remainingfullscope; no feasibility/demo substitute or prematuremerge/publication.
-- Remaining fullscope:204Javafiles to sharedKotlin; remaining Android-bound screens/ViewModels/
+- Latest actualCI43435064307: AndroidPASS28focusedtests inclbodyrepository/healthgateway/UI;
+  AppleFAIL only HealthKitBodyReaderNSDate constructors/category-propertybindings atlines131–137.
+  AllApplehealthquery APIs compiled up to that error; no infrastructureblocker. LOCALfix now
+  reuses existing kotlinx-datetimeDarwin toNSDate/toKotlinInstant instead of bespokeFoundation
+  calls;2realiosDateinteroperability tests added. Do not rerun unchangedafc8 or weaken tests.
+- Third batch LOCAL: SourceIdentity/PerformanceDistance converted to commonKotlin,2Java originals
+  removed (202remaining). Retains Javaaccessors/constants, originalrecordequality/hash/text,
+  exactwhitespace (validationdoesnotnormaliseIDs), immutableCORE order. OriginalJava versus
+  convertedJVM10line identity/distance parity output cmpMATCH; originalhashes testedincommon.
+  `/workspace/scratch/kmp-identities-build.log` PASS113tasks/2m47s:6sharedDomainJVMtests, all700,189
+  legacydomainchecks, APK/testAPKcompile. Three newidentity tests retain invalidinput assertions.
+  No lint/runtime/Nativepass yet for thisbatch. Preserve alluncommitted files.
+- Exactnext: review/commit the NativeDatefix+realidentityconversion to SAMEPR24 after localformat
+  checks; push and inspect new macOS/AndroidCI. UpdatePRbodyactualresults. Keepdraft until full
+  agreedappscope complete; sharedframework alone is not iOSapp. Continue actualdomain/UI/
+  storage/native-service migration after these concretecompilation failures are resolved.
+- Remaining fullscope:202Javafiles to sharedKotlin; remaining Android-bound screens/ViewModels/
   navigation/data sources into one sharedapp; HealthKit and retainedHealthConnect adapters,
   cross-platformSQLite/backup/retention/permissions/recording/BLE/notifications; iOSapphost,
   genuine end-to-end feature parity and Android+iOSbuilds; final fullplatform/regression/visual

@@ -4,14 +4,12 @@ package org.racedaydreams.health.body
 
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.math.floor
-import kotlin.math.roundToLong
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
-import platform.Foundation.NSDate
+import kotlinx.datetime.toKotlinInstant
+import kotlinx.datetime.toNSDate
 import platform.Foundation.NSSortDescriptor
 import platform.HealthKit.*
 import platform.darwin.dispatch_async
@@ -71,8 +69,8 @@ class HealthKitBodyReader(private val store: HKHealthStore = HKHealthStore()) :
         suspendCancellableCoroutine { continuation ->
             val predicate =
                 HKQuery.predicateForSamplesWithStartDate(
-                    window.from.toDate(),
-                    window.until.toDate(),
+                    window.from.toNSDate(),
+                    window.until.toNSDate(),
                     HKQueryOptionStrictStartDate,
                 )
             val query =
@@ -104,7 +102,7 @@ class HealthKitBodyReader(private val store: HKHealthStore = HKHealthStore()) :
                                     BodyObservation(
                                         metric,
                                         sample.quantity.doubleValueForUnit(unit),
-                                        sample.startDate.toInstant(),
+                                        sample.startDate.toKotlinInstant(),
                                         null,
                                         "health-kit",
                                         sample.UUID.UUIDString,
@@ -125,15 +123,4 @@ class HealthKitBodyReader(private val store: HKHealthStore = HKHealthStore()) :
             }
             if (continuation.isActive) store.executeQuery(query)
         }
-}
-
-private fun Instant.toDate(): NSDate =
-    NSDate(timeIntervalSince1970 = epochSeconds.toDouble() + nanosecondsOfSecond / 1_000_000_000.0)
-
-private fun NSDate.toInstant(): Instant {
-    val seconds = floor(timeIntervalSince1970).toLong()
-    return Instant.fromEpochSeconds(
-        seconds,
-        ((timeIntervalSince1970 - seconds) * 1_000_000_000.0).roundToLong(),
-    )
 }
