@@ -1076,17 +1076,60 @@ incomplete migration merely because a focused checkpoint passes.
 - No migrations, version bump, rolling-release publication or merge. Full iOS application host,
   native typed persistence/backup/retention/assets/services and remaining domain/UI still OPEN.
 
+### Thirty-first checkpoint — shared sample qualification, observed splits and rolling efforts
+
+- Continued from pushed4916f1fac336d30da1bc514dc08b37afc2e65ddd/6ee10a0, preserving all prior work.
+  Replaced original SampleSeries, SplitCalculator and BestEffortCalculator Java with common Kotlin.
+  **90 domain Java files remain.** Existing Java callers retain their helper field/constant API;
+  javap confirms SampleSeries resolves the Kotlin implementation. No duplicate Java shadow.
+- Preserves the same500000-point/12m/s/30s quality gates, rejected/unknown evidence, prefix-indexed
+  available sensor means, continuous segments, fixed-split elapsed semantics and both rolling-effort
+  sweeps. Stationary plateaus use latest starts for efforts but first crossings for fixed splits;
+  final stationary time remains in fixed splits. No PB across unsupported gaps/sparse evidence or
+  materially conflicting totals. Recorded source offsets/UTC fallback retained; actuals unchanged.
+- Original/shared full output matches672lines/112deterministic configurations, SHA256
+ 135a6f4757414e7ae3d934a3bc8aa584822fe482b28dd5d9ca5643165e652775.
+  Originals/compiled oracle in scratch/activity-calculation-original; ActivityCalculationParity.java
+  and kmp-{original,shared}-activity-calculation.log retained. Ten new common tests keep all assertions.
+  One initial fixture was only400m (shorter than CORE1km), corrected to four valid observations over
+ 1km; original Java independently confirms UNCERTAIN/no automatic PB. No product rule was changed.
+- Local kmp-activity-calculation-final-build.log: BUILD SUCCESSFUL1m47s/52tasks; **254 domain+14health
+  JVM tests**, zero failures/errors/skips; retained Java suite compilation and actual Android Kotlin
+  compilation PASS. The prepared offline classpath executed **700189checks/48suites** with -ea,
+  all PASS (kmp-activity-all-legacy-domain.log). Activity138/GPS46311 included, not extra totals.
+  Formatting CHECK489sources (381Kotlin/108Java) and diff PASS. No modified UI or migrations in
+  this added calculation batch; both APK/lint PASS at preceding4916 route checkpoint, not rebuilt
+  for this newer local source yet. Exact-head Android build/runtime and Native remain pending.
+- Actual4916 Apple job132582788108 in experiment43639234658 SUCCESS7m55s: real iosX64 tests and
+  shared UI framework link. Artifact14131781097 digest
+ 36790f83cfe959a090ae4e9cd7a76817b63b7c571e1675ea6ad5f5fe149552ac independently verified:
+  **230domain+16health Native tests**, zero failures/errors/skips. Proof scratch/running-apple-
+  verification.json. This verifies the nine recorder/execution/route ports, NOT the following
+  three calculation classes (expected Native240domain is still pending).
+- First4916 Android job132582788395 failed BEFORE compilation: pinned Maven Central Kotlin2.1.21
+  POM requests returnedHTTP403. All three exact POMs independently returnedHTTP200 afterwards.
+  No dependency/mirror/security/test change. GitHub rejected retry while parentApple was running;
+  once it finished ONE targeted job retry was authorised/executed via connected GitHub tool.
+  Attempt2 Android132586151728 is running; actual dependency/domain/schema steps passed and it
+  reached Android build. Prior failure was investigated, not blindly rerun. Check actual result.
+  Expected340runtime cases are still NOT a pass. Formatting43639234684 SUCCESS for4916.
+- Hold the next source push until the running4916 Android attempt completes, so it is not needlessly
+  cancelled. If it reveals a genuine integration failure, fix it with this next coherent source
+  checkpoint and reverify. PR24 remains OPEN DRAFT; version/formats/publication/merge unchanged.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve6ee10a0 plus the following route checkpoint. Inspect
-   their new experiment/format workflows and fix actual failures; current handoff only records LOCAL
-   passing gates. Expected340 Android runtime /230 domain+16 health Native must not be claimed until
-   completed logs/result artifacts confirm them. Prior c2d46bd verification does not cover new source.
-2. Continue coherent remaining running-analysis domain batch: SampleSeries, SplitCalculator and
-   BestEffortCalculator share the retained sample-quality gate and are still Java. Inspect originals,
-   preserve invalid/gap/plateau semantics and add original-versus-common parity before deletion.
-   Extend to directly coupled analysis/presentation/UI only when dependencies are shared. Do not
-   change GPS acquisition, filtering, timing, stored totals or accepted observations while porting.
+1. Inspect branch/status/log and PR24; preserve all source. New calculation checkpoint is locally
+   verified (254domain+14health JVM/700189legacy), awaiting push after4916 Android attempt2.
+   Inspect experiment43639234658 attempt2 Android132586151728 actual result. Apple4916 already
+   passed230domain+16health Native/framework; new calculation source still needs its own Native
+   and Android CI. Fix root causes, retain all340 focused cases/full final gates; no blind reruns.
+2. Push the verified calculation checkpoint once prior running CI has completed (avoid cancellation),
+   update PR24, inspect new exact-head tests/artifacts. Do not restart the completed recorder,
+   route, sample-quality, splits or rolling-effort ports. Remaining activity analysis/query Java
+   includes ActivityAnalytics, ComparableRuns, LongRunDurability, MilestoneEngine,
+   WorkoutHistoryQuery and RunnerDataRepository; inspect their direct dependencies before the next
+   coherent batch. Preserve original formulas/evidence/provenance and prepare parity first.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
