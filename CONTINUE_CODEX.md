@@ -959,17 +959,55 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19; SQLite19/JSON13/raw3/complete1 unchanged. No publication/merge. iOS
   host, native assets/storage/backup/retention/services and remaining domain/UI parity remain open.
 
+### Twenty-eighth checkpoint — verified implementation and next running-execution boundary
+
+- Latest IMPLEMENTATION31ac1eb4148af7e56a08e4a08a9566a9f6bee673 passed exact experiment43632534511
+  on BOTH Android and Apple; formatting43632534522 SUCCESS. This following recovery-only commit
+  may advance the branch without app-source changes; inspect its own CI before claiming it passed.
+- Completed Android logs: **288 unique START/END pairs, no failures/skips**, including all3 actual
+  routine SQLite completion/navigation/light/dark/200% cases. **700189 domain checks/48suites**,
+  schema75/build/lint PASS. No weakened assertions, skipped original cases or blind rerun.
+- Digest-verified CI result artifacts14128574397/JVM and14129560116/Apple: **197 domain+14 health
+  JVM tests;184 domain+16 health Native tests**, zero failures/errors/skips. Real iosX64 domain/
+  health tests and shared UI framework link executed, BUILD SUCCESSFUL12m4s. The longer Apple
+  run completed successfully; its in-progress log endpoint returned404 until final logs existed.
+  No Xcode-infrastructure blocker or failed Native assertion was demonstrated.
+- CI APK artifact14128663983 tied to31ac1eb: ZIP SHA256
+  92cda6734675e80cbefac20bd685aa05f02c101ee0287dfa74872e176dad7ebe verified. Actual APK56,840,887
+  bytes/SHA25654a02bf330b64168c7bec4b5f10839abd9663125b14163c4177502ba4a74ff65; inspected
+  0.12.3-test1/code19/min28/noINTERNET. Proof /workspace/scratch/routine-ci-verification.json.
+  Actions test artifact only; no rolling release/version bump/merge. Full iOS APPLICATION is open.
+- All three source checkpoints (2971409/e2fadac/31ac1eb) pushed; working tree clean at this verified
+  implementation boundary. Entire domain.strength package is common;102 other domain Java files
+  and native UI/state/data/services/app integration remain. Native image loading remains unfinished.
+- Next pure-domain batch identified, NOT IMPLEMENTED: execution/WorkoutExecutionEngine +CoachCues,
+  followed by coordinators as their dependencies become shared. These project accepted recorder
+  metres/active time and select cues; do not change GPS acquisition/filtering/stored evidence.
+- Preserve distance-over-estimated-duration precedence, latest-observation boundary interpolation,
+  explicit open/skip/early actions, paused/monotonic metrics and immutable event snapshots. Original
+  step-list constructor permits raw null elements; do not add silent new collection validation.
+  Cue selection retains sustained evidence, grace/hysteresis, cooldown, freshness, priority/time/
+  ID ordering and first-item ties. No new audio service or second authoritative engine.
+- Common Duration currently lacks toMillis(). Add its original JVM method contract and Native
+  exact implementation when required: Java truncates negative fractional milliseconds towards
+  zero and throws on overflow (including cancellation near Long.MIN/MAX); never silently wrap
+  or round away missing time. Existing seconds/nanoseconds/ISO date types stay authoritative.
+- Prepared original source copies +RunningExecutionParity.java in scratch/running-execution-original
+  and scratch root; kmp-original-running-execution.log196lines/SHA256
+  7499eac8cd85e45b9ba6573252d61325249820b9f987bf75b6bc779100bd13f6. Includes mixed metric traces,
+  pauses/explicit actions, cue arbitration and JDK duration boundary vectors. These are preparation
+  only; no running-execution port or new shared Duration API exists yet. Use original LiveCoach/
+  RecordingCoordination suites and targeted common tests before committing that batch.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. e2fadac passed experiment43630748155
-   Android285/Apple; the following routine checkpoint needs exact new-head Android288/Apple/
-   formatting verification. Fix actual failures, never borrow the previous pass.
-2. Continue remaining102 Java domain files and actual shared UI/state/orchestration +native data
-   services. The whole strength package and RunningRoutines are already common; do not redo them.
-   WorkoutCategories now owns the exact original quality/demanding policy, with AdaptiveCoachingEngine
-   delegated to it; keep existing null/eligibility distinctions when porting other consumers.
-   Native asset loading still requires the original licensed images and a real app integration.
-   Preserve existing Android lifecycle/resource adapters, durable stores and explicit approval.
+1. Inspect branch/status/log and PR24. Preserve all work. Implementation31ac1eb passed43632534511
+   Android288/Apple and43632534522 formatting. This recovery-only documentation commit may have
+   a newer pending workflow; check its actual result. Do not restart completed strength/routine ports.
+2. Start the precise running-execution batch described above: WorkoutExecutionEngine +CoachCues
+   and required exact Duration.toMillis contract, then coordinators as dependencies allow. Prepared
+   originals/parity trace are in scratch. Retain the service-owned recording boundary and original
+   LiveCoach/RecordingCoordination/GPS assertions; do not redesign the underlying recording engine.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
