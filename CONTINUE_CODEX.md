@@ -796,16 +796,55 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No public artifact/merge.
   Full platform UI/state, native persistence/services/HealthKit and real iOS host remain open.
 
+### Twenty-fourth checkpoint — common programme construction, templates and real configuration
+
+- This source checkpoint follows b75baba (inspect git log for its final commit). TWO more Java
+  originals replaced: StrengthProgrammeGenerator and StrengthProgrammeTemplates. **117 Java
+  domain files remain.** All nine original structures/copy and unvalidated raw-template unknowns
+  retained. No load is inferred, programme activated or actual created by generation.
+- Original goals, experience-aware roles/phases, strength/muscle/power targets, conservative
+  beginner power limitations, time-budget volume reduction/reservations, canonical equipment/
+  exclusion gates, favourite tie-breaks and stable selection retained. Weeks anchor to actual
+  start dates; Upper/Lower variations remain distinct. Hybrid run penalties, race windows and
+  bounded insertion-ordered explanations are unchanged. Dates compare exact epoch days.
+- Entire actual programme-configuration form and existing generation/swap UI state now shared.
+  Original remembered fields, equipment disclosure, semantics, keyboard choices, optional recovery
+  checkbox, error/disabled state and explicit preview callback remain. Android supplies its exact
+  strict UK date parser/formatter, local today, ISO weekday conversion/labels and original labels.
+  No new default date, silently applied schedule or separate authoring engine is introduced.
+- **175 shared-domain JVM +14 shared-health JVM tests PASS**, no failures/errors/skips. Eight new
+  common tests run1080 combinations plus every start weekday/frequency, phases/experience/goals,
+  actual metadata/equipment/exclusion/time bounds, power limitations, race/hybrid context, nine
+  templates, immutable request inputs and invalid durations. Missing eligible roles remain honest
+  limitations or the original explicit rejection; no invented balanced workout is returned.
+- Original six suites **374190 checks PASS**. Complete original/shared generation output cmp MATCH
+  across1080 configurations (all5goals/3experiences/3priorities/6frequencies/4time budgets, varying
+  starts/lengths/templates/equipment/exclusions/favourites/focus/runs/races/recovery). Both80MB
+  outputs SHA25621f62dae161821b529e5a84b08b029f6c83df192f0501d90f0497b41530b669b.
+  Scratch ProgrammeGenerationParity.java / kmp-{original,shared}-programme-generation.log retain
+  proof. No sorting away output differences, numeric normalisation or weakened assertion.
+- Final kmp-programme-generation-final-build.log BUILD SUCCESSFUL117tasks/2m47s, both APKs.
+  CI-style formatting443scoped files (327Kotlin/116Java) and diff check PASS. Known raw template
+  strings are explicitly checked in Android/shared production forms; their optional/default
+  behaviour is retained. No schema/backup change since successful schema75/release-note10.
+- Next pushed-head gate must verify all278 focused Android cases, retained full domain/schema/
+  build/lint and actual Apple tests/framework. Parent fa0c88a passed Android265/Apple/format;
+  that is not a substitute for this new head. Full API28/35/36/app screenshots remain final work.
+- Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No public release or merge.
+  A shared framework is not a complete iOS app; native app/storage/services parity remains open.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. New revisions/concrete-preview
-   checkpoints follow fa0c88a, whose43603001097 experiment passed Android265/Apple and43603001007
-   formatting. Inspect exact NEW-head Android278/Apple/format CI after push; never borrow passes.
-2. Continue existing StrengthProgrammeGenerator and nine StrengthProgrammeTemplates into common
-   Kotlin, preserving all original goals/experience/phase targets, week anchors, equipment and
-   exclusion gates, favourite tie-breaks, time budgets, hybrid penalties and explainable trade-offs.
-   Compare original output and run simulator/invariants. Then continue real UI/state and legacy
-   GymProgrammeGenerator/GymNowWorkouts/GymPlanEditor. Do not redo completed ports.
+1. Inspect branch/status/log and PR24. Preserve all work. Three checkpoints after fa0c88a
+   share revisions/contracts, concrete previews/history and programme construction/configuration.
+   Inspect exact NEW-head Android278/Apple/format CI after push; never borrow parent passes.
+2. Continue remaining legacy GymProgrammeGenerator/GymNowWorkouts/GymPlanEditor into common code.
+   First share the actual TechniqueGuide/TechniqueIllustrations models and their original catalogue
+   content: the legacy generator's favourite-equivalence and explanations depend on those patterns,
+   and ExpandedExerciseGuides contains both guide and artwork definitions. Preserve all220 guides,
+   original licensing/IDs, fallback/drawing specifications and existing guidance-audit assertions;
+   do not replace them with invented metadata-to-pattern mappings. Then continue real UI/state/
+   orchestration and generation-library/dated-preview ownership without redoing completed ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
