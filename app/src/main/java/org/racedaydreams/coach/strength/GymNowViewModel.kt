@@ -5,7 +5,6 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
 import java.util.UUID
@@ -125,7 +124,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
     private var savedRest: GymRestTimer? = null
     private val repository = SqliteGymExecutionRepository(application)
     private val associations =
-        GymAssociationCoordinator(SqliteGymAssociationRepository(application), Clock.systemUTC()) {
+        GymAssociationCoordinator(SqliteGymAssociationRepository(application), { Instant.now() }) {
             UUID.randomUUID().toString()
         }
     private val coaching = CoachingStore(application)

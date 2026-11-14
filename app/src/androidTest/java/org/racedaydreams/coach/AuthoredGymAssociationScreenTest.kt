@@ -84,7 +84,7 @@ class AuthoredGymAssociationScreenTest {
             assertEquals(
                 80.0,
                 chosen!!
-                    .authoredPrescription()
+                    .authoredPrescription()!!
                     .definition()
                     .slots()[0]
                     .target()!!

@@ -634,20 +634,67 @@ incomplete migration merely because a focused checkpoint passes.
 - Final kmp-substitution-verified-build.log BUILD SUCCESSFUL,117tasks/3m17s, both APKs. CI-style
   formatting424 scoped files (294Kotlin/130Java) and diff check PASS. Existing cff9be2 already
   verified schema75/release10 and225 real Android cases including production swap/large-text/
-  authored execution and actual SQLite/JSON/backup tests. Exact NEW-head Android/Apple/format CI
-  pending after push; do not borrow the parent pass. Existing selectors retained unchanged.
+  authored execution and actual SQLite/JSON/backup tests. Exact e287ddd experiment43583530747
+  SUCCESS on BOTH Android/Apple:225 real runtime cases/no failures or skips, retained domain/
+  schema/build/lint and Apple tests/framework. Formatting43583530752 SUCCESS. No borrowed pass.
 - SQLite19/JSON13/raw3/complete1 and0.12.3-test1/code19 unchanged. No new runtime dependency,
   permission, schema, public release or merge. Full app parity and actual iOS host remain unfinished.
 
+### Twentieth checkpoint — common source validation and explicit association protocol/card
+
+- This source checkpoint follows e287ddd (inspect git log for its final commit). FOUR more Java
+  originals replaced with common Kotlin: GymWorkoutSourceValidator, GymWorkoutAssociation,
+  GymAssociationRepository and GymAssociationCoordinator. **128 Java domain files remain**.
+- Preserved sources are revalidated against exact retained versions, not today's catalogue.
+  Legacy sources authenticate stored exercise IDs/order/targets without pretending old names
+  were stored; authored/saved sources compare the full frozen definition, nullable/fractional
+  RIR targets and optional load references. Repeat sources do not copy actuals or load references.
+- Association discovery remains limited to three stored local days and an exact working task;
+  warm-up-only, occupied, not-yet-completed and already planned work cannot invent eligibility.
+  Authored open slots do not invent comparable prescriptions. Exact actuals, old revisions,
+  explicit choices, transaction-time revalidation, reversals and conflicting association guards
+  retained. Source timestamps use exact seconds/nanoseconds, never floating-point elapsed time.
+- Reviewed-choice protocol keeps the exact decision ID/proposal/choice/time through lost ACK,
+  wrong ACK or post-commit read failure. Pending stays pending until a matching acknowledgement
+  and successful read or explicit reload. Clock/ID suppliers are small common functional
+  interfaces; Android injects the same UTC instant source. The single original Java clock fixture
+  now passes its unchanged fixed clock via ::instant. No assertion or expected value changed.
+  Existing calling IO serialization retained; no speculative new association locking/engine.
+- Entire real association card/confirmation now shared Compose. Android supplies the original UK
+  date and target formatters. Actual date still uses its retained offset; historical actuals,
+  preserved prescriptions and association choices stay visibly distinct. Text, actions, tags,
+  scrolling, disabled states and confirmation remain intact; no auto-completion or auto-linking.
+- **136 shared-domain JVM +14 shared-health JVM tests PASS**, no failures/errors/skips. Eight new
+  common tests cover retained-local-day boundaries, warm-ups, future completion, stale/occupied
+  reviews, source validation, exact fractional RIR, unknown/open targets, frozen definitions,
+  lost/wrong acknowledgements, post-commit read failure, reversal and explicit reload.
+  Original five suites **1176 checks PASS**: association658/source60/coordinator241/execution173/
+  concrete substitution44. Original/new association/discovery/decision output **336lines cmp MATCH**
+  in scratch kmp-{original,shared}-association.log / AssociationParity.java. Original sources
+  remain outside git for diagnosis. No assertion weakened.
+- Initial test fixture incorrectly requested a calculated time budget for an open slot. Corrected
+  to an explicit athlete-entered fixture duration, retaining the existing unknown-budget guard.
+  Android's authored-family fixture now asserts its known non-null prescription; same assertions.
+- Final kmp-association-verified-build.log BUILD SUCCESSFUL,117tasks/1m7s, both APKs; JVM tasks
+  up-to-date after the final Android-fixture-only correction. CI-style formatting426 scoped files
+  (300Kotlin/126Java), diff and APK version/permission inspection PASS (code19/min28/noINTERNET).
+- Experiment selector adds original association SQLite7/authored-SQLite6/JSON5/UI3 tests,
+  retaining all225 prior cases (246 expected) and all default final gates. Exact NEW-head
+  Android/Apple/format CI pending after push; inspect it before borrowing e287ddd success.
+- Version0.12.3-test1/code19; SQLite19/JSON13/raw3/complete1 unchanged. No schema migration,
+  public artifact, version bump or merge. Full iOS app host/storage/services/integration and the
+  remaining Java engines/shared UI/state remain unfinished; framework success is not an app.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve the Gym Now checkpoint following a54b993 and any
-   surviving uncommitted work. The substitution checkpoint follows cff9be2; inspect exact new CI.
-   cff9be2 passed43582331804 Android225/Apple and43582331839 formatting.
+1. Inspect branch/status/log and PR24. Preserve all work. The source/association checkpoint
+   follows e287ddd; inspect its exact new Android246/Apple/format CI and correct real failures.
+   e287ddd itself passed43583530747 Android225/Apple and43583530752 formatting.
 2. Fix actual new-head failures before further source checkpoints. Next port the existing
-   GymWorkoutSourceValidator and remaining association/provenance application contracts, then
-   their real UI/state. Preserve frozen-source validation and explicit reviewed choices. Do not
-   repeat completed execution/substitution/warm-up ports or redesign their logic.
+   strength recommendation rules (polish/StartingLoad, StrengthTargetProgression and
+   StrengthProgressionAdvisor) with exact evidence/unknown/freshness/parity tests, then their real
+   progression UI/state. Do not repeat completed execution/substitution/source/association ports.
+   Preserve explicit reviewed activation and current conservative calculations.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
