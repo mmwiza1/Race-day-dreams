@@ -92,14 +92,15 @@ fun GymNowScreen(
             }
         }
         state.unfinished.forEach { saved ->
-            val attached = state.view?.accepted()?.execution()?.id() == saved.id()
+            val savedId = requireNotNull(saved.id())
+            val attached = state.view?.accepted()?.execution()?.id() == savedId
             SemanticCard(Tile.Insight) {
                 Text(
-                    saved.title().ifBlank { "Unfinished workout" },
+                    requireNotNull(saved.title()).ifBlank { "Unfinished workout" },
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
-                    "${saved.actualSetCount()} recorded sets · ${saved.status().name.lowercase(Locale.UK).replace('_', ' ')}"
+                    "${saved.actualSetCount()} recorded sets · ${requireNotNull(saved.status()).name.lowercase(Locale.UK).replace('_', ' ')}"
                 )
                 Text(
                     if (attached)
@@ -108,15 +109,13 @@ fun GymNowScreen(
                         "Recorded evidence is safe. Review this unfinished workout; any interruption is kept as a gap."
                 )
                 Button(
-                    onClick = {
-                        if (attached) onWorkout() else model.recover(saved.id(), onWorkout)
-                    },
+                    onClick = { if (attached) onWorkout() else model.recover(savedId, onWorkout) },
                     enabled = mutable,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                 ) {
                     Text(if (attached) "Continue workout" else "Review unfinished workout")
                 }
-                TextButton(onClick = { discardId = saved.id() }, enabled = mutable) {
+                TextButton(onClick = { discardId = savedId }, enabled = mutable) {
                     Text("Discard unfinished workout")
                 }
             }

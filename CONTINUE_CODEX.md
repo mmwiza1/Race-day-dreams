@@ -522,7 +522,7 @@ incomplete migration merely because a focused checkpoint passes.
   typed native storage/backup/retention, device services, full HealthKit integration and the real
   iOS app host. Continue SAME draftPR24; do not restart completed Java conversions or UI.
 
-### Seventeenth checkpoint — shared weekly strength analysis and production screen
+### Seventeenth checkpoint — shared weekly strength analysis and production screen (`a54b993`)
 
 - This source checkpoint follows94aa212 (inspect current git log/PR head for its commit).
   StrengthVolume.java replaced with common Kotlin; **141Java domain files remain**.
@@ -549,25 +549,73 @@ incomplete migration merely because a focused checkpoint passes.
   Actual screenshot regeneration/full Android matrix/iOS application build remain final work.
 - Current experiment focus already contains StrengthAnalyticsScreenTest, including real light/
   dark/200% evidence/disclosure cases; no test selector/assertion change for this batch.
-  Exact new Android/Apple/format verification pending. Do not borrow94aa212 pass.
+  Actual exact-head experiment43579335061 SUCCESS on BOTH Android and Apple; formatting
+ 43579335041 SUCCESS. Shared tests, retained domain/schema/build/lint, real runtime checks and
+ Native tests/framework passed. This does not establish final platform/application parity.
 - Next exact action: inspect this checkpoint's exact PR24 CI, fix any actual failure; then continue
   remaining domain/execution/coaching engines and shared UI/state/orchestration, typed native
   SQLite/backup/retention and services, full HealthKit integration, real iOS app host. Preserve
   all existing Android Health Connect/GPS/history. No release/version bump/merge before full parity.
 
+### Eighteenth checkpoint — common Gym Now execution, durability coordination and preparation
+
+- This source checkpoint follows a54b993 (inspect git log for its final commit). EIGHT Java
+  originals replaced with common Kotlin: GymExecution, GymExecutionSet, GymExecutionEngine,
+  GymSupersets, GymWorkoutAdapter, GymExecutionRepository, GymWorkoutSessionCoordinator and
+  GymWarmup. **133 Java domain files remain.** No second execution engine or duplicate database.
+- Frozen prescriptions/provenance, original SHA-256 programme-session IDs, event replay and
+  actual-set order remain intact. JVM uses the original system MessageDigest; Apple uses
+  system CommonCrypto. Original UTF-16 length/UTF-8 replacement of isolated surrogates retained.
+  Original enum order, wire format1, IDs and record text preserved. No schema/backup bump.
+- Monotonic timing, explicit interrupted-clock recovery, paused versus active time, unknown
+  downtime, partial completion, warm-up exclusion and independent swapped-exercise evidence
+  are preserved. Stable-ID identical retries remain idempotent; conflicts never overwrite actuals.
+  A failed command cannot replace the last good snapshot. Stored versus proposed evidence remains
+  separate. Coordinator retries freeze the exact operation/snapshot/revision/clock observation.
+- Typed durability contract is shared; existing Android SQLite remains authoritative. Accepted
+  evidence is published only after a matching acknowledgement. Complete operations are serialized
+  by a reentrant JVM monitor / Apple NSRecursiveLock, including repository IO; no UI-thread IO.
+  Explicit nullable load/acknowledgement contracts retain missing/invalid evidence. Android callers
+  now check preserved IDs/known rows explicitly; fixtures assert expected non-null evidence.
+  No assertion removal, delay, training-rule or persistence-semantic change.
+- Original conservative warm-up engine and real production preparation card now shared. Original
+  freshness (including fractional 28-day boundary), exact exercise, effort, related movement,
+  modality and reference cap rules preserved. Suggestions only stage the editable form, never
+  actuals. Collapsed/evidence disclosures, copy, callbacks and semantics retained; Android supplies
+  the original UK one-decimal formatter and still owns rest notifications/permission handling.
+- **122 shared-domain JVM +14 shared-health JVM tests PASS**, no failures/errors/skips. Nineteen
+  new tests cover replay corruption, clock/recovery gaps, partials, warm-ups/substitutions/rounds,
+  source IDs, signed-zero retry effort, before/after-commit failures, wrong acknowledgements,
+  reentrant lock release and 64 competing saves without lost sets/revisions. Original six suites
+  **9085 checks PASS**: execution173/tools7909/coordinator241/source60/association658/substitution44.
+  Original/new outputs **cmp MATCH**: execution7 +identity6 +warmup9 lines, scratch
+  kmp-{original,shared}-gym-{execution,identity,warmup}.log. Offline harness uses actual Kotlin.
+- Schema75/release-note10 tests PASS. CI-style formatter421 scoped files (290Kotlin/131Java)
+  and diff check PASS. Initial compile surfaced Kotlin's newly explicit nullable row/source types;
+  direct production checks and fixture non-null assertions correct those without weakening tests.
+  Final kmp-gym-verified-build.log BUILD SUCCESSFUL:117tasks/1m12s, both APKs. Shared
+ tests were up-to-date after the final fixture-only correction; all instrumentation sources compile.
+- Experiment selector adds existing execution SQLite14/JSON12/backup12, engine2/coordinator1/
+  source1 and substitution3/authored GymNow6 cases (225 expected overall), retaining all prior
+  cases/default final gates. Exact new Android/Apple/format CI pending after push; do not claim
+  a Native/runtime pass from a54b993. No new full screenshots or final Android matrix claim.
+- Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. APK permission inspection
+  confirms no INTERNET. No public artifact/version increment/merge. Full iOS application host,
+  typed native SQLite/backup/retention/services and app-wide shared UI/orchestration remain open.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The current weekly strength
-   analysis/shared-screen checkpoint follows94aa212. Its local tests/build/formatting passed;
-   inspect exact new PR-head CI.94aa212 passed Android174, Apple tests/framework and formatting.
-2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
-   application work: portable activity/strength models/engines, actual shared screens and
-   orchestration, platform storage/services and real iOS app host. Preserve known/unknown
-   HealthKit read visibility; never use a visible-only snapshot for window replacement.
-3. Continue remaining Java-domain conversion and actual shared screens/navigation/state/data
-   sources, cross-platform typed SQLite/backup/retention, permissions, full HealthKit integration,
-   recording/BLE/notifications and an actual iOS app host with entitlements/usage strings.
-   Full Android/iOS parity and actual app builds are still incomplete. Framework-only success
+1. Inspect branch/status/log and PR24. Preserve the Gym Now checkpoint following a54b993 and any
+   surviving uncommitted work. Check the exact final both-APK build and newly pushed CI results.
+   a54b993 itself passed43579335061 Android/Apple and43579335041 formatting.
+2. Fix actual failures before further source checkpoints. Continue with the existing
+   ExerciseSubstitutionEngine and actual substitution UI/state/context, retaining equipment,
+   exclusion, measurement/provenance and explicit today-only/permanent choice safeguards.
+3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
+   typed native SQLite/backup/retention, permissions, full HealthKit integration,
+   recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
+   use visible-only HealthKit snapshots to replace retained windows or infer deletion.
+   Full Android/iOS parity and actual app builds remain incomplete. Framework-only success
    must never be described as an iOS application or grounds for merging.
 4. Final required platform/regression/screenshot gates only once implementation is ready.
    No premature version increment, publication or merge. Physical HealthKit, Health Connect,

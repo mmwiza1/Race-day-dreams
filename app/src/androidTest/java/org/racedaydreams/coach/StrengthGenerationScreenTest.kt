@@ -308,8 +308,8 @@ class StrengthGenerationScreenTest {
             )
             gym.finish(
                     engine.finish(tick(2000), null, "Retained native actual", false),
-                    started.revision(),
-                )
+                    started!!.revision(),
+                )!!
                 .execution()
         }
         click("Review future programme changes")
@@ -350,7 +350,10 @@ class StrengthGenerationScreenTest {
             original.programme(),
             io { programmes.programme(original.programme().id(), 1) },
         )
-        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        assertEquals(
+            actual,
+            io { SqliteGymExecutionRepository(app).load(actual.id())!!.execution() },
+        )
         assertTrue(io { programmes.decisions().last().protectedWorkoutIds().contains(first.id()) })
         io {
             val backup = SqliteBackupRepository(app)
@@ -360,7 +363,10 @@ class StrengthGenerationScreenTest {
             regenerated.programme(),
             io { programmes.programme(original.programme().id(), 2) },
         )
-        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        assertEquals(
+            actual,
+            io { SqliteGymExecutionRepository(app).load(actual.id())!!.execution() },
+        )
         compose.runOnIdle { model.open(before.id()) {} }
         await { model.state.value.draft?.id() == before.id() }
         assertTrue(model.state.value.superseded)
@@ -656,13 +662,16 @@ class StrengthGenerationScreenTest {
                         "Recorded independently",
                         false,
                     ),
-                    started.second.revision(),
-                )
+                    started.second!!.revision(),
+                )!!
                 .execution()
         }
         compose.runOnIdle { model.activate(proposal, "accept-finished-swap") { activations++ } }
         await { activations == 2 }
-        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        assertEquals(
+            actual,
+            io { SqliteGymExecutionRepository(app).load(actual.id())!!.execution() },
+        )
         assertEquals(
             first,
             io {

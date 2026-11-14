@@ -174,7 +174,10 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
         val known = review.programme().workouts().map { it.id() }.toSet()
         val gym = SqliteGymExecutionRepository(getApplication<Application>())
         gym.unfinished().forEach { row ->
-            val source = gym.load(row.id()).execution().source()
+            val stored =
+                gym.load(requireNotNull(row.id()))
+                    ?: error("The unfinished gym workout is missing.")
+            val source = stored.execution().source()
             if (
                 source?.kind() == GymExecution.SourceKind.PROGRAMME &&
                     source.id() == review.programme().id() &&

@@ -242,7 +242,7 @@ class CustomStrengthExerciseScreenTest {
         awaitGym { true }
         compose.runOnIdle { gym!!.startPlanned(candidate.workouts().first().id()) {} }
         awaitGym { it.view?.accepted() != null }
-        assertTrue(gym!!.state.value.view!!.accepted().execution().actualSets().isEmpty())
+        assertTrue(gym!!.state.value.view!!.accepted()!!.execution().actualSets().isEmpty())
         assertEquals("", gym!!.state.value.form.kilograms)
         compose.runOnIdle {
             gym!!.updateForm {

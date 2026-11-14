@@ -78,7 +78,7 @@ class GymAssociationScreenTest {
         }
         Assert.assertEquals(
             GymExecution.Origin.FREE,
-            io { SqliteGymExecutionRepository(app).load(actualId).execution().origin() },
+            io { SqliteGymExecutionRepository(app).load(actualId)!!.execution().origin() },
         )
         Assert.assertEquals(originalActual, io { CoachingStore(app).strength().single() })
         Assert.assertEquals(original, io { GymProgrammeStore(app).current() })

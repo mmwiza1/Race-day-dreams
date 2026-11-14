@@ -775,7 +775,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
     fun skipMovement() = command {
         val id = coordinator.view().observed()?.selectedSlotId() ?: error("Choose an exercise.")
         coordinator.skipExercise(id)
-        GymSupersets.next(coordinator.view().observed())?.let {
+        GymSupersets.next(coordinator.view().observed() ?: error("Open a workout first."))?.let {
             coordinator.selectExercise(it.slotId())
         }
     }

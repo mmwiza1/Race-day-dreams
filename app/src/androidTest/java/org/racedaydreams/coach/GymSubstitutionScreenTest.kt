@@ -82,7 +82,7 @@ class GymSubstitutionScreenTest {
     @Test
     fun busyEquipmentSwapPreservesOriginalActualAndClearsIncompatibleLoadReferenceAfterChoice() {
         install()
-        val frozen = execution().prescription()
+        val frozen = execution().prescription()!!
         val slotId = execution().selectedSlotId()
         saveOriginalSet()
         val firstActual = execution().actualSets().single()
@@ -166,7 +166,7 @@ class GymSubstitutionScreenTest {
     @Test
     fun discomfortBodyweightAlternativeExplainsLimitationsAndRemovesTheOldMeasurementTarget() {
         install(dark = true)
-        val frozen = execution().prescription()
+        val frozen = execution().prescription()!!
         saveOriginalSet()
         val originalActual = execution().actualSets().single()
         compose.onNodeWithText("Swap exercise").performScrollTo().performClick()
@@ -301,7 +301,7 @@ class GymSubstitutionScreenTest {
         assertFalse(io { SqliteUserPreferencesRepository(application).load().isPresent })
     }
 
-    private fun execution() = model.state.value.view!!.accepted().execution()
+    private fun execution() = model.state.value.view!!.accepted()!!.execution()
 
     private fun await(condition: () -> Boolean) {
         compose.waitUntil(20_000) {

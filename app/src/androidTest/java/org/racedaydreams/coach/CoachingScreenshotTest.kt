@@ -1683,7 +1683,7 @@ class CoachingScreenshotTest {
             await("Workout saved")
             alignHeading("Workout saved")
             capture("gym-workout-saved")
-            val retained = SqliteGymExecutionRepository(context).load(executionId).execution()
+            val retained = SqliteGymExecutionRepository(context).load(executionId)!!.execution()
             Assert.assertFalse(retained.partial())
             Assert.assertEquals(4, retained.actualSets().size)
             Assert.assertNull(retained.plannedAssociation())
@@ -1770,7 +1770,7 @@ class CoachingScreenshotTest {
             capture("gym-association-saved")
             Assert.assertEquals(
                 retained,
-                SqliteGymExecutionRepository(context).load(executionId).execution(),
+                SqliteGymExecutionRepository(context).load(executionId)!!.execution(),
             )
             Assert.assertEquals(actual, CoachingStore(context).strength().single())
         } finally {

@@ -192,7 +192,7 @@ class GymNowScreenTest {
         click("Start favourite")
         await { execution()?.origin() == GymExecution.Origin.FAVOURITE }
         assertEquals(frozen, execution()!!.prescription())
-        assertEquals(frozen.id(), execution()!!.source().id())
+        assertEquals(frozen.id(), execution()!!.source()!!.id())
         assertTrue(execution()!!.actualSets().isEmpty())
         assertEquals("", model.state.value.form.kilograms)
         compose.runOnIdle { model.discard() }
@@ -222,7 +222,7 @@ class GymNowScreenTest {
         assertEquals("", model.state.value.form.kilograms)
         assertEquals(
             80.0,
-            execution()!!.prescription().slots().single().target()!!.referenceLoadKg()!!,
+            execution()!!.prescription()!!.slots().single().target()!!.referenceLoadKg()!!,
             0.0,
         )
         io { GymProgrammeStore(application).save(programme(2)) }
