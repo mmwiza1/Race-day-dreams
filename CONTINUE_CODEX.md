@@ -881,18 +881,56 @@ incomplete migration merely because a focused checkpoint passes.
   are prepared under /workspace/scratch/gym-planning-original; proposed Kotlin files are in scratch,
   NOT yet installed in repository at this source checkpoint. Continue implementation, not a restart.
 
+### Twenty-sixth checkpoint — common legacy gym planner, one-off factory and future-session edits
+
+- This source checkpoint follows2971409 (inspect git log for its final commit). THREE remaining
+  Java strength-package originals replaced: GymProgrammeGenerator, GymNowWorkouts and GymPlanEditor.
+  **103 Java domain files remain; domain.strength itself now contains NO Java implementation.**
+  This is domain migration, not full platform/application parity or a completed iOS app.
+- Original bounded six-week permutation search, start-anchored weeks, lower-session ordinal,
+  priority-sensitive demanding-run/actual/planned adjacency penalties, pattern-sensitive favourite
+  selection, equipment/exclusion fallbacks, time budgeting and explanation order retained. Core-
+  only work remains distinct from meaningful lower-body work. No sessions silently disappear.
+- One-off generation retains private fixed reference calendar, exact planner selection, honest
+  missing-pulling/power/experience limitations and no invented starting load. Only the date-free
+  definition is returned; programmes and actuals are never saved. All original overloads retained.
+- Explicit move/skip/reduce/swap/reference actions create new versions; past/completed work cannot
+  change. Original recurring days/other sessions preserved, swaps clear load references and reject
+  incompatible tasks. Legacy version arithmetic/validation retained without a new progression rule.
+- Presentation bridge keeps the exact existing UK java.time formatter on Android/JVM, including
+  its platform locale data. Native uses explicit UK month/year formatting over the supported
+  proleptic date range; stored date IDs and all date calculations stay common and exact.
+- **191 shared-domain JVM +14 shared-health JVM tests PASS**, zero failures/errors/skips. Eight new
+  common tests cover every start weekday/frequency,1080 equipment/goal/experience/priority/time
+  cases, distinct lower variations, favourite intent, directional hybrid context, protected
+  history, optional task/load references, one-off isolation and96 full-range date cases.
+- Original six suites **77780 checks PASS**: gym25847/allocation30390/GymNow19720/guidance1410/
+  catalogue240/Release08173. A temporary CLI launcher used the wrong Release08 class name; ran
+  the actual polish.Release08TestSuite successfully without rerunning/weakening passed suites.
+- Complete original/shared **14136line cmp MATCH**,1080 configurations/3240 one-off requests plus
+  reduce/skip edits and96 date vectors. Both outputs SHA256
+  32dde5a936e1d801886013a34d7096795d3fe1769ace4824b85bb91407bbec66. Scratch GymPlanningParity.java,
+  gym-planning-original and kmp-{original,shared}-gym-planning.log retain exact proof.
+- Final kmp-gym-planning-final-build.log BUILD SUCCESSFUL117tasks/3m40s, both APKs. Formatting459
+  scoped files (346Kotlin/113Java), diff, schema75 and release-note10 PASS. Existing Android
+  callers/test sources compile without altered assertions. No schema/backup/permission change.
+- Exact combined pushed-head verification of guidance +legacy planning remains pending: expect
+  all285 focused Android cases, full retained domain/schema/build/lint and actual Apple tests/
+  framework. Full API28/35/36/source-bound screenshots and real iOS application remain final work.
+- Version0.12.3-test1/code19; SQLite19/JSON13/raw3/complete1 unchanged. No rolling publication,
+  version bump or merge. Keep PR24 draft until the whole authorised migration is complete.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. Recovery99eaa6a passed43608429805
-   Android/Apple and43608429838 formatting. The newer guidance checkpoint needs exact pushed-head
-   Android285/Apple/format verification; do not borrow earlier passes.
-2. Complete legacy GymProgrammeGenerator/GymNowWorkouts/GymPlanEditor common ports. Original Java
-   sources +1080-case/full-range UK-date parity baseline are in scratch/gym-planning-original and
-   kmp-original-gym-planning.log; proposed three Kotlin files are in scratch. Keep original six-week
-   allocation/search, pattern-sensitive favourites, explanation accuracy, equipment/exclusion rules,
-   one-off limitations and explicit future-only immutable edits. JVM date text must keep the original
-   UK java.time formatter; use a Native actual for presentation without changing date calculations.
-   Compare actual outputs and run original allocation/programme/GymNow suites plus common tests.
+1. Inspect branch/status/log and PR24. Preserve all work. Guide/technique and legacy gym-planning
+   checkpoints follow verified99eaa6a. Inspect exact new pushed-head Android285/Apple/format CI;
+   fix real failures without borrowing earlier passes. All current local checks are recorded above.
+2. Continue remaining domain Java +actual shared UI/state/orchestration and native persistence.
+   Do not redo the completed strength-package ports or replace explicit technique case tables.
+   RunningRoutines is a possible next cohesive support/UI batch, but its warmup selection calls
+   AdaptiveCoachingEngine.isQuality: share that exact classification/delegate or port its engine
+   dependency, rather than inventing a new quality definition. Native image loading still needs
+   the original packaged assets. Preserve Android lifecycle/resource adapters and durable stores.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
