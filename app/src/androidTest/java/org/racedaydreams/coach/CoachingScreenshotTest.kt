@@ -1217,9 +1217,8 @@ class CoachingScreenshotTest {
                                 )
                     ) {
                         val mistakes =
-                            TechniqueGuide.forExercise(id)!!.mistakes().joinToString("\n") {
-                                "• $it"
-                            }
+                            requireNotNull(TechniqueGuide.forExercise(id)!!.mistakes())
+                                .joinToString("\n") { "• $it" }
                         val body = compose.onNodeWithText(mistakes)
                         // This is near the page end: max scroll may prevent an arbitrary
                         // upper heading position. Require the complete actual content instead.
@@ -1239,7 +1238,7 @@ class CoachingScreenshotTest {
                         capture("exercise-$id-howto-details$suffix", "Common mistakes")
                         compose
                             .onNodeWithText(
-                                "Alternatives: ${org.racedaydreams.domain.strength.TechniqueGuide.forExercise(id)!!.alternatives().joinToString()}"
+                                "Alternatives: ${requireNotNull(org.racedaydreams.domain.strength.TechniqueGuide.forExercise(id)!!.alternatives()).joinToString()}"
                             )
                             .performScrollTo()
                             .assertIsDisplayed()

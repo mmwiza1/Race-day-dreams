@@ -843,26 +843,56 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No public release or merge.
   A shared framework is not a complete iOS app; native app/storage/services parity remains open.
 
+### Twenty-fifth checkpoint — common original guidance/artwork and real technique presentation
+
+- This source checkpoint follows99eaa6a (inspect git log for its final commit). Its exact recovery
+  head passed43608429805 Android/Apple and43608429838 formatting. ELEVEN Java originals now
+  replaced by common Kotlin: TechniqueGuide, TechniqueIllustrations, ExpandedExerciseGuides and
+  their eight original catalogue/delegation helpers. **106 Java domain files remain.**
+- Original case tables, fallback delegation, variant-specific instructions, cues, mistakes,
+  alternatives, asset IDs/descriptions and phase captions retained. No generic pose or metadata-
+  inferred pattern replaces movement-specific content. All220 canonical guides and14 running
+  routine illustrations remain complete;223 licensed packaged assets/11,634,030bytes pass exact
+  provenance verification. Unknown/custom movements still have no invented guide/artwork.
+- Original raw guide DTO nulls/list references and artwork validation/snapshot semantics retained;
+  private pipe-list splitting keeps Java trailing-empty behaviour. Expanded identity set immutable.
+  Source-based screenshot guard now reads ExpandedExerciseGuides.kt with the SAME exact identity/
+  mode assertions; all23 tests PASS. No hardcoded replacement set or skipped capture guard.
+- Actual TechniqueSection content and original GuidanceStyle surfaces now shared Compose. Android
+  retains actual licensed image loading/TalkBack description, image geometry and original window/
+  font-scale policy. Same numbered steps, phase captions, notes, alternatives and optional real
+  guidance disclosure. Native still needs its real packaged-asset adapter and app integration.
+- **183 shared-domain JVM +14 shared-health JVM tests PASS**, zero failures/errors/skips. Eight new
+  common tests cover all220/46/14 identities, variants, loaded-vs-unloaded art, raw constructors,
+  immutability, absent/custom evidence and private Java split semantics. Original guidance1410+
+  catalogue240+Release05253 = **1903 checks PASS**; strict ExerciseGuidanceAudit220/220+14/14 PASS.
+  Complete original/shared1211line lookup output cmp MATCH, SHA256
+  8c49373d52dfc73143f7deadd5c3156f2af54dffd2711b5096f94b9023cdff89. Originals/snapshot remain in scratch.
+- Android nullable screenshot/artwork fixture reads now explicitly assert known canonical lists,
+  retaining all original assertions and clipping checks. Four new production-wrapper UI cases
+  exercise light/dark/200%/unknown plus real disclosure expansion/collapse; existing2 packaged-
+  artwork tests join all279 prior focused cases (285 expected). Runtime/Native verification pending
+  the next coherent push; no final screenshot or full-matrix acceptance claim.
+- Final kmp-technique-final-build.log BUILD SUCCESSFUL108tasks/55s, both APKs; shared JVM checks
+  passed before Android-fixture-only corrections. CI-style formatting455scoped files (340Kotlin/
+  115Java), diff and APK code19/noINTERNET inspection PASS; final format check log in scratch.
+- Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No public release or merge.
+  Next legacy planner/factory/editor sources and original1080-case GymPlanningParity.java baseline
+  are prepared under /workspace/scratch/gym-planning-original; proposed Kotlin files are in scratch,
+  NOT yet installed in repository at this source checkpoint. Continue implementation, not a restart.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. Latest implementation99b9b26 passed
-   experiment43606970897 on BOTH Android279/Apple and43606970889 formatting. This following
-   recovery-documentation commit may advance the branch; inspect its actual CI rather than
-   borrowing the implementation's pass. No app source changed in this recovery update.
-2. Continue remaining legacy GymProgrammeGenerator/GymNowWorkouts/GymPlanEditor into common code.
-   First share the actual TechniqueGuide/TechniqueIllustrations models and their original catalogue
-   content: the legacy generator's favourite-equivalence and explanations depend on those patterns,
-   and ExpandedExerciseGuides contains both guide and artwork definitions. Preserve all220 guides,
-   original licensing/IDs, fallback/drawing specifications and existing guidance-audit assertions;
-   do not replace them with invented metadata-to-pattern mappings. scripts/test-dream-screenshots.py
-   currently reads ExpandedExerciseGuides.java to verify the exact expanded-capture identity set;
-   migrate that source lookup equivalently when porting, without hardcoding or removing its guard.
-   Original11 source files are preserved in /workspace/scratch/technique-catalogue-original; the
-   prepared TechniqueGuidanceParity.java +technique-identities.txt compare canonical/alias/routine/
-   unknown lookups. Original1211line kmp-original-technique-guidance.log SHA256
-   8c49373d52dfc73143f7deadd5c3156f2af54dffd2711b5096f94b9023cdff89. No guide port is implemented yet.
-   Then continue real UI/state/
-   orchestration and generation-library/dated-preview ownership without redoing completed ports.
+1. Inspect branch/status/log and PR24. Preserve all work. Recovery99eaa6a passed43608429805
+   Android/Apple and43608429838 formatting. The newer guidance checkpoint needs exact pushed-head
+   Android285/Apple/format verification; do not borrow earlier passes.
+2. Complete legacy GymProgrammeGenerator/GymNowWorkouts/GymPlanEditor common ports. Original Java
+   sources +1080-case/full-range UK-date parity baseline are in scratch/gym-planning-original and
+   kmp-original-gym-planning.log; proposed three Kotlin files are in scratch. Keep original six-week
+   allocation/search, pattern-sensitive favourites, explanation accuracy, equipment/exclusion rules,
+   one-off limitations and explicit future-only immutable edits. JVM date text must keep the original
+   UK java.time formatter; use a Native actual for presentation without changing date calculations.
+   Compare actual outputs and run original allocation/programme/GymNow suites plus common tests.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

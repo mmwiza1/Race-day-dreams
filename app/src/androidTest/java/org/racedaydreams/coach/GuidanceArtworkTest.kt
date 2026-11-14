@@ -29,7 +29,7 @@ class GuidanceArtworkTest:AndroidTestCase() {
             assertNotNull("Every canonical exercise needs bundled artwork: $id",art)
             registered++;verify(art!!);val guide=TechniqueGuide.forExercise(id)
             assertNotNull("Artwork needs movement instructions: $id",guide)
-            assertTrue(guide!!.setup().isNotBlank()&&guide.movement().isNotBlank())
+            assertTrue(requireNotNull(guide!!.setup()).isNotBlank()&&requireNotNull(guide.movement()).isNotBlank())
         }
         assertEquals(ExerciseCatalog.definitions().size,registered);assertNull(TechniqueIllustrations.forExercise("unknown-custom-exercise"))
     }
