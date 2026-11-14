@@ -12,6 +12,11 @@ object Immutable {
 
     @JvmStatic fun <T> copySet(values: Collection<T>): Set<T> = FrozenSet(values)
 
+    /**
+     * For original EnumSet/ordered DTO contracts only; normal copySet retains its old semantics.
+     */
+    internal fun <T> copyOrderedSet(values: Collection<T>): Set<T> = FrozenSet(values, true)
+
     @JvmStatic fun <K, V> copyMap(values: Map<K, V>): Map<K, V> = FrozenMap(values)
 
     internal fun <K, V> copyMapRetainingNullValues(values: Map<K, V>): Map<K, V> =
@@ -63,8 +68,9 @@ private class FrozenList<T>(values: Collection<T>) : AbstractList<T>() {
     override fun get(index: Int): T = rows[index]
 }
 
-private class FrozenSet<T>(values: Collection<T>) : AbstractSet<T>() {
-    private val rows = HashSet(values)
+private class FrozenSet<T>(values: Collection<T>, preserveOrder: Boolean = false) :
+    AbstractSet<T>() {
+    private val rows = if (preserveOrder) LinkedHashSet(values) else HashSet(values)
 
     init {
         for (value in rows) if (value == null) throw NullPointerException()

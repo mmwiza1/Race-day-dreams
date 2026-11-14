@@ -596,21 +596,58 @@ incomplete migration merely because a focused checkpoint passes.
   Final kmp-gym-verified-build.log BUILD SUCCESSFUL:117tasks/1m12s, both APKs. Shared
  tests were up-to-date after the final fixture-only correction; all instrumentation sources compile.
 - Experiment selector adds existing execution SQLite14/JSON12/backup12, engine2/coordinator1/
-  source1 and substitution3/authored GymNow6 cases (225 expected overall), retaining all prior
-  cases/default final gates. Exact new Android/Apple/format CI pending after push; do not claim
-  a Native/runtime pass from a54b993. No new full screenshots or final Android matrix claim.
+  source1 and substitution3/authored GymNow6 cases, retaining all prior/default final gates.
+  Exact cff9be2 experiment43582331804 SUCCESS on BOTH Android and Apple:225 runtime tests,
+  zero failures/skips, retained domain/schema/build/lint, real Apple tests/framework. Formatting
+ 43582331839 SUCCESS. No new full screenshots or final Android matrix claim.
 - Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. APK permission inspection
   confirms no INTERNET. No public artifact/version increment/merge. Full iOS application host,
   typed native SQLite/backup/retention/services and app-wide shared UI/orchestration remain open.
 
+### Nineteenth checkpoint — common intent-ranked substitution and real busy-equipment dialog
+
+- This source checkpoint follows cff9be2 (inspect git log for its final commit). Existing
+  ExerciseSubstitutionEngine.java replaced with common Kotlin; **132 Java domain files remain**.
+  Original primary-role/body-area/task/equipment/experience gates, reviewed easier/harder pairs,
+  goal/equipment/role/measurement/favourite/history ranking and stable ID tie-breaker preserved.
+  No clinical clearance, loading transfer, invented alternatives or recommendation changes.
+- Exact context validation, frozen inputs, reason order and bounded results retained. The parity
+  harness caught ordinal equipment iteration changing to hash order; fixed with an internal
+  ordered immutable-set snapshot. Normal Immutable.copySet keeps its existing unordered semantics.
+  No mutable iterator/entry escape and no global collection-order rewrite.
+- Entire real GymSubstitutionSheet and GymSwapState moved to shared Compose. Android wrapper only
+  collects existing lifecycle state and supplies original callbacks/exercise-context formatter.
+  Same full-screen dialog, concise alternatives, equipment/reason disclosures, explanation
+  expansion, empty/loading/error states, confirmation, scrolling and semantics. No fake iOS UI,
+  duplicate decision engine or new navigation. Labels use the same fixed ASCII enum names.
+  Today-only replacement/unsaved-form clearing still occurs only through existing explicit IO.
+- **128 shared-domain JVM +14 shared-health JVM tests PASS**, no failures/errors/skips. Six new
+  common tests include2640 canonical catalogue/experience/equipment/reason combinations, exact
+  setup/task/role/exclusion gates, reviewed difficulty relationships, missing/frozen metadata,
+  non-medical wording, load warnings and immutable original ordinal equipment snapshots.
+  Original ExerciseSubstitutionEngine117060 +concrete substitution44 = **117104 checks PASS**.
+- Original/new **39600-combination parity MATCH** for complete contexts, ranked IDs, explanations
+  and task flags (all220 exercises ×5 goals ×3 experiences ×6 reasons ×2 equipment setups).
+  SHA-25653c0110cb575c99a3e094bf5e68e726ae091f970e93b3ef7aede03f98662c13b.
+  Scratch kmp-{original,shared}-substitution.log and SubstitutionParity.java retain the proof;
+  original source/classes preserved outside git. No assertion weakened or golden output normalised.
+- Final kmp-substitution-verified-build.log BUILD SUCCESSFUL,117tasks/3m17s, both APKs. CI-style
+  formatting424 scoped files (294Kotlin/130Java) and diff check PASS. Existing cff9be2 already
+  verified schema75/release10 and225 real Android cases including production swap/large-text/
+  authored execution and actual SQLite/JSON/backup tests. Exact NEW-head Android/Apple/format CI
+  pending after push; do not borrow the parent pass. Existing selectors retained unchanged.
+- SQLite19/JSON13/raw3/complete1 and0.12.3-test1/code19 unchanged. No new runtime dependency,
+  permission, schema, public release or merge. Full app parity and actual iOS host remain unfinished.
+
 ### Exact next safe actions and remaining full scope
 
 1. Inspect branch/status/log and PR24. Preserve the Gym Now checkpoint following a54b993 and any
-   surviving uncommitted work. Check the exact final both-APK build and newly pushed CI results.
-   a54b993 itself passed43579335061 Android/Apple and43579335041 formatting.
-2. Fix actual failures before further source checkpoints. Continue with the existing
-   ExerciseSubstitutionEngine and actual substitution UI/state/context, retaining equipment,
-   exclusion, measurement/provenance and explicit today-only/permanent choice safeguards.
+   surviving uncommitted work. The substitution checkpoint follows cff9be2; inspect exact new CI.
+   cff9be2 passed43582331804 Android225/Apple and43582331839 formatting.
+2. Fix actual new-head failures before further source checkpoints. Next port the existing
+   GymWorkoutSourceValidator and remaining association/provenance application contracts, then
+   their real UI/state. Preserve frozen-source validation and explicit reviewed choices. Do not
+   repeat completed execution/substitution/warm-up ports or redesign their logic.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
