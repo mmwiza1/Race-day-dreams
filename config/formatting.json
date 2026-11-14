@@ -247,6 +247,11 @@
     "sharedUi/src/**/*.kt",
     "sharedHealth/src/**/*.kt",
     "domain/src/main/kotlin/**/*.kt",
-    "domain/src/test/java/org/racedaydreams/domain/settings/PrimaryFocusTestSuite.java"
+    "domain/src/test/java/org/racedaydreams/domain/settings/PrimaryFocusTestSuite.java",
+    "app/src/main/java/org/racedaydreams/coach/TechniqueScreens.kt",
+    "app/src/main/java/org/racedaydreams/coach/SupportingTrainingScreens.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedTechniqueContentTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedRunningRoutineScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/GuidanceArtworkTest.kt"
   ]
 }

@@ -914,23 +914,62 @@ incomplete migration merely because a focused checkpoint passes.
 - Final kmp-gym-planning-final-build.log BUILD SUCCESSFUL117tasks/3m40s, both APKs. Formatting459
   scoped files (346Kotlin/113Java), diff, schema75 and release-note10 PASS. Existing Android
   callers/test sources compile without altered assertions. No schema/backup/permission change.
-- Exact combined pushed-head verification of guidance +legacy planning remains pending: expect
-  all285 focused Android cases, full retained domain/schema/build/lint and actual Apple tests/
-  framework. Full API28/35/36/source-bound screenshots and real iOS application remain final work.
+- Exact e2fadac experiment43630748155 SUCCESS on BOTH Android and Apple. Completed Android
+  logs confirm285 unique runtime cases/no failures or skips,700189 checks/48suites and schema75/
+  build/lint. Actual iosX64 tests +shared UI framework link executed, BUILD SUCCESSFUL5m16s.
+  Digest-verified results14128376837/JVM and14127787601/Apple confirm191+14 JVM and178+16 Native
+  tests, zero failures/errors/skips; proof /workspace/scratch/e2-test-verification.json. Formatting
+  run43630748164 is recorded separately; inspect its actual status. Full matrix/screenshots/app
+  parity remain unfinished. No runtime failure was hidden or assertion weakened.
 - Version0.12.3-test1/code19; SQLite19/JSON13/raw3/complete1 unchanged. No rolling publication,
   version bump or merge. Keep PR24 draft until the whole authorised migration is complete.
 
+### Twenty-seventh checkpoint — common optional running routines and real support screens
+
+- This source checkpoint follows e2fadac (inspect git log for its final commit). RunningRoutines
+  Java replaced by common Kotlin; **102 Java domain files remain.** Original14 movements and13
+  routines retain every ID/title/dose/instruction/tip/caution/pose, no planned workouts or actuals.
+- Original adaptive coach quality/demanding classification moved to common WorkoutCategories;
+  existing Java AdaptiveCoachingEngine delegates to it. Exact five quality categories, race/long-
+  run distinction, null rejection and warm-up distance boundaries retained. No programming change.
+- Original raw record unknowns/list references and library mutability contracts retained: global
+  MOVEMENTS/routine movement lists immutable; each all() fixed-size list allows replacing its own
+  element, not resizing or modifying the canonical library. A compiler out-projected-array error
+  was corrected using a private list behind the same fixed-size facade; no fallback validation.
+- Actual RoutineLibrary/RoutineScreen presentation now shared Compose: same content, progress,
+  remembered index, Back/Next/Finish controls, scroll layout, guidance and unknown state. Android
+  retains licensed assets, lifecycle/coroutine cancellation, existing completion transaction and
+  related-workout ID. No common UI command creates training actuals or silently marks work done.
+- **197 shared-domain JVM +14 shared-health JVM tests PASS**, zero failures/errors/skips. Six new
+  common tests cover all14/13 entries/art links, exact category/distance selection, raw unknowns,
+  fixed-size per-call mutation and canonical immutability. Original coaching29602/weekly96/
+  Release05253 = **29951 checks PASS** against the shared classification/catalogue.
+- Complete original/shared161line output cmp MATCH including full records, all12categories ×11
+  race-distance values and per-call replacement semantics. SHA256
+  43dcb07759b7f37d3d538c380ce153713a20daabe15449428ba1f3825d4ee1a2; originals/RunningRoutineParity.java
+  and kmp-{original,shared}-running-routines.log in scratch. No output normalisation or test removal.
+- Three new production-wrapper UI cases use the real SQLite completion path, explicit navigation,
+  light/dark/200% text, unknown IDs and no gym-actual creation. Known movement strings in existing
+  artwork/Live Coach fixtures are explicitly checked without changing assertions. Expect288
+  focused Android cases after push, preserving all285 prior and default full release gates.
+- New technique/routine wrappers/tests added to pinned formatting scope; formatting468scoped
+  files (355Kotlin/113Java) and diff PASS. Final kmp-running-routines-final-build.log BUILD
+  SUCCESSFUL117tasks/3m37s, both APKs; code19/min28/noINTERNET inspected. Native/UI runtime checks
+  for this NEW head remain pending; e2fadac's green pass does not cover new routine work.
+- Version0.12.3-test1/code19; SQLite19/JSON13/raw3/complete1 unchanged. No publication/merge. iOS
+  host, native assets/storage/backup/retention/services and remaining domain/UI parity remain open.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. Guide/technique and legacy gym-planning
-   checkpoints follow verified99eaa6a. Inspect exact new pushed-head Android285/Apple/format CI;
-   fix real failures without borrowing earlier passes. All current local checks are recorded above.
-2. Continue remaining domain Java +actual shared UI/state/orchestration and native persistence.
-   Do not redo the completed strength-package ports or replace explicit technique case tables.
-   RunningRoutines is a possible next cohesive support/UI batch, but its warmup selection calls
-   AdaptiveCoachingEngine.isQuality: share that exact classification/delegate or port its engine
-   dependency, rather than inventing a new quality definition. Native image loading still needs
-   the original packaged assets. Preserve Android lifecycle/resource adapters and durable stores.
+1. Inspect branch/status/log and PR24. Preserve all work. e2fadac passed experiment43630748155
+   Android285/Apple; the following routine checkpoint needs exact new-head Android288/Apple/
+   formatting verification. Fix actual failures, never borrow the previous pass.
+2. Continue remaining102 Java domain files and actual shared UI/state/orchestration +native data
+   services. The whole strength package and RunningRoutines are already common; do not redo them.
+   WorkoutCategories now owns the exact original quality/demanding policy, with AdaptiveCoachingEngine
+   delegated to it; keep existing null/eligibility distinctions when porting other consumers.
+   Native asset loading still requires the original licensed images and a real app integration.
+   Preserve existing Android lifecycle/resource adapters, durable stores and explicit approval.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

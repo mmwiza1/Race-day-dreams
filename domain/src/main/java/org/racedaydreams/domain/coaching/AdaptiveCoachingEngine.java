@@ -76,9 +76,9 @@ public final class AdaptiveCoachingEngine {
             evidence, "Only this workout is affected. No mileage is added elsewhere. Your race goal is unchanged.", "Moderate — coaching heuristics, not a medical assessment", options));
     }
     public static boolean isQuality(WorkoutCategory category) {
-        return switch (category) { case INTERVALS, TEMPO_THRESHOLD_RUN, RACE_PACE_RUN, TIME_TRIAL, PROGRESSION_RUN -> true; default -> false; };
+        return WorkoutCategories.isQuality(category);
     }
-    public static boolean isDemanding(WorkoutCategory category) { return isQuality(category) || category == WorkoutCategory.LONG_RUN || category == WorkoutCategory.RACE; }
+    public static boolean isDemanding(WorkoutCategory category) { return WorkoutCategories.isDemanding(category); }
     public static TrainingPlan apply(TrainingPlan plan, AdjustmentProposal proposal, AdjustmentProposal.Option option, Set<String> completed) {
         if (!proposal.options().contains(option)) throw new IllegalArgumentException("Choose an option from this proposal.");
         if (completed.contains(proposal.workoutId())) throw new IllegalArgumentException("Completed prescriptions cannot be changed.");

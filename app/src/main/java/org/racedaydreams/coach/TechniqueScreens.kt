@@ -13,7 +13,9 @@ fun TechniqueSection(id: String) {
     SharedTechniqueContent(
         guide = guide,
         phases = art?.phases,
-        wideNotes = LocalDensity.current.fontScale <= 1.15f && LocalConfiguration.current.screenWidthDp >= 350,
+        wideNotes =
+            LocalDensity.current.fontScale <= 1.15f &&
+                LocalConfiguration.current.screenWidthDp >= 350,
         illustration = { if (art != null) IllustratedMovement(art) },
     )
 }

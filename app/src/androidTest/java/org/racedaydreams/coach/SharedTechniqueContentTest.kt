@@ -17,7 +17,9 @@ class SharedTechniqueContentTest {
     private fun show(dark: Boolean = false, large: Boolean = false, id: String = "bench-press") {
         compose.setContent {
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, if (large) 2f else 1f)) {
+            CompositionLocalProvider(
+                LocalDensity provides Density(density.density, if (large) 2f else 1f)
+            ) {
                 RaceDayTheme(darkTheme = dark, dynamicColour = false) {
                     CoachPage { TechniqueSection(id) }
                 }
@@ -32,7 +34,8 @@ class SharedTechniqueContentTest {
         compose.onNodeWithText("Key cues").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Common mistakes").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("About this guidance").performScrollTo().assertIsDisplayed()
-        val explanation = "General technique guidance. Start conservatively and seek qualified in-person coaching if you are unsure about a movement. Illustrations are general guidance, not individual form assessment or an exact joint-angle prescription."
+        val explanation =
+            "General technique guidance. Start conservatively and seek qualified in-person coaching if you are unsure about a movement. Illustrations are general guidance, not individual form assessment or an exact joint-angle prescription."
         compose.onNodeWithText(explanation).assertDoesNotExist()
         compose.onNodeWithText("About this guidance").performClick()
         compose.onNodeWithText(explanation).performScrollTo().assertIsDisplayed()
@@ -41,12 +44,32 @@ class SharedTechniqueContentTest {
         compose.onNodeWithText("About this guidance").assertIsDisplayed()
     }
 
-    @Test fun actualSharedGuidanceAndLicensedImageInLightTheme() { show(); verifyKnown() }
-    @Test fun actualSharedGuidanceAndLicensedImageInDarkTheme() { show(dark = true); verifyKnown() }
-    @Test fun largeTextSharedGuidanceScrollsThroughStackedNotesAndDisclosure() { show(dark = true, large = true); verifyKnown() }
-    @Test fun unknownCustomMovementDoesNotInventInstructionsOrIllustration() {
+    @Test
+    fun actualSharedGuidanceAndLicensedImageInLightTheme() {
+        show()
+        verifyKnown()
+    }
+
+    @Test
+    fun actualSharedGuidanceAndLicensedImageInDarkTheme() {
+        show(dark = true)
+        verifyKnown()
+    }
+
+    @Test
+    fun largeTextSharedGuidanceScrollsThroughStackedNotesAndDisclosure() {
+        show(dark = true, large = true)
+        verifyKnown()
+    }
+
+    @Test
+    fun unknownCustomMovementDoesNotInventInstructionsOrIllustration() {
         show(id = "custom-unrecognised")
-        compose.onNodeWithText("A visual guide for this exercise is not available yet. Choose a familiar movement or seek qualified coaching.").assertIsDisplayed()
+        compose
+            .onNodeWithText(
+                "A visual guide for this exercise is not available yet. Choose a familiar movement or seek qualified coaching."
+            )
+            .assertIsDisplayed()
         compose.onNodeWithText("How to do it").assertDoesNotExist()
         compose.onNodeWithText("Key cues").assertDoesNotExist()
     }

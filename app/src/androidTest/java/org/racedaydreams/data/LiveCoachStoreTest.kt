@@ -147,8 +147,8 @@ class LiveCoachStoreTest : AndroidTestCase() {
             setOf("walk", "lunge", "stand", "calf", "swing", "march", "bridge", "sit", "quad")
         for (m in RunningRoutines.MOVEMENTS) {
             assertTrue(m.pose() in poses)
-            assertTrue(m.instructions().length > 20)
-            assertTrue(m.cue().isNotBlank())
+            assertTrue(requireNotNull(m.instructions()).length > 20)
+            assertTrue(requireNotNull(m.cue()).isNotBlank())
         }
     }
 
