@@ -763,15 +763,49 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No new permission, public
   artifact, version bump or merge. Native storage/services/real iOS host remain unfinished.
 
+### Twenty-third checkpoint — common concrete previews, permanent swaps and history screen
+
+- This source checkpoint follows53ab0fc (inspect git log for its final commit). THREE more Java
+  originals replaced: ConcreteStrengthProgrammeDraft, ConcreteStrengthProgrammeEditor and its
+  typed repository. **119 Java domain files remain.** Saving a preview still cannot activate it
+  or create actuals; original Android SQLite/JSON/backup transactions remain authoritative.
+- Every dated workout/phase target/explanation remains preserved. Explicit swaps retain original
+  accepted intent across chained choices, replace only eligible future slots, honour exclusions/
+  protected evidence, require fresh individual targets for changed measurements and clear load
+  references. Reversing a pending swap removes its decision while keeping the reference cleared.
+  Original checked revision overflow, lineage guards, complete-target and unique-slot validation
+  retained. Raw summary unknowns stay unknown; known Android stored rows are checked explicitly.
+- Entire real read-only programme-history screen is shared Compose. Android keeps lifecycle and
+  the original dialog/date/target formatting. Same cards, paging, lazy lists, retained-version/
+  workout navigation, disclosures, saved selection, reset-to-top and accessibility semantics.
+  Dates sort by epoch day on Native/JVM. No historical activation action is introduced.
+- **167 shared-domain JVM +14 shared-health JVM tests PASS**, no failures/errors/skips. Eight new
+  common tests cover dated edits, protected history, immutable previews, raw summary unknowns,
+  lineage/overflow, phase-specific all-occurrence targets, exclusions, changed tasks and reversal.
+  Original six suites **374190 checks PASS**. Original/shared **3453line cmp MATCH** for complete
+  preview/workout/decision output, ranked choices and reversals across all6 reasons/3 identities.
+  Scratch ConcretePreviewParity.java / kmp-{original,shared}-concrete-preview.log preserve proof.
+- Schema75 and release-note10 PASS. Formatting440scoped files (322Kotlin/118Java) and diff PASS;
+  final import-only wrapper correction retains sorted imports. Initial main compile surfaced raw
+  summary nullability and missing original date import; explicit checks/import fixed those without
+  removing assertions. Final kmp-concrete-preview-final-build.log BUILD SUCCESSFUL108tasks/2m19s,
+  both APKs. Shared JVM tests had passed before the final Android-only import correction.
+- Focus adds13 existing concrete-draft SQLite/JSON/old-schema/backup/transaction/activation tests
+  to all265 prior cases (278 expected); original19 generation UI cases include real historical
+  read-only review. Exact new-head Android/Apple/format runtime gate remains pending after push.
+- Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No public artifact/merge.
+  Full platform UI/state, native persistence/services/HealthKit and real iOS host remain open.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. The revision checkpoint follows
-   fa0c88a, whose experiment43603001097 passed Android265/Apple and43603001007 formatting.
-   Verify final local build/formatter and the exact new pushed head; do not borrow parent passes.
-2. Continue concrete saved-preview draft/editor/repository into common code, preserving each
-   dated target, reviewed substitution lineage, checked revision increments, protected workouts,
-   independent draft saving and transaction-time activation. Then continue the actual UI/state.
-   Do not redo completed recommendation/progression/execution/substitution/association ports.
+1. Inspect branch/status/log and PR24. Preserve all work. New revisions/concrete-preview
+   checkpoints follow fa0c88a, whose43603001097 experiment passed Android265/Apple and43603001007
+   formatting. Inspect exact NEW-head Android278/Apple/format CI after push; never borrow passes.
+2. Continue existing StrengthProgrammeGenerator and nine StrengthProgrammeTemplates into common
+   Kotlin, preserving all original goals/experience/phase targets, week anchors, equipment and
+   exclusion gates, favourite tie-breaks, time budgets, hybrid penalties and explainable trade-offs.
+   Compare original output and run simulator/invariants. Then continue real UI/state and legacy
+   GymProgrammeGenerator/GymNowWorkouts/GymPlanEditor. Do not redo completed ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

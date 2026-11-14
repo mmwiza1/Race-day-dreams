@@ -155,16 +155,19 @@ fun StrengthGenerationScreen(
                     )
                 state.saved.forEach { row ->
                     SemanticCard(Tile.Neutral) {
-                        Text(row.name(), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            requireNotNull(row.name()),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
                         Text(
                             "Programme revision ${row.programmeRevision()} · draft edit ${row.revision()}"
                         )
                         Text(
-                            "${friendlyDate(row.start())} – ${friendlyDate(row.end())}${if (row.revisionExists()) " · revision preserved" else " · not active"}"
+                            "${friendlyDate(requireNotNull(row.start()))} – ${friendlyDate(requireNotNull(row.end()))}${if (row.revisionExists()) " · revision preserved" else " · not active"}"
                         )
                         TextButton(
                             onClick = {
-                                model.open(row.id()) {
+                                model.open(requireNotNull(row.id())) {
                                     workoutId = null
                                     section = "preview"
                                 }
@@ -481,7 +484,7 @@ fun StrengthGenerationScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        model.delete(row.id(), row.revision())
+                        model.delete(requireNotNull(row.id()), row.revision())
                         deletion = null
                     },
                     enabled = enabled,
