@@ -790,8 +790,9 @@ incomplete migration merely because a focused checkpoint passes.
   summary nullability and missing original date import; explicit checks/import fixed those without
   removing assertions. Final kmp-concrete-preview-final-build.log BUILD SUCCESSFUL108tasks/2m19s,
   both APKs. Shared JVM tests had passed before the final Android-only import correction.
-- Focus adds13 existing concrete-draft SQLite/JSON/old-schema/backup/transaction/activation tests
-  to all265 prior cases (278 expected); original19 generation UI cases include real historical
+- Focus adds14 existing concrete-draft SQLite/JSON/old-schema/backup/transaction/activation tests
+  to all265 prior cases (279 verified in the following checkpoint; the initial13/278 estimate
+  missed one wrapped Java method declaration); original19 generation UI cases include real historical
   read-only review. Exact new-head Android/Apple/format runtime gate remains pending after push.
 - Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No public artifact/merge.
   Full platform UI/state, native persistence/services/HealthKit and real iOS host remain open.
@@ -827,23 +828,40 @@ incomplete migration merely because a focused checkpoint passes.
   CI-style formatting443scoped files (327Kotlin/116Java) and diff check PASS. Known raw template
   strings are explicitly checked in Android/shared production forms; their optional/default
   behaviour is retained. No schema/backup change since successful schema75/release-note10.
-- Next pushed-head gate must verify all278 focused Android cases, retained full domain/schema/
-  build/lint and actual Apple tests/framework. Parent fa0c88a passed Android265/Apple/format;
-  that is not a substitute for this new head. Full API28/35/36/app screenshots remain final work.
+- Exact99b9b26 experiment43606970897 SUCCESS on BOTH Android and Apple; formatting43606970889
+  SUCCESS. Completed Android logs show279 unique START/END pairs, no failures/skips,700189 legacy
+  checks/48suites, schema75/build/lint. Actual extra repository class contains14 tests, correcting
+  the earlier13/278 estimate; no test/selector/assertion changed to alter the observed count.
+- Digest-verified CI result ZIPs confirm175 domain+14 health JVM tests and162 domain+16 health
+  Native tests, zero failures/errors/skips. All24 new revision/preview/generation common tests
+  pass on Native. Real iosX64 tests and shared UI framework link executed, BUILD SUCCESSFUL6m53s.
+  Artifacts14119350912/JVM and14118014340/Apple are tied to99b9b26. Framework success is not an app.
+- CI APK artifact14118517512 is source-bound to99b9b26; ZIP SHA256d84e1a430370bac3f11aae6b8d017654f7d83258212a6e27ec20cb5b9ff884c8 verified.
+  Actual APK56,791,735bytes/SHA25698937fcfba1e33c88cb725436fd01914149864068a8d5621de2cb91140796470;
+  inspected0.12.3-test1/code19/min28/noINTERNET. Experimental Actions artifact only, no rolling
+  publication. Full unfiltered API28/35/36/app screenshots and actual iOS application remain open.
 - Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No public release or merge.
   A shared framework is not a complete iOS app; native app/storage/services parity remains open.
 
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. Three checkpoints after fa0c88a
-   share revisions/contracts, concrete previews/history and programme construction/configuration.
-   Inspect exact NEW-head Android278/Apple/format CI after push; never borrow parent passes.
+1. Inspect branch/status/log and PR24. Preserve all work. Latest implementation99b9b26 passed
+   experiment43606970897 on BOTH Android279/Apple and43606970889 formatting. This following
+   recovery-documentation commit may advance the branch; inspect its actual CI rather than
+   borrowing the implementation's pass. No app source changed in this recovery update.
 2. Continue remaining legacy GymProgrammeGenerator/GymNowWorkouts/GymPlanEditor into common code.
    First share the actual TechniqueGuide/TechniqueIllustrations models and their original catalogue
    content: the legacy generator's favourite-equivalence and explanations depend on those patterns,
    and ExpandedExerciseGuides contains both guide and artwork definitions. Preserve all220 guides,
    original licensing/IDs, fallback/drawing specifications and existing guidance-audit assertions;
-   do not replace them with invented metadata-to-pattern mappings. Then continue real UI/state/
+   do not replace them with invented metadata-to-pattern mappings. scripts/test-dream-screenshots.py
+   currently reads ExpandedExerciseGuides.java to verify the exact expanded-capture identity set;
+   migrate that source lookup equivalently when porting, without hardcoding or removing its guard.
+   Original11 source files are preserved in /workspace/scratch/technique-catalogue-original; the
+   prepared TechniqueGuidanceParity.java +technique-identities.txt compare canonical/alias/routine/
+   unknown lookups. Original1211line kmp-original-technique-guidance.log SHA256
+   8c49373d52dfc73143f7deadd5c3156f2af54dffd2711b5096f94b9023cdff89. No guide port is implemented yet.
+   Then continue real UI/state/
    orchestration and generation-library/dated-preview ownership without redoing completed ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
