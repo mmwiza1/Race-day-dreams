@@ -679,22 +679,68 @@ incomplete migration merely because a focused checkpoint passes.
   up-to-date after the final Android-fixture-only correction. CI-style formatting426 scoped files
   (300Kotlin/126Java), diff and APK version/permission inspection PASS (code19/min28/noINTERNET).
 - Experiment selector adds original association SQLite7/authored-SQLite6/JSON5/UI3 tests,
-  retaining all225 prior cases (246 expected) and all default final gates. Exact NEW-head
-  Android/Apple/format CI pending after push; inspect it before borrowing e287ddd success.
+  retaining all225 prior cases and all default final gates. Exact fa6cb1f experiment43585087542
+  SUCCESS on BOTH Android/Apple:246 real API35 cases/no failures/skips,700189 retained checks/
+ 48suites, schema75/build/lint and Apple tests/framework. Formatting43585087561 SUCCESS.
 - Version0.12.3-test1/code19; SQLite19/JSON13/raw3/complete1 unchanged. No schema migration,
   public artifact, version bump or merge. Full iOS app host/storage/services/integration and the
   remaining Java engines/shared UI/state remain unfinished; framework success is not an app.
 
+### Twenty-first checkpoint — shared recommendations and approved progression experience
+
+- This source checkpoint follows fa6cb1f (inspect git log for its final commit). FOUR more Java
+  originals replaced: polish/StartingLoad, StrengthProgressionAdvisor, StrengthTargetProgression
+  and presentation/StrengthPrescriptionText. **124 Java domain files remain.** No engine redesign.
+- Starting references keep exact exercise/weighted mode/recent working sets/recorded effort,
+  conservative range and unknown fallback. Progression preserves the two-comparable-session rule,
+  each observation's28-day boundary including nanoseconds, intended effort, consistent load,
+  original half-kg increment/order/ceilings, modality-specific rep/time/distance suggestions,
+  optional references and stale/newer-reference safeguards. No prescription or actual mutation.
+  Legacy advisor overload behaviour (including duplicate input IDs) and raw DTO null/option-list
+  behaviour retained; authored task advice retains its separate duplicate-identity safeguard.
+- Entire real approved ProgrammeProgressionContent and review DTO now shared Compose. Original
+  guidance-first hierarchy, compact changed/unchanged comparisons, nested supporting-workout
+  disclosure, collapsed defaults/restoration, keyboard/TalkBack semantics,200% stacking, canvas
+  glyphs, styles, labels and separate save/activation remain intact. Android owns only lifecycle/
+  dialog and original UK date formatter. Recorded dates use retained offsets, not device zone.
+- Presentation instructions/comparisons are common. JVM decimal formatting keeps original
+  BigDecimal exactly. Native expands the platform's round-trip Double text to plain decimal and
+  uses a shared exact digit subtraction for non-negative reference-load text, without rounding or
+  a precision cap. These strings never drive calculations or stored values. Platform shortest
+  representations are not claimed byte-identical for every arbitrary Double. Common full-finite-
+  range round-trip tests and JVM expansion/subtraction checks protect against lost precision.
+- **151 shared-domain JVM +14 shared-health JVM tests PASS**, no failures/errors/skips (15 new
+  tests). Original five suites **4723 checks PASS**: target152/text114/Release08173/today58/
+  six-month4226. All three calendar-six-month athlete histories pass with decisions unchanged;
+  these are deterministic evidence tests, not physiological outcome claims.
+- Original/shared output **MATCH** across3840 recommendation configurations (all supported task
+  families, effort/missing/warm-up/age/load/success/duplicate variants) and180 complete instruction/
+  reference/comparison cases. Scratch RecommendationParity.java / PrescriptionTextParity.java and
+  kmp-{original,shared}-{recommendation,prescription-text}.log retain proofs; originals outside git.
+- Exact nullable optional-target/raw-advice contracts are now explicit in Kotlin. Android's computed
+  advice consumers and known-success fixtures check their non-null values, retaining assertions.
+  One initial shared UI compile surfaced the old Android date formatter; corrected to an injected
+  UK date callback and common stored-offset conversion. No test weakening or altered target values.
+- Final kmp-progression-verified-build.log BUILD SUCCESSFUL117tasks/1m9s, both APKs. Shared tasks
+  up-to-date after the final Android-fixture-only correction. CI-style formatting435 scoped files
+  (312Kotlin/123Java), diff and APK checks PASS (0.12.3-test1/code19/min28/noINTERNET).
+- Existing11 progression clarity UI cases remain selected. Experiment adds original19 generation/
+  progression-persistence cases, retaining all246 prior cases (265 expected), old source/backup/
+  repository checks and default full gates. Exact NEW-head Android/Apple/format CI pending after
+  push. Do not borrow fa6cb1f's pass; Native text/framework and runtime UI remain to be verified.
+- SQLite19/JSON13/raw3/complete1 unchanged. No schema migration, new runtime dependency, version
+  bump/public release/merge. Remaining engines, native storage/services and real iOS host are open.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. The source/association checkpoint
-   follows e287ddd; inspect its exact new Android246/Apple/format CI and correct real failures.
-   e287ddd itself passed43583530747 Android225/Apple and43583530752 formatting.
-2. Fix actual new-head failures before further source checkpoints. Next port the existing
-   strength recommendation rules (polish/StartingLoad, StrengthTargetProgression and
-   StrengthProgressionAdvisor) with exact evidence/unknown/freshness/parity tests, then their real
-   progression UI/state. Do not repeat completed execution/substitution/source/association ports.
-   Preserve explicit reviewed activation and current conservative calculations.
+1. Inspect branch/status/log and PR24. Preserve all work. The recommendation/progression checkpoint
+   follows fa6cb1f; inspect exact new Android265/Apple/format CI and fix real failures. fa6cb1f
+   itself passed43585087542 Android246/Apple and43585087561 formatting.
+2. After new-head verification, continue StrengthProgrammeEditor and StrengthProgrammingRepository
+   into common code, preserving immutable past/completed prescriptions, forward revisions, frozen
+   protected evidence, explicit activation and deterministic regenerated IDs (Java UUID v3/UTF-8
+   semantics). Then continue their real UI/state. Do not redo completed recommendation/progression,
+   execution/substitution/source/association ports or change conservative calculations.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

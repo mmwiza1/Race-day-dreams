@@ -123,7 +123,7 @@ class StrengthCoordinator(
                         p,
                         sessionId,
                         exerciseId,
-                        advice.suggestedKilograms(),
+                        requireNotNull(advice.suggestedKilograms()),
                         LocalDate.now(),
                         Instant.now(),
                         development.strengthLinks().values.toSet(),

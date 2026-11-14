@@ -702,7 +702,7 @@ class StrengthGenerationScreenTest {
         compose.onNodeWithText("Your workout suggestion").assertIsDisplayed()
         val advice = model.state.value.progressionReview!!.advice
         assertEquals(2, advice.supportingSessionIds().size)
-        assertEquals(82.0, advice.proposedTarget().referenceLoadKg()!!, 0.0)
+        assertEquals(82.0, advice.proposedTarget()!!.referenceLoadKg()!!, 0.0)
         assertEquals(
             draft,
             io { SqliteConcreteStrengthProgrammeDraftRepository(app).get(draft.id()) },
@@ -882,20 +882,21 @@ class StrengthGenerationScreenTest {
             val advice = model.state.value.progressionReview!!.advice
             assertNotNull(exerciseId, advice.proposedTarget())
             if (profile.usesDuration())
-                assertEquals(35L, advice.proposedTarget().seconds()!!.toLong())
-            if (profile.usesDistance()) assertEquals(25.0, advice.proposedTarget().metres()!!, 0.0)
+                assertEquals(35L, advice.proposedTarget()!!.seconds()!!.toLong())
+            if (profile.usesDistance())
+                assertEquals(25.0, advice.proposedTarget()!!.metres()!!, 0.0)
             if (profile.usesReps())
                 assertEquals(
                     if (profile.usesLoad()) 8 else 9,
-                    advice.proposedTarget().maximumReps(),
+                    advice.proposedTarget()!!.maximumReps(),
                 )
             if (profile.usesLoad())
                 assertEquals(
                     if (profile.usesReps()) 41.0 else load,
-                    advice.proposedTarget().referenceLoadKg()!!,
+                    advice.proposedTarget()!!.referenceLoadKg()!!,
                     0.0,
                 )
-            else assertNull(advice.proposedTarget().referenceLoadKg())
+            else assertNull(advice.proposedTarget()!!.referenceLoadKg())
             compose.runOnIdle { model.saveProgressionProposal() }
             await { model.state.value.draft!!.revision() == edited.revision() + 1 }
             assertEquals(

@@ -23,15 +23,6 @@ data class ProgrammeSwapReview(
     val suggestions: List<ExerciseSubstitutionEngine.Suggestion> = emptyList(),
 )
 
-data class ProgrammeProgressionReview(
-    val draftId: String,
-    val draftRevision: Int,
-    val workoutId: String,
-    val slot: GymWorkoutDefinition.Slot,
-    val advice: StrengthTargetProgression.Advice,
-    val supportingWorkouts: List<StrengthSession> = emptyList(),
-)
-
 /** Exact concrete generation/preview ownership; durable drafts contain dates, not UI timers. */
 data class StrengthGenerationState(
     val busy: Boolean = false,
