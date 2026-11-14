@@ -1042,14 +1042,51 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19, SQLite19/rootJSON13/raw3/complete1 unchanged. No new permissions,
   version bump, rolling publication or merge. Entire iOS APPLICATION and full migration remain open.
 
+### Thirtieth checkpoint — shared retained route projection and production route surface
+
+- Continues committed6ee10a0 without restarting it. Replaced original RoutePresentation and
+  RouteRenderGeometry Java with common Kotlin; **93 domain Java files remain**. Original drawing
+  projection, qualified kilometre interpolation/story, altitude gate, 64-edge bounded simplification,
+  sharp turns, kilometre transitions and discontinuity endpoints retained. No GPS rule/storage edit.
+- Actual production route surface/canvas now shared as SharedLiveRecordedRoute/PreparedLiveRoute.
+  Android LiveRecordedRoute remains its unchanged lifecycle-aware saved-evidence collector, with
+  IO reads/default-dispatcher preparation, cancellation and honest read-failure handling. No street
+  map, fabricated coordinates, new sensor or second recording engine. Live panel, pace indicator
+  and route drawing all use shared Compose; native data/service/app integration remains unfinished.
+- Eight new common route tests exercise geometry, exact boundaries, unknown elevation, immutable
+  results, turns/gaps and zero/positive tolerance. Original and shared72-line route trace match SHA
+ 9d00bc8fb34e775d249f10867d8c6f700f1cb455caa50b0b48083baf05a742d5. javap confirms original
+  Java harness resolves the new Kotlin object, not stale Java classes. Retained rendering6323,
+  LiveCoach1850 and GPS46311 checks passed; previous coordinator74 also passed on shared recorder.
+- Local kmp-route-final-build.log: BUILD SUCCESSFUL6m47s/162tasks, **244 domain JVM tests**, zero
+  failures/errors/skips, both Android APKs and lint PASS. Health14 JVM tests passed on preceding
+  6ee10a0 batch; unchanged health will run again in pushed CI. Formatting CHECK485sources
+  (377Kotlin/108Java), schema75, release-note10 and diff PASS. No weakened assertions/skipped tests.
+- Actual local APK61,497,838bytes/SHA256
+ 1ce29d2488fe44bd9af83db800bfc09dee9dd2ec1ccffb1004ffebeea9b85747,
+  version0.12.3-test1/code19/min28/noINTERNET inspected; scratch/kmp-route-local-apk-verification.json.
+  Local debug output only, not a published release. CI APK identity will differ with runner signing.
+- Experimental API35 focus is now **340 expected cases**, preserving all288 previous cases plus
+  existing live-control/route, recording/sensor/staging/SQLite/backup tests and3 new shared-panel
+  interaction/200% cases. Runtime and real Apple results for this NEW source are PENDING after push.
+  Do not borrow c2d46bd's green pass. Expected Native domain230/health16 is not yet a test result.
+- Prior source checkpoint c2d46bd actually passed43634399391 Android/Apple and43634399393 format;
+  completed Android logs verified288 unique pairs/no failures. Both new source commits will be
+  pushed together to avoid starting/cancelling redundant experimental CI. PR24 stays OPEN DRAFT.
+- No migrations, version bump, rolling-release publication or merge. Full iOS application host,
+  native typed persistence/backup/retention/assets/services and remaining domain/UI still OPEN.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24; preserve all work. Prior c2d46bd CI passed; current local
-   checkpoint's Native/framework and focused Android runtime gates remain pending, not borrowed.
-2. Continue prepared route batch: apply scratch/kmp-recording-source RoutePresentation,
-   RouteRenderGeometry, RouteRenderingContractTest, SharedLiveRecordedRoute and platform adapter;
-   remove only superseded Java. Verify original/shared72-line route trace, retained geometry/GPS/
-   LiveCoach suites, common tests, build/lint/format, then push coherent checkpoint to existing PR24.
+1. Inspect branch/status/log and PR24. Preserve6ee10a0 plus the following route checkpoint. Inspect
+   their new experiment/format workflows and fix actual failures; current handoff only records LOCAL
+   passing gates. Expected340 Android runtime /230 domain+16 health Native must not be claimed until
+   completed logs/result artifacts confirm them. Prior c2d46bd verification does not cover new source.
+2. Continue coherent remaining running-analysis domain batch: SampleSeries, SplitCalculator and
+   BestEffortCalculator share the retained sample-quality gate and are still Java. Inspect originals,
+   preserve invalid/gap/plateau semantics and add original-versus-common parity before deletion.
+   Extend to directly coupled analysis/presentation/UI only when dependencies are shared. Do not
+   change GPS acquisition, filtering, timing, stored totals or accepted observations while porting.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
