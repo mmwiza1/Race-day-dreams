@@ -13,14 +13,18 @@ object Immutable {
     @JvmStatic fun <T> copySet(values: Collection<T>): Set<T> = FrozenSet(values)
 
     @JvmStatic fun <K, V> copyMap(values: Map<K, V>): Map<K, V> = FrozenMap(values)
+
+    internal fun <K, V> copyMapRetainingNullValues(values: Map<K, V>): Map<K, V> =
+        FrozenMap(values, rejectNullValues = false)
 }
 
 /** Neither an entry nor its enclosing collection exposes a mutation path. */
-private class FrozenMap<K, V>(values: Map<K, V>) : AbstractMap<K, V>() {
+private class FrozenMap<K, V>(values: Map<K, V>, rejectNullValues: Boolean = true) :
+    AbstractMap<K, V>() {
     private val index = LinkedHashMap(values)
     private val rows =
         index.entries.map { (key, value) ->
-            if (key == null || value == null) throw NullPointerException()
+            if (key == null || rejectNullValues && value == null) throw NullPointerException()
             FrozenEntry(key, value)
         }
 

@@ -485,9 +485,9 @@ incomplete migration merely because a focused checkpoint passes.
   stored-offset dates and shared framework passed. Formatting43518706458 SUCCESS. These are
   framework/development gates, not a complete iOS application or final release matrix.
 
-### Sixteenth checkpoint — shared strength context and historical timelines
+### Sixteenth checkpoint — shared strength context and historical timelines (`94aa212`)
 
-- This source checkpoint follows3b234d7 (inspect current git log/PR head for commit identity).
+- COMMITTED/PUSHED `94aa2129c49de82ce492d166bff193c13c7b105c` follows3b234d7.
   THREE Java originals replaced: StrengthAnalytics, HistoricalStrengthRecord, StrengthProgression.
   **142Java domain files remain**. Original context, bounded estimates, legacy rep buckets,
   loaded-task comparisons, approximate/unknown date precision and manual provenance preserved.
@@ -513,18 +513,53 @@ incomplete migration merely because a focused checkpoint passes.
   JSON13 /raw3 /complete1 unchanged. No version increment/publication/merge.
 - Experiment CI adds original WeeklyUxTest five cases (historical unknown PB, explicit-zero shoe
   data, body entry/calendar/settings), preserving prior169 and all default full gates. Expected
- 174focused runtime cases must be confirmed, not presumed. New Native/Android/format results
-  pending for this checkpoint; inspect exact PR head. Previous3b Native pass is not this pass.
+ Actual CI43578194651 SUCCESS on BOTH Android and Apple. Completed Android logs confirm
+ 174focused runtime tests with no failures/skips, schema75, full legacy/build/lint. Real Native
+  context/historical-timeline tests/framework passed. Formatting43578194654 SUCCESS. Still no
+  complete iOS app or final unfiltered release-matrix claim.
 - Next exact action: inspect the source checkpoint's real Android/Apple/format CI and fix actual
   failures. Then continue remaining shared execution/coaching engines and actual UI/state,
   typed native storage/backup/retention, device services, full HealthKit integration and the real
   iOS app host. Continue SAME draftPR24; do not restart completed Java conversions or UI.
 
+### Seventeenth checkpoint — shared weekly strength analysis and production screen
+
+- This source checkpoint follows94aa212 (inspect current git log/PR head for its commit).
+  StrengthVolume.java replaced with common Kotlin; **141Java domain files remain**.
+  Monday windows, explicit empty weeks, as-of filtering, duplicate/conflict checks, actual
+  working-set totals, primary fractional shares/separate secondary exposure, unknown/changed
+  definition classification and exact exercise/task load totals preserve the original rules.
+  No body-mass inference, mixed-modality equivalence, new physiology or prescription inputs.
+- Week maps retain original EnumMap ordinal ordering and nullable raw map values. Existing
+  Immutable gained an internal snapshot variant permitting null VALUES for this original DTO
+  contract; normal copyMap still rejects nulls. No mutable map-entry escape. Working-set absence
+  remains recorded absence, not proof the athlete did not train. Warm-up-only workouts preserved.
+- Entire original production StrengthAnalyticsScreen now shared Compose: asynchronous projection,
+  window filters, progressive disclosure, charts, semantics and strings retained. Android wrapper
+  supplies original Instant/LocalDate clock, UK date/number/duration formatting and existing
+  working-set explanation. No extra dependency or separate/demo iOS screen.
+- **103shared-domain +14shared-health JVM tests PASS**, zero failures/errors/skips; four new
+  common volume tests cover attribution, unknown metadata, source filtering/empty windows,
+  null-value/ordinal immutable snapshots and real task totals. Original/new3-line volume output
+  **cmp MATCH** in scratch kmp-{original,shared}-strength-volume.log. Existing volume685 and
+  GymTools7909 checks PASS (8594total). No assertion weakened.
+- `/workspace/scratch/kmp-strength-volume-build.log` BUILD SUCCESSFUL,117tasks/3m29s,
+  APK + testAPK. CI-style formatting --check --patch-output PASS412files (273Kotlin/139Java),
+  git diff check clean. Version0.12.3-test1/code19; SQLite19/JSON13/raw3/complete1 unchanged.
+  Actual screenshot regeneration/full Android matrix/iOS application build remain final work.
+- Current experiment focus already contains StrengthAnalyticsScreenTest, including real light/
+  dark/200% evidence/disclosure cases; no test selector/assertion change for this batch.
+  Exact new Android/Apple/format verification pending. Do not borrow94aa212 pass.
+- Next exact action: inspect this checkpoint's exact PR24 CI, fix any actual failure; then continue
+  remaining domain/execution/coaching engines and shared UI/state/orchestration, typed native
+  SQLite/backup/retention and services, full HealthKit integration, real iOS app host. Preserve
+  all existing Android Health Connect/GPS/history. No release/version bump/merge before full parity.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The current strength
-   context/historical-timeline source checkpoint follows3b234d7. Its local tests/build passed;
-   inspect exact new PR-head CI.3b234d7 passed Android169, Apple tests/framework and formatting.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The current weekly strength
+   analysis/shared-screen checkpoint follows94aa212. Its local tests/build/formatting passed;
+   inspect exact new PR-head CI.94aa212 passed Android174, Apple tests/framework and formatting.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown
