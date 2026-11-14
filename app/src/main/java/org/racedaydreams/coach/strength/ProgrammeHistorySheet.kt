@@ -62,12 +62,17 @@ internal fun ProgrammeHistorySheet(model: StrengthGenerationViewModel) {
                         }
                     items(state.history, key = { "${it.id()}:${it.revision()}" }) { row ->
                         SemanticCard(Tile.Strength) {
-                            Text(row.name(), style = MaterialTheme.typography.titleLarge)
                             Text(
-                                "Revision ${row.revision()} · ${friendlyDate(row.start())} – ${friendlyDate(row.end())}"
+                                requireNotNull(row.name()),
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                            Text(
+                                "Revision ${row.revision()} · ${friendlyDate(requireNotNull(row.start()))} – ${friendlyDate(requireNotNull(row.end()))}"
                             )
                             OutlinedButton(
-                                onClick = { model.reviewHistorical(row.id(), row.revision()) },
+                                onClick = {
+                                    model.reviewHistorical(requireNotNull(row.id()), row.revision())
+                                },
                                 enabled = enabled,
                             ) {
                                 Text("Review ${row.name()} revision ${row.revision()}")

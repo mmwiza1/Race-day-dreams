@@ -174,7 +174,7 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
                     source.id() == review.programme().id() &&
                     source.sessionId() in known
             )
-                ids.add(source.sessionId())
+                ids.add(requireNotNull(source.sessionId()))
         }
         return ids.toSet()
     }

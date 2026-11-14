@@ -142,13 +142,13 @@ fun StrengthProgrammeBuilderScreen(
                 state.drafts.forEach { row ->
                     SemanticCard(Tile.Neutral) {
                         Text(
-                            row.name().ifBlank { "Untitled programme" },
+                            requireNotNull(row.name()).ifBlank { "Untitled programme" },
                             style = MaterialTheme.typography.titleLarge,
                         )
-                        Text("Starts ${friendlyDate(row.start())}")
+                        Text("Starts ${friendlyDate(requireNotNull(row.start()))}")
                         Button(
                             onClick = {
-                                model.openDraft(row.id()) {
+                                model.openDraft(requireNotNull(row.id())) {
                                     section = "edit"
                                     expandedDay = null
                                 }
@@ -549,12 +549,12 @@ fun StrengthProgrammeBuilderScreen(
     delete?.let { row ->
         ProgrammeConfirmation(
             "Delete this draft?",
-            "${row.name().ifBlank { "Untitled programme" }} will be removed. Active programming, historical prescriptions and actual sets remain.",
+            "${requireNotNull(row.name()).ifBlank { "Untitled programme" }} will be removed. Active programming, historical prescriptions and actual sets remain.",
             state,
             "Delete draft",
             { delete = null },
         ) {
-            model.deleteDraft(row.id(), row.revision())
+            model.deleteDraft(requireNotNull(row.id()), row.revision())
             delete = null
         }
     }

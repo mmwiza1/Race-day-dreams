@@ -675,9 +675,9 @@ class StrengthGenerationScreenTest {
         assertEquals(
             first,
             io {
-                programmes.programme(original.programme().id(), 2).workouts().first {
-                    it.id() == first.id()
-                }
+                requireNotNull(programmes.programme(original.programme().id(), 2))
+                    .workouts()
+                    .first { it.id() == first.id() }
             },
         )
         assertEquals(

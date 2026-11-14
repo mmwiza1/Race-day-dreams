@@ -726,21 +726,52 @@ incomplete migration merely because a focused checkpoint passes.
   (312Kotlin/123Java), diff and APK checks PASS (0.12.3-test1/code19/min28/noINTERNET).
 - Existing11 progression clarity UI cases remain selected. Experiment adds original19 generation/
   progression-persistence cases, retaining all246 prior cases (265 expected), old source/backup/
-  repository checks and default full gates. Exact NEW-head Android/Apple/format CI pending after
-  push. Do not borrow fa6cb1f's pass; Native text/framework and runtime UI remain to be verified.
+  repository checks and default full gates. Exact fa0c88a experiment43603001097 SUCCESS on
+  BOTH Android and Apple:265 runtime cases/no failures or skips,700189 retained checks/48suites,
+  schema75/build/lint and actual Native tests/framework. Formatting43603001007 SUCCESS.
 - SQLite19/JSON13/raw3/complete1 unchanged. No schema migration, new runtime dependency, version
   bump/public release/merge. Remaining engines, native storage/services and real iOS host are open.
 
+### Twenty-second checkpoint — common programme revisions and typed authoring contract
+
+- This source checkpoint follows fa0c88a (inspect git log for its final commit). TWO more Java
+  originals replaced: StrengthProgrammeEditor and StrengthProgrammingRepository. **122 Java
+  domain files remain.** Android's existing typed SQLite/transactions remain authoritative.
+- Future regeneration preserves exact historical/completed workouts, protected evidence,
+  immutable revisions, explicit activation, availability and source/provenance guards. Permanent
+  alternatives retain context/task checks and clear incompatible references. No actuals are created.
+- Regenerated collision IDs retain original UUID v3/UTF-8 semantics, including isolated-surrogate
+  replacement and reserved-ID salt. JVM uses original MD5; Native system CommonCrypto. This is
+  legacy identity compatibility, not cryptographic authentication. Existing SHA-256 execution
+  identities reuse the same unchanged common UTF-8 helper. Dates compare epoch days on both
+  platforms; no JVM-only LocalDate comparison leaks into common source.
+- Repository missing rows/pointers are explicitly nullable; successful decisions/reviews are
+  non-null. Original DTO validation, immutable decisions, raw summary nullability and compare-
+  activate contracts retained. Android checks known metadata/source IDs; test fixtures explicitly
+  assert known created IDs and expected stored programmes without removing any assertion.
+- **159 shared-domain JVM +14 shared-health JVM tests PASS**, no failures/errors/skips. Eight new
+  tests cover retained history, Unicode/surrogate collision identities, reserved IDs, protected/
+  missing evidence, forward revisions, unavailable days, substitutions/reference clearing and
+  immutable decision evidence. Original six suites **374190 checks PASS**: programme373245/
+  concrete substitution44/concrete draft31/target152/association658/source60. Original/shared
+  27line programme edit identity/target/decision output cmp MATCH; scratch ProgrammeEditParity.java
+  and kmp-{original,shared}-programme-edit.log. No golden normalisation or assertion weakening.
+- Final kmp-programme-revision-verified-final-build.log BUILD SUCCESSFUL117tasks/1m16s, both
+  APKs. CI-style formatting438scoped files (317Kotlin/121Java) and diff check PASS. APK remains
+  code19/min28/noINTERNET. Exact pushed-head Android/Apple runtime CI is still required; no final
+  full matrix/screenshots claim. Shared tests up-to-date after Android-fixture-only fixes.
+- Version0.12.3-test1/code19, SQLite19/JSON13/raw3/complete1 unchanged. No new permission, public
+  artifact, version bump or merge. Native storage/services/real iOS host remain unfinished.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. The recommendation/progression checkpoint
-   follows fa6cb1f; inspect exact new Android265/Apple/format CI and fix real failures. fa6cb1f
-   itself passed43585087542 Android246/Apple and43585087561 formatting.
-2. After new-head verification, continue StrengthProgrammeEditor and StrengthProgrammingRepository
-   into common code, preserving immutable past/completed prescriptions, forward revisions, frozen
-   protected evidence, explicit activation and deterministic regenerated IDs (Java UUID v3/UTF-8
-   semantics). Then continue their real UI/state. Do not redo completed recommendation/progression,
-   execution/substitution/source/association ports or change conservative calculations.
+1. Inspect branch/status/log and PR24. Preserve all work. The revision checkpoint follows
+   fa0c88a, whose experiment43603001097 passed Android265/Apple and43603001007 formatting.
+   Verify final local build/formatter and the exact new pushed head; do not borrow parent passes.
+2. Continue concrete saved-preview draft/editor/repository into common code, preserving each
+   dated target, reviewed substitution lineage, checked revision increments, protected workouts,
+   independent draft saving and transaction-time activation. Then continue the actual UI/state.
+   Do not redo completed recommendation/progression/execution/substitution/association ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

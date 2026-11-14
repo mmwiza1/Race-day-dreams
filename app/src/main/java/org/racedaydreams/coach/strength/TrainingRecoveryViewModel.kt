@@ -83,7 +83,7 @@ class TrainingRecoveryViewModel(app: Application) : AndroidViewModel(app) {
                         source.id() == programme.id() &&
                         source.sessionId() in known
                 )
-                    protected.add(source.sessionId())
+                    protected.add(requireNotNull(source.sessionId()))
             }
         }
         val hybrid = focus.load().orElse(PrimaryFocus.RUNNING) == PrimaryFocus.HYBRID
