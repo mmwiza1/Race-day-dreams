@@ -455,9 +455,9 @@ incomplete migration merely because a focused checkpoint passes.
   remaining engines/shared UI/orchestration/native storage/services/real iOS app host. No merge,
   release or version increment while full parity remains unfinished.
 
-### Fifteenth checkpoint — shared actual strength-record engine (locally verified)
+### Fifteenth checkpoint — shared actual strength-record engine (`3b234d7`)
 
-- Preserve the coherent local batch on top of62e9867: StrengthRecords.java replaced with actual
+- COMMITTED/PUSHED `3b234d777b43e728f4aa4c9af3a72283fa9deb08`: StrengthRecords.java replaced with actual
   common engine/key/point models. **145Java domain files remain**. Original JVM StrengthAnalytics
   estimatedOneRepMax API delegates to new common StrengthRecordPolicy; its other existing logic
   remains Java (not counted as migrated). No duplicate estimate formula or prescription input.
@@ -480,15 +480,51 @@ incomplete migration merely because a focused checkpoint passes.
   APK+testAPK. Earlier kmp-record-policy-build.log exposed nullable Java-interop UI reads, fixed
   before final verification. Formatter --check --patch-output PASS406files (266Kotlin/140Java),
   kmp-record-format-check.log. Git diff check clean.
-- Next: finish formatter result, record/commit/push coherent batch to SAME draftPR24, inspect
-  exact new Native/Android/format verification. Do not borrow62e9867 success. Then continue
-  remaining shared engines/UI/orchestration/native storage/services and actual iOS app host.
+- Exact CI43518706438 SUCCESS on BOTH Android and Apple; Android logs confirm169focused
+  tests, zero failures/skips, plus schema75/full legacy domain/build/lint. Native record policy,
+  stored-offset dates and shared framework passed. Formatting43518706458 SUCCESS. These are
+  framework/development gates, not a complete iOS application or final release matrix.
+
+### Sixteenth checkpoint — shared strength context and historical timelines
+
+- This source checkpoint follows3b234d7 (inspect current git log/PR head for commit identity).
+  THREE Java originals replaced: StrengthAnalytics, HistoricalStrengthRecord, StrengthProgression.
+  **142Java domain files remain**. Original context, bounded estimates, legacy rep buckets,
+  loaded-task comparisons, approximate/unknown date precision and manual provenance preserved.
+  Missing effort stays unknown; warm-ups do not enter working-set context/PBs. Manual records
+  never fabricate completed workouts. One common estimate policy remains authoritative.
+- Historical records retain original validated measurement profiles, date-precision constraints,
+  notes/identity and nullable dates. Timeline sorting keeps unknown dates last/outside charts;
+  old best/tie/NaN/signed-zero behaviour retained. Existing source offsets, not current device
+  timezone, determine recorded dates. Session-load math keeps toMillis truncation and evaluation
+  order on validated <=12h sessions; missing session RPE is not inferred from set averages.
+- **99shared-domain +14shared-health JVM tests PASS**, zero failures/errors/skips, including
+  six new common context/history tests. Original Java/common11-line output **cmp MATCH** in
+  scratch kmp-{original,shared}-strength-context.log. Seven original suites **30461checks**:
+  Release05Domain253, StrengthTodaySummary58, Refinement97, Coaching29602, WeeklyCoaching96,
+  TrainingRecovery321, StrengthRecords34. No assertions weakened or algorithms redesigned.
+- Four Android UI/orchestration files now explicitly check known computed fields/filtered dates.
+  Unknown historical dates still render as unknown and stay outside graphs. Original UI strings,
+  chart calculations, callbacks, future-date guard and independent actual/manual history remain.
+- Final `/workspace/scratch/kmp-strength-context-final-build.log` BUILD SUCCESSFUL,
+ 117tasks/2m19s, both APKs. Earlier context-build log found Java-nullability reads, fixed before
+  final gate. Formatter --check --patch-output PASS410files (270Kotlin/140Java), release10 and
+  git diff check PASS. APK confirms0.12.3-test1/code19 and no INTERNET permission. SQLite19 /
+  JSON13 /raw3 /complete1 unchanged. No version increment/publication/merge.
+- Experiment CI adds original WeeklyUxTest five cases (historical unknown PB, explicit-zero shoe
+  data, body entry/calendar/settings), preserving prior169 and all default full gates. Expected
+ 174focused runtime cases must be confirmed, not presumed. New Native/Android/format results
+  pending for this checkpoint; inspect exact PR head. Previous3b Native pass is not this pass.
+- Next exact action: inspect the source checkpoint's real Android/Apple/format CI and fix actual
+  failures. Then continue remaining shared execution/coaching engines and actual UI/state,
+  typed native storage/backup/retention, device services, full HealthKit integration and the real
+  iOS app host. Continue SAME draftPR24; do not restart completed Java conversions or UI.
 
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all valid work. The strength-record
-   batch is locally built/tested, not yet committed/pushed.62e9867 passed Android166, real
-   Apple tests/framework and formatting. Preserve the newer batch and inspect its exact CI.
+1. Inspect branch/status/log and PR24. Preserve all valid work. The current strength
+   context/historical-timeline source checkpoint follows3b234d7. Its local tests/build passed;
+   inspect exact new PR-head CI.3b234d7 passed Android169, Apple tests/framework and formatting.
 2. Inspect exact new Android/Apple CI, correcting real failures. Continue remaining shared
    application work: portable activity/strength models/engines, actual shared screens and
    orchestration, platform storage/services and real iOS app host. Preserve known/unknown

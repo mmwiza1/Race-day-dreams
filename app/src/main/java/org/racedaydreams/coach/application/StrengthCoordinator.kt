@@ -211,7 +211,8 @@ class StrengthCoordinator(
 
     fun saveHistorical(record: HistoricalStrengthRecord, done: () -> Unit = {}) =
         operations.submit(onSuccess = done) {
-            require(record.date() == null || record.date() <= LocalDate.now()) {
+            val date = record.date()
+            require(date == null || date <= LocalDate.now()) {
                 "A historical PB cannot be in the future."
             }
             development.saveHistorical(record)

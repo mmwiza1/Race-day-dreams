@@ -39,13 +39,13 @@ import org.racedaydreams.domain.strength.*
         if(progression.isEmpty()&&state.historicalStrength.isEmpty())Text("Log working sets or add a historical record. No maximal test is needed.")
         state.exercises.filter{e->timeline.any{it.exerciseId()==e.id()}}.forEach{e->CoachCard{
             Text(e.name(),style=MaterialTheme.typography.titleMedium)
-            val categories=timeline.filter{it.exerciseId()==e.id()}.map{it.category()}.distinct()
+            val categories=timeline.filter{it.exerciseId()==e.id()}.map{requireNotNull(it.category())}.distinct()
             var selectedCategory by rememberSaveable(e.id()){mutableStateOf(categories.firstOrNull{it=="Load × 5"}?:categories.first())}
             var choose by remember{mutableStateOf(false)}
             val category=selectedCategory.takeIf{it in categories}?:categories.first()
             Box{OutlinedButton(onClick={choose=true},modifier=Modifier.heightIn(min=48.dp)){Text(org.racedaydreams.domain.presentation.AthleteLanguage.recordLabel(category))};DropdownMenu(expanded=choose,onDismissRequest={choose=false}){categories.forEach{c->DropdownMenuItem(text={Text(org.racedaydreams.domain.presentation.AthleteLanguage.recordLabel(c))},onClick={selectedCategory=c;choose=false})}}}
             val best=StrengthProgression.best(timeline,e.id(),category)
-            best?.let{if(category!="Estimated 1RM")PbCelebration(state,model,"strength:"+it.id()+":"+category);Text(if(category.startsWith("Duration"))"Current PB: ${StrengthMeasurements.duration(it.value().toLong())}"else if(category.startsWith("Distance"))"Current PB: ${decimal(it.value())} m"else if(category=="Estimated 1RM")"Estimated maximum for one repetition: ~${kotlin.math.round(state.massUnit.fromKilograms(it.value())).toInt()} ${state.massUnit.name.lowercase()}"else if(category=="Bodyweight reps")"Current PB: ${it.reps()} reps"else "Current PB: ${mass(it.kilograms())} × ${it.reps()}",style=MaterialTheme.typography.titleLarge);Text(it.provenance(),style=MaterialTheme.typography.labelMedium)}
+            best?.let{if(category!="Estimated 1RM")PbCelebration(state,model,"strength:"+it.id()+":"+category);Text(if(category.startsWith("Duration"))"Current PB: ${StrengthMeasurements.duration(it.value().toLong())}"else if(category.startsWith("Distance"))"Current PB: ${decimal(it.value())} m"else if(category=="Estimated 1RM")"Estimated maximum for one repetition: ~${kotlin.math.round(state.massUnit.fromKilograms(it.value())).toInt()} ${state.massUnit.name.lowercase()}"else if(category=="Bodyweight reps")"Current PB: ${it.reps()} reps"else "Current PB: ${mass(it.kilograms())} × ${it.reps()}",style=MaterialTheme.typography.titleLarge);Text(requireNotNull(it.provenance()),style=MaterialTheme.typography.labelMedium)}
             if(category=="Estimated 1RM")WhyDetails("Epley estimate from eligible working sets of at most 10 reps. This is approximate and does not require maximal testing.","How was this estimated?")
             var expanded by rememberSaveable(e.id()){mutableStateOf(false)}
             TextButton(onClick={expanded=!expanded},modifier=Modifier.heightIn(min=48.dp)){Text(if(expanded)"Hide progression"else "View progression")}
@@ -54,14 +54,14 @@ import org.racedaydreams.domain.strength.*
                 history.forEach{r->
                     Column(verticalArrangement=Arrangement.spacedBy(4.dp)){
                         HorizontalDivider()
-                        Text(when(r.precision()){HistoricalStrengthRecord.DatePrecision.UNKNOWN->"Date unknown · not placed in chronology";HistoricalStrengthRecord.DatePrecision.APPROXIMATE->"Around ${shortDate(r.date())}";else->shortDate(r.date())},style=MaterialTheme.typography.titleSmall)
+                        Text(when(r.precision()){HistoricalStrengthRecord.DatePrecision.UNKNOWN->"Date unknown · not placed in chronology";HistoricalStrengthRecord.DatePrecision.APPROXIMATE->"Around ${shortDate(requireNotNull(r.date()))}";else->shortDate(requireNotNull(r.date()))},style=MaterialTheme.typography.titleSmall)
                         Text(if(category.startsWith("Duration"))StrengthMeasurements.duration(r.value().toLong())else if(category.startsWith("Distance"))"${decimal(r.value())} m"else if(category=="Estimated 1RM")"~${kotlin.math.round(state.massUnit.fromKilograms(r.value())).toInt()} ${state.massUnit.name.lowercase()} · estimated"else if(category=="Bodyweight reps")"${r.reps()} reps"else "${mass(r.kilograms())} × ${r.reps()}")
-                        Text(r.provenance(),style=MaterialTheme.typography.labelMedium)
+                        Text(requireNotNull(r.provenance()),style=MaterialTheme.typography.labelMedium)
                         var details by rememberSaveable(r.id(),category){mutableStateOf(false)}
                         if(r.sessionId()==null||!r.notes().isNullOrBlank())TextButton(onClick={details=!details},modifier=Modifier.heightIn(min=48.dp)){Text(if(details)"Hide record details"else "Record details")}
                         if(details){
                             if(r.sessionId()==null){var edit by rememberSaveable(r.id()){mutableStateOf(false)};TextButton(onClick={edit=!edit}){Text("Edit historical PB")};if(edit)state.historicalStrength.firstOrNull{it.id()==r.id()}?.let{HistoricalForm(state,model,it){edit=false}}}
-                            r.notes()?.takeIf{it.isNotBlank()}?.let{Text(it)};if(r.sessionId()==null)TextButton(onClick={model.strength.deleteHistorical(r.id())}){Text("Delete historical entry")}}
+                            r.notes()?.takeIf{it.isNotBlank()}?.let{Text(it)};if(r.sessionId()==null)TextButton(onClick={model.strength.deleteHistorical(requireNotNull(r.id()))}){Text("Delete historical entry")}}
                     }
                 }
             }
@@ -75,8 +75,8 @@ import org.racedaydreams.domain.strength.*
             Text("${friendlyDate(s.startedAt().atOffset(s.offset()).toLocalDate())} · ${s.duration().toMinutes()} min")
             state.strengthPlannedDates[s.id()]?.let{Text("Linked planned strength date: ${friendlyDate(it)}") }
             state.gymLinks[s.id()]?.let{Text("Prescribed block: ${it.versionKey().substringAfterLast(":")} · original prescription retained")}
-            val context=StrengthAnalytics.context(s);Text("${context.region().name.lowercase().replace('_',' ')} · ${context.effort()} · lower-body involvement ${context.lowerBody().name.lowercase()}")
-            WhyDetails(context.reasons().joinToString("\n"),"Why this strength context?")
+            val context=StrengthAnalytics.context(s);Text("${requireNotNull(context.region()).name.lowercase().replace('_',' ')} · ${context.effort()} · lower-body involvement ${requireNotNull(context.lowerBody()).name.lowercase()}")
+            WhyDetails(requireNotNull(context.reasons()).joinToString("\n"),"Why this strength context?")
             val newRecords=progression.filter{r->r.sessionId()==s.id()&&r.category()!="Estimated 1RM"&&timeline.none{it.sessionId()==null&&it.exerciseId()==r.exerciseId()&&it.category()==r.category()&&it.value()>=r.value()}}
             if(newRecords.isNotEmpty())Text("PB evidence recorded · ${newRecords.map{it.exerciseId()}.distinct().size} exercises",style=MaterialTheme.typography.titleSmall)
             s.exercises().forEach{b->
