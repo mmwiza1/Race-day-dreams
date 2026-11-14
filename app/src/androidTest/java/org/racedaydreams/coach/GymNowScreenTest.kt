@@ -85,7 +85,7 @@ class GymNowScreenTest {
 
         click("Add exercise")
         compose.onNodeWithText("Exercise name or alias").performTextInput("bench press")
-        click(ExerciseCatalog.definition("bench-press").exercise().name())
+        click(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise().name())
         await { execution()?.slots()?.size == 1 }
         val originalInputId = model.state.value.form.id
         assertEquals("", model.state.value.form.kilograms)
@@ -162,7 +162,7 @@ class GymNowScreenTest {
         enter("Workout name", "Bench practice")
         click("Add exercise")
         enter("Search by name or alias", "bench press")
-        click(ExerciseCatalog.definition("bench-press").exercise().name())
+        click(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise().name())
         // Keep the editor's three-set default. Targets remain separate from entered actuals.
         enter("Minimum repetitions", "5")
         enter("Maximum repetitions", "8")
@@ -173,7 +173,7 @@ class GymNowScreenTest {
         await { model.state.value.favourites.size == 1 }
         val frozen = model.state.value.favourites.single()
         assertEquals("Bench practice", frozen.title())
-        assertEquals(80.0, frozen.slots().single().target().referenceLoadKg()!!, 0.0)
+        assertEquals(80.0, frozen.slots().single().target()!!.referenceLoadKg()!!, 0.0)
         click("Start this workout")
         await { execution()?.origin() == GymExecution.Origin.CUSTOM }
         assertTrue(execution()!!.actualSets().isEmpty())
@@ -192,7 +192,7 @@ class GymNowScreenTest {
         click("Start favourite")
         await { execution()?.origin() == GymExecution.Origin.FAVOURITE }
         assertEquals(frozen, execution()!!.prescription())
-        assertEquals(frozen.id(), execution()!!.source().id())
+        assertEquals(frozen.id(), execution()!!.source()!!.id())
         assertTrue(execution()!!.actualSets().isEmpty())
         assertEquals("", model.state.value.form.kilograms)
         compose.runOnIdle { model.discard() }
@@ -222,7 +222,7 @@ class GymNowScreenTest {
         assertEquals("", model.state.value.form.kilograms)
         assertEquals(
             80.0,
-            execution()!!.prescription().slots().single().target().referenceLoadKg()!!,
+            execution()!!.prescription()!!.slots().single().target()!!.referenceLoadKg()!!,
             0.0,
         )
         io { GymProgrammeStore(application).save(programme(2)) }
@@ -266,7 +266,9 @@ class GymNowScreenTest {
         install(retained, largeDark = true)
         click("Start open workout")
         await { execution()?.origin() == GymExecution.Origin.FREE }
-        compose.runOnIdle { model.addExercise(ExerciseCatalog.definition("plank").exercise()) }
+        compose.runOnIdle {
+            model.addExercise(requireNotNull(ExerciseCatalog.definition("plank")).exercise())
+        }
         await { execution()?.slots()?.size == 1 }
         enter("Actual duration · seconds", "20")
         click("Save actual set")
@@ -334,7 +336,7 @@ class GymNowScreenTest {
         await { execution() != null }
         click("Add exercise")
         compose.onNodeWithText("Exercise name or alias").performTextInput("bench press")
-        click(ExerciseCatalog.definition("bench-press").exercise().name())
+        click(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise().name())
         await { execution()?.slots()?.size == 1 }
         assertTrue(execution()!!.actualSets().isEmpty())
         click("Optional warm-up ▾")

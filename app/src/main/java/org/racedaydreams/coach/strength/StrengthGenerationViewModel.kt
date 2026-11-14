@@ -13,53 +13,6 @@ import org.racedaydreams.domain.WorkoutCategory
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.*
 
-data class ProgrammeSwapReview(
-    val draftId: String,
-    val draftRevision: Int,
-    val workoutId: String,
-    val slotId: String,
-    val original: StrengthExercise,
-    val reason: ExerciseSubstitutionEngine.Reason,
-    val suggestions: List<ExerciseSubstitutionEngine.Suggestion> = emptyList(),
-)
-
-data class ProgrammeProgressionReview(
-    val draftId: String,
-    val draftRevision: Int,
-    val workoutId: String,
-    val slot: GymWorkoutDefinition.Slot,
-    val advice: StrengthTargetProgression.Advice,
-    val supportingWorkouts: List<StrengthSession> = emptyList(),
-)
-
-/** Exact concrete generation/preview ownership; durable drafts contain dates, not UI timers. */
-data class StrengthGenerationState(
-    val busy: Boolean = false,
-    val loading: Boolean = true,
-    val error: String? = null,
-    val notice: String? = null,
-    val draft: ConcreteStrengthProgrammeDraft? = null,
-    val accepted: Boolean = false,
-    val superseded: Boolean = false,
-    val baseProgramme: StrengthProgramme? = null,
-    val swapReview: ProgrammeSwapReview? = null,
-    val progressionReview: ProgrammeProgressionReview? = null,
-    val protectedWorkoutIds: Set<String> = emptySet(),
-    val saved: List<ConcreteStrengthProgrammeDraftRepository.Summary> = emptyList(),
-    val page: Int = 0,
-    val more: Boolean = false,
-    val current: StrengthProgrammingRepository.Reference? = null,
-    val historyOpen: Boolean = false,
-    val historyPage: Int = 0,
-    val history: List<StrengthProgrammingRepository.Summary> = emptyList(),
-    val historyMore: Boolean = false,
-    val historicalProgramme: StrengthProgramme? = null,
-    val exercises: List<StrengthExercise> = emptyList(),
-    val favourites: Set<String> = emptySet(),
-    val excluded: Set<String> = emptySet(),
-    val archived: Set<String> = emptySet(),
-)
-
 class StrengthGenerationViewModel(app: Application, private val retained: SavedStateHandle) :
     AndroidViewModel(app) {
     private val repository = SqliteConcreteStrengthProgrammeDraftRepository(app)
@@ -174,13 +127,16 @@ class StrengthGenerationViewModel(app: Application, private val retained: SavedS
         val known = review.programme().workouts().map { it.id() }.toSet()
         val gym = SqliteGymExecutionRepository(getApplication<Application>())
         gym.unfinished().forEach { row ->
-            val source = gym.load(row.id()).execution().source()
+            val stored =
+                gym.load(requireNotNull(row.id()))
+                    ?: error("The unfinished gym workout is missing.")
+            val source = stored.execution().source()
             if (
                 source?.kind() == GymExecution.SourceKind.PROGRAMME &&
                     source.id() == review.programme().id() &&
                     source.sessionId() in known
             )
-                ids.add(source.sessionId())
+                ids.add(requireNotNull(source.sessionId()))
         }
         return ids.toSet()
     }

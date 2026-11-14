@@ -74,13 +74,16 @@ class TrainingRecoveryViewModel(app: Application) : AndroidViewModel(app) {
         if (programme != null) {
             val known = programme.workouts().map { it.id() }.toSet()
             gym.unfinished().forEach { row ->
-                val source = gym.load(row.id()).execution().source()
+                val stored =
+                    gym.load(requireNotNull(row.id()))
+                        ?: error("The unfinished gym workout is missing.")
+                val source = stored.execution().source()
                 if (
                     source?.kind() == GymExecution.SourceKind.PROGRAMME &&
                         source.id() == programme.id() &&
                         source.sessionId() in known
                 )
-                    protected.add(source.sessionId())
+                    protected.add(requireNotNull(source.sessionId()))
             }
         }
         val hybrid = focus.load().orElse(PrimaryFocus.RUNNING) == PrimaryFocus.HYBRID

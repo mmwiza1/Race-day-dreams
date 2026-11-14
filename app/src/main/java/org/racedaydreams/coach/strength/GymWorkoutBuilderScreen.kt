@@ -102,7 +102,8 @@ fun GymWorkoutBuilderScreen(model: GymNowViewModel, onWorkout: () -> Unit, onBac
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(gymTargetDescription(slot))
-                        if (slot.supersetGroup() != null) {
+                        val supersetGroup = slot.supersetGroup()
+                        if (supersetGroup != null) {
                             Text("Superset · record each movement separately")
                             if (
                                 index < draft.slots.lastIndex &&
@@ -117,7 +118,7 @@ fun GymWorkoutBuilderScreen(model: GymNowViewModel, onWorkout: () -> Unit, onBac
                             }
 
                             TextButton(
-                                onClick = { model.builderUngroup(slot.supersetGroup()) },
+                                onClick = { model.builderUngroup(supersetGroup) },
                                 enabled = enabled,
                             ) {
                                 Text("Break this superset")

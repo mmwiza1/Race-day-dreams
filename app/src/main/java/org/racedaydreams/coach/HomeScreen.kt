@@ -94,12 +94,11 @@ private fun RunningTodayScreen(
                                 "Aim for a ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)} effort."
                         )
                     }
-                    if (
-                        segment.minimumSecondsPerKm() != null &&
-                            segment.maximumSecondsPerKm() != null
-                    )
+                    val minimumPace = segment.minimumSecondsPerKm()
+                    val maximumPace = segment.maximumSecondsPerKm()
+                    if (minimumPace != null && maximumPace != null)
                         Text(
-                            "${formatPaceSeconds(segment.minimumSecondsPerKm())}–${formatPaceSeconds(segment.maximumSecondsPerKm())}/km"
+                            "${formatPaceSeconds(minimumPace)}–${formatPaceSeconds(maximumPace)}/km"
                         )
                 }
             if (!completed)
@@ -173,13 +172,14 @@ private fun RunningTodayScreen(
         ?.raceGoal()
         ?.takeIf { it.raceDate() != null }
         ?.let { goal ->
+            val raceDate = goal.raceDate() ?: return@let
             SemanticCard(Tile.Race) {
                 Text(
                     goal.raceName().ifBlank { goal.distance().label() },
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
-                    "${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),goal.raceDate())} days · ${friendlyDate(goal.raceDate())}"
+                    "${java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(),raceDate)} days · ${friendlyDate(raceDate)}"
                 )
                 TextButton(onClick = race) { Text("Race preparation") }
             }

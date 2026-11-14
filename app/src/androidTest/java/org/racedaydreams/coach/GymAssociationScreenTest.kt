@@ -50,7 +50,7 @@ class GymAssociationScreenTest {
         compose.runOnIdle { model.startFree { shown.value = true } }
         await { execution()?.status() == GymExecution.Status.ACTIVE }
         compose.runOnIdle {
-            model.addExercise(ExerciseCatalog.definition("bench-press").exercise())
+            model.addExercise(requireNotNull(ExerciseCatalog.definition("bench-press")).exercise())
         }
         await { execution()?.slots()?.size == 1 }
         compose.runOnIdle {
@@ -78,7 +78,7 @@ class GymAssociationScreenTest {
         }
         Assert.assertEquals(
             GymExecution.Origin.FREE,
-            io { SqliteGymExecutionRepository(app).load(actualId).execution().origin() },
+            io { SqliteGymExecutionRepository(app).load(actualId)!!.execution().origin() },
         )
         Assert.assertEquals(originalActual, io { CoachingStore(app).strength().single() })
         Assert.assertEquals(original, io { GymProgrammeStore(app).current() })

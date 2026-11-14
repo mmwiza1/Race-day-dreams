@@ -26,8 +26,9 @@ public final class SqlitePrimaryFocusRepository implements PrimaryFocusRepositor
     public Optional<PrimaryFocus> load() {
         String selected = settings.getSetting(KEY);
         return selected == null
-                ? PrimaryFocus.fromLegacyStartingPath(settings.getSetting("starting.path"))
-                : PrimaryFocus.fromStorageValue(selected);
+                ? Optional.ofNullable(
+                        PrimaryFocus.fromLegacyStartingPath(settings.getSetting("starting.path")))
+                : Optional.ofNullable(PrimaryFocus.fromStorageValue(selected));
     }
 
     @Override

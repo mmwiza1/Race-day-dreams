@@ -76,7 +76,7 @@ internal fun WeeklyRunningChart(
                 "${formatPaceSeconds(value * if (imperial) 1.609344 else 1.0)} /${if (imperial) "mi" else "km"}"
         }
     fun description(point: RunningTrendPoint): String =
-        "Week of ${shortDate(point.week.weekStart())}: " +
+        "Week of ${shortDate(requireNotNull(point.week.weekStart()))}: " +
             when {
                 point.week.activityCount() == 0 -> "No recorded runs"
                 point.value == null -> "${metric.label} unavailable"
@@ -98,7 +98,7 @@ internal fun WeeklyRunningChart(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
-                "Week of ${friendlyDate(current.week.weekStart())}",
+                "Week of ${friendlyDate(requireNotNull(current.week.weekStart()))}",
                 style = MaterialTheme.typography.labelLarge,
             )
             Text(
@@ -158,7 +158,7 @@ internal fun WeeklyRunningChart(
                     customActions =
                         points.map { point ->
                             CustomAccessibilityAction(
-                                "Select week of ${shortDate(point.week.weekStart())}"
+                                "Select week of ${shortDate(requireNotNull(point.week.weekStart()))}"
                             ) {
                                 selectedWeek = point.week.weekStart().toString()
                                 true
@@ -272,8 +272,14 @@ internal fun WeeklyRunningChart(
         }
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(shortDate(weeks.first().weekStart()), style = MaterialTheme.typography.labelSmall)
-        Text(shortDate(weeks.last().weekStart()), style = MaterialTheme.typography.labelSmall)
+        Text(
+            shortDate(requireNotNull(weeks.first().weekStart())),
+            style = MaterialTheme.typography.labelSmall,
+        )
+        Text(
+            shortDate(requireNotNull(weeks.last().weekStart())),
+            style = MaterialTheme.typography.labelSmall,
+        )
     }
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),

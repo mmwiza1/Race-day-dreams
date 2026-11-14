@@ -229,7 +229,7 @@ class StrengthGenerationScreenTest {
         await { model.state.value.draft!!.revision() == 2 }
         val edited = model.state.value.draft!!
         val changed = edited.programme().workouts().first()
-        assertEquals(1, changed.definition().slots().first().target().sets())
+        assertEquals(1, changed.definition().slots().first().target()!!.sets())
         assertEquals(
             StrengthWorkoutBudget.workoutMinutes(changed.definition().slots()),
             changed.expectedMinutes(),
@@ -308,8 +308,8 @@ class StrengthGenerationScreenTest {
             )
             gym.finish(
                     engine.finish(tick(2000), null, "Retained native actual", false),
-                    started.revision(),
-                )
+                    started!!.revision(),
+                )!!
                 .execution()
         }
         click("Review future programme changes")
@@ -350,7 +350,10 @@ class StrengthGenerationScreenTest {
             original.programme(),
             io { programmes.programme(original.programme().id(), 1) },
         )
-        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        assertEquals(
+            actual,
+            io { SqliteGymExecutionRepository(app).load(actual.id())!!.execution() },
+        )
         assertTrue(io { programmes.decisions().last().protectedWorkoutIds().contains(first.id()) })
         io {
             val backup = SqliteBackupRepository(app)
@@ -360,7 +363,10 @@ class StrengthGenerationScreenTest {
             regenerated.programme(),
             io { programmes.programme(original.programme().id(), 2) },
         )
-        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        assertEquals(
+            actual,
+            io { SqliteGymExecutionRepository(app).load(actual.id())!!.execution() },
+        )
         compose.runOnIdle { model.open(before.id()) {} }
         await { model.state.value.draft?.id() == before.id() }
         assertTrue(model.state.value.superseded)
@@ -422,7 +428,7 @@ class StrengthGenerationScreenTest {
         assertEquals("bench-press", proposed.substitutions().single().fromExerciseId())
         val changed = proposed.programme().workouts().first().definition().slots().first()
         assertEquals("dumbbell-bench-press", changed.exercise().id())
-        assertNull(changed.target().referenceLoadKg())
+        assertNull(changed.target()!!.referenceLoadKg())
         assertEquals(
             80.0,
             original
@@ -432,7 +438,7 @@ class StrengthGenerationScreenTest {
                 .definition()
                 .slots()
                 .first()
-                .target()
+                .target()!!
                 .referenceLoadKg()!!,
             0.0,
         )
@@ -534,8 +540,8 @@ class StrengthGenerationScreenTest {
         val replacement =
             model.state.value.draft!!.programme().workouts().first().definition().slots().first()
         assertEquals(suggestion.exercise(), replacement.exercise())
-        assertNull(replacement.target().referenceLoadKg())
-        assertEquals(5, replacement.target().minimumReps())
+        assertNull(replacement.target()!!.referenceLoadKg())
+        assertEquals(5, replacement.target()!!.minimumReps())
         assertEquals(1, io { programmes.currentReference()!!.revision() })
         assertTrue(io { CoachingStore(app).strength().isEmpty() })
     }
@@ -580,7 +586,7 @@ class StrengthGenerationScreenTest {
                     .definition()
                     .slots()
                     .first { it.id() == change.slotId() }
-            assertEquals(before.target().withoutLoadReference(), after.target())
+            assertEquals(before.target()!!.withoutLoadReference(), after.target())
         }
         assertEquals(1, io { programmes.currentReference()!!.revision() })
         assertEquals(
@@ -656,19 +662,22 @@ class StrengthGenerationScreenTest {
                         "Recorded independently",
                         false,
                     ),
-                    started.second.revision(),
-                )
+                    started.second!!.revision(),
+                )!!
                 .execution()
         }
         compose.runOnIdle { model.activate(proposal, "accept-finished-swap") { activations++ } }
         await { activations == 2 }
-        assertEquals(actual, io { SqliteGymExecutionRepository(app).load(actual.id()).execution() })
+        assertEquals(
+            actual,
+            io { SqliteGymExecutionRepository(app).load(actual.id())!!.execution() },
+        )
         assertEquals(
             first,
             io {
-                programmes.programme(original.programme().id(), 2).workouts().first {
-                    it.id() == first.id()
-                }
+                requireNotNull(programmes.programme(original.programme().id(), 2))
+                    .workouts()
+                    .first { it.id() == first.id() }
             },
         )
         assertEquals(
@@ -693,7 +702,7 @@ class StrengthGenerationScreenTest {
         compose.onNodeWithText("Your workout suggestion").assertIsDisplayed()
         val advice = model.state.value.progressionReview!!.advice
         assertEquals(2, advice.supportingSessionIds().size)
-        assertEquals(82.0, advice.proposedTarget().referenceLoadKg()!!, 0.0)
+        assertEquals(82.0, advice.proposedTarget()!!.referenceLoadKg()!!, 0.0)
         assertEquals(
             draft,
             io { SqliteConcreteStrengthProgrammeDraftRepository(app).get(draft.id()) },
@@ -817,7 +826,7 @@ class StrengthGenerationScreenTest {
         }
         for (exerciseId in
             listOf("push-up", "weighted-pull-up", "plank", "weighted-plank", "farmers-carry")) {
-            val exercise = ExerciseCatalog.definition(exerciseId).exercise()
+            val exercise = requireNotNull(ExerciseCatalog.definition(exerciseId)).exercise()
             val before = model.state.value.draft!!
             val workout = before.programme().workouts().first()
             val slot = workout.definition().slots().first()
@@ -873,20 +882,21 @@ class StrengthGenerationScreenTest {
             val advice = model.state.value.progressionReview!!.advice
             assertNotNull(exerciseId, advice.proposedTarget())
             if (profile.usesDuration())
-                assertEquals(35L, advice.proposedTarget().seconds()!!.toLong())
-            if (profile.usesDistance()) assertEquals(25.0, advice.proposedTarget().metres()!!, 0.0)
+                assertEquals(35L, advice.proposedTarget()!!.seconds()!!.toLong())
+            if (profile.usesDistance())
+                assertEquals(25.0, advice.proposedTarget()!!.metres()!!, 0.0)
             if (profile.usesReps())
                 assertEquals(
                     if (profile.usesLoad()) 8 else 9,
-                    advice.proposedTarget().maximumReps(),
+                    advice.proposedTarget()!!.maximumReps(),
                 )
             if (profile.usesLoad())
                 assertEquals(
                     if (profile.usesReps()) 41.0 else load,
-                    advice.proposedTarget().referenceLoadKg()!!,
+                    advice.proposedTarget()!!.referenceLoadKg()!!,
                     0.0,
                 )
-            else assertNull(advice.proposedTarget().referenceLoadKg())
+            else assertNull(advice.proposedTarget()!!.referenceLoadKg())
             compose.runOnIdle { model.saveProgressionProposal() }
             await { model.state.value.draft!!.revision() == edited.revision() + 1 }
             assertEquals(
@@ -921,10 +931,10 @@ class StrengthGenerationScreenTest {
                     listOf(
                         StrengthSession.ExerciseSets(
                             slot.exercise(),
-                            (1..slot.target().sets()).map { set ->
+                            (1..slot.target()!!.sets()).map { set ->
                                 StrengthSession.SetEntry(
                                     "evidence-$day-$set",
-                                    slot.target().maximumReps(),
+                                    slot.target()!!.maximumReps()!!,
                                     80.0,
                                     effort,
                                     false,
@@ -944,7 +954,7 @@ class StrengthGenerationScreenTest {
         val workout = initial.programme().workouts().first()
         val slot = workout.definition().slots().first()
         assertEquals("bench-press", slot.exercise().id())
-        val target = slot.target()
+        val target = requireNotNull(slot.target())
         compose.runOnIdle {
             model.putSlot(
                 workout.id(),
@@ -954,8 +964,8 @@ class StrengthGenerationScreenTest {
                     sets = target.sets().toString(),
                     minimumReps = target.minimumReps().toString(),
                     maximumReps = target.maximumReps().toString(),
-                    minimumEffort = target.effort().minimum().toString(),
-                    maximumEffort = target.effort().maximum().toString(),
+                    minimumEffort = target.effort()!!.minimum().toString(),
+                    maximumEffort = target.effort()!!.maximum().toString(),
                     restSeconds = target.restSeconds().toString(),
                     referenceKilograms = "80",
                 ),

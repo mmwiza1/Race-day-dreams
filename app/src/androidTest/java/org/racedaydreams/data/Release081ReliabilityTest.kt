@@ -29,7 +29,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
         val session=store.unfinished()!!;val id=store.finish(session,null)
         assertEquals(id,store.finish(session,null))
         assertEquals(1,FeatureStore(context).activitySummaries().size)
-        assertEquals(e.status(21000).metres(),FeatureStore(context).activityDetail(id).distanceMetres()!!,.00001)
+        assertEquals(e.status(21000).metres(),requireNotNull(FeatureStore(context).activityDetail(id)).distanceMetres()!!,.00001)
         try{store.flush("retry",e.points(),e.events(),0,0,22000,"ACTIVE");fail("Finished stage revived")}catch(_:IllegalStateException){}
         assertNull(store.unfinished())
     }
@@ -45,7 +45,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
         store.start("pause",wall,1000);store.flush("pause",e.points(),e.events(),0,0,182000,"PAUSED");store.recoverable()
         // A new repository represents process recreation; no current boot clock is used.
         val after=RecordingStore(context);val s=after.unfinished()!!;assertEquals(182000L,s.last);val retained=after.recoverySummary(s);assertTrue(retained.paused);assertEquals(21,retained.points);assertEquals(21000L,retained.activeMillis)
-        val id=after.finish(s,null);val a=FeatureStore(context).activityDetail(id)
+        val id=after.finish(s,null);val a=requireNotNull(FeatureStore(context).activityDetail(id))
         assertEquals(181000L,a.elapsedTime().toMillis());assertEquals(21000L,a.movingTime()!!.toMillis())
     }
     fun testTwoThousandHistoryRowsPageWithoutHydratingRetainedCoordinates() {
@@ -74,7 +74,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
     fun testMixedSameTimeSameIdPagesNeverSkipStrengthOrDuplicateRunning() {
         val a=ActivityRecord("same",SourceIdentity("manual","same",null),wall,wall.plusSeconds(60),ZoneOffset.UTC,ZoneOffset.UTC,100.0,null,null,null,null,null,null,null,emptyList(),emptyList(),null,null)
         FeatureStore(context).upsertManualActivity(a)
-        val e=ExerciseCatalog.definition("back-squat").exercise()
+        val e=requireNotNull(ExerciseCatalog.definition("back-squat")).exercise()
         CoachingStore(context).saveStrength(StrengthSession("same",wall,ZoneOffset.UTC,Duration.ofMinutes(30),7.0,"",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("set",5,40.0,7.0,false))))))
         val store=WorkoutHistoryStore(context)
         val first=store.page(WorkoutHistoryQuery.Kind.ALL,null,"",null,null,emptyList(),null,1)
@@ -100,7 +100,7 @@ class Release081ReliabilityTest:AndroidTestCase() {
         assertEquals(first,coaching.versions().first{it.id()==first.id()})
     }
     fun testStrengthAliasAndDateFiltersRemainCorrectAcrossPages() {
-        val e=ExerciseCatalog.definition("romanian-deadlift").exercise()
+        val e=requireNotNull(ExerciseCatalog.definition("romanian-deadlift")).exercise()
         repeat(65){i->CoachingStore(context).saveStrength(StrengthSession("lift-$i",wall.minusSeconds(i*86400L),ZoneOffset.ofHours(2),Duration.ofMinutes(30),7.0,"",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("set",8,40.0,7.0,false))))))}
         val store=WorkoutHistoryStore(context)
         val first=store.page(WorkoutHistoryQuery.Kind.ALL,null,"RDL",null,null,emptyList(),null,30)

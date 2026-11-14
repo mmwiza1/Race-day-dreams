@@ -109,5 +109,9 @@ import org.racedaydreams.domain.body.MassUnit
 private fun workoutSummary(w:org.racedaydreams.domain.PlannedWorkout,s:CoachUiState):String {
     val factor=if(s.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL)1.609344 else 1.0
     val unit=if(factor>1)"mi"else "km"
-    return org.racedaydreams.domain.presentation.CalendarData.label(w.category())+(w.distanceKm()?.let{" · ${formatDistance(it*1000,s)}"}?:w.duration()?.let{" · ${it.toMinutes()} min"}?:"")+w.segments().filter{it.minimumSecondsPerKm()!=null}.joinToString(""){" · ${formatPaceSeconds(it.minimumSecondsPerKm()*factor)}–${formatPaceSeconds((it.maximumSecondsPerKm()?:it.minimumSecondsPerKm())*factor)}/$unit"}
+    return org.racedaydreams.domain.presentation.CalendarData.label(w.category())+(w.distanceKm()?.let{" · ${formatDistance(it*1000,s)}"}?:w.duration()?.let{" · ${it.toMinutes()} min"}?:"")+w.segments().mapNotNull { segment ->
+        val minimumPace = segment.minimumSecondsPerKm() ?: return@mapNotNull null
+        val maximumPace = segment.maximumSecondsPerKm() ?: minimumPace
+        " · ${formatPaceSeconds(minimumPace*factor)}–${formatPaceSeconds(maximumPace*factor)}/$unit"
+    }.joinToString("")
 }

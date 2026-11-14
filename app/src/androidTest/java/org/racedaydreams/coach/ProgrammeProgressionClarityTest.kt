@@ -33,7 +33,7 @@ class ProgrammeProgressionClarityTest {
         currentLoad: Double? = 80.0,
         effort: Boolean = true,
     ): ProgrammeProgressionReview {
-        val exercise = ExerciseCatalog.definition(id).exercise()
+        val exercise = requireNotNull(ExerciseCatalog.definition(id)).exercise()
         val profile = exercise.measurement()
         val target =
             GymWorkoutDefinition.Target(
@@ -259,7 +259,7 @@ class ProgrammeProgressionClarityTest {
         compose.onNodeWithTag("progression-review").performScrollToIndex(0)
         compose.onNodeWithText("Complete 2 sets of 40 metres.").assertIsDisplayed()
         val carry = review("farmers-carry")
-        val target = carry.slot.target()
+        val target = requireNotNull(carry.slot.target())
         val longerCarry =
             GymWorkoutDefinition.Target(2, null, null, null, 45.0, target.effort(), 180, 80.0)
         compose.runOnIdle {

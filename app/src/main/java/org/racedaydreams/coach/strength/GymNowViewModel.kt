@@ -5,7 +5,6 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
 import java.util.UUID
@@ -85,20 +84,6 @@ data class GymBuilderDraft(
     val savedRevision: Int? = null,
 )
 
-/** A prepared, bounded today-only choice. None of these capabilities change saved gym settings. */
-data class GymSwapState(
-    val executionId: String,
-    val slotId: String,
-    val original: StrengthExercise,
-    val goal: GymProgramme.Goal,
-    val experience: GymProgramme.Experience,
-    val equipment: Set<ExerciseMetadata.Equipment>,
-    val contextExplanation: String,
-    val reason: ExerciseSubstitutionEngine.Reason,
-    val suggestions: List<ExerciseSubstitutionEngine.Suggestion>,
-    val visibleLimit: Int = 4,
-)
-
 data class GymNowState(
     val restPreferences: GymRestTimer.Preferences = GymRestTimer.Preferences.defaults(),
     val restTimer: GymRestTimer? = null,
@@ -139,7 +124,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
     private var savedRest: GymRestTimer? = null
     private val repository = SqliteGymExecutionRepository(application)
     private val associations =
-        GymAssociationCoordinator(SqliteGymAssociationRepository(application), Clock.systemUTC()) {
+        GymAssociationCoordinator(SqliteGymAssociationRepository(application), { Instant.now() }) {
             UUID.randomUUID().toString()
         }
     private val coaching = CoachingStore(application)
@@ -725,7 +710,10 @@ class GymNowViewModel(application: Application, private val retained: SavedState
                             GymRestTimer.start(
                                 execution.id(),
                                 UUID.randomUUID().toString(),
-                                GymRestTimer.suggestedSeconds(slot, tools.preferences()),
+                                GymRestTimer.suggestedSeconds(
+                                    slot?.target()?.restSeconds(),
+                                    tools.preferences(),
+                                ),
                                 now,
                             )
                     "pause" -> requireNotNull(old).pause(now)
@@ -772,7 +760,7 @@ class GymNowViewModel(application: Application, private val retained: SavedState
     fun skipMovement() = command {
         val id = coordinator.view().observed()?.selectedSlotId() ?: error("Choose an exercise.")
         coordinator.skipExercise(id)
-        GymSupersets.next(coordinator.view().observed())?.let {
+        GymSupersets.next(coordinator.view().observed() ?: error("Open a workout first."))?.let {
             coordinator.selectExercise(it.slotId())
         }
     }

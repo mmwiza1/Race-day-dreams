@@ -1,0 +1,39 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
+    id 'org.jetbrains.compose'
+    id 'org.jetbrains.kotlin.plugin.compose'
+    id 'com.android.library'
+}
+
+kotlin {
+    jvmToolchain(17)
+    androidTarget()
+    [iosArm64(), iosSimulatorArm64(), iosX64()].each { target ->
+        target.binaries.framework {
+            baseName = 'RaceDayShared'
+            isStatic = true
+            export project(':sharedDomain')
+            export project(':sharedHealth')
+        }
+    }
+    sourceSets {
+        commonMain.dependencies {
+            api project(':sharedDomain')
+            api project(':sharedHealth')
+            api compose.runtime
+            api compose.foundation
+            api compose.material3
+        }
+        commonTest.dependencies { implementation kotlin('test') }
+    }
+}
+
+android {
+    namespace 'org.racedaydreams.shared'
+    compileSdk 36
+    defaultConfig { minSdk 28 }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

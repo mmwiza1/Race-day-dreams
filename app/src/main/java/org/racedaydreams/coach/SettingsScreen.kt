@@ -257,7 +257,7 @@ private fun PrimaryFocusSettings(state: CoachUiState, model: CoachViewModel) {
         Button(
             onClick = {
                 selected?.let {
-                    model.settings.primaryFocus(PrimaryFocus.fromStorageValue(it).get())
+                    model.settings.primaryFocus(requireNotNull(PrimaryFocus.fromStorageValue(it)))
                 }
             },
             enabled = !state.busy && selected != null,

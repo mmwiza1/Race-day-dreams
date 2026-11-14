@@ -452,7 +452,7 @@ class ExerciseBrowseScreenTest {
             )
     }
 
-    private fun exercise(id: String) = ExerciseCatalog.definition(id).exercise()
+    private fun exercise(id: String) = requireNotNull(ExerciseCatalog.definition(id)).exercise()
 
     private fun exercises(vararg ids: String) = ids.map(::exercise)
 

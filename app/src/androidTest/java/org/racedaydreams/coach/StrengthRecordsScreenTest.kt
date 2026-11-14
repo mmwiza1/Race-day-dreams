@@ -25,7 +25,7 @@ class StrengthRecordsScreenTest {
     @Test fun measuredAndEstimatedPerformanceAreSeparateAtDoubleText() = verify(false, 2f)
 
     private fun verify(dark: Boolean, scale: Float) {
-        val exercise = ExerciseCatalog.definition("bench-press").exercise()
+        val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         val source =
             StrengthSession(
                 "actual",

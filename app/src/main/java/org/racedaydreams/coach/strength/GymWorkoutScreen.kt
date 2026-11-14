@@ -204,9 +204,10 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
                     Text(gymExerciseContext(slot.exercise()))
                     PlainWorkoutTarget(slot)
                     val working = currentSets.count { !it.actual().warmUp() }
+                    val target = slot.target()
                     Text(
-                        if (slot.target() == null) "$working working sets saved"
-                        else "$working of ${slot.target().sets()} target working sets saved"
+                        if (target == null) "$working working sets saved"
+                        else "$working of ${target.sets()} target working sets saved"
                     )
                     Text(
                         "Targets and references are guidance. Record the load and repetitions, time or distance you actually perform.",

@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = 'RaceDayDreams'
-include ':domain', ':app'
+include ':sharedDomain', ':sharedHealth', ':sharedUi', ':domain', ':app'

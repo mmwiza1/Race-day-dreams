@@ -79,6 +79,16 @@ rdd_wait_for_platform_focus com.android.launcher3
 adb logcat -v raw -s RddGate:I '*:S' &
 rdd_test_log_pid=$!
 
+# Explicit development-only filter. Mandatory release jobs never set this variable and
+# continue through both the original guards and the complete unfiltered suite below.
+if [ -n "${RDD_FOCUSED_CLASSES:-}" ]; then
+    ./gradlew :app:connectedDebugAndroidTest \
+        -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000 \
+        -Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener \
+        "-Pandroid.testInstrumentationRunnerArguments.class=$RDD_FOCUSED_CLASSES"
+    exit 0
+fi
+
 # Fail fast on native interaction, disclosures and the actual multi-window capture lifecycle.
 # A passing guard never substitutes for the complete unfiltered suite below.
 ./gradlew :app:connectedDebugAndroidTest \
