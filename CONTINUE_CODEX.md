@@ -999,15 +999,57 @@ incomplete migration merely because a focused checkpoint passes.
   only; no running-execution port or new shared Duration API exists yet. Use original LiveCoach/
   RecordingCoordination suites and targeted common tests before committing that batch.
 
+### Twenty-ninth checkpoint — shared recorder execution and actual live-running panel
+
+- Resumed c2d46bd on experiment/android-ios-kmp-compose; fetched main85e1c3 unchanged; PR24 OPEN
+  DRAFT. Its experiment43634399391 Android/Apple and formatting43634399393 SUCCESS. Completed
+  Android logs independently inspected:288 unique START/END pairs, zero failures; schema75 passed.
+- Replaced seven original Java implementations with common Kotlin: WorkoutExecutionEngine,
+  CoachCues, WorkoutExecutionCoordinator, RecordingCueCoordinator, RunMetricsEngine,
+  RecordingTimeline, AutoPausePolicy. Entire domain.execution and domain.recording are now shared;
+  95 other domain Java files remain. Original Java copies retained only under scratch for parity.
+- This is an exact port, NOT another GPS correction: receipt clocks/qualification, stationary
+  clusters, anchors, accepted observations, pause/gap boundaries, sensor freshness, active/elapsed
+  semantics, smoothed pace, interpolation, cue grace/hysteresis/cooldown/order all retained. Raw
+  nullable record fields and original mutable factory results/frozen engine snapshots preserved.
+- Added exact Duration.toMillis API/Native implementation: truncates negative fractional millis
+  towards zero, rejects overflow, handles Long.MIN/MAX cancellation. Added39 common/JVM tests:
+  execution9, cue6, duration4+JDK oracle1, metrics13, coordinator6. Native execution pending CI.
+- Production ActiveRunPanel and PaceRange now delegate to actual shared Compose implementations.
+  Android retains existing authoritative service/route/Dream sources and exact number/time text.
+  Shared panel never starts a sensor, clock or second recorder. Safe Finish confirmation, explicit
+  step/pause/resume commands, route/stat selection and large-text behavior retained. Unknown raw
+  status is honestly labelled unavailable; recorded values/targets are never fabricated.
+- Fixed Kotlin-visible optional pace/elevation reads via checked local values in retained Android
+  StructuredRunSection/RouteCard. No assertions or recording heuristics changed. New shared-panel
+  Android tests3 added; experimental focus retains all288 old cases and adds running/recording/
+  persistence flows. New Android runtime tests have NOT yet run; no local KVM.
+- Local kmp-shared-running-final-build.log: BUILD SUCCESSFUL5m34s/166tasks,236 domain+14 health JVM
+  tests, zero failures/errors/skips; app/debug instrumentation APKs and lint PASS. Formatting
+ 373Kotlin/109Java APPLY complete; final CHECK follows the next source batch. Code19/min28/no
+  INTERNET inspected. Domain LiveCoach1850, RecordingCoordination74, GPS46311 checks PASS.
+- Two independent original/shared JVM parity traces match byte-for-byte: execution196lines/SHA
+ 7499eac8cd85e45b9ba6573252d61325249820b9f987bf75b6bc779100bd13f6;
+  recording1865lines/SHA61f806d2f1ff30d14bd450ca681e763e3b9c0e29d17040bffc96cf747a7d755c.
+  Scratch originals/fixtures/logs remain under scratch/{running-execution-original,recording-original}.
+- Next route batch PREPARED ONLY under scratch/kmp-recording-source: RoutePresentation,
+  RouteRenderGeometry, common render tests8, SharedLiveRecordedRoute and Android evidence adapter.
+  Not applied or verified yet. Valid original RouteParity.java fixture72lines/SHA
+ 9d00bc8fb34e775d249f10867d8c6f700f1cb455caa50b0b48083baf05a742d5;
+  original copies scratch/route-original. Initial invalid longitude fixture was corrected BEFORE
+  baseline capture, not a product failure or test weakening. Keep existing64-edge/segment/km
+  bounds and no-bridge assertions. Do not recalculate or mutate stored route evidence.
+- Version0.12.3-test1/code19, SQLite19/rootJSON13/raw3/complete1 unchanged. No new permissions,
+  version bump, rolling publication or merge. Entire iOS APPLICATION and full migration remain open.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve all work. Implementation31ac1eb passed43632534511
-   Android288/Apple and43632534522 formatting. This recovery-only documentation commit may have
-   a newer pending workflow; check its actual result. Do not restart completed strength/routine ports.
-2. Start the precise running-execution batch described above: WorkoutExecutionEngine +CoachCues
-   and required exact Duration.toMillis contract, then coordinators as dependencies allow. Prepared
-   originals/parity trace are in scratch. Retain the service-owned recording boundary and original
-   LiveCoach/RecordingCoordination/GPS assertions; do not redesign the underlying recording engine.
+1. Inspect branch/status/log and PR24; preserve all work. Prior c2d46bd CI passed; current local
+   checkpoint's Native/framework and focused Android runtime gates remain pending, not borrowed.
+2. Continue prepared route batch: apply scratch/kmp-recording-source RoutePresentation,
+   RouteRenderGeometry, RouteRenderingContractTest, SharedLiveRecordedRoute and platform adapter;
+   remove only superseded Java. Verify original/shared72-line route trace, retained geometry/GPS/
+   LiveCoach suites, common tests, build/lint/format, then push coherent checkpoint to existing PR24.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

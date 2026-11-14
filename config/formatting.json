@@ -252,6 +252,9 @@
     "app/src/main/java/org/racedaydreams/coach/SupportingTrainingScreens.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedTechniqueContentTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedRunningRoutineScreenTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/GuidanceArtworkTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/GuidanceArtworkTest.kt",
+    "app/src/main/java/org/racedaydreams/coach/StructuredRunSection.kt",
+    "app/src/main/java/org/racedaydreams/coach/PaceRange.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedActiveRunPanelTest.kt"
   ]
 }

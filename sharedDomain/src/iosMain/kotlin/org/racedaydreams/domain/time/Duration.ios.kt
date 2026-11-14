@@ -10,6 +10,8 @@ actual class Duration internal constructor(private val value: DurationParts) :
 
     actual fun getNano(): Int = value.nanos
 
+    actual fun toMillis(): Long = value.toMillis()
+
     actual fun isNegative(): Boolean = value.seconds < 0
 
     actual fun isZero(): Boolean = value.seconds == 0L && value.nanos == 0

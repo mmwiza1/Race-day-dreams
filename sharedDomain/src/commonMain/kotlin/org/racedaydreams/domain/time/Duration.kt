@@ -11,6 +11,8 @@ expect class Duration : Comparable<Duration> {
 
     fun getNano(): Int
 
+    fun toMillis(): Long
+
     fun isNegative(): Boolean
 
     fun isZero(): Boolean
@@ -38,6 +40,13 @@ expect object Durations {
 internal data class DurationParts(val seconds: Long, val nanos: Int) {
     init {
         require(nanos in 0..999999999)
+    }
+
+    /** Same truncation towards zero and checked cancellation as java.time.Duration.toMillis. */
+    fun toMillis(): Long {
+        val secondsPart = if (seconds < 0) seconds + 1 else seconds
+        val nanosPart = if (seconds < 0) nanos.toLong() - 1000000000L else nanos.toLong()
+        return checkedAdd(checkedScale(secondsPart, 1000), nanosPart / 1000000)
     }
 
     /** Mirrors java.time's checked operations, including the Long.MIN_VALUE special case. */
