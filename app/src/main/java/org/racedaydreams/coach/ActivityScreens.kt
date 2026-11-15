@@ -321,7 +321,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             CoachCard {
                 Text("What this assessment tells us", style = MaterialTheme.typography.titleMedium)
                 Text("Mode: ${assessment!!.assessment().mode().name.lowercase().replace('_', ' ')}")
-                Text("Baseline confidence: ${summary.confidence().name.lowercase()}")
+                summary.confidence()?.let { Text("Baseline confidence: ${it.name.lowercase()}") }
                 summary.findings().forEach { Text(it) }
             }
         }

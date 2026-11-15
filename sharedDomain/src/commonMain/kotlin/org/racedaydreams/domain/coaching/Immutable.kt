@@ -42,7 +42,14 @@ private class FrozenMap<K, V>(values: Map<K, V>, rejectNullValues: Boolean = tru
             override val size: Int
                 get() = rows.size
 
-            override fun iterator(): Iterator<Map.Entry<K, V>> = rows.iterator()
+            override fun iterator(): Iterator<Map.Entry<K, V>> {
+                val source = rows.iterator()
+                return object : Iterator<Map.Entry<K, V>> {
+                    override fun hasNext(): Boolean = source.hasNext()
+
+                    override fun next(): Map.Entry<K, V> = source.next()
+                }
+            }
         }
 }
 

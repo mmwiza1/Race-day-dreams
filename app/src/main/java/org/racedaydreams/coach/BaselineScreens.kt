@@ -5,8 +5,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
@@ -30,21 +28,13 @@ fun BaselineScreen(state: CoachUiState, model: CoachViewModel, historyAvailable:
     WhyDetails("Compatible apps can share existing runs through Health Connect. Your data stays on this device.","How does this work?")
     HealthConnectionCard(state, model, historyAvailable, connect, providerUpdate)
     val baseline = state.baseline
-    CoachCard {
-        Text("Does this look right?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
-        if (baseline.activityCount() > 0) Text("Found ${baseline.activityCount()} recorded runs in the available history window.")
-        else Text("No running history is available yet. You can continue without it.")
-        WhyDetails("Window: ${shortDate(baseline.windowStart().atOffset(ZoneOffset.UTC).toLocalDate())} to ${shortDate(baseline.windowEnd().atOffset(ZoneOffset.UTC).toLocalDate())} (UTC boundaries)","History window")
-        BaselineValue("Average recorded weekly distance", baseline.weeklyDistanceKm()?.let { formatDistance(it * 1000, state) }, RunnerBaseline.WEEKLY_DISTANCE, baseline)
-        BaselineValue("Usual recorded runs/week", baseline.runsPerWeek()?.let { decimal(it) }, RunnerBaseline.RUNS_PER_WEEK, baseline)
-        BaselineValue("Longest recent run", baseline.longestRunKm()?.let { formatDistance(it * 1000, state) }, RunnerBaseline.LONGEST_RUN, baseline)
-        BaselineValue("Typical elapsed run duration", baseline.typicalRunMinutes()?.let { "${decimal(it)} min" }, RunnerBaseline.TYPICAL_DURATION, baseline)
-        BaselineValue("Recent 5K result", baseline.recent5k()?.let(PaceCalculator::formatTime), RunnerBaseline.RECENT_5K, baseline)
-        BaselineValue("Recent 10K result", baseline.recent10k()?.let(PaceCalculator::formatTime), RunnerBaseline.RECENT_10K, baseline)
-        BaselineValue("Recent half-marathon result", baseline.recentHalf()?.let(PaceCalculator::formatTime), RunnerBaseline.RECENT_HALF, baseline)
-        Text("Baseline confidence: ${baseline.confidence().name.lowercase().replaceFirstChar { it.uppercase() }}")
-        WhyDetails("Confidence describes the amount, recency and quality of evidence. It is not a probability of race success.","About confidence")
-    }
+    SharedBaselineSummaryCard(
+        baseline,
+        { formatDistance(it, state) },
+        ::decimal,
+        PaceCalculator::formatTime,
+        { shortDate(it.atOffset(ZoneOffset.UTC).toLocalDate()) },
+    )
     WhyDetails(baseline.explanations().joinToString("\n"),"About your baseline")
     if (state.eligibilityReasons.isNotEmpty()) CoachCard {
         Text("Performance-focused training", style = MaterialTheme.typography.titleMedium)
@@ -83,14 +73,6 @@ fun HealthConnectionCard(state: CoachUiState, model: CoachViewModel, historyAvai
                 } else Button(onClick = { connect(heartRate, history) }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Connect Health Connect") }
             }
         }
-    }
-}
-
-@Composable
-private fun BaselineValue(label: String, value: String?, key: String, baseline: RunnerBaseline) {
-    if (value != null) {
-        val origin = baseline.provenance()[key]?.name?.lowercase()?.replace('_', ' ')
-        Text("$label: $value${origin?.let { " · $it" } ?: ""}")
     }
 }
 

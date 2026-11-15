@@ -96,6 +96,11 @@ class ExerciseMetadataModelsTest {
         assertFails {
             (frozen.entries.first() as MutableMap.MutableEntry<String, Int>).setValue(99)
         }
+        val iterator = frozen.entries.iterator()
+        iterator.next()
+        assertFails { (iterator as MutableIterator<Map.Entry<String, Int>>).remove() }
+        assertEquals(listOf("second", "first"), frozen.keys.toList())
+        assertEquals(2, frozen["second"])
         assertFailsWith<NullPointerException> { Immutable.copyMap(mapOf<String?, Int>(null to 1)) }
     }
 }

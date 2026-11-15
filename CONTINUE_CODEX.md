@@ -1192,20 +1192,79 @@ incomplete migration merely because a focused checkpoint passes.
   inferred from c651. No known local failures. Version0.12.3-test1/code19; SQLite19/rootJSON13/
   raw3/complete1 unchanged; no permissions/dependencies/version bump/publication/merge. PR24 DRAFT.
 
+### Thirty-fourth checkpoint — shared weekly analytics, baseline coaching and repository seams
+
+- Recovered and verified 5fb47fd425d6f2f4b78ee541abaebc38886f0bba: experiment43705545478 and
+  formatting43705545475 SUCCESS. Completed Android log132785713956 has **346unique runtime
+  START/END cases**, including all3 durability-card cases, no failures/skips. Apple132785713710
+  actually built/tested iosX64 and linked shared UI; this is a framework, not an iOS app.
+  Digest-verified archives14158378502/Apple and14158249736/JVM confirm **263domain+16health
+  Native;277domain+14health JVM**, zero failures/errors/skips. CI APK14158319533 ZIP digest
+ 886e2f3a21611818e794a8743c1e2d3dc1826477701e0e249be995d0773248ae; actual56,906,423bytes/
+ SHA25621cf234f4538b4f82b842ed9e3d9aa0ed07b82bcc23bba1f2bb9fd01cd02c726,
+  code19/min28/noINTERNET inspected. Proof scratch/summary-5fb-verified/verification.json.
+- Recovered weekly port and continued a coherent batch: **18superseded Java domain files
+  replaced;67remain**. Entire baseline package, RunnerDataRepository compatibility aggregate,
+  SettingsRepository and PlannedWorkoutRepository are common Kotlin. Actual Android storage/
+  shared SQLite transaction and atomic activity+assessment save remain in existing adapters.
+- RecordedWeekAggregation is the single common weekly implementation. JVM ActivityAnalytics
+  preserves its Java-callable ZoneId API and real display-zone/DST projection; native callers
+  supply platform projection. Never substitute stored offsets or UTC for the display timezone.
+  BaselineEngine deliberately retains its DIFFERENT original per-run recorded-offset/UTC rule.
+- Baseline/assessment code preserves source deduplication, exact cross-provider mirrors without
+  deleting originals, observed complete weeks, unknown distances, recency/coverage confidence,
+  explicit result provenance, manual corrections/review timestamps, fractional assessment times,
+  controlled-vs-best-effort interpretation and mixed-evidence earlier expiry. No training rules,
+  prescriptions, measurements or historical records changed. Raw nullable DTO fields/entries,
+  snapshot ownership and older Java constructors/accessors remain supported.
+- Original/shared output identical: weekly261lines/SHA256
+ b2994b96c66e2587cd1b46539d786306f9e3283a8d42c409f84034fc0bbd44f2;
+  input boundaries122lines/8c0a6cfbabfa2d75632186df7c4c884aa4ef6d32c18982bdc25b7e6370795473;
+  baseline/overlays/assessment/eligibility1078lines/
+ c4f968beec51aa921f12b7738a158c571d5d9b0d25c9dc6ced5db59f13cb8582.
+  Fixtures/original copies in scratch/activity-weeks-original, baseline-boundary-original,
+  baseline-engine-original, ActivityWeeksParity.java, BaselineBoundaryParity.java and
+  BaselineEngineParity.java. javap confirms actual Kotlin classes, not stale Java test copies.
+- Production BaselineScreen now calls SharedBaselineSummaryCard, keeping original layout,
+  disclosures, labels and platform number/unit/UTC-date formatting. Added3actual-card light/
+  dark/manual/200% interaction tests; focus retains all346 previous cases (349expected after
+  push, not yet a result). No Health Connect permissions or UI navigation changes. Assessment
+  summary renders confidence only when present; it never substitutes an invented level.
+- Confirmed Java iterator.remove mutation escape in the new baseline map and existing shared
+  immutable-map helper. Replaced both exposed mutable iterators with read-only iterators,
+  strengthened existing tests, and independently verified Java now rejects both operations.
+  No assertion removed/weakened. Tests retain raw null-map support where original DTOs allowed it.
+- Current local **312domain+14health JVM tests PASS**, zero failures/errors/skips; common30+
+  JVM5new contracts cover timezone/DST, unknowns, assessment boundaries, confidence, evidence
+  expiry, provenance and snapshots. Original **700189checks/48suites passed after the iterator fix** with -ea against the
+  prepared Kotlin classes. Final post-fix build **BUILD SUCCESSFUL6m47s/166tasks**: Android
+  debug APK, instrumentation APK and lint PASS.
+  Formatting CHECK523sources (419Kotlin/104Java), diff PASS; schema75 and release-note10 PASS.
+  Logs scratch/kmp-baseline-verified-{build,legacy,format}.log. Final local APK inspected for
+  code19/min28/noINTERNET and new shared classes (scratch/baseline-local-apk-verification.json);
+  local debug build only, not a rolling publication. New Native293domain+16health and Android349
+  remain pending exact-head CI after push. No canonical screenshot capture yet for this batch.
+- Corrected actual Kotlin integration errors rather than weakening validation: baseline repository
+  returns its existing all-unknown ManualBaselineInput.empty when absent, with nullable timestamp;
+  raw AssessmentSummary confidence remains optional at its actual display. No known JVM failures.
+  PR24 stays DRAFT; main85e1c39/PR23 untouched. Version0.12.3-test1/code19 and formats19/13/3/1
+  unchanged; no new permission/dependency/version, merge or publication. Migration still incomplete.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24; preserve the current milestone/summary checkpoint. c651bad
-   passed both real Apple and343Android runtime cases. This newer source is locally verified
-   277domain+14health JVM/700189legacy/build/lint/format but needs its OWN exact-head CI after push.
-   Inspect completed logs/artifacts; expected346Android and263domain+16health Native are not
-   passes until confirmed. Investigate real failures, retain all previous/full final gates.
-2. Continue remaining Java-domain logic and real shared UI. Remaining activity classes are now
-   ActivityAnalytics and RunnerDataRepository. ActivityAnalytics requires its actual display-
-   ZoneId date projection (today is already an input): preserve timezone/DST behavior instead of
-   substituting UTC. RunnerDataRepository depends on unported baseline/settings/plan repository
-   seams. The source of those interfaces/models must be inspected before extraction. Completed
-   recording, route, sample, split, rolling-effort, comparison, durability and milestone ports
-   must not be restarted. No speculative clock layer or unrelated feature is needed.
+1. Inspect branch/status/log and PR24; preserve this weekly/baseline/repository/UI checkpoint.
+   5fb47fd is independently verified346Android/263domain+16health Native. This newer checkpoint
+   locally passed312domain+14health JVM,700189legacy checks, both APKs/lint/format/schema. Inspect
+   its OWN exact-head Apple/Android CI after push (expected293domain+16health Native/349Android,
+   not results until logs/artifacts confirm). Keep every previous and full final gate intact.
+2. Continue remaining67Java domain files and actual shared application UI. Activity and baseline
+   domain Java implementations are now gone; weekly JVM timezone adapter is intentionally thin.
+   Next coherent seam is remaining coaching models/contracts (PlanRequest, PlanVersion,
+   RunExecution, RunFeedback and dependent revision/proposal/repository types) before the actual
+   running-plan/coaching engines. Inspect their immutable snapshots, nullable evidence and
+   preserved prescription linkage before porting. Optional preferences/focus repository APIs
+   still use Java Optional and need a deliberate compatible common boundary. Do not restart
+   completed baseline, recording, route, sample, split, comparison, milestone or strength ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
