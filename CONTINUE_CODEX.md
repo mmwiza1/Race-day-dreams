@@ -2103,17 +2103,50 @@ incomplete migration merely because a focused checkpoint passes.
   host. Canonical codecs are not a full supported-backup reader; retain accepted older normalisation
   and validate all data before replacing user records. Do not restart completed domain/storage.
 
+### Checkpoint 54 — Baseline references and atomic completed assessments (15 November 2026)
+
+- Checkpoint53 pushed **daeceba9af1ac5cc65ce64a7ef4a6462e32118a4**, existing PR24 OPEN/DRAFT.
+  Own experiment43771660620 running, format43771660568 SUCCESS. Actual Apple132988690044 SUCCESS;
+  digest-verified14184906602 ZIP2be1210d385a251e5b6ac599cac615707992aacc094c19e539f46288ec4b62d4
+  proves **449domain+18health+65storage Native**, all0failures/errors/skips. All65case names inspected
+  in scratch/activity-daeceba-native.{zip,json}; framework14185111015 linked. Still NOT an iOS app.
+  Android132988689829 passed compile/domain/schema stages and is running436focused cases; inspect
+  actual completion including all5 original/shared Android repository parity cases before claims.
+- Added BaselineJson/SqliteBaselines implementing the existing common baseline interface over the
+  SAME baseline_state/assessment_results tables and original JSON payloads. Missing answers/date
+  remain unknown; reads never generate a clock observation or recorded run. Explicit save retains
+  actual observation time/review flag; restore can retain null original time. Completed assessment
+  and its actual activity/PBs/annotations share one transaction and source/identity validation.
+  The original user-activity source rule is shared with SqliteActivities. No training calculations.
+- Local **66storage JVM PASS**, zero failures/errors/skips. Five more contracts cover missing/zero
+  references, clock-free reads, actual assessment pairs, invalid linkage/provider, failed assessment
+  rollback, whole-count JSON and fractional actual effort/time. Added2 real Android old/new baseline
+  and assessment codec/repository parity cases (7new repository cases total; runtime NOT yet run).
+- Actual app/shared UI/instrumentation Kotlin compile PASS2m41s/57tasks; full66JVM/build/bothAPKs/lint
+  **PASS3m8s/160tasks** in scratch/kmp-baseline-repository-complete-build.log. Formatting673sources
+  (578Kotlin/95Java) PASS; exact schema/current version/boundaries PASS. Existing schema75 PASS in
+  this session. No database/backup/version/permissions/navigation changes or public publication.
+- Expected next exact-head CI **438Android /70storage Native**; not verified yet. Canonical JSON
+  stored-payload readers are NOT a complete supported backup reader; retain all supported older
+  reads/normalisation and validate completely before replacing data. No destructive native cleanup.
+- Next: verify parent436Android, commit/push this baseline checkpoint, inspect latest native70/
+  Android438 (especially7 old/new repository parity cases). Then port planned-workout/coaching-plan
+  storage/codecs, strength programme/execution repositories, complete backups/archives/retention,
+  real common application root, full native services and functioning iOS host/app. Do not restart
+  completed Java-domain conversion or the current typed persistence. Full Android28/35/36/iOS APP/
+  canonical screenshots/hardware acceptance remain pending; no merge/publication until ready.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint53 is the latest
-   activity/result implementation. Parent efba425 experiment43768694789 and format SUCCESS:
-   431Android,700189/48suites,490domain+16health+38storage JVM,449domain+18health+42storage Native.
-   Latest local source:61storage JVM/build/bothAPKs/lint/schema PASS; next436Android/65Native pending.
-   Inspect git/latest pushed head and its actual CI; preserve any later local work.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest checkpoint54 includes
+   baseline/assessment work after pushed daeceba. Inspect actual git/push/CI state and preserve all
+   local work. daeceba Apple449domain+18health+65storage and formatting PASS; Android436pending.
+   Latest baseline source locally66storage JVM/build/bothAPKs/lint/format673/schema PASS;
+   next438Android/70storage Native pending. Current version/formats19/13/3/1 unchanged.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
-   Existing native/schema/settings/exclusions/profile/focus/height/milestone/shoe/retention reader are
+   Existing native/schema/settings/exclusions/profile/focus/height/milestone/shoe/baseline/retention reader are
    implemented as above; preserve them. JSON history/programme/execution codecs and archives still
    need portable implementations, plus remaining repositories. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check

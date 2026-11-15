@@ -565,4 +565,161 @@ abstract class ActivityRepositoryContract {
             activities.deleteActivity(activity.id())
             assertNull(receipts.removal("session-actual"))
         }
+
+    @Test
+    fun absentAndEmptyBaselinesStayUnknownAndNeverBecomeRecordedRuns(): Unit =
+        storage { db, activities, results ->
+            val repository = SqliteBaselines(db) { clock }
+            assertEquals(
+                org.racedaydreams.domain.baseline.ManualBaselineInput.empty(),
+                repository.savedManualBaseline(),
+            )
+            assertNull(repository.manualBaselineRecordedAt())
+            assertTrue(db.query("SELECT * FROM baseline_state").isEmpty())
+            repository.saveManualBaseline(
+                org.racedaydreams.domain.baseline.ManualBaselineInput.empty()
+            )
+            assertEquals(clock, repository.manualBaselineRecordedAt())
+            assertEquals(
+                SqlValue.Integer(1),
+                db.query("SELECT reviewed FROM baseline_state").single().single(),
+            )
+            assertTrue(activities.activities().isEmpty())
+            assertTrue(results.results().isEmpty())
+        }
+
+    @Test
+    fun baselineAnswersAndOriginalObservationTimeSurviveReadWithoutClock(): Unit =
+        storage { db, _, _ ->
+            val input =
+                org.racedaydreams.domain.baseline.ManualBaselineInput(
+                    0.0,
+                    3.0,
+                    12.0,
+                    Durations.ofMinutes(25),
+                    null,
+                    null,
+                    360.0,
+                    0,
+                )
+            SqliteBaselines(db) { clock }.saveManualBaseline(input)
+            val reader =
+                SqliteBaselines(db) { error("Reads must not invent a new observation time") }
+            assertEquals(input, reader.savedManualBaseline())
+            assertEquals(clock, reader.manualBaselineRecordedAt())
+            reader.putBaseline(input, null)
+            assertEquals(input, reader.savedManualBaseline())
+            assertNull(reader.manualBaselineRecordedAt())
+        }
+
+    @Test
+    fun completedAssessmentAndActualActivityAreRetainedTogether(): Unit =
+        storage { db, activities, results ->
+            val actual = activity(provider = "assessment")
+            val assessment =
+                org.racedaydreams.domain.baseline.AssessmentResult(
+                    "assessment",
+                    org.racedaydreams.domain.baseline.BaselineAssessment(
+                        3,
+                        org.racedaydreams.domain.baseline.AssessmentMode.CONTROLLED,
+                    ),
+                    Durations.ofSeconds(500, 123456789),
+                    null,
+                    actual.end(),
+                    actual.id(),
+                )
+            val repository =
+                SqliteBaselines(db) { error("Actual completion time is already recorded") }
+            repository.saveAssessment(actual, assessment)
+            assertEquals(actual, activities.activityDetail(actual.id()))
+            assertEquals(listOf(assessment), repository.assessments())
+            assertTrue(results.results().isNotEmpty())
+            assertNull(repository.manualBaselineRecordedAt())
+        }
+
+    @Test
+    fun rejectedAssessmentCannotLeaveAnActivityOrNewPersonalBest(): Unit =
+        storage { db, activities, results ->
+            val original = activity()
+            activities.upsertManualActivity(original)
+            val before = results.results()
+            val actual = activity("new", "assessment")
+            val assessment =
+                org.racedaydreams.domain.baseline.AssessmentResult(
+                    "blocked",
+                    org.racedaydreams.domain.baseline.BaselineAssessment(
+                        3,
+                        org.racedaydreams.domain.baseline.AssessmentMode.BEST_EFFORT,
+                    ),
+                    Durations.ofSeconds(500),
+                    7.5,
+                    actual.end(),
+                    actual.id(),
+                )
+            val repository = SqliteBaselines(db) { clock }
+            db.execute(
+                "CREATE TRIGGER reject_assessment BEFORE INSERT ON assessment_results BEGIN SELECT RAISE(ABORT,'test failure'); END"
+            )
+            assertFails { repository.saveAssessment(actual, assessment) }
+            assertEquals(listOf(original), activities.activities())
+            assertEquals(before, results.results())
+            assertTrue(repository.assessments().isEmpty())
+            assertFailsWith<IllegalArgumentException> {
+                repository.saveAssessment(
+                    actual.copy(source = SourceIdentity("health-connect", "imported", null)),
+                    assessment,
+                )
+            }
+            assertFailsWith<IllegalArgumentException> {
+                repository.saveAssessment(actual, assessment.copy(activityId = "different"))
+            }
+        }
+
+    @Test
+    fun baselineCodecsKeepNullZeroWholeCountsAndAssessmentEffortDistinct(): Unit =
+        storage { _, _, _ ->
+            val input =
+                org.racedaydreams.domain.baseline.ManualBaselineInput(
+                    0.0,
+                    null,
+                    null,
+                    null,
+                    Durations.ofMinutes(50),
+                    null,
+                    null,
+                    0,
+                )
+            val encoded = BaselineJson.encode(input)
+            assertEquals(input, BaselineJson.decode(encoded))
+            assertEquals(
+                input,
+                BaselineJson.decode(
+                    encoded.replace("\"consistentWeeks\":0", "\"consistentWeeks\":0.0")
+                ),
+            )
+            assertFailsWith<IllegalArgumentException> {
+                BaselineJson.decode(
+                    encoded.replace("\"consistentWeeks\":0", "\"consistentWeeks\":0.5")
+                )
+            }
+            assertFailsWith<IllegalArgumentException> {
+                BaselineJson.decode(encoded.replace("PT50M", "PT-1S"))
+            }
+            val assessment =
+                org.racedaydreams.domain.baseline.AssessmentResult(
+                    "assessment",
+                    org.racedaydreams.domain.baseline.BaselineAssessment(
+                        5,
+                        org.racedaydreams.domain.baseline.AssessmentMode.BEST_EFFORT,
+                    ),
+                    Durations.ofSeconds(1500, 123456789),
+                    7.5,
+                    clock,
+                    null,
+                )
+            assertEquals(
+                assessment,
+                BaselineJson.decodeAssessment(BaselineJson.encodeAssessment(assessment)),
+            )
+        }
 }

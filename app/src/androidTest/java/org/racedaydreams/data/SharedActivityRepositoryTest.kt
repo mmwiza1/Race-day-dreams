@@ -221,6 +221,79 @@ class SharedActivityRepositoryTest {
         }
         assertEquals(originalResults.results(), commonResults.results())
     }
+
+    @Test
+    fun baselineReferencesKeepTheirObservationTimeWithoutCreatingActuals() {
+        val legacy = SqliteBaselineRepository(context)
+        val fixed = Instant.parse("2026-11-15T12:00:00Z")
+        val shared = SqliteBaselines(bridge) { fixed }
+        val answers =
+            org.racedaydreams.domain.baseline.ManualBaselineInput(
+                0.0,
+                3.0,
+                12.0,
+                Duration.ofMinutes(25),
+                null,
+                null,
+                360.0,
+                8,
+            )
+        legacy.saveManualBaseline(answers)
+        assertEquals(answers, shared.savedManualBaseline())
+        assertEquals(legacy.manualBaselineRecordedAt(), shared.manualBaselineRecordedAt())
+        assertEquals(answers, BaselineJson.decode(FeatureJson.baseline(answers).toString()))
+        assertEquals(answers, FeatureJson.baseline(JSONObject(BaselineJson.encode(answers))))
+        shared.saveManualBaseline(answers.copy(weeklyDistanceKm = 42.0))
+        assertEquals(shared.savedManualBaseline(), legacy.savedManualBaseline())
+        assertEquals(fixed, legacy.manualBaselineRecordedAt())
+        assertTrue(original.activities().isEmpty())
+        assertTrue(originalResults.results().isEmpty())
+    }
+
+    @Test
+    fun linkedAssessmentSharesLegacyTransactionAndRollback() {
+        val legacy = SqliteBaselineRepository(context)
+        val shared =
+            SqliteBaselines(bridge) { error("Actual assessment already includes completion time") }
+        val actual = actual("assessment")
+        val assessment =
+            org.racedaydreams.domain.baseline.AssessmentResult(
+                "assessment",
+                org.racedaydreams.domain.baseline.BaselineAssessment(
+                    3,
+                    org.racedaydreams.domain.baseline.AssessmentMode.CONTROLLED,
+                ),
+                Duration.ofSeconds(500, 123456789),
+                7.5,
+                actual.end(),
+                actual.id(),
+            )
+        shared.saveAssessment(actual, assessment)
+        assertEquals(listOf(assessment), legacy.assessments())
+        assertEquals(legacy.assessments(), shared.assessments())
+        assertEquals(
+            assessment,
+            BaselineJson.decodeAssessment(FeatureJson.assessment(assessment).toString()),
+        )
+        assertEquals(
+            assessment,
+            FeatureJson.assessment(JSONObject(BaselineJson.encodeAssessment(assessment))),
+        )
+        val before = originalResults.results()
+        db.execSQL(
+            "CREATE TRIGGER reject_assessment BEFORE INSERT ON assessment_results BEGIN SELECT RAISE(ABORT,'test failure'); END"
+        )
+        val blocked =
+            actual.copy(id = "blocked", source = SourceIdentity("assessment", "blocked", null))
+        assertThrows(android.database.sqlite.SQLiteException::class.java) {
+            shared.saveAssessment(
+                blocked,
+                assessment.copy(id = "blocked-assessment", activityId = blocked.id()),
+            )
+        }
+        assertEquals(before, originalResults.results())
+        assertEquals(listOf(actual), original.activities())
+    }
 }
 
 /**

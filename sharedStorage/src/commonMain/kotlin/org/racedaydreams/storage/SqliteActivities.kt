@@ -161,9 +161,7 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
     }
 
     override fun upsertManualActivity(activity: ActivityRecord) {
-        require(activity.source().provider() in listOf("manual", "assessment", "rdd", "gpx")) {
-            "Use the import boundary for provider activities."
-        }
+        require(isUserActivity(activity)) { "Use the import boundary for provider activities." }
         database.transaction { putActivity(activity, true) }
     }
 
@@ -376,3 +374,6 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
         )
     }
 }
+
+internal fun isUserActivity(activity: ActivityRecord): Boolean =
+    activity.source().provider() in listOf("manual", "assessment", "rdd", "gpx")
