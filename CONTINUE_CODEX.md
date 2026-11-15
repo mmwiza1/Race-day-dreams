@@ -1847,28 +1847,63 @@ incomplete migration merely because a focused checkpoint passes.
   composition/storage/permissions/services/real iOS host and final platform/canonical capture
   acceptance remain unfinished; no merge/publication or physical acceptance claimed.
 
+### Forty-seventh checkpoint — bounded basemap decoder; no Java domain sources remain
+
+- Reminder checkpointff1c406 committed locally and preserved. This batch replaces the final Java
+  domain file, DreamBasemap, with actual shared Kotlin. **0Java files remain under
+  domain/src/main/java**. JVM Clock/Optional/stream/SDK compatibility adapters remain Kotlin,
+  with common business rules; this is NOT completion of native storage/services/app integration.
+- Common BasemapInput/BasemapReadException use JVM actual typealiases to the ORIGINAL InputStream
+  and IOException. read(InputStream,String) throws IOException remains exactly Java-callable;
+  Native actual byte input/errors implement the same protocol. Caller still owns/closes input.
+  No second parser or copied DTO hierarchy; all decoding/validation/model snapshots are common.
+- Preserves3MB/150000point/20000feature limits, header/frame checks, CR/LF/CRLF/trailing-line
+  handling, coordinate finite/range checks, polygon closure/signed zero and all original vertices.
+  No downsampling, projection, asset/licence change or stored GPS/history mutation. Only the known
+  parsed feature kind is explicitly bound at DreamBasemapArtwork's existing path lookup.
+- Original/shared **63line parser trace EXACTLY matches**, SHA256
+  7726d01d0ee23370328b75f3fc1428fc7141c607ddff92025f2cf0563a61a9b4.
+  Includes bit fingerprints for all6real bundled files, original valid numeric spellings, malformed
+  tokens/headers/frames and resource limits. scratch/basemap-original, BasemapParity.java,
+  kmp-{original,shared}-basemap.log. javap confirms .kt read signature with IOException.
+- Added8common+2JVM decoder tests for paths, independent segments, source float formats, signed
+  zero, missing/corrupt frames, exact limits, raw nullable metadata, immutable snapshots, IO failure
+  propagation and caller-owned streams. **490domain+16health JVM PASS**, all0failures/errors/skips.
+  **700189checks/48retained assertion suites PASS**; no old Java shadow or assertion weakening.
+- Core build kmp-basemap-core.log PASS1m26s. Full build kmp-basemap-verified-build.log
+  **PASS5m58s/165tasks**, both APKs/lint; format CHECK634sources, schema75/diff PASS. Actual private
+  local APK/code19/min28/noINTERNET/new Kotlin classes verified in
+  scratch/basemap-local-apk-verification.json. No public publication or canonical capture.
+- Added existing9Dream asset/publication/readiness/presentation tests while retaining418prior
+  focused cases: **427Android /449domain+18health Native EXPECTED**, not yet run on this source.
+  Native tests include175original calendar gold cases and full decoder edge cases; inspect their
+  real results before claiming native compatibility. A linked framework remains NOT an iOS app.
+- Version0.12.3-test1/code19/formats19/13/3/1 unchanged. Both coherent source checkpoints ready
+  to push together to existing draft PR24. No merge/publication/physical acceptance claimed.
+- Next priority after exact-head verification: actual common application composition/navigation,
+  typed native SQLite/migrations/backup/retention, native permissions/HealthKit/recording/BLE/
+  notifications and a REAL functioning iOS host. Preserve existing Android implementations,
+  data formats and the already-shared UI; do not replace stable systems or add fake controls.
+
 ### Exact next safe actions and remaining full scope
 
-1. Current branch experiment/android-ios-kmp-compose; pushed HEAD56bb65a, PR24 DRAFT. Preserve
-   the final local documentation-only handoff edit. Checkpoint45 locally verified472domain+
-   14health JVM,700189retained checks,336canonical recovery lines, both APKs/lint and620source
-   formatting. Retention2478 locally verified462+14/schema75/2935line oracle. Inspect current
-   experiment43757246519 and exact-head artifacts: **410Android /433domain+16health Native
-   EXPECTED**, not claimed passes until actual reports. Fix any actual failures before proceeding.
-2. Independently verified be280 CI43754601167 SUCCESS:391unique Android /452+14JVM /416+16Native;
-   digest/APK proofs above. Do not rerun unchanged old parents or weaken assertions.
-3. Continue six remaining Java domain files: reminders5 and bounded DreamBasemap reader1.
-   Reminder original9372line oracle and compiled originals above are ready. Preserve original
-   zone/DST/quiet-hours/status/revision/clock/permission/delayed-delivery rules; keep platform
-   clock/stream/Optional adapters narrow and share the business logic. Do not discard original
-   geometry/licences, bounded parsing or source/restoration safeguards.
-4. Then complete actual shared root UI/navigation/state/data sources, typed native SQLite/
-   migrations/backup/retention, full permissions/HealthKit, native recording/BLE/notifications and
-   a REAL iOS app host with entitlements/usage strings. Visible-only HealthKit snapshots cannot
-   replace retained windows/infer deletion. A linked/tested framework is not an iOS application.
-5. Final full Android28/35/36/iOS app/regression/canonical screenshot gates only when ready.
-   No premature version bump, merge or public artifact publication. Physical HealthKit/Health
-   Connect/GPS/BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
+1. Preserve local checkpointff1c406 and current shared basemap work; commit/push the verified
+   checkpoints together to PR24, then inspect own-source CI before proceeding. Latest local
+   verification490domain+16health JVM,700189retained checks,9372reminder trace via both calendar
+   adapters/63basemap trace, schema75, both APKs/lint and634source formatting PASS.
+   Expected427Android/449domain+18health Native are NOT yet verified.
+2. Independently verified56bb experiment43757246519 SUCCESS:410unique Android /472+14JVM /
+   433+16Native; digest/APK proofs above. Do not rerun unchanged old parents or weaken tests.
+3. Java domain source conversion is complete (0remaining); narrow JVM Kotlin SDK/IO adapters are
+   intentional. Do not restart or duplicate already-shared domain/UI modules. Any native parser,
+   calendar or ABI failure must be diagnosed against the original preserved fixtures first.
+4. Continue actual common root UI/navigation/state/data sources, typed native SQLite/migrations/
+   backup/retention and platform services/permissions/full HealthKit, native recording/BLE/
+   notifications and REAL iOS app host/entitlements/usage strings. Android Health Connect and
+   all existing functionality remain intact. Visible-only health snapshots cannot infer deletion.
+5. Full Android28/35/36/iOS app/regression/canonical screenshot gates only once complete.
+   No premature version bump, merge or publication. Physical HealthKit/Health Connect/GPS/
+   BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
 
 ### Reproducible local tooling / Apple verification
 

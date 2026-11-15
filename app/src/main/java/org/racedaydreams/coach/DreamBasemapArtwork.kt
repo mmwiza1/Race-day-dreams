@@ -75,7 +75,7 @@ private object DreamBasemapCache {
                         )
                         if (length < .10) continue
                     }
-                    val path = paths.getValue(feature.kind())
+                    val path = paths.getValue(requireNotNull(feature.kind()))
                     points.forEachIndexed { index, point ->
                         if (index == 0) path.moveTo(point.x().toFloat(), point.y().toFloat())
                         else path.lineTo(point.x().toFloat(), point.y().toFloat())
