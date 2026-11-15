@@ -1637,16 +1637,66 @@ incomplete migration merely because a focused checkpoint passes.
   complete the prepared achievements batch, then push coherent checkpoints together to avoid
   starting/cancelling duplicate expensive CI. No new-source Android/Native runtime pass claimed.
 
+### Forty-third checkpoint — retained recognition and plan diagnostics verified locally
+
+- Checkpoint42 committed locally as42acb48; not pushed yet, to combine coherent verified batches
+  in one CI trigger. All9recovered conversions preserved. No reset/replacement PR/main development.
+- This checkpoint ports TrainingMilestones and PlanRegression/PlanRegressionReport/
+  PlanSnapshot;4Java originals removed, **10Java domain files remain**. Original award thresholds,
+  working-set evidence, completed-run gate, duplicate/conflict rejection, recorded-offset Monday
+  weeks and immutable earned-at evidence preserved. No streaks or new achievement rules.
+- Plan diagnostics remain explicit engineering budgets, not new coaching rules. Missing distance
+  stays UNVERIFIABLE/null, separate from ERROR, with unchanged weekly/race/taper/phase/hard-day
+  checks. Original snapshot escaping, stable ordering, trailing-empty-line diff and60change bound
+  preserved. Does not mutate/generate prescriptions or actuals.
+- Original/shared **4071achievement lines match**, SHA256
+  b3056a63af40ebfeb6d096ee6569ea6d24d31a4e46fb94c752400312a5a87359;
+  **4546plan-diagnostic lines match**, SHA256
+  65affaa76a9e7d19b1a26d5211364c0cd89910d5326c1fd6abef0f5ddc317368.
+  Originals/compiled sources remain outside repo in scratch/{milestones,plan-diagnostics}-original;
+  TrainingMilestonesParity.java/PlanDiagnosticsParity.java and kmp-{original,shared}-*.log.
+- Actual existing AchievementsScreen now delegates to SharedAchievementsScreen, preserving copy,
+  cards/disclosure/200% scrolling, optional celebrations, missing-source limitations and explicit
+  callbacks. Android retains lifecycle, repository transactions and prepared local date labels.
+  Added2actual shared UI tests, retaining all existing3light/dark/200% and6repository tests.
+  Experimental selection now **391EXPECTED Android**; not executed on this source yet.
+- Added14common+2JVM tests: award evidence, future/unknown/duplicate handling, recorded-offset
+  weeks, retained snapshots, missing prescription measurements, context/phase diagnostics and
+  escaped/ordered/bounded snapshots. **452domain+14health JVM PASS**, all0failures/errors/skips.
+  Corrected full build scratch/kmp-recognition-final-build.log **PASS6m23s/166tasks**, both
+  APKs/lint PASS. **700189checks/48retained suites PASS**; javap confirms Kotlin-only source.
+  Formatting CHECK614sources and diff PASS; logs kmp-recognition-retained-suites.log and
+  kmp-recognition-format-check.log. Actual local APK/code19/min28/noINTERNET/shared classes
+  verified in scratch/recognition-local-apk-verification.json; private incremental artifact only.
+- Initial scratch common-test fixture needed requireNotNull for known push-up catalogue entry;
+  new plan-test source then had one extra closing parenthesis. Corrected syntax/fixture only,
+  no assertions weakened. Failed logs kmp-milestones-core.log and kmp-recognition-verified-build.log
+  preserved. Formatter now succeeds before build via fail-fast shell.
+- Expected own-source Native **416domain+16health**; not claimed passed. Checkpoint42 Native402/
+  Android380 never ran separately. Latest actually green remote source remains b493 as checkpoint42
+  records. Version0.12.3-test1/code19/formats19/13/3/1 unchanged; PR24 remains DRAFT.
+- Both coherent checkpoints are ready to push together; inspect their exact-head CI before
+  claiming Native/Android runtime passes. Next retention originals/oracle preserved outside repo:
+  scratch/retention-original, RetentionParity.java, kmp-original-retention.log2935lines/SHA256
+  3c6a36737acb7a33974be5ff7811969a5bb09b9b1c772c266c118c69077cd4a7.
+  Prepared DetailRetention.kt/RemovedRecordingDetail.kt and two test files remain SCRATCH ONLY,
+  not yet applied/compiled. Preserve original informed consent, epoch/expiry/bounded transactions,
+  exact counts and restoration fingerprints. Then continue remaining10Java
+  (recovery, retention, reminders, bounded basemap IO) and actual native root/storage/services/host.
+  No merge/publication/canonical screenshots/physical acceptance claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint42 is locally verified:436domain JVM,700189retained checks,2295line oracle,
-   schema75, both APKs/lint and607source formatting PASS. Expected380Android/402domain+16health
-   Native for that source remain unverified. b493 own CI is independently green as recorded above.
-2. Next prepared achievement originals/4071line oracle and scratch Kotlin/UI files are not yet
-   applied/compiled. Complete and test them rather than restart the already-shared ports.
-3. Continue remaining14Java domain files and actual shared app: achievements, recovery, retention,
-   reminders, plan diagnostics, bounded DreamBasemap JVM stream decoding. Preserve actuals,
-   provenance, corrupt/future rejection, protected records and transactional safeguards.
+1. Checkpoint43 is locally verified:452domain+14health JVM,700189retained checks,4071achievement/
+   4546plan trace lines, both APKs/lint and614source formatting PASS. Expected391Android and
+   416domain+16health Native remain unverified on this source until own exact-head CI completes.
+   b493 own CI is independently green as checkpoint42 records; no need to rerun old parents.
+2. Finish prepared retention Kotlin and its common/JVM tests (scratch filenames above), currently
+   NOT APPLIED. Preserve original2935line oracle. Then run focused domain/schema/actual Android
+   retention+backup integration checks; do not change consent or enable new deletion authority.
+3. Remaining10Java domain files: recovery2, retention2, reminders5, bounded DreamBasemap reader1.
+   Continue actual shared app; do not restart finished strength/coaching/recording/health/race/
+   presentation/geometry/route/custom-workout/achievement/plan-diagnostic conversions.
 4. Actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/backup/
    retention, permissions/full HealthKit, native recording/BLE/notifications and a REAL iOS app
    host with entitlements/usage strings remain incomplete. Visible-only HealthKit snapshots
