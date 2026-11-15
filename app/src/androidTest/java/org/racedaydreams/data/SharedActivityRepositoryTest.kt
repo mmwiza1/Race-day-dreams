@@ -299,7 +299,7 @@ class SharedActivityRepositoryTest {
 /**
  * Test bridge only; production Android retains its existing helper, IO checks and pool lifetime.
  */
-private class AndroidSqlTestConnection(private val database: SQLiteDatabase) : SqlDatabase {
+internal class AndroidSqlTestConnection(private val database: SQLiteDatabase) : SqlDatabase {
     private var sequence = 0
 
     override fun execute(sql: String, arguments: List<SqlValue>) {

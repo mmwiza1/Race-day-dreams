@@ -250,6 +250,7 @@
     "app/src/androidTest/java/org/racedaydreams/data/SharedShoeCodecTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedActivityCodecTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedActivityRepositoryTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/SharedRunningCoachingTest.kt",
     "domain/src/main/kotlin/**/*.kt",
     "domain/src/test/java/org/racedaydreams/domain/settings/PrimaryFocusTestSuite.java",
     "app/src/main/java/org/racedaydreams/coach/TechniqueScreens.kt",

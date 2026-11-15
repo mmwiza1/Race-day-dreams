@@ -27,9 +27,39 @@ internal object StoredJson {
         val value = this[key]
         if (value == null || value == JsonNull) return null
         require(value is JsonPrimitive && !value.isString) { "Expected a number for $key." }
-        val number = value.doubleOrNull
+        // Android JSONTokener retains integral literals as Long before getDouble (including -0).
+        val number = value.longOrNull?.toDouble() ?: value.doubleOrNull
         require(number != null && number.isFinite()) { "Expected a finite number for $key." }
         return number
+    }
+
+    fun JsonObject.integer(key: String): Int? {
+        val value = number(key) ?: return null
+        require(
+            value in Int.MIN_VALUE.toDouble()..Int.MAX_VALUE.toDouble() &&
+                value == value.toInt().toDouble()
+        ) {
+            "Expected whole number for $key."
+        }
+        return value.toInt()
+    }
+
+    fun JsonObject.requiredInteger(key: String): Int =
+        integer(key) ?: throw IllegalArgumentException("Missing whole number for $key.")
+
+    fun JsonObject.exactLong(key: String): Long {
+        val value = this[key]
+        require(value is JsonPrimitive && !value.isString) {
+            "Expected exact whole number for $key."
+        }
+        return value.longOrNull
+            ?: throw IllegalArgumentException("Expected exact whole number for $key.")
+    }
+
+    fun JsonObject.prose(key: String): String {
+        val value = text(key)
+        require(value != null && value.length <= 100000) { "Invalid coaching text: $key" }
+        return value
     }
 
     fun JsonObject.requiredNumber(key: String): Double =

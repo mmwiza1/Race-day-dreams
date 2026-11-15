@@ -2136,13 +2136,50 @@ incomplete migration merely because a focused checkpoint passes.
   completed Java-domain conversion or the current typed persistence. Full Android28/35/36/iOS APP/
   canonical screenshots/hardware acceptance remain pending; no merge/publication until ready.
 
+### Checkpoint 55 — Shared running-plan persistence and explicit decisions (15 November 2026)
+
+- Preserved checkpoint54 and the local verification handoff; live main85e1c39 unchanged, PR24
+  OPEN/DRAFT. Parent **b909442** experiment **43773014056 FULL SUCCESS**, formatting43773014059
+  SUCCESS. Android132992905601 actual logs: **438unique START/END**, no missing cases/failures/skips;
+  all7 original/shared activity/baseline repository cases ran. **700189checks/48suites** retained.
+- Digest-verified JVM14185835757 ZIPf088207e9e149f44b65e16e68dcaa22d3605c1a3273ed0f19026b5ef25e0b33e
+  proves **490domain+16health+66storage**; Native14185099720
+  ZIP96ca6ec54c81677eb7ea2bb5cbc6d45005f85b6d43d051cec32bb2f25d52dcd8 proves
+  **449domain+18health+70storage**, all0failures/errors/skips. Proofs scratch/baseline-b909-{jvm,native}
+  .{zip,json}. Framework14185154436 is linked shared code, NOT an iOS app.
+- Added ProfileJson/PlannedWorkoutJson/RunningCoachingJson and real SqlitePlannedWorkouts/
+  SqliteRunningCoaching over existing SQLite19 tables. Immutable version/profile/phase/prescription
+  snapshots remain separate from reminder mirror, responses and optional recommendations. Completed
+  prescriptions cannot be rewritten. Decisions use the EXISTING AdaptiveCoaching implementation;
+  KEEP does not consult a clock/generate a version. Decision/version/pointer/mirror commit together.
+  No fake strength methods: this is the running half, to compose with the remaining strength store.
+- Fixed actual old/shared interoperability: reminder revisions compare structured prescriptions
+  instead of raw JSON number spelling/key order. Tiny original CoachingStore comparator delegates
+  to shared value comparison; unchanged targets no longer produce false reminder revisions when
+  alternating writers. Android integer -0 versus decimal -0.0 parsing matches original JSONTokener;
+  exact Long step timing never goes through Double. No training or GPS calculation change.
+- Added16 common actual-SQLite contracts (JVM/Apple wrappers) for rollback/foreign keys, completed
+  history, stale/invalid/KEEP/REST choices, nested transactions, mirror revisions, duplicate rows,
+  limits/null/optional/large integer evidence and legacy-number spelling. Added6 actual Android
+  original/shared same-database codec/repository parity tests, including both writer directions.
+- Local82storage JVM PASS and Android app/instrumentation Kotlin compile PASS2m33s/57tasks.
+  Final formatted-source build/bothAPKs/lint PASS5m31s/160tasks in scratch/kmp-running-coaching-
+  complete-build.log. Format682sources(587Kotlin/95Java) PASS; release-note10 PASS. Exact schema19
+  boundaries PASS; existing75schema tests PASS. Native86 /Android444
+  are EXPECTED next CI counts, not yet run on this source. No schema/version/backup bump,
+  permissions/navigation change, merge or public publication. Full backup normalisation remains.
+- Next: finish focused local build/format, commit/push this coherent batch; inspect its actual
+  Native and Android results, especially6 new old/shared running-plan tests. Continue strength
+  session/exercise/programme/execution codecs and repositories, full backups/archives/retention,
+  common application composition, native services and REAL iOS app host. Preserve completed ports.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest checkpoint54 includes
-   baseline/assessment work after pushed daeceba. Inspect actual git/push/CI state and preserve all
-   local work. daeceba Apple449domain+18health+65storage and formatting PASS; Android436pending.
-   Latest baseline source locally66storage JVM/build/bothAPKs/lint/format673/schema PASS;
-   next438Android/70storage Native pending. Current version/formats19/13/3/1 unchanged.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest coherent running-plan
+   batch is checkpoint55 above (locally verified; commit follows this record). Parentb909442
+   FULL SUCCESS:438Android,700189checks/48suites,490domain+16health+66storage JVM,
+   449domain+18health+70storage Native. New batch locally82storage JVM/Android compile PASS;
+   expected444Android/86storage Native must be verified after push, never assumed.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
@@ -2152,7 +2189,7 @@ incomplete migration merely because a focused checkpoint passes.
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
-   consent/preview/transaction/restore safeguards exist. Existing Android stores remain unchanged.
+   consent/preview/transaction/restore safeguards exist. Existing Android stores remain authoritative; checkpoint55 adds only a semantic reminder comparator for cross-codec compatibility.
 4. Then wire real common application composition/navigation/state/data sources, full permissions/
    HealthKit, native recording/BLE/notifications and real iOS app host/entitlements/usage strings,
    preserving Android Health Connect and all existing features. Visible-only health snapshots

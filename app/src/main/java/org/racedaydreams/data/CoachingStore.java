@@ -265,15 +265,21 @@ public final class CoachingStore implements CoachingRepository {
         }
         db.delete("planned_workouts", null, null);
         for (var w : version.plan().workouts()) {
-            String json = FeatureJson.planned(w).toString();
             ContentValues values = payload(w.id(), FeatureJson.planned(w));
             values.put("scheduled_date", w.date().toString());
             values.put(
                     "revision",
                     revisions.getOrDefault(w.id(), 0L)
-                            + (json.equals(previous.get(w.id())) ? 0 : 1));
+                            + (samePrescription(previous.get(w.id()), w) ? 0 : 1));
             db.insertOrThrow("planned_workouts", null, values);
         }
+    }
+
+    /** Portable codecs may spell the same JSON number differently; targets drive revisions. */
+    private static boolean samePrescription(String saved, PlannedWorkout proposed) {
+        if (saved == null) return false;
+        return org.racedaydreams.storage.PlannedWorkoutJson.samePrescription(
+                FeatureJson.planned(FeatureJson.object(saved)), proposed);
     }
 
     public void decide(AdjustmentProposal proposal, String optionId, Set<String> completed) {
