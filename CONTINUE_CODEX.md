@@ -2210,13 +2210,55 @@ incomplete migration merely because a focused checkpoint passes.
   association provenance, transactional completion and older/current backups; never enable partial
   native destructive history/cleanup commands. Common app root/native services/REAL iOS host remain.
 
+### Checkpoint 57 — Strict frozen gym-workout codec (15 November 2026)
+
+- Checkpoints55–56 committed/pushed together: **cb95d1e1259df7d89ea9dadb511c11346a666fd1** then
+  **31101d7c61560d641d237e8333682521a4362d44**. Existing PR24 OPEN/DRAFT, body updated with actual
+  completed/pending scope. Experiment **43776246774 RUNNING**, formatting43776246786 SUCCESS.
+  Android133003085132 passed domain/schema/build and is running expected449focused cases;
+  Apple133003085372 SUCCESS: digest-verified14186068645
+  ZIP94258ccd7dea53b94e258cffad900d75554a090c3e159081406d94ec893a89ca proves
+  **449domain+18health+98storage Native**, all0failures/errors/skips. Proofs scratch/coaching-311-
+  native.{zip,json}. Framework14186707231 linked; NOT an iOS app. Android449 still pending.
+- Added internal GymStoredJson preserving original strict gym envelope validation BEFORE allocating
+  a DOM:16MiB UTF8,20nesting,1000000tokens, bounded strings, standard JSON/no comments/trailing data,
+  duplicate keys including escaped names, exact fields/types/whole-integer tokens. Reuses existing
+  shared JSON primitives and serialization dependency, no new library or separate training model.
+- Added FrozenGymWorkoutJson for original v1 GymWorkoutJson payloads. Frozen exercise identities,
+  optional targets/reference loads, all measurement profiles, RPE versus RIR, superset ordering and
+  100slot limits round-trip through existing common domain constructors. This wire format remains
+  DISTINCT from legacy actual-session CoachingJson (estimateOneRepMax versus estimate; execution
+  completed-session durationMillis versus legacy duration). No actuals are generated from targets.
+- Ten common tests exercise valid/failing formats, escaped duplicate keys, limits, exact clocks,
+  supersets/modality/effort/reference meanings and maximum100slots. Three actual Android parity
+  tests use original GymWorkoutJson BOTH ways, including rejected unknown/future/exponent fields.
+- Regression found a real portability mismatch: JsonPrimitive.longOrNull accepts integral exponent
+  tokens such as3e0, whereas original Android requiredLong/gym whole rejects Double tokens. Shared
+  numeric parsing now tests the literal content with String.toLongOrNull; numeric Double reads
+  still use proper Double parsing for exponent tokens. Integer -0 versus decimal -0.0 and exact
+  large Long evidence remain covered. Focused failing case PASS25s after correction; full
+  **104storage JVM tests PASS**,0failures/errors/skips. No assertion weakening. Initial Kotlin object
+  wildcard-import/nullable enum inference errors corrected with explicit imports/type arguments.
+- Formatting **691sources(596Kotlin/95Java) PASS**. Final source build/bothAPKs/lint PASS5m24s/160tasks in
+  scratch/kmp-frozen-workout-complete-build.log. Expected next
+  source **452Android/108storage Native** remains unverified. No schema/version/backup/permission/
+  navigation/engine change, native destructive commands, merge or public experimental publication.
+- Next exact action: inspect the current local build and parent31101d7 CI, fix actual failures;
+  commit/push this coherent strict-codec checkpoint when locally verified and inspect its real
+  Apple/Android gates. Then continue GymExecutionJson, GymProgramme/StrengthProgramming/concrete
+  draft/association/accepted-actual/tools codecs and typed repositories, preserving exact payload
+  guards, retained source revision validation, actual edits and transaction boundaries. Complete
+  full older/current backup normalisation/archives/retention before wiring native destructive
+  operations. Real common app root, native services and iOS app host/app build remain unfinished.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest coherent work is
-   checkpoints55–56 above: localcb95d1e + fully locally verified strength evidence/choices batch (commit follows this record).
-   Push together once verified. Parentb909442 FULL SUCCESS:438Android,700189checks/48suites,
-   490domain+16health+66storage JVM,449domain+18health+70storage Native. Latest local94storage JVM/
-   compile/format687 PASS; expected449Android/98storage Native still need exact-head verification.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24, remote31101d7. Checkpoint57
+   strict frozen-workout code is locally verified:104storage JVM/format691/build/bothAPKs/lint PASS.
+   Preserve it. Parent31101d7 experiment43776246774 RUNNING, format43776246786 SUCCESS; expected
+   Android449 pending. Native98 verified as above. Earlierb909442 FULL SUCCESS438Android,
+   700189checks/48suites,490domain+16health+66storage JVM,449domain+18health+70storage Native.
+   Next after local build: commit/push strict-codec batch, verify expected452Android/108Native.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.

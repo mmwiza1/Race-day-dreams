@@ -253,6 +253,7 @@
     "app/src/androidTest/java/org/racedaydreams/data/SharedRunningCoachingTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedStrengthEvidenceCodecTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedStrengthChoicesTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/SharedFrozenGymWorkoutCodecTest.kt",
     "domain/src/main/kotlin/**/*.kt",
     "domain/src/test/java/org/racedaydreams/domain/settings/PrimaryFocusTestSuite.java",
     "app/src/main/java/org/racedaydreams/coach/TechniqueScreens.kt",

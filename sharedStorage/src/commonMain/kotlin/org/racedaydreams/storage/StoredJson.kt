@@ -28,7 +28,7 @@ internal object StoredJson {
         if (value == null || value == JsonNull) return null
         require(value is JsonPrimitive && !value.isString) { "Expected a number for $key." }
         // Android JSONTokener retains integral literals as Long before getDouble (including -0).
-        val number = value.longOrNull?.toDouble() ?: value.doubleOrNull
+        val number = value.content.toLongOrNull()?.toDouble() ?: value.doubleOrNull
         require(number != null && number.isFinite()) { "Expected a finite number for $key." }
         return number
     }
@@ -52,7 +52,8 @@ internal object StoredJson {
         require(value is JsonPrimitive && !value.isString) {
             "Expected exact whole number for $key."
         }
-        return value.longOrNull
+        // JsonPrimitive.longOrNull also accepts integral exponents; Android integer tokens do not.
+        return value.content.toLongOrNull()
             ?: throw IllegalArgumentException("Expected exact whole number for $key.")
     }
 
