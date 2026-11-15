@@ -44,7 +44,11 @@ fun StructuredRunSection(state: CoachUiState, model: CoachViewModel, activity: A
             }
         if (!work.isNullOrEmpty()) {
             val within =
-                work.count { it.activeMillis() / it.metres() in it.fastPace()..it.slowPace() }
+                work.count {
+                    val fast = requireNotNull(it.fastPace())
+                    val slow = requireNotNull(it.slowPace())
+                    it.activeMillis() / it.metres() in fast..slow
+                }
             Text("$within of ${work.size} qualified work intervals inside the intended pace range.")
         }
         if (j.optBoolean("interrupted"))

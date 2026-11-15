@@ -2,6 +2,7 @@ package org.racedaydreams.coach
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Density
@@ -50,7 +51,7 @@ class SharedBaselineSummaryCardTest {
         show(manual(), dark = true)
         compose.onNodeWithText("No running history is available yet. You can continue without it.").assertExists()
         compose.onNodeWithText("Average recorded weekly distance: 30.0 km · manual").assertExists()
-        compose.onNodeWithText("Recent 5K result: 25:00 · manual").assertExists()
+        compose.onNodeWithText("Recent 5K result: 0:25:00 · manual").assertExists()
         compose.onNodeWithText("Baseline confidence: Low").assertExists()
         compose.onNodeWithText("not a probability of race success", substring = true).assertDoesNotExist()
         compose.onNodeWithText("About confidence").performScrollTo().performClick()
@@ -63,7 +64,11 @@ class SharedBaselineSummaryCardTest {
         compose.onNodeWithText("Longest recent run: 6.2 mi · manual").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("About confidence").performScrollTo().performClick()
         compose.onNodeWithText("not a probability of race success", substring = true).performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("About confidence").performScrollTo().performClick()
+        compose.onNodeWithText("Hide details")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded"))
+            .performScrollTo().performClick()
+        compose.onNodeWithText("About confidence")
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed"))
         compose.onNodeWithText("not a probability of race success", substring = true).assertDoesNotExist()
     }
 }

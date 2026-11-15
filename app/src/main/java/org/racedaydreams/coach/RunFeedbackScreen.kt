@@ -20,16 +20,7 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
         value=withContext(Dispatchers.Default){RunScoreEngine.analyse(planned,activity,response)}
     }
     CoachHeading(if(planned==null) "Run Analysis" else "Run Score and feedback")
-    feedback?.let { result -> CoachCard {
-        if(result.score()!=null||result.label()!="Run Analysis")Text(result.score()?.let { "$it/10 — ${result.label()}" } ?: result.label(),style=MaterialTheme.typography.headlineSmall)
-        WhyDetails("RPE describes how hard this felt. Run Score describes execution of the intended purpose; neither is a health or fitness-improvement score.","What does this score mean?")
-        WhyDetails(result.components().joinToString("\n\n"){c->"${c.name()}: ${c.fraction()?.let{"${kotlin.math.round(it*100).toInt()}%"}?:"Unavailable"}\n${c.explanation()}"},"Score components")
-        if(result.wentWell().isNotEmpty()){Text("What went well",style=MaterialTheme.typography.titleMedium);result.wentWell().forEach{Text(it)}}
-        if(result.differed().isNotEmpty()){Text("What differed from the plan",style=MaterialTheme.typography.titleMedium);result.differed().forEach{Text(it)}}
-        Text("What we learned",style=MaterialTheme.typography.titleMedium);Text(result.learned())
-        Text("Next step",style=MaterialTheme.typography.titleMedium);Text(result.nextStep())
-        WhyDetails("Deterministic product heuristics, rule version ${RunScoreEngine.RULE_VERSION}; not scientifically validated weights. Missing evidence is excluded.","How was this calculated?")
-    } }
+    feedback?.let { SharedRunFeedbackCard(it) }
     if (planned != null) {
         if (state.proposals.isEmpty()) Text("No programme adjustment is currently proposed. This run remains useful evidence for future reviews.")
         else {
