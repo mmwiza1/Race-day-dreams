@@ -1589,19 +1589,64 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19; formats19/13/3/1 unchanged. PR24 DRAFT; main85e1c39/PR23 untouched.
   No merge, version increment, public publication, canonical capture or physical acceptance claimed.
 
+### Forty-second checkpoint — recovered route/custom-workout batch verified locally
+
+- Resumed b49309f on experiment/android-ios-kmp-compose without resetting/discarding its nine
+  uncommitted Java-to-Kotlin conversions. Live main still85e1c39; PR24 OPEN/DRAFT, PR23 untouched.
+- b493 own experiment43749173197 and formatting43749173130 SUCCESS. Android132919066273:
+  **362unique START/END cases**, no failures/skips/missing completions. Digest-verified artifacts
+  confirm **422domain+14health JVM /390domain+16health Native**, all zero failures/errors/skips.
+  Proof scratch/dream-b493-verified/verification.json. APK14176580597 ZIP6c9c3a6b0e4da0fb17ba484efbcee332b05078c39adb2e79685e35789e390144;
+  extracted57,070,145bytes/SHA25665e2929d3172ace2bca73080ed23eec4bc44ff09a64ff6bddbe341183bf024bc,
+  code19/min28/noINTERNET. Actual shared framework, NOT a functioning iOS application.
+- This checkpoint ports TrackPoint, RecordedRoute, ActivityRecorder,
+  StructuredWorkoutDelivery, CustomWorkout and TrainingInsights to common Kotlin. Three original
+  Optional/stream interfaces now JVM Kotlin compatibility facades (UserPreferencesRepository,
+  PrimaryFocusRepository/GpxCodec), not duplicated business logic. Nine Java originals removed;
+  **14Java domain files remain**. JVM facade IO/Optional semantics intentionally remain platform
+  specific; complete native storage/GPX remains unfinished.
+- Preserves route coordinate/optional sensor evidence, within-segment ordering/independent segment
+  boundaries, source identity, immutable snapshots; custom repeats/reordering/open-target totals;
+  original28/56day insight gates, compensated sums, actual moving-time demand and noncausal shoe
+  notes. No new recording/generation engine or automatic programme change.
+- **700189checks/48retained assertion suites PASS**; original/shared **2295line trace matches**,
+  SHA256533c1c8706b7a4987a58fb928910082adc8f2c88794488317e5e77f81a0e6df6.
+  Scratch portability-original, PortabilityParity.java, kmp-{original,shared}-portability.log.
+  javap confirms Kotlin-only classes and exact original Optional/IOException/stream signatures.
+- Added12common and2JVM tests. First run436domain tests found2NEW ownership-test fixture errors:
+  Kotlin MutableList casts reject read-only collections before reaching Java mutation methods.
+  Corrected tests to invoke java.util.List directly, retaining UnsupportedOperationException
+  assertions. Final corrected build scratch/kmp-portability-final-build.log **PASS5m25s/162tasks**:436domain
+  JVM tests (zero failures/errors/skips), both Android APKs and lint PASS. Unchanged14health JVM
+  tests independently verified at b493; own-source CI remains pending. First failed log
+  kmp-portability-verified-build.log preserved. Formatting CHECK607sources, schema75/diff PASS.
+  Actual local APK/code19/min28/noINTERNET/shared source identities verified in
+  scratch/portability-local-apk-verification.json; private incremental artifact only.
+- Added existing Release08UiTest3 + Release08StoreTest15 to experimental Android selection,
+  retaining all362prior cases: **380EXPECTED Android /402domain+16health Native**, unverified on
+  this source. No assertions weakened, no broad final matrix yet.
+- Next achievement originals preserved/compiled OUTSIDE repository in scratch/milestones-original;
+  TrainingMilestonesParity.java original4071lines/SHA256
+  b3056a63af40ebfeb6d096ee6569ea6d24d31a4e46fb94c752400312a5a87359.
+  Scratch TrainingMilestones.kt/TrainingMilestoneContractTest.kt PREPARATION ONLY, not applied.
+  Fixture initially supplied missing StrengthSession offset; corrected to valid actual offsets
+  before capturing oracle. Preserve original nullable Proof offset semantics.
+- Version0.12.3-test1/code19/formats19/13/3/1 unchanged. No merge/publication/version increment,
+  final canonical capture or physical acceptance claimed. Native root/storage/services/real iOS
+  host and full platform acceptance remain unfinished. Next: preserve this verified local commit,
+  complete the prepared achievements batch, then push coherent checkpoints together to avoid
+  starting/cancelling duplicate expensive CI. No new-source Android/Native runtime pass claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status and own Dream/data-generator checkpoint CI. Local422domain+14health
-   JVM,700189retained checks, exact72415line oracle, all7strict generator checks, both APKs/lint/
-   format PASS. Preserve current geometry/decimal-helper/native RNG/DreamDrawing work. Own new-head
-   Android362 and Native390+16 remain EXPECTATIONS until its exact-head CI verifies them.
-2. e679 race checkpoint is independently verified362Android/409+14JVM/380+16Native; digests/APK
-   proof above. Prior ecc and85a checkpoints remain preserved. No blind reruns or weakened tests.
-3. Continue remaining23Java domain files and actual shared app. DreamBasemap JVM stream adapter,
-   portability/GPX, retention, recovery/reminders/plan-regression and preference/focus Optional
-   seams remain. Preserve bounded decoding, corrupt/future rejection, protected actual/history,
-   provenance and transactional safeguards. Do not redo completed Dream geometry/progress,
-   race/health/presentation/strength/coaching/baseline/recording ports.
+1. Checkpoint42 is locally verified:436domain JVM,700189retained checks,2295line oracle,
+   schema75, both APKs/lint and607source formatting PASS. Expected380Android/402domain+16health
+   Native for that source remain unverified. b493 own CI is independently green as recorded above.
+2. Next prepared achievement originals/4071line oracle and scratch Kotlin/UI files are not yet
+   applied/compiled. Complete and test them rather than restart the already-shared ports.
+3. Continue remaining14Java domain files and actual shared app: achievements, recovery, retention,
+   reminders, plan diagnostics, bounded DreamBasemap JVM stream decoding. Preserve actuals,
+   provenance, corrupt/future rejection, protected records and transactional safeguards.
 4. Actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/backup/
    retention, permissions/full HealthKit, native recording/BLE/notifications and a REAL iOS app
    host with entitlements/usage strings remain incomplete. Visible-only HealthKit snapshots
