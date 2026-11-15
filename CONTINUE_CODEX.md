@@ -1725,25 +1725,93 @@ incomplete migration merely because a focused checkpoint passes.
   final full platform/screenshot acceptance remain incomplete. Version/formats unchanged,
   no merge/publication/physical acceptance claimed.
 
+### Forty-fifth checkpoint — shared recovery and explicit schedule proposals verified locally
+
+- Retention checkpoint2478b47 committed locally, not yet pushed. be280 experiment43754601167
+  and formatting43754601156 SUCCESS. Android132935826997: **391unique START/END cases**, no
+  failures/skips/missing completions, including all new milestone/recorder/legacy-backup cases.
+  Digest-verified JVM14177813393 and Apple14177674870 confirm **452domain+14health JVM /
+  416domain+16health Native**, all0failures/errors/skips. Proof
+  scratch/recognition-be280-verified/verification.json. Framework is still NOT an iOS app.
+- be280 private CI APK14177768316 ZIP0baf1f852ae86314162958e0670b687f4dc762304c6a6bf68fe8d8a0b52f3c1d;
+  extracted57,102,854bytes/SHA256d8a6dc9981c441aae20d57b791b7c1c1593840db777b113b372be52a86d3f109,
+  code19/min28/noINTERNET verified. No public publication. Do not rerun verified old parents.
+- This checkpoint ports TrainingRecovery and RecoveryProgrammeProposal to shared Kotlin;
+  their2Java originals removed: **6Java domain files remain**. Existing health RecoveryCoaching
+  stays preserved; this moves the distinct completed-training/scheduling evaluator, not a second
+  replacement engine. No recovery score, diagnosis or automatic activation introduced.
+- Keeps completed/recent working-set evidence, separate recorded RPE/RIR, duplicate conflicts,
+  distinct recorded-offset dates, fresh corroborated health context, future/unknown exclusions,
+  original programme priorities, same/before/after/race-week context, anchored-week alternatives,
+  protected actuals and future-only immutable reviewed proposals. Reuses checked time arithmetic
+  and checked integer revisions; original loads/tasks/rest/effort/later weeks remain unchanged.
+- Existing TrainingRecoveryState and production recovery content now in sharedUi. Android retains
+  lifecycle, real provider/repository calls, local date formatting and original preview/keep/refresh/
+  move callbacks. Original public Android wrapper remains for current callers/tests. Qualified
+  nullable raw DTO fields are explicitly bound at factory-driven consumers; no zero/empty fiction.
+- Preserved original336line oracle in scratch/recovery-original, RecoveryParity.java and
+  kmp-original-training-recovery.log/SHA256
+  b602cacc8e0e634b6be245b5f9ce6a328cfe39462b8e069d84c37a6be9d3b8c3.
+  Covers96histories/health/offset/reordering cases,3priorities, lighter-week targets/protection,
+  all programme-workout conflict/date choices and explicit moves. Kotlin matches all336lines after canonicalising ONLY unordered days/equipment enum-set
+  DISPLAY order. Raw original/shared logs preserved; first193review lines match without changes.
+  Java Enum.hashCode is process-specific, so original raw Proposal.toString is not deterministic.
+  scratch/canonical_recovery_trace.py validates every enum token then sorts those sets only;
+  every member/duplicate and all workout/block/target/date/explanation order/content remain
+  compared. Canonical SHA256708d19ed2bf97d0c52c570318234e14670199b61ccf4fea8adf6bc5f90fbb53e.
+  No domain output or test assertion weakened.
+- Added9common+1JVM contracts for missing/stale/future/duplicate actuals, RPE versus RIR, health
+  corroboration limits, original priorities, immutable preview/protected dates/tasks, anchored
+  alternatives and raw nullable record ownership. Existing4TrainingRecoveryScreenTest cases now
+  exercise actual shared content. Focus retains all406prior cases: **410EXPECTED Android**.
+  **472domain+14health JVM PASS**, all0failures/errors/skips; **700189checks/48retained suites
+  PASS** against actual .kt classes, javap verified. Native433domain+16health remains EXPECTED,
+  not yet tested on this source. Initial format CHECK620sources/diff PASS.
+- First formatter rejected missing whitespace in scratch '!!==' expression; corrected to '!! =='.
+  Fail-fast prevented starting Gradle on that invalid source. UI extraction guard caught a wrapped
+  Java date expression before writing the shared screen; completed the exact formatter replacement
+  safely. No assertions or training rules changed. Initial full build
+  scratch/kmp-training-recovery-verified-build.log passed domain/sharedUI/app compilation then
+  found ONE real Android-test nullable fixture error at TrainingRecoveryScreenTest:62. Wrapped
+  its known explanation with requireNotNull, retaining the original assertDoesNotExist assertion.
+  Corrected Android build scratch/kmp-training-recovery-android-final.log **PASS1m45s/157tasks**:
+  both APKs/lint PASS. Final formatting CHECK620sources/diff PASS after the fixture guard fix.
+  Actual local APK/code19/min28/noINTERNET/shared recovery/state/content classes verified in
+  scratch/training-recovery-local-apk-verification.json; private incremental artifact only.
+- Ready to push2478b47 and this coherent checkpoint together now that be280 CI is verified.
+  Own new-head410Android/433domain+16health Native remain EXPECTED until exact-head CI completes.
+  No new-source runtime result may be borrowed from be280.
+- Next reminder originals/compiled oracle preserved WITHOUT changing their production sources:
+  scratch/reminders-original, RemindersParity.java, kmp-original-reminders.log **9372lines**/
+  SHA2568191a23ad96647f921cad715f4100a2ec4dd2a8c74fa8cedf9cea450938a61dc.
+  Covers seven zones, five DST/dateline dates, spring gaps/autumn overlaps, five local times,
+  all reminder modes/statuses, quiet hours, permission denial and exact2hour delivery boundaries.
+  No shared reminder implementation has yet been applied. Preserve clock/zone/Optional JVM
+  signatures through appropriate platform seams rather than duplicating scheduling rules.
+- Remaining6Java: reminders5 and bounded DreamBasemap reader1. Native application root, typed native
+  storage/services/full permissions/HealthKit and REAL iOS host remain unfinished. Version/formats
+  unchanged, PR24 DRAFT; no merge/publication/canonical capture/physical acceptance claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint44 locally verified462domain+14health JVM,700189retained checks,2935line oracle,
-   schema75, both APKs/lint and616source formatting. Own406Android/424domain+16health Native
-   remain expectations until that source runs. be280 experiment43754601167 is running; inspect
-   completion/errors before claiming391Android/416domain+16health Native passes or retrying.
-2. Finish prepared recovery Kotlin and common/JVM tests (scratch filenames above), currently
-   NOT APPLIED. Compare original336line oracle and retained domain/actual Android recovery tests.
-   Raw nullable records remain supported; bind only already-qualified factory values in UI.
-3. Remaining8Java domain files: recovery2, reminders5, bounded DreamBasemap reader1. Preserve
-   original DST/quiet-hour/notification revalidation and bounded corrupt-data rejection while
-   sharing actual logic. Do not restart any already-completed domain/UI ports.
-4. Actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/backup/
-   retention, permissions/full HealthKit, native recording/BLE/notifications and a REAL iOS app
-   host with entitlements/usage strings remain incomplete. Visible-only HealthKit snapshots
-   cannot replace retained windows/infer deletion. A framework is not an iOS application.
-5. Final full Android28/35/36/iOS app/regression/screenshot gates only once implementation ready.
-   No premature version increment, merge or publication. Physical HealthKit/Health Connect/GPS/
-   BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
+1. Checkpoint45 locally verified472domain+14health JVM,700189retained checks,336canonical recovery
+   trace lines, both APKs/lint and620source formatting. Retention2478 locally verified462+14,
+   schema75/2935line oracle. Push both coherent commits and inspect own new exact-head CI:
+   **410Android /433domain+16health Native EXPECTED**, not claimed passes until actual reports.
+2. Independently verified be280 CI43754601167 SUCCESS:391unique Android /452+14JVM /416+16Native;
+   digest/APK proofs above. Do not rerun unchanged old parents or weaken assertions.
+3. Continue six remaining Java domain files: reminders5 and bounded DreamBasemap reader1.
+   Reminder original9372line oracle and compiled originals above are ready. Preserve original
+   zone/DST/quiet-hours/status/revision/clock/permission/delayed-delivery rules; keep platform
+   clock/stream/Optional adapters narrow and share the business logic. Do not discard original
+   geometry/licences, bounded parsing or source/restoration safeguards.
+4. Then complete actual shared root UI/navigation/state/data sources, typed native SQLite/
+   migrations/backup/retention, full permissions/HealthKit, native recording/BLE/notifications and
+   a REAL iOS app host with entitlements/usage strings. Visible-only HealthKit snapshots cannot
+   replace retained windows/infer deletion. A linked/tested framework is not an iOS application.
+5. Final full Android28/35/36/iOS app/regression/canonical screenshot gates only when ready.
+   No premature version bump, merge or public artifact publication. Physical HealthKit/Health
+   Connect/GPS/BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
 
 ### Reproducible local tooling / Apple verification
 

@@ -13,17 +13,6 @@ import org.racedaydreams.domain.recovery.*
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.*
 
-data class TrainingRecoveryState(
-    val busy: Boolean = true,
-    val review: TrainingRecovery.Review? = null,
-    val programme: StrengthProgramme? = null,
-    val conflicts: List<TrainingRecovery.Conflict> = emptyList(),
-    val alternatives: Map<String, List<LocalDate>> = emptyMap(),
-    val canReviewLighterWeek: Boolean = false,
-    val error: String? = null,
-    val notice: String? = null,
-)
-
 /**
  * Advisory evidence and explicit draft preparation; accepted programming remains repository-owned.
  */
@@ -92,7 +81,7 @@ class TrainingRecoveryViewModel(app: Application) : AndroidViewModel(app) {
             programme?.let { TrainingRecovery.conflicts(it, runs, today, protected) } ?: emptyList()
         val dates =
             conflicts
-                .map { it.workoutId() }
+                .map { requireNotNull(it.workoutId()) }
                 .distinct()
                 .associateWith {
                     RecoveryProgrammeProposal.alternatives(programme!!, it, runs, today, protected)
