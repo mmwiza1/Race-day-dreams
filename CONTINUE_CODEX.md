@@ -1778,9 +1778,15 @@ incomplete migration merely because a focused checkpoint passes.
   both APKs/lint PASS. Final formatting CHECK620sources/diff PASS after the fixture guard fix.
   Actual local APK/code19/min28/noINTERNET/shared recovery/state/content classes verified in
   scratch/training-recovery-local-apk-verification.json; private incremental artifact only.
-- Ready to push2478b47 and this coherent checkpoint together now that be280 CI is verified.
-  Own new-head410Android/433domain+16health Native remain EXPECTED until exact-head CI completes.
-  No new-source runtime result may be borrowed from be280.
+- **PUSHED**2478b47 and56bb65a5ae73f6c7172a01e58c42ed2118e61a49 together on
+  experiment/android-ios-kmp-compose; PR24 remains OPEN/DRAFT and its description is current.
+  Own experiment43757246519 is RUNNING (Apple132943915240/Android132943915590); formatting
+ 43757246520 SUCCESS. Last inspection: own CI domain/retained suites and schema steps SUCCESS,
+  Android build and Apple tests/framework still in progress. Own410Android/433domain+16health
+  Native remain EXPECTED until reports/logs confirm. No parent runtime pass borrowed.
+- This final delivery-state handoff edit is DOCUMENTATION ONLY and intentionally left local after
+  the verified source push, avoiding a duplicate expensive CI run. Preserve and include it in the
+  next coherent source checkpoint; implementation commits and all source are already pushed.
 - Next reminder originals/compiled oracle preserved WITHOUT changing their production sources:
   scratch/reminders-original, RemindersParity.java, kmp-original-reminders.log **9372lines**/
   SHA2568191a23ad96647f921cad715f4100a2ec4dd2a8c74fa8cedf9cea450938a61dc.
@@ -1792,12 +1798,63 @@ incomplete migration merely because a focused checkpoint passes.
   storage/services/full permissions/HealthKit and REAL iOS host remain unfinished. Version/formats
   unchanged, PR24 DRAFT; no merge/publication/canonical capture/physical acceptance claimed.
 
+### Forty-sixth checkpoint — shared reminder decisions and regional calendar
+
+- Resumed56bb65a preserving the uncommitted documentation-only handoff. Main still85e1c39;
+  PR24 OPEN/DRAFT. Own56bb experiment43757246519 and formatting43757246520 SUCCESS.
+  Android132943915590: **410unique START/END cases**, no failures/skips/missing completions.
+  Digest-verified JVM14178832894/Apple14178723952: **472domain+14health JVM /
+  433domain+16health Native**, all0failures/errors/skips. Proof
+  scratch/recovery-56bb-verified/verification.json. Framework remains NOT an iOS app.
+- Private CI APK14179191882 ZIPb35e77b27f6edabd8f33d05378b518692ca57db042d3dcc667d8b5389cd33630;
+  extracted57,119,238bytes/SHA256b368b5db8aaff2539cb7a33a5febced9c2f6e1d19805f3ab3c089bc8332bc66c,
+  code19/min28/noINTERNET verified. No public publication, no old-parent rerun required.
+- This batch replaces all5Java reminder files. Shared EveningReminder/ReminderPlanEntry/repository
+  and ReminderRules own original opt-in eligibility, content, statuses/revisions, quiet intervals,
+  future scheduling and exact2hour delayed-delivery revalidation. **1Java domain file remains**:
+  DreamBasemap. No new alarm engine or permission; actual platform notification delivery remains
+  platform-owned. Shared rules accept a lazy clock and typed resolved local-calendar facts.
+- JVM ReminderPreferences/EveningReminderPolicy are narrow Kotlin LocalTime/ZoneId/Clock/Optional
+  compatibility adapters; quiet/default/decision logic delegates to common code. No duplicated
+  business rules. Native callers use ReminderSettings and KotlinxReminderCalendar, placed with
+  existing cross-platform integration adapters and existing datetime0.6.2 dependency. No new
+  dependency. Native notification/permission/app-root wiring remains unfinished.
+- Both JVM facade and actual cross-platform calendar JVM execution exactly match original
+  **9372line oracle**, SHA2568191a23ad96647f921cad715f4100a2ec4dd2a8c74fa8cedf9cea450938a61dc.
+  Scratch RemindersParity.java/CrossCalendarRemindersParity.java, reminders-original, and
+  kmp-{original,shared,kotlinx}-reminders.log. Preserves gaps/overlaps, dateline skipping,
+  seven zones, all modes/statuses, permissions, quiet-hour and2hour boundaries.
+- Added8common domain tests and2common integration tests. Calendar tests compare175independently
+  generated original java.time results with nanosecond precision; generator/CSV in scratch
+  ReminderCalendarGold.java/reminder-calendar-gold.csv. **480domain+16health JVM PASS**, all0
+  failures/errors/skips; **700189checks/48retained assertion suites PASS** against real Kotlin.
+- Added existing8EveningRemindersTest Android tests while retaining410prior cases:
+  **418Android /441domain+18health Native EXPECTED**, not yet tested on this source. One initial
+  new-test fixture needed a Long literal to prevent Int nanosecond arithmetic; fixed the actual
+  fixture, no assertion weakened. Failed log kmp-reminders-verified-build.log retained.
+- Final build scratch/kmp-reminders-final-build.log **PASS6m/166tasks**, both APKs/lint.
+  Formatting CHECK628sources/diff PASS; actual private local APK/code19/min28/noINTERNET/new
+  Kotlin classes inspected in scratch/reminders-local-apk-verification.json. Initial core build
+  kmp-reminders-core.log passed before the completed test additions; use final results above.
+- Next basemap originals/compiled oracle captured WITHOUT changing its production source:
+  scratch/basemap-original, BasemapParity.java, kmp-original-basemap.log63lines/SHA256
+  7726d01d0ee23370328b75f3fc1428fc7141c607ddff92025f2cf0563a61a9b4.
+  Covers all6real asset bit fingerprints plus malformed/header/line-ending/float/size limits.
+  Prepared scratch/basemap-ports/*.kt NOT APPLIED or compiled. Preserve caller-owned stream and
+  IOException JVM signature through typealias boundaries; no geometry downsampling/data mutation.
+- Version0.12.3-test1/code19/formats19/13/3/1 unchanged. Commit this coherent verified batch,
+  finish basemap and push checkpoints together to avoid duplicate expensive CI. Native application
+  composition/storage/permissions/services/real iOS host and final platform/canonical capture
+  acceptance remain unfinished; no merge/publication or physical acceptance claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint45 locally verified472domain+14health JVM,700189retained checks,336canonical recovery
-   trace lines, both APKs/lint and620source formatting. Retention2478 locally verified462+14,
-   schema75/2935line oracle. Push both coherent commits and inspect own new exact-head CI:
-   **410Android /433domain+16health Native EXPECTED**, not claimed passes until actual reports.
+1. Current branch experiment/android-ios-kmp-compose; pushed HEAD56bb65a, PR24 DRAFT. Preserve
+   the final local documentation-only handoff edit. Checkpoint45 locally verified472domain+
+   14health JVM,700189retained checks,336canonical recovery lines, both APKs/lint and620source
+   formatting. Retention2478 locally verified462+14/schema75/2935line oracle. Inspect current
+   experiment43757246519 and exact-head artifacts: **410Android /433domain+16health Native
+   EXPECTED**, not claimed passes until actual reports. Fix any actual failures before proceeding.
 2. Independently verified be280 CI43754601167 SUCCESS:391unique Android /452+14JVM /416+16Native;
    digest/APK proofs above. Do not rerun unchanged old parents or weaken assertions.
 3. Continue six remaining Java domain files: reminders5 and bounded DreamBasemap reader1.
