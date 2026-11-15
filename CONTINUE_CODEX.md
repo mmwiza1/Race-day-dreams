@@ -1486,22 +1486,71 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19; formats19/13/3/1 unchanged. PR24 DRAFT; main85e1c39/PR23 untouched.
   No merge, version increment, public publication or physical-device acceptance claimed.
 
+### Fortieth checkpoint — race predictions and preserved training-choice contracts
+
+- Health checkpoint **ecc2aba6949451025f97c641edef6d18e0c8fa13** pushed. Formatting43743599734
+  passed; experiment43743599758 Apple132901917819 SUCCESS. Digest-verified Apple14173589121:
+  **368domain+16health Native**, zero failures/errors/skips, proof scratch/health-ecc-apple-verified/
+  verification.json. Framework linking remains NOT a real iOS app. Android132901917892 then PASSED **362unique START/END runtime cases**, zero failures/skips/
+  missing completions, including ALL7new Home/Strength Today/health/recovery cases. Experiment
+ 43743599758 SUCCESS; earlier85a Maven429 did not recur. Digest-verified JVM14172919484 confirms
+  **395domain+14health**, all zero failures/errors/skips; full proof scratch/health-ecc-verified/
+  verification.json. APK14172974642 ZIP1956510632da0fe5aa37dc6b197cb9bc94f52a3a4a25ad0dbf7aed68b9c63cb4;
+  extracted57,020,993bytes/SHA256c13ed8ffb7c4c8ceb8ba377a74bf3d02ff67d23dff5d1a9cf693f7bb6a375cba,
+  code19/min28/noINTERNET verified. Actions artifact only, no public publication.
+- This batch replaces8Java files: CompletedWorkout, GymSession, PlanAdjustment,
+  RacePrediction, RaceReadiness, RecoveryMetrics, RacePredictionEngine and RaceStrategyEngine.
+  **32Java domain files remain; no Java remains in domain.race.** Kotlin constructors/accessors,
+  raw optional observations, immutable evidence, valid choices/selections and kept-original
+  option remain intact. RaceReadiness retains its old INTERNAL score contract, not a new health
+  readiness score/probability. No new training metric or recommendation rule was introduced.
+- Original race scaling/ageing/source independence/120day lookback/28day actual endurance gates,
+  conflict widening and minute-rounded ranges are preserved. Target pacing remains separate
+  from estimates; hills/missing targets retain effort-only guidance. Java default-locale source
+  casing is preserved by a tiny JVM helper; native UI uses English source labels. Existing UK
+  decimal helper reused; no new numerical formatter or prediction implementation duplicated.
+- Android RaceScreen binds already-qualified optional range/pace values explicitly and retains
+  its actual appearance/navigation. No UI redesign or fabricated substitute values. All original
+  eight source files/compiled oracle retained outside repository in scratch/race-contracts-original;
+  fixture RaceContractsParity.java. **855original/shared lines exactly match**, SHA256
+ c8ae7df49d3970c56ad8ce15d215b7612a1dc56ee7e05e1da10562ff4a85b037.
+  Includes120evidence scenarios/sixdistances, target/hill strategies and retained DTO/choice cases.
+- **409domain+14health JVM tests PASS**, zero failures/errors/skips;12new common and2JVM
+  contracts. **700189checks/48retained suites PASS** with assertions against actual Kotlin;
+  javap confirms Kotlin classes, not stale Java shadows. Formatting CHECK580sources/diff PASS.
+  Native380domain+16health and Android362 are EXPECTATIONS for this source, not verified yet.
+- Core compile PASS1m23s. Initial scratch generator had missing whitespace before getter '='
+  after generic '>'; corrected syntax before successful compile. Original fixture preparation
+  used enum values() on the actual PerformanceDistance VALUE TYPE and missing rolling source
+  links; corrected fixtures to real CORE distances and valid activity IDs BEFORE capturing
+  the original855line oracle. No production rule or existing test assertion changed.
+- Final affected build/lint **PASS7m13s/166tasks** in
+  scratch/kmp-race-contracts-verified-build.log: both Android APKs and lint PASS. Actual local APK/
+  code19/min28/noINTERNET/shared race classes inspected (scratch/race-contracts-local-apk-
+  verification.json); private incremental artifact only, not public publication.
+  Final source canonical screenshots/full platform gate still pending at migration readiness.
+- Dream originals/72415line oracle from checkpoint39 remain preserved and UNAPPLIED. Safely
+  complete the coupled geometry/cartography/progress port plus appropriate bounded stream/parser
+  boundary in the next batch; don't recreate or discard known original vertices/licences.
+- Version0.12.3-test1/code19; formats19/13/3/1 unchanged. PR24 remains DRAFT, main85e1c39 and
+  owner PR23 untouched. No merge/publication/version increment/physical acceptance claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status and the new health checkpoint CI. Local JVM395+14,700189retained checks,
-   exact1280line oracle/both APKs/lint/format PASS. Verify OWN new-head Android362 and Native368+16;
-   expectations are not results. Preserve current import/health/shared UI work.
-2. Presentation85a Apple Native354+16 is independently verified. Its Android job failed BEFORE
-   tests due confirmed Maven429. New health CI includes all retained359 cases plus3new ones;
-   prefer that own-head result over rerunning an obsolete parent. If the latest head hits429,
-   inspect actual logs and consider ONE targeted retry after completion. No test weakening,
-   repository mirrors or blind reruns. e52 remains last verified355Android; never borrow it.
-3. Continue remaining40Java files and actual shared app. Next coherent DreamRoutes/geometry/
-   DreamCartography/DreamBasemap/DreamRouteProgress batch has original oracle prepared above.
-   Preserve all historical geometry IDs/vertices, cache/readiness, licences, bounded UTF-8 parser,
-   real stored routes and original Java Random/stream-call compatibility at JVM boundaries.
-   Continue race/recovery/reminder/retention/portability and preference/focus Optional seams.
-   Do not redo completed health, presentation, strength, coaching, baseline or recording ports.
+1. Inspect branch/status and own race-model/engine checkpoint CI. Local JVM409+14,700189retained
+   checks, exact855line oracle, both APKs/lint/format PASS. Preserve85a/ecc/race work. Own new-head
+   Android362 and Native380+16 need exact-head CI; expectations are not results.
+2. Health ecc experiment43743599758 is independently verified **362Android /395domain+14health
+   JVM /368domain+16health Native**, all zero failures/errors/skips, archives/APK digests checked.
+   All7new shared Home/health/recovery tests execute and pass. Parent85a Maven429 was a pre-test
+   external failure, resolved by the newer coherent checkpoint; no blind retry/configuration
+   workaround was used. New race head must pass its OWN checks before claiming verification.
+3. Continue remaining32Java domain files and actual shared app. Prepared DreamRoutes/geometry/
+   DreamCartography/DreamBasemap/DreamRouteProgress originals/oracle are in checkpoint39.
+   Preserve historical geometry IDs/vertices, cache/readiness, licences, bounded UTF-8 parser,
+   real routes and original Java Random/stream-call compatibility at JVM boundaries. Continue
+   recovery/reminder/retention/portability/plan-regression and preference/focus Optional seams.
+   Do not redo completed race, health, presentation, strength, coaching or recording ports.
 4. Actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/backup/
    retention, permissions/full HealthKit, native recording/BLE/notifications and a REAL iOS app
    host with entitlements/usage strings remain incomplete. Visible-only HealthKit snapshots
