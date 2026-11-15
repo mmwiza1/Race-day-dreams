@@ -388,4 +388,197 @@ abstract class StorageContract {
             db.close()
         }
     }
+
+    @Test
+    fun heightEvidenceKeepsNanosecondOrderingSourceAndUnknownFields() {
+        val db = opened()
+        try {
+            val repository = SqliteBodyHeights(db)
+            val earlier =
+                org.racedaydreams.domain.body.BodyHeight(
+                    "manual",
+                    1.78,
+                    StoredInstant.parse("2026-11-15T09:00:00Z"),
+                    null,
+                    "manual",
+                    "manual",
+                    null,
+                    null,
+                )
+            val later =
+                org.racedaydreams.domain.body.BodyHeight(
+                    "imported",
+                    1.79,
+                    StoredInstant.parse("2026-11-15T09:00:00.000000001Z"),
+                    org.racedaydreams.domain.time.Offsets.ofTotalSeconds(3600),
+                    "healthkit",
+                    "source",
+                    "watch",
+                    StoredInstant.parse("2026-11-15T10:00:00Z"),
+                )
+            repository.saveHeight(earlier)
+            repository.saveHeight(later)
+            assertEquals(listOf(later, earlier), repository.heights(500, 0))
+            assertEquals(listOf(earlier), repository.heights(1, 1))
+            assertFailsWith<IllegalArgumentException> { repository.heights(501, 0) }
+            assertFailsWith<IllegalArgumentException> { repository.heights(1, -1) }
+            assertFailsWith<IllegalArgumentException> {
+                repository.saveHeight(later.copy(id = "conflicting"))
+            }
+            assertEquals(listOf(later, earlier), repository.heights(500, 0))
+            val corrected = earlier.copy(metres = 1.80)
+            repository.saveHeight(corrected)
+            assertEquals(listOf(later, corrected), repository.heights(500, 0))
+            repository.deleteHeight("manual")
+            assertEquals(listOf(later), repository.heights(500, 0))
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun optionalBodyGuidancePreferencesKeepSelectedBasisAndCanClearIt() {
+        val db = opened()
+        try {
+            val repository = SqliteBodyHeights(db)
+            val defaults =
+                org.racedaydreams.domain.body.BodyMeasurementsRepository.Preferences.defaults()
+            assertEquals(defaults, repository.preferences())
+            val selected =
+                org.racedaydreams.domain.body.BodyMeasurementsRepository.Preferences(
+                    true,
+                    org.racedaydreams.domain.body.HeightUnit.INCHES,
+                    org.racedaydreams.domain.body.ProteinGuidance.Basis(
+                        "recorded-weight",
+                        StoredInstant.parse("2026-11-15T09:00:00.123456789Z"),
+                        87.0,
+                    ),
+                )
+            repository.preferences(selected)
+            assertEquals(selected, repository.preferences())
+            repository.preferences(defaults)
+            assertEquals(defaults, repository.preferences())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun milestoneRecognitionIsIdempotentAndRetainsOriginalProof() {
+        val db = opened()
+        try {
+            val repository = SqliteTrainingMilestones(db)
+            val at = StoredInstant.parse("2026-11-15T09:00:00.123456789Z")
+            val proof =
+                org.racedaydreams.domain.achievements.TrainingMilestones.Proof(
+                    org.racedaydreams.domain.achievements.TrainingMilestones.Source.RUN,
+                    "retained-run",
+                    at,
+                    null,
+                    5000.0,
+                )
+            val award =
+                org.racedaydreams.domain.achievements.TrainingMilestones.Award(
+                    org.racedaydreams.domain.achievements.TrainingMilestones.Kind.FIRST_RUN,
+                    at,
+                    listOf(proof),
+                )
+            val now = StoredInstant.parse("2026-11-15T10:00:00Z")
+            assertFalse(repository.celebrations())
+            repository.celebrations(true)
+            assertTrue(repository.celebrations())
+            assertEquals(1, repository.recognize(listOf(award, award), now))
+            assertEquals(
+                0,
+                repository.recognize(listOf(award), StoredInstant.parse("2026-11-15T11:00:00Z")),
+            )
+            assertEquals(listOf(SqliteTrainingMilestones.Stored(award, now)), repository.awards())
+            repository.celebrations(false)
+            assertFalse(repository.celebrations())
+            assertEquals(1, repository.awards().size)
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun failedMilestoneBatchCannotLeavePartialRecognitionOrProof() {
+        val db = opened()
+        try {
+            val repository = SqliteTrainingMilestones(db)
+            val at = StoredInstant.parse("2026-11-15T09:00:00Z")
+            val future = StoredInstant.parse("2026-11-15T12:00:00Z")
+            val run =
+                org.racedaydreams.domain.achievements.TrainingMilestones.Award(
+                    org.racedaydreams.domain.achievements.TrainingMilestones.Kind.FIRST_RUN,
+                    at,
+                    listOf(
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Proof(
+                            org.racedaydreams.domain.achievements.TrainingMilestones.Source.RUN,
+                            "run",
+                            at,
+                            null,
+                            1000.0,
+                        )
+                    ),
+                )
+            val gym =
+                org.racedaydreams.domain.achievements.TrainingMilestones.Award(
+                    org.racedaydreams.domain.achievements.TrainingMilestones.Kind.FIRST_GYM,
+                    future,
+                    listOf(
+                        org.racedaydreams.domain.achievements.TrainingMilestones.Proof(
+                            org.racedaydreams.domain.achievements.TrainingMilestones.Source.GYM,
+                            "gym",
+                            future,
+                            null,
+                            null,
+                        )
+                    ),
+                )
+            assertFailsWith<IllegalArgumentException> { repository.recognize(listOf(run, gym), at) }
+            assertTrue(repository.awards().isEmpty())
+            assertTrue(db.query("SELECT * FROM training_milestone_sources").isEmpty())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun importedHeightAndPreferenceChangesShareOuterRollback() {
+        val db = opened()
+        try {
+            val repository = SqliteBodyHeights(db)
+            val original =
+                org.racedaydreams.domain.body.BodyHeight(
+                    "original",
+                    1.78,
+                    StoredInstant.parse("2026-11-15T09:00:00Z"),
+                    null,
+                    "healthkit",
+                    "source",
+                    null,
+                    null,
+                )
+            repository.saveHeight(original)
+            val defaults = repository.preferences()
+            assertFailsWith<IllegalArgumentException> {
+                db.transaction {
+                    repository.saveHeight(original.copy(id = "new", sourceId = "new-source"))
+                    repository.preferences(
+                        org.racedaydreams.domain.body.BodyMeasurementsRepository.Preferences(
+                            true,
+                            org.racedaydreams.domain.body.HeightUnit.INCHES,
+                            null,
+                        )
+                    )
+                    repository.saveHeight(original.copy(id = "conflicting"))
+                }
+            }
+            assertEquals(listOf(original), repository.heights(500, 0))
+            assertEquals(defaults, repository.preferences())
+        } finally {
+            db.close()
+        }
+    }
 }

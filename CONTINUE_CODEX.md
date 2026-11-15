@@ -1953,23 +1953,45 @@ incomplete migration merely because a focused checkpoint passes.
   application/native services/iOS host. Existing 449domain/18health native and427Android remain
   required; do not replace with storage-only tests. Physical acceptance remains unperformed.
 
+### Checkpoint 50 — Native proof; typed height and milestone storage (15 November 2026)
+
+- Checkpoint49 pushed e51c0c419372a522aad887a2753e68770a3bb568. Formatting43764761168 SUCCESS.
+  Actual Apple job132967287219 /experiment43764761281 SUCCESS7m33s. Digest-verified artifact
+  14181718656 ZIP410f1c30f4e65341bf2f737b8a50733d063008dbe5fdb3a02628e588e6313740:
+  **449domain+18health+23storage Native**, all0failures/errors/skips. Actual23cases inspected:
+  inherited migration/profile contracts ran, as did corruption byte preservation, SQL tail/binds,
+  production open/reopen/identity/WAL, nested rollback, UTF16/NUL/Long/null/blob and full timestamps.
+  Framework linked (artifact14181813447); still NOT an iOS application. Proof in
+  scratch/storage-e51-native-verification.json and storage-e51-native.zip. Android job132967287502
+  passed JVM/domain/schema/build/lint and is running focused instrumentation; inspect completion.
+- Added shared typed SqliteBodyHeights and SqliteTrainingMilestones on existing tables: source
+  conflicts reject without REPLACE, timestamp ordering uses exact seconds/nanos, nullable source
+  offset/import time remain unknown, selected protein basis/disabled defaults retained. No weight
+  owner/format change. Milestone awards/proof/recognition time are idempotent; failed batches and
+  outer height/preferences transactions roll back together. No new achievement definitions/rules.
+- Local latest PASS24storage JVM tests (0failures/errors/skips); preceding combined Android sharedUi
+  compilation PASS45s, final new rollback test PASS20s. Logs kmp-storage-health-milestone-build.log,
+  kmp-storage-typed-final.log. Native EXPECTED28storage tests on this later source, not yet verified.
+  Generator also checks Android/current shared VERSION equality, not only DDL/migration boundaries.
+- Still incomplete: shared JSON/history/programme/execution/backup codecs/repositories; full native
+  retention/pruning/archive handling; actual common root/native recording/BLE/notifications/full
+  health integrations and REAL iOS host. No app/merge/publication/version-bump claim.
+
 ### Exact next safe actions and remaining full scope
 
-1. Current branch experiment/android-ios-kmp-compose, latest implementation checkpoints48–49 below/above; PR24 OPEN/DRAFT.
-   Preserve the final local documentation-only CI handoff. Own experiment43761135855 and format
-   43761135839 SUCCESS:427unique focused Android,490domain+16integration JVM,
-   449domain+18integration Native,700189retained checks, schema75/build/lint/format PASS;
-   digest/APK proof above. No need to rerun unchanged completed domain or old checkpoint gates.
-2. Java domain conversion is complete:0Java sources remain. Narrow JVM Kotlin SDK/IO adapters
-   intentionally preserve Java signatures, while shared business rules/actual shared UI are intact.
-   Do not restart these ports or mistake framework linking for a functioning iOS application.
-3. Next implementation: typed native persistence over the existing SQLite19 schema, plus shared
-   codecs/backup/migration/retention support. ProfileDatabase.java has exact V1..V19_SCHEMA markers;
-   scripts/test-schema.py already extracts/tests this DDL. Reuse the schema rather than inventing
-   a second model. Its onCreate also applies the dynamic NEW_INSTALL_DEFAULT retention choice
-   with real clock/identity; upgrades remain protected/unreviewed. Preserve that distinction.
-   Checkpoint48 adds native SQLite/schema and initial typed preferences; remaining typed repositories,
-   codecs/backup/retention and actual iOS app wiring are still incomplete. No fake/stub app host.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest checkpoints48–50
+   are authoritative; preserve all newer local work. e51c0c4 Apple/format SUCCESS:449domain,
+   18health,23storage Native; Android focused gate43764761281 is pending when recorded. Inspect
+   its actual result. Latest local later height/milestone source:24storage JVM PASS, Native28pending.
+2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
+   and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
+3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
+   Existing native/schema/settings/exclusions/profile/focus/height/milestone/retention reader are
+   implemented as above; preserve them. JSON history/programme/execution codecs and archives still
+   need portable implementations, plus remaining repositories. scripts/shared-schema.py --check
+   proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
+   uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
+   consent/preview/transaction/restore safeguards exist. Existing Android stores remain unchanged.
 4. Then wire real common application composition/navigation/state/data sources, full permissions/
    HealthKit, native recording/BLE/notifications and real iOS app host/entitlements/usage strings,
    preserving Android Health Connect and all existing features. Visible-only health snapshots
