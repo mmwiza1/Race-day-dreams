@@ -261,7 +261,10 @@ class LiveCoachStoreTest : AndroidTestCase() {
             "work",
             requireNotNull(FeatureStore(context).activityDetail(id)).plannedWorkoutId(),
         )
-        assertEquals("Original", CoachingStore(context).current().plan().workouts().first().note())
+        assertEquals(
+            "Original",
+            requireNotNull(CoachingStore(context).current()).plan().workouts().first().note(),
+        )
     }
 
     fun testMalformedExecutionTimelineRejectsWithoutReplacement() {

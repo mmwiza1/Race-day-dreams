@@ -20,41 +20,11 @@ import org.racedaydreams.domain.body.MassUnit
     CoachHeading("Weekly coaching review")
     val r=s.weeklyReview
     if(r==null)Text("Create a programme to review its completed weeks.") else{
-        Text("Week of ${friendlyDate(r.week())}")
-        val presentation=org.racedaydreams.domain.presentation.WeeklyReviewData.of(r)
-        GuidanceCard(if(presentation.noChange())guidanceMint()else guidanceBlue()) {
-            Text(if(!presentation.noChange()||presentation.attention().isNotEmpty())"Something may need adjusting"else if(r.completed()<2)"Still learning your training"else"Training is on track",style=MaterialTheme.typography.headlineSmall)
-            Text("${r.completed()} of ${r.planned()} planned runs completed")
-            Text("${decimal(r.kilometres())} km"+(r.longestKm()?.let{" · longest ${decimal(it)} km"}?:""))
-            Text(if(presentation.attention().isNotEmpty())presentation.attention().first()else if(r.completed()<2)"More recorded training will help us understand your response."else"No meaningful warning signals in this week's recorded evidence.")
-            WhyDetails((presentation.positives().map{"✓ $it"}+presentation.attention().map{"△ $it"}).joinToString("\n\n").ifBlank{"More recorded training will help us see your response."},"Why?")
-        }
-        WhyDetails(r.observations().joinToString("\n\n"),"Week observations")
-        if(r.observations().any{it.contains("missed or moved")})TextButton(onClick=editRoutine){Text("Review training days")}
-        WhyDetails(r.channels().joinToString("\n\n"){"${it.name()}: ${it.state().name.lowercase().replace('_',' ')}\n${it.reason()}"},"Evidence channels")
-        CoachHeading("Recommendation")
-        CoachCard{Text(if(presentation.noChange())"No adjustment required"else "Review the next step",style=MaterialTheme.typography.titleMedium);Text(if(presentation.noChange())if(r.completed()>=2)"Your recent training supports continuing the current plan."else "Continue the current plan while more training evidence becomes available."else r.recommendation())}
-        var previewId by rememberSaveable(r.id()){mutableStateOf<String?>(null)}
-        val preview=r.choices().firstOrNull{it.id()==previewId}
-        if(s.weeklyDecision!=null)Text("Your decision: ${s.weeklyDecision}. Your choice is retained.")else r.choices().forEach{c->
-            OutlinedButton(onClick={if(c.replacements().isEmpty())model.runningPlan.weeklyDecision(c.id())else previewId=c.id()},enabled=!s.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)){Text(c.label())}
-        }
-        if(preview!=null)AlertDialog(onDismissRequest={previewId=null},title={Text("Preview plan change")},text={Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(12.dp)){
-            Text(if(preview.id()=="paces")"Optional quality-pace reassessment"else r.recommendation())
-            r.channels().firstOrNull{it.name()=="Performance trend"}?.takeIf{preview.id()=="paces"}?.let{Text(it.reason().substringBefore("."));WhyDetails(it.reason(),"Why these pace ranges?")}
-            if(preview.id()!="paces"){
-                r.observations().firstOrNull{it.contains("effort increased",true)||it.contains("below 80%")||it.contains("slowed") }?.let{Text(it)}
-                WhyDetails(r.observations().joinToString("\n\n"),"Why this change?")
-            }
-            preview.replacements().forEach{next->
-                val current=s.currentPlan?.plan()?.workouts()?.firstOrNull{it.id()==next.id()}
-                Text(shortDate(next.date()),style=MaterialTheme.typography.titleSmall)
-                Text("Current: ${current?.let{workoutSummary(it,s)}?:"Preserved workout unavailable"}")
-                Text("Proposed: ${workoutSummary(next,s)}")
-            }
-            Text("Other sessions stay unchanged. Your race goal stays unchanged.")
-        }},confirmButton={TextButton(onClick={model.runningPlan.weeklyDecision(preview.id());previewId=null},enabled=!s.busy){Text("Accept change")}},dismissButton={TextButton(onClick={previewId=null}){Text("Keep original plan")}})
-
+        SharedWeeklyReviewContent(
+            r, s.currentPlan?.plan(), s.weeklyDecision, s.busy, editRoutine,
+            model.runningPlan::weeklyDecision, ::friendlyDate, ::shortDate, ::decimal,
+            { workoutSummary(it, s) },
+        )
     }
     var report by rememberSaveable{mutableStateOf(false)}
     TextButton(onClick={report=!report}){Text("Report a training break")}

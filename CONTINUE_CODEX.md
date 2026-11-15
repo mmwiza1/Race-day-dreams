@@ -1339,20 +1339,71 @@ incomplete migration merely because a focused checkpoint passes.
   Actual shared root UI/navigation/state, native persistence/services/HealthKit and iOS app host
   are still unfinished. Physical acceptance remains unperformed.
 
+### Thirty-seventh checkpoint — weekly/adaptive coaching and production review workflow
+
+- 41971581afd54e92769a758327fdba51c8e27bd0 passed experiment43727718762 and formatting
+ 43727718724. Completed Android132853184965 log: **352unique START/END cases**, zero failures/
+  skips/missing completions. Apple132853184678 actually built/tested iosX64/framework7m15s.
+  Digest-verified archives14167337576/JVM and14167875345/Apple: **341domain+14health JVM;
+ 322domain+16health Native**, zero failures/errors/skips. Proof scratch/generator-419-verified/
+  verification.json. Framework linking is not an iOS application build.
+- CI APK14167945108 ZIPceac1fe7e21221f7c5251d44150743fd86b0fe85a88e34fd920ecb738854f54a
+  verified; actual56,971,959bytes/SHA256
+ 627bf20bd6f92d9f36465ad6440c8ba09777e557d63587a79e455eea0b2b2ded,
+  code19/min28/noINTERNET inspected. Actions artifact only, no rolling publication.
+- Replaced all5remaining coaching Java files and WeeklyReviewData with Kotlin. **No Java remains
+  in domain.coaching;50Java domain files remain overall.** One common AdaptiveCoaching engine;
+  JVM AdaptiveCoachingEngine is ONLY the original Optional facade. Common CoachingRepository
+  uses expect/actual CoachingTransaction: JVM typealiases Runnable; iOS has its own interface.
+  javap and JVM ABI test confirm original transaction(java.lang.Runnable). Android CoachingStore
+  retains actual shared SQLite transaction ownership. Native storage is still not implemented.
+- Preserves review windows, earliest prescriptions, moved/completed/skipped evidence, raw-null
+  DTOs, enum ordering, fatigue/strength/durability context, source authority, six CALENDAR month
+  lookback, keep/preview/accept safeguards, completed protection, pace bounds and UUID identity.
+  No training rule redesigned. Calendar clamping, ordered compensated DoubleStream sums and
+  native one-decimal labels are checked against JDK references; JVM formatter unchanged.
+- Original/shared **771line trace identical**, SHA256
+ 80999dd339c7e55a4f031fde57dbf7f73bdab72b6b6f882c7a604779e937c2e9.
+  Fixtures/original compiled copies: scratch/coaching-review-original, CoachingReviewParity.java,
+  kmp-{original,shared}-coaching-review.log. Covers72histories/choices/apply/briefings/proposals,
+  performance thresholds and3explicit hard-lower-body cases. Earlier768line trace matched too;
+  enlarged fixture now genuinely meets retained >=3working-set hard-lower criterion.
+- Actual WeeklyReviewScreen delegates review/disclosures/preview/accept/cancel to shared Compose
+  SharedWeeklyReviewContent. Android keeps formatting, current plan, stored decision, coordinator
+  action and break form. PlanScreens explicitly binds its known factory briefing. Added3actual
+  light/dark/200% UI tests; existing352 retained (355EXPECTED, not run locally).
+- **362domain+14health JVM PASS**, zero failures/errors/skips;18new common and3JVM contracts.
+  **700189checks/48retained suites PASS** with -ea against prepared Kotlin. CHECK550sources
+  (446Kotlin/104Java), diff PASS. Initial2new tests mistakenly used1lower set; fixture corrected
+  to3, rule/assertions unchanged. Both then passed TARGETED rerun53s before full362test run.
+- kmp-review-engines-build.log passed1m22s. Full kmp-review-final-build.log passed JVM tests and
+  app compilation/APK, then instrumentation compile found old LiveCoachStoreTest assuming
+  current() non-null. Strengthened that backup test with requireNotNull, preserving its exact
+  original-prescription assertion. Affected Android rebuild/lint **PASS2m12s/157tasks** in
+  scratch/kmp-review-android-verified.log: debug APK, instrumentation APK and lint all PASS.
+  Local APK/version/code/min28/noINTERNET/new shared classes verified (scratch/coaching-review-
+  local-apk-verification.json); private local build only. No known local failures.
+  New Native340domain+16health and Android355 need OWN exact-head CI after push. Canonical
+  final-source captures remain a final migration gate, not completed here.
+- Version0.12.3-test1/code19 and formats19/13/3/1 unchanged. No permission/dependency/version bump,
+  merge or public publication. PR24 DRAFT; main85e1c39/PR23 untouched. Shared root UI/state,
+  native persistence/services/full HealthKit and real iOS host remain incomplete. Hardware unrun.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24. Preserve current running-generator/scheduler source and
-   311f724's verified352Android/310domain+16health Native checkpoint. This newer source locally
-   passes both APKs/lint/format,341domain+14health JVM and700189legacy checks. Its OWN exact-head
-   CI after push must confirm322domain+16health Native and
-   352Android cases. Never borrow a parent pass or bypass the full final release gates.
-2. Continue remaining56Java domain files and actual shared UI/application services. Running-plan
-   generator and scheduler are now common; do not redo them. Next remaining coaching files:
-   WeeklyCoaching, WorkoutContext, PerformanceReassessment, AdaptiveCoachingEngine and
-   CoachingRepository. Preserve Optional/Runnable compatibility, stable proposal IDs, UK dates/
-   numbers, freshness/evidence limits and atomic reviewed changes. Preferences/focus repositories
-   still expose Java Optional and need compatible common/platform boundaries. Preserve all
-   completed baseline/model/feedback/recording/route/sample/strength ports.
+1. Inspect branch/status/log and PR24; preserve current review/transaction/UI work. Parent4197158
+   is independently verified352Android/322domain+16health Native. This checkpoint locally passes
+   both APKs/lint/format,362domain+14health JVM and700189legacy checks. Verify OWN exact-head CI
+   after push (expected340domain+
+   16health Native and355Android, including3new weekly-review UI tests). Never borrow a parent pass.
+2. Continue remaining50Java domain files and real shared application UI/services. Coaching and
+   running generators are now common; Optional facade/Runnable alias deliberately preserve old
+   JVM APIs without duplicate algorithms. Next inspect remaining presentation/read models and
+   actual clients: HomeCoachingSummary, StrengthTodaySummary, CalendarData, HealthContextSummary,
+   WeightGraphData, DreamRouteProgress and AthleteLanguage. StrengthTodaySummary has important
+   actual/prescription/provenance safeguards; preserve them. Remaining race/recovery/health/
+   reminder/retention/portability/Dream code and preference/focus Optional seams still need work.
+   Do not redo completed coaching, baseline, recording, route, sample or strength ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
