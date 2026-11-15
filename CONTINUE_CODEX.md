@@ -1685,18 +1685,58 @@ incomplete migration merely because a focused checkpoint passes.
   (recovery, retention, reminders, bounded basemap IO) and actual native root/storage/services/host.
   No merge/publication/canonical screenshots/physical acceptance claimed.
 
+### Forty-fourth checkpoint — shared retention consent and proof verified locally
+
+- Checkpoints42acb48 andbe280213f256dc80235d79f4d32920f723a6a792 pushed together. PR24 OPEN/DRAFT
+  description updated. be280 formatting43754601156 SUCCESS; experiment43754601167 RUNNING
+  (Apple132935826740/Android132935826997); no own-source runtime pass claimed yet.
+- This checkpoint applies DetailRetention/RemovedRecordingDetail common Kotlin,
+  removes2Java originals: **8Java domain files remain**. Original selection/consent rules only;
+  actual bounded SQLite transactions/archive IO remain platform-owned. No new deletion policy,
+  permission, schema or backup format. Shared/native repository integration is still unfinished.
+- UTC calendar-month cutoffs preserve original month-end/leap-year/nanosecond behaviour; reuses
+  checkedAdd and existing calendar/instant/Java-whitespace compatibility. Preserves existing-user
+  protection, strict age/app ownership, unknown counts, overflow rejection, duplicate conflicts,
+  dataset epoch, chosen policy/identity,24hour preview expiry, active/recoverable/replacement
+  protection,20row transaction bound and exact original restoration fingerprints.
+- Original2935line oracle captured BEFORE edits in scratch/retention-original, RetentionParity.java,
+  kmp-original-retention.log/SHA256
+  3c6a36737acb7a33974be5ff7811969a5bb09b9b1c772c266c118c69077cd4a7.
+  Actual Kotlin2935line output matches EXACTLY; javap confirms .kt implementations.
+- Added8common+2JVM tests, including wide/negative-year calendar comparisons, protected ownership,
+  unknown sample counts, consent, exact expiry/epoch/identity checks, repeated bounded batches,
+  unchanged proofs and hashes. Added existing4StorageManagementScreenTest+11DetailRetentionRepository
+  tests to focused Android selection, retaining all391previous cases: **406EXPECTED Android**.
+  **462domain+14health JVM PASS**, all0failures/errors/skips. Native424domain+16health
+  remains an unverified expectation for this source.
+- Android achievement date labels now recompute per composition, preserving original behaviour
+  when system zone changes without altering recognition/evidence timestamps; no cached date labels.
+- Full build scratch/kmp-retention-verified-build.log **PASS7m45s/166tasks**, both APKs/lint.
+  **700189checks/48retained suites PASS**; schema75, formatting CHECK616sources and diff PASS.
+  Logs kmp-retention-retained-suites.log, kmp-retention-schema.log, kmp-retention-format-check.log.
+  Actual private local APK/code19/min28/noINTERNET/new shared classes verified in
+  scratch/retention-local-apk-verification.json. Own Android/Native runtime CI still pending.
+- Recovery originals/compiled oracle preserved outside repo: scratch/recovery-original,
+  RecoveryParity.java, kmp-original-training-recovery.log336lines/SHA256
+  b602cacc8e0e634b6be245b5f9ce6a328cfe39462b8e069d84c37a6be9d3b8c3.
+  Prepared TrainingRecovery.kt/RecoveryProgrammeProposal.kt and two test files remain scratch
+  only until applied/compiled. Preserve existing future-only/protected choices and copy exactly.
+- Remaining8Java: recovery2/reminders5/DreamBasemap1. Actual native app root/storage/services/host,
+  final full platform/screenshot acceptance remain incomplete. Version/formats unchanged,
+  no merge/publication/physical acceptance claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint43 is locally verified:452domain+14health JVM,700189retained checks,4071achievement/
-   4546plan trace lines, both APKs/lint and614source formatting PASS. Expected391Android and
-   416domain+16health Native remain unverified on this source until own exact-head CI completes.
-   b493 own CI is independently green as checkpoint42 records; no need to rerun old parents.
-2. Finish prepared retention Kotlin and its common/JVM tests (scratch filenames above), currently
-   NOT APPLIED. Preserve original2935line oracle. Then run focused domain/schema/actual Android
-   retention+backup integration checks; do not change consent or enable new deletion authority.
-3. Remaining10Java domain files: recovery2, retention2, reminders5, bounded DreamBasemap reader1.
-   Continue actual shared app; do not restart finished strength/coaching/recording/health/race/
-   presentation/geometry/route/custom-workout/achievement/plan-diagnostic conversions.
+1. Checkpoint44 locally verified462domain+14health JVM,700189retained checks,2935line oracle,
+   schema75, both APKs/lint and616source formatting. Own406Android/424domain+16health Native
+   remain expectations until that source runs. be280 experiment43754601167 is running; inspect
+   completion/errors before claiming391Android/416domain+16health Native passes or retrying.
+2. Finish prepared recovery Kotlin and common/JVM tests (scratch filenames above), currently
+   NOT APPLIED. Compare original336line oracle and retained domain/actual Android recovery tests.
+   Raw nullable records remain supported; bind only already-qualified factory values in UI.
+3. Remaining8Java domain files: recovery2, reminders5, bounded DreamBasemap reader1. Preserve
+   original DST/quiet-hour/notification revalidation and bounded corrupt-data rejection while
+   sharing actual logic. Do not restart any already-completed domain/UI ports.
 4. Actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/backup/
    retention, permissions/full HealthKit, native recording/BLE/notifications and a REAL iOS app
    host with entitlements/usage strings remain incomplete. Visible-only HealthKit snapshots

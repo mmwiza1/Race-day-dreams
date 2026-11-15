@@ -13,17 +13,16 @@ fun AchievementsScreen(
     onBack: () -> Unit,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
-    val recognized =
-        remember(state.awards) {
-            state.awards.map { stored ->
-                SharedRecognizedMilestone(
-                    stored.award(),
-                    friendlyDate(
-                        stored.recognizedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                    ),
-                )
-            }
+    val recognized = run {
+        state.awards.map { stored ->
+            SharedRecognizedMilestone(
+                stored.award(),
+                friendlyDate(
+                    stored.recognizedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                ),
+            )
         }
+    }
     SharedAchievementsScreen(
         loading = state.loading,
         awards = recognized,
