@@ -23,10 +23,25 @@ content = '\n'.join(lines)
 if '--check' in sys.argv:
     import ast
     import re
-    actual = [ast.literal_eval(s.replace('\\$', '$')) for s in re.findall(r'"(?:\\.|[^"\\])*"', target.read_text())]
-    expected = [s for v in range(1, 20) for s in schema.schema_statements(v)]
-    if actual != expected:
+    # Compare migration boundaries as well as flattened statements: moving DDL into
+    # an earlier/later version would otherwise hide an incompatible upgrade.
+    stack = []
+    actual = None
+    source = target.read_text().partition('val versions')[2]
+    for token in re.findall(r'listOf\s*\(|"(?:\\.|[^"\\])*"|\)', source):
+        if token.startswith('listOf'):
+            stack.append([])
+        elif token == ')':
+            completed = stack.pop()
+            if stack:
+                stack[-1].append(completed)
+            else:
+                actual = completed
+        else:
+            stack[-1].append(ast.literal_eval(token.replace('\\$', '$')))
+    expected = [schema.schema_statements(v) for v in range(1, 20)]
+    if stack or actual != expected:
         raise SystemExit('Shared schema differs from Android; run scripts/shared-schema.py')
-    print('Shared schema: all 19 migrations match Android exactly')
+    print('Shared schema: all 19 migration boundaries/statements match Android exactly')
 else:
     target.write_text(content)

@@ -2,6 +2,8 @@
 
 package org.racedaydreams.storage
 
+import cnames.structs.sqlite3
+import cnames.structs.sqlite3_stmt
 import kotlinx.cinterop.*
 import org.racedaydreams.storage.sqlite.*
 import platform.Foundation.NSRecursiveLock
@@ -55,18 +57,13 @@ class AppleSqliteDatabase(path: String) : SqlDatabase {
         require('\u0000' !in sql)
         memScoped {
             val out = alloc<CPointerVar<sqlite3_stmt>>()
-            val tail = alloc<CPointerVar<ByteVar>>()
-            val source = sql.cstr.getPointer(this)
-            val code = sqlite3_prepare_v2(db, source, -1, out.ptr, tail.ptr)
+            val code = rdd_sqlite_prepare_single(db, sql, out.ptr)
             if (code != SQLITE_OK) {
                 out.value?.let { sqlite3_finalize(it) }
                 failure(code)
             }
             val stmt = out.value ?: throw IllegalArgumentException("SQL statement is empty.")
             try {
-                require(tail.value?.toKString().orEmpty().isBlank()) {
-                    "Only one SQL statement is allowed."
-                }
                 require(sqlite3_bind_parameter_count(stmt) == arguments.size) {
                     "Incorrect SQL argument count."
                 }

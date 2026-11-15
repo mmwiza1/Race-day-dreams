@@ -280,4 +280,112 @@ abstract class StorageContract {
             db.close()
         }
     }
+
+    private fun athlete(race: Boolean = false): org.racedaydreams.domain.UserProfile {
+        return org.racedaydreams.domain.UserProfile(
+            org.racedaydreams.domain.RaceGoal(
+                if (race) org.racedaydreams.domain.RaceDistance.HALF_MARATHON
+                else org.racedaydreams.domain.RaceDistance.GENERAL_FITNESS,
+                if (race) "Local half" else "",
+                if (race) org.racedaydreams.domain.time.CalendarDates.of(2027, 4, 25) else null,
+                if (race) org.racedaydreams.domain.GoalMode.TARGET_TIME
+                else org.racedaydreams.domain.GoalMode.FINISH,
+                if (race) org.racedaydreams.domain.time.Durations.ofSeconds(7200) else null,
+            ),
+            org.racedaydreams.domain.TrainingPreferences(
+                org.racedaydreams.domain.TrainingStrategy.BALANCED,
+                setOf(
+                    org.racedaydreams.domain.time.DayOfWeek.MONDAY,
+                    org.racedaydreams.domain.time.DayOfWeek.FRIDAY,
+                ),
+                2,
+                org.racedaydreams.domain.time.DayOfWeek.FRIDAY,
+                setOf(org.racedaydreams.domain.time.DayOfWeek.TUESDAY),
+                org.racedaydreams.domain.ScheduleType.FLEXIBLE,
+                org.racedaydreams.domain.UnitSystem.METRIC,
+            ),
+            false,
+        )
+    }
+
+    @Test
+    fun profileRoundTripPreservesGoalOptionalValuesDaysAndHistory() {
+        val db = opened()
+        try {
+            val profiles = SqliteAthleteProfile(db)
+            assertNull(profiles.load())
+            db.execute(
+                "INSERT INTO activities VALUES('retained','rdd','source',NULL,10,20,'original history')"
+            )
+            db.execute("INSERT INTO onboarding_draft VALUES(1,'draft')")
+            for (race in listOf(false, true, false)) {
+                val expected = athlete(race)
+                profiles.save(expected)
+                assertEquals(expected, profiles.load())
+                assertEquals(
+                    SqlValue.Text("original history"),
+                    db.query("SELECT payload FROM activities WHERE id='retained'").single().single(),
+                )
+                assertTrue(db.query("SELECT * FROM onboarding_draft").isEmpty())
+            }
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun profileReplacementFailureRollsBackDeletedProfileAndDraft() {
+        val db = opened()
+        try {
+            val profiles = SqliteAthleteProfile(db)
+            val original = athlete(false)
+            profiles.save(original)
+            db.execute("INSERT INTO onboarding_draft VALUES(1,'retain draft')")
+            db.execute(
+                "CREATE TRIGGER fail_goal BEFORE INSERT ON race_goal BEGIN SELECT RAISE(ABORT,'test failure'); END"
+            )
+            assertFails { profiles.save(athlete(true)) }
+            assertEquals(original, profiles.load())
+            assertEquals(
+                SqlValue.Text("retain draft"),
+                db.query("SELECT payload FROM onboarding_draft").single().single(),
+            )
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun incompleteProfileIsAnErrorRatherThanNewUserState() {
+        val db = opened()
+        try {
+            db.execute("INSERT INTO user_profile VALUES(1,0)")
+            assertFails { SqliteAthleteProfile(db).load() }
+            assertEquals(
+                SqlValue.Integer(1),
+                db.query("SELECT COUNT(*) FROM user_profile").single().single(),
+            )
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun primaryFocusUsesLegacyFallbackOnlyWhenModernChoiceAbsent() {
+        val db = opened()
+        try {
+            val settings = SqliteSettings(db)
+            val focus = SqlitePrimaryFocus(settings)
+            assertNull(focus.load())
+            settings.putSetting("starting.path", "hybrid")
+            assertEquals(org.racedaydreams.domain.settings.PrimaryFocus.HYBRID, focus.load())
+            focus.save(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH)
+            assertEquals(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH, focus.load())
+            assertNull(SqliteAthleteProfile(db).load())
+            settings.putSetting("primary.focus", "future-choice")
+            assertNull(focus.load())
+        } finally {
+            db.close()
+        }
+    }
 }

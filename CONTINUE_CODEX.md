@@ -1926,9 +1926,36 @@ incomplete migration merely because a focused checkpoint passes.
   real common application root/native services and real iOS app host. No framework-only app claims,
   no version bump/publication/merge. Physical-device acceptance remains unperformed.
 
+### Checkpoint 49 — Profile persistence and Apple binding correction (15 November 2026)
+
+- Checkpoint48 pushed as4e35bb7c77eb30351531edff7bb612c34fea8804. Own experiment43764161239:
+  Android shared JVM/domain/schema stages PASS, APK/lint/instrumentation still pending when checked.
+  Apple132965404194 failed compiling custom SQLite bindings, before any storage native test ran.
+  Exact errors: opaque sqlite3/sqlite3_stmt types live in cnames.structs, and prepare_v2's generated
+  String wrapper does not accept a raw pointer. Corrected imports and added small C helper inside
+  sqlite.def that validates a single SQL statement WHILE the temporary UTF-8 string remains alive.
+  Never retain/read its tail pointer after cinterop frees it. Native re-verification is required.
+- Added actual typed profile persistence over the SAME normalised Android tables. Snapshot reads
+  report incomplete/corrupt profiles as errors; transactional replacements preserve unrelated
+  activity history and roll back old profile/draft on failure. Running goal/date/target, independent
+  running/gym availability and focus/legacy fallback retain existing meanings. Strength focus does
+  not require a race or running profile. Existing Android repositories remain unchanged.
+- Local updated PASS:19 real SQLite JVM tests (0failures/errors/skips), sharedUi Android compilation
+  PASS53s (scratch/kmp-storage-profile-build.log). Includes failed profile replacement trigger,
+  optional race data, exact availability, history survival and focus unknown/legacy handling.
+  Native tests now also cover corrupt file byte preservation, production opener, SQL-tail/binding
+  rejection, NaN rejection and resource close; EXPECTED23storage Apple tests, NOT verified yet.
+- Tightened generator check to compare all19 migration BOUNDARIES as well as exact DDL. Runtime
+  gradle.properties (cinterop commonisation) also included in screenshot source fingerprint.
+- No schema/backup/version changes, public APK, canonical captures, merge or iOS-app claim.
+  Next: inspect the next exact-head Apple compile/storage tests/framework and Android focused gate;
+  fix actual errors. Then continue remaining typed storage/codecs/backups/retention and REAL shared
+  application/native services/iOS host. Existing 449domain/18health native and427Android remain
+  required; do not replace with storage-only tests. Physical acceptance remains unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Current branch experiment/android-ios-kmp-compose, pushed HEADf2bd55d, PR24 OPEN/DRAFT.
+1. Current branch experiment/android-ios-kmp-compose, latest implementation checkpoints48–49 below/above; PR24 OPEN/DRAFT.
    Preserve the final local documentation-only CI handoff. Own experiment43761135855 and format
    43761135839 SUCCESS:427unique focused Android,490domain+16integration JVM,
    449domain+18integration Native,700189retained checks, schema75/build/lint/format PASS;
