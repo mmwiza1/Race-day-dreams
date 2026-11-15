@@ -1158,19 +1158,54 @@ incomplete migration merely because a focused checkpoint passes.
   Version0.12.3-test1/code19; SQLite19/rootJSON13/raw3/complete1 unchanged, no new permissions or
   dependencies, no merge/publication/version bump. PR23 untouched. Real-device acceptance unrun.
 
+### Thirty-third checkpoint — shared retained milestones and actual durability summary card
+
+- Verified c651baddd19e5584aa94b63c93ee7cbd6d89a178 passed experiment43703461026 Android/Apple
+  and formatting43703460995. Completed logs confirm **343unique Android runtime cases**, no
+  failures/skips, including all3 real shared-comparison/manual-choice/200% tests. Digests verified
+  for test archives14158435179/JVM and14157304729/Apple: **265domain+14health JVM;251domain+
+ 16health Native**, zero failures/errors/skips. Real iosX64/framework link6m48s. No iOS app yet.
+- c651 CI APK artifact14157826263 ZIP48ec6821dce4378cb9fe3fec83175166de23022a6831438dfba5f10899803e40
+  verified; actual APK56,906,423bytes/SHA256
+ 4df22f1155857c237815939d783173a1765827c26f9514fcab74082f925e459e, code19/min28/noINTERNET
+  inspected. Proof scratch/insights-c651-verified/verification.json. No rolling publication.
+- New current source replaces MilestoneEngine and DurabilityData Java with common Kotlin;
+  **85domain Java files remain**. No new achievements or calculations: retained firsts, strict
+  time thresholds, original source/input/result tie rules, recorded offsets and no lifetime-first
+  claims preserved. Summary requires the same qualified detailed evidence; totals alone never
+  become half-run paces or sensor context. Raw nullable summary fields remain supported.
+- Actual Activity Detail durability card is now SharedRunDurabilityCard, reused in production
+  with unchanged shape/text/disclosure and Android unit/number callbacks. No record/sensor/clock
+  ownership moved to UI. Existing screenshot fixture still reloads actual stored activity and
+  asserts sufficient durability; explicit requireNotNull bindings preserve/strengthen its checks,
+  not a skipped assertion or manufactured capture. Final source screenshots remain a final gate.
+- Original/shared30-line milestone/summary trace matches SHA256
+ 0669b23349df49d108f45168783a417a99bfe966155927dd2caf94b722d290b5. Original copies/compiled
+  oracle scratch/running-summary-original, RunningSummaryParity.java and kmp-{original,shared}-
+  running-summary.log. Added12common contracts and3actual-card UI tests; new UI tests compiled
+  but NOT yet run locally (no KVM). Focus preserves all343 prior cases and adds3 (346expected).
+- Local kmp-running-summary-build.log BUILD SUCCESSFUL7m6s/166tasks: **277domain+14health JVM
+  tests**, zero failures/errors/skips, both Android APKs and lint PASS. Original **700189checks/
+ 48suites** executed with -ea against new Kotlin classes, all PASS; Activity138/Refinement97
+  included, not additional totals. Formatting CHECK501sources (393Kotlin/108Java), diff PASS.
+- New exact-head Android346 and Native263domain/16health results are PENDING after push, not
+  inferred from c651. No known local failures. Version0.12.3-test1/code19; SQLite19/rootJSON13/
+  raw3/complete1 unchanged; no permissions/dependencies/version bump/publication/merge. PR24 DRAFT.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24; preserve this comparison/history checkpoint. b787077 passed
-   both real Apple and340Android runtime cases. This newer source is locally verified265domain+
-   14health JVM/700189legacy/build/lint/format but needs its OWN new exact-head CI after push.
-   Inspect real results/artifacts; expected343Android and251domain+16health Native are not passes.
-   Investigate actual failures and retain all previous cases/full final gates, no blind reruns.
-2. Continue remaining reusable running analysis/presentation. DurabilityData now depends on shared
-   LongRunDurability; MilestoneEngine's inputs are also shared and use recorded offsets (no Clock
-   dependency). Inspect originals/capture parity before porting. ActivityAnalytics still needs its
-   real display-ZoneId date projection; preserve timezone/DST behavior, never replace it with UTC
-   merely to compile. RunnerDataRepository still depends on other unported repository/model seams.
-   Do not restart completed recorder, route, sample, split, rolling-effort or comparison ports.
+1. Inspect branch/status/log and PR24; preserve the current milestone/summary checkpoint. c651bad
+   passed both real Apple and343Android runtime cases. This newer source is locally verified
+   277domain+14health JVM/700189legacy/build/lint/format but needs its OWN exact-head CI after push.
+   Inspect completed logs/artifacts; expected346Android and263domain+16health Native are not
+   passes until confirmed. Investigate real failures, retain all previous/full final gates.
+2. Continue remaining Java-domain logic and real shared UI. Remaining activity classes are now
+   ActivityAnalytics and RunnerDataRepository. ActivityAnalytics requires its actual display-
+   ZoneId date projection (today is already an input): preserve timezone/DST behavior instead of
+   substituting UTC. RunnerDataRepository depends on unported baseline/settings/plan repository
+   seams. The source of those interfaces/models must be inspected before extraction. Completed
+   recording, route, sample, split, rolling-effort, comparison, durability and milestone ports
+   must not be restarted. No speculative clock layer or unrelated feature is needed.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

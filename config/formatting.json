@@ -257,6 +257,7 @@
     "app/src/main/java/org/racedaydreams/coach/PaceRange.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedActiveRunPanelTest.kt",
     "app/src/main/java/org/racedaydreams/coach/RunComparisonScreen.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/SharedRunComparisonTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedRunComparisonTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedRunDurabilityCardTest.kt"
   ]
 }

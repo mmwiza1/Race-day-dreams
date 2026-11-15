@@ -1815,10 +1815,12 @@ class CoachingScreenshotTest {
             )
             Assert.assertTrue(
                 "Native capture fixture must retain durability evidence",
-                org.racedaydreams.domain.presentation.DurabilityData.of(
-                        FeatureStore(context).activityDetail(recorded.id())
+                requireNotNull(
+                        org.racedaydreams.domain.presentation.DurabilityData.of(
+                                requireNotNull(FeatureStore(context).activityDetail(recorded.id()))
+                            )
+                            .evidence()
                     )
-                    .evidence()
                     .sufficient(),
             )
             SupportStore(context)

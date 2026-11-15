@@ -294,42 +294,13 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             }
             activity.cadence()?.let { Text("Recorded cadence: ${decimal(it)} steps/min") }
             activity.rpe()?.let { Text("Manually entered effort: ${decimal(it)}/10") }
-            val durability =
-                remember(activity) {
-                    org.racedaydreams.domain.presentation.DurabilityData.of(activity)
-                }
-            CoachCard {
-                Text("Long-run durability", style = MaterialTheme.typography.titleMedium)
-                Text(durability.status())
-                if (durability.evidence().sufficient()) {
-                    val factor =
-                        if (
-                            state.profile?.preferences()?.units() ==
-                                org.racedaydreams.domain.UnitSystem.IMPERIAL
-                        )
-                            1.609344
-                        else 1.0
-                    val unit = if (factor > 1) "mi" else "km"
-                    Text(
-                        "First half: ${formatPaceSeconds(durability.firstHalfSecondsPerKm()*factor)}/$unit"
-                    )
-                    Text(
-                        "Second half: ${formatPaceSeconds(durability.secondHalfSecondsPerKm()*factor)}/$unit"
-                    )
-                    durability.evidence().paceFadePercent()?.let {
-                        Text("Late-run pace change: ${decimal(it)}%")
-                    }
-                    activity.rpe()?.let { Text("Session RPE: ${decimal(it)}/10") }
-                }
-                WhyDetails(
-                    durability.evidence().explanation() +
-                        " These are descriptive equal-time halves, not a precise fitness score. Terrain, stops, conditions and intention matter." +
-                        (durability.evidence().heartRateDriftPercent()?.let {
-                            " HR-to-pace change: ${decimal(it)}%."
-                        } ?: " HR context unavailable."),
-                    "Durability details",
-                )
-            }
+            SharedRunDurabilityCard(
+                activity,
+                state.profile?.preferences()?.units() ==
+                    org.racedaydreams.domain.UnitSystem.IMPERIAL,
+                ::formatPaceSeconds,
+                ::decimal,
+            )
             Text(
                 "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
             )
