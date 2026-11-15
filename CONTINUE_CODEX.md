@@ -1117,19 +1117,60 @@ incomplete migration merely because a focused checkpoint passes.
   cancelled. If it reveals a genuine integration failure, fix it with this next coherent source
   checkpoint and reverify. PR24 remains OPEN DRAFT; version/formats/publication/merge unchanged.
 
+### Thirty-second checkpoint — shared comparisons, durability, history and actual comparison UI
+
+- Pushed b787077f65671c0f7a976cb6d09099e6a09b4320; experiment43700834215 Android/Apple and
+  formatting43700834175 SUCCESS. Completed Android logs confirm340unique START/END pairs with
+  no failures/skips, original700189checks/48suites, schema75/build/lint. Digest-verified artifacts
+  confirm254domain+14health JVM and240domain+16health Native, zero failures/errors/skips. Real
+  iosX64 tests/shared UI framework link4m36s; no iOS APPLICATION exists yet.
+- b787 artifact14156731462 ZIP6a48d8e22b67634522843730c07eef79e4f024bedd877e1c9c35b52fa4b6c578
+  verified; actual CI APK56,890,039bytes/SHA256
+  c0b27f6f3cfb3abbffc0f13327721212dcf5d23ce447189050869fce97646b13, version/code/min28/noINTERNET
+  inspected. JVM14156611728 and Apple14156466669 test ZIP digests checked before XML counts.
+  Proof scratch/calculation-b787-verified/verification.json. Actions artifact only, no publication.
+- Current source replaces original ComparableRuns, LongRunDurability and WorkoutHistoryQuery Java
+  with common Kotlin; **87 Java domain files remain**. Preserves ranking/ties, purpose/distance/
+  duration/elevation/age gates, optional effort descriptions, equal-time halves and80%sensor
+  coverage, recorded offsets/UTC fallback, history range/type/exercise-alias filtering and bounded
+  pages. Raw nullable record fields and original mutable aliases remain supported. No new score,
+  medical inference, fabricated completion, physiological precision or history mutation.
+- Original/shared988-line output matches SHA256
+  deebbd3a6613aa3ff6d0d15b7109d7b86ba996e02328c573ccdcb9e9bb1b7671:
+ 720history pages,12matching histories/240interpretations,12durability windows and4raw records.
+  Originals/oracle in scratch/activity-insights-original and ActivityInsightsParity.java.
+- Actual production RunComparisonSection delegates to SharedRunComparisonSection. Android retains
+  plan/profile/date/unit sources; original collapse, manual choice, controls/disclosure/wording and
+  metrics are shared. ActivityScreens uses a nullable evidence binding for optional pace fade,
+  never a fabricated zero. Activity Detail really calls this wrapper (not a test-only component).
+- Added11common contracts (coverage, ranking, dates, aliases, raw records) and3actual Compose
+  interaction/dark/200% tests. New Android cases are compiled, NOT yet executed. Experimental
+  focus retains all340 previous cases and adds3 (343expected, not yet a result).
+- Local kmp-activity-insights-verified-build.log: BUILD SUCCESSFUL5m55s/166tasks; **265domain+
+ 14health JVM tests**, zero failures/errors/skips; both Android APKs and lint PASS. Original
+ 700189checks/48suites executed with -ea against prepared new Kotlin classes, all PASS
+  (kmp-insights-all-legacy-domain.log). Formatting CHECK496sources (388Kotlin/108Java), diff PASS.
+  New Native251domain/16health and Android343 results remain pending after push; b787 pass does
+  not cover this new source. Existing required final unfiltered gates unchanged.
+- Intermediate compile optional typing and canonical-exercise test fixture nullability were fixed
+  at their actual call sites; no assertion removed/weakened, no arbitrary delay or blind rerun.
+  Latest source has no known local failures. Branch/PR24 OPEN DRAFT and full migration incomplete.
+  Version0.12.3-test1/code19; SQLite19/rootJSON13/raw3/complete1 unchanged, no new permissions or
+  dependencies, no merge/publication/version bump. PR23 untouched. Real-device acceptance unrun.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24; preserve all source. New calculation checkpoint is locally
-   verified (254domain+14health JVM/700189legacy), awaiting push after4916 Android attempt2.
-   Inspect experiment43639234658 attempt2 Android132586151728 actual result. Apple4916 already
-   passed230domain+16health Native/framework; new calculation source still needs its own Native
-   and Android CI. Fix root causes, retain all340 focused cases/full final gates; no blind reruns.
-2. Push the verified calculation checkpoint once prior running CI has completed (avoid cancellation),
-   update PR24, inspect new exact-head tests/artifacts. Do not restart the completed recorder,
-   route, sample-quality, splits or rolling-effort ports. Remaining activity analysis/query Java
-   includes ActivityAnalytics, ComparableRuns, LongRunDurability, MilestoneEngine,
-   WorkoutHistoryQuery and RunnerDataRepository; inspect their direct dependencies before the next
-   coherent batch. Preserve original formulas/evidence/provenance and prepare parity first.
+1. Inspect branch/status/log and PR24; preserve this comparison/history checkpoint. b787077 passed
+   both real Apple and340Android runtime cases. This newer source is locally verified265domain+
+   14health JVM/700189legacy/build/lint/format but needs its OWN new exact-head CI after push.
+   Inspect real results/artifacts; expected343Android and251domain+16health Native are not passes.
+   Investigate actual failures and retain all previous cases/full final gates, no blind reruns.
+2. Continue remaining reusable running analysis/presentation. DurabilityData now depends on shared
+   LongRunDurability; MilestoneEngine's inputs are also shared and use recorded offsets (no Clock
+   dependency). Inspect originals/capture parity before porting. ActivityAnalytics still needs its
+   real display-ZoneId date projection; preserve timezone/DST behavior, never replace it with UTC
+   merely to compile. RunnerDataRepository still depends on other unported repository/model seams.
+   Do not restart completed recorder, route, sample, split, rolling-effort or comparison ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

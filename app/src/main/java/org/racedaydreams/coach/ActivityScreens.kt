@@ -316,9 +316,9 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                     Text(
                         "Second half: ${formatPaceSeconds(durability.secondHalfSecondsPerKm()*factor)}/$unit"
                     )
-                    Text(
-                        "Late-run pace change: ${decimal(durability.evidence().paceFadePercent())}%"
-                    )
+                    durability.evidence().paceFadePercent()?.let {
+                        Text("Late-run pace change: ${decimal(it)}%")
+                    }
                     activity.rpe()?.let { Text("Session RPE: ${decimal(it)}/10") }
                 }
                 WhyDetails(
