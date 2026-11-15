@@ -1,0 +1,3 @@
+headers = sqlite3.h
+package = org.racedaydreams.storage.sqlite
+linkerOpts = -lsqlite3

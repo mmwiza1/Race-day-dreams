@@ -14,12 +14,14 @@ kotlin {
             isStatic = true
             export project(':sharedDomain')
             export project(':sharedHealth')
+            export project(':sharedStorage')
         }
     }
     sourceSets {
         commonMain.dependencies {
             api project(':sharedDomain')
             api project(':sharedHealth')
+            api project(':sharedStorage')
             api compose.runtime
             api compose.foundation
             api compose.material3

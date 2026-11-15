@@ -27,9 +27,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
       - name: Shared JVM and retained domain regression suites
-        run: ./gradlew :sharedDomain:jvmTest :sharedHealth:jvmTest :domain:domainTest :domain:prepareOfflineTests
+        run: ./gradlew :sharedDomain:jvmTest :sharedHealth:jvmTest :sharedStorage:jvmTest :domain:domainTest :domain:prepareOfflineTests
       - name: Existing schema and backup-format protections
-        run: python3 scripts/test-schema.py
+        run: |
+          python3 scripts/test-schema.py
+          python3 scripts/shared-schema.py --check
       - name: Compile the existing Android app and instrumentation APK
         run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug
       - name: Enable emulator acceleration
@@ -63,6 +65,7 @@ jobs:
           path: |
             sharedDomain/build/test-results/
             sharedHealth/build/test-results/
+            sharedStorage/build/test-results/
 
   apple-shared:
     if: github.head_ref == 'experiment/android-ios-kmp-compose' || github.event_name == 'workflow_dispatch'
@@ -84,9 +87,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$(uname -m)" = arm64 ]; then
-            ./gradlew :sharedDomain:iosSimulatorArm64Test :sharedHealth:iosSimulatorArm64Test :sharedUi:linkDebugFrameworkIosSimulatorArm64
+            ./gradlew :sharedDomain:iosSimulatorArm64Test :sharedHealth:iosSimulatorArm64Test :sharedStorage:iosSimulatorArm64Test :sharedUi:linkDebugFrameworkIosSimulatorArm64
           else
-            ./gradlew :sharedDomain:iosX64Test :sharedHealth:iosX64Test :sharedUi:linkDebugFrameworkIosX64
+            ./gradlew :sharedDomain:iosX64Test :sharedHealth:iosX64Test :sharedStorage:iosX64Test :sharedUi:linkDebugFrameworkIosX64
           fi
       - uses: actions/upload-artifact@v4
         with:
@@ -100,3 +103,4 @@ jobs:
           path: |
             sharedDomain/build/test-results/
             sharedHealth/build/test-results/
+            sharedStorage/build/test-results/

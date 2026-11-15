@@ -1878,32 +1878,82 @@ incomplete migration merely because a focused checkpoint passes.
   focused cases: **427Android /449domain+18health Native EXPECTED**, not yet run on this source.
   Native tests include175original calendar gold cases and full decoder edge cases; inspect their
   real results before claiming native compatibility. A linked framework remains NOT an iOS app.
-- Version0.12.3-test1/code19/formats19/13/3/1 unchanged. Both coherent source checkpoints ready
-  to push together to existing draft PR24. No merge/publication/physical acceptance claimed.
+- **PUSHED**ff1c406 andf2bd55d91125d31e1041f633893d475ad5eb0bcb to existing draft PR24.
+  Own experiment43761135855 and formatting43761135839 SUCCESS. Android132956005260:
+  **427unique START/END cases**, no failures/skips/missing completions; all17new reminder/Dream
+  cases ran. Apple132956005025 SUCCESS; actual Native calendar/float/stream/decoder contracts pass.
+- Digest-verified JVM14180797976 and Apple14181170632 confirm **490domain+16health JVM /
+  449domain+18health Native**, all0failures/errors/skips. Proof
+  scratch/basemap-f2bd-verified/verification.json. Private CI APK14180464125
+  ZIPf58e8baa2455ccfe47d7451d12a41cf8885678c63329fe0b3ef233264d62ea22;
+  extracted57,135,681bytes/SHA256bd4827b15819a5c7bc870516dbd55db9e54efbab2c7d0f2e0af5b832c6def265,
+  version0.12.3-test1/code19/min28/noINTERNET verified. Actual shared Native framework, NOT iOS app.
+- PR24 body updated with exact successful results; remains OPEN/DRAFT. Main85e1c39/PR23 untouched.
+  Version/formats19/13/3/1 unchanged. No merge/publication/physical acceptance claimed.
+  This final verification-only handoff update is intentionally local to avoid another expensive
+  docs-only CI; preserve/include it with the next coherent implementation checkpoint.
 - Next priority after exact-head verification: actual common application composition/navigation,
   typed native SQLite/migrations/backup/retention, native permissions/HealthKit/recording/BLE/
   notifications and a REAL functioning iOS host. Preserve existing Android implementations,
   data formats and the already-shared UI; do not replace stable systems or add fake controls.
 
+### Checkpoint 48 — Native SQLite persistence foundation (15 November 2026)
+
+- Continuing existing branch/PR24; baseline f2bd55d exact CI confirmed successful again. Preserve
+  its final verification-only local handoff, included with this implementation checkpoint.
+- Added sharedStorage: exact generated Android schema1..19, checked against original migration
+  literals by scripts/shared-schema.py --check. No schema/version/backup changes. Added real Apple
+  system SQLite cinterop/serialised connection, bound UTF-16 text including NUL, exact Int64,
+  distinct NULL/empty text/blob, foreign keys, nested savepoint transactions and close/error guards.
+  No corruption fallback/deletion. Production Apple factory uses actual wall clock/UUID, protects
+  existing consent, closes failed migrations and enables WAL. Not yet wired to an iOS app root.
+- Shared typed settings/exclusion repositories and read-only retention preference reader use one
+  connection. Existing Android repositories/helper remain unchanged. JDBC is TEST-ONLY SQLite
+  oracle, not a new application dependency/second database. Exclusion restoration never deletes
+  history. Native cleanup/archive/backup codecs are NOT implemented by this foundation.
+- Schema creation/upgrades are atomic, reject future/unversioned nonempty DBs before schema writes,
+  retain rollback, and apply NEW_INSTALL_DEFAULT only to truly fresh DBs. Canonical stored UTC
+  parser retains original full Instant range/nanoseconds; 2048 deterministic round trips included.
+- Local PASS: 15 real SQLite JVM tests (0 failures/errors/skips), including all18 historical upgrades,
+  migration/consent failure rollback, protected retention, integer/null/text/blob preservation,
+  nested transactions, file reopen, typed exclusion/settings behaviour and timestamp bounds.
+  Logs scratch/kmp-storage-contract-final.log; prior sharedUi Android compilation PASS42s in
+  kmp-storage-build.log. Existing schema75 PASS. Formatter/fingerprint/CI include new runtime module,
+  system SQLite bindings and build inputs. CI now runs storage JVM/Apple tests and exports native
+  storage with the existing shared framework. Expected17 storage Apple tests; NOT yet verified.
+- Next: push coherent checkpoint and inspect REAL macOS cinterop/native tests/framework and focused
+  Android CI; fix actual failures. Then complete typed native repositories/codecs/backup/retention,
+  real common application root/native services and real iOS app host. No framework-only app claims,
+  no version bump/publication/merge. Physical-device acceptance remains unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Preserve local checkpointff1c406 and current shared basemap work; commit/push the verified
-   checkpoints together to PR24, then inspect own-source CI before proceeding. Latest local
-   verification490domain+16health JVM,700189retained checks,9372reminder trace via both calendar
-   adapters/63basemap trace, schema75, both APKs/lint and634source formatting PASS.
-   Expected427Android/449domain+18health Native are NOT yet verified.
-2. Independently verified56bb experiment43757246519 SUCCESS:410unique Android /472+14JVM /
-   433+16Native; digest/APK proofs above. Do not rerun unchanged old parents or weaken tests.
-3. Java domain source conversion is complete (0remaining); narrow JVM Kotlin SDK/IO adapters are
-   intentional. Do not restart or duplicate already-shared domain/UI modules. Any native parser,
-   calendar or ABI failure must be diagnosed against the original preserved fixtures first.
-4. Continue actual common root UI/navigation/state/data sources, typed native SQLite/migrations/
-   backup/retention and platform services/permissions/full HealthKit, native recording/BLE/
-   notifications and REAL iOS app host/entitlements/usage strings. Android Health Connect and
-   all existing functionality remain intact. Visible-only health snapshots cannot infer deletion.
-5. Full Android28/35/36/iOS app/regression/canonical screenshot gates only once complete.
-   No premature version bump, merge or publication. Physical HealthKit/Health Connect/GPS/
-   BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
+1. Current branch experiment/android-ios-kmp-compose, pushed HEADf2bd55d, PR24 OPEN/DRAFT.
+   Preserve the final local documentation-only CI handoff. Own experiment43761135855 and format
+   43761135839 SUCCESS:427unique focused Android,490domain+16integration JVM,
+   449domain+18integration Native,700189retained checks, schema75/build/lint/format PASS;
+   digest/APK proof above. No need to rerun unchanged completed domain or old checkpoint gates.
+2. Java domain conversion is complete:0Java sources remain. Narrow JVM Kotlin SDK/IO adapters
+   intentionally preserve Java signatures, while shared business rules/actual shared UI are intact.
+   Do not restart these ports or mistake framework linking for a functioning iOS application.
+3. Next implementation: typed native persistence over the existing SQLite19 schema, plus shared
+   codecs/backup/migration/retention support. ProfileDatabase.java has exact V1..V19_SCHEMA markers;
+   scripts/test-schema.py already extracts/tests this DDL. Reuse the schema rather than inventing
+   a second model. Its onCreate also applies the dynamic NEW_INSTALL_DEFAULT retention choice
+   with real clock/identity; upgrades remain protected/unreviewed. Preserve that distinction.
+   Checkpoint48 adds native SQLite/schema and initial typed preferences; remaining typed repositories,
+   codecs/backup/retention and actual iOS app wiring are still incomplete. No fake/stub app host.
+4. Then wire real common application composition/navigation/state/data sources, full permissions/
+   HealthKit, native recording/BLE/notifications and real iOS app host/entitlements/usage strings,
+   preserving Android Health Connect and all existing features. Visible-only health snapshots
+   cannot infer deletion. Use actual shared screens and domain, not a separate product/prototype.
+5. If adding a storage/platform module, include its runtime sources/build inputs in automated
+   formatting and screenshot-source.py fingerprint coverage, and test its actual native storage
+   on working macOS CI. Preserve foreign keys, one DB/transaction boundary, rollback/corrupt/future
+   rejection, actual/history/source identities and current/older backup compatibility.
+6. Final full Android28/35/36/iOS APP/regression/canonical screenshot/accessibility gates only
+   when implementation ready. No premature version bump, merge or public publication.
+   Physical HealthKit/Health Connect/GPS/BLE/audio/locked-screen/OEM/TalkBack remains unperformed.
 
 ### Reproducible local tooling / Apple verification
 

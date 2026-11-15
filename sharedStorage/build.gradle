@@ -1,0 +1,16 @@
+plugins { id 'org.jetbrains.kotlin.multiplatform' }
+
+kotlin {
+    jvmToolchain(17)
+    jvm()
+    [iosArm64(), iosSimulatorArm64(), iosX64()].each { target ->
+        target.compilations.main.cinterops {
+            sqlite { definitionFile.set(project.file('src/nativeInterop/cinterop/sqlite.def')) }
+        }
+    }
+    sourceSets {
+        commonMain.dependencies { api project(':sharedDomain') }
+        commonTest.dependencies { implementation kotlin('test') }
+        jvmTest.dependencies { implementation 'org.xerial:sqlite-jdbc:3.46.1.3' }
+    }
+}
