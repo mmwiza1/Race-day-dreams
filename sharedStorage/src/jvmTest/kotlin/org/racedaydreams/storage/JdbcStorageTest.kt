@@ -29,7 +29,7 @@ class JdbcStorageTest : StorageContract() {
 }
 
 /** Test-only SQLite oracle; Android keeps its existing SQLiteOpenHelper and repositories. */
-private class JdbcDatabase(url: String) : SqlDatabase {
+internal class JdbcDatabase(url: String) : SqlDatabase {
     private val connection = DriverManager.getConnection(url)
     private var depth = 0
 
@@ -94,4 +94,44 @@ private class JdbcDatabase(url: String) : SqlDatabase {
     }
 
     override fun close() = connection.close()
+}
+
+class JdbcActivityRepositoryTest : ActivityRepositoryContract() {
+    @Test
+    fun actualActivityAndDerivedEvidenceSurviveFileReopen() {
+        val file = java.nio.file.Files.createTempFile("rdd-activity-", ".db").toFile()
+        val original = activity()
+        try {
+            val first = JdbcDatabase("jdbc:sqlite:${file.absolutePath}")
+            try {
+                ApplicationSchema.open(first) {
+                    ApplicationSchema.NewInstallation("2026-11-15T12:00:00Z", "file-test")
+                }
+                val repository =
+                    SqliteActivities(first) {
+                        error("Manual activity does not require wall-clock invention")
+                    }
+                repository.upsertManualActivity(original)
+                repository.saveActivityNotes(original.id(), "persistent annotation", 7.5)
+            } finally {
+                first.close()
+            }
+            val second = JdbcDatabase("jdbc:sqlite:${file.absolutePath}")
+            try {
+                ApplicationSchema.open(second) { error("Not a new install") }
+                val repository = SqliteActivities(second) { error("Read must not invent time") }
+                assertEquals(
+                    original.copy(notes = "persistent annotation", rpe = 7.5),
+                    repository.activityDetail(original.id()),
+                )
+                assertTrue(SqliteResults(second).results().isNotEmpty())
+            } finally {
+                second.close()
+            }
+        } finally {
+            file.delete()
+        }
+    }
+
+    override fun database(): SqlDatabase = JdbcDatabase("jdbc:sqlite::memory:")
 }

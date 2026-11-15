@@ -2039,20 +2039,84 @@ incomplete migration merely because a focused checkpoint passes.
   execution/backup/archive/native services and REAL iOS app root/host still incomplete. No merge,
   public publication, canonical capture or physical acceptance is claimed.
 
+### Final recovery boundary — pushed activity codec, next exact-head gate pending
+
+- All implementation through checkpoint52 is committed AND PUSHED as
+  **efba4256d2c4d1eb26d1a939762e3d0ac191e734**, existing branch/PR24 still OPEN/DRAFT. Remote
+  main85e1c3903b61f1d45e444d120ba1a701ad3a2c36 fetched again; unchanged, separate PR23 untouched.
+- Parent91d8489 experiment43766955165 FULL SUCCESS. Android132974134626 log inspected:
+  **429unique START/END**, allcomplete/no failures/skips, both SharedShoeCodecTest cases ran.
+  Domain **700189checks/48suites**. Digest-verified JVM14182938951
+  ZIP76303637b32e7780aa98223c0fcee68912cdf36d896a3b71fcc8858280ca1bc1 confirms
+  **490domain+16health+30storage**, all0failures/errors/skips. Native proof34 in checkpoint52.
+  Private APK14183013770 and framework14182942392 exist; no public publication/IOS app claimed.
+- NEW exact-head efba425 experiment **43768694789 RUNNING**, formatting **43768694910 SUCCESS**.
+  Expected431Android/42storage Native; inspect actual logs/artifact XML before claiming results.
+  Local38storage JVM + actual Android/instrumentation Kotlin compile PASS2m17s; format662 PASS.
+- PR24 body updated with actual parent verification, current-head pending status and remaining
+  full migration scope. Canonical stored-payload codecs are not a completed backup/restore engine.
+- Next exact action: inspect43768694789 results, fix actual failures without weakening assertions;
+  then port typed ActivityRepository using existing Android code/source import and hydration/PB
+  rules, remaining JSON/history/programme/execution repositories, full backups/retention/native
+  services and a REAL shared application/iOS app host. Do not restart completed domain/storage.
+- This final CI/recovery-only note is intentionally local to avoid a docs-only expensive CI push;
+  preserve/include it with the next coherent implementation checkpoint. No other uncommitted work.
+
+### Checkpoint 53 — Real shared activity/result repositories (15 November 2026)
+
+- Recovered existing branch/PR24 and preserved the previous local verification-only handoff.
+  Live main85e1c39 unchanged. Parent **efba425** experiment43768694789 FULL SUCCESS;
+  format43768694910 SUCCESS. Android132979512125 inspected: **431unique START/END** cases,
+  allcomplete/no failures/skips, both actual SharedActivityCodecTest cases ran; **700189/48suites**.
+  Digest-verified JVM14184310869 (8488ef657f2ebbc167e9c83b0da17327e0768df8546494dd36aec1f38cd07d64)
+  proves490domain+16health+38storage; Native14183786475
+  (95f784f4101273f1e5a9bc5523399a849e96a69b43d42de8d73fd9128320d479) proves449domain+18health+42storage,
+  all0failures/errors/skips. Proofs scratch/activity-efba-{jvm,native}.{zip,json}. Framework is NOT app.
+- Added actual SqliteActivities/SqliteResults implementing existing COMMON repository interfaces,
+  ResultJson/RecordingPointJson, exact epoch-millisecond IO, read-only removal receipts. Same SQLite19
+  tables/IDs/JSON payloads. No schema/version/backup changes and Android production stores unchanged.
+- Activity source conflicts reject; upserts/deletions/checkpoints/annotations/qualified PB updates
+  commit together using the EXISTING BestEffortCalculator, with injectable real clock. Manual PBs
+  cannot overwrite derived identities; original distance-catalog rules/table priority retained.
+  Default shoes assigned only on first eligible observation; provider refresh never overwrites
+  athlete notes/RPE/shoes. Explicit deletion and provider deletion preserve their different semantics.
+- Summary/cursor reads never hydrate native raw detail. Detail hydration uses500-row keyset pages,
+  same FINISHED/rdd/gpx rules, original totals/laps/offsets and discontinuities. Coaching retains
+  original12recent/28day/60000point budget. Missing/recoverable/pruned detail never creates samples.
+  Removal provenance is read-only; NO native destructive cleanup was enabled.
+- Local **61storage JVM tests PASS**, zero failures/errors/skips. Includes17real SQLite activity
+  contracts plus file reopen, source/import/PB/annotation rollback, 60001point budget, raw corruption,
+  stable paging/timestamps and receipt/history truth. Codecs test Long>2^53, null/zero, bounds and
+  actual coordinate preservation. File evidence tests run on both JVM and Apple (Native pending).
+- Added5 Android parity tests using original repositories/FeatureJson/RecordingStore and shared
+  repositories on the SAME actual Android database, with test-only SQLite bridge. Outer rollback,
+  actual PBs/annotations/shoes/imports and normalized raw hydration are compared directly. SDK36
+  non-null edit-table annotations and JUnit's deprecated two-double overload corrected; no assertion
+  weakening. Existing Android production helper/pool/IO checks remain unchanged.
+- Local full **build/APK/instrumentation APK/lint PASS3m9s/160tasks**:
+  scratch/kmp-activity-repository-release-checkpoint.log. Schema75 PASS, exact shared schema/version/
+  boundaries PASS; format671sources scoped. Expected next CI **436Android /65storage Native**;
+  not yet run on this source. No public publication/merge/physical or iOS-app acceptance claimed.
+- Next: push this coherent checkpoint, inspect exact-head Apple/native and Android parity gates;
+  fix actual failures. Then continue remaining baseline/coaching/programme/execution repositories,
+  complete backup/retention/archive compatibility, actual common root/native services and REAL iOS
+  host. Canonical codecs are not a full supported-backup reader; retain accepted older normalisation
+  and validate all data before replacing user records. Do not restart completed domain/storage.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoints48–52 are the
-   authoritative recovery boundary; preserve all newer local work. Parent e51c0c4 FULL experiment
-   43764761281 and formatting43764761168 SUCCESS:427Android,700189checks/48suites,
-   490domain+16health+19storage JVM,449domain+18health+23storage Native. Later height/milestone batch
-   committed9278ce1; latest shoe/codec work has30storage JVM PASS, expected34Native/429Android
-   pending. Inspect latest push/CI and scratch/kmp-storage-shoe-final-build.log before claims.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint53 is the latest
+   activity/result implementation. Parent efba425 experiment43768694789 and format SUCCESS:
+   431Android,700189/48suites,490domain+16health+38storage JVM,449domain+18health+42storage Native.
+   Latest local source:61storage JVM/build/bothAPKs/lint/schema PASS; next436Android/65Native pending.
+   Inspect git/latest pushed head and its actual CI; preserve any later local work.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
    Existing native/schema/settings/exclusions/profile/focus/height/milestone/shoe/retention reader are
    implemented as above; preserve them. JSON history/programme/execution codecs and archives still
-   need portable implementations, plus remaining repositories. scripts/shared-schema.py --check
+   need portable implementations, plus remaining repositories. Activity/result repositories are implemented in checkpoint53;
+   preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
    consent/preview/transaction/restore safeguards exist. Existing Android stores remain unchanged.

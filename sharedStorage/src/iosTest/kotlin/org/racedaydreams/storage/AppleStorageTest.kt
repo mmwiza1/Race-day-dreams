@@ -126,3 +126,40 @@ class AppleStorageTest : StorageContract() {
         }
     }
 }
+
+class AppleActivityRepositoryTest : ActivityRepositoryContract() {
+    @Test
+    fun actualActivityAndDerivedEvidenceSurviveNativeFileReopen() {
+        val path = NSTemporaryDirectory() + NSUUID().UUIDString + ".db"
+        val original = activity()
+        try {
+            val first = AppleApplicationDatabase.open(path)
+            try {
+                val repository =
+                    SqliteActivities(first) {
+                        error("Manual activity does not require wall-clock invention")
+                    }
+                repository.upsertManualActivity(original)
+                repository.saveActivityNotes(original.id(), "persistent annotation", 7.5)
+            } finally {
+                first.close()
+            }
+            val second = AppleApplicationDatabase.open(path)
+            try {
+                val repository = SqliteActivities(second) { error("Read must not invent time") }
+                assertEquals(
+                    original.copy(notes = "persistent annotation", rpe = 7.5),
+                    repository.activityDetail(original.id()),
+                )
+                assertTrue(SqliteResults(second).results().isNotEmpty())
+            } finally {
+                second.close()
+            }
+        } finally {
+            for (suffix in listOf("", "-wal", "-shm")) NSFileManager.defaultManager
+                .removeItemAtPath(path + suffix, null)
+        }
+    }
+
+    override fun database(): SqlDatabase = AppleSqliteDatabase(":memory:")
+}
