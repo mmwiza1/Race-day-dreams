@@ -1433,24 +1433,80 @@ incomplete migration merely because a focused checkpoint passes.
   or public publication. Shared application root/native storage/services/full HealthKit/real iOS
   host remain unfinished. Physical acceptance unperformed.
 
+### Thirty-ninth checkpoint — source-specific health context and import safety
+
+- Preserved/pushed presentation checkpoint **85a6d0d9fc7ba779807d3c2e8b4111f8237cbc68**.
+  Formatting43742108377 PASS. Experiment43742108251 Android132897315132 FAILED BEFORE tests:
+  Maven Central returned HTTP429 for Kotlin2.1.21 plugin/BOM/Compose compiler POMs during root
+  configuration. Actual logs inspected; no test or compilation assertion failed. Apple132897315253
+  then PASSED actual iosX64 tests/framework9m3s. Digest-verified Apple14173586423 reports
+  **354domain+16health Native**, zero failures/errors/skips; proof scratch/presentation-85a-verified/
+  verification.json. A single Android retry request was rejected403 while the run was active;
+  it did NOT rerun. New health source will run all retained Android cases, so do not launch an
+  obsolete-parent retry immediately before pushing it.85a has NO verified Android runtime pass.
+- This batch ports HealthIntelligence, HealthReadPolicy, RecoveryCoaching,
+  HealthImportPolicy and HealthContextSummary; their5Java originals removed. **40Java domain
+  files remain; no Java remains in domain.health.** Typed health repository/Android SDK transaction
+  ownership remains unchanged. No additional permission, background read or deletion authority.
+- Preserves latest-source authority, one comparable observation/day, longest sleep observation,
+  seven-day versus preceding28-day windows,4/14 measured-day gates, exact compensated averages,
+  corroborated recovery rules, missing/stale evidence and race-goal protection. Import snapshots
+  remain permission/caller facts; partial/visible-only HealthKit data cannot imply deletion.
+  Deletions retain wholly-contained window boundaries, other providers, opaque tuple identity,
+  upsert precedence and single atomic applyImport. JVM constructors/accessors/text retained.
+- Existing health trend and recovery preview/keep/accept cards now shared Compose. Android keeps
+  permission launchers, provider reads, prepared state, formatting and actual plan actions. No
+  recommendation is automatically activated. Existing rounded cards/disclosures/copy retained.
+  JVM health number formatting unchanged; Native canonical decimal/grouping verified against
+  the UK formatter on8001values plus extremes/nonfinite/negative-zero cases.
+- **395domain+14health JVM tests PASS**, zero failures/errors/skips;14new common and2JVM
+  contracts. **700189checks/48retained suites PASS** with assertions against actual shared Kotlin
+  (javap confirms HealthImportPolicy.kt/HealthIntelligence.kt, no old Java shadow).
+  Original/shared **1280line trace identical**, SHA256
+ bde8c16113a7d3ba86ff7a60796ce1d340912a356958fdafdbb2fc0cb2f24bc6.
+  Originals/fixtures: scratch/health-context-original, HealthContextParity.java,
+  kmp-{original,shared}-health-context.log. Initial1271line trace also matched before adding
+ 9explicit import cases; retain the enlarged1280line oracle.
+- Added3actual shared health/recovery UI tests for unknown data/disclosure, keeping original,
+  and explicit acceptance at200% text. Existing359 focused cases retained. Own new source expects
+  **362Android /368domain+16health Native**, not yet run. Formatting CHECK568sources and diff PASS.
+- Initial health core compile PASS1m24s. Full build passed all JVM tests then found ONE real
+  Kotlin integration error: cannot star-import nested types from a Kotlin object. Replaced ONLY
+  HealthIntelligenceGateway's wildcard with explicit Metric/Observation imports; provider logic
+  unchanged. Affected Android APK/instrumentation/lint rebuild **PASS4m49s/157tasks** in
+  scratch/kmp-health-context-android-verified.log. Both APKs/lint PASS; final formatting568/diff PASS.
+  Actual local APK/code19/min28/noINTERNET/new shared health classes verified (scratch/health-
+  context-local-apk-verification.json); private local artifact only. No canonical captures yet.
+- Next Dream batch originals compiled/preserved without production edits:
+  scratch/dream-original, DreamParity.java, kmp-original-dream.log **72415lines**/SHA256
+ 539826da12212bfbe852c1e1fc234906680296f82ae3a7dac293dffac5af634d.
+  Covers16geometry revisions, exact vertex-bit hashes, clipped sections, all6real basemap assets,
+  licences/attribution/landmarks/rivers and500seeded assignments/progress descriptions. No Dream
+  code has been ported in this batch. Preserve genuine route evidence and safe bounded parser.
+- Version0.12.3-test1/code19; formats19/13/3/1 unchanged. PR24 DRAFT; main85e1c39/PR23 untouched.
+  No merge, version increment, public publication or physical-device acceptance claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status and the new presentation checkpoint CI. Local JVM379+14,700189retained
-   checks, both APKs/lint/format and exact2671line oracle pass. Own exact-head Android359 and
-   Native354+16 are EXPECTATIONS until CI runs; never borrow e52's pass for newer source.
-2. Continue remaining45Java domain files and actual shared application UI/services. Next coherent
-   batch can finish HealthIntelligence/HealthContextSummary/RecoveryCoaching/HealthReadPolicy
-   using the captured originals and scratch drafts. HealthImportPolicy remains Java and needs
-   separate careful typed reconciliation/transaction parity. Preserve source-specific evidence,
-   missing/old data, unchanged recovery rules and explicit athlete approval. DreamRouteProgress
-   stays with its unported DreamRoutes/geometry dependencies. Do not redo completed strength,
-   coaching, baseline, recording, route/sample or running-generator ports.
-3. Continue race/recovery/reminder/retention/portability/Dream domain, preference/focus Optional
-   seams, actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/
-   backup/retention, permissions, full HealthKit, recording/BLE/notifications and a REAL iOS
-   application host with entitlements/usage strings. Visible-only HealthKit snapshots cannot
-   replace retained windows or infer deletion. A framework is not an iOS application.
-4. Final full Android28/35/36/iOS app/regression/screenshot gates only once implementation ready.
+1. Inspect branch/status and the new health checkpoint CI. Local JVM395+14,700189retained checks,
+   exact1280line oracle/both APKs/lint/format PASS. Verify OWN new-head Android362 and Native368+16;
+   expectations are not results. Preserve current import/health/shared UI work.
+2. Presentation85a Apple Native354+16 is independently verified. Its Android job failed BEFORE
+   tests due confirmed Maven429. New health CI includes all retained359 cases plus3new ones;
+   prefer that own-head result over rerunning an obsolete parent. If the latest head hits429,
+   inspect actual logs and consider ONE targeted retry after completion. No test weakening,
+   repository mirrors or blind reruns. e52 remains last verified355Android; never borrow it.
+3. Continue remaining40Java files and actual shared app. Next coherent DreamRoutes/geometry/
+   DreamCartography/DreamBasemap/DreamRouteProgress batch has original oracle prepared above.
+   Preserve all historical geometry IDs/vertices, cache/readiness, licences, bounded UTF-8 parser,
+   real stored routes and original Java Random/stream-call compatibility at JVM boundaries.
+   Continue race/recovery/reminder/retention/portability and preference/focus Optional seams.
+   Do not redo completed health, presentation, strength, coaching, baseline or recording ports.
+4. Actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/backup/
+   retention, permissions/full HealthKit, native recording/BLE/notifications and a REAL iOS app
+   host with entitlements/usage strings remain incomplete. Visible-only HealthKit snapshots
+   cannot replace retained windows/infer deletion. A framework is not an iOS application.
+5. Final full Android28/35/36/iOS app/regression/screenshot gates only once implementation ready.
    No premature version increment, merge or publication. Physical HealthKit/Health Connect/GPS/
    BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
 
