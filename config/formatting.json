@@ -247,6 +247,7 @@
     "sharedUi/src/**/*.kt",
     "sharedHealth/src/**/*.kt",
     "sharedStorage/src/**/*.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/SharedShoeCodecTest.kt",
     "domain/src/main/kotlin/**/*.kt",
     "domain/src/test/java/org/racedaydreams/domain/settings/PrimaryFocusTestSuite.java",
     "app/src/main/java/org/racedaydreams/coach/TechniqueScreens.kt",

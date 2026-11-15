@@ -581,4 +581,70 @@ abstract class StorageContract {
             db.close()
         }
     }
+
+    @Test
+    fun shoeEditsAndDefaultChangesPreserveForeignKeyAssignments() {
+        val db = opened()
+        try {
+            val repository = SqliteShoes(db)
+            val first =
+                org.racedaydreams.domain.activity.Shoe(
+                    "first",
+                    "Brand",
+                    "Daily",
+                    null,
+                    null,
+                    false,
+                    null,
+                    true,
+                )
+            repository.saveShoe(first)
+            db.execute(
+                "INSERT INTO activity_annotations(provider,record_id,shoe_id) VALUES('rdd','retained-run','first')"
+            )
+            repository.saveShoe(first.copy(model = "Updated", notes = "retained note"))
+            assertEquals(
+                SqlValue.Text("first"),
+                db.query("SELECT shoe_id FROM activity_annotations").single().single(),
+            )
+            val second = first.copy(id = "second", model = "Race")
+            repository.saveShoe(second)
+            assertEquals(listOf("second", "first"), repository.shoes().map { it.id() })
+            assertFalse(repository.shoes().last().defaultShoe())
+            assertEquals(
+                SqlValue.Text("first"),
+                db.query("SELECT shoe_id FROM activity_annotations").single().single(),
+            )
+            assertEquals("retained note", repository.shoes().last().notes())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun failedNewDefaultShoeRestoresPreviousDefault() {
+        val db = opened()
+        try {
+            val repository = SqliteShoes(db)
+            val original =
+                org.racedaydreams.domain.activity.Shoe(
+                    "retained",
+                    "Brand",
+                    "Daily",
+                    null,
+                    0.0,
+                    false,
+                    null,
+                    true,
+                )
+            repository.saveShoe(original)
+            db.execute(
+                "CREATE TRIGGER reject_new_shoe BEFORE INSERT ON shoes BEGIN SELECT RAISE(ABORT,'test failure'); END"
+            )
+            assertFails { repository.saveShoe(original.copy(id = "blocked")) }
+            assertEquals(listOf(original), repository.shoes())
+        } finally {
+            db.close()
+        }
+    }
 }

@@ -17,6 +17,9 @@ Apache-2.0. Review that graph and this inventory when versions change.
 | Compose Multiplatform | 1.8.2 | Apache-2.0 | Shared existing Compose UI for Android/iOS; [source](https://github.com/JetBrains/compose-multiplatform/tree/v1.8.2). Apache terms retained in assets; platform libraries keep their own notices. |
 | kotlinx.coroutines Multiplatform/core/Android/test | 1.9.0 | Apache-2.0 | Off-main IO, structured concurrency and StateFlow; [source](https://github.com/Kotlin/kotlinx.coroutines/tree/1.9.0). Licence retained in assets. |
 | kotlinx-datetime | 0.6.2 | Apache-2.0 | Shared exact timestamps and JVM Instant adapters for optional health observations; [source](https://github.com/Kotlin/kotlinx-datetime/tree/v0.6.2). Apache terms retained in assets. |
+| kotlinx-serialization JSON/core | 1.7.3 | Apache-2.0 | Portable explicit DOM codecs for existing local JSON formats; [source](https://github.com/Kotlin/kotlinx.serialization/tree/v1.7.3). Full upstream licence retained in assets. |
+| SQLite (Apple system library) | OS-provided | Public domain | Native persistence uses the existing SQLite schema; [upstream dedication](https://sqlite.org/copyright.html). No separate SQLite distribution or provider service. |
+| SQLite JDBC | 3.46.1.3 | Apache-2.0 / bundled SQLite public domain | JVM storage contract tests ONLY, excluded from app runtime; [source](https://github.com/xerial/sqlite-jdbc/tree/3.46.1.3). |
 | AndroidX Compose BOM | 2025.07.00 | Apache-2.0 | Pins UI/runtime/foundation 1.8.3 and Material 3 1.3.2; [AndroidX](https://android.googlesource.com/platform/frameworks/support/). |
 | Compose UI, Foundation, Material 3, previews/tooling | BOM-managed | Apache-2.0 | Accessible declarative UI; AndroidX copyright/licence notices below. Tooling is debug-only. |
 | AndroidX Activity Compose | 1.9.3 | Apache-2.0 | Activity and result/permission integration; AndroidX. |

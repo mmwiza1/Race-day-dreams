@@ -185,3 +185,10 @@ commercial guide was used. Artwork is contributed under MIT; exact file hashes, 
 review provenance are maintained in docs/exercise-artwork/asset-provenance.json. Bundled
 illustrations are general instruction, not individual form assessment. No runtime service,
 image download or new library is required.
+
+## Experimental shared storage
+
+Portable JSON codecs use kotlinx-serialization1.7.3 (Apache-2.0), with its full pinned upstream
+licence bundled in assets/serialization-LICENSE.txt. Native SQLite uses Apple's system library
+(upstream public-domain dedication); JDBC3.46.1.3 is a JVM test-only oracle, excluded from the app.
+No artwork, health service or network feature is introduced. See THIRD_PARTY.md.

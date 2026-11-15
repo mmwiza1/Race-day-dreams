@@ -1977,16 +1977,46 @@ incomplete migration merely because a focused checkpoint passes.
   retention/pruning/archive handling; actual common root/native recording/BLE/notifications/full
   health integrations and REAL iOS host. No app/merge/publication/version-bump claim.
 
+### Checkpoint 51 — Portable shoe JSON/persistence (15 November 2026)
+
+- Previous checkpoint50 committed locally9278ce1 (height/milestone repository batch). Parent e51c0c4
+  experiment43764761281 FULL SUCCESS, formatting43764761168 SUCCESS. Android132967287502 inspected:
+  **427unique START/END cases**, no failures/skips/missing completions; **700189checks/48retained
+  suites** (Primary focus19 plus47TestSuites700170). Both APKs/lint/schema75 passed. Actual Native
+  **449domain+18health+23storage**, digest/case proof in checkpoint50. No public publication.
+- Added portable ShoeJson and typed SqliteShoes over existing payload/default columns. Preserves
+  optional/zero mileage, escaped Unicode/NUL/notes, canonical full-range dates, actual default
+  column authority, and non-destructive UPDATE so existing shoe assignments survive edits. Default
+  changes roll back if insert fails. Original Android FeatureJson/repositories remain in place.
+- Added official kotlinx-serialization-json1.7.3 DOM dependency for portable EXISTING JSON formats;
+  no reflective serializers/compiler plugin/new format. Avoided a homemade JSON parser. Full pinned
+  upstream licence included; root/bundled attribution inventories updated, including system SQLite
+  (public domain) and TEST-ONLY JDBC3.46.1.3. No network feature or permission introduced.
+- Local PASS30storage JVM tests, all0failures/errors/skips; sharedUi Android compilation PASS51s
+  (kmp-storage-shoe-build.log). format CHECK654sources (559Kotlin/95Java); schema source/current
+  version/boundaries CHECK passes. New Android SharedShoeCodecTest cross-reads ACTUAL FeatureJson
+  outputs with common codec, including null/zero, Unicode/NUL, extended dates and coercion rejection.
+  It is added to focused CI: EXPECTED429Android /34storage Native, NOT yet verified on this source.
+- Local full APK/instrumentation APK/lint PASS5m17s; final source/assets/JVM30/build/lint
+  recheck PASS1m52s in scratch/kmp-storage-shoe-final-build.log (160tasks). Final local APK contains
+  pinned serialization licence/current attribution, version0.12.3-test1/code19/min28/noINTERNET;
+  no JDBC native library bundled. This is PRIVATE local verification, not public publication.
+- No schema/version/backup-format changes. Whole JSON13 backup compatibility, remaining codecs/
+  repositories/native retention/archives and actual iOS app root/services/host are STILL incomplete.
+  Canonical screenshots/full Android28/35/36/iOS APP/hardware acceptance are NOT claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest checkpoints48–50
-   are authoritative; preserve all newer local work. e51c0c4 Apple/format SUCCESS:449domain,
-   18health,23storage Native; Android focused gate43764761281 is pending when recorded. Inspect
-   its actual result. Latest local later height/milestone source:24storage JVM PASS, Native28pending.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoints48–51 are the
+   authoritative recovery boundary; preserve all newer local work. Parent e51c0c4 FULL experiment
+   43764761281 and formatting43764761168 SUCCESS:427Android,700189checks/48suites,
+   490domain+16health+19storage JVM,449domain+18health+23storage Native. Later height/milestone batch
+   committed9278ce1; latest shoe/codec work has30storage JVM PASS, expected34Native/429Android
+   pending. Inspect latest push/CI and scratch/kmp-storage-shoe-final-build.log before claims.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
-   Existing native/schema/settings/exclusions/profile/focus/height/milestone/retention reader are
+   Existing native/schema/settings/exclusions/profile/focus/height/milestone/shoe/retention reader are
    implemented as above; preserve them. JSON history/programme/execution codecs and archives still
    need portable implementations, plus remaining repositories. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
