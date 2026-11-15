@@ -18,23 +18,9 @@ scale = 9/max(max(xs)-min(xs),max(ys)-min(ys))
 xoff = (10-(max(xs)-min(xs))*scale)/2
 yoff = (10-(max(ys)-min(ys))*scale)/2
 vertices = [((x-min(xs))*scale+xoff,(y-min(ys))*scale+yoff) for x,y in zip(xs,ys)]
-source = '''package org.racedaydreams.domain.support;
-import java.util.*;
-
-/** Geographic DATA: ODbL-1.0, (c) OpenStreetMap contributors, via Geofabrik.
- * Annual Schneider Electric Marathon de Paris2026 street-itinerary reconstruction.
- * Original wrapper: MIT. All selected OSM positions retained; no invented coordinates.
- * Sources, node/way/version evidence, factual itinerary and limitations:
- * docs/dream-route-data/paris-2026.json and paris-2026-osm-evidence.json.
- * Approximate road/junction line, not a certified racing line or navigation.
- */
-final class Paris2026Geometry {
-    private Paris2026Geometry() {}
-    static DreamRoutes.Route route() {return new DreamRoutes.Route("paris-2026-geo-v1","Paris · Marathon de Paris 2026",Arrays.asList(
-'''
-source += ',\n'.join('        new DreamRoutes.Vertex(%.8f,%.8f)' % p for p in vertices)
-source += '\n    ));}\n}\n'
-target = Path('domain/src/main/java/org/racedaydreams/domain/support/Paris2026Geometry.java')
+from dream_kotlin import geometry_source, SHARED
+source = geometry_source('Paris2026Geometry', "paris-2026-geo-v1", "Paris · Marathon de Paris 2026", vertices, '/** Geographic DATA: ODbL-1.0, (c) OpenStreetMap contributors, via Geofabrik.\n * Annual Schneider Electric Marathon de Paris2026 street-itinerary reconstruction.\n * Original wrapper: MIT. All selected OSM positions retained; no invented coordinates.\n * Sources, node/way/version evidence, factual itinerary and limitations:\n * docs/dream-route-data/paris-2026.json and paris-2026-osm-evidence.json.\n * Approximate road/junction line, not a certified racing line or navigation.\n */')
+target = SHARED / 'Paris2026Geometry.kt'
 if '--check' in sys.argv:
     if target.read_text() != source:
         raise SystemExit('Paris projection differs from retained geographic source positions')

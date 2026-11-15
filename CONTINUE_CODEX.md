@@ -1535,22 +1535,73 @@ incomplete migration merely because a focused checkpoint passes.
 - Version0.12.3-test1/code19; formats19/13/3/1 unchanged. PR24 remains DRAFT, main85e1c39 and
   owner PR23 untouched. No merge/publication/version increment/physical acceptance claimed.
 
+### Forty-first checkpoint — retained Dream geometry and cross-platform equivalent progress
+
+- Preserved/pushed race checkpoint **e679887be25f48e20d1f23b0b2f63feb27086063**. Experiment
+ 43745501715 and formatting43745501719 SUCCESS. Android132907782499: **362unique START/END
+  cases**, zero failures/skips/missing completions. Digest-verified JVM14174074186 and
+  Apple14174711315: **409domain+14health JVM /380domain+16health Native**, all zero failures/
+  errors/skips. Proof scratch/race-e679-verified/verification.json. Framework is NOT an iOS app.
+- CI APK14174164084 ZIP3427598bdf2b937a3f8b5ccae748302f473dc175dc9997d96fade8ea95bda39c;
+  extracted57,020,993bytes/SHA256831db756141fba2112be2d73aed82fa6123113df81bf4e74851de4f1323d9fd4,
+  code19/min28/noINTERNET verified. Actions artifact only, not public publication.
+- This batch ports DreamRoutes, DreamCartography,6geographic data wrappers and
+  DreamRouteProgress;9Java originals removed. **23Java domain files remain; presentation has
+  no Java left.** DreamBasemap deliberately remains the original bounded JVM InputStream reader;
+  native stream/parser/storage support is still unfinished, NOT claimed cross-platform complete.
+- Keeps all16historical geometry identities,5stable city-preference IDs, every original projected
+  vertex/landmark/river, approximate-versus-official limitations and MIT/CC0/ODbL attribution.
+  Original immutable registry remains cached once; no GPS coordinates/history touched. Generated
+  coordinate helpers use128-vertex parts to avoid JVM method-size limits without downsampling.
+- Original/shared **72415line trace EXACTLY matches**, SHA256
+ 539826da12212bfbe852c1e1fc234906680296f82ae3a7dac293dffac5af634d.
+  Originals/compiled oracle scratch/dream-original; DreamParity.java, DreamContractFixtures.java,
+  kmp-{original,shared}-dream.log. Covers all6real basemap assets, exact vertex-bit hashes,
+  clipped sections/metadata and500seeded assignment/progress cases. Raw geography remains
+  decorative marathon equivalence, never physical-location evidence or an invented GPS route.
+- JVM assign API keeps java.util.Random through expect/actual typealias. Native uses a separately
+  implemented documented48-bit LCG plus NSLock, with reproducible seeded public factory for native
+  callers. New JVM contracts compare sequences across seeds/bounds/rejection and exact old API
+  descriptor. Existing JVM source signatures remain callable. No runtime/new-library dependency.
+- Existing native whole/one-decimal label implementations now share FixedDecimalText with the
+  new two-decimal Dream labels; original JVM UK formatters unchanged. Canonical decimal half-up,
+  negative zero/nonfinite/large/tiny cases tested. Only label text is rounded, never stored values.
+- All7source-generation entry points now emit shared Kotlin and retain STRICT complete-source
+  --check comparisons. Original Python projections/source-count/licence/frame validation unchanged.
+  New scripts/dream_kotlin.py reuses repository-pinned checksum-verified ktfmt for generated text;
+  Java/warm formatter cache required by this BUILD TOOL, never an app dependency. Checks passed:
+  Berlin191/Tokyo91/London164/NewYork371/Paris2026=1960/Paris2024=328vertices;18sourced landmarks.
+- **422domain+14health JVM tests PASS**, zero failures/errors/skips;10new common and3JVM
+  Dream contracts, including all6full vertex fingerprints, preserved IDs/cache, actual corners,
+  overrun/distance/physical-location distinctions, exact RNG and0/1/2decimal compatibility.
+  Latest public seeded-factory source reconfirmed by final build. **700189checks/48retained
+  suites PASS** with assertions against prepared Kotlin classes; final72415line oracle still
+  identical. No duplicate old Java implementation shipped.
+- Core compile PASS1m24s. Full build passed422JVM tests then found2real nullable metadata bindings
+  in DreamDrawing: canonical landmark names are known but raw Landmark DTOs permit null. Bound
+  qualified labels explicitly without fake replacements. Also exposed seeded DreamRandoms factory
+  publicly so actual native clients outside sharedDomain can create its RNG. Native constructor
+  remains encapsulated; Java Random API unchanged. Final corrected build
+  scratch/kmp-dream-final-build.log **PASS8m9s/166tasks**:422domain+14health tests, both Android
+  APKs/lint PASS. Final formatting CHECK597sources/diff PASS. Actual local APK/version/code/min28/
+  noINTERNET/shared classes verified (scratch/dream-local-apk-verification.json); private
+  incremental artifact only. Initial failed log scratch/kmp-dream-verified-build.log preserved.
+- Version0.12.3-test1/code19; formats19/13/3/1 unchanged. PR24 DRAFT; main85e1c39/PR23 untouched.
+  No merge, version increment, public publication, canonical capture or physical acceptance claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status and own race-model/engine checkpoint CI. Local JVM409+14,700189retained
-   checks, exact855line oracle, both APKs/lint/format PASS. Preserve85a/ecc/race work. Own new-head
-   Android362 and Native380+16 need exact-head CI; expectations are not results.
-2. Health ecc experiment43743599758 is independently verified **362Android /395domain+14health
-   JVM /368domain+16health Native**, all zero failures/errors/skips, archives/APK digests checked.
-   All7new shared Home/health/recovery tests execute and pass. Parent85a Maven429 was a pre-test
-   external failure, resolved by the newer coherent checkpoint; no blind retry/configuration
-   workaround was used. New race head must pass its OWN checks before claiming verification.
-3. Continue remaining32Java domain files and actual shared app. Prepared DreamRoutes/geometry/
-   DreamCartography/DreamBasemap/DreamRouteProgress originals/oracle are in checkpoint39.
-   Preserve historical geometry IDs/vertices, cache/readiness, licences, bounded UTF-8 parser,
-   real routes and original Java Random/stream-call compatibility at JVM boundaries. Continue
-   recovery/reminder/retention/portability/plan-regression and preference/focus Optional seams.
-   Do not redo completed race, health, presentation, strength, coaching or recording ports.
+1. Inspect branch/status and own Dream/data-generator checkpoint CI. Local422domain+14health
+   JVM,700189retained checks, exact72415line oracle, all7strict generator checks, both APKs/lint/
+   format PASS. Preserve current geometry/decimal-helper/native RNG/DreamDrawing work. Own new-head
+   Android362 and Native390+16 remain EXPECTATIONS until its exact-head CI verifies them.
+2. e679 race checkpoint is independently verified362Android/409+14JVM/380+16Native; digests/APK
+   proof above. Prior ecc and85a checkpoints remain preserved. No blind reruns or weakened tests.
+3. Continue remaining23Java domain files and actual shared app. DreamBasemap JVM stream adapter,
+   portability/GPX, retention, recovery/reminders/plan-regression and preference/focus Optional
+   seams remain. Preserve bounded decoding, corrupt/future rejection, protected actual/history,
+   provenance and transactional safeguards. Do not redo completed Dream geometry/progress,
+   race/health/presentation/strength/coaching/baseline/recording ports.
 4. Actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/backup/
    retention, permissions/full HealthKit, native recording/BLE/notifications and a REAL iOS app
    host with entitlements/usage strings remain incomplete. Visible-only HealthKit snapshots

@@ -53,40 +53,5 @@ internal fun coachingSixMonthsBefore(day: LocalDate): LocalDate {
 }
 
 /** Decimal half-up rounding of the retained canonical value, for one-decimal UK labels on iOS. */
-internal fun coachingDecimalOne(value: Double): String {
-    if (value.isNaN()) return "NaN"
-    if (value.isInfinite()) return if (value < 0) "-Infinity" else "Infinity"
-    val text = value.toString().lowercase()
-    val negative = text.startsWith('-')
-    val unsigned = text.removePrefix("-")
-    val mantissa = unsigned.substringBefore('e')
-    val exponent = unsigned.substringAfter('e', "0").toInt()
-    val point = mantissa.indexOf('.').let { if (it < 0) mantissa.length else it } + exponent
-    val digits = mantissa.replace(".", "")
-    val cut = point + 1
-    var rounded =
-        when {
-            cut < 0 -> "0"
-            cut == 0 -> if (digits.first() >= '5') "1" else "0"
-            cut >= digits.length -> digits.padEnd(cut, '0')
-            else -> {
-                val prefix = digits.take(cut).toCharArray()
-                if (digits[cut] >= '5') {
-                    var i = prefix.lastIndex
-                    while (i >= 0 && prefix[i] == '9') {
-                        prefix[i] = '0'
-                        i--
-                    }
-                    if (i < 0)
-                        return (if (negative) "-" else "") +
-                            "1" +
-                            "0".repeat(prefix.size - 1) +
-                            ".0"
-                    prefix[i]++
-                }
-                prefix.concatToString()
-            }
-        }
-    rounded = rounded.trimStart('0').ifEmpty { "0" }.padStart(2, '0')
-    return (if (negative) "-" else "") + rounded.dropLast(1) + "." + rounded.last()
-}
+internal fun coachingDecimalOne(value: Double): String =
+    org.racedaydreams.domain.presentation.fixedDecimalText(value, 1)

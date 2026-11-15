@@ -69,20 +69,4 @@ internal fun healthGrouped(value: Long): String {
 }
 
 /** Canonical decimal half-up, retaining negative zero and non-finite raw DTO display behaviour. */
-internal fun healthWholeDecimal(value: Double): String {
-    if (value.isNaN()) return "NaN"
-    if (value.isInfinite()) return if (value < 0) "-Infinity" else "Infinity"
-    val negative = value.toBits() < 0
-    val text = expandPrescriptionDecimal(kotlin.math.abs(value).toString())
-    var whole = text.substringBefore('.').toCharArray()
-    if (text.substringAfter('.', "0").first() >= '5') {
-        var i = whole.lastIndex
-        while (i >= 0 && whole[i] == '9') {
-            whole[i] = '0'
-            i--
-        }
-        if (i < 0) return (if (negative) "-" else "") + "1" + whole.concatToString()
-        whole[i]++
-    }
-    return (if (negative) "-" else "") + whole.concatToString()
-}
+internal fun healthWholeDecimal(value: Double): String = fixedDecimalText(value, 0)

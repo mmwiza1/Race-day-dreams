@@ -39,7 +39,7 @@ import java.util.Locale
     val finishLabel = String.format(Locale.UK, "%.2f", shownFinish.coerceIn(0.0, 42195.0) / 1000)
     val exactSectionReady = prepared?.let { it.startMetres == start && it.finishMetres == finish } == true
     val landmarkSummary = prepared?.base?.landmarks?.takeIf { it.isNotEmpty() }
-        ?.joinToString { it.label() }?.let {
+        ?.joinToString { requireNotNull(it.label()) }?.let {
             (if (route.id().contains("-geo-")) "Geographic landmarks: " else "Stylised city context: ") + it + ". "
         }.orEmpty()
 
@@ -185,7 +185,7 @@ import java.util.Locale
             // Sourced landmark positions restore geographic identity without icon
             // clutter. They yield to the course pins, kilometre pills and blue section.
             for (landmark in base.landmarks) {
-                label(landmark.label(), p(DreamRoutes.Vertex(landmark.x(), landmark.y())), context = true)
+                label(requireNotNull(landmark.label()), p(DreamRoutes.Vertex(landmark.x(), landmark.y())), context = true)
             }
 
             // The equivalent section is the strongest map information and sits above
