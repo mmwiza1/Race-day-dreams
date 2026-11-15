@@ -647,4 +647,96 @@ abstract class StorageContract {
             db.close()
         }
     }
+
+    @Test
+    fun strengthChoicesRemainReversibleWithoutCreatingOrDeletingEvidence() {
+        val db = opened()
+        try {
+            val choices = SqliteStrengthChoices(db)
+            assertTrue(choices.choices().isEmpty())
+            choices.save(SqliteStrengthChoices.Choice("bench", true, false))
+            choices.save(SqliteStrengthChoices.Choice("pull-up", false, true))
+            choices.save(SqliteStrengthChoices.Choice("bench", false, true))
+            assertEquals(
+                listOf(
+                    SqliteStrengthChoices.Choice("bench", false, true),
+                    SqliteStrengthChoices.Choice("pull-up", false, true),
+                ),
+                choices.choices(),
+            )
+            choices.save(SqliteStrengthChoices.Choice("bench", true, false))
+            assertEquals(
+                SqliteStrengthChoices.Choice("bench", true, false),
+                choices.choices().first(),
+            )
+            assertTrue(db.query("SELECT id FROM strength_sessions").isEmpty())
+            assertTrue(db.query("SELECT exercise_id FROM strength_exclusions").isEmpty())
+            assertTrue(db.query("SELECT kind FROM training_milestones").isEmpty())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun strengthAcknowledgementsAreIdempotentAndNeverCreatePersonalBestEvidence() {
+        val db = opened()
+        try {
+            val choices = SqliteStrengthChoices(db)
+            assertTrue(choices.acknowledged().isEmpty())
+            choices.acknowledge("recorded-bench-5")
+            choices.acknowledge("recorded-bench-5")
+            choices.acknowledge("recorded-pull-up")
+            assertEquals(setOf("recorded-bench-5", "recorded-pull-up"), choices.acknowledged())
+            assertTrue(db.query("SELECT id FROM manual_results").isEmpty())
+            assertTrue(db.query("SELECT id FROM strength_sessions").isEmpty())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun strengthChoiceAndAcknowledgementWritesJoinAnOuterTransaction() {
+        val db = opened()
+        try {
+            val choices = SqliteStrengthChoices(db)
+            choices.save(SqliteStrengthChoices.Choice("existing", true, false))
+            choices.acknowledge("old-record")
+            assertFails {
+                db.transaction {
+                    choices.save(SqliteStrengthChoices.Choice("existing", false, true))
+                    choices.save(SqliteStrengthChoices.Choice("new", true, false))
+                    choices.acknowledge("new-record")
+                    error("Aborted operation")
+                }
+            }
+            assertEquals(
+                listOf(SqliteStrengthChoices.Choice("existing", true, false)),
+                choices.choices(),
+            )
+            assertEquals(setOf("old-record"), choices.acknowledged())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun strengthChoiceValidationPreservesOriginalIdentityWithoutTrimmingOrCoercion() {
+        val db = opened()
+        try {
+            val choices = SqliteStrengthChoices(db)
+            for (id in listOf("", "x".repeat(201))) assertFailsWith<IllegalArgumentException> {
+                choices.save(SqliteStrengthChoices.Choice(id, true, false))
+            }
+            for (id in listOf("", "x".repeat(501))) assertFailsWith<IllegalArgumentException> {
+                choices.acknowledge(id)
+            }
+            val id = " old-press\u0000🏋️ "
+            choices.save(SqliteStrengthChoices.Choice(id, true, false))
+            choices.acknowledge(id)
+            assertEquals(id, choices.choices().single().exerciseId)
+            assertEquals(setOf(id), choices.acknowledged())
+        } finally {
+            db.close()
+        }
+    }
 }

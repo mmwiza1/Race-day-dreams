@@ -2173,13 +2173,50 @@ incomplete migration merely because a focused checkpoint passes.
   session/exercise/programme/execution codecs and repositories, full backups/archives/retention,
   common application composition, native services and REAL iOS app host. Preserve completed ports.
 
+### Checkpoint 56 — Frozen strength evidence and retained exercise choices (15 November 2026)
+
+- Checkpoint55 is committed locally as **cb95d1e**. Batching this next coherent storage work before
+  one push, preserving b909442's fully green remote checkpoint and the existing draft PR24.
+- Added StrengthEvidenceJson for original CoachingJson exercise/actual-session payloads. Frozen
+  original definitions, actual load/repetitions/duration/distance, warm-up flags, fractional RPE
+  versus RIR, unknown effort, source offsets and nanosecond timestamps round-trip. Legacy absent
+  measurement/seconds/metres/RIR retain existing mode-specific defaults or unknown values. No
+  catalogue lookup, generated technique, prescribed sets or invented maximum becomes an actual.
+- Eight common tests cover all modalities/weighted bodyweight, frozen definitions, legacy reads,
+  invalid types/effort/measurement conflicts, duplicate IDs/limits and a full10000actual-set workout.
+  Two actual Android tests compare old/new codecs BOTH ways, including genuine malformed input.
+- Added typed SqliteStrengthChoices over existing strength_user_state/pb_acknowledgements: original
+  favourite/archive flags and stable idempotent acknowledgements. Exclusions remain their existing
+  separate reversible repository; no PB/workout/achievement is created or removed by these choices.
+  No new table, generic payload bucket or migration. Four additional real-SQLite JVM/Apple contracts
+  cover independent flags/unknown identities, rollback, original length validation and UTF16/NUL
+  identities. Three Android tests compare the original StrengthUserStore and shared storage on the
+  SAME database, original-writer reads, acknowledgements and outer transaction rollback.
+- Local **94storage JVM tests PASS**, zero failures/errors/skips. Earlier90test payload/app/
+  instrumentation compile PASS3m5s/57tasks; final full build/bothAPKs/lint **PASS5m3s/160tasks**
+  in scratch/kmp-strength-evidence-choices-build.log.
+  Format **687sources(592Kotlin/95Java) PASS**; exact schema1..19 boundary/source VERSION check PASS.
+  No changed training/GPS/recovery calculations, schema/backup/version/permissions/navigation.
+- Expected combined next CI **449Android /98storage Native**, not yet run. Final source still needs
+  real Apple execution and actual Android parity tests. No iOS app, canonical visual or physical
+  acceptance claimed; no public publication/merge. Full supported-backup input/restore guards are
+  still incomplete, distinct from these canonical stored-payload codecs.
+- Next: record final local build result, commit and push checkpoints55–56 together; inspect actual
+  Apple and Android gates, fix root failures without weakening assertions. Then port the strict
+  GymJsonSupport input size/depth/token/duplicate-field guards and GymWorkoutJson frozen workout
+  codec before execution/programme storage. These strict gym payloads are DISTINCT: exercise
+  estimateOneRepMax and completed durationMillis differ from legacy CoachingJson estimate/duration.
+  Do not reuse the wrong wire shape. Preserve supersets, source revisions, actual edit/
+  association provenance, transactional completion and older/current backups; never enable partial
+  native destructive history/cleanup commands. Common app root/native services/REAL iOS host remain.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest coherent running-plan
-   batch is checkpoint55 above (locally verified; commit follows this record). Parentb909442
-   FULL SUCCESS:438Android,700189checks/48suites,490domain+16health+66storage JVM,
-   449domain+18health+70storage Native. New batch locally82storage JVM/Android compile PASS;
-   expected444Android/86storage Native must be verified after push, never assumed.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Latest coherent work is
+   checkpoints55–56 above: localcb95d1e + fully locally verified strength evidence/choices batch (commit follows this record).
+   Push together once verified. Parentb909442 FULL SUCCESS:438Android,700189checks/48suites,
+   490domain+16health+66storage JVM,449domain+18health+70storage Native. Latest local94storage JVM/
+   compile/format687 PASS; expected449Android/98storage Native still need exact-head verification.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
