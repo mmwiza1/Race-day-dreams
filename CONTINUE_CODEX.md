@@ -1294,22 +1294,65 @@ incomplete migration merely because a focused checkpoint passes.
  17863e2983260d6149776e0094755fbb379828d311843faadabcff386b15125b.
   scratch/ConstraintScheduler.kt is a prepared port, NOT yet applied/compiled. Preserve this prep.
 
+### Thirty-sixth checkpoint — original running generator and constraint scheduler shared
+
+- 311f72422a4bf458d316731ba8181fa6b3019026 passed experiment43715513040 and
+  formatting43715512958. Completed Android132816068189 logs confirm **352unique START/END
+  runtime cases**, none missing/failed/skipped: all3 baseline tests now pass, including both
+  repaired assertions, and all3 new feedback-card tests actually execute. Apple132816068411
+  tests/framework build SUCCESS6m30s. Framework success is still not an iOS app build.
+- Digest-verified JVM14162048474 and Apple14161919269 archives confirm **329domain+14health
+  JVM;310domain+16health Native**, all zero failures/errors/skips. APK14162542930 ZIP SHA256
+ 59cc0b10727839b0a3a518f30231f9e48948efd903a351ed234f28528bdadaf5;
+  actual56,971,959bytes/SHA2560910a8b77500e4a3d7a725a24a446705d9fb84bdd7db43431988e2292e339eea,
+  code19/min28/noINTERNET verified. Proof scratch/coaching-311-verified/verification.json.
+- Continued without stopping at CI repair: replaces ConstraintScheduler and
+  OriginalTrainingPlanGenerator Java with the actual common Kotlin implementation used by
+  Android. **56Java domain files remain**. Same hard availability, exhaustive soft scoring/ties,
+  prior-week spacing, actual lower-body context, frequencies, workload/long-run caps, conservative
+  run/walk defaults, taper/race protection, distant phases, time preferences and distribution.
+  No training rules or calculations intentionally changed; no source evidence rewritten.
+- Reuses existing exact Java-compatible UUID helper by changing ONLY nameUuid visibility in
+  StrengthProgrammeEditor from private to internal. Strength programming logic unchanged;
+  original UTF-8, MD5 UUIDv3 bits, plan IDs, prescription IDs and rounding preserved. No new
+  dependency, speculative clock/calendar service or parallel generator.
+- Original/shared **422line trace matches** SHA256
+ 17863e2983260d6149776e0094755fbb379828d311843faadabcff386b15125b:
+ 168full plans across race/goal/strategy/frequency/evidence/distribution/horizon and254scheduler
+  combinations. Original copies/compiled fixture scratch/running-generator-original and
+  RunningGeneratorParity.java; shared output kmp-shared-running-generator.log. javap confirms
+  OriginalTrainingPlanGenerator.kt, including original Java-callable static phaseAt API.
+- Added12common tests for legacy UUID/horizon, missing/stale evidence, all start weekdays,
+  race protection/frequency, phase partition, distant phases, time caps/distribution, demanding
+  spacing, all127nonempty weekday subsets/both quality options, soft strength conflicts and
+  factory-vs-raw Schedule snapshot semantics. **341domain+14health JVM PASS**, zero failures/
+  errors/skips. Original **700189checks/48suites PASS** with assertions against prepared Kotlin.
+- Focused compile kmp-running-generator-build.log passed3m8s. Final
+  kmp-running-generator-verified-build.log **BUILD SUCCESSFUL4m55s/166tasks**: both APKs and lint
+  PASS. Actual local APK/code19/min28/noINTERNET/new shared generator classes inspected
+  (scratch/running-generator-local-apk-verification.json); local build only, not publication. Formatting CHECK537sources
+  (433Kotlin/104Java), diff PASS. New exact-head Native322domain+16health and Android352 remain
+  pending after push; 311's green run must not be borrowed for this new production source.
+  No canonical final-source capture yet. No known local test/compile failures.
+- Version0.12.3-test1/code19; formats19/13/3/1 unchanged. No permissions/dependencies, version
+  increment, merge or public publication. PR24 remains DRAFT; main85e1c39/PR23 untouched.
+  Actual shared root UI/navigation/state, native persistence/services/HealthKit and iOS app host
+  are still unfinished. Physical acceptance remains unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24; preserve this running-model/feedback checkpoint. 066104d
-   Apple/JVM archives are verified, but its Android run failed two newly added test expectations.
-   This checkpoint corrects them and locally passes329domain+14health JVM/700189legacy/bothAPKs/
-   lint/format. Inspect its OWN exact-head CI after push (expected310domain+16health Native and
-   352Android cases); confirm both baseline repairs and3new feedback-card tests actually execute.
-   Investigate failures at root cause. Keep all previous and final full-platform gates intact.
-2. Continue remaining58Java files and actual shared application UI. Next coherent batch is the
-   original ConstraintScheduler and OriginalTrainingPlanGenerator, using the already captured
-   422line oracle (see above). Preserve UUID identity, rounding, phase/race dates, missing evidence,
-   available days, workload caps, session distribution and conservative rules; no redesign.
-   Then remaining WeeklyCoaching/WorkoutContext/PerformanceReassessment/AdaptiveCoachingEngine and
-   CoachingRepository. Optional repositories still use Java Optional; transactions use Runnable
-   and need compatible common/platform boundaries. Do not restart completed model/feedback,
-   baseline, recording, route, sample, comparison, milestone or strength ports.
+1. Inspect branch/status/log and PR24. Preserve current running-generator/scheduler source and
+   311f724's verified352Android/310domain+16health Native checkpoint. This newer source locally
+   passes both APKs/lint/format,341domain+14health JVM and700189legacy checks. Its OWN exact-head
+   CI after push must confirm322domain+16health Native and
+   352Android cases. Never borrow a parent pass or bypass the full final release gates.
+2. Continue remaining56Java domain files and actual shared UI/application services. Running-plan
+   generator and scheduler are now common; do not redo them. Next remaining coaching files:
+   WeeklyCoaching, WorkoutContext, PerformanceReassessment, AdaptiveCoachingEngine and
+   CoachingRepository. Preserve Optional/Runnable compatibility, stable proposal IDs, UK dates/
+   numbers, freshness/evidence limits and atomic reviewed changes. Preferences/focus repositories
+   still expose Java Optional and need compatible common/platform boundaries. Preserve all
+   completed baseline/model/feedback/recording/route/sample/strength ports.
 3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
    typed native SQLite/backup/retention, permissions, full HealthKit integration,
    recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not

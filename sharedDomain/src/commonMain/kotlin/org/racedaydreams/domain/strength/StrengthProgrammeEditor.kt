@@ -314,7 +314,7 @@ object StrengthProgrammeEditor {
         left.toEpochDay() < right.toEpochDay()
 
     // Keep Java nameUUIDFromBytes v3/variant bits and its original UTF-8 replacement semantics.
-    private fun nameUuid(seed: String): String {
+    internal fun nameUuid(seed: String): String {
         val bytes = programmeRevisionDigest(javaUtf8(seed))
         bytes[6] = ((bytes[6].toInt() and 0x0f) or 0x30).toByte()
         bytes[8] = ((bytes[8].toInt() and 0x3f) or 0x80).toByte()
