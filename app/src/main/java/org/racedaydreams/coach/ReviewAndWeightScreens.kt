@@ -41,7 +41,7 @@ import org.racedaydreams.domain.body.MassUnit
     Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){MassUnit.entries.forEach{u->CoachFilterChip(selected=s.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
     FlowRow(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip), verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip)){listOf("Week","Month","3 Months","Year","All").forEach{r->CoachFilterChip(selected=range==r,onClick={range=r},modifier=Modifier.heightIn(min=48.dp),label={Text(r)})}}
     val graph=remember(s.weights,range,s.massUnit){org.racedaydreams.domain.presentation.WeightGraphData.of(s.weights,LocalDate.now(),range,s.massUnit)}
-    val points=graph.points()
+    val points=requireNotNull(graph.points())
     var selectedId by rememberSaveable(range){mutableStateOf<String?>(null)}
     val selected=points.firstOrNull{it.id()==selectedId}
     val latest=s.weights.maxByOrNull{it.at()};latest?.let{Text("Latest: ${decimal(s.massUnit.fromKilograms(it.kilograms()))} ${s.massUnit.name.lowercase()} · ${friendlyDate(it.at().atOffset(it.offset()).toLocalDate())}")}

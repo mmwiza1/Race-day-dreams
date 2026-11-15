@@ -40,10 +40,10 @@ fun calendarEntries(s:CoachUiState,d:LocalDate,today:LocalDate=LocalDate.now()):
 private fun markerLetter(c:CalendarData.Category)=when(c){CalendarData.Category.REST->"–";CalendarData.Category.RUN->"U";else->c.name.take(1)}
 private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RUN->"Unclassified run";else->c.name.lowercase().replaceFirstChar{it.uppercase()}}
 @Composable private fun markerColour(c:CalendarData.Category):Color {val dark=isSystemInDarkTheme();return when(c){CalendarData.Category.EASY->if(dark)Color(0xFF80D8A0)else Color(0xFF206839);CalendarData.Category.QUALITY->if(dark)Color(0xFF9BC9FF)else Color(0xFF175FA6);CalendarData.Category.LONG->if(dark)Color(0xFFFFC078)else Color(0xFF955000);CalendarData.Category.STRENGTH->if(dark)Color(0xFFDDB5FF)else Color(0xFF78469E);CalendarData.Category.RACE->if(dark)Color(0xFFFFADA7)else Color(0xFFB12F32);else->if(dark)Color(0xFFCBCBCB)else Color(0xFF5E6268)}}
-@Composable fun CalendarMarker(entry:CalendarData.Entry){val colour=markerColour(entry.category());val filled=entry.state()==CalendarData.State.COMPLETED
+@Composable fun CalendarMarker(entry:CalendarData.Entry){val colour=markerColour(requireNotNull(entry.category()));val filled=entry.state()==CalendarData.State.COMPLETED
     Column(horizontalAlignment=Alignment.CenterHorizontally){Box(Modifier.size(20.dp).semantics{contentDescription=entry.description()},contentAlignment=Alignment.Center){
         Canvas(Modifier.fillMaxSize()){if(filled)drawCircle(colour)else drawCircle(colour,style=Stroke(1.5.dp.toPx()))}
-        Text(markerLetter(entry.category()),fontSize=10.sp,color=if(filled)MaterialTheme.colorScheme.surface else colour,modifier=Modifier.clearAndSetSemantics{})
+        Text(markerLetter(requireNotNull(entry.category())),fontSize=10.sp,color=if(filled)MaterialTheme.colorScheme.surface else colour,modifier=Modifier.clearAndSetSemantics{})
     }
         val status=when(entry.state()){CalendarData.State.MOVED->"↗";CalendarData.State.SKIPPED->"−";CalendarData.State.NOT_COMPLETED->"?";else->null}
         status?.let{Text(it,fontSize=9.sp,modifier=Modifier.clearAndSetSemantics{})}
@@ -106,10 +106,10 @@ private fun markerName(c:CalendarData.Category)=when(c){CalendarData.Category.RU
             recorded?.let{it.distanceMetres()?.let{metres->formatDistance(metres,s)}?:"${it.elapsedTime().toMinutes()} min"}?:planned?.let{it.distanceKm()?.let{km->formatDistance(km*1000,s)}?:it.duration()?.let{time->"${time.toMinutes()} min"}}
         }
         val text="${entry.label()}${volume?.let{" · $it"}?:""} · $status"
-        when{entry.activityId()!=null->TextButton(onClick={activity(entry.activityId())},modifier=Modifier.heightIn(min=48.dp)){Text(text)}
+        when{entry.activityId()!=null->TextButton(onClick={activity(requireNotNull(entry.activityId()))},modifier=Modifier.heightIn(min=48.dp)){Text(text)}
             entry.category()==CalendarData.Category.STRENGTH&&entry.state()==CalendarData.State.PLANNED->TextButton(onClick={strength(d.toString())},modifier=Modifier.heightIn(min=48.dp)){Text("$text · Log workout")}
             entry.category()==CalendarData.Category.STRENGTH->Text(text)
-            entry.id()!=null&&entry.state()!=CalendarData.State.SKIPPED->TextButton(onClick={workout(entry.id())},modifier=Modifier.heightIn(min=48.dp)){Text(text)}
+            entry.id()!=null&&entry.state()!=CalendarData.State.SKIPPED->TextButton(onClick={workout(requireNotNull(entry.id()))},modifier=Modifier.heightIn(min=48.dp)){Text(text)}
             else->Text(text)
         }
     }}

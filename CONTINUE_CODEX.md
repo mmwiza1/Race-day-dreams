@@ -1389,30 +1389,70 @@ incomplete migration merely because a focused checkpoint passes.
   merge or public publication. PR24 DRAFT; main85e1c39/PR23 untouched. Shared root UI/state,
   native persistence/services/full HealthKit and real iOS host remain incomplete. Hardware unrun.
 
+### Thirty-eighth checkpoint — Home, Strength Today, calendar and weight projections
+
+- Recovered clean e52af3907342ccd247644c545120086412597690 on PR24; remote main85e1c39 and
+  separate PR23 unchanged. e52 experiment43731038795 and formatting43731038835 SUCCESS.
+  Android132863298696 completed **355unique START/END cases**, zero missing completions/failures/
+  skips. Digest-verified JVM14168777856 and Apple14169017056 reports: **362domain+14health JVM;
+  340domain+16health Native**, zero failures/errors/skips. Proof scratch/review-e52-verified/
+  verification.json. Real Apple tests/framework pass is NOT an iOS application build.
+- e52 APK14168747924 ZIP6228730fc7559f4edc006eaa07a2af71cdbaeb84703e7a27c61f903db9377ba1;
+  extracted56,988,284bytes/SHA2561265c1956c98efc97f0e9f88febc747da98a30335f6a6749e17a5fb8a497597f,
+  code19/min28/noINTERNET verified. Actions artifact only, not public publication.
+- This batch ports HomeCoachingSummary, StrengthTodaySummary, CalendarData,
+  WeightGraphData and AthleteLanguage to common Kotlin and removes their5Java originals.
+  **45Java domain files remain**. Preserves raw nullable DTO/alias contracts, actual-vs-planned
+  completion, explicit retained revision associations, recorded offsets, PB recency/estimate
+  exclusions, conservative existing progression, calendar states and genuine chart measurements.
+  JVM raw constructor/accessor APIs retained; graph epoch-millisecond floor/overflow matches JDK.
+- Production StrengthTodayScreen and Home coaching card now delegate to actual shared Compose
+  content. Android retains clock/date formatting/prepared state/URI encoding/navigation. No layout,
+  target, history, permission, health-read or recording engine redesign. Nullable raw model fields
+  are explicitly bound at their existing qualified factory/callback boundaries, never zero-filled.
+- **379domain+14health JVM tests PASS**, zero failures/errors/skips;14new common and3JVM
+  presentation contracts. **700189checks/48retained suites PASS** with assertions against actual
+  Kotlin classes (javap verifies no stale Java shadows). Original/shared **2671line trace matches**,
+  SHA2566bb4ba9a7a79e0700cd67830064ed501fb58ddc31ebca3560c74db9be764abd9.
+  Originals/oracle: scratch/presentation-original, PresentationParity.java,
+  kmp-{original,shared}-presentation.log. Oracle caught and corrected one truncated time-trial
+  sentence; exact original wording restored. No test assertion weakened.
+- Added4actual shared Home/Strength Today Android UI tests: standalone use, explicit navigation/
+  raw session identity, actual completion and 200% scrolling. All355prior focused cases retained;
+  **359EXPECTED Android /354domain+16health Native**, not yet verified on this source.
+- Formatting CHECK557sources and diff PASS. Final affected build/lint **PASS7m40s/166tasks** in
+  scratch/kmp-presentation-verified-build.log: both Android APKs and lint PASS. First compile
+  identified real nullable integration errors; fixed qualified consumers, no invented fallbacks.
+  Actual local APK/code19/min28/noINTERNET/shared classes verified (scratch/presentation-local-
+  apk-verification.json); private local build only. No canonical screenshots yet.
+- Next health-context original oracle already captured without editing those production sources:
+  scratch/health-context-original, HealthContextParity.java, kmp-original-health-context.log
+  (1271lines). Draft Kotlin files in scratch/health-context-ports are PREPARATION ONLY, not applied
+  or compiled. Preserve, inspect and finish them rather than assuming they are verified.
+- Version0.12.3-test1/code19; formats19/13/3/1 unchanged. PR24 stays DRAFT; no merge, version bump
+  or public publication. Shared application root/native storage/services/full HealthKit/real iOS
+  host remain unfinished. Physical acceptance unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect branch/status/log and PR24; preserve current review/transaction/UI work. Parent4197158
-   is independently verified352Android/322domain+16health Native. This checkpoint locally passes
-   both APKs/lint/format,362domain+14health JVM and700189legacy checks. Verify OWN exact-head CI
-   after push (expected340domain+
-   16health Native and355Android, including3new weekly-review UI tests). Never borrow a parent pass.
-2. Continue remaining50Java domain files and real shared application UI/services. Coaching and
-   running generators are now common; Optional facade/Runnable alias deliberately preserve old
-   JVM APIs without duplicate algorithms. Next inspect remaining presentation/read models and
-   actual clients: HomeCoachingSummary, StrengthTodaySummary, CalendarData, HealthContextSummary,
-   WeightGraphData, DreamRouteProgress and AthleteLanguage. StrengthTodaySummary has important
-   actual/prescription/provenance safeguards; preserve them. Remaining race/recovery/health/
-   reminder/retention/portability/Dream code and preference/focus Optional seams still need work.
-   Do not redo completed coaching, baseline, recording, route, sample or strength ports.
-3. Continue remaining Java-domain engines, actual shared screens/navigation/state/data sources,
-   typed native SQLite/backup/retention, permissions, full HealthKit integration,
-   recording/BLE/notifications and a real iOS app host with entitlements/usage strings. Do not
-   use visible-only HealthKit snapshots to replace retained windows or infer deletion.
-   Full Android/iOS parity and actual app builds remain incomplete. Framework-only success
-   must never be described as an iOS application or grounds for merging.
-4. Final required platform/regression/screenshot gates only once implementation is ready.
-   No premature version increment, publication or merge. Physical HealthKit, Health Connect,
-   GPS/BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
+1. Inspect branch/status and the new presentation checkpoint CI. Local JVM379+14,700189retained
+   checks, both APKs/lint/format and exact2671line oracle pass. Own exact-head Android359 and
+   Native354+16 are EXPECTATIONS until CI runs; never borrow e52's pass for newer source.
+2. Continue remaining45Java domain files and actual shared application UI/services. Next coherent
+   batch can finish HealthIntelligence/HealthContextSummary/RecoveryCoaching/HealthReadPolicy
+   using the captured originals and scratch drafts. HealthImportPolicy remains Java and needs
+   separate careful typed reconciliation/transaction parity. Preserve source-specific evidence,
+   missing/old data, unchanged recovery rules and explicit athlete approval. DreamRouteProgress
+   stays with its unported DreamRoutes/geometry dependencies. Do not redo completed strength,
+   coaching, baseline, recording, route/sample or running-generator ports.
+3. Continue race/recovery/reminder/retention/portability/Dream domain, preference/focus Optional
+   seams, actual shared root UI/navigation/state/data sources, typed native SQLite/migrations/
+   backup/retention, permissions, full HealthKit, recording/BLE/notifications and a REAL iOS
+   application host with entitlements/usage strings. Visible-only HealthKit snapshots cannot
+   replace retained windows or infer deletion. A framework is not an iOS application.
+4. Final full Android28/35/36/iOS app/regression/screenshot gates only once implementation ready.
+   No premature version increment, merge or publication. Physical HealthKit/Health Connect/GPS/
+   BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
 
 ### Reproducible local tooling / Apple verification
 

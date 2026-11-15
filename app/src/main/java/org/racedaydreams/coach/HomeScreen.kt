@@ -237,13 +237,7 @@ private fun RunningTodayScreen(
         OutlinedButton(record, Modifier.fillMaxWidth().heightIn(min = 56.dp)) { Text("Run now") }
     }
     val summary = org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
-    SemanticCard(Tile.Progress) {
-        Text("How am I doing?", style = MaterialTheme.typography.titleMedium)
-        Text(summary.title(), style = MaterialTheme.typography.headlineSmall)
-        summary.observations().take(3).forEach { Text(it) }
-        Text("Plan recommendation: ${summary.recommendation()}")
-        TextButton(onClick = weekly) { Text("Weekly coaching review") }
-    }
+    SharedHomeCoachingCard(summary, weekly)
     val hard =
         org.racedaydreams.domain.strength.StrengthAnalytics.hardLowerBodyDates(
                 state.strengthSessions
