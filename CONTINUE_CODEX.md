@@ -2005,9 +2005,43 @@ incomplete migration merely because a focused checkpoint passes.
   repositories/native retention/archives and actual iOS app root/services/host are STILL incomplete.
   Canonical screenshots/full Android28/35/36/iOS APP/hardware acceptance are NOT claimed.
 
+### Checkpoint 52 — Existing activity payload and exact time codecs (15 November 2026)
+
+- Checkpoint51 pushed91d8489649aa08a2c2c2e36412f29d378ef7bc25 (9278ce1 also pushed).
+  Own experiment43766955165: Apple132974134825 SUCCESS; framework artifact14182942392.
+  Digest-verified Apple XML14183316062 ZIP3f4b2344ec84a5567cec9cef25dde5234dbddf5ae18156965c01ec6730f7326e
+  proves **449domain+18health+34storage Native**, all0failures/errors/skips. Proof:
+  scratch/storage-91d-native-verification.json and storage-91d-native.zip. Android132974134626
+  still running focused429 instrumentation when last inspected; prior compile/domain/schema PASS.
+- Continued next codec batch locally: ActivityJson matches existing FeatureJson activity payload
+  fields, including unchanged totals, missing metrics/offsets, source IDs, sample discontinuities,
+  laps and planned/shoe references. No GPS/pace/PB recalculation or invented routes/samples.
+  Same200000sample/10000lap bounds reject excess rather than silently truncate.
+- Shared explicit StoredJson value checks extracted from already-tested ShoeJson, preserving the
+  existing null/zero/string/boolean distinction. Canonical StoredDuration uses exact integer/nano
+  arithmetic across full original Long range; StoredOffset preserves second-resolution source
+  offsets/unknown values. JVM DateTimeException discrepancy fixed by validating total offset
+  bounds before platform factory, preserving assertions rather than weakening them.
+- Local PASS38storage JVM tests (0failures/errors/skips); includes2048duration random/extreme SDK
+  round trips, >2100source-offset cases, retained totals/gaps/summaries/nulls and oversize rejection.
+  Actual Android compile of app/shared UI/instrumentation tests PASS2m17s/57tasks in
+  scratch/kmp-storage-activity-android-compile.log. JVM logs kmp-storage-activity-verified.log.
+  New SharedActivityCodecTest cross-reads actual Android FeatureJson in BOTH directions; compile
+  passed, instrumentation NOT yet run. Format CHECK662sources (567Kotlin/95Java) and schema
+  source/version/boundaries PASS. Next CI EXPECTED431Android /42storage Native (not verified).
+- These are CANONICAL STORED-PAYLOAD readers, NOT a completed JSON13 backup restore pipeline.
+  Before wiring backup input, retain all existing accepted older reads/normalisation, validate all
+  sections/future/corrupt formats before replacement and restore atomically. No new format/version.
+- Next exact task: inspect91d Android completion, finish/check/commit/push current activity codec
+  batch, inspect actual next-head431Android/42storage Native/framework/format gates. Then port the
+  real ActivityRepository including summaries/paging, annotations, raw hydration budgets/removed
+  detail truth, source import authority and transactional result/PB updates. Remaining programme/
+  execution/backup/archive/native services and REAL iOS app root/host still incomplete. No merge,
+  public publication, canonical capture or physical acceptance is claimed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoints48–51 are the
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoints48–52 are the
    authoritative recovery boundary; preserve all newer local work. Parent e51c0c4 FULL experiment
    43764761281 and formatting43764761168 SUCCESS:427Android,700189checks/48suites,
    490domain+16health+19storage JVM,449domain+18health+23storage Native. Later height/milestone batch
