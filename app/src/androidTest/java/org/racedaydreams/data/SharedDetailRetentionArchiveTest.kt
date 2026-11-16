@@ -95,6 +95,29 @@ class SharedDetailRetentionArchiveTest {
             RecordingArchiveReader(RecordingArchiveManifest.decode(extractedManifest.toByteArray()))
         checkedZip.extract("recordings.jsonl") { checkedStream.accept(it) }
         assertEquals(expected, checkedStream.finish().sessions)
+        val before = bridge.query("SELECT total_changes()")
+        val sharedExport = SqliteRecordingArchive(bridge).export(context.cacheDir.absolutePath)
+        try {
+            val sharedZip = BackupZipArchive.inspect(sharedExport, BackupZipArchive.Kind.RECORDINGS)
+            val sharedRaw = ByteArrayOutputStream()
+            sharedZip.extract("recordings.jsonl") { sharedRaw.write(it) }
+            val sharedLines = sharedRaw.toByteArray().decodeToString().dropLast(1).split('\n')
+            assertEquals(
+                lines.map { Json.parseToJsonElement(it) },
+                sharedLines.map { Json.parseToJsonElement(it) },
+            )
+            val sharedManifest = ByteArrayOutputStream()
+            sharedZip.extract("manifest.json") { sharedManifest.write(it) }
+            val sharedRows =
+                RecordingArchiveReader(
+                    RecordingArchiveManifest.decode(sharedManifest.toByteArray())
+                )
+            sharedRows.accept(sharedRaw.toByteArray())
+            assertEquals(expected, sharedRows.finish().sessions)
+        } finally {
+            sharedExport.close()
+        }
+        assertEquals(before, bridge.query("SELECT total_changes()"))
         return archive to lines
     }
 

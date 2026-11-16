@@ -4012,14 +4012,54 @@ incomplete migration merely because a focused checkpoint passes.
  native services /actual iOS host/build/runtime, final unfiltered28/35/36+iOS APP and genuine visuals.
  No version/schema/backup/permission change, destructive native restore/pruning, merge or publication.
 
+### Checkpoint91 — bounded shared raw-recording database export (in progress)
+
+- All saved89/90/recovery commits pushed normally; current remote7e8cdaaec840b80f3886540e282e2ee62a7487de.
+ PR24 remains OPEN/DRAFT.90corrected experiment43943796128 RUNNING, Android133567945066 /
+ Apple133567945467; format43943795945 SUCCESS. Native453 and new writer interoperability runtime
+ remain UNVERIFIED until actual completion. Do not cancel this run for91.
+-88 completed Android133557392264 SUCCESS:533unique START/END matched,700189checks/48domain suites;
+ original raw/complete exporter, full private-package inspection and original no-write assertions
+ passed. Actual log scratch/backup-5b-android-job.log.88overall remains FAILURE because native zlib
+ version binding did not compile;90fix is now pushed, not merely local.86 last FULL green remote.
+-91 new local files: SqliteRecordingArchive.kt, RecordingArchiveRepositoryContract.kt,
+ JdbcRecordingArchiveTest.kt /AppleRecordingArchiveTest.kt. Original Android SharedDetailRetention-
+ ArchiveTest helper also compares complete shared DB-export rows with original exporter JSON and
+ verifies actual shared manifest/hash/graph and unchanged SQL total_changes. All old assertions stay.
+- Shared raw-v3 export captures ONE existing SQLite19 transaction,512-session keysets and512-row
+ dense metadata pages. Payload batches bound1MiB (one larger supported row alone), <=513SQL bind
+ parameters. Preflight payload lengths before materializing text. Strict existing row/graph/byte/
+ source/clock limits and real platform SHA256 precede sealed private STORED ZIP output. Unknown
+ payload fields, exact Long clocks, accepted coordinates, events, summary totals and removal proofs
+ remain; active/paused/recoverable states are NOT silently completed or coerced. No data writes,
+ pruning, replacement, new consent, schema/version/format/dependency/permission change.
+-5focused REAL JDBC contracts PASS0failure/error/skip (1.169s runtime), shared metadata PASS51s/
+ 13tasks in scratch/kmp-recording-export-focused-fixed.log. First compile found test fixture omitted
+ existing required SqliteActivities clock; injected deterministic { at }, preserving all assertions.
+ Focused fixtures cover514sessions/514points/514events crossing count AND1MiB batch boundaries,
+ unknown metadata, read-only transaction coverage, unfinished states/context, removal receipts,
+ invalid/deep/oversized payload rejection without mutation, recovery after rejection, empty archive
+ and rollback of caller's uncommitted outer transaction. Actual Apple counterparts await next CI.
+- FINAL local458storage JVM0failure/error/skip +metadata +Android test compilation PASS3m39s/64tasks in scratch/
+ kmp-recording-export-final.log. Formatting834sources(739Kotlin95Java), exact schema1..19 and
+ 3source-provenance tests PASS; scratch/kmp-recording-export-{format,safety}.log. Brief executor
+ disconnect recovered; source persisted and focused run actually completed, no guessed test pass.
+- NEXT EXACT: inspect final458/local compilation result and current90CI. Verify actual453Native/
+ JVM plus533Android and all10ZIP+11staging/package+5writer methods using artifact XML/digests.
+ Helper scratch/verify_backup_io_cases.py checks exact JVM/Native method names. Fix genuine failures.
+ Commit91+this handoff after local gates pass, push ONCE after90 finishes (do not cancel it), verify
+ new Native/JVM458 and original Android database-export parity. Then continue COMPLETE app snapshot
+ capture/export and same-DB transactional app/raw replacement/reconciliation with consent/preview/
+ dataset epoch and active+paused+recoverable protections. Native destructive operations remain OFF.
+ Full common app composition/native services/REAL iOS host/runtime and final gates remain below.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint90 above is latest recovery boundary.88Native43940777101 FAILED on actual zlib C
-   string/pointer binding; source is corrected with requireNotNull(zlibVersion()).toKString().
-   Android88 still running; preserve local89writer9c2e628 (453tests/metadata/Android compile PASS).
-   90fix3e11089 is committed and830format PASS. Inspect completed Android88, then push local
-   writer/fix/recovery commits once and verify fresh Native
-   runtime and original-reader Android parity. No reset, early merge/version bump/publication.
+1. Checkpoint91 above is latest recovery boundary.90corrected head7e8cdaa is pushed; CI43943796128
+   RUNNING, format43943795945 PASS. Local91 raw exporter +5JDBC/Apple contracts +original Android
+   parity preserved. Focused5/meta PASS; final458storage/metadata/Android compile PASS3m39s/64tasks.
+   Check actual results, verify90Native IO and Android runtime, fix real errors, commit/push91 once
+   preceding expensive gate finishes. Keep draft; no reset/early merge/version bump/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
