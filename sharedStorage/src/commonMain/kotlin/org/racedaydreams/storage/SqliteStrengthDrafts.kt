@@ -36,36 +36,7 @@ class SqliteStrengthDrafts(private val database: SqlDatabase) {
                 slot.exercise()
             )
             StrengthProgrammingArchiveJson.validateRows(value)
-            val root = read(StrengthProgrammingPayloadJson.encodeDraft(value))
-            val payload = bounded(JsonObject(root - "blocks"), 262144)
-            val values =
-                listOf(
-                    SqlValue.Integer(value.revision().toLong()),
-                    SqlValue.Text(value.programmeId()),
-                    SqlValue.Integer(value.baseRevision().toLong()),
-                ) + texts(value.name(), value.start().toString(), payload, value.id())
-            if (previous == null)
-                database.execute(
-                    "INSERT INTO strength_programme_drafts(revision,programme_id,base_revision,name,start_date,header,id) VALUES(?,?,?,?,?,?,?)",
-                    values,
-                )
-            else
-                database.execute(
-                    "UPDATE strength_programme_drafts SET revision=?,programme_id=?,base_revision=?,name=?,start_date=?,header=? WHERE id=?",
-                    values,
-                )
-            database.execute(
-                "DELETE FROM strength_programme_draft_blocks WHERE draft_id=?",
-                texts(value.id()),
-            )
-            for ((i, b) in array(root, "blocks", 12).withIndex()) database.execute(
-                "INSERT INTO strength_programme_draft_blocks(draft_id,position,payload) VALUES(?,?,?)",
-                listOf(
-                    SqlValue.Text(value.id()),
-                    SqlValue.Integer(i.toLong()),
-                    SqlValue.Text(bounded(row(b), 262144)),
-                ),
-            )
+            writeDraft(value, previous != null)
         }
 
     /**
@@ -209,6 +180,64 @@ class SqliteStrengthDrafts(private val database: SqlDatabase) {
         ) {
             "Draft custom exercise metadata is missing."
         }
+    }
+
+    /** Only the enclosing validated archive transaction may populate retained draft revisions. */
+    internal fun populateArchive(snapshot: StrengthProgrammingArchiveJson.Snapshot) =
+        database.transaction {
+            for (table in
+                listOf(
+                    "strength_custom_exercises",
+                    "strength_programme_drafts",
+                    "strength_programme_draft_blocks",
+                    "strength_concrete_drafts",
+                    "strength_concrete_draft_blocks",
+                    "strength_concrete_draft_workouts",
+                )) require(database.query("SELECT 1 FROM $table LIMIT 1").isEmpty()) {
+                "Draft restore requires empty prepared tables; existing data was retained."
+            }
+            for (custom in snapshot.custom) writeCustom(custom)
+            for (draft in snapshot.drafts) {
+                StrengthProgrammingArchiveJson.validateRows(draft)
+                writeDraft(draft, false)
+            }
+            for (draft in snapshot.concreteDrafts) {
+                StrengthProgrammingArchiveJson.validateRows(draft)
+                writeConcrete(draft, false)
+            }
+        }
+
+    private fun writeDraft(value: StrengthProgrammeDraft, exists: Boolean) {
+        val root = read(StrengthProgrammingPayloadJson.encodeDraft(value))
+        val payload = bounded(JsonObject(root - "blocks"), 262144)
+        val values =
+            listOf(
+                SqlValue.Integer(value.revision().toLong()),
+                SqlValue.Text(value.programmeId()),
+                SqlValue.Integer(value.baseRevision().toLong()),
+            ) + texts(value.name(), value.start().toString(), payload, value.id())
+        if (!exists)
+            database.execute(
+                "INSERT INTO strength_programme_drafts(revision,programme_id,base_revision,name,start_date,header,id) VALUES(?,?,?,?,?,?,?)",
+                values,
+            )
+        else
+            database.execute(
+                "UPDATE strength_programme_drafts SET revision=?,programme_id=?,base_revision=?,name=?,start_date=?,header=? WHERE id=?",
+                values,
+            )
+        database.execute(
+            "DELETE FROM strength_programme_draft_blocks WHERE draft_id=?",
+            texts(value.id()),
+        )
+        for ((i, b) in array(root, "blocks", 12).withIndex()) database.execute(
+            "INSERT INTO strength_programme_draft_blocks(draft_id,position,payload) VALUES(?,?,?)",
+            listOf(
+                SqlValue.Text(value.id()),
+                SqlValue.Integer(i.toLong()),
+                SqlValue.Text(bounded(row(b), 262144)),
+            ),
+        )
     }
 
     private fun writeConcrete(draft: ConcreteStrengthProgrammeDraft, exists: Boolean) {

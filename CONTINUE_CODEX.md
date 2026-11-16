@@ -4327,13 +4327,74 @@ incomplete migration merely because a focused checkpoint passes.
   internal population steps only in the complete validated outer transaction; do not expose them as
   a user-facing partial restore. Native pruning remains OFF. Version/schema/formats unchanged.
 
+### Checkpoint98 — retained strength programming, body observations and awards
+
+-97 committed/pushed086e6315458dd9d8f6d0badb622334b90973605b; existing DRAFT24. Experiment43963718706
+  is RUNNING; formatting43963718680 SUCCESS. Do not cancel a pending gate with an unnecessary push.
+  Native492/18new restore cases and Android534/original stored-byte hash parity remain unverified.
+-97 Apple job is now SUCCESS. Digest-verified492storage +449domain +18health, ALL0failure/error/skip,
+  artifact14277870370 SHA256d3a4fabe061fc1881ab36815b4be4c9bd8104625e6a00d1079fb92ff3df196c1,
+  scratch/restore-086-native/verification.json. Framework14277550927 NOT APP. Android/JVM pending.
+-97 is now FULL SUCCESS: experiment43963718706, Android133637527670 /Apple133637528168;
+  format43963718680 SUCCESS.534unique Android START/END match; extended original stored-byte hash
+  parity in the GPS/gap archive fixture ran.700189checks/48domain suites, build/lint/schema PASS.
+  Digest-verified JVM14277341771 SHA2563c662c0e089535dc002c19ec28619520d9fccae58eecea00e8cf5df8b1bc3db3:
+  490domain+16health+492storage; Native counts/digest above. ALL0failure/error/skip. All65new IO/SQL /
+  restore case names match across both artifacts, including18new restore cases. Proofs scratch /
+  restore-086-{jvm,native}/verification.json, native/all-case-proof.json, restore-086-android-job.log.
+  PrivateAPK14277716297 exists but was NOT byte-inspected this checkpoint; last byte proof is96.
+-98 adds INTERNAL SqliteStrengthProgramming.populateArchive(parent). A fully validated parent and
+  empty normalized tables are required BEFORE writes. Existing private insertion/decision functions
+  restore immutable revisions, blocks, dated sessions, original decision IDs/times/order and selected
+  revision, without calling activate/stop or current clock/date functions. Old absent programming
+  remains absent and retains the restored legacy selection. Restored stopped programming stays stopped.
+- SqliteStrengthDrafts reuses its original normalized weekly-draft SQL through extracted writeDraft;
+  normal save guards/order unchanged. Internal transactional population preserves custom metadata /
+  logging definitions, incomplete weekly drafts and concrete previews with independent saved revisions.
+  It bypasses normal save/activation gates only for validated history, which can legitimately retain
+  revision4 previews of an already activated programme. All target draft tables must be empty first.
+- New SqliteBodyAwardsBackupRestore internally restores validated height provenance/offset/nanos /
+  import time, retained optional guidance/unit/weight-basis preferences and original milestone proof /
+  per-award recognition dates. No health import, new measurement/award calculation or alerts. Reuses
+  repository writes with ORIGINAL recognition dates; missing older sections keep disabled defaults.
+  Late failure/caller rollback is atomic; occupied target rows reject before any write. No native
+  destructive replacement/pruning command is enabled.
+- New ProgrammingBackupRestoreRepositoryContract(5) and BodyAwardsBackupRestoreRepositoryContract(4),
+  with real JDBC and Apple wrappers. Tests cover two authored revisions and original decisions, draft3 /
+  concrete4, stopped history, old legacy selection, source metadata/unknown offsets, exact recognition
+  dates, old disabled defaults, occupied targets and late/outer rollback. First fixture compile used
+  nonexistent Region.CORE; fixed to existing Region.FULL with explicit BodyArea.TRUNK. No enum/model change.
+- Focused programming +existing draft/activation commands PASS40tests (5new +19draft +16activation),
+  metadata PASS1m21s/13tasks in scratch/kmp-programming-restore-focused.log. Focused body/awards4cases /
+  metadata PASS1m21s/13tasks in scratch/kmp-body-awards-restore-focused.log. No assertion weakening.
+- FINAL local501storage tests0failure/error/skip +metadata +Android test compilation PASS2m58s/64tasks
+  in scratch/kmp-programming-body-restore-final.log. Pinned866format
+  sources(771Kotlin95Java), exact schema1..19 and3source-provenance tests PASS. All75schema tests PASS in
+  scratch/kmp-programming-body-restore-schema.log. Native9cases pending new CI.
+-98local final gate is complete;97remote is fully verified. This source+recovery checkpoint is ready
+  for one push; update DRAFT24 with its actual head/run IDs, then verify fresh Native/JVM501 and the9new
+  programming/body/award cases plus Android534 regressions. Pending tests are not passes. Keep all scope.
+- Remaining persistence: frozen workout/execution/set/event/accepted-actual edit receipts and association
+  restoration, gym-tool/timer metadata; full protected outer replacement/clear order; compatible raw
+  merge and retained-sample/receipt/dataset-epoch reconciliation; retention consent/preview/pruning.
+  Raw merge MUST test original JSONObject number/whitespace serialization against exact receipt
+  bytes; equivalent JSON is not identical evidence. Never normalize/recalculate persisted receipt
+  hashes to force a match. Current verifiers safely reject differing stored bytes.
+  Use97core/archive/retention +98programming/body/awards writers only inside complete validated outer
+  transaction. Original Android remains authoritative. Then common application/native service wiring,
+  actual iOS app host/runtime, and final unfiltered28/35/36+iOS APP/source-bound visual gates.
+  No version/schema/format/permission change, early merge or publication. Hardware checks unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint97 above is latest recovery boundary.96head91430d3 is fully green; exact experiment /
-   formatting and digest-verified results are recorded there.97protected core/archive/retention
-   population +exact original raw hash verification is committed with this handoff; local492/meta /
-   Android compile PASS3m21s/64tasks,859format/schema/source PASS. Push this coherent batch once. Then verify fresh Apple492/18new restore cases, Android534 and original hash
-   parity; update PR24 draft and this boundary with actual CI outcomes. Do not treat pending as pass.
+1. Checkpoint98 above is latest recovery boundary.97head086e631 is fully green:43963718706 +format /
+   43963718680, digest-verified Native/JVM492/18restore cases and Android534/700189domain checks.98adds
+   normalized programming/body/award population and9cases; local501tests/meta/Android compile PASS /
+   2m58s/64tasks,866format/schema/source checks and75schema tests PASS. Push this checkpoint once,
+   inspect actual new run IDs, verify Native/JVM501/9new cases and Android534, update DRAFT24. Never
+   treat pending as pass or expose partial restore/pruning. Next: frozen execution/association/tools
+   restoration, then guarded whole replacement/raw reconciliation/retention safeguards, then full app /
+   native services/iOS host and final gates. Preserve all completed source; no schema/version bump.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

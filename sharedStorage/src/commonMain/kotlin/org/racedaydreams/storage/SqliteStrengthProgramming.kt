@@ -185,6 +185,50 @@ class SqliteStrengthProgramming(
             choice
         }
 
+    /**
+     * Internal history population, never activation: no clock/current-day/decision generation.
+     * Requires the fully validated parent and empty normalized target tables. Existing coaching /
+     * legacy archives must already be populated in the same enclosing replacement transaction.
+     */
+    internal fun populateArchive(parent: UserBackupDataJson.Snapshot) =
+        database.transaction {
+            for (table in
+                listOf(
+                    "strength_programme_revisions",
+                    "strength_programme_blocks",
+                    "strength_programme_sessions",
+                    "strength_programme_current",
+                    "strength_programme_decisions",
+                    "strength_programme_drafts",
+                    "strength_programme_draft_blocks",
+                    "strength_custom_exercises",
+                    "strength_concrete_drafts",
+                    "strength_concrete_draft_blocks",
+                    "strength_concrete_draft_workouts",
+                )) require(database.query("SELECT 1 FROM $table LIMIT 1").isEmpty()) {
+                "Programming restore requires empty prepared tables; existing data was retained."
+            }
+            val graph = parent.programming ?: return@transaction
+            require(
+                graph.current == null ||
+                    database.query("SELECT 1 FROM gym_current LIMIT 1").isEmpty()
+            ) {
+                "Two current strength programmes."
+            }
+            for (programme in graph.programmes.values) insert(programme)
+            drafts.populateArchive(graph)
+            for (decision in graph.decisions) writeDecision(decision)
+            graph.current?.let { reference ->
+                database.execute(
+                    "INSERT INTO strength_programme_current VALUES(1,?,?)",
+                    listOf(
+                        SqlValue.Text(reference.id()),
+                        SqlValue.Integer(reference.revision().toLong()),
+                    ),
+                )
+            }
+        }
+
     internal fun decision(id: String): Decision? =
         database
             .query(
