@@ -4171,15 +4171,62 @@ incomplete migration merely because a focused checkpoint passes.
  native application/root/services/iOS host/runtime and final unfiltered28/35/36+iOS APP/visual gates.
  No version/schema/root13/raw3/package1/dependency/permission change, merge or publication.
 
+### Checkpoint95 — complete current application snapshot composition (local verification)
+
+-94pushed3fdba944d66f22d53d426f0fe2f5a69f052ffaa0 is FULL SUCCESS in experiment43951817449,
+ Android133595983385 /Apple133595983878; formatting43951817321 SUCCESS.534unique Android
+ START/END matched, including fixed raw JSON parity, new exact-clock/type/measurement guard and
+ both actual core-capture comparisons.700189checks/48domain suites +build/lint/schema PASS.
+-94 digest-verified JVM14268818911 SHA25630d54cd347344baa7d59c8122baf897be15d83369dfdc466787d10f3237bbb6d:
+ 490domain+16health+464storage. Apple14272306468
+ SHA256c1dcbe1117e63cc319801cade1be6ec04a98c9bd860924d11a9e93d63f7f86c7:
+ 449domain+18health+464storage. ALL0failure/error/skip. All37new common IO/SQL names match across
+ platforms:26ZIP/staging/writer +5raw SQL +6core SQL. Includes actual Apple100001-cache, >32MiB
+ legacy inline-route source and Unicode/NUL identity cases. Proofs scratch/core-3fd-{jvm,native}/
+ verification.json, native/all-io-case-proof.json; Android log scratch/core-3fd-android-job.log.
+ Framework14271226751 NOT an iOS app; privateAPK14272391191. No public experimental release.
+-95 local source: SqliteApplicationBackup.kt, ApplicationBackupRepositoryContract.kt and real
+ JdbcApplicationBackupTest.kt /AppleApplicationBackupTest.kt; Android SharedBackupEnvelopeTest
+ adds full-original-export comparison after core and body/achievement/choice fixtures. Preserve ALL.
+- Explicitly captures core AND every existing section in ONE existing SQLite19 transaction:
+ coaching, owned development, choices/exclusions, immutable legacy and authored programming/drafts/
+ custom definitions/decisions/current references, frozen workouts/executions/actual edit metadata /
+ associations, running support/0.8 records, timers, achievements, body measurements and retention.
+ All current sections exist BEFORE full UserBackupDataJson graph validation; old-file empty default
+ filling is NOT used to omit current data. No read creates programme IDs/timestamps, awards or
+ activations. Source read callbacks deliberately reject attempts to use command-only clock/UUID.
+- Original programming lower-bound/row-count budgets precede hydration. Per-feature actual bytes
+ and final whole-parent32MiB/syntax limits apply. Imported weight/activity caches remain omitted
+ without deletion; raw detail stays in91companion. encode(createdAt) emits original parent13 only
+ after complete validation; this is still NOT replacement, cleanup, or a complete ZIP package export.
+-6focused REAL JDBC tests PASS0failure/error/skip (0.685s runtime), metadata PASS48s/13tasks in
+ scratch/kmp-application-capture-graph-focused.log. Cases cover all explicit sections/current13
+ roundtrip, real finished sets+legacy+exclusions+height+awards, authored revision+incomplete draft,
+ unaccepted valid actual replacement, early oversized gym rejection, read-only outer rollback.
+ First test compile corrected prohibited object wildcard import. Initial graph rejection fixture
+ wrongly expected removal of canonical definition cache to fail; original catalogue fallback is
+ valid. It now explicitly ACCEPTS that supported case, then rejects a valid-but-unaccepted changed
+ actual which disagrees with retained execution evidence. No production guard was weakened/tightened.
+- FINAL local470storage JVM0failure/error/skip +metadata +Android test compilation PASS3m51s/64tasks in
+ scratch/kmp-application-capture-final.log.842format sources(747Kotlin95Java) PASS in
+ scratch/kmp-application-capture-format.log. New actual Apple6 and application-wide original Android
+ parity are UNVERIFIED until fresh CI. No change to version/code/schema/root13/raw3/package1 /
+ dependencies/permissions; native destructive restore/prune OFF. Current PR24 still draft.
+- NEXT EXACT: inspect final local470/meta/Android compile log for actual result; finish schema/source
+ checks. Fix real failures, commit95+this recovery and push ONCE (94run already finished and verified).
+ Verify fresh Native/JVM470, new6application cases and Android534 full app-source parity; no blind
+ reruns. Then compose COMPLETE ZIP export using typed app capture+91raw capture under the SAME outer
+ transaction and original unfinished-recording guards. Continue protected transactional app/raw
+ restore/reconciliation+consent/preview/epoch protections, real common app/native services/iOS host
+ and final unfiltered28/35/36+iOS APP/source-bound visual gates. No early merge/publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint94 above is latest recovery boundary.93test fix7feaf5a +94typed core capture local
-   gate464storage/metadata/Android compilation(4m37s)/838format/schema/source PASS. Commit94 and
-   push93+94 once to same draft24.91a1Native/JVM458/5SQL methods verified; Android533 completed
-   with ONE numeric-token lexical-parity failure. Fix uses actual original reader with new exact
-   clock/type/changed-measurement guards. Verify fresh Native464/Android534 and core exporter parity,
-   then compose ALL application sections (never empty defaults) and complete protected restore/app.
-   No reset, early merge, version/schema bump or publication.
+1. Checkpoint95 above is latest recovery boundary.94remote3fdba94 FULL Native464/Android534/
+   JVM464/domain70018948/37IO-SQL-case matches VERIFIED.95complete application capture source is
+   local;6JDBC+meta PASS, final470storage/metadata/Android compile PASS3m51s/64tasks.
+   Schema/source/842format PASS. Commit/push95 once, verify fresh Native470/Android534 full-source parity.
+   No empty defaults for current data, reset, early merge, version/schema bump or publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

@@ -51,6 +51,19 @@ class SharedBackupEnvelopeTest {
     private lateinit var repository: SqliteBackupRepository
     private lateinit var original: BackupManager
 
+    private fun assertApplicationCaptureMatchesOriginal(source: JSONObject) {
+        repository.validateSnapshot(source)
+        val connection = AndroidSqlTestConnection(ProfileDatabase.get(context).writableDatabase)
+        val before = connection.query("SELECT total_changes()")
+        val captured = org.racedaydreams.storage.SqliteApplicationBackup(connection).snapshot()
+        val value = org.racedaydreams.storage.UserBackupDataJson.element(captured)
+        assertEquals(
+            Json.parseToJsonElement(source.toString()),
+            Json.parseToJsonElement(JSONObject(value.toString()).toString()),
+        )
+        assertEquals(before, connection.query("SELECT total_changes()"))
+    }
+
     private fun assertCoreCaptureMatchesOriginal(source: JSONObject) {
         val db = ProfileDatabase.get(context).writableDatabase
         val connection = AndroidSqlTestConnection(db)
@@ -83,6 +96,7 @@ class SharedBackupEnvelopeTest {
             Json.parseToJsonElement(JSONObject(captured.data.toString()).toString()),
         )
         assertEquals(before, connection.query("SELECT total_changes()"))
+        assertApplicationCaptureMatchesOriginal(source)
     }
 
     @Test
@@ -258,6 +272,7 @@ class SharedBackupEnvelopeTest {
             SqliteBodyMeasurementsRepository.validate(null).preferences(),
             BodyMeasurementsArchiveJson.decode(null).preferences,
         )
+        assertApplicationCaptureMatchesOriginal(repository.exportUserData())
     }
 
     @Test
@@ -314,6 +329,7 @@ class SharedBackupEnvelopeTest {
         assertEquals(before.toString(), SqliteAchievementsRepository.exportData(db).toString())
         assertEquals(0, store.recognize(listOf(award), at))
         assertFalse(AchievementsArchiveJson.decode(null).celebrations)
+        assertApplicationCaptureMatchesOriginal(repository.exportUserData())
     }
 
     @Test
@@ -397,6 +413,7 @@ class SharedBackupEnvelopeTest {
         assertTrue(store.exclusions().isEmpty())
         assertEquals("retained-exercise", store.choices().single().exerciseId())
         assertEquals(setOf("record-1"), store.acknowledged())
+        assertApplicationCaptureMatchesOriginal(repository.exportUserData())
     }
 
     @Test
