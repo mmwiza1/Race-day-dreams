@@ -4022,6 +4022,13 @@ incomplete migration merely because a focused checkpoint passes.
  original raw/complete exporter, full private-package inspection and original no-write assertions
  passed. Actual log scratch/backup-5b-android-job.log.88overall remains FAILURE because native zlib
  version binding did not compile;90fix is now pushed, not merely local.86 last FULL green remote.
+-90Android133567945066 is now SUCCESS:533unique START/END matched, original complete writer/Java
+ reader/full-inspection method ran,700189checks/48domain suites, build/lint/schema PASS. Actual log
+ scratch/backup-7e-android-job.log. Digest-verified JVM14265227864 SHA256
+ bb3c24b7b0b74e53ecac51712e960d9f6067ca79d75c34c06b30a6714d76aba6:490domain+16health+453storage,
+ ALL0failure/error/skip. Proof scratch/backup-7e-jvm/verification.json. Apple90 still pending;
+ do not infer Native success from Android/JVM.91 source committed locally as51fa65a (not pushed
+ while90Native runs). Local final458/metadata/Android compilation actually PASS3m39s/64tasks.
 -91 new local files: SqliteRecordingArchive.kt, RecordingArchiveRepositoryContract.kt,
  JdbcRecordingArchiveTest.kt /AppleRecordingArchiveTest.kt. Original Android SharedDetailRetention-
  ArchiveTest helper also compares complete shared DB-export rows with original exporter JSON and
@@ -4053,13 +4060,50 @@ incomplete migration merely because a focused checkpoint passes.
  dataset epoch and active+paused+recoverable protections. Native destructive operations remain OFF.
  Full common app composition/native services/REAL iOS host/runtime and final gates remain below.
 
+### Checkpoint92 — verified real Apple backup IO; queue91 database-export runtime
+
+-90HEAD7e8cdaaec840b80f3886540e282e2ee62a7487de FULL SUCCESS in43943796128,
+ Android133567945066 /Apple133567945467; format43943795945 SUCCESS.533unique Android cases,
+ 700189checks/48domain suites, build/lint/schema passed. Actual original Java ZIP reader consumed
+ shared writer output and complete private-package validation; original assertions remain intact.
+- Digest-verified JVM14265227864 SHA256bb3c24b7b0b74e53ecac51712e960d9f6067ca79d75c34c06b30a6714d76aba6:
+ 490domain+16health+453storage. Apple14264928564
+ SHA256bd9d8331044dcddf595893d6a10dd1b94f866fbd67179fb58d2aed7a194ed1d3:
+ 449domain+18health+453storage. ALL0failure/error/skip. ALL26new common IO cases matched exact
+ JVM/Native method names:10ZIP+11real private-staging/package+5writer. Real Apple zlib and POSIX
+ IO now VERIFIED, not just compiled source. Proofs scratch/backup-7e-{jvm,native}/verification.json
+ and native/io-case-proof.json. A framework14263444345 is still NOT an iOS application.
+- PrivateAPK14265247742 ZIPdigest d7367c047789f28a6741d38d9577d51b7780a9b1040b217756825a29fa954393
+ verified; APK58123531bytes/SHA2566e1466567fca41414d468323445c908571f44496fafbe380499ff42d9e8a4616,
+ code19/version0.12.3-test1/minAPI28/noINTERNET. Proof scratch/backup-7e-apk/verification.json.
+ No experimental public publication or complete-iOS-app claim.
+-91read-only raw database export is committed51fa65a. Local5new JDBC cases/meta PASS51s with1.169s
+ test runtime; full458storage0failure/error/skip +metadata+Android test compilation PASS3m39s/64tasks.
+ Formatting834sources(739Kotlin95Java), exact schema1..19 and3source-provenance PASS. Original Android
+ database raw-export parity extension is compiled, not yet run. Expected next Native/JVM458 and
+ Android533 need actual fresh CI; do not confuse them with verified90Native453.
+- NEXT: push91+this recovery ONCE to existing draft24; update PR with90proof/new91pending state.
+ Verify5new actual Apple SQLite export contracts and original Android raw export parity from fresh
+ artifacts/logs. Do not rerun old7e unnecessarily. No destructive restore/pruning is enabled.
+- Next implementation after91: complete application snapshot capture/export over same SQLite19,
+ then transactional app/raw replacement/compatible detail merge +consent/preview/epoch/unfinished
+ protections. Original capture reference is app/src/main/java/org/racedaydreams/data/
+ SqliteBackupRepository.java#exportUserData; parent decoder is UserBackupDataJson82. Filter owned
+ activities BEFORE source budgets/hydration (do not accidentally count imported health caches);
+ preserve original rdd/gpx app-JSON sample stripping, laps/PBs, annotations and planned links.
+ Raw detail is preserved separately by91. No duplicate database, generic bucket or invented data.
+- Full common app composition/native services/permissions/HealthKit/recording/BLE/notifications /
+ actual iOS host/entitlements/build/runtime and final unfiltered28/35/36+iOS APP/source-bound visual
+ gates remain incomplete. Physical HK/HC/GPS/BLE/locked-screen/audio/TalkBack remain unperformed.
+ No version/schema/backup/permission/dependency bump, premature merge or public development build.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint91 above is latest recovery boundary.90corrected head7e8cdaa is pushed; CI43943796128
-   RUNNING, format43943795945 PASS. Local91 raw exporter +5JDBC/Apple contracts +original Android
-   parity preserved. Focused5/meta PASS; final458storage/metadata/Android compile PASS3m39s/64tasks.
-   Check actual results, verify90Native IO and Android runtime, fix real errors, commit/push91 once
-   preceding expensive gate finishes. Keep draft; no reset/early merge/version bump/publication.
+1. Checkpoint92 above is latest recovery boundary.90FULL remote453Native/JVM+533Android/
+   700189checks48suites/26exact IO-case matches VERIFIED.91source51fa65a local458storage/metadata/
+   Android compilation/834format PASS. Push91+recovery once to same draft24, verify5new Native
+   SQLite contracts +original Android exporter parity; then continue complete app capture/restore
+   and actual native app. Keep draft, no reset/early merge/version bump/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
