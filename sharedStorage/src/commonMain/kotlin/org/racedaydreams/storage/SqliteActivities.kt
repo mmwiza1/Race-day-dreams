@@ -97,16 +97,7 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
                 arguments,
             )
         return rows.map { row ->
-            var activity = ActivityJson.decode(row[0].sqlText())
-            if (row[1] != SqlValue.Null)
-                activity =
-                    activity.copy(
-                        notes = row[2].nullableSqlText() ?: activity.notes(),
-                        rpe = row[3].nullableSqlNumber(),
-                        shoeId = row[4].nullableSqlText(),
-                    )
-            if (row[5] != SqlValue.Null)
-                activity = activity.copy(plannedWorkoutId = row[5].sqlText())
+            var activity = readAnnotatedActivity(row)
             if (includeSamples) activity = withRetainedSamples(activity)
             activity
         }
@@ -373,6 +364,20 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
             ),
         )
     }
+}
+
+/** Original summary projection, reused by backup capture without hydrating dense recording data. */
+internal fun readAnnotatedActivity(row: List<SqlValue>): ActivityRecord {
+    var activity = ActivityJson.decode(row[0].sqlText())
+    if (row[1] != SqlValue.Null)
+        activity =
+            activity.copy(
+                notes = row[2].nullableSqlText() ?: activity.notes(),
+                rpe = row[3].nullableSqlNumber(),
+                shoeId = row[4].nullableSqlText(),
+            )
+    if (row[5] != SqlValue.Null) activity = activity.copy(plannedWorkoutId = row[5].sqlText())
+    return activity
 }
 
 internal fun isUserActivity(activity: ActivityRecord): Boolean =

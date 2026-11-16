@@ -51,6 +51,40 @@ class SharedBackupEnvelopeTest {
     private lateinit var repository: SqliteBackupRepository
     private lateinit var original: BackupManager
 
+    private fun assertCoreCaptureMatchesOriginal(source: JSONObject) {
+        val db = ProfileDatabase.get(context).writableDatabase
+        val connection = AndroidSqlTestConnection(db)
+        val before = connection.query("SELECT total_changes()")
+        val captured = org.racedaydreams.storage.SqliteCoreBackup(connection).snapshot()
+        val expectedKeys =
+            setOf(
+                "storeVersion",
+                "profile",
+                "draft",
+                "manualBaseline",
+                "manualBaselineRecordedAt",
+                "activities",
+                "shoes",
+                "results",
+                "bestEfforts",
+                "annotations",
+                "settings",
+                "plannedWorkouts",
+                "assessments",
+                "trainingPlans",
+                "planAdjustments",
+            )
+        assertEquals(expectedKeys, captured.data.keys)
+        val expected = JSONObject()
+        expectedKeys.forEach { expected.put(it, source.get(it)) }
+        // Use the real original JSON reader, including its numeric spelling convention.
+        assertEquals(
+            Json.parseToJsonElement(expected.toString()),
+            Json.parseToJsonElement(JSONObject(captured.data.toString()).toString()),
+        )
+        assertEquals(before, connection.query("SELECT total_changes()"))
+    }
+
     @Test
     fun completePackageManifestMatchesRealOriginalPayloadHashesWithoutReplacingAppData() {
         val before = repository.exportUserData().toString()
@@ -818,6 +852,7 @@ class SharedBackupEnvelopeTest {
             CoreBackupDataJson.decode(Json.parseToJsonElement(before.toString()) as JsonObject)
         assertEquals(listOf(actual), snapshot.activities)
         assertEquals(listOf(result), snapshot.results)
+        assertCoreCaptureMatchesOriginal(before)
         repository.validateSnapshot(before)
         val duplicated =
             JSONObject(before.toString())
@@ -915,6 +950,7 @@ class SharedBackupEnvelopeTest {
     @Test
     fun originalOldCurrentAndSharedExportsPassTheSameCompleteSnapshotValidator() {
         val source = repository.exportUserData()
+        assertCoreCaptureMatchesOriginal(source)
         for (version in 1..13) {
             val data = JSONObject(source.toString())
             for ((section, minimum) in introduced) if (version < minimum) data.remove(section)

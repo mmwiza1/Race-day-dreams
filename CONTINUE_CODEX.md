@@ -4128,13 +4128,58 @@ incomplete migration merely because a focused checkpoint passes.
 -94 core source is local and tested, preserve it; commit93test correction first, then core94 with
  complete handoff; push BOTH together once. Main85e1c39 /owner PR23 untouched; PR24 remains draft.
 
+### Checkpoint94 — typed read-only core database capture
+
+-93parity test fix committed7feaf5a.94source files: SqliteCoreBackup.kt, CoreBackupRepository-
+ Contract.kt, JdbcCoreBackupTest.kt /AppleCoreBackupTest.kt; SqliteActivities summary projection
+ extracted verbatim into readAnnotatedActivity, preserving notes/RPE/shoe/planned-link semantics.
+ Original Android core-guard/old-current tests additionally compare ALL15core fields through the
+ actual original exporter/JSONObject reader and assert SQL total_changes unchanged. No SDK/IO,
+ engine, profile, history, actuals, settings or consent writes were introduced.
+- Core capture reads the SAME SQLite19 connection inside one transaction. Imported activity
+ providers are filtered BEFORE COUNT/payload load/owned byte checks.512-row keyset metadata pages,
+ byte-bounded payload batches and <=512parameters; source syntax/individual supported32MiB bounds
+ precede decoding. Whole-core output obeys original32MiB/100000array/depth/string budgets.
+- Source data is captured faithfully: optional profile/draft/baseline timestamps, original annotation
+ overrides and row ordering, normalized default-shoe authority, manual results, live/preserved PB
+ precedence and source identity, exact revisions, settings, assessments, opaque plan/adjustment
+ metadata. rdd/gpx inline samples are stripped ONLY from app-JSON summaries as Android already does;
+ raw detail remains in original source and91companion export. Legacy inline source aggregates may
+ exceed32MiB if compact summaries fit; no premature aggregate source cap. NULL remains unknown.
+- Annotation source-pair ordering uses original SQLite ORDER BY, not a concatenated key (embedded
+ NULs can collide). Activity date sorting is stable over SQLite ID order, preserving astral/BMP
+ ordering rather than Kotlin UTF-16 tie sorting. Validates both on real JDBC/Apple contracts.
+-6focused JDBC contracts PASS0failure/error/skip (2.493s initial runtime), metadata PASS1m32s/
+ 13tasks, scratch/kmp-core-capture-focused.log. Tests: Strength-only absent running profile/read-only
+ transaction;100001import caches over owned row+byte budgets retained; legacy inline routes >32MiB
+ but compact valid export; actual annotations/default shoes/PB precedence; Unicode/NUL identities;
+ corrupt/oversized owned data fail without mutation and subsequent valid capture succeeds.
+- FINAL local464storage JVM0failure/error/skip +shared metadata +Android test compilation
+ PASS4m37s/64tasks, scratch/kmp-core-capture-final.log.838format sources(743Kotlin95Java), exact
+ schema1..19 and3source-provenance PASS; scratch/kmp-core-capture-format-ready.log and safety-ready.log.
+ No new canonical screenshots required DURING this read-only storage development; final-source full
+ app screenshots/iOS APP gates still mandatory before acceptance. New Native6/Android534 pending.
+- IMPORTANT this captures CORE ONLY. Do NOT pass core.data to currentElement as a complete new
+ database export: old-backup default filling would invent empty missing feature sections. Capture
+ ALL existing feature sections in the same transaction, then run UserBackupDataJson82/parent13
+ validation. Native destructive restore/pruning remains OFF, Android stores remain authoritative.
+- NEXT EXACT: commit94+this recovery; push93+94 ONCE to existing DRAFT24 (prior91gate is completed,
+ Apple458pass, Android one numeric-token parity mismatch). Verify fresh Native/JVM464 and actual
+ Android534 including corrected raw original-reader parity and both new core-capture comparisons.
+ Fix genuine failures; do not blindly rerun unchanged a1. Then compose COMPLETE typed application
+ snapshot/export and implement protected transactional restore/raw reconciliation before full
+ native application/root/services/iOS host/runtime and final unfiltered28/35/36+iOS APP/visual gates.
+ No version/schema/root13/raw3/package1/dependency/permission change, merge or publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint92 above is latest recovery boundary.90FULL remote453Native/JVM+533Android/
-   700189checks48suites/26exact IO-case matches VERIFIED.91source51fa65a local458storage/metadata/
-   Android compilation/834format PASS. Push91+recovery once to same draft24, verify5new Native
-   SQLite contracts +original Android exporter parity; then continue complete app capture/restore
-   and actual native app. Keep draft, no reset/early merge/version bump/publication.
+1. Checkpoint94 above is latest recovery boundary.93test fix7feaf5a +94typed core capture local
+   gate464storage/metadata/Android compilation(4m37s)/838format/schema/source PASS. Commit94 and
+   push93+94 once to same draft24.91a1Native/JVM458/5SQL methods verified; Android533 completed
+   with ONE numeric-token lexical-parity failure. Fix uses actual original reader with new exact
+   clock/type/changed-measurement guards. Verify fresh Native464/Android534 and core exporter parity,
+   then compose ALL application sections (never empty defaults) and complete protected restore/app.
+   No reset, early merge, version/schema bump or publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
