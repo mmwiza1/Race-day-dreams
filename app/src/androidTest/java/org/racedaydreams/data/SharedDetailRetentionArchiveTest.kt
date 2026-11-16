@@ -40,6 +40,28 @@ class SharedDetailRetentionArchiveTest {
 
     private fun element(json: JSONObject) = Json.parseToJsonElement(json.toString()) as JsonObject
 
+    // Compare through the actual original reader: JsonPrimitive equality alone treats 100 and
+    // 100.0 as different text even though JSONObject retains the same numeric measurement.
+    private fun originalRow(line: String) = element(JSONObject(JSONObject(line).toString()))
+
+    @Test
+    fun originalReaderParityKeepsExactClocksTypesAndChangedMeasurementsDistinct() {
+        val original = originalRow("""{"measurement":100,"clock":9007199254740993}""")
+        assertEquals(original, originalRow("""{"measurement":100.0,"clock":9007199254740993}"""))
+        assertNotEquals(original, originalRow("""{"measurement":"100","clock":9007199254740993}"""))
+        assertNotEquals(original, originalRow("""{"measurement":100,"clock":9007199254740992}"""))
+        assertNotEquals(
+            original,
+            originalRow("""{"measurement":100.00000000000001,"clock":9007199254740993}"""),
+        )
+        assertNotEquals(
+            original,
+            originalRow("""{"measurement":100,"clock":9007199254740993,"extra":null}"""),
+        )
+        // Legacy output spells negative zero as -0, then reads it as integral zero.
+        assertEquals(originalRow("""{"measurement":-0}"""), originalRow("""{"measurement":-0.0}"""))
+    }
+
     private fun rawArchive(): Pair<ByteArray, List<String>> {
         val out = ByteArrayOutputStream()
         RecordingArchive(context).exportTo(out)
@@ -102,10 +124,7 @@ class SharedDetailRetentionArchiveTest {
             val sharedRaw = ByteArrayOutputStream()
             sharedZip.extract("recordings.jsonl") { sharedRaw.write(it) }
             val sharedLines = sharedRaw.toByteArray().decodeToString().dropLast(1).split('\n')
-            assertEquals(
-                lines.map { Json.parseToJsonElement(it) },
-                sharedLines.map { Json.parseToJsonElement(it) },
-            )
+            assertEquals(lines.map(::originalRow), sharedLines.map(::originalRow))
             val sharedManifest = ByteArrayOutputStream()
             sharedZip.extract("manifest.json") { sharedManifest.write(it) }
             val sharedRows =

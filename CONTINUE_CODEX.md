@@ -4097,6 +4097,37 @@ incomplete migration merely because a focused checkpoint passes.
  gates remain incomplete. Physical HK/HC/GPS/BLE/locked-screen/audio/TalkBack remain unperformed.
  No version/schema/backup/permission/dependency bump, premature merge or public development build.
 
+### Checkpoint93 — actual raw-export platform results and original-reader parity correction
+
+-92/91HEADa1c66d111e6dceae3c65b258948e04e3586b7ac7 experiment43946970369 is OVERALL FAILURE:
+ Apple133579093220 SUCCESS; Android133579093429 completed533unique cases with ONE failed method,
+ SharedDetailRetentionArchiveTest#sharedRawRowsKeepOriginalRemovedDetailProvenanceWithoutInventingRouteEvidence.
+ Formatting43946970454 SUCCESS.700189checks/48domain suites/build/lint/schema PASS. No public APK.
+- Actual expected/actual row arrays differ only in numeric spelling: original JSONObject emits
+ distanceMetres:100 while the stored Kotlin JSON payload remains100.0. JsonPrimitive equality
+ compares token text. Both represent the same measurement to the original reader; stored points,
+ source clocks, receipts, totals and full row graphs are unchanged. This is a parity-test contract
+ mismatch, NOT a demonstrated training-data/GPS calculation error. Log scratch/recording-a1-android-job.log.
+- Fix test comparison by passing BOTH full row arrays through the ACTUAL original JSONObject reader
+ and round-trip output; keep complete field/order/count/type comparison and every prior graph /
+ no-mutation assertion. Two reader passes stabilize legacy -0 output becoming integral0 on read.
+ New explicit Android guard proves numeric100/100.0 equivalence while changed measurement
+ 100.00000000000001, quoted100, exact clock9007199254740992 vs9007199254740993 and extra:null
+ remain distinguishable. Also checks -0/-0.0. No production raw-export numbers or assertions about
+ retained activity/point/removal evidence changed. New expected unique Android count534.
+- Digest-verified92/91 JVM14266851323 SHA256b33f63763cd763cdc8b727692f30721049ec23c24716be7e008a95883799e523:
+ 490domain+16health+458storage. Apple14266251569
+ SHA256ead41fa5dfc90800f5a164fc31cb3cc67beff6d8f0012584017a25a3bd9fee17:
+ 449domain+18health+458storage. ALL0failure/error/skip. ALL5new actual Apple raw-export SQLite
+ contracts matched JDBC names, including514sessions/dense payload paging, removal provenance,
+ unfinished states and rollback. Proofs scratch/recording-a1-{jvm,native}/verification.json and
+ native/sql-case-proof.json. Framework14266621203 is NOT an iOS app.
+-93parity correction is compiled in the combined local core gate:464storage0failure/error/skip,
+ metadata+Android test compilation PASS4m37s/64tasks, scratch/kmp-core-capture-final.log. No local
+ KVM: new Android guard/fixed comparison runtime still require fresh CI. No blind a1 rerun.
+-94 core source is local and tested, preserve it; commit93test correction first, then core94 with
+ complete handoff; push BOTH together once. Main85e1c39 /owner PR23 untouched; PR24 remains draft.
+
 ### Exact next safe actions and remaining full scope
 
 1. Checkpoint92 above is latest recovery boundary.90FULL remote453Native/JVM+533Android/
