@@ -2922,6 +2922,40 @@ incomplete migration merely because a focused checkpoint passes.
   full backup/retention commands and real common application/native services/iOS host/app. No version/
   schema/backup bump, public publication or merge. Preserve0Java-domain completion and shared UI.
 
+### Checkpoint 72 — Parent-budget programme archive entry points
+
+- Checkpoint71 committed/pushed **a5d2cf4f79f0dbb754469832af675865f1c537ec**; PR24 OPEN/DRAFT
+  confirmed and body updated. Experiment43852648767 and format43852648918 FULL SUCCESS.
+  Android133248865390:507unique START/END, all6new source/finalization/edit/delete/backup cases ran
+  with REAL original Android serializer/SHA256;700189checks/48suites. JVM14219368344
+  ZIP348c06c5c7e45c53e080568cfb5ffc05a43db4fdf5edff1085919540cd476da4:490domain+16health+275storage.
+  Native14220336386 ZIP2ce4507be7eef8fe58044781d365ba6e7737d9939f99c501710c0def76ec6888:
+  449domain+18health+279storage; all21 new command cases matched against Native XML. All0fail/
+  error/skip. Native tests use TEST-ONLY fingerprint lookup, NOT native production hash proof.
+  Proofs scratch/execution-a5d2-{jvm,native}/verification.json. Framework14221220755 is NOT an
+  iOS app; privateAPK14219782764. No public experimental publication.
+- Coherent source72: StrengthProgrammingArchiveJson.kt, StrengthProgrammingArchiveJsonTest.kt,
+  SharedProgrammingArchiveTest.kt, plus recovered status notes. Preserve all work; do not restart71.
+- Existing String decode delegates to SAME full programme graph guards through new JsonObject
+  overload. New element(Snapshot) permits nesting under an already syntax/size-validated parent
+  backup without a second16MiB cap. Standalone encode/decode remains16MiB bounded; all per-row,
+  version, legacy context, lineage, current-pointer and history checks unchanged. No native restore
+  or partial parent-backup validator enabled; this is a required piece of future complete backups.
+- Added2 common cases: synthetic800retained programmes/800explicit decisions/8000workouts >16MiB
+  and<32MiB, all preserved, plus nested invalid-version/orphan/current/unknown-field rejection.
+  Added Android same-large-DOM parity with ORIGINAL StrengthProgrammingArchive validator.
+- Focused programming archive suite PASS, scratch/kmp-nested-programming-focused.log (56s build).
+  Current **277storage JVM tests PASS**,0failures/errors/skips. Common metadata/bothAPKs/lint PASS
+  **6m1s/167tasks**, scratch/kmp-nested-programming-verified.log. **758-source formatting PASS** (663Kotlin/95Java),
+  scratch/kmp-nested-programming-format.log. No schema/backup/version/dependency/UI/engine change.
+- Next exact: all local72 gates PASS and71 CI fully verified. Commit/push72 coherently; inspect
+  its exact Android/Native runtime and digest-verified artifacts, diagnose any real failures. Expected
+  child508focused Android/281storage Native are not passed until proof. Keep PR24 DRAFT.
+- Native compatible LegacyStrengthFingerprint provider and host wiring STILL REQUIRED; fixture
+  lookup in common tests must never be shipped. No native end-to-end finalization claimed. Complete
+  remaining full root13/older backups/raw3/package1/retention safeguards and actual common app/
+  OS services/iOS host/build afterwards; no premature merge, public release or version bump.
+
 ### Exact next safe actions and remaining full scope
 
 1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Final70 pushed boundary above

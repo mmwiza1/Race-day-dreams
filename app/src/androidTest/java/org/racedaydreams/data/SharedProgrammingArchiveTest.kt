@@ -145,6 +145,72 @@ class SharedProgrammingArchiveTest {
         )
     }
 
+    @Test
+    fun largeNestedProgrammingHistoryMatchesOriginalParentBackupGraphValidation() {
+        val base = programme()
+        val notes = "n".repeat(2000)
+        val plans =
+            List(800) { index ->
+                base.copy(
+                    id = "retained-$index",
+                    blocks =
+                        listOf(
+                            base
+                                .blocks()
+                                .single()
+                                .copy(
+                                    weeks = 10,
+                                    workouts =
+                                        List(10) { week ->
+                                            val id = "workout-$week"
+                                            val w = base.workouts().first()
+                                            w.copy(
+                                                id = id,
+                                                date = start.plusWeeks(week.toLong()),
+                                                definition = w.definition().copy(id = id),
+                                                notes = notes,
+                                            )
+                                        },
+                                )
+                        ),
+                )
+            }
+        val refs = plans.map { Reference(Owner.AUTHORED, it.id(), 1) }
+        val decisions =
+            plans.indices.map { i ->
+                Decision(
+                    "activate-$i",
+                    if (i == 0) null else refs[i - 1],
+                    refs[i],
+                    at,
+                    "Athlete replaced programming; history retained",
+                    emptyList(),
+                    emptyList(),
+                )
+            }
+        val expected =
+            snapshot()
+                .copy(
+                    programmes = plans.associateBy { "${it.id()}:v1" },
+                    decisions = decisions,
+                    current = refs.last(),
+                )
+        val nested = StrengthProgrammingArchiveJson.element(expected)
+        val payload = nested.toString()
+        assertTrue(
+            payload.toByteArray(Charsets.UTF_8).size in
+                (16 * 1024 * 1024 + 1) until (32 * 1024 * 1024)
+        )
+        val old = StrengthProgrammingArchive.validate(JSONObject(payload), null)
+        assertTrue(expected.programmes == old.programmes())
+        assertEquals(expected.decisions, old.decisions())
+        assertEquals(expected.current, old.current())
+        val restored = StrengthProgrammingArchiveJson.decode(nested)
+        assertTrue(expected.programmes == restored.programmes)
+        assertEquals(expected.decisions, restored.decisions)
+        assertEquals(expected.current, restored.current)
+    }
+
     private fun compare(expected: StrengthProgrammingArchiveJson.Snapshot) {
         val payload = StrengthProgrammingArchiveJson.encode(expected)
         val old = StrengthProgrammingArchive.validate(JSONObject(payload), null)

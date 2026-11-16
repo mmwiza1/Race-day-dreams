@@ -101,6 +101,85 @@ class StrengthProgrammingArchiveJsonTest {
 
     private fun decode(j: JsonObject) = StrengthProgrammingArchiveJson.decode(j.toString())
 
+    @Test
+    fun largeNestedProgrammeHistoryPreservesAllRevisionsWithinParentBackupBudget() {
+        val base = programme()
+        val notes = "n".repeat(2000)
+        val plans =
+            List(800) { index ->
+                base.copy(
+                    id = "retained-$index",
+                    blocks =
+                        listOf(
+                            base
+                                .blocks()
+                                .single()
+                                .copy(
+                                    weeks = 10,
+                                    workouts =
+                                        List(10) { week ->
+                                            val id = "workout-$week"
+                                            val w = base.workouts().first()
+                                            w.copy(
+                                                id = id,
+                                                date = start.plusWeeks(week.toLong()),
+                                                definition = w.definition().copy(id = id),
+                                                notes = notes,
+                                            )
+                                        },
+                                )
+                        ),
+                )
+            }
+        val refs = plans.map { Reference(Owner.AUTHORED, it.id(), 1) }
+        val decisions =
+            plans.indices.map { i ->
+                Decision(
+                    "activate-$i",
+                    if (i == 0) null else refs[i - 1],
+                    refs[i],
+                    at,
+                    "Athlete replaced programming; history retained",
+                    emptyList(),
+                    emptyList(),
+                )
+            }
+        val expected =
+            snapshot()
+                .copy(
+                    programmes = plans.associateBy { "${it.id()}:v1" },
+                    decisions = decisions,
+                    current = refs.last(),
+                )
+        val nested = StrengthProgrammingArchiveJson.element(expected)
+        val bytes = nested.toString().encodeToByteArray().size
+        assertTrue(bytes > 16 * 1024 * 1024 && bytes < 32 * 1024 * 1024)
+        val restored = StrengthProgrammingArchiveJson.decode(nested)
+        assertEquals(800, restored.programmes.size)
+        assertTrue(expected.programmes == restored.programmes)
+        assertEquals(expected.decisions, restored.decisions)
+        assertEquals(expected.current, restored.current)
+        assertFailsWith<IllegalArgumentException> {
+            StrengthProgrammingArchiveJson.decode(nested.toString())
+        }
+    }
+
+    @Test
+    fun nestedEntryPointRetainsContextVersionLineageAndCurrentPointerGuards() {
+        val valid = snapshot()
+        val root = StrengthProgrammingArchiveJson.element(valid)
+        assertEquals(valid, StrengthProgrammingArchiveJson.decode(root))
+        for (invalid in
+            listOf(
+                JsonObject(root + ("version" to JsonPrimitive(3))),
+                JsonObject(root + ("decisions" to JsonArray(emptyList()))),
+                JsonObject(root + ("current" to JsonNull)),
+                JsonObject(root + ("extra" to JsonNull)),
+            )) assertFailsWith<IllegalArgumentException> {
+            StrengthProgrammingArchiveJson.decode(invalid)
+        }
+    }
+
     private fun forward(): ConcreteStrengthProgrammeDraft {
         val p = programme()
         val old = p.workouts()[1]

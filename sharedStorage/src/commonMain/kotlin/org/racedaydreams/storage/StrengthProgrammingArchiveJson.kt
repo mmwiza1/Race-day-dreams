@@ -28,8 +28,14 @@ object StrengthProgrammingArchiveJson {
         payload: String,
         legacy: List<GymProgramme> = emptyList(),
         legacyCurrent: String? = null,
+    ): Snapshot = decode(read(payload), legacy, legacyCurrent)
+
+    /** Parent backup syntax/size and legacy context must be validated before supplying this DOM. */
+    fun decode(
+        json: JsonObject,
+        legacy: List<GymProgramme> = emptyList(),
+        legacyCurrent: String? = null,
     ): Snapshot {
-        val json = read(payload)
         val version = integer(json, "version")
         when (version) {
             1 ->
@@ -194,53 +200,38 @@ object StrengthProgrammingArchiveJson {
         return Snapshot(programmes.toMap(), drafts, concreteDrafts, custom, decisions, current)
     }
 
-    fun encode(snapshot: Snapshot): String =
-        write(
-            buildJsonObject {
-                put("version", 2)
-                put(
-                    "programmes",
-                    JsonArray(
-                        snapshot.programmes.values.map {
-                            StrengthProgrammingPayloadJson.element(it)
-                        }
-                    ),
-                )
-                put(
-                    "drafts",
-                    JsonArray(
-                        snapshot.drafts.map { read(StrengthProgrammingPayloadJson.encodeDraft(it)) }
-                    ),
-                )
-                put(
-                    "concreteDrafts",
-                    JsonArray(
-                        snapshot.concreteDrafts.map {
-                            read(ConcreteStrengthDraftPayloadJson.encode(it))
-                        }
-                    ),
-                )
-                put(
-                    "customExercises",
-                    JsonArray(
-                        snapshot.custom.map {
-                            read(StrengthProgrammingPayloadJson.encodeCustom(it))
-                        }
-                    ),
-                )
-                put(
-                    "decisions",
-                    JsonArray(
-                        snapshot.decisions.map { StrengthProgrammingDecisionJson.element(it) }
-                    ),
-                )
-                put(
-                    "current",
-                    snapshot.current?.let { ConcreteStrengthDraftPayloadJson.reference(it) }
-                        ?: JsonNull,
-                )
-            }
+    fun encode(snapshot: Snapshot): String = write(element(snapshot))
+
+    /** Nested export uses the enclosing backup budget, without truncating retained revisions. */
+    fun element(snapshot: Snapshot): JsonObject = buildJsonObject {
+        put("version", 2)
+        put(
+            "programmes",
+            JsonArray(snapshot.programmes.values.map { StrengthProgrammingPayloadJson.element(it) }),
         )
+        put(
+            "drafts",
+            JsonArray(snapshot.drafts.map { read(StrengthProgrammingPayloadJson.encodeDraft(it)) }),
+        )
+        put(
+            "concreteDrafts",
+            JsonArray(
+                snapshot.concreteDrafts.map { read(ConcreteStrengthDraftPayloadJson.encode(it)) }
+            ),
+        )
+        put(
+            "customExercises",
+            JsonArray(snapshot.custom.map { read(StrengthProgrammingPayloadJson.encodeCustom(it)) }),
+        )
+        put(
+            "decisions",
+            JsonArray(snapshot.decisions.map { StrengthProgrammingDecisionJson.element(it) }),
+        )
+        put(
+            "current",
+            snapshot.current?.let { ConcreteStrengthDraftPayloadJson.reference(it) } ?: JsonNull,
+        )
+    }
 
     /** Separate cross-archive logging-definition consistency check, required before replacement. */
     fun validateCoaching(snapshot: Snapshot, definitions: Map<String, StrengthExercise>) {
