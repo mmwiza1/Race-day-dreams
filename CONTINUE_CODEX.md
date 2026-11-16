@@ -2251,14 +2251,58 @@ incomplete migration merely because a focused checkpoint passes.
   full older/current backup normalisation/archives/retention before wiring native destructive
   operations. Real common app root, native services and iOS app host/app build remain unfinished.
 
+### Checkpoint 58 — Gym Now execution snapshot wire format (16 November 2026)
+
+- Checkpoint57 committed/pushed **a79cd9889cf55edb6d0d693ea681aed8f0b73e8b**, same draft PR24.
+  Experiment **43777437866 RUNNING**, formatting43777437837 SUCCESS. Expected452Android/
+  Android452 remains pending. Apple133006823423 SUCCESS: digest-verified14186508735
+  ZIP79e2add9eef11a4b4f385a63940f6bd79abade07f51eb3c95a2361ada15b44f4 proves
+  **449domain+18health+108storage Native**, all0failures/errors/skips; scratch/frozen-a79-native
+  .{zip,json}. Framework14185864989 linked. No iOS app host has been implemented yet.
+- Parent **31101d7 experiment43776246774 FULL SUCCESS**, format43776246786 SUCCESS. Actual Android
+  133003085132: **449unique START/END**, allcomplete/no failures/skips; all11new running-plan/
+  strength-codec/choice parity tests ran. **700189checks/48suites** retained. Digest-verified
+  JVM14187200643 ZIPa87d39b0b9db021c9fd6fe080a36a2bc17f0932fd08f8f70692e648af7c00e3c proves
+  **490domain+16health+94storage**. Native98 proof above; files scratch/coaching-311-{jvm,native}
+  .{zip,json}. Actual linked framework is not an application; APK14186991659 is private CI only.
+- Added GymExecutionSnapshotJson preserving original strict v1 GymExecutionJson envelope, original
+  and today-only slots, source/revision identity, exact monotonic clock, actual exercise/set records,
+  events, optional completed session and partial status. Uses the SAME GymExecution constructors
+  to replay event/state invariants. No second execution engine and no writes/finalisation enabled.
+  Repository/source-content validation is still required separately from source identity checks.
+- Six common tests cover active/paused/finished/free states, warm-ups, fractional RIR, optional
+  effort, source provenance, exact clocks above2^53, honest process recovery, superset changes and
+  original/replaced actual exercise separation. Forged events/timing/completion, unknown fields,
+  exponent clocks and collection limits reject. Two Android tests compare original/shared readers
+  BOTH ways, real lifecycle/recovery/substitution and forged payload rejection.
+- Focused6tests PASS38s after correcting a test syntax error and binding the planned fixture to its
+  genuine domain-required source identity/revision; no invariant/assertion weakening. Full local
+  **110storage JVM PASS**,0failures/errors/skips. Final build/bothAPKs/lint **PASS1m55s/160tasks**:
+  scratch/kmp-gym-execution-snapshot-build-fixed.log. Original attempt identified a nullable Double
+  in the Android delta assertion; explicit non-null unboxing retains the exact assertion and fixes
+  compilation. Format **694sources(599Kotlin/95Java) PASS**, exact schema1..19 boundaries PASS.
+  Expected114storage Native/454Android still require actual CI; never assumed passed.
+- Next: complete local gates, inspect checkpoint57 CI; commit/push this batch only once locally
+  verified, preserving parent gate evidence without blind reruns. Then port remaining programme/
+  concrete draft/association/accepted-actual/tools/backup codecs and real typed repositories.
+  Execution persistence/finalisation MUST preserve retained source content, atomic actual/session/
+  association commits, deliberate actual-edit provenance and corruption/rollback guards. Native
+  destructive commands remain disabled until full retention/restore safeguards are complete.
+- Version0.12.3-test1/code19/SQLite19/rootJSON13/raw3/package1 unchanged. No recording/domain-rule/
+  permission/navigation change, public publication or merge. Real common app composition, native
+  services, full supported backup normalization and functioning iOS app host/app gates remain.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24, remote31101d7. Checkpoint57
-   strict frozen-workout code is locally verified:104storage JVM/format691/build/bothAPKs/lint PASS.
-   Preserve it. Parent31101d7 experiment43776246774 RUNNING, format43776246786 SUCCESS; expected
-   Android449 pending. Native98 verified as above. Earlierb909442 FULL SUCCESS438Android,
-   700189checks/48suites,490domain+16health+66storage JVM,449domain+18health+70storage Native.
-   Next after local build: commit/push strict-codec batch, verify expected452Android/108Native.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24, remotea79cd98. Checkpoint58
+   execution-snapshot codec/tests are fully locally verified;110storage JVM/format694/build/
+   bothAPKs/lint/schema PASS (commit follows this record).
+   Preserve them.
+   a79cd98 experiment43777437866 RUNNING/format43777437837 SUCCESS; Native108 verified,
+   Android452 still pending.
+   Parent31101d7 FULL SUCCESS449Android/700189checks/48suites/490domain+16health+94storage JVM/
+   449domain+18health+98storage Native. Next after local build: commit/push execution codec and
+   verify its actual454Android/114Native gates, then remaining typed strength persistence/backups.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
