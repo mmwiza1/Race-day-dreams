@@ -3428,12 +3428,46 @@ incomplete migration merely because a focused checkpoint passes.
   unfinished. Working Mac/Xcode CI exists. Physical HealthKit/HC/GPS/BLE/audio/locked-screen/OEM/
   human TalkBack unperformed. No premature bump/merge/publication or unrelated release.
 
+### Checkpoint80 — Body-measurement and achievement archives (locally verified; next push pending)
+
+- Checkpoint79 ALL source committed/pushed as **4e4d336b4b792ef14775ac0b86f30c2daca50519**;
+  PR24 OPEN/DRAFT confirmed, description updated. Main85e1c39 /PR23 untouched. Exact-head experiment
+  **43880437540 RUNNING**, Android133344566099 /Apple133344566645; formatting43880437522 SUCCESS.
+  Expected523Android/355Native remain unverified until completed logs/digest-verified XML.
+- Continued next original sections without restarting: BodyMeasurementsArchiveJson,
+  AchievementsArchiveJson, BodyAndAchievementsArchiveTest and2 additional parity methods in existing
+  SharedBackupEnvelopeTest. These4 source files are included in coherent80 local commit; next push
+  waits for79 runtime to avoid cancelling its still-running Android gate. Existing typed body/milestone models
+  reused; measurement identities/nullable provenance/reference basis, strict fields/versions/limits,
+  duplicate sources, actual milestone proof/recognition chronology and old missing-section defaults
+  retained. No guidance/celebration activation, reawarding, DB replacement or new SQL tables.
+- Added9 common cases plus2 REAL original Android export/validator parity cases. Focused9 PASS
+  **1m2s**, scratch/kmp-body-awards-focused.log, after fixing prohibited Kotlin object wildcard
+  imports with explicit imports (initial compile failure resolved). Full storage JVM now364tests /
+  0failure/error/skip. Common metadata AND Android test compilation PASS **3m16s/64tasks**,
+  scratch/kmp-body-awards-final.log. Formatter792sources(697Kotlin/95Java), exact schema1..19 /
+  75schema tests/source-provenance3 PASS, scratch/kmp-body-awards-{format,safety}.log.
+- Next exact: inspect79CI before any next push to avoid cancellation. All80 relevant local checks
+  now pass; push coherent80 once79 runtime finishes;
+  keep PR24draft, record actual runtime counts/digests. No public experimental artifacts or version/
+  schema/backup changes. Parent78 FULL SUCCESS is recorded above;79local355/APKs/lint all passed.
+- Parent79 Apple artifact14233291239 digest VERIFIED:
+  eee49e4f4d6c9cbb06b57c1b1d9c4bbf919a41120879b4f433fbb34e518326bc;449domain+18health+355storage,
+  all0failure/error/skip. All19 new archive codec methods and4SQLite contract methods matched exact
+  expected Native names, ignoring ONLY platform suffixes. Proof scratch/support-4e4d336-native/
+  verification.json; framework14233286286 NOT iOS app. Android523 still pending.
+- Then remaining legacy programme/authored/execution/tool archive composition/graph links, COMPLETE
+  parent backup validation, raw3/package1 and transactional restore/retention safeguards, common app
+  composition/native full services/REAL iOS app/final matrix remain as below. Native destructive
+  operations stay disabled. Physical checks unperformed; actual Mac/Xcode CI is available.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint79 above is CURRENT. Keep existing PR24 draft; preserve all source and78final status
-   note. All local gates PASS355JVM/789format/metadata/APKs/lint/schema75/provenance3. Commit/push
-   coherently and verify exact new Android523/Native355 runtime/artifacts; these remain pending.
-   Parent78 FULL SUCCESS520Android/332JVM/332Native. Do not repeat completed implementation.
+1. Current local checkpoint80 boundary immediately above supersedes79pending instructions.
+   Remote4e4d336 is committed79; local80 contains the4 body/achievement source changes plus
+   recovery note. Focused9 and364full storage JVM/792format/schema75/provenance3 PASS;
+   common metadata/Android test compilation PASS3m16s. Inspect79 runtime
+   43880437540 (523Android/355Native pending; formatting green), then coherent80 checkpoint.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.

@@ -12,13 +12,20 @@ import org.json.JSONObject
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
+import org.racedaydreams.domain.achievements.TrainingMilestones
 import org.racedaydreams.domain.activity.*
+import org.racedaydreams.domain.body.BodyHeight
+import org.racedaydreams.domain.body.BodyMeasurementsRepository.Preferences
 import org.racedaydreams.domain.body.BodyWeight
+import org.racedaydreams.domain.body.HeightUnit
+import org.racedaydreams.domain.body.ProteinGuidance
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.support.DreamRoutes
 import org.racedaydreams.domain.support.RunningRoutines
 import org.racedaydreams.portability.BackupManager
+import org.racedaydreams.storage.AchievementsArchiveJson
 import org.racedaydreams.storage.BackupEnvelopeJson
+import org.racedaydreams.storage.BodyMeasurementsArchiveJson
 import org.racedaydreams.storage.CoreBackupDataJson
 import org.racedaydreams.storage.DevelopmentArchiveJson
 import org.racedaydreams.storage.Release08ArchiveJson
@@ -32,6 +39,131 @@ class SharedBackupEnvelopeTest {
     private val at = Instant.parse("2026-11-16T10:00:00.123456789Z")
     private lateinit var repository: SqliteBackupRepository
     private lateinit var original: BackupManager
+
+    @Test
+    fun sharedBodyArchiveMatchesOriginalSourceIdentityAndOptionalGuidancePreferences() {
+        val store = SqliteBodyMeasurementsRepository(context)
+        val height =
+            BodyHeight("manual-height", 1.83, at, null, "manual", "height-source", null, null)
+        val imported =
+            BodyHeight(
+                "imported-height",
+                1.84,
+                at,
+                ZoneOffset.ofHoursMinutesSeconds(5, 30, 15),
+                "health-connect",
+                "provider-id",
+                "provider.package",
+                at,
+            )
+        store.saveHeight(height)
+        store.saveHeight(imported)
+        store.preferences(
+            Preferences(
+                true,
+                HeightUnit.CENTIMETRES,
+                ProteinGuidance.Basis("retained-weight-reference", at, 87.25),
+            )
+        )
+        val db = ProfileDatabase.get(context).writableDatabase
+        val before = SqliteBodyMeasurementsRepository.exportData(db)
+        val original = SqliteBodyMeasurementsRepository.validate(before)
+        val shared =
+            BodyMeasurementsArchiveJson.decode(
+                Json.parseToJsonElement(before.toString()) as JsonObject
+            )
+        assertEquals(original.heights(), shared.heights)
+        assertEquals(original.preferences(), shared.preferences)
+        val rechecked =
+            SqliteBodyMeasurementsRepository.validate(
+                JSONObject(BodyMeasurementsArchiveJson.element(shared).toString())
+            )
+        assertEquals(original.heights(), rechecked.heights())
+        assertEquals(original.preferences(), rechecked.preferences())
+        val duplicate =
+            JSONObject(before.toString()).apply {
+                getJSONArray("heights").put(getJSONArray("heights").getJSONObject(0))
+            }
+        for (bad in
+            listOf(
+                JSONObject(before.toString()).put("version", 2),
+                duplicate,
+                JSONObject(before.toString()).apply {
+                    getJSONArray("heights").getJSONObject(0).put("metres", 0)
+                },
+            )) {
+            assertTrue(runCatching { SqliteBodyMeasurementsRepository.validate(bad) }.isFailure)
+            assertTrue(
+                runCatching {
+                        BodyMeasurementsArchiveJson.decode(
+                            Json.parseToJsonElement(bad.toString()) as JsonObject
+                        )
+                    }
+                    .isFailure
+            )
+        }
+        assertEquals(before.toString(), SqliteBodyMeasurementsRepository.exportData(db).toString())
+        assertEquals(
+            SqliteBodyMeasurementsRepository.validate(null).preferences(),
+            BodyMeasurementsArchiveJson.decode(null).preferences,
+        )
+    }
+
+    @Test
+    fun sharedAchievementsArchiveRetainsOriginalProofWithoutReawardingOrChangingCelebrations() {
+        val store = SqliteAchievementsRepository(context)
+        val proof =
+            TrainingMilestones.Proof(
+                TrainingMilestones.Source.RUN,
+                "retained-run",
+                at,
+                null,
+                5000.5,
+            )
+        val award =
+            TrainingMilestones.Award(TrainingMilestones.Kind.FIRST_FIVE_KM_RUN, at, listOf(proof))
+        store.recognize(listOf(award), at)
+        store.celebrations(false)
+        val db = ProfileDatabase.get(context).writableDatabase
+        val before = SqliteAchievementsRepository.exportData(db)
+        val original = SqliteAchievementsRepository.validate(before)
+        val shared =
+            AchievementsArchiveJson.decode(Json.parseToJsonElement(before.toString()) as JsonObject)
+        assertFalse(shared.celebrations)
+        assertEquals(original.awards().single().award(), shared.awards.single().award)
+        assertEquals(original.awards().single().recognizedAt(), shared.awards.single().recognizedAt)
+        val rechecked =
+            SqliteAchievementsRepository.validate(
+                JSONObject(AchievementsArchiveJson.element(shared).toString())
+            )
+        assertEquals(original.awards(), rechecked.awards())
+        assertFalse(rechecked.celebrations())
+        for (bad in
+            listOf(
+                JSONObject(before.toString()).put("version", 2),
+                JSONObject(before.toString()).apply {
+                    getJSONArray("awards").put(getJSONArray("awards").getJSONObject(0))
+                },
+                JSONObject(before.toString()).apply {
+                    getJSONArray("awards")
+                        .getJSONObject(0)
+                        .put("recognizedAt", "2020-01-01T00:00:00Z")
+                },
+            )) {
+            assertTrue(runCatching { SqliteAchievementsRepository.validate(bad) }.isFailure)
+            assertTrue(
+                runCatching {
+                        AchievementsArchiveJson.decode(
+                            Json.parseToJsonElement(bad.toString()) as JsonObject
+                        )
+                    }
+                    .isFailure
+            )
+        }
+        assertEquals(before.toString(), SqliteAchievementsRepository.exportData(db).toString())
+        assertEquals(0, store.recognize(listOf(award), at))
+        assertFalse(AchievementsArchiveJson.decode(null).celebrations)
+    }
 
     @Test
     fun sharedStrengthChoicesArchivePreservesOriginalFavouritesExclusionsAndAcknowledgements() {
