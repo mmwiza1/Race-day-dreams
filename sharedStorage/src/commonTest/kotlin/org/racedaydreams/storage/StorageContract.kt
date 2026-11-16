@@ -14,6 +14,67 @@ abstract class StorageContract {
         ApplicationSchema.NewInstallation("2026-11-15T10:00:00Z", "installation-test")
 
     @Test
+    fun strengthChoiceArchiveCapturesReversiblePreferencesWithoutRewritingActualsOrAcknowledgements() {
+        val db = opened()
+        try {
+            val choices = SqliteStrengthChoices(db)
+            choices.save(SqliteStrengthChoices.Choice("retained", true, false))
+            choices.acknowledge("historic-record")
+            val exclusion =
+                Exclusion(
+                    "retained",
+                    Reason.UNCOMFORTABLE,
+                    StoredInstant.parse("2026-11-16T10:00:00Z"),
+                )
+            SqliteExerciseExclusions(db).exclude(exclusion)
+            val changes = db.query("SELECT total_changes()")
+            val snapshot = choices.archiveSnapshot()
+            assertEquals(choices.choices(), snapshot.choices)
+            assertEquals(choices.acknowledged(), snapshot.acknowledged.toSet())
+            assertEquals(listOf(exclusion), snapshot.exclusions)
+            assertEquals(changes, db.query("SELECT total_changes()"))
+            assertTrue(db.query("SELECT id FROM strength_sessions").isEmpty())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun strengthChoiceArchiveRejectsOversizedIdentityBeforeLoadingRows() {
+        val db = opened()
+        try {
+            db.execute(
+                "INSERT INTO pb_acknowledgements(id) VALUES(CAST(zeroblob(33554433) AS TEXT))"
+            )
+            val changes = db.query("SELECT total_changes()")
+            val guarded =
+                object : SqlDatabase by db {
+                    override fun query(
+                        sql: String,
+                        arguments: List<SqlValue>,
+                    ): List<List<SqlValue>> {
+                        check(!sql.contains("ORDER BY")) {
+                            "Preflight must run before loading choices."
+                        }
+                        return db.query(sql, arguments)
+                    }
+                }
+            val error =
+                assertFailsWith<IllegalArgumentException> {
+                    SqliteStrengthChoices(guarded).archiveSnapshot()
+                }
+            assertTrue(error.message!!.contains("whole-backup budget"))
+            assertEquals(changes, db.query("SELECT total_changes()"))
+            assertEquals(
+                1L,
+                db.query("SELECT COUNT(*) FROM pb_acknowledgements").single().single().sqlLong(),
+            )
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
     fun freshInstallationHasExactSchemaAndExplicitDefault() {
         val db = opened()
         try {

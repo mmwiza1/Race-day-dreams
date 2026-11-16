@@ -15,10 +15,16 @@ import org.junit.runner.RunWith
 import org.racedaydreams.domain.activity.*
 import org.racedaydreams.domain.body.BodyWeight
 import org.racedaydreams.domain.strength.*
+import org.racedaydreams.domain.support.DreamRoutes
+import org.racedaydreams.domain.support.RunningRoutines
 import org.racedaydreams.portability.BackupManager
 import org.racedaydreams.storage.BackupEnvelopeJson
 import org.racedaydreams.storage.CoreBackupDataJson
 import org.racedaydreams.storage.DevelopmentArchiveJson
+import org.racedaydreams.storage.Release08ArchiveJson
+import org.racedaydreams.storage.SqliteRunningSupportArchives
+import org.racedaydreams.storage.StrengthChoicesArchiveJson
+import org.racedaydreams.storage.SupportArchiveJson
 
 @RunWith(AndroidJUnit4::class)
 class SharedBackupEnvelopeTest {
@@ -26,6 +32,324 @@ class SharedBackupEnvelopeTest {
     private val at = Instant.parse("2026-11-16T10:00:00.123456789Z")
     private lateinit var repository: SqliteBackupRepository
     private lateinit var original: BackupManager
+
+    @Test
+    fun sharedStrengthChoicesArchivePreservesOriginalFavouritesExclusionsAndAcknowledgements() {
+        val store = StrengthUserStore(context)
+        store.save(StrengthUserStore.Choice("retained-exercise", true, false))
+        store.acknowledge("record-1")
+        store.exclude(
+            ExerciseExclusionRepository.Exclusion(
+                "retained-exercise",
+                ExerciseExclusionRepository.Reason.UNCOMFORTABLE,
+                at,
+            )
+        )
+        val db = ProfileDatabase.get(context).writableDatabase
+        val before = StrengthUserStore.exportData(db)
+        StrengthUserStore.validate(before)
+        val snapshot =
+            StrengthChoicesArchiveJson.decode(
+                Json.parseToJsonElement(before.toString()) as JsonObject
+            )
+        assertEquals(
+            StrengthChoicesArchiveJson.element(snapshot),
+            StrengthChoicesArchiveJson.element(
+                org.racedaydreams.storage
+                    .SqliteStrengthChoices(AndroidSqlTestConnection(db))
+                    .archiveSnapshot()
+            ),
+        )
+        assertEquals("retained-exercise", snapshot.choices.single().exerciseId)
+        assertEquals(store.exclusions(), snapshot.exclusions)
+        assertEquals(store.acknowledged(), snapshot.acknowledged.toSet())
+        assertEquals(
+            Json.parseToJsonElement(before.toString()),
+            StrengthChoicesArchiveJson.element(snapshot),
+        )
+        StrengthUserStore.validate(
+            JSONObject(StrengthChoicesArchiveJson.element(snapshot).toString())
+        )
+        val legacy =
+            JSONObject(before.toString()).put("version", 1).apply {
+                remove("exclusions")
+                put("legacyExtra", "preserved")
+            }
+        StrengthUserStore.validate(legacy)
+        assertEquals(
+            Json.parseToJsonElement(legacy.toString()),
+            StrengthChoicesArchiveJson.element(
+                StrengthChoicesArchiveJson.decode(
+                    Json.parseToJsonElement(legacy.toString()) as JsonObject
+                )
+            ),
+        )
+        val badExclusions = JSONObject(before.toString())
+        badExclusions
+            .getJSONObject("exclusions")
+            .getJSONArray("entries")
+            .getJSONObject(0)
+            .put("reason", "INJURED")
+        for (bad in
+            listOf(
+                JSONObject(before.toString()).put("version", 3),
+                JSONObject(before.toString()).put("extra", true),
+                badExclusions,
+                JSONObject(before.toString()).apply {
+                    getJSONArray("choices").getJSONObject(0).put("favourite", "true")
+                },
+            )) {
+            assertTrue(runCatching { StrengthUserStore.validate(bad) }.isFailure)
+            assertTrue(
+                runCatching {
+                        StrengthChoicesArchiveJson.decode(
+                            Json.parseToJsonElement(bad.toString()) as JsonObject
+                        )
+                    }
+                    .isFailure
+            )
+        }
+        assertEquals(before.toString(), StrengthUserStore.exportData(db).toString())
+        store.restoreExercise("retained-exercise")
+        assertTrue(store.exclusions().isEmpty())
+        assertEquals("retained-exercise", store.choices().single().exerciseId())
+        assertEquals(setOf("record-1"), store.acknowledged())
+    }
+
+    @Test
+    fun sharedSupportArchiveMatchesOriginalSavedRunningEvidenceWithoutSideEffects() {
+        val db = ProfileDatabase.get(context).writableDatabase
+        val route = DreamRoutes.routes().first().id()
+        SupportStore.put(
+            db,
+            "dream",
+            "actual",
+            JSONObject()
+                .put("version", 1)
+                .put("route", route)
+                .put("start", 0)
+                .put("distance", 5000)
+                .put("assignedAt", at.toString()),
+        )
+        SupportStore.put(
+            db,
+            "routine",
+            "routine",
+            JSONObject()
+                .put("version", 1)
+                .put("routine", RunningRoutines.all().first().id())
+                .put("at", at.toString())
+                .put("related", "actual"),
+        )
+        for (mode in listOf("workout", "race", "quick", "custom", "repeat")) {
+            val payload =
+                JSONObject()
+                    .put("version", 1)
+                    .put("mode", mode)
+                    .put("planVersion", "historic-v1")
+                    .put("workoutId", "run")
+                    .put(
+                        "steps",
+                        JSONArray()
+                            .put(
+                                JSONObject()
+                                    .put("label", "Run")
+                                    .put("kind", "RUN")
+                                    .put("metres", "1000.5")
+                                    .put("millis", "300000.9")
+                            ),
+                    )
+                    .put(
+                        "events",
+                        JSONArray()
+                            .put(
+                                JSONObject()
+                                    .put("step", 1)
+                                    .put("active", "1000.9")
+                                    .put("metres", "10.5")
+                                    .put("type", "WORKOUT_FINISHED_EARLY")
+                            ),
+                    )
+                    .put("interrupted", true)
+                    .put("unrecognisedLegacyField", "retained")
+            SupportStore.put(db, "execution", mode, payload)
+        }
+        val planned =
+            org.racedaydreams.domain.PlannedWorkout(
+                "run",
+                LocalDate.of(2026, 11, 16),
+                org.racedaydreams.domain.WorkoutCategory.EASY_RUN,
+                5.0,
+                Duration.ofMinutes(30),
+                emptyList(),
+                "Retained prescription",
+            )
+        val retained =
+            SupportStore(context)
+                .get("execution", "workout")!!
+                .put("workout", FeatureJson.planned(planned))
+        SupportStore.put(db, "execution", "workout", retained)
+        val before = SupportStore.exportData(db)
+        SupportStore.validate(before)
+        val snapshot =
+            SupportArchiveJson.decode(Json.parseToJsonElement(before.toString()) as JsonObject)
+        assertEquals(7, snapshot.records.size)
+        assertEquals(
+            Json.parseToJsonElement(before.toString()),
+            SupportArchiveJson.element(snapshot),
+        )
+        SupportStore.validate(JSONObject(SupportArchiveJson.element(snapshot).toString()))
+        assertEquals(
+            SupportArchiveJson.element(snapshot),
+            SupportArchiveJson.element(
+                SqliteRunningSupportArchives(AndroidSqlTestConnection(db)).snapshot().support
+            ),
+        )
+        for (record in snapshot.records.filter { it.kind == SupportArchiveJson.Kind.EXECUTION }) {
+            val originalSteps = SupportStore.steps(JSONObject(record.payload.toString()))
+            assertEquals(
+                originalSteps,
+                (record.evidence as SupportArchiveJson.Evidence.Execution).steps,
+            )
+        }
+        val bad = JSONObject(before.toString())
+        bad.getJSONArray("rows")
+            .put(
+                JSONObject()
+                    .put("kind", "execution")
+                    .put("id", "corrupt")
+                    .put(
+                        "payload",
+                        JSONObject()
+                            .put("version", 1)
+                            .put("mode", "quick")
+                            .put(
+                                "steps",
+                                JSONArray().put(JSONObject().put("label", "Run").put("kind", "RUN")),
+                            )
+                            .put(
+                                "events",
+                                JSONArray()
+                                    .put(
+                                        JSONObject()
+                                            .put("step", 0)
+                                            .put("active", -1)
+                                            .put("metres", 0)
+                                            .put("type", "STEP_STARTED")
+                                    ),
+                            ),
+                    )
+            )
+        assertTrue(runCatching { SupportStore.validate(bad) }.isFailure)
+        assertTrue(
+            runCatching {
+                    SupportArchiveJson.decode(Json.parseToJsonElement(bad.toString()) as JsonObject)
+                }
+                .isFailure
+        )
+        assertEquals(before.toString(), SupportStore.exportData(db).toString())
+        assertTrue(CoachingStore(context).versions().isEmpty())
+    }
+
+    @Test
+    fun sharedRelease08ArchiveMatchesOriginalCustomDefinitionsAndPreferences() {
+        val db = ProfileDatabase.get(context).writableDatabase
+        val city = DreamRoutes.routes().first().id()
+        val rows =
+            listOf(
+                Triple(
+                    "custom",
+                    "custom",
+                    """{"version":1,"id":"custom","title":"My run","groups":[{"repeats":"2.9","steps":[{"label":"Run","kind":"RUN","metres":"500.5"}]}],"extra":"preserved"}""",
+                ),
+                Triple(
+                    "origin",
+                    "run",
+                    """{"version":1,"mode":"free","at":"$at","dreamRoute":null}""",
+                ),
+                Triple(
+                    "association",
+                    "actual",
+                    """{"version":1,"activity":"actual","planVersion":"v1","workout":"run","at":"$at"}""",
+                ),
+                Triple("checklist", "item", """{"version":1,"label":"Shoes","checked":"TRUE"}"""),
+                Triple(
+                    "config",
+                    "dream",
+                    """{"version":1,"type":"dream","enabled":"FALSE","cities":["$city"]}""",
+                ),
+                Triple(
+                    "config",
+                    "schedule",
+                    """{"version":1,"type":"schedule","maximumMinutes":"45.9","distribution":"BALANCED","unavailable":["2026-11-17","2026-11-17"]}""",
+                ),
+                Triple(
+                    "config",
+                    "shoe-feedback",
+                    """{"version":1,"type":"shoe_feedback","activities":["actual"]}""",
+                ),
+                Triple("config", "start", """{"version":1,"type":"start","path":"hybrid"}"""),
+            )
+        for ((kind, id, payload) in rows) Release08Store.put(db, kind, id, JSONObject(payload))
+        val before = Release08Store.exportData(db)
+        Release08Store.validate(before)
+        val snapshot =
+            Release08ArchiveJson.decode(Json.parseToJsonElement(before.toString()) as JsonObject)
+        assertEquals(8, snapshot.records.size)
+        assertEquals(
+            Json.parseToJsonElement(before.toString()),
+            Release08ArchiveJson.element(snapshot),
+        )
+        Release08Store.validate(JSONObject(Release08ArchiveJson.element(snapshot).toString()))
+        assertEquals(
+            Release08ArchiveJson.element(snapshot),
+            Release08ArchiveJson.element(
+                SqliteRunningSupportArchives(AndroidSqlTestConnection(db)).snapshot().release08
+            ),
+        )
+        val custom = snapshot.records.single { it.kind == Release08ArchiveJson.Kind.CUSTOM }
+        assertEquals(Release08Store.decode(JSONObject(custom.payload.toString())), custom.custom)
+        for (bad in
+            listOf(
+                JSONObject(before.toString()).put("version", 2),
+                JSONObject()
+                    .put("version", 1)
+                    .put(
+                        "rows",
+                        JSONArray()
+                            .put(
+                                JSONObject()
+                                    .put("kind", "custom")
+                                    .put("id", "different")
+                                    .put("payload", JSONObject(rows.first().third))
+                            ),
+                    ),
+                JSONObject()
+                    .put("version", 1)
+                    .put(
+                        "rows",
+                        JSONArray()
+                            .put(
+                                JSONObject()
+                                    .put("kind", "config")
+                                    .put("id", "dream")
+                                    .put("payload", JSONObject(rows.last().third))
+                            ),
+                    ),
+            )) {
+            assertTrue(runCatching { Release08Store.validate(bad) }.isFailure)
+            assertTrue(
+                runCatching {
+                        Release08ArchiveJson.decode(
+                            Json.parseToJsonElement(bad.toString()) as JsonObject
+                        )
+                    }
+                    .isFailure
+            )
+        }
+        assertEquals(before.toString(), Release08Store.exportData(db).toString())
+        assertEquals(2, Release08Store(context).workouts().single().flattened().size)
+    }
 
     @Test
     fun developmentArchiveMatchesOriginalKindsAndManualWeightExportFilter() {

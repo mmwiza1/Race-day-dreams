@@ -1,10 +1,75 @@
 package org.racedaydreams.storage
 
+import kotlinx.serialization.json.*
+
 /**
  * Existing reversible favourites/archive choices and PB acknowledgement, separate from evidence.
  */
 class SqliteStrengthChoices(private val database: SqlDatabase) {
     data class Choice(val exerciseId: String, val favourite: Boolean, val archived: Boolean)
+
+    /** One bounded read in the shared transaction; no exclusions or PB records are changed. */
+    fun archiveSnapshot(): StrengthChoicesArchiveJson.Snapshot =
+        database.transaction {
+            var minimumBytes = 0L
+            for ((table, maximum, size) in
+                listOf(
+                    Triple("strength_user_state", 10000, "LENGTH(CAST(exercise_id AS BLOB))"),
+                    Triple("pb_acknowledgements", 100000, "LENGTH(CAST(id AS BLOB))"),
+                    Triple(
+                        "strength_exclusions",
+                        10000,
+                        "LENGTH(CAST(exercise_id AS BLOB))+LENGTH(CAST(reason AS BLOB))+LENGTH(CAST(excluded_at AS BLOB))",
+                    ),
+                )) {
+                val totals =
+                    database.query("SELECT COUNT(*),COALESCE(SUM($size),0) FROM $table").single()
+                require(totals[0].sqlLong() <= maximum) {
+                    "Too many exercise choices; nothing was truncated."
+                }
+                val bytes = totals[1].sqlLong()
+                require(bytes >= 0 && bytes <= BackupEnvelopeJson.MAX_BYTES - minimumBytes) {
+                    "Exercise choices exceed the whole-backup budget; nothing was truncated."
+                }
+                minimumBytes += bytes
+            }
+            StrengthChoicesArchiveJson.decode(
+                buildJsonObject {
+                    put("version", 2)
+                    put(
+                        "choices",
+                        buildJsonArray {
+                            for (choice in choices()) add(
+                                buildJsonObject {
+                                    put("id", choice.exerciseId)
+                                    put("favourite", choice.favourite)
+                                    put("archived", choice.archived)
+                                }
+                            )
+                        },
+                    )
+                    put("acknowledged", buildJsonArray { for (id in acknowledged()) add(id) })
+                    put(
+                        "exclusions",
+                        buildJsonObject {
+                            put("version", 1)
+                            put(
+                                "entries",
+                                buildJsonArray {
+                                    for (e in SqliteExerciseExclusions(database).exclusions()) add(
+                                        buildJsonObject {
+                                            put("exerciseId", e.exerciseId())
+                                            put("reason", e.reason().name)
+                                            put("excludedAt", e.excludedAt().toString())
+                                        }
+                                    )
+                                },
+                            )
+                        },
+                    )
+                }
+            )
+        }
 
     fun choices(): List<Choice> =
         database

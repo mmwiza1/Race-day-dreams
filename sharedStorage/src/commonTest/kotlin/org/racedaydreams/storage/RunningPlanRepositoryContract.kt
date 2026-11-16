@@ -15,6 +15,65 @@ abstract class RunningPlanRepositoryContract {
     protected val at = StoredInstant.parse("2026-11-15T09:00:00.123456789Z")
 
     @Test
+    fun runningSupportSnapshotReadsOriginalTablesWithoutWritingOrCompletingWorkouts() =
+        storage { db, _, _ ->
+            val payload =
+                """{"version":1,"mode":"quick","steps":[{"label":"Run","kind":"RUN","millis":60000}],"interrupted":true}"""
+            val preference = """{"version":1,"type":"start","path":"record"}"""
+            db.execute(
+                "INSERT INTO coach_support(kind,id,payload) VALUES('execution','historic',?)",
+                listOf(SqlValue.Text(payload)),
+            )
+            db.execute(
+                "INSERT INTO release08(kind,id,payload) VALUES('config','start',?)",
+                listOf(SqlValue.Text(preference)),
+            )
+            val changes = db.query("SELECT total_changes()")
+            val archive = SqliteRunningSupportArchives(db).snapshot()
+            assertEquals("historic", archive.support.records.single().id)
+            assertEquals("start", archive.release08.records.single().id)
+            assertEquals(Json.parseToJsonElement(payload), archive.support.records.single().payload)
+            assertEquals(changes, db.query("SELECT total_changes()"))
+            assertEquals(
+                payload,
+                db.query("SELECT payload FROM coach_support").single().single().sqlText(),
+            )
+            assertTrue(db.query("SELECT id FROM activities").isEmpty())
+            assertTrue(db.query("SELECT id FROM strength_sessions").isEmpty())
+        }
+
+    @Test
+    fun runningSupportRejectsOversizedSectionsBeforeLoadingPayloadAndDoesNotTruncate() =
+        storage { db, _, _ ->
+            db.execute(
+                "INSERT INTO coach_support(kind,id,payload) VALUES('execution','huge',CAST(zeroblob(33554433) AS TEXT))"
+            )
+            val changes = db.query("SELECT total_changes()")
+            val guarded =
+                object : SqlDatabase by db {
+                    override fun query(
+                        sql: String,
+                        arguments: List<SqlValue>,
+                    ): List<List<SqlValue>> {
+                        check(!sql.contains("ORDER BY kind,id")) {
+                            "Preflight must run before loading payloads."
+                        }
+                        return db.query(sql, arguments)
+                    }
+                }
+            val error =
+                assertFailsWith<IllegalArgumentException> {
+                    SqliteRunningSupportArchives(guarded).snapshot()
+                }
+            assertTrue(error.message!!.contains("whole-backup budget"))
+            assertEquals(changes, db.query("SELECT total_changes()"))
+            assertEquals(
+                1L,
+                db.query("SELECT COUNT(*) FROM coach_support").single().single().sqlLong(),
+            )
+        }
+
+    @Test
     fun coachingArchiveReadsOneConsistentGraphWithoutRewritingActualPayloadOrFeedback() =
         storage { db, r, _ ->
             r.saveCurrent(version())
