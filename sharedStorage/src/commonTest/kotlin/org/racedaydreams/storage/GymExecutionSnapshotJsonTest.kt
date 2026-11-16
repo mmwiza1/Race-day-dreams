@@ -12,7 +12,11 @@ class GymExecutionSnapshotJsonTest {
     private val clock = 9007199254741017L
 
     private fun tick(delta: Long, epoch: String = "boot") =
-        GymExecution.Tick(epoch, clock + delta, now.plusSeconds(delta / 1000))
+        GymExecution.Tick(
+            epoch,
+            clock + delta,
+            Instants.ofEpochSecond(now.getEpochSecond() + delta / 1000, now.getNano().toLong()),
+        )
 
     private fun target() =
         GymWorkoutDefinition.Target(

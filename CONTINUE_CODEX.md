@@ -2327,20 +2327,89 @@ incomplete migration merely because a focused checkpoint passes.
   recording, Health Connect and cleanup remain intact; only unimplemented native destructive
   commands are disabled. No app version/schema/backup bump, public publication or merge.
 
+### Final recovery boundary — checkpoints58–59 pushed; latest gate pending
+
+- Current branch experiment/android-ios-kmp-compose; HEAD/remote
+  **610cf0b0619a0f16efe8a7bcbd7904e014699a56**. Checkpoint58ddf09b3 and59 were pushed together.
+  GitHub confirms existing PR24 OPEN/DRAFT at this head; body rewritten with completed work and
+  complete remaining migration scope. Main85e1c39 /separate owner PR23 preserved. No merge,
+  version bump, public experimental publication or iOS app acceptance.
+- Latest experiment **43779276337 RUNNING**, formatting **43779276309 SUCCESS**.
+  Inspect actual results before relying on expected456Android/118storage Native. Latest local
+  **114storage JVM PASS** and actual Android app/shared UI/instrumentation compile PASS2m37s;
+  pinned targeted3files CHECK PASS. Earlier full694format and execution-batch bothAPKs/lint PASS;
+  latest child APK/lint/runtime are pending exact-head CI, not falsely reported as passed.
+- Parenta79cd98 experiment43777437866 FULL SUCCESS; format43777437837 SUCCESS. Actual Android
+  133006823601 **452unique START/END**, allcomplete/no failures/skips; all3frozen-workout parity
+  cases ran. **700189checks/48suites**, digest-verified490domain+16health+104storage JVM /
+  449domain+18health+108storage Native. Proofs/digests/artifacts in checkpoints58–59 above.
+- Next exact action: inspect43779276337 (format43779276309 passed); verify actual Android class cases and
+  digest-verified Native/JVM XML, fix actual failures without weakening assertions. Then port
+  StrengthProgrammingJson (programme/draft/settings/custom definitions including exact authored
+  Workout), legacy GymProgramme/concrete-draft/tool codecs, BOTH associationv1/v2 and real typed
+  execution/programme/association repositories with source-content/actual-edit/atomicity safeguards.
+  Continue complete supported backups/archives/retention, real common application composition,
+  native OS services and REAL iOS app host. Preserve completed Java-domain conversion and UI.
+- This final verification/recovery-only note is intentionally local to avoid another expensive
+  docs-only CI push. Preserve/include with the next coherent implementation commit. No other
+  uncommitted work remains. Current working branch has a functioning Android compile, not a
+  functioning iOS application; actual macOS CI works and must not be described as unavailable.
+
+### Checkpoint 60 — Authored strength payloads and portable execution fixture (16 November 2026)
+
+- Recovered branch610cf0b /existing OPEN DRAFT PR24, fetched live main85e1c39 unchanged, preserved
+  the local verification-only handoff. No reset/restart/force push or replacement PR.
+- Actual610cf0b experiment43779276337: Apple133012552771 FAILED compiling common TEST source,
+  GymExecutionSnapshotJsonTest.kt:15 unresolved plusSeconds. JVM java.time actual exposed that
+  member, but the shared Instant contract does not. Replaced fixture arithmetic with existing
+  Instants.ofEpochSecond + original seconds/nanoseconds, preserving the same wall/monotonic values.
+  No production time API, clock semantics, recording or domain calculation changed. Native fix
+  still requires actual Apple CI; no blind rerun of unchanged failing source. Android133012552962
+  was still running456cases when last inspected; inspect completion before claiming its result.
+- Added StrengthProgrammingPayloadJson matching original v1 StrengthProgrammingJson: immutable
+  programmes/revision lineage/training blocks, exact authored Workouts, editable/incomplete drafts,
+  custom exercise metadata/equipment alternatives, settings and trade-offs. Reuses strict bounded
+  gym input/frozen-workout codecs and existing domain constructors. No catalogue lookup while
+  decoding history, inferred technique, generated actuals, changed programme or auto-activation.
+  Wire enum names sort alphabetically as before; enum sets reconstruct ordinal input before the
+  EXISTING domain immutable-set semantics. No domain collection contract changed.
+- Nine common tests cover actual existing generator5goals/3experience +all9templates, frozen names/
+  fractional effort/reference meanings, incomplete drafts, six custom measurement profiles,
+  enum/duplicate/field/kind/future/coercion/date/collection limits and maximum12blocks. One new test
+  initially assumed ordinal iteration from Settings; original Immutable.copySet uses HashSet.
+  Corrected the expectation to the original Settings snapshot/set contract, retaining explicit
+  wire-order, set-membership and source-snapshot iteration assertions. Focused case PASS26s.
+- Four real Android parity tests compare original/shared programme/draft/custom codecs BOTH ways,
+  all goals/experience/templates, frozen names, actual original set iteration and invalid payloads.
+  Local **123storage JVM tests PASS**,0failures/errors/skips. Actual Android app/shared UI/test
+  compilation **PASS2m23s/57tasks**, scratch/kmp-strength-programming-payload-android-compile.log.
+  Full format **697sources(602Kotlin/95Java) PASS**, exact schema1..19 boundaries +existing75schema
+  tests PASS. Latest APK/lint/runtime/native pending exact-head CI, not falsely claimed passed.
+- Expected next CI460Android/127storage Native must be verified; no schema/version/backup bump,
+  public publication, merge, permissions or user-visible feature redesign. Preserve all existing
+  original Android stores and functionality; full native execution finalisation stays unwired.
+- Next: commit/push this coherent payload +fixture fix, inspect actual native compile/runtime and
+  Android cases; fix genuine failures. Continue BOTH GymAssociationJson legacyv1/authoredv2 using
+  exact authored Workout codec and strict accepted-actual reader, then remaining legacy programme/
+  concrete draft/tools/archive codecs and typed execution/programme/association repositories.
+  Retained source-content/actual-edit/atomicity safeguards, full supported backups/retention,
+  common application root/native services/REAL iOS app host and final full gates remain required.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Localddf09b3 + checkpoint59
-   accepted-actual guard (commit follows this record) are verified and ready to push together.
-   Parenta79cd98 FULL SUCCESS452Android/700189checks/48suites/490domain+16health+104storage JVM/
-   449domain+18health+108storage Native. Latest114storage JVM/Android app+test compile/targeted
-   format PASS; previous execution batch bothAPKs/lint PASS. After push verify actual456Android/
-   118Native exact-head gates, then remaining typed strength repositories and full backups.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint60 source is local,
+   123storage JVM/Android app+test compile/format697/schema75 PASS. Commit/push and verify actual
+   Native fix +expected460Android/127storage Native. Parent610cf0b Apple133012552771 FAILED due
+   JVM-only plusSeconds in test fixture (fixed locally); Android133012552962 running456 when last
+   checked. Do not claim full green. Previousa79cd98 fully verified452Android/104JVM/108Native storage.
+   Preserve completed codecs and local handoff. Then next BOTH association formats/storage tasks.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
    Existing native/schema/settings/exclusions/profile/focus/height/milestone/shoe/baseline/retention reader are
-   implemented as above; preserve them. JSON history/programme/execution codecs and archives still
-   need portable implementations, plus remaining repositories. Activity/result repositories are implemented in checkpoint53;
+   implemented as above; preserve them. Running/actual/frozen workout/execution codecs are now shared
+   as recorded in checkpoints55–59; preserve them. Remaining programme/association/tools/archive
+   codecs and repositories are still needed. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
