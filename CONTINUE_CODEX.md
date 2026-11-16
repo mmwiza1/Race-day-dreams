@@ -3786,15 +3786,23 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Checkpoint85 — bounded user-owned development-evidence database capture
 
-- Current remote84 `297b95696963fbb297db82023a4fd5b11ba0748d` (implementation2685205 plus bundled
-  recovery record) pushed to existing DRAFT PR24.84 experiment43910500616 RUNNING, Apple133450781246 /
-  Android133450781759; format43910500700 SUCCESS. Last FULL remote remains83(419storage/532Android/
- 700189checks48suites). Do not claim84 Native424 /Android533 until artifacts/logs actually confirm.
-- Valid LOCAL85 source: SqliteDevelopmentArchive.kt, DevelopmentArchiveRepositoryContract.kt,
+- Remote84 `297b95696963fbb297db82023a4fd5b11ba0748d` (implementation2685205 plus bundled recovery)
+  FULL SUCCESS in43910500616, Apple133450781246 /Android133450781759; format43910500700 SUCCESS.
+ 533unique Android START/END matched, INCLUDING actual original complete-package exporter method,
+  previous5parity cases and root1..13.700189checks/48domain suites passed. No current CI failure.
+-84 digest-verified JVM14248961446 SHA2562d14a3cd54e632dde170927921fab11c3a2741fce20d42389af9ea91c63d7928:
+  490domain+16health+424storage. Native14247414688
+  SHA2569e6f3f51852306d785b3764cb3b452bb0418184a291f6b31427062b10958f9bc:
+  449domain+18health+424storage. ALL0failure/error/skip. ALL5new complete-manifest methods matched
+  exact JVM/Native names. Proofs scratch/package-297-results/{verification,runtime-case-proof}.json.
+  Framework14247329830 NOT an iOS app; privateAPK14247438935. No public experimental publication.
+-85 first source committed locally as97d527e; stable batching/parity follow-up also ready to commit: SqliteDevelopmentArchive.kt, DevelopmentArchiveRepositoryContract.kt,
   JdbcDevelopmentArchiveTest.kt /AppleDevelopmentArchiveTest.kt and original development export
   parity extension in SharedBackupEnvelopeTest. No DB/version/backup/permission/dependency change.
 - Snapshot scans original coach_evidence in bounded512-row keyset pages within ONE existing DB
-  transaction. Source rows individually preflight against supported whole-file32MiB input size /
+  transaction. Payload queries batch up to1MiB, with a larger supported row isolated; <=512bound
+  parameters stay below API28SQLite limits. Existing composite-index tuple keysets/row IDs avoid
+  per-record lookups and preserve kind/id ordering. Source rows individually preflight against supported whole-file32MiB input size /
   original JSON structural limits; aggregate imported-cache size/count is NEVER an owned limit.
   Imported WEIGHT provider filtering happens BEFORE owned100000-row/32MiB budget and typed external
   archive decoding. Matches original optString(provider) export semantics, including omission of
@@ -3806,13 +3814,20 @@ incomplete migration merely because a focused checkpoint passes.
   BOTH owned count and aggregate-byte caps, yet manual export succeeds and ALL100002rows remain.
   Corrupt manual data rejects without writes; incomplete imported cached measurements omit exactly
   as original; legacy optional links and unknown metadata/order remain intact. Original Android
-  seven-kind export test now ALSO compares the actual shared database snapshot with original JSON.
+  seven-kind export test ALSO compares actual shared DB snapshots with original JSON; adds513
+  cached rows to exercise Android multi-page tuple SQL, keeps original2weights assertion first,
+  then asserts all515weights remain and exported owned data is unchanged.3common contracts also
+  cover514records across a kind/page boundary. No assertions removed or weakened.
 - Local focused3JDBC cases PASS0failure/error/skip (6.281s runtime), shared metadata+Android test
-  compilation PASS5m7s/64tasks, scratch/kmp-owned-evidence-focused.log. Formatting815sources
-  (720Kotlin95Java) and3source-provenance tests PASS. Do not rerun unchanged full release matrix.
-- NEXT EXACT: commit85+handoff locally for recovery; HOLD PUSH until84 CI finishes to avoid cancelling
-  its expensive run. Verify84 actual424storage/533Android +package5common/original exporter test.
-  Then push stable85 to same draft24; new expected427storage per platform /533Android. Verify actual
+  compilation PASS5m7s/64tasks, scratch/kmp-owned-evidence-focused.log. FINAL batching gate PASS:
+  3JDBC0failure/error/skip(2.897s), metadata+Android test compilation4m25s/64tasks in
+  scratch/kmp-owned-evidence-batch-focused.log. Final Android multi-page assertion compile PASS
+  1m30s/55tasks in kmp-owned-evidence-android-page-compile.log. Formatting815sources(720Kotlin95Java),
+  exact schema1..19 and3source-provenance tests PASS. No new schema/version. Final release matrix
+  remains final-readiness work; no need to rerun unchanged phase84.
+- NEXT EXACT:84 is now FULLY verified424storage/533Android/package cases. Commit stable85 batched
+  source+final handoff (preserve97d527e), then push BOTH85 commits ONCE to same draft24. New expected
+  427storage per platform /533Android remains UNVERIFIED until fresh CI. Verify actual
   Native3SQLite contract methods (including large cache fixture) plus existing Android7-kind parity
   extension from fresh completed artifacts/logs. Fix real failures; no assertions weakened/reruns.
 - Next implementation: real ZIP extraction/container guards and same-DB app/raw replacement with
@@ -3826,11 +3841,11 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint85 immediately above is latest LOCAL boundary. Remote84 is297b956; CI43910500616
-   pending.85 owned-evidence snapshot/contracts/Android parity compile5m7s /focused3JDBC/815format
-   PASS. Commit85 locally; verify84 actual424/533/package cases before pushing another head. Then
-   verify new85 Native427/Android533, especially100001cache fixture, with artifacts/logs.83 remains
-   last FULL remote419/532/700189checks48suites until84 completes. No reset/amend/early merge.
+1. Checkpoint85 immediately above is latest boundary.84 FULL remote43910500616 SUCCESS424storage/
+   533Android/700189checks48suites.85 first source97d527e committed locally; FINAL batched source/
+   expanded parity/source contracts are ready to commit, local3JDBC/metadata/test compile4m25s +
+   Android paging1m30s /815format PASS. Commit follow-up+note and push85 ONCE; verify NEW Native427/
+   Android533, especially real100001cache fixture, with artifacts/logs. No reset/amend/early merge.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

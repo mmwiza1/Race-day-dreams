@@ -123,5 +123,20 @@ abstract class DevelopmentArchiveRepositoryContract {
                 before,
                 db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id"),
             )
+            db.transaction {
+                for (i in 0 until 512) {
+                    val id = "older-$i"
+                    insert(db, "STRENGTH_LINK", id, JsonObject(link + ("id" to JsonPrimitive(id))))
+                }
+            }
+            val headers = db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id")
+            val paged = SqliteDevelopmentArchive(db).snapshot()
+            assertEquals(514, paged.records.size)
+            assertEquals(headers.map { it[1].sqlText() }, paged.records.map { it.id })
+            assertEquals("manual", paged.records.last().id)
+            assertEquals(
+                headers,
+                db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id"),
+            )
         }
 }

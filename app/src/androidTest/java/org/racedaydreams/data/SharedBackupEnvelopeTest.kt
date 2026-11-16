@@ -639,6 +639,22 @@ class SharedBackupEnvelopeTest {
         )
         assertEquals(2, store.weights().size)
         assertEquals(before.toString(), DevelopmentStore.exportData(db).toString())
+        for (i in 0 until 513) {
+            val id = "cache-page-$i"
+            store.saveWeight(
+                BodyWeight(id, 88.0, at, ZoneOffset.UTC, "health-connect", id, "provider")
+            )
+        }
+        val paged =
+            org.racedaydreams.storage
+                .SqliteDevelopmentArchive(AndroidSqlTestConnection(db))
+                .snapshot()
+        assertEquals(
+            Json.parseToJsonElement(before.toString()),
+            DevelopmentArchiveJson.element(paged),
+        )
+        assertEquals(515, store.weights().size)
+        assertEquals(before.toString(), DevelopmentStore.exportData(db).toString())
     }
 
     @Test
