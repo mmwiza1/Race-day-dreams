@@ -4220,13 +4220,64 @@ incomplete migration merely because a focused checkpoint passes.
  restore/reconciliation+consent/preview/epoch protections, real common app/native services/iOS host
  and final unfiltered28/35/36+iOS APP/source-bound visual gates. No early merge/publication.
 
+### Checkpoint96 — complete package export from one shared database snapshot (local)
+
+-95typed app capture committed/pushed0ae10b4ce3b99a941704ad9964887c8f84dda2e6; existing DRAFT24.
+ Current experiment43956465891 RUNNING, Android133612208709 /Apple133612209451. Formatting
+ 43956465677 FAILED during PINNED TOOL DOWNLOAD: actual Maven HTTP429 Too Many Requests, not a
+ source-formatting diff. All13formatter self-tests passed before fetch. Original local842format
+ passed; failure log scratch/application-0ae-format-job.log. Required formatting still needs a
+ clean current-head run; do not mark failed CI green or bypass its hash/content lock. No workflow /
+ owner PR23 changes or blind rerun. Next changed-source head gets a normal fresh required gate.
+-95experiment43956465891 is now SUCCESS: Android133612208709 andApple133612209451.534unique
+ Android START/END matched, all full-original app capture comparisons (empty/core/body/awards/
+ choices) ran,700189checks/48domain suites/build/lint/schema PASS. Formatter HTTP429 remains a
+ separate REQUIRED failed check, so do NOT call95all-required-green. Actual Android log
+ scratch/application-0ae-android-job.log.
+-95digest-verified JVM14271899714 SHA2562a78c6f7177ddfbd2efc115e76a393a67a82acc8a8ac6b6bb0ea646977d748f8:
+ 490domain+16health+470storage. Apple14271184309
+ SHA2565cf9ed40a725c4218fa52507c378c60120f6580bd8176572592be300ba7be880:
+ 449domain+18health+470storage. ALL0failure/error/skip. All43new IO/SQLite case names match across
+ platforms, including6complete app capture cases. Proofs scratch/application-0ae-{jvm,native}/
+ verification.json and native/all-case-proof.json. Framework14272049066 NOT an iOS app;
+ privateAPK14272544480. No public experimental publication.
+-96new files: SqliteCompleteBackup.kt, CompleteBackupRepositoryContract.kt and real
+ JdbcCompleteBackupTest.kt /AppleCompleteBackupTest.kt. Android original complete-package method
+ now also reads actual shared DATABASE package export via java.util.zip, verifies real byte lengths
+ /Java SHA256, validates app.json through ORIGINAL BackupManager.inspect, compares original app data,
+ then inspects the full shared package. All previous original-export assertions remain.
+- Package1 output explicitly captures95parent13 and91raw3 under ONE outer existing SQLite19
+ transaction, with original finish/recover ACTIVE/PAUSED/RECOVERABLE guard. Ordinary JSON/raw
+ exports retain independent behaviour. Real SHA256 measures BOTH payloads; original manifest1,
+ bounded stored ZIP and sealed private files. Streaming IO uses <=32KiB blocks, closes scratch
+ handles on failure/complete/cancellation, and never publishes destinations or changes source data.
+ No restore/pruning/gym activation/recording engine, version/schema/format/permission change.
+-4focused REAL JDBC package cases PASS0failure/error/skip +metadata1m24s/13tasks in
+ scratch/kmp-complete-export-focused.log. Actual nested complete inspector validates produced
+ payloads and exact coordinates/Long clocks, truthful summary-vs-raw separation, unfinished run
+ blocking with standalone raw still usable, one read-only snapshot/caller rollback and recovery
+ after failed private staging. New actual Apple4 and Android original-package parity pending.
+- FINAL local474storage JVM0failure/error/skip +metadata +Android test compilation PASS3m7s/64tasks in scratch/kmp-complete-export-
+ final.log; local formatting846sources(751Kotlin95Java) and schema/source checks PASS, recorded
+ in scratch/kmp-complete-export-{format,safety}.log. Do not claim pending tests as passed.
+- NEXT EXACT: inspect final local log and95actualCI before next push. Verify current Native/JVM470
+ and Android534/full application parity; inspect any failure root cause. Then commit96+handoff and
+ push once (avoid cancelling prior expensive run). Verify fresh Native/JVM474, new4real SQLite
+ package cases and original Android package reader parity; mandatory formatting must pass.
+- After complete export verification, implement transactional application replacement/compatible raw
+ restoration and retention consent/preview/dataset epoch/active+paused+recoverable protections.
+ Native destructive restore/prune remains OFF until complete safeguards/test coverage. Then finish
+ real common app composition/native services/actual iOS host/runtime and final unfiltered28/35/36 /
+ iOS APP/source-bound visuals. No reset, early merge/publication or stable tag.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint95 above is latest recovery boundary.94remote3fdba94 FULL Native464/Android534/
-   JVM464/domain70018948/37IO-SQL-case matches VERIFIED.95complete application capture source is
-   local;6JDBC+meta PASS, final470storage/metadata/Android compile PASS3m51s/64tasks.
-   Schema/source/842format PASS. Commit/push95 once, verify fresh Native470/Android534 full-source parity.
-   No empty defaults for current data, reset, early merge, version/schema bump or publication.
+1. Checkpoint96 above is latest recovery boundary.95source0ae10b4 is pushed; experiment43956465891
+   RUNNING, formatting43956465677 failed on actual Maven HTTP429 (local842format passed).96shared
+   complete-package DB export is local;4JDBC/meta PASS, final474storage/meta/Android compile PASS3m7s/64tasks.
+   95experiment Native/JVM470/Android534/43cases verified; required formatting failedHTTP429.
+   Commit/push96 once, verify Native
+   474/Android534/original package parity and required format. Never bypass CI or enable unsafe restore.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

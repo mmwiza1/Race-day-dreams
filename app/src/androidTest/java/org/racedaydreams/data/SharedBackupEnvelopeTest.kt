@@ -199,6 +199,63 @@ class SharedBackupEnvelopeTest {
         } finally {
             sharedInspected.close()
         }
+        val capturedPackage =
+            org.racedaydreams.storage
+                .SqliteCompleteBackup(
+                    AndroidSqlTestConnection(ProfileDatabase.get(context).writableDatabase)
+                )
+                .export(context.cacheDir.absolutePath, at)
+        try {
+            val capturedBytes = ByteArrayOutputStream()
+            var offset = 0L
+            while (offset < capturedPackage.size) {
+                val chunk = capturedPackage.read(offset, 32768)
+                capturedBytes.write(chunk)
+                offset += chunk.size
+            }
+            val capturedEntries = linkedMapOf<String, ByteArray>()
+            ZipInputStream(ByteArrayInputStream(capturedBytes.toByteArray())).use { zip ->
+                while (true) {
+                    val entry = zip.nextEntry ?: break
+                    assertFalse(capturedEntries.containsKey(entry.name))
+                    capturedEntries[entry.name] = zip.readBytes()
+                    zip.closeEntry()
+                }
+            }
+            assertEquals(entries.keys, capturedEntries.keys)
+            val declaration =
+                JSONObject(capturedEntries.getValue("manifest.json").decodeToString())
+                    .getJSONObject("files")
+            for (name in listOf("app.json", "recordings.zip")) {
+                val bytes = capturedEntries.getValue(name)
+                assertEquals(bytes.size.toLong(), declaration.getJSONObject(name).getLong("bytes"))
+                assertEquals(
+                    MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") {
+                        "%02x".format(it)
+                    },
+                    declaration.getJSONObject(name).getString("sha256"),
+                )
+            }
+            val originalRead =
+                original.inspect(ByteArrayInputStream(capturedEntries.getValue("app.json")))
+            assertEquals(
+                Json.parseToJsonElement(before),
+                Json.parseToJsonElement(originalRead.getJSONObject("data").toString()),
+            )
+            val checked =
+                org.racedaydreams.storage.InspectedBackupPackage.inspect(
+                    capturedPackage,
+                    context.cacheDir.absolutePath,
+                )
+            try {
+                assertEquals(at, checked.application.createdAt)
+                assertTrue(checked.recordings.sessions.isEmpty())
+            } finally {
+                checked.close()
+            }
+        } finally {
+            capturedPackage.close()
+        }
         assertTrue(
             runCatching { manifest.verify(listOf(receipts.first(), receipts.first())) }.isFailure
         )
