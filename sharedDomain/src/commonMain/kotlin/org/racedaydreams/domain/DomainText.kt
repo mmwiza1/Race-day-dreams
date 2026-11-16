@@ -4,7 +4,7 @@ package org.racedaydreams.domain
  * Original JDK String.isBlank boundary for retained authored text. Non-breaking spaces are not
  * blank.
  */
-internal fun isJavaBlank(value: String): Boolean =
+fun isJavaBlank(value: String): Boolean =
     value.all { c ->
         c in '\t'..'\r' ||
             c in '\u001c'..' ' ||

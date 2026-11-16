@@ -2422,21 +2422,59 @@ incomplete migration merely because a focused checkpoint passes.
   full native finalisation/source-content/actual-edit/retention/restore safeguards remain mandatory.
   Common app root/native services/REAL iOS host and final full gates remain unfinished.
 
+### Checkpoint 62 — Typed legacy gym programme history and decisions (16 November 2026)
+
+- Checkpoint61 committed locally **736e52d**; batch its association codec with this related legacy
+  persistence work before a single push. Parentfd5ac1e experiment43780857820 FULL SUCCESS and
+  formatting43780857827 SUCCESS. Actual Android133017466871: **460unique START/END**, allcomplete/
+  no failures/skips; all4 original/shared authoring codec cases ran. **700189checks/48suites**.
+  Digest-verified JVM14189255105 ZIP1deeb8b665fe1daa3b666740d721514e85b81b15adc39d7a804fcd0a98a0b792
+  proves **490domain+16health+123storage**; Native127 proof in checkpoint61. Files scratch/programming-
+  fd5-{jvm,native}.{zip,json}. Private APK14187859974 exists; framework is NOT an iOS application.
+- Added LegacyGymProgrammePayloadJson preserving original GymProgrammeStore snapshots and explicit
+  KEEP/INCREASE decision payloads. Legacy whole-number/default/optional reference rules remain
+  distinct from strict association records. Shared legacy session encoding is reused; no generic
+  JSON bucket or independent programming model. Its version field remains a programme revision.
+- Added actual SqliteLegacyGymProgrammes over existing gym_plan_versions/gym_current/
+  gym_progression_decisions. Versions append; disable removes only the current pointer. Explicit
+  version/decision/pointer updates are atomic and join outer transactions. Active authored
+  programming blocks legacy activation. No prescribed set becomes an actual and no PB/history is
+  deleted. Reads validate indexed identity; native writes reject unreadable metadata before insert.
+- Reused the EXISTING JDK-compatible isJavaBlank helper by exposing its unchanged implementation
+  across modules (visibility only); no new whitespace algorithm or training rule. NBSP identities
+  remain valid, Java-blank EM SPACE rejects. Exact UTF16/NUL identities and legacy keys retained.
+- Ten common real-SQLite contracts run on JVM/Apple wrappers: append/disable/history, stale/skipped/
+  duplicate versions, KEEP/INCREASE history, invalid metadata, trigger/outer rollback, exact/corrupt
+  indexed identities, legacy optional/numeric reads, limits and modern-current protection. Three
+  actual Android tests compare original/shared codecs/repositories on the SAME database, alternating
+  writers, explicit decisions, outer rollback and original unusual-ID rules.
+- Local **140storage JVM PASS**,0failures/errors/skips. Full actual app/debug APK/instrumentation
+  APK/lint **PASS5m4s/160tasks** in scratch/kmp-legacy-gym-repository-build.log. Full formatting
+  **706sources(611Kotlin/95Java) PASS**. Exact schema1..19/current VERSION and existing75schema tests
+  PASS this session; no schema/version/backup/permission/navigation changes or public publication.
+- Expected combined next head **466Android /144storage Native** pending; verify actual logs/XML.
+  Next commit/push checkpoints61–62, inspect Apple and Android results, fix real failures. Then
+  remaining concrete-draft/tools/archive codecs and real authored programme/execution/association/
+  strength-actual repositories; preserve source-content checks, finalisation/actual-edit provenance
+  and atomicity. Full supported backups/retention, common app composition/native services/REAL iOS
+  host/app build and full release/visual/hardware gates remain unfinished. Keep PR24 draft.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24, remotefd5ac1e. Checkpoint61
-   both association formats are locally complete130storage JVM/build/bothAPKs/lint/format700 PASS
-   (commit follows this record). fd5ac1e experiment43780857820 RUNNING, format43780857827 SUCCESS;
-   Native127 verified including fixed execution clocks, Android460 still pending. Inspect runtime
-   results, commit/push next coherent batch and verify its actual platform cases. Then remaining
-   typed strength persistence/backups and real app composition; do not restart completed ports.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Local736e52d + checkpoint62
+   are complete140storage JVM/build/bothAPKs/lint/format706 PASS (commit/push follows this record).
+   Parentfd5ac1e FULL SUCCESS460Android/700189checks/48suites/490domain+16health+123storage JVM/
+   449domain+18health+127storage Native; earlier Native-only test fixture failure is FIXED/verified.
+   After push inspect actual expected466Android/144Native; then remaining typed strength storage,
+   complete backups/retention and real application composition, not completed domain/UI ports.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
    Existing native/schema/settings/exclusions/profile/focus/height/milestone/shoe/baseline/retention reader are
    implemented as above; preserve them. Running/actual/frozen workout/execution codecs are now shared
-   as recorded in checkpoints55–59; preserve them. Remaining programme/association/tools/archive
-   codecs and repositories are still needed. Activity/result repositories are implemented in checkpoint53;
+   as recorded in checkpoints55–59; preserve them. Programme and both association codecs plus typed legacy gym history now exist as recorded in
+   checkpoints60–62. Remaining concrete-draft/tools/archive codecs and authored/execution/association
+   repositories are still needed. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete

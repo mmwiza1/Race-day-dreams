@@ -41,7 +41,7 @@ object GymAssociationDecisionJson {
                         StrengthProgrammingPayloadJson.workoutElement(
                             proposal.authoredPrescription()!!
                         )
-                    else legacySession(proposal.prescription()!!),
+                    else legacySessionElement(proposal.prescription()!!),
                 )
             },
         )
@@ -95,7 +95,7 @@ object GymAssociationDecisionJson {
         )
     }
 
-    private fun legacySession(session: GymProgramme.Session): JsonObject = buildJsonObject {
+    internal fun legacySessionElement(session: GymProgramme.Session): JsonObject = buildJsonObject {
         put("id", session.id())
         put("date", session.date().toString())
         put("title", session.title())
