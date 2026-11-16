@@ -3994,13 +3994,15 @@ incomplete migration merely because a focused checkpoint passes.
  is still RUNNING. Do NOT call88green. Actual log scratch/backup-5b-native-job.log confirms ONE
  reported source error at BackupInflate.ios.kt:16: zlibVersion() returns CPointer<ByteVar>?, but
  inflateInit2_ expects String?. No Native storage runtime tests have passed for87–89 yet.
-- Focused source correction: requireNotNull(zlibVersion()).toKString() before passing the version
+-90 source correction is COMMITTED LOCALLY as3e11089 (89writer9c2e628 is also committed locally).
+ Remote remains88HEAD5b2c371; do not lose these unpushed commits. Working tree source is clean.
+ Focused source correction: requireNotNull(zlibVersion()).toKString() before passing the version
  string to inflateInit2_. This is the actual SDK binding conversion, not a filtering/test/algorithm
  change. Decompression, limits, CRC/byte checks, cleanup and all assertions remain unchanged.
  Existing JVM453/metadata/Android compile results remain valid; real corrected Native compilation/
  runtime still requires fresh CI. Formatter/source checks are recorded in scratch/
- kmp-backup-zlib-version-format.log (check actual final status if interrupted).
-- NEXT EXACT: finish formatter; commit this Native binding correction +recovery note; let actual
+ kmp-backup-zlib-version-format.log:830sources (735Kotlin95Java) PASS.
+- NEXT EXACT: formatter PASS and source correction committed. Let actual
  Android88 job finish and inspect its results/logs. Fix any genuine additional failure. Push local
  89+90 ONCE to same DRAFT24 normally, then verify corrected Apple453storage (10ZIP+11staging/package+
  5writer cases), JVM453/Android533/original Java reader parity/domain/build/lint/format. This is a
@@ -4015,7 +4017,8 @@ incomplete migration merely because a focused checkpoint passes.
 1. Checkpoint90 above is latest recovery boundary.88Native43940777101 FAILED on actual zlib C
    string/pointer binding; source is corrected with requireNotNull(zlibVersion()).toKString().
    Android88 still running; preserve local89writer9c2e628 (453tests/metadata/Android compile PASS).
-   Finish format, commit90, inspect completed Android88, then push89+90 once and verify fresh Native
+   90fix3e11089 is committed and830format PASS. Inspect completed Android88, then push local
+   writer/fix/recovery commits once and verify fresh Native
    runtime and original-reader Android parity. No reset, early merge/version bump/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
