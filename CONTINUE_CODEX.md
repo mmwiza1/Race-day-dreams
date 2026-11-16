@@ -3695,11 +3695,57 @@ incomplete migration merely because a focused checkpoint passes.
   work. Physical HealthKit/HC/GPS/BLE/audio/locked-screen/OEM/human TalkBack UNPERFORMED. Keep draft;
   no premature version bump, merge/publication or unrelated feature release.
 
+### Checkpoint83 — raw archive byte framing and real streaming digests
+
+- HEAD/remote82 `b68d71fac96e8bfbd0dccc0f2cbf8fa0155dbadb` pushed successfully to existing draft
+  PR24.82 experiment43903195370 FULL SUCCESS, Android133424989147 /Apple133424988141;
+  format43903195580 SUCCESS.532unique Android START/END matched, including ALL5new parity cases
+  and original root1..13 whole backup test.700189checks/48retained domain suites passed.
+- Digest-verified82 JVM14243834289 SHA256d35335a9f75c481e451ec4eac2c3b5da87e6929f6ef8568439115f38f812f13f:
+  490domain+16health+409storage. Native14243788358
+  SHA256ede90f01a8fd662ea213a38fb5e580ef9ae551a8533c20aa8668cda6f2d01d7e:
+  449domain+18health+409storage. ALL0failure/error/skip. All33new common methods matched exact names
+  against JVM XML, ignoring ONLY [jvm]/[iosX64] suffix. Proofs scratch/backup-b68-{jvm,native}/
+  verification.json, backup-b68-native/new-case-proof.json and backup-b68-runtime-proof.json.
+  Real Xcode26.6 Native tests/framework completed8m55s; framework14244337466 is NOT an iOS app.
+  PrivateAPK14243769020; no public experimental release.82 source includes raw-row guard, build/lint
+  passed remotely, not just the older399 local APK.
+- Valid LOCAL83 source is not yet committed: RecordingArchiveReader.kt /RecordingArchiveReaderTest.kt,
+  ArchiveSha256.jvm.kt /ArchiveSha256.ios.kt, and updated original raw-export Android helper in
+  SharedDetailRetentionArchiveTest. Also ActivityJson/RecordingPointJson DOM entries and their
+  existing common parity tests, plus RecordingArchiveRows calls them directly: avoids serialising/
+  reparsing every already-parsed point/summary in potentially512MiB archives. Same original domain
+  validation/coordinates/totals, no smoothing/training changes. Preserve all. No schema/version/
+  backup/permission/library change.
+- Adds bounded original8KiB manifest1..3 guard,512MiB exact streamed byte count, UTF8 decoding across
+  arbitrary chunk boundaries, original final-newline framing, row graph82 and checksum before any
+  valid snapshot is returned. Streams real JVM MessageDigest /Apple CoreCrypto SHA256, including
+  explicit cancellation/error/finish cleanup. Does NOT implement ZIP extraction/package1 or grant
+  database restore/pruning permission. File adapters still need exact ZIP names/duplicates/expanded
+  limits and same-DB transaction/retention/recoverable-run safeguards.
+- Added10 common framing/digest cases: published empty/abc vectors, byte-wise/multibyte/CRLF/BOM,
+  truncated/invalidUTF8/incorrect hash/length, strict manifests and closed/cancelled reader behaviour.
+  Existing2 original raw-export Android cases now additionally stream original archive bytes in
+  seven-byte chunks against their REAL original manifest/checksum and compare complete row graphs.
+-83 first local gate PASS:419storage JVM0failure/error/skip +metadata+Android test compilation
+  4m56s/64tasks, scratch/kmp-raw-stream-final.log. FINAL DOM optimisation gate also PASS4m43s/64tasks:
+ 419JVM0failure/error/skip, shared metadata and Android test compilation, scratch/kmp-raw-stream-
+  dom-final.log. No known current local failure. Formatting809sources(714Kotlin95Java) PASS;3source-provenance
+  tests PASS. Native streaming crypto is not yet compiled/tested; next exact-head macOS CI must
+  verify it. Do not describe untested new native source as working iOS code.
+- NEXT:83 local FINAL419/metadata/Android test compile/809format is verified;82 CI is also
+  FULLY verified. Commit/push coherent83+handoff now to EXISTING draft PR24; verify new
+  Native419/Android532/format/build/lint results and all10new common methods using downloaded XML.
+  Continue full raw3/package1 container/transactional replacement/retention protection, then actual
+  common application/native services/iOS host/runtime. No early merge/publication; PR24 stays draft.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint82 immediately above supersedes81's NEXT implementation list. Preserve all dirty82
-   source and81 final note; local409/metadata/Android test compile/805format PASS. Commit/push
-   and verify fresh Android/Apple CI.81 remains last fully verified REMOTE checkpoint until82 results are confirmed.
+1. In-progress83 immediately above is the latest local recovery boundary.82 allsource pushed at
+   b68d71f FULL SUCCESS Android532/Native409/JVM409/700189checks48suites. Preserve dirty83 source,
+   tests and local handoff.83 final419/metadata/Android test compile/809format PASS; commit/push
+   stable83 and verify fresh Android/Apple CI.
+   No reset, docs-only CI push, version bump or merge/publication.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.

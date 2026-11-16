@@ -74,8 +74,12 @@ object ActivityJson {
             }
             .toString()
 
-    fun decode(text: String): ActivityRecord {
-        val row = StoredJson.objectValue(text)
+    fun decode(text: String): ActivityRecord = decode(StoredJson.objectValue(text))
+
+    /**
+     * Parent syntax/size must already be bounded; avoids serialising streamed archive rows twice.
+     */
+    fun decode(row: JsonObject): ActivityRecord {
         val source =
             row["source"]?.row() ?: throw IllegalArgumentException("Missing activity source.")
         val samples =

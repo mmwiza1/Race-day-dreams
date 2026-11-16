@@ -147,7 +147,7 @@ class RecordingArchiveRows(private val version: Int) {
                 ) {
                     "Invalid recording point sequence or point limit exceeded."
                 }
-                val point = RecordingPointJson.decode(payload.toString())
+                val point = RecordingPointJson.decode(payload)
                 val mono = point.fix().monotonicMillis()
                 require(
                     mono in header.startedMono..header.lastMono &&
@@ -178,7 +178,7 @@ class RecordingArchiveRows(private val version: Int) {
             }
             "activity" -> {
                 require(!pending.hasActivity) { "Duplicate recording summary." }
-                val activity = ActivityJson.decode(payload.toString())
+                val activity = ActivityJson.decode(payload)
                 require(
                     activity.id() == header.activityId &&
                         activity.source().recordId() == id &&

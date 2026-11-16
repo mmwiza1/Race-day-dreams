@@ -72,6 +72,12 @@ class ActivityStorageCodecTest {
                 0.0,
             )
         val restored = RecordingPointJson.decode(RecordingPointJson.encode(point))
+        assertEquals(
+            restored,
+            RecordingPointJson.decode(
+                Json.parseToJsonElement(RecordingPointJson.encode(point)).jsonObject
+            ),
+        )
         assertEquals(point, restored)
         assertEquals(9007199254741017L, restored.fix().monotonicMillis())
         assertNull(restored.fix().accuracy())

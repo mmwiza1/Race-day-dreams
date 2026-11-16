@@ -40,6 +40,10 @@ class ActivityJsonTest {
         val original = activity()
         val restored = ActivityJson.decode(ActivityJson.encode(original))
         assertEquals(original, restored)
+        assertEquals(
+            restored,
+            ActivityJson.decode(Json.parseToJsonElement(ActivityJson.encode(original)).jsonObject),
+        )
         assertTrue(restored.samples().last().discontinuity())
         assertEquals(150.0, restored.distanceMetres())
         assertEquals(50.0, restored.samples().last().distanceMetres())

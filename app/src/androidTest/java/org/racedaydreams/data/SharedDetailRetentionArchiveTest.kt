@@ -69,7 +69,21 @@ class SharedDetailRetentionArchiveTest {
             },
         )
         assertTrue(bytes.decodeToString().endsWith("\n"))
-        return archive to bytes.decodeToString().dropLast(1).split('\n')
+        val lines = bytes.decodeToString().dropLast(1).split('\n')
+        val streamed =
+            RecordingArchiveReader(
+                RecordingArchiveManifest.decode(m.toString().encodeToByteArray())
+            )
+        var offset = 0
+        while (offset < bytes.size) {
+            val length = minOf(7, bytes.size - offset)
+            streamed.accept(bytes, offset, length)
+            offset += length
+        }
+        val rows = RecordingArchiveRows(3)
+        lines.forEach(rows::acceptLine)
+        assertEquals(rows.finish().sessions, streamed.finish().sessions)
+        return archive to lines
     }
 
     @Test

@@ -30,8 +30,10 @@ object RecordingPointJson {
             }
             .toString()
 
-    fun decode(text: String): Point {
-        val row = StoredJson.objectValue(text)
+    fun decode(text: String): Point = decode(StoredJson.objectValue(text))
+
+    /** Parent syntax/size must already be bounded; never changes accepted recording coordinates. */
+    fun decode(row: JsonObject): Point {
         val segment = row.long("segment")
         require(segment in 0..Int.MAX_VALUE.toLong()) { "Invalid recording segment." }
         return Point(
