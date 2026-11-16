@@ -448,4 +448,53 @@ class SharedProgrammingArchiveTest {
             assertEquals(original.currentReference(), shared.currentReference())
             assertEquals(programme(), shared.programme("programme", 1))
         }
+
+    @Test
+    fun revisionReviewMatchesOriginalRetainedActualProjectionAndRefreshesAfterDeletion() =
+        database { db, shared, original ->
+            val graph =
+                StrengthProgrammingArchive.validate(
+                    JSONObject(StrengthProgrammingArchiveJson.encode(snapshot())),
+                    null,
+                )
+            db.beginTransaction()
+            try {
+                SqliteStrengthProgrammingRepository.restore(db, graph)
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+            assertEquals(original.reviewRevision(ref), shared.reviewRevision(ref))
+            val actual =
+                StrengthSession(
+                    "recorded",
+                    at.minusSeconds(86400),
+                    ZoneOffset.UTC,
+                    Duration.ofMinutes(30),
+                    null,
+                    "Recorded actual",
+                    listOf(
+                        StrengthSession.ExerciseSets(
+                            ExerciseCatalog.definition("bench-press")!!.exercise(),
+                            listOf(StrengthSession.SetEntry("set", 6, 80.0, 7.0, false, null, null)),
+                        )
+                    ),
+                )
+            CoachingStore(androidx.test.core.app.ApplicationProvider.getApplicationContext())
+                .saveStrength(actual)
+            db.execSQL(
+                "INSERT INTO strength_association_targets(actual_id,programme_key,session_id,planned_date) VALUES('recorded','programme:v1','workout-0','2026-11-17')"
+            )
+            db.execSQL(
+                "INSERT INTO strength_association_targets(actual_id,programme_key,session_id,planned_date) VALUES('missing','programme:v1','workout-1','2026-11-17')"
+            )
+            val before = shared.reviewRevision(ref)
+            assertEquals(setOf("workout-0"), before.completedWorkoutIds())
+            assertEquals(original.reviewRevision(ref), before)
+            db.execSQL("DELETE FROM strength_sessions WHERE id='recorded'")
+            assertEquals(original.reviewRevision(ref), shared.reviewRevision(ref))
+            assertTrue(shared.reviewRevision(ref).completedWorkoutIds().isEmpty())
+            assertEquals(setOf("workout-0"), before.completedWorkoutIds())
+            assertEquals(ref, original.currentReference())
+        }
 }

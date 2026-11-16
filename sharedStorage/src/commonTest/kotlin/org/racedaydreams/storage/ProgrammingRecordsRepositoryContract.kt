@@ -385,4 +385,78 @@ abstract class ProgrammingRecordsRepositoryContract {
             }
             assertNull(records.currentReference())
         }
+
+    private fun actual(db: SqlDatabase, id: String) {
+        val session =
+            StrengthSession(
+                id,
+                at,
+                Offsets.ofTotalSeconds(0),
+                Durations.ofSeconds(1800, 0),
+                null,
+                "Recorded actual",
+                listOf(
+                    StrengthSession.ExerciseSets(
+                        ExerciseCatalog.definition("bench-press")!!.exercise(),
+                        listOf(StrengthSession.SetEntry("set", 6, 80.0, 7.0, false, null, null)),
+                    )
+                ),
+            )
+        db.execute(
+            "INSERT INTO strength_sessions(id,started_at,payload) VALUES(?,?,?)",
+            values(id, at.toString(), StrengthEvidenceJson.encodeAcceptedSession(session)),
+        )
+    }
+
+    private fun target(db: SqlDatabase, actual: String, programme: String, session: String) {
+        db.execute(
+            "INSERT INTO strength_association_targets(actual_id,programme_key,session_id,planned_date) VALUES(?,?,?,?)",
+            values(actual, programme, session, start.toString()),
+        )
+    }
+
+    @Test
+    fun revisionReviewCountsOnlyRetainedActualsAndKnownWorkoutIdentities(): Unit =
+        storage { db, records ->
+            seedProgramme(db)
+            val ref = Reference(Owner.AUTHORED, "programme", 1)
+            assertTrue(records.reviewRevision(ref).completedWorkoutIds().isEmpty())
+            actual(db, "recorded")
+            target(db, "recorded", ref.key(), "workout-0")
+            target(db, "missing-actual", ref.key(), "workout-1")
+            actual(db, "outside")
+            target(db, "outside", ref.key(), "not-in-this-revision")
+            val review = records.reviewRevision(ref)
+            assertEquals(ref, review.reference())
+            assertEquals(programme(), review.programme())
+            assertEquals(setOf("workout-0"), review.completedWorkoutIds())
+            assertNull(records.currentReference())
+        }
+
+    @Test
+    fun revisionReviewFindsRetainedCompletionAcrossVersionsAndNeverCachesDeletedEvidence(): Unit =
+        storage { db, records ->
+            seedProgramme(db)
+            seedProgramme(db, programme().copy(revision = 2, parentRevision = 1))
+            actual(db, "recorded")
+            target(db, "recorded", "programme:v2", "workout-1")
+            val ref = Reference(Owner.AUTHORED, "programme", 1)
+            val before = records.reviewRevision(ref)
+            assertEquals(setOf("workout-1"), before.completedWorkoutIds())
+            db.execute("DELETE FROM strength_sessions WHERE id='recorded'")
+            assertTrue(records.reviewRevision(ref).completedWorkoutIds().isEmpty())
+            assertEquals(setOf("workout-1"), before.completedWorkoutIds())
+            assertEquals(programme(), records.programme("programme", 1))
+            assertEquals(2, records.versions(10, 0).size)
+        }
+
+    @Test
+    fun revisionReviewRequiresAKnownAuthoredRevision(): Unit = storage { _, records ->
+        assertFailsWith<IllegalArgumentException> {
+            records.reviewRevision(Reference(Owner.LEGACY, "legacy", 1))
+        }
+        assertFailsWith<IllegalArgumentException> {
+            records.reviewRevision(Reference(Owner.AUTHORED, "missing", 1))
+        }
+    }
 }

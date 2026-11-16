@@ -11,6 +11,30 @@ import org.racedaydreams.storage.GymStoredJson.text
  * Normalised, read-only programming records. Future commands must recheck evidence transactionally.
  */
 class SqliteStrengthProgrammingRecords(private val database: SqlDatabase) {
+    /** One review snapshot; activation must independently recheck fresh completed evidence. */
+    fun reviewRevision(reference: Reference): RevisionReview =
+        database.transaction {
+            require(reference.owner() == Owner.AUTHORED) {
+                "Choose an authored programme revision."
+            }
+            val retained =
+                requireNotNull(programme(reference.id(), reference.revision())) {
+                    "The programme revision is unavailable."
+                }
+            val completed =
+                database
+                    .query(
+                        "SELECT DISTINCT t.session_id FROM strength_programme_revisions p JOIN strength_association_targets t ON t.programme_key=p.programme_id || ':v' || p.revision JOIN strength_sessions s ON s.id=t.actual_id WHERE p.programme_id=?",
+                        listOf(SqlValue.Text(retained.id())),
+                    )
+                    .map { it.single().sqlText() }
+                    .toSet()
+            RevisionReview(
+                retained,
+                completed.intersect(retained.workouts().map { it.id() }.toSet()),
+            )
+        }
+
     fun currentReference(): Reference? =
         database.transaction {
             val modern =

@@ -2619,6 +2619,33 @@ incomplete migration merely because a focused checkpoint passes.
   execution/association/actual storage; then full supported backups/retention and actual common
   application/native services/iOS app. Do not enable partial native destructive restore/finalizer.
 
+### Checkpoint 67 — Programme revision review snapshots
+
+- Checkpoint66 committed/pushed **32929fb5f0a932d581dc75a70a6273c6e343d208**, PR24 OPEN/DRAFT
+  confirmed; body updated. Experiment43833882273 RUNNING (Android133185561250 /
+  Apple133185561688), formatting43833882276 SUCCESS. **Apple SUCCESS**: digest-verified
+  artifact14210906075 ZIPa46144523653ff3ec3350319ca1aaa8b02b6ebcf7468363e96e8eaf5d6e44b35
+  proves **449domain+18health+210storage Native**,0failures/errors/skips, all31new cases ran.
+  Proofs scratch/durability-32929-native.{zip,json}; framework14210687440 linked, NOT an iOS app.
+  Expected486Android remains pending, NOT claimed passed. All66local gates206storage JVM,735format,bothAPKs/lint,schema75 PASS.
+- Implemented review batch in3 existing files: SqliteStrengthProgrammingRecords.reviewRevision,
+  ProgrammingRecordsRepositoryContract (+3 common cases), SharedProgrammingArchiveTest (+1
+  original-store Android case). Common reader returns one transactional programme/completion
+  snapshot; it considers retained actuals linked across programme versions, intersects with known
+  workouts, ignores dangling projections and refreshes after actual deletion. Historical snapshots
+  remain immutable. Requires known AUTHORED reference. Does NOT activate/change programming.
+- Uses exact original repository query and existing RevisionReview model. Acceptance must still
+  recheck fresh completions inside its own write transaction; this snapshot is never authorisation.
+- Local final **209storage JVM tests PASS**,0failures/errors/skips, bothAPKs+lint PASS
+  **6m4s/160tasks**, scratch/kmp-programme-review-verified.log. Full formatting735sources
+  (640Kotlin/95Java) PASS, scratch/kmp-programme-review-format.log. Expected213storage Native/
+  487Android remain unverified until exact pushed child CI.
+- Next safe action: inspect66 actual Android logs and digest-verified JVM XML; Apple verified
+  above. All67local gates PASS; commit/push67 coherently without cancelling nearly-complete
+  preceding CI. Preserve all local files/note. Continue full reviewed activation and source-validated
+  execution/association/actual storage, backups/retention, real common app/native OS services and
+  actual iOS app. No version/schema/backup bump, merge or public publication until full readiness.
+
 ### Exact next safe actions and remaining full scope
 
 1. Continue experiment/android-ios-kmp-compose /existing draft PR24; preserve ALL valid local
