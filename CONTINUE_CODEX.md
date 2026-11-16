@@ -3911,13 +3911,54 @@ incomplete migration merely because a focused checkpoint passes.
  recoverable safeguards. Native destructive restore/prune remains OFF. Original Android stores
  remain authoritative. Full common app/native services/actual iOS host and final gates remain below.
 
+### Checkpoint88 — private platform staging and complete-package inspection
+
+-87 committed locally as1027712; NOT pushed separately (batch with88 to avoid duplicate costly CI).
+ 86dcf2fb2 is now FULL SUCCESS in43934876478; format43934876402 SUCCESS. Android133536725255 /
+ Apple133536724689 succeeded.533unique Android cases incl BOTH corrected fixtures,700189checks/
+ 48domain suites. JVM14260644377:490domain+16health+427storage; Apple14262287373:449domain+
+ 18health+427storage; ALL0failure/error/skip. Apple artifact SHA256
+ 0cd5dfcc2b040f37d152973583d30711f47845a8e19ad5fd1dfb474e908c998b. Proofs scratch/owned-dcf-
+ {jvm,native}/verification.json;11development archive/SQLite method names matched across platforms.
+ Framework14260694984 NOT an iOS app; privateAPK14261806624. No public experimental publication.
+-88 in-progress files: BackupStagingFile.kt, BackupScratch.jvm.kt /BackupScratch.ios.kt,
+ InspectedBackupPackage.kt, BackupStagingFileContract.kt, CompletePackageFixtures.kt and real
+ JvmBackupStagingFileTest /AppleBackupStagingFileTest; original Android complete-export case extended.
+ Sources preserved locally. No version/schema/format/permission/dependency bump or native data writes.
+- Private app-directory files use exclusive creation and immediate unlink with open handles, so
+ cancellation/crashes cannot leave named scratch backups. Common wrapper bounds32KiB blocks and
+ supported format bytes, seals before reads, prevents later writes, closes on failure and handles
+ repeated close. JVM uses original Android-compatible RandomAccessFile; Apple uses real POSIX IO.
+ Caller must supply app-private directory and serialize operations. These are temporary scratch,
+ NOT durable/exported backups and never database files.
+- Complete inspection composes original outer ZIP/manifest +ACTUALLY measured SHA256/lengths,
+ complete app parent1..13 validation and nested raw ZIP1..3/manifest/hash/session-graph validation.
+ App payload alone has bounded32MiB allocation; raw ZIP remains in bounded private scratch until
+ close. Both inner validators must succeed before returning any checked object. No replacement,
+ raw merge, retention cleanup or activation is enabled. All original Android parity assertions stay.
+- Focused first6real JVM staging contracts PASS0failure/error/skip, metadata PASS1m45s/13tasks,
+ scratch/kmp-backup-staging-focused.log. Added5complete-package contracts with independently measured
+ Python standard-library ZIP/hash fixtures: valid original root1/recoverable session, wrong outer
+ hashes/lengths, invalid app graph/future14, wrong inner raw hash/invalid graph, failure cleanup and
+ later valid inspect. Android existing original COMPLETE exporter also validates whole composition.
+- Final local448storage JVM0failure/error/skip +metadata +Android test compilation PASS5m30s/64tasks in
+ scratch/kmp-backup-package-staging-final.log. Formatting828sources(733Kotlin95Java), schema1..19 /
+ 3source-provenance PASS. Native ZIP zlib AND scratch implementation still UNVERIFIED until next
+ actual Apple CI. Do not call these an actual functioning iOS app or completed restore.
+- NEXT EXACT: local final run is verified448/metadata/Android compilation/828format;
+ commit88+this recovery and push87+88 ONCE to existing DRAFT24. Verify448storage on JVM/Apple,
+ all10ZIP+11real staging/package cases and533Android original-export parity. Update PR body honestly.
+ Then complete container export and same-DB transactional restore/raw reconciliation with retention
+ consent/preview/epoch/active+paused+recoverable protections. Native destructive operations OFF.
+ Full common app/services/actual iOS host/build/runtime and final28/35/36+iOS APP/visual gates remain.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint87 immediately above is latest recovery boundary.86 corrected Android533 and
-   domain700189/48/JVM427 passed; Apple86 is still pending.87 ZIP sources + original Android exporter
-   parity are locally verified437storage/metadata/Android compilation/820format. Preserve all.
-   Finish86 CI verification, then push coherent87 and verify real Apple zlib/437storage/533Android.
-   Continue private staging adapters/transactional restore; no reset, early merge or publication.
+1. Checkpoint88 above is latest recovery boundary.86FULL remote533Android/427JVM+Native/
+   domain70018948 verified.87ZIP commit1027712 local;88private staging/package inspection is local
+   verified448storage/metadata/Android compilation(5m30s)/828format.
+   Commit/push87+88 ONCE; verify actual Native zlib/POSIX and both original-export parity paths.
+   No reset, early merge, version bump or public publication. Existing Android remains authoritative.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

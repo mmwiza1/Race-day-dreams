@@ -99,6 +99,27 @@ class SharedBackupEnvelopeTest {
             org.racedaydreams.storage.UserBackupDataJson.inspect(entries.getValue("app.json"))
         assertEquals(13, parent.version)
         assertTrue(parent.snapshot.engine!!.executions.isEmpty())
+        val inspectedPackage =
+            org.racedaydreams.storage.InspectedBackupPackage.inspect(
+                sharedBackupZipSource(output.toByteArray()),
+                context.cacheDir.absolutePath,
+            )
+        try {
+            assertEquals(parent.version, inspectedPackage.application.version)
+            assertEquals(
+                org.racedaydreams.storage.UserBackupDataJson.currentElement(parent.snapshot),
+                org.racedaydreams.storage.UserBackupDataJson.currentElement(
+                    inspectedPackage.application.snapshot
+                ),
+            )
+            assertTrue(inspectedPackage.recordings.sessions.isEmpty())
+            assertEquals(
+                entries.getValue("recordings.zip").size.toLong(),
+                inspectedPackage.recordingArchive().size,
+            )
+        } finally {
+            inspectedPackage.close()
+        }
         assertTrue(
             runCatching { manifest.verify(listOf(receipts.first(), receipts.first())) }.isFailure
         )
