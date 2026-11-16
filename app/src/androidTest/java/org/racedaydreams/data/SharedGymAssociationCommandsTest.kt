@@ -325,6 +325,43 @@ class SharedGymAssociationCommandsTest {
     }
 
     @Test
+    fun nestedHistoryAboveStandaloneLimitMatchesOriginalBackupGraphValidation() {
+        install(false)
+        finish()
+        val p = original.proposals("actual", at.plusSeconds(3)).single()
+        val historical = p.copy(actual = p.actual().copy(notes = "n".repeat(10000)))
+        val choices = List(1800) { choice("historical-$it", historical) }
+        val archive =
+            GymAssociationArchiveJson.Archive(choices, mapOf("actual" to "historical-1799"))
+        val nested = GymAssociationArchiveJson.element(archive)
+        val payload = nested.toString()
+        assertTrue(
+            payload.toByteArray(Charsets.UTF_8).size in
+                (16 * 1024 * 1024 + 1) until (32 * 1024 * 1024)
+        )
+        val link =
+            org.json
+                .JSONObject()
+                .put("id", "actual")
+                .put("gymVersion", "legacy:v1")
+                .put("gymSession", "session")
+                .put("plannedDate", day.toString())
+        SqliteGymAssociationRepository.validate(
+            org.json.JSONObject(payload),
+            mapOf("actual" to gym.load("actual")!!.execution()),
+            mapOf("actual" to p.actual()),
+            mapOf("legacy:v1" to legacy()),
+            mapOf("actual" to link),
+        )
+        assertEquals(
+            choices.sortedBy { it.id() },
+            GymAssociationArchiveJson.decode(nested).decisions,
+        )
+        assertNull(shared.current("actual"))
+        assertTrue(DevelopmentStore(context).gymLinks().isEmpty())
+    }
+
+    @Test
     fun sharedTargetFailureRollsBackOriginalVisibleDecisionProjectionAndActuals() {
         install(true)
         finish()

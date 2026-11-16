@@ -295,6 +295,32 @@ abstract class GymAssociationCommandsContract {
     }
 
     @Test
+    fun largeNestedHistoryUsesOuterBackupBudgetAndRetainsEveryChoice(): Unit = storage { db, r ->
+        val p = proposal(r)
+        val historical = p.copy(actual = p.actual().copy(notes = "n".repeat(10000)))
+        val decisions = List(1800) { choice("historical-$it", historical) }
+        val archive =
+            GymAssociationArchiveJson.Archive(decisions, mapOf("actual" to "historical-1799"))
+        // One retained current target; all previous snapshots remain historical evidence.
+        r.decide(choice("count", p))
+        val nested = GymAssociationArchiveJson.element(archive)
+        val bytes = nested.toString().encodeToByteArray().size
+        assertTrue(bytes > 16 * 1024 * 1024 && bytes < 32 * 1024 * 1024)
+        val decoded = GymAssociationArchiveJson.decode(nested)
+        assertEquals(decisions.sortedBy { it.id() }, decoded.decisions)
+        assertEquals(archive.current, decoded.current)
+        validateArchive(db, decoded)
+        // Standalone parsing is still bounded; a parent backup must supply its validated DOM.
+        assertFailsWith<IllegalArgumentException> {
+            GymAssociationArchiveJson.decode(nested.toString())
+        }
+        val tooLarge =
+            GymAssociationArchiveJson.Archive(emptyList(), mapOf("x".repeat(257) to "missing"))
+        assertFailsWith<IllegalArgumentException> { GymAssociationArchiveJson.element(tooLarge) }
+        assertEquals(mapOf("actual" to "count"), r.archive().current)
+    }
+
+    @Test
     fun archiveRejectsFutureMalformedDuplicateAndMissingFields(): Unit = storage { _, r ->
         r.decide(choice("count", proposal(r)))
         val payload = GymAssociationArchiveJson.encode(r.archive())

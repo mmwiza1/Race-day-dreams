@@ -2770,12 +2770,81 @@ incomplete migration merely because a focused checkpoint passes.
   retention and real common root/native services/REAL iOS app. No public experimental release,
   schema/version bump, premature merge or native destructive restore/finalizer.
 
+### Latest recovery boundary — checkpoint69 pushed, corrected runtime verification pending
+
+- Branch `experiment/android-ios-kmp-compose`; HEAD/remote **a42e5ee2f6089ec6903c95e4c1321a68831735d2**.
+  Checkpoint68/69 source is committed/pushed, PR24 OPEN/DRAFT confirmed at this exact head and body
+  updated. No implementation remains only locally. This verification note is intentionally local
+  for the next coherent source checkpoint, avoiding another expensive docs-only CI push.
+- Corrected experiment **43845048753 RUNNING**: Android133222990921 /Apple133222991304.
+  Formatting **43845048657 SUCCESS**. Actual current Android CI passed common metadata +JVM/
+  retained domain suites +schema gates; build/runtime pending. Apple simulator Native/framework
+  step running, not claimed passed. Expected500Android/257storage Native need actual logs and
+  digest-verified XML. Root68 Apple compile failure was fixed in a42e5ee, no blind rerun.
+- Local current-source verification COMPLETE:253storage JVM tests, common metadata, bothAPKs/lint
+  (5m37s/167tasks),752formatting sources,75schema tests/exact schema1..19,10release-note tests PASS.
+  APK version0.12.3-test1/code19/min28/noINTERNET. Preceding9323e36 Android495unique START/END/
+  700189checks/48suites and235storage JVM verified; Native failed compilation, never claimed passed.
+- Next exact action: inspect43845048753 jobs/new Android parity/backup cases and digest-verified
+  JVM/Native results, fix real failures without weakening safeguards. Continue FULL source-validated
+  execution start/save/atomic finish and accepted-actual edit/deletion storage, preserving original
+  CoachingJson UTF8 fingerprint/hash-input compatibility and explicit repeat edit/deletion receipts.
+  Associations, programme activation, normalized readers and association archive guards are done;
+  do not restart them. All original Android stores remain wired until full replacements are safe.
+- Then complete root13 supported older/current backups/raw3/package1 and retention/pruning guards,
+  common root/navigation/state/services, actual native permissions/HealthKit/recording/BLE/
+  notifications and REAL iOS app host/build/runtime. Native framework is NOT an app. Working
+  GitHub macOS/Xcode is available; incomplete app code is not an infrastructure blocker. Full
+  Android28/35/36/iOS app/canonical visuals and physical acceptance remain pending. No version or
+  schema/backup bump, public artifact publication, premature merge or partial native finalizer.
+
+### Checkpoint 70 — Preserve nested large association history
+
+- New LOCAL source after pushed a42e5ee: GymAssociationArchiveJson, GymAssociationCommandsContract,
+  SharedGymAssociationCommandsTest andsharedStorage/build.gradle plus this recovery note. All
+  local checks complete; commit/push this coherent checkpoint before native runtime verification.
+- Focused review demonstrated a boundary mismatch: original full BackupManager allows32MiB,
+  while new association graph validation serialized its entire nested archive through the standalone
+  GymStoredJson16MiB reader. This could reject valid larger retained choice histories before native
+  restore is enabled. Original Android behaviour has NOT changed.
+- Added element(Archive)/decode(JsonObject) for embedding only inside an enclosing syntax/size-
+  validated backup; typed graph validation retains all100000row/524288byte decision bounds and
+  exact evidence/link/occupancy checks without a second standalone aggregate cap. Standalone String
+  encode/decode keeps its existing16MiB guard. No complete parent-backup validator or native restore
+  is claimed; no destructive command enabled.
+- Added common1800decision synthetic history >16MiB/<32MiB, exact all-choice decode/graph preservation,
+  standalone rejection and retained per-field limits. Focused single JVM case PASS,0failures/errors/
+  skips, scratch/kmp-large-association-focused.log (54s build,2.152s test). Added Android parity case
+  passes that same large nested DOM to ORIGINAL association backup validator; runtime still pending.
+- Current-source254storage JVM tests PASS,0failures/errors/skips; full752-source formatting PASS.
+  First full build hit a public-API classpath error: new JsonObject parent entry point exposed an
+  existing implementation-only serialization dependency to Android callers. Changed its SAME1.7.3
+  dependency to api (no new library/version/runtime dependency). Corrected common metadata/bothAPKs/
+  lint PASS **5m40s/167tasks**, scratch/kmp-large-association-api-verified.log; preceding failed
+  log retained at scratch/kmp-large-association-verified.log. Full254storage JVM0fail/error/skip
+  verified from XML.752format PASS; schema75/exact1..19 andrelease10 PASS unchanged from69.
+  Native258/Android501 remain pending until corrected pushed-head CI, not claimed passed.
+- Checkpoint69 a42e5ee experiment43845048753 and formatting43845048657 FULL SUCCESS. Android
+  133222990921:500unique START/END, all5new association/backup parity cases ran,700189checks/48suites.
+  JVM14216475216 SHA2564b2b01f05b0752dc449ed5b302657f3a033ac6c0a19a480d9e501d52bd7500bb:
+  490domain+16health+253storage. Native14216015518
+  SHA2563393ca17c3ec6d53c84f5c7281fcb701ac9e1cea8f78d1dff3be90cb8ccd77b8:449domain+18health+
+  257storage, all18new association and26activation/execution cases ran. AllXML0failure/error/skip.
+  Proofs scratch/associations-a42-jvm/verification.json and associations-a42-native.{zip,json}.
+  Framework14215980640 NOT iOS app; privateAPK14216465364. Root68 native date issue VERIFIED fixed.
+- Next exact: all70 local checks PASS; commit/push coherently, preserve true69 green results, then inspect its exact Native/
+  Android cases and artifact digests. Preserve previous local verification note with next commit.
+  Keep PR24 DRAFT and update its body. No version/schema/backup/public release change.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint69 above is the
-   newest recovery boundary. Preserve local69 implementation and portability correction. Finish
-   the completed local checks and inspect corrected-head runtime CI after commit/push.
-   Checkpoint68 Apple failed common date compilation and is fixed locally; Android495 SUCCESS.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint70 source above
+   is the newest implementation boundary; all recorded local checks PASS. Preserve all work.
+   Latest pushed boundary69 above supplies the preceding verified-source CI/status.
+   All69 implementation is committed/pushed at a42e5ee, PR24 OPEN/DRAFT. Its43845048753 runtime
+   and43845048657 formatting BOTH SUCCESS. Inspect70 child actual runtime after push; preserve
+   the complete local note and source until committed.
+   Checkpoint68 Apple date compile defect is fixed in69; prior Android495 SUCCESS.
    Checkpoint67 FULL SUCCESS487Android/209storage JVM/213storage Native. Preserve all work.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

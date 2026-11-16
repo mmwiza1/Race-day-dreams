@@ -22,37 +22,47 @@ object GymAssociationArchiveJson {
         val plannedDate: String,
     )
 
-    fun encode(archive: Archive): String =
-        GymStoredJson.write(
-                buildJsonObject {
-                    put("version", 1)
-                    put(
-                        "decisions",
-                        JsonArray(
-                            archive.decisions
-                                .sortedBy { it.id() }
-                                .map { read(GymAssociationDecisionJson.encode(it)) }
-                        ),
-                    )
-                    put(
-                        "current",
-                        JsonArray(
-                            archive.current.entries
-                                .sortedBy { it.key }
-                                .map { (id, decision) ->
-                                    buildJsonObject {
-                                        put("actualId", id)
-                                        put("decisionId", decision)
-                                    }
-                                }
-                        ),
-                    )
-                }
-            )
-            .also { decode(it) }
+    /** Standalone gym payloads retain their existing 16 MiB syntax budget. */
+    fun encode(archive: Archive): String = GymStoredJson.write(element(archive)).also { decode(it) }
 
-    fun decode(payload: String): Archive {
-        val root = read(payload)
+    /**
+     * The enclosing validated backup owns its total budget; do not impose a second 16 MiB limit.
+     */
+    fun element(archive: Archive): JsonObject {
+        require(archive.decisions.size <= 100000 && archive.current.size <= 100000) {
+            "Too many association rows."
+        }
+        return buildJsonObject {
+                put("version", 1)
+                put(
+                    "decisions",
+                    JsonArray(
+                        archive.decisions
+                            .sortedBy { it.id() }
+                            .map { read(GymAssociationDecisionJson.encode(it)) }
+                    ),
+                )
+                put(
+                    "current",
+                    JsonArray(
+                        archive.current.entries
+                            .sortedBy { it.key }
+                            .map { (id, decision) ->
+                                buildJsonObject {
+                                    put("actualId", id)
+                                    put("decisionId", decision)
+                                }
+                            }
+                    ),
+                )
+            }
+            .also { decode(it) }
+    }
+
+    fun decode(payload: String): Archive = decode(read(payload))
+
+    /** Nested archives arrive only after the enclosing backup's syntax/size validation. */
+    fun decode(root: JsonObject): Archive {
         fields(root, "version", "decisions", "current")
         version(root, 1)
         val ids = mutableSetOf<String>()
@@ -86,7 +96,7 @@ object GymAssociationArchiveJson {
         authored: Map<String, StrengthProgramme> = emptyMap(),
     ) {
         // Enforce syntax/row bounds even when an in-memory archive did not come through decode.
-        encode(archive)
+        element(archive)
         val decisions = mutableMapOf<String, Decision>()
         val actualIds = mutableSetOf<String>()
         for (d in archive.decisions) {
