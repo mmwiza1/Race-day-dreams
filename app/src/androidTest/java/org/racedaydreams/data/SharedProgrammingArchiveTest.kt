@@ -292,4 +292,160 @@ class SharedProgrammingArchiveTest {
             StrengthProgrammingArchive.decision(JSONObject(bad))
         }
     }
+
+    private fun database(
+        block:
+            (
+                android.database.sqlite.SQLiteDatabase,
+                SqliteStrengthProgrammingRecords,
+                SqliteStrengthProgrammingRepository,
+            ) -> Unit
+    ) {
+        val context =
+            androidx.test.core.app.ApplicationProvider.getApplicationContext<
+                android.content.Context
+            >()
+        ProfileDatabase.get(context).close()
+        context.deleteDatabase(ProfileDatabase.NAME)
+        try {
+            val db = ProfileDatabase.get(context).writableDatabase
+            block(
+                db,
+                SqliteStrengthProgrammingRecords(AndroidSqlTestConnection(db)),
+                SqliteStrengthProgrammingRepository(context),
+            )
+        } finally {
+            ProfileDatabase.get(context).close()
+            context.deleteDatabase(ProfileDatabase.NAME)
+        }
+    }
+
+    @Test
+    fun normalizedSharedReadersOpenOriginalProgrammeDraftCustomAndConcreteRows() =
+        database { db, shared, original ->
+            val draft =
+                StrengthProgrammeDraft(
+                    "weekly",
+                    3,
+                    "programme",
+                    1,
+                    "",
+                    programme().settings(),
+                    start,
+                    emptyList(),
+                    StrengthProgramme.Origin.CUSTOM,
+                    null,
+                )
+            val e =
+                StrengthExercise(
+                    "custom-press",
+                    "My press",
+                    StrengthExercise.Region.UPPER,
+                    StrengthExercise.Mode.WEIGHTED,
+                    false,
+                    StrengthExercise.MeasurementProfile.LOAD_REPS,
+                )
+            val custom =
+                CustomStrengthExercise(
+                    e,
+                    ExerciseMetadata.BodyArea.CHEST,
+                    ExerciseMetadata.Role.HORIZONTAL_PUSH,
+                    ExerciseMetadata.EquipmentRequirement(
+                        listOf(setOf(ExerciseMetadata.Equipment.DUMBBELLS))
+                    ),
+                    "Athlete notes",
+                )
+            val data =
+                snapshot()
+                    .copy(
+                        drafts = listOf(draft),
+                        concreteDrafts = listOf(forward()),
+                        custom = listOf(custom),
+                    )
+            val graph =
+                StrengthProgrammingArchive.validate(
+                    JSONObject(StrengthProgrammingArchiveJson.encode(data)),
+                    null,
+                )
+            db.beginTransaction()
+            try {
+                SqliteStrengthProgrammingRepository.restore(db, graph)
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+            assertEquals(original.programme("programme", 1), shared.programme("programme", 1))
+            assertEquals(original.currentReference(), shared.currentReference())
+            assertEquals(original.versions(10, 0), shared.versions(10, 0))
+            assertEquals(original.draft("weekly"), shared.draft("weekly"))
+            assertEquals(original.drafts(10, 0), shared.drafts(10, 0))
+            assertEquals(original.customExercises(), shared.customExercises())
+            assertEquals(original.customExercise(e.id()), shared.customExercise(e.id()))
+            assertEquals(original.decisions(), shared.decisions())
+            val concrete =
+                SqliteConcreteStrengthProgrammeDraftRepository(
+                    androidx.test.core.app.ApplicationProvider.getApplicationContext()
+                )
+            assertEquals(concrete.get("draft"), shared.concreteDraft("draft"))
+            assertEquals(concrete.list(10, 0), shared.concreteDrafts(10, 0))
+            assertTrue(shared.versions(1, 1).isEmpty())
+            assertEquals(ref, original.currentReference())
+        }
+
+    @Test
+    fun bothNormalizedReadersRejectMismatchedSummaryAndMissingOrderWithoutRepairingHistory() =
+        database { db, shared, original ->
+            val graph =
+                StrengthProgrammingArchive.validate(
+                    JSONObject(StrengthProgrammingArchiveJson.encode(snapshot())),
+                    null,
+                )
+            db.beginTransaction()
+            try {
+                SqliteStrengthProgrammingRepository.restore(db, graph)
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+            db.execSQL("UPDATE strength_programme_revisions SET name='Corrupt index'")
+            assertThrows(IllegalArgumentException::class.java) { shared.programme("programme", 1) }
+            assertThrows(IllegalArgumentException::class.java) {
+                original.programme("programme", 1)
+            }
+            db.execSQL("UPDATE strength_programme_revisions SET name='Original'")
+            db.execSQL("DELETE FROM strength_programme_sessions WHERE position=0")
+            assertThrows(IllegalArgumentException::class.java) { shared.programme("programme", 1) }
+            assertThrows(IllegalArgumentException::class.java) {
+                original.programme("programme", 1)
+            }
+            db.rawQuery("SELECT COUNT(*) FROM strength_programme_sessions", null).use {
+                assertTrue(it.moveToFirst())
+                assertEquals(1L, it.getLong(0))
+            }
+        }
+
+    @Test
+    fun originalAndSharedCurrentReferenceReadersRejectCompetingOwners() =
+        database { db, shared, original ->
+            val graph =
+                StrengthProgrammingArchive.validate(
+                    JSONObject(StrengthProgrammingArchiveJson.encode(snapshot())),
+                    null,
+                )
+            db.beginTransaction()
+            try {
+                SqliteStrengthProgrammingRepository.restore(db, graph)
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+            db.execSQL("INSERT INTO gym_plan_versions VALUES('legacy:v1','legacy',1,'{}')")
+            db.execSQL("INSERT INTO gym_current VALUES(1,'legacy:v1')")
+            assertThrows(IllegalArgumentException::class.java) { shared.currentReference() }
+            assertThrows(IllegalArgumentException::class.java) { original.currentReference() }
+            db.execSQL("DELETE FROM strength_programme_current")
+            assertEquals(Reference(Owner.LEGACY, "legacy", 1), shared.currentReference())
+            assertEquals(original.currentReference(), shared.currentReference())
+            assertEquals(programme(), shared.programme("programme", 1))
+        }
 }

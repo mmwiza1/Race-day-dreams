@@ -2533,14 +2533,49 @@ incomplete migration merely because a focused checkpoint passes.
   strength-actual repositories, real common application root/native OS services and actual iOS app
   remain unfinished. Keep PR24 DRAFT; no version/schema/backup bump, merge or public publication.
 
+### Checkpoint 65 — Normalised authored programme readers (16 November 2026)
+
+- Checkpoint64 committed/pushed **6dc4a7a9e595275d798db4c0783f05793573ef58**. PR24 remains
+  OPEN/DRAFT, accurate body updated. Formatting43816665144 SUCCESS. Experiment43816664754
+  RUNNING: Android133130162731 pending. **Apple133130162793 SUCCESS**; digest-verified
+  artifact14202873165 ZIP34457de5ef4881ea83fe4e07e49e2e6f67c2fe5527da22b24c0bf75f2b14da8f
+  proves **449domain+18health+171storage Native**,0failures/errors/skips, all22new timer/archive
+  cases ran. Proofs scratch/tools-6dc-native.{zip,json}. Framework14203426346 linked, NOT an iOS
+  app. Expected474Android remains pending, not claimed passed. Final local64 build bothAPKs/lint PASS5m31s/160tasks,167storage JVM PASS,
+  format719(624K/95J),schema75+exactsource guard PASS. APK0.12.3-test1/code19,min28,noINTERNET.
+- Implemented records batch (include all files in this checkpoint commit): `SqliteStrengthProgrammingRecords.kt`, common
+  `ProgrammingRecordsRepositoryContract.kt`, JDBC/Apple wrappers and3 additional Android cases
+  appended to SharedProgrammingArchiveTest.kt (its preceding3 codec tests preserved).
+- Reader composes existing SQLite19 tables: current legacy/authored reference, exact programme
+  revision with indexed header/block/workout consistency, weekly draft, concrete draft with separate
+  draft/programme revisions, bounded summaries, custom metadata and ordered decisions. Multi-query
+  hydration shares one transaction. Read-only; no automatic activation, actual editing or restore.
+  Use this reader in forthcoming command repositories rather than duplicating normalized loading.
+- Added8 common realSQLite cases +3 Android parity cases using original normalized restore/writers.
+  Initial local175tests had2 TEST FIXTURE failures: invalid SQL parent_revision9 and decision
+  position0 violated existing CHECKs before reader assertions. Fixed to corrupt indexed start_date
+  (legal SQL, invalid header identity) and original1-based decisions. No engine/schema/assertions
+  weakened. Focused8 rerun PASS +Android instrumentation compile PASS (**2m40s/57tasks**),
+  scratch/kmp-programming-records-focused.log. Full sharedStorage JVM **175PASS**,0failure/error/
+  skip. Formatting **723sources (628Kotlin/95Java) PASS**, scratch/kmp-programming-records-format.log.
+  Both APKs +lint PASS (**2m55s/160tasks**), scratch/kmp-programming-records-final.log.
+- Next safe action: inspect checkpoint64 Android result/new6 actual instrumentation cases and
+  digest-verified JVM XML. All65local gates PASS; commit/push the coherent reader batch without
+  needlessly cancelling the almost-complete preceding runtime gate, then inspect its exact
+  Native/JVM/Android results. Do not discard or redo checkpoint64.
+  Full reviewed authored/concrete programme commands and source-validated execution/association/
+  actual repositories, supported backups/retention, real app/native services/iOS host and final
+  platform gates remain. Readers intentionally expose no mutation/activation/restore; future command
+  repositories must compose these same normalized readers and recheck fresh evidence atomically.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24 from checkpoint64 above.
-   Verify its exact pushed experiment/formatting results and new6 Android cases plus Apple/JVM XML.
-   Checkpoint63 b1b3d91 FULL SUCCESS468Android/700189checks;145storage JVM/149storage Native.
-   Next implement typed authored/concrete programme persistence and execution/association/actual
-   repositories over existing SQLite19, using completed codecs/graph guards. Do not redo tools or
-   authoring archive ports. Preserve any final local verification-only handoff with next source commit.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24 from latest checkpoint65.
+   Preserve any uncommitted files/final verification note. Verify latest exact child CI and original/
+   shared Android parity cases plus Apple/JVM XML. Checkpoint64 HEAD6dc4a7a Apple171storage
+   verified; Android474 pending in43816664754. Current reader source175storage JVM/723format/
+   Android compile/bothAPKs/lint PASS. Next typed reviewed programme mutation and
+   source-validated execution/association/actual repositories; compose the completed readers/codecs.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
@@ -2548,7 +2583,8 @@ incomplete migration merely because a focused checkpoint passes.
    implemented as above; preserve them. Running/actual/frozen workout/execution codecs are now shared
    as recorded in checkpoints55–59; preserve them. Programme, both association and concrete-preview codecs plus typed legacy gym history now exist
    as recorded in checkpoints60–63. Tools/timer storage and authoring decision/archive graph guards are implemented in checkpoint64.
-   Authored/concrete/execution/association/strength-actual repositories are still needed. Activity/result repositories are implemented in checkpoint53;
+   Normalized authored/draft/concrete/custom/decision readers are implemented in checkpoint65.
+   Reviewed authored/concrete commands and execution/association/strength-actual repositories are still needed. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
