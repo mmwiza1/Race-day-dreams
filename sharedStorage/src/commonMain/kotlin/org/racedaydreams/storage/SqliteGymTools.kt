@@ -91,6 +91,30 @@ class SqliteGymTools(private val database: SqlDatabase) {
             )
         }
 
+    /**
+     * Copy the retained clock/phase. A new device epoch is handled by observe, not fabricated rest.
+     */
+    internal fun populateArchive(snapshot: GymToolsPayloadJson.Snapshot) =
+        database.transaction {
+            for (table in listOf("gym_rest_timers", "gym_rest_preferences")) require(
+                database.query("SELECT 1 FROM $table LIMIT 1").isEmpty()
+            ) {
+                "Timer restore requires empty prepared tables; existing data was retained."
+            }
+            for (timer in snapshot.timers) require(
+                database
+                    .query(
+                        "SELECT 1 FROM strength_executions WHERE id=?",
+                        listOf(SqlValue.Text(timer.executionId())),
+                    )
+                    .isNotEmpty()
+            ) {
+                "Rest timer workout is missing."
+            }
+            preferences(snapshot.preferences)
+            snapshot.timers.forEach(::putTimer)
+        }
+
     private fun unfinished(execution: String): Boolean =
         database
             .query(

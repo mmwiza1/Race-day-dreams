@@ -10,7 +10,7 @@ import org.racedaydreams.storage.StoredJson.text
  * restore entry point: the coordinator still owns all feature sections and raw reconciliation.
  */
 internal class SqliteCoreBackupRestore(private val database: SqlDatabase) {
-    fun populate(core: CoreBackupDataJson.Snapshot) =
+    fun populate(core: CoreBackupDataJson.Snapshot, retainOwnedRecordings: Boolean = false) =
         database.transaction {
             // Fail before the first write if the enclosing replacement has not prepared ALL tables.
             for (table in
@@ -33,8 +33,23 @@ internal class SqliteCoreBackupRestore(private val database: SqlDatabase) {
                     "training_plans",
                     "plan_adjustments",
                     "import_checkpoints",
-                )) require(database.query("SELECT 1 FROM $table LIMIT 1").isEmpty()) {
+                )) require(
+                (table == "activities" && retainOwnedRecordings) ||
+                    database.query("SELECT 1 FROM $table LIMIT 1").isEmpty()
+            ) {
                 "Core restore requires empty prepared tables; existing data was retained."
+            }
+            if (retainOwnedRecordings) {
+                require(
+                    database
+                        .query(
+                            "SELECT 1 FROM activities WHERE provider NOT IN ('rdd','gpx') LIMIT 1"
+                        )
+                        .isEmpty()
+                ) {
+                    "Only protected owned recordings may remain during replacement."
+                }
+                SqliteOwnedActivityRestore(database).requirePreserved(core)
             }
             core.profile?.let { SqliteAthleteProfile(database).save(it) }
             core.draft?.let {
@@ -49,24 +64,27 @@ internal class SqliteCoreBackupRestore(private val database: SqlDatabase) {
                     error("Restoring evidence must not invent an observation time")
                 }
             for (a in core.activities) {
-                database.execute(
-                    "INSERT INTO activities(id,provider,record_id,origin_package,start_millis,end_millis,payload) VALUES(?,?,?,?,?,?,?)",
-                    listOf(
-                        SqlValue.Text(a.id()),
-                        SqlValue.Text(a.source().provider()),
-                        SqlValue.Text(a.source().recordId()),
-                        sqlText(a.source().originPackage()),
-                        SqlValue.Integer(storedEpochMillis(a.start())),
-                        SqlValue.Integer(storedEpochMillis(a.end())),
-                        SqlValue.Text(
-                            ActivityJson.encode(
-                                if (a.source().provider() in listOf("rdd", "gpx"))
-                                    a.copy(samples = emptyList())
-                                else a
-                            )
+                if (retainOwnedRecordings && a.source().provider() in listOf("rdd", "gpx"))
+                    SqliteOwnedActivityRestore(database).put(a)
+                else
+                    database.execute(
+                        "INSERT INTO activities(id,provider,record_id,origin_package,start_millis,end_millis,payload) VALUES(?,?,?,?,?,?,?)",
+                        listOf(
+                            SqlValue.Text(a.id()),
+                            SqlValue.Text(a.source().provider()),
+                            SqlValue.Text(a.source().recordId()),
+                            sqlText(a.source().originPackage()),
+                            SqlValue.Integer(storedEpochMillis(a.start())),
+                            SqlValue.Integer(storedEpochMillis(a.end())),
+                            SqlValue.Text(
+                                ActivityJson.encode(
+                                    if (a.source().provider() in listOf("rdd", "gpx"))
+                                        a.copy(samples = emptyList())
+                                    else a
+                                )
+                            ),
                         ),
-                    ),
-                )
+                    )
                 // Original restore creates owned annotations without assigning today's default
                 // shoe.
                 activities.putAnnotation(
@@ -98,10 +116,7 @@ internal class SqliteCoreBackupRestore(private val database: SqlDatabase) {
                     .putBaseline(it, core.baselineAt)
             }
             core.settings.forEach { (key, value) ->
-                database.execute(
-                    "INSERT INTO settings VALUES(?,?)",
-                    listOf(SqlValue.Text(key), SqlValue.Text(value)),
-                )
+                SqliteSettings(database).putSetting(key, value)
             }
             core.planned.forEach {
                 SqlitePlannedWorkouts(database).put(it.workout, it.revision, false)

@@ -103,6 +103,69 @@ class SqliteGymExecutions(
         return persist(finished, expectedRevision, true)
     }
 
+    /**
+     * Internal population from a fully validated parent. Never starts/finishes training, updates
+     * actuals, reviews sources or invents edits/associations. All features share the caller's DB.
+     */
+    internal fun populateArchive(parent: UserBackupDataJson.Snapshot) =
+        database.transaction {
+            for (table in
+                listOf(
+                    "strength_workout_versions",
+                    "strength_workout_preferences",
+                    "strength_executions",
+                    "strength_execution_sets",
+                    "strength_execution_events",
+                    "strength_association_targets",
+                    "strength_association_decisions",
+                    "gym_rest_timers",
+                    "gym_rest_preferences",
+                )) require(database.query("SELECT 1 FROM $table LIMIT 1").isEmpty()) {
+                "Gym restore requires empty prepared tables; existing data was retained."
+            }
+            parent.engine?.let { graph ->
+                for (record in graph.workouts.values) database.execute(
+                    "INSERT INTO strength_workout_versions(workout_id,revision,source_kind,source_id,payload) VALUES(?,?,?,?,?)",
+                    listOf(
+                        SqlValue.Text(record.definition.id()),
+                        SqlValue.Integer(record.definition.revision().toLong()),
+                        sqlText(record.source?.kind()?.name),
+                        sqlText(record.source?.id()),
+                        SqlValue.Text(bounded(FrozenGymWorkoutRecordJson.encode(record))),
+                    ),
+                )
+                graph.preferences.forEach { workouts.savePreference(it) }
+                for (evidence in graph.executions.values) {
+                    val stored = evidence.original
+                    val e = stored.execution()
+                    val p = parts(e)
+                    database.execute(
+                        "INSERT INTO strength_executions(id,revision,origin,state,started_at,title,recorded_elapsed,active_millis,set_count,event_count,workout_id,workout_revision,header,accepted_actual,actual_edited_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        listOf(SqlValue.Text(e.id())) + summary(e, stored.revision(), p.header),
+                    )
+                    append(e, p, 0, 0)
+                    if (e.status() == GymExecution.Status.FINISHED)
+                        database.execute(
+                            "UPDATE strength_executions SET accepted_actual=?,actual_edited_at=? WHERE id=?",
+                            listOf(
+                                SqlValue.Text(
+                                    bounded(
+                                        StrengthEvidenceJson.encodeSession(
+                                            requireNotNull(evidence.currentActual)
+                                        )
+                                    )
+                                ),
+                                sqlText(evidence.actualEditedAt?.toString()),
+                                SqlValue.Text(e.id()),
+                            ),
+                        )
+                }
+            }
+            SqliteGymAssociations(database) { error("Restore cannot date a new association") }
+                .populateArchive(parent)
+            SqliteGymTools(database).populateArchive(parent.tools)
+        }
+
     private fun persist(next: GymExecution, expected: Long, finish: Boolean): Stored {
         conflict(expected >= 1 && expected < Long.MAX_VALUE)
         val prepared = parts(next)

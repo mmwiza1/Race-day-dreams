@@ -215,6 +215,59 @@ class SqliteGymAssociations(private val database: SqlDatabase, private val now: 
             decision
         }
 
+    /**
+     * Restore retained projections and explicit decisions, never call decide or regenerate links.
+     */
+    internal fun populateArchive(parent: UserBackupDataJson.Snapshot) =
+        database.transaction {
+            for (table in
+                listOf("strength_association_targets", "strength_association_decisions")) require(
+                database.query("SELECT 1 FROM $table LIMIT 1").isEmpty()
+            ) {
+                "Association restore requires empty prepared tables; existing data was retained."
+            }
+            // Historical links remain historical, including links predating explicit association
+            // UI.
+            for ((id, link) in GymExecutionArchiveJson.links(parent.development)) database.execute(
+                "INSERT INTO strength_association_targets(actual_id,programme_key,session_id,planned_date,decision_id) VALUES(?,?,?,?,NULL)",
+                listOf(
+                    SqlValue.Text(id),
+                    sqlText(link.programmeKey),
+                    sqlText(link.sessionId),
+                    SqlValue.Text(link.plannedDate),
+                ),
+            )
+            val archive = parent.engine?.associations ?: return@transaction
+            val decisions = archive.decisions.associateBy { it.id() }
+            for (d in archive.decisions) {
+                val payload = GymAssociationDecisionJson.encode(d)
+                require(payload.encodeToByteArray().size <= 524288) {
+                    "Association snapshot is too large."
+                }
+                database.execute(
+                    "INSERT INTO strength_association_decisions(id,actual_id,decided_at,payload) VALUES(?,?,?,?)",
+                    texts(d.id(), d.proposal().actual().id(), d.decidedAt().toString(), payload),
+                )
+            }
+            for ((id, decision) in archive.current) {
+                val d = decisions.getValue(decision)
+                val p = d.proposal()
+                require(id == p.actual().id()) {
+                    "Association target differs from its recorded decision."
+                }
+                val counted = d.choice() == Choice.COUNT_TOWARD_SESSION
+                database.execute(
+                    "INSERT OR REPLACE INTO strength_association_targets(actual_id,decision_id,programme_key,session_id,planned_date) VALUES(?,?,?,?,?)",
+                    texts(id, d.id()) +
+                        listOf(
+                            sqlText(if (counted) key(p) else null),
+                            sqlText(if (counted) p.sessionId() else null),
+                            sqlText(if (counted) p.date().toString() else null),
+                        ),
+                )
+            }
+        }
+
     private fun actual(id: String): StrengthSession =
         database
             .query("SELECT payload FROM strength_sessions WHERE id=?", texts(id))

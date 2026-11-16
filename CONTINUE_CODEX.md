@@ -4385,16 +4385,95 @@ incomplete migration merely because a focused checkpoint passes.
   actual iOS app host/runtime, and final unfiltered28/35/36+iOS APP/source-bound visual gates.
   No version/schema/format/permission change, early merge or publication. Hardware checks unperformed.
 
+### Live recovery note after checkpoint98 push
+
+- Implementation98 committed/pushed as cfe5b383f1ebeb328cb357f779f9c4bb80413fa6; PR24 remains OPEN/DRAFT.
+  Fresh experiment43967075701 and formatting43967075932 are RUNNING on that exact source. No pass claimed.
+  Source tree is preserved; this live-status note is a local documentation update so another push does
+  not cancel/restart the just-launched expensive gate. Update/commit it with the next coherent batch.
+- NEXT EXACT: inspect those two actual runs; require Native/JVM501/9new cases and Android534. Last all-
+  green source is97/086e631 as documented above. After verification continue frozen execution/association /
+  timer restore, guarded app/raw replacement and retention safeguards, then real shared app/native
+  service integration/iOS host. No reset, replacement PR, premature merge/version/publication.
+
+### Checkpoint99 — gym history population and guarded whole-app JSON replacement (local)
+
+- Continuing experiment/android-ios-kmp-compose /DRAFT24. Live main85e1c3903b61f1d45e444d120ba1a701ad3a2c36
+  unchanged; source work and the prior local status note are preserved. No reset/force/new PR/version.
+-98headcfe5b383f1ebeb328cb357f779f9c4bb80413fa6 is now FULL SUCCESS: experiment43967075701,
+  Apple133649202666 /Android133649203156; formatting43967075932 SUCCESS.534unique Android START/END
+  match;700189checks/48domain suites/build/lint/schema PASS. All74 IO/SQL/restore case names match
+  across actual downloaded test artifacts, including9new programming/body/award cases.
+-98digest-verified JVM14276598479 SHA2567876b7e7fe6fdb79f72eda819cffc6378f4d44e262b30f63f2e0aa413b3fdd8b:
+  490domain+16health+501storage. Native14276933304
+  SHA25628e25ad3fe5cd6dda036cd8878bdc2b3e9616ae030dcdcfd3cfa9bd290396029:
+  449domain+18health+501storage. ALL0failure/error/skip. Proofs scratch/programming-cfe-{jvm,native}/
+  verification.json, native/all-case-proof.json, programming-cfe-android-job.log. Framework14277303093
+  NOT APP. PrivateAPK14278130989 byte-verified ZIP2e79e60d1247914409461c0262f0a462d8244eb8f3d89d5a684ff5d760e03b6b;
+  APK58205451bytes/SHA25605af700d5801a35983bd4158703af9237d8372172f6457069ba2e8ef977da40c,
+  version0.12.3-test1/code19/min28/noINTERNET. Private only; no public experimental release.
+-99 adds INTERNAL SqliteGymExecutions.populateArchive(parent) using existing parts/summary/append.
+  Frozen workout/source/edit/deletion receipts, exact saved revision/preferences, original execution
+  sets/events, accepted actual +actualEditedAt are copied without start/finish/saveActual or source
+  revalidation/fingerprint generation. All engine/association/timer target tables must be empty first.
+- Internal SqliteGymAssociations.populateArchive copies legacy link projections and original explicit
+  choice history/selected target, never decides again or regenerates coaching evidence. KEEP_EXTRA /
+  COUNT_TOWARD_SESSION remain distinct. SqliteGymTools.populateArchive copies exact timer epoch/phase /
+  trigger and preferences; changing device epochs remains an interruption, not fabricated elapsed rest.
+- GymBackupRestoreRepositoryContract8 real JDBC cases PASS1m17s/13tasks +metadata in
+  scratch/kmp-gym-backup-restore-focused.log. Real Apple wrapper added. Cases include edited accepted
+  actual vs original, warm-up/superset order, Long revision>2^53, deleted repeat source/fingerprint,
+  all unfinished states, timer epoch, planned projection/no new choice, both explicit choices,
+  old missing engine, occupied late table, final failure and outer rollback.
+- New INTERNAL SqliteApplicationBackupRestore validates the complete root1..13 file BEFORE ANY DB
+  access, protects outgoing run/gym recovery, validates owned recording identity/measurements and
+  receipt/raw-count/hash compatibility BEFORE clearing. All typed core/archive/programming/body /
+  retention/gym population executes in ONE existing SQLite19 transaction with final FK check.
+  Retention runs before loading a legitimately unfinished incoming gym, and a fresh caller-supplied
+  dataset identity invalidates old approvals. Late failure or rejected caller scope rolls back ALL.
+- SqliteOwnedActivityRestore retains existing rdd/gpx activity rows in place, preserving dense legacy
+  inline samples and normalized recording tables without whole-history staging or recalculation.
+  Bounded512-key metadata pages, <=32MiB single-source rows and small indexed identities; imported
+  caches are not hydrated. Only annotations/links can differ on retained measured records; conflicting
+  IDs/measurements reject rather than overwriting evidence. Old inline backups restore into empty DBs.
+  Known removal receipts survive older JSONs missing that later provenance; conflicting proofs reject.
+- SqliteCoreBackupRestore default empty-table path remains intact; optional internal retained-owned
+  path rechecks all owned evidence first. Settings restore now reuses SqliteSettings.putSetting,
+  matching ORIGINAL Android legacy-provider normalisation to HEALTH_CONNECT; all13root versions test it.
+- ApplicationBackupRestoreRepositoryContract now11 cases +Apple/JDBC wrappers: whole current roundtrip
+  with running/strength revisions/drafts/sets/exclusions/body/awards/timer, genuine old-section reads
+  for roots1..13, corrupt/future/incomplete rejection before DB access, all outgoing recovery guards,
+  owned omission/source/measurement conflicts, retained coordinates/summary/PB, inline preservation,
+  missing/conflicting removal provenance, late failure and caller rollback/unfinished imported gym.
+- Initial15focused app/core cases PASS1m22s/13tasks. Preliminary519storage/meta/Android compile PASS /
+  4m14s/64tasks, all0failure/error/skip, before the final additional compatibility case. A PB fixture
+  constructor argument order was corrected, without changing assertions. Schema75/source3 PASS.
+- Added a RED regression proving original-reader -0.0 ->0 summary spelling falsely conflicted under
+  record equality. Fixed comparison ONLY for numerically identical signed-zero summary values;
+  other differences (including100.00000000000001 vs100) still reject; raw bytes/hashes never normalize.
+  A development attempt used the older compiled binary while source was edited and is not verification.
+  Stable-source16focused app/core +metadata PASS1m22s/13tasks in scratch/kmp-application-replacement-
+  focused.log. FINAL520storage JVM0failure/error/skip +metadata +Android test compilation PASS2m58s /
+  64tasks in scratch/kmp-composed-restore-final.log. Pinned874sources(779Kotlin95Java), exact schema19,
+  source3 and schema75 PASS in scratch/kmp-composed-restore-{format,schema}.log. New Native19cases /
+  original Android regressions pending a fresh pushed-head gate.
+- NATIVE DESTRUCTIVE UI REMAINS OFF. Whole JSON kernel is internal, not a complete backup-package /
+  raw merge command or cleanup permission. Next: compatible streaming raw restore with exact receipts /
+  source/timing/count/conflict checks, same-transaction complete package coordination, full retention
+  consent/preview/epoch/pruning protections. Reuse RecordingArchiveRows/Reader and sealed private
+  inspected ZIP inputs; never normalize receipt hashes to force a match. Original Android stores
+  remain authoritative. Then full shared app/native services/iOS host and final full gates.
+- No schema19/root13/raw3/package1/version/code/dependency/permission change. No early merge/publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint98 above is latest recovery boundary.97head086e631 is fully green:43963718706 +format /
-   43963718680, digest-verified Native/JVM492/18restore cases and Android534/700189domain checks.98adds
-   normalized programming/body/award population and9cases; local501tests/meta/Android compile PASS /
-   2m58s/64tasks,866format/schema/source checks and75schema tests PASS. Push this checkpoint once,
-   inspect actual new run IDs, verify Native/JVM501/9new cases and Android534, update DRAFT24. Never
-   treat pending as pass or expose partial restore/pruning. Next: frozen execution/association/tools
-   restoration, then guarded whole replacement/raw reconciliation/retention safeguards, then full app /
-   native services/iOS host and final gates. Preserve all completed source; no schema/version bump.
+1. Checkpoint99 above is latest recovery boundary.98cfe5b38 is fully green and byte-verified.99gym /
+   whole-app JSON kernel is committed with this handoff; local520tests/meta/Android compile PASS /
+   2m58s/64tasks;874format, schema75/exact19 and source3 PASS. Push this batch once and inspect actual
+   fresh Native/JVM520/19new gym/app cases +Android534 results, update DRAFT24 and this boundary.
+   Native UI remains OFF until compatible raw/complete-package merge +full retention safeguards,
+   then full app/native services/iOS host and final gates. Never treat pending as pass or restart
+   completed domain/storage work. Keep schema/version/backup formats unchanged until justified.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
