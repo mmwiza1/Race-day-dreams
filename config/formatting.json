@@ -263,6 +263,7 @@
     "app/src/androidTest/java/org/racedaydreams/data/SharedProgrammingArchiveTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedStrengthDraftCommandsTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedFrozenWorkoutRecordTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/SharedGymAssociationCommandsTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedGymExecutionRecordsTest.kt",
     "app/src/androidTest/java/org/racedaydreams/data/SharedStrengthProgrammingCommandsTest.kt",
     "domain/src/main/kotlin/**/*.kt",

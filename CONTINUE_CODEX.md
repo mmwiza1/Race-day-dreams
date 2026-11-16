@@ -2728,12 +2728,54 @@ incomplete migration merely because a focused checkpoint passes.
   disabled until complete protections exist. Keep original Android CoachingJson UTF8 fingerprint
   input contract; structural receipts or copied hashes never authorize differently serialized proof.
 
+### Checkpoint 69 — Explicit associations and archive graph validation
+
+- Checkpoint68 committed/pushed **9323e363c0c3f0b5edac81d5dc7edc923e787609**. PR24 updated,
+  remains OPEN/DRAFT. Formatting43842272255 SUCCESS. Experiment43842272316: Android
+  133213618830 SUCCESS, **495unique START/END**, all8new parity cases ran; retained700189checks/
+  48suites. JVM14214996067 ZIPa2622dcbde632a975494c64f575080a0202d08b1c4876ac5057eec5330ce5a44
+  digest-verified **490domain+16health+235storage**,0failures/errors/skips; proof
+  scratch/acceptance-9323-jvm.{zip,json}. PrivateAPK14214198054, not publicly released.
+  Apple133213618440 FAILED common compilation at two
+  LocalDate.isBefore calls (JVM-only java.time members). Root cause fixed by equivalent common
+  toEpochDay comparisons in SqliteStrengthProgramming; no changed date bounds/calculations.
+  Do not rerun failing source or claim checkpoint68 Native239 passed; validate corrected child.
+- New SqliteGymAssociations implements COMPLETE existing GymAssociationRepository: exact
+  legacy/authored discovery and review, explicit COUNT/KEEP choices, current-programme and fresh
+  actual checks, occupied-target protection, stable retries, immutable choices and atomic coaching/
+  indexed projections. Original completed executions/sets/programmes are never modified.
+- GymAssociationArchiveJson ports original version1 association graph guards and canonical export
+  shape: frozen historical actuals/prescriptions remain separate from current edits; complete current
+  choices, unique target occupancy, exact links, row/root bounds and original domain comparability
+  checks required. SqliteGymAssociations.archive is read-only and never invents a decision from a
+  legacy projection. No destructive/native replacement or partial actual finalizer enabled.
+- Added18 common realSQLite command/archive cases and JDBC/Apple wrappers;5 Android cases alternate
+  original/shared commands, test stale/competing/edited actuals, rollback, and original backup roundtrip
+  for both families. Existing assertions and engines preserved; focused workflow adds the new class.
+- Focused18 JVM cases PASS (0failure/error/skip), scratch/kmp-gym-association-archive-focused.log.
+  Initial new fixture violated existing FINISHED/accepted_actual CHECK when simulating unfinished
+  data; replaced with a real domain-generated ACTIVE fixture, retaining assertions. New archive
+  test generic inference error fixed explicitly. Final **253storage JVM tests PASS**,0failures/errors/
+  skips. Common metadata +bothAPKs +lint PASS **5m37s/167tasks**, scratch/kmp-gym-association-
+  verified.log. Full formatting **752sources(657Kotlin/95Java) PASS**, scratch/kmp-gym-association-
+  format.log. Exact schema1..19 guard +75schema tests PASS, release-note10tests PASS. Built APK
+  code19/version0.12.3-test1/min28/noINTERNET verified. No UI/engine/permission/dependency change.
+  Common storage metadata compilation added to the existing JVM CI step to catch JVM-only API
+  calls earlier; all existing focused Android classes retained, exactly one new class added.
+- Next exact: finish local verification, commit/push69 together with portability fix and this note;
+  inspect corrected child Android/Native runtime + digest-verified
+  XML. Expected child500Android/257storage Native are NOT passed until actual proof. Continue complete
+  source-validated execution commands and actual edit/deletion/frozen-repeat receipts; preserve
+  original CoachingJson UTF8 fingerprint contract. Then full root13/older backups/raw3/package1,
+  retention and real common root/native services/REAL iOS app. No public experimental release,
+  schema/version bump, premature merge or native destructive restore/finalizer.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint68 above is the
-   newest recovery boundary and supersedes pending-checkpoint67 notes. Local235storage JVM,
-   bothAPKs/lint,746format,schema75 PASS. Inspect new exact-head Android/Apple runtime CI;
-   expected495Android/239storage Native are not passed until actual logs/XML prove it.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint69 above is the
+   newest recovery boundary. Preserve local69 implementation and portability correction. Finish
+   the completed local checks and inspect corrected-head runtime CI after commit/push.
+   Checkpoint68 Apple failed common date compilation and is fixed locally; Android495 SUCCESS.
    Checkpoint67 FULL SUCCESS487Android/209storage JVM/213storage Native. Preserve all work.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
@@ -2746,7 +2788,8 @@ incomplete migration merely because a focused checkpoint passes.
    Draft/custom/concrete-save commands and saved-workout library are implemented in checkpoint66;
    transactional revision-review snapshots are implemented in checkpoint67.
    Reviewed authored/concrete activation and normalized execution readers are implemented in checkpoint68.
-   Full source-validated execution commands/association/strength-actual repositories remain needed. Activity/result repositories are implemented in checkpoint53;
+   Explicit associations and archive graph guards are implemented in checkpoint69.
+   Full source-validated execution commands/strength-actual repositories remain needed. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete

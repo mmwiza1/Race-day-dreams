@@ -98,7 +98,7 @@ class SqliteStrengthProgramming(
             require(
                 !legacyId(proposed.id()) &&
                     !proposed.createdAt().isAfter(now()) &&
-                    !proposed.effectiveFrom().isBefore(today())
+                    proposed.effectiveFrom().toEpochDay() >= today().toEpochDay()
             ) {
                 "Review a current, unambiguous programme change."
             }
@@ -242,7 +242,7 @@ class SqliteStrengthProgramming(
         }
         for (w in p.workouts()) {
             if (
-                w.date().isBefore(p.effectiveFrom()) ||
+                w.date().toEpochDay() < p.effectiveFrom().toEpochDay() ||
                     w.id() in protected ||
                     (previous != null &&
                         w == old[w.id()] &&
