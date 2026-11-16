@@ -372,6 +372,14 @@ class SharedBackupEnvelopeTest {
         val snapshot =
             SupportArchiveJson.decode(Json.parseToJsonElement(before.toString()) as JsonObject)
         assertEquals(7, snapshot.records.size)
+        val captured =
+            org.racedaydreams.storage
+                .SqliteDevelopmentArchive(AndroidSqlTestConnection(db))
+                .snapshot()
+        assertEquals(
+            Json.parseToJsonElement(before.toString()),
+            DevelopmentArchiveJson.element(captured),
+        )
         assertEquals(
             Json.parseToJsonElement(before.toString()),
             SupportArchiveJson.element(snapshot),

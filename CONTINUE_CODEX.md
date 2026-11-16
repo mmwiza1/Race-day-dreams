@@ -3784,13 +3784,54 @@ incomplete migration merely because a focused checkpoint passes.
   infrastructure excuse or framework-as-app claim. Final unfiltered28/35/36+iOS APP/visual gates
   and physical HealthKit/HC/GPS/BLE/audio/locked-screen/OEM/human TalkBack remain unperformed.
 
+### Checkpoint85 — bounded user-owned development-evidence database capture
+
+- Current remote84 `297b95696963fbb297db82023a4fd5b11ba0748d` (implementation2685205 plus bundled
+  recovery record) pushed to existing DRAFT PR24.84 experiment43910500616 RUNNING, Apple133450781246 /
+  Android133450781759; format43910500700 SUCCESS. Last FULL remote remains83(419storage/532Android/
+ 700189checks48suites). Do not claim84 Native424 /Android533 until artifacts/logs actually confirm.
+- Valid LOCAL85 source: SqliteDevelopmentArchive.kt, DevelopmentArchiveRepositoryContract.kt,
+  JdbcDevelopmentArchiveTest.kt /AppleDevelopmentArchiveTest.kt and original development export
+  parity extension in SharedBackupEnvelopeTest. No DB/version/backup/permission/dependency change.
+- Snapshot scans original coach_evidence in bounded512-row keyset pages within ONE existing DB
+  transaction. Source rows individually preflight against supported whole-file32MiB input size /
+  original JSON structural limits; aggregate imported-cache size/count is NEVER an owned limit.
+  Imported WEIGHT provider filtering happens BEFORE owned100000-row/32MiB budget and typed external
+  archive decoding. Matches original optString(provider) export semantics, including omission of
+  incomplete cached payloads. Only owned rows receive typed validation; caches are NOT deleted.
+- Preserves original SQL kind/id order, exact identities, manual measurements, unknown legacy
+  payload fields, historical PBs/links/decisions and retained-source semantics. No new association,
+  actual sets, programme activation, stale-evidence interpretation or source rewrite by reading.
+- Added3 REAL SQLite contracts shared by JVM/Apple. Synthetic100001imported-weight cache exceeds
+  BOTH owned count and aggregate-byte caps, yet manual export succeeds and ALL100002rows remain.
+  Corrupt manual data rejects without writes; incomplete imported cached measurements omit exactly
+  as original; legacy optional links and unknown metadata/order remain intact. Original Android
+  seven-kind export test now ALSO compares the actual shared database snapshot with original JSON.
+- Local focused3JDBC cases PASS0failure/error/skip (6.281s runtime), shared metadata+Android test
+  compilation PASS5m7s/64tasks, scratch/kmp-owned-evidence-focused.log. Formatting815sources
+  (720Kotlin95Java) and3source-provenance tests PASS. Do not rerun unchanged full release matrix.
+- NEXT EXACT: commit85+handoff locally for recovery; HOLD PUSH until84 CI finishes to avoid cancelling
+  its expensive run. Verify84 actual424storage/533Android +package5common/original exporter test.
+  Then push stable85 to same draft24; new expected427storage per platform /533Android. Verify actual
+  Native3SQLite contract methods (including large cache fixture) plus existing Android7-kind parity
+  extension from fresh completed artifacts/logs. Fix real failures; no assertions weakened/reruns.
+- Next implementation: real ZIP extraction/container guards and same-DB app/raw replacement with
+  retention consent/preview/dataset epoch/active+paused+recoverable protection. Use COMPLETE parent82,
+  byte/hash/row reader83 and package manifest84; owned development capture85 now exists, do not redo
+  or feed unbounded caches into a bounded file decoder. Native destructive restore/pruning stays OFF.
+- Full common app root/navigation/state/data, full HealthKit/native permissions/recording/BLE/
+  notifications and REAL iOS host/app/runtime remain incomplete. Working Mac/Xcode CI is available.
+  Final unfiltered28/35/36+iOS APP +source-bound light/dark/200% gates and physical HK/HC/GPS/BLE/
+  audio/locked-screen/OEM/TalkBack acceptance remain unperformed. No early bump, merge/publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint84 immediately above is latest boundary.84 source2685205 committed locally;
-   bundled recovery note records FULL83 CI43906545019 SUCCESS532Android/419Native/419JVM and
-   700189checks48suites. Push84+this note once, then verify exact new424storage/533Android +format
-   from artifacts/logs. Local focused5/metadata/test compile4m33s/811format PASS. No reset, amend,
-   docs-only CI push or premature merge/publication/version bump.
+1. Checkpoint85 immediately above is latest LOCAL boundary. Remote84 is297b956; CI43910500616
+   pending.85 owned-evidence snapshot/contracts/Android parity compile5m7s /focused3JDBC/815format
+   PASS. Commit85 locally; verify84 actual424/533/package cases before pushing another head. Then
+   verify new85 Native427/Android533, especially100001cache fixture, with artifacts/logs.83 remains
+   last FULL remote419/532/700189checks48suites until84 completes. No reset/amend/early merge.
+
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
