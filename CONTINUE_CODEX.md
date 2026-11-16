@@ -3250,13 +3250,98 @@ incomplete migration merely because a focused checkpoint passes.
   recording/BLE/notifications and REAL iOS host/app/runtime plus final unfiltered API28/35/36/iOS APP/
   source-bound light/dark/200% visuals. Do not start another release or merge/publish prematurely.
 
+### Final recovery boundary — checkpoint77 pushed; exact-head runtime pending
+
+- Continue experiment/android-ios-kmp-compose, HEAD/remote
+  **4d40365ae69a2655d8cb375f43524f43a557b629**.76(6999e80) and77 ALL source committed/pushed;
+  PR24 OPEN/DRAFT confirmed at4d40365, body updated. Main85e1c39 /owner PR23 untouched. No
+  version/schema/backup bump, merge or public experimental publication. Only this final status note
+  intentionally local; include it with the next coherent source checkpoint, avoid docs-only CI push.
+- Latest PR experiment **43871575805 RUNNING**: Android133313857245 /Apple133313856795.
+  Formatting43871575783 SUCCESS. Expected518focused Android/324storage Native NOT verified
+  until completed logs/digest-verified XML. No duplicate manual workflow was dispatched this time.
+- All77 local checks COMPLETE/PASS:324storage JVM0failure/error/skip, common metadata/bothAPKs/lint
+  **6m42s/167tasks**,779source formatting(684Kotlin/95Java), focused7core tests, exact schema1..19/
+  75schema tests/source-provenance3. Logs scratch/kmp-core-backup-{focused,final,format,safety}.log.
+  No known local source/build failure. All76 local checks also passed317JVM/777format/APKs/lint.
+- Parent76 experiment43869009332 /format43869009125 FULL SUCCESS:517unique Android START/END,
+  both original CoachingStore archive parity cases ran;700189checks/48suites. Digest-verified JVM
+  14228765023 SHA2567f6c3c79e8200fcba5403449c372ddd50d90be414422da6e29acec8fbf7376d3:
+  490domain+16health+317storage. Native14227143042
+  SHA2566be24ef83fe961ed452b05e888e9b8380c5ccccb7ef6a7ef892134fb4a3895a6:
+  449domain+18health+317storage. All0failure/error/skip. All8coaching archive methods matched against
+  current common JVM methods after removing ONLY [jvm]/[iosX64] platform suffixes; both new Native
+  SQLite source/no-write/>32MiB-preflight cases ran. Proofs scratch/coaching-6999-{jvm,native}/
+  verification.json. Framework14227841914 NOT iOS app; privateAPK14227622360.75 is fully verified too.
+- Next exact: inspect77 actual Native seven CoreBackupDataJsonTest cases and Android new
+  SharedBackupEnvelopeTest#sharedCoreGuardsMatchOriginalWholeDataActivityResultAndAnnotationRules;
+  verify total518Android/324Native and JVM/Native artifact digests/XML, fix genuine failures without
+  weakening tests or blindly rerunning. Preserve all completed source, including full Java-domain
+  conversion and prior shared UI/repos/commands/fingerprint/retention/envelope/coaching/core guards.
+- Then complete parent feature archive normalization and cross-references. CoreBackupDataJson77
+  and CoachingArchiveJson76 are COMPONENTS, not the complete BackupEnvelopeJson validator. Reuse
+  their typed source indexes, reminder/retention checks and exact payloads; implement remaining
+  DevelopmentStore/SupportStore/Release08, strength choices/legacy programme/authored/execution graph
+  links, tool/body/achievement sections. Finish complete same-database transactional restore/raw3/
+  package1/compatible archive-detail/retention consent/preview/epoch/active-recording safeguards.
+  Native destructive replacement/pruning stays disabled until ALL safeguards are implemented/tested.
+- Full product still needs common application root/navigation/state/data composition, native full
+  permissions/HealthKit/recording/BLE/notifications, REAL iOS host/entitlements/app build/runtime,
+  final unfiltered API28/35/36 +iOS APP/source-bound screenshots/light/dark/200% gates. Mac/Xcode CI
+  works; incomplete app is not an infrastructure blocker. Physical Galaxy S24/HealthKit/Health
+  Connect/GPS/BLE/audio/locked-screen/OEM/human TalkBack remain unperformed. No premature bump/merge/
+  publication; do not start another release or reimplement already completed domain/UI/storage work.
+
+### Checkpoint 78 — Typed legacy evidence archive and weight-export privacy
+
+- Preserved77source and its local final recovery note. Branch experiment/android-ios-kmp-compose /
+  DRAFT PR24; main85e1c39 /owner PR23 unchanged. No version/schema/backup/publication changes.
+- Added DevelopmentArchiveJson for original development-v1 records: WEIGHT, HISTORICAL_PB,
+  INTERRUPTION, SESSION_DECISION, STRENGTH_LINK, REVIEW_DECISION and WEEKLY_REVIEW. Original kind/
+  identity, domain measurement/date/effort/decision and paired gym-reference checks are reused.
+  Unknown/future kinds/versions, duplicate kind+ID, mismatched identity and invalid records reject.
+- Immutable typed evidence views retain private DOM copies of original payloads/unknown legacy
+  fields. Historical PBs keep measurement profile/date precision and remain separate from actual
+  workouts. Weekly summaries retain old channel/choice shapes without invented new fields or scores;
+  completed counts may exceed planned as before. Reading/encoding never applies decisions.
+- Older imported WEIGHT records remain readable. Explicit userOwnedElement omits non-manual weights
+  exactly like original export, without deleting or changing imported observations. This is an
+  archive component, NOT a complete parent validator/native restore/SQL export implementation.
+  Future DB export must filter imported cached weights BEFORE parent row/size limits, as Android
+  does; do not load an unbounded cache into this already-bounded file-archive decoder.
+- Added8 common cases covering all7kinds, manual/imported privacy, identity/size/future guards,
+  weight provenance, all historical measurement profiles/unknown dates, pairing rules, sparse legacy
+  reviews and immutable payloads. Added2 Android cases in existing SharedBackupEnvelopeTest using
+  REAL DevelopmentStore writes/export/validator, all7kinds, older imported weights, no-deletion and
+  corrupt-evidence rejection. Existing class already in focused CI/format configuration.
+- All78local gates PASS:332storage JVM0failure/error/skip; common metadata/bothAPKs/lint
+  **7m34s/167tasks**, scratch/kmp-development-archive-final.log; focused8cases PASS1m2s build;
+  formatting781sources(686Kotlin/95Java) PASS, scratch/kmp-development-archive-format.log; exact
+  schema1..19/75schema tests/source-provenance3 PASS, scratch/kmp-development-archive-safety.log.
+  No known local source/build failure. New Android/Native runtime cases still require pushed CI.
+- Parent77 experiment43871575805 /format43871575783 FULL SUCCESS:518unique Android START/END,
+  new REAL whole-data core guard parity case ran;700189checks/48suites. Digest-verified JVM14227529786
+  SHA25673250ec23fa6114366d3e12d6b71696fd003a16e156d433539ddc13d231b9fa6:
+  490domain+16health+324storage. Native14229760530
+  SHA256511bf084296b0e790d7a4fe1ce19503690c1d6e6aa50ce9f35f147e43235588e:
+  449domain+18health+324storage. All0failure/error/skip; all7CoreBackupDataJsonTest Native methods
+  matched common JVM names, ignoring ONLY [jvm]/[iosX64] suffixes. Proofs scratch/core-4d403-
+  {jvm,native}/verification.json. Framework14229810475 NOT iOS app; privateAPK14227114823.
+- Next exact: commit/push78 coherent source+handoff, keep PR24 DRAFT, inspect exact new Native8cases
+  and Android2cases/logs/digest-verified XML (expected520focused Android/332storage Native NOT yet
+  verified). Reuse completed core/coaching/development guards, finish SupportStore/Release08 and
+  other parent feature sections/graph links, full transactional/raw3/package1/retention restoration.
+  Native destructive operations remain disabled until COMPLETE validation/consent/epoch/preview/
+  active-recording protections exist. Real common root/navigation/state/native services/full HealthKit/
+  recording/BLE/notifications, REAL iOS app host/runtime and final full matrix/visual gates remain
+  unfinished. Mac/Xcode CI works; physical checks unperformed. No premature merge/bump/publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint77 supersedes
-   older pending notes. Preserve core-backup batch and all committed work.76 FULL SUCCESS517Android/
-   317JVM/317Native.77local324JVM/779format/metadata/APKs/lint/schema75/provenance3 PASS.
-   Commit/push77 coherently, inspect518Android/324Native runtime and proceed with remaining parent
-   archives/full restore; do not mistake a component validator or framework for complete app delivery.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint78 supersedes
+   older pending notes. Preserve development archive batch and all77 work.77 FULL SUCCESS518Android/
+   324JVM/324Native;78local332JVM/781format/metadata/APKs/lint/schema75/provenance3 PASS.
+   Commit/push78 coherently, verify new520Android/332Native and complete remaining parent sections.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
