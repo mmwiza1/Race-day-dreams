@@ -14,6 +14,84 @@ abstract class RunningPlanRepositoryContract {
     protected val start = CalendarDates.of(2026, 11, 16)
     protected val at = StoredInstant.parse("2026-11-15T09:00:00.123456789Z")
 
+    @Test
+    fun coachingArchiveReadsOneConsistentGraphWithoutRewritingActualPayloadOrFeedback() =
+        storage { db, r, _ ->
+            r.saveCurrent(version())
+            r.saveResponse(RunExecution("run", "done", "v1", null, null, "Retained actual"))
+            r.saveProposal(proposal())
+            r.saveCurrent(version(2))
+            val actual = LegacyFingerprintFixtures.session()
+            val payload = " \n" + StrengthEvidenceJson.encodeSession(actual)
+            db.execute(
+                "INSERT INTO strength_sessions(id,started_at,payload) VALUES(?,?,?)",
+                listOf(
+                    SqlValue.Text(actual.id()),
+                    SqlValue.Text(actual.startedAt().toString()),
+                    SqlValue.Text(payload),
+                ),
+            )
+            val feedback =
+                """ {"ruleVersion":1,"score":null,"components":["historic component"],"extra":"retain"} """
+            db.execute(
+                "INSERT INTO run_feedback(activity_id,plan_version_id,payload) VALUES(?,?,?)",
+                listOf(SqlValue.Text("run"), SqlValue.Text("v1"), SqlValue.Text(feedback)),
+            )
+            val changes = db.query("SELECT total_changes()")
+            val snapshot = SqliteCoachingArchive(db).snapshot()
+            assertEquals("v2", snapshot.currentVersionId)
+            assertEquals(2, snapshot.versions.size)
+            assertEquals(actual, snapshot.sessions[actual.id()])
+            assertEquals(
+                payload,
+                snapshot.rows.getValue(CoachingArchiveJson.Table.SESSIONS).single()["payload"],
+            )
+            assertEquals(
+                feedback,
+                snapshot.rows.getValue(CoachingArchiveJson.Table.FEEDBACK).single()["payload"],
+            )
+            assertNull(snapshot.proposals.single().decision)
+            assertEquals(
+                CoachingArchiveJson.element(snapshot),
+                CoachingArchiveJson.element(
+                    CoachingArchiveJson.decode(CoachingArchiveJson.element(snapshot))
+                ),
+            )
+            assertEquals(changes, db.query("SELECT total_changes()"))
+        }
+
+    @Test
+    fun coachingExportRejectsImpossibleSizeBeforeLoadingPayloadsAndKeepsDatabaseIntact() =
+        storage { db, r, _ ->
+            r.saveCurrent(version())
+            db.execute(
+                "INSERT INTO run_feedback(activity_id,plan_version_id,payload) VALUES('huge','v1',CAST(zeroblob(33554433) AS TEXT))"
+            )
+            val changes = db.query("SELECT total_changes()")
+            val guarded =
+                object : SqlDatabase by db {
+                    override fun query(
+                        sql: String,
+                        arguments: List<SqlValue>,
+                    ): List<List<SqlValue>> {
+                        check(!sql.contains("ORDER BY rowid")) {
+                            "Payloads must not be loaded before the size check."
+                        }
+                        return db.query(sql, arguments)
+                    }
+                }
+            val error =
+                assertFailsWith<IllegalArgumentException> {
+                    SqliteCoachingArchive(guarded).snapshot()
+                }
+            assertTrue(error.message!!.contains("whole-backup budget"))
+            assertEquals(
+                listOf(SqlValue.Integer(1)),
+                db.query("SELECT COUNT(*) FROM run_feedback").single(),
+            )
+            assertEquals(changes, db.query("SELECT total_changes()"))
+        }
+
     protected fun workout(id: String = "done", date: LocalDate = start): PlannedWorkout =
         PlannedWorkout(
             id,
