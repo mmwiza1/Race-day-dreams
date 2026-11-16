@@ -59,7 +59,7 @@ object PortableLegacyStrengthFingerprint : LegacyStrengthFingerprint {
     private fun number(value: Double?): String =
         value?.let { LegacyStrengthNumbers.text(it) } ?: "null"
 
-    private fun quoted(value: String): String = buildString {
+    internal fun quoted(value: String): String = buildString {
         append('"')
         for (c in value) when (c) {
             '"',
@@ -80,7 +80,7 @@ object PortableLegacyStrengthFingerprint : LegacyStrengthFingerprint {
         append('"')
     }
 
-    private fun javaUtf8(value: String): ByteArray {
+    internal fun javaUtf8(value: String): ByteArray {
         val normalized = buildString {
             var i = 0
             while (i < value.length) {

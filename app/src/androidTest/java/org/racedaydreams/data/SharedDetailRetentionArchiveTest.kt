@@ -2,7 +2,11 @@ package org.racedaydreams.data
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
 import java.time.*
+import java.util.zip.ZipInputStream
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.json.JSONArray
@@ -35,6 +39,117 @@ class SharedDetailRetentionArchiveTest {
     }
 
     private fun element(json: JSONObject) = Json.parseToJsonElement(json.toString()) as JsonObject
+
+    private fun rawArchive(): Pair<ByteArray, List<String>> {
+        val out = ByteArrayOutputStream()
+        RecordingArchive(context).exportTo(out)
+        val archive = out.toByteArray()
+        var manifest: JSONObject? = null
+        var raw: ByteArray? = null
+        ZipInputStream(ByteArrayInputStream(archive)).use { zip ->
+            while (true) {
+                val entry = zip.nextEntry ?: break
+                val bytes = zip.readBytes()
+                when (entry.name) {
+                    "manifest.json" -> manifest = JSONObject(bytes.decodeToString())
+                    "recordings.jsonl" -> raw = bytes
+                    else -> fail("Unexpected original raw archive entry")
+                }
+                zip.closeEntry()
+            }
+        }
+        val bytes = requireNotNull(raw)
+        val m = requireNotNull(manifest)
+        assertEquals(3, m.getInt("version"))
+        assertEquals(bytes.size.toLong(), m.getLong("bytes"))
+        assertEquals(
+            m.getString("sha256"),
+            MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") {
+                "%02x".format(it)
+            },
+        )
+        assertTrue(bytes.decodeToString().endsWith("\n"))
+        return archive to bytes.decodeToString().dropLast(1).split('\n')
+    }
+
+    @Test
+    fun sharedRawRowsAcceptOriginalGpsGapsAndRecoveryWithoutChangingCoordinatesOrTotals() {
+        val store = RecordingStore(context)
+        val engine = org.racedaydreams.domain.recording.RunMetricsEngine(0, at)
+        for (i in 0..70) engine.accept(
+            org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
+                at.plusSeconds(i.toLong()),
+                i * 1000L,
+                0.0,
+                i * 0.00003,
+                3.0,
+                null,
+                null,
+                3.0,
+            )
+        )
+        engine.missingFix(100000, at.plusSeconds(100))
+        for (i in 101..110) engine.accept(
+            org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
+                at.plusSeconds(i.toLong()),
+                i * 1000L,
+                0.0,
+                0.01 + (i - 101) * 0.00003,
+                3.0,
+                null,
+                null,
+                3.0,
+            )
+        )
+        store.start("raw-shared", at, 0)
+        store.flush("raw-shared", engine.points(), engine.events(), 0, 0, 110000, "RECOVERABLE")
+        val actualId = store.finish(requireNotNull(store.unfinished()), null)
+        val points = store.points("raw-shared")
+        assertTrue(points.any { it.discontinuity() })
+        val summary = FeatureStore(context).activities().first { it.id() == actualId }
+        val (archive, lines) = rawArchive()
+        for (version in 1..3) {
+            val reader = RecordingArchiveRows(version)
+            lines.forEach(reader::acceptLine)
+            val kept = reader.finish().sessions.getValue("raw-shared")
+            assertEquals(points.size, kept.points)
+            assertEquals(engine.events().size.toLong(), kept.events)
+            assertEquals(actualId, kept.activityId)
+            assertTrue(kept.hasActivity)
+            assertNull(kept.removal)
+        }
+        RecordingArchive(context).restoreFrom(ByteArrayInputStream(archive))
+        assertEquals(points, store.points("raw-shared"))
+        assertEquals(summary, FeatureStore(context).activities().first { it.id() == actualId })
+    }
+
+    @Test
+    fun sharedRawRowsKeepOriginalRemovedDetailProvenanceWithoutInventingRouteEvidence() {
+        val proof = retainReceipt()
+        bridge.execute(
+            "INSERT INTO recording_sessions(id,state,started_at,started_mono,last_mono,activity_id) VALUES(?,'FINISHED',?,?,?,?)",
+            listOf(
+                SqlValue.Text(proof.sessionId()),
+                SqlValue.Text(proof.startedAt().toString()),
+                SqlValue.Integer(proof.startedMono()),
+                SqlValue.Integer(proof.lastMono()),
+                SqlValue.Text(proof.activityId()),
+            ),
+        )
+        val (archive, lines) = rawArchive()
+        val reader = RecordingArchiveRows(3)
+        lines.forEach(reader::acceptLine)
+        val kept = reader.finish().sessions.getValue(proof.sessionId())
+        assertEquals(proof, kept.removal)
+        assertEquals(0, kept.points)
+        assertEquals(0L, kept.events)
+        assertTrue(kept.hasActivity)
+        val before = SqliteActivities(bridge) { at }.activitySummaries()
+        RecordingArchive(context).restoreFrom(ByteArrayInputStream(archive))
+        assertEquals(proof, SqliteRecordingDetailReceipts(bridge).removal(proof.sessionId()))
+        assertEquals(before, SqliteActivities(bridge) { at }.activitySummaries())
+        assertTrue(RecordingStore(context).points(proof.sessionId()).isEmpty())
+    }
 
     private fun retainReceipt(): RemovedRecordingDetail {
         val activity =

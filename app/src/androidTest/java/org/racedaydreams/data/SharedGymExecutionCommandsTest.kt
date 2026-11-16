@@ -4,6 +4,10 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.security.MessageDigest
 import java.time.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import org.json.JSONArray
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -205,6 +209,169 @@ class SharedGymExecutionCommandsTest {
             GymProgrammeStore(context).save(p)
             GymWorkoutAdapter.fromProgramme(p, "session")
         }
+
+    private fun checkedArchive(data: JSONObject): GymExecutionArchiveJson.Snapshot {
+        fun dom(j: JSONObject) = Json.parseToJsonElement(j.toString()) as JsonObject
+        val coaching = CoachingArchiveJson.decode(dom(CoachingStore.exportData(db)))
+        val legacy = LegacyGymProgrammeArchiveJson.decode(dom(GymProgrammeStore.exportData(db)))
+        val development = DevelopmentArchiveJson.decode(dom(DevelopmentStore.exportData(db)))
+        val authored =
+            StrengthProgrammingArchiveJson.decode(
+                dom(SqliteStrengthProgrammingRepository.exportData(db)),
+                legacy.programmes.values.toList(),
+                legacy.current,
+            )
+        return GymExecutionArchiveJson.decode(
+            dom(data),
+            coaching.sessions,
+            legacy.programmes,
+            GymExecutionArchiveJson.links(development),
+            authored.programmes,
+            PortableLegacyStrengthFingerprint,
+        )
+    }
+
+    private fun originalCheck(data: JSONObject) =
+        SqliteGymExecutionRepository.validate(
+            data,
+            CoachingStore.exportData(db),
+            GymProgrammeStore.exportData(db),
+            DevelopmentStore.exportData(db),
+            StrengthProgrammingArchive.validate(
+                    SqliteStrengthProgrammingRepository.exportData(db),
+                    GymProgrammeStore.exportData(db),
+                )
+                .programmes(),
+        )
+
+    @Test
+    fun sharedArchiveMatchesOriginalPlannedAuthoredGraphAndRejectsTamperedActualsWithoutWrites() {
+        val p = plan(true)
+        val e =
+            GymExecutionEngine.start(
+                "execution",
+                GymExecution.Origin.PLANNED,
+                p.definition(),
+                p.source(),
+                ZoneOffset.UTC,
+                tick(0),
+            )
+        val first = original.start(e.snapshot())!!
+        e.saveSet(p.definition().slots().first().id(), set("working"), tick(1000))
+        val done = e.finish(tick(2000), null, "Recorded independently", true)
+        original.finish(done, first.revision())
+        val before = SqliteGymExecutionRepository.exportData(db)
+        originalCheck(before)
+        val changes = bridge.query("SELECT total_changes()")
+        val checked = checkedArchive(before)
+        assertEquals(
+            Json.parseToJsonElement(before.toString()),
+            GymExecutionArchiveJson.element(checked),
+        )
+        assertEquals(done, checked.executions.getValue(done.id()).original.execution())
+        val repository = SqliteBackupRepository(context)
+        val whole = repository.exportUserData()
+        repository.validateSnapshot(whole)
+        val complete =
+            UserBackupDataJson.decode(Json.parseToJsonElement(whole.toString()) as JsonObject)
+        assertEquals(done, complete.engine!!.executions.getValue(done.id()).original.execution())
+        val envelope = UserBackupDataJson.encodeCurrent(complete, at)
+        org.racedaydreams.portability
+            .BackupManager(context, repository, Clock.fixed(at, ZoneOffset.UTC))
+            .inspect(java.io.ByteArrayInputStream(envelope))
+        assertEquals(
+            Json.parseToJsonElement(whole.toString()),
+            UserBackupDataJson.element(UserBackupDataJson.inspect(envelope).snapshot),
+        )
+
+        val v1 = JSONObject(before.toString()).put("version", 1).apply { remove("associations") }
+        originalCheck(v1)
+        checkedArchive(v1)
+        val wrongActual =
+            JSONObject(before.toString()).apply {
+                getJSONArray("executions")
+                    .getJSONObject(0)
+                    .getJSONObject("currentActual")
+                    .put("notes", "Forged")
+            }
+        for (bad in
+            listOf(
+                wrongActual,
+                JSONObject(before.toString()).put("workouts", JSONArray()),
+                JSONObject(before.toString()).apply {
+                    getJSONArray("executions").put(getJSONArray("executions").getJSONObject(0))
+                },
+            )) {
+            assertTrue(runCatching { originalCheck(bad) }.isFailure)
+            assertTrue(runCatching { checkedArchive(bad) }.isFailure)
+        }
+        assertEquals(changes, bridge.query("SELECT total_changes()"))
+        assertEquals(before.toString(), SqliteGymExecutionRepository.exportData(db).toString())
+    }
+
+    @Test
+    fun sharedArchivePreservesOriginalRepeatHashesAndExplicitActualEditAndDeletionReceipts() {
+        val e = free()
+        val first = original.start(e.snapshot())!!
+        add(e)
+        e.saveSet("a", set("working"), tick(1000))
+        val done = e.finish(tick(2000), null, "Original / 🏋️", true)
+        original.finish(done, first.revision())
+        val p = GymWorkoutAdapter.repeatExecution("repeat", 1, at, "Repeat", done)
+        original.saveWorkout(p.definition(), p.source())
+        val firstArchive = checkedArchive(SqliteGymExecutionRepository.exportData(db))
+        val originalHash =
+            firstArchive.workouts.values.single().sourceSnapshot!!.originalSourceFingerprint
+        val edited = done.completedSession()!!.copy(notes = "Explicit accepted edit")
+        shared.saveActual(edited)
+        var data = SqliteGymExecutionRepository.exportData(db)
+        originalCheck(data)
+        var current = checkedArchive(data)
+        assertEquals(
+            originalHash,
+            current.workouts.values.single().sourceSnapshot!!.originalSourceFingerprint,
+        )
+        assertEquals(
+            fingerprint(edited),
+            current.workouts.values.single().sourceSnapshot!!.currentSourceFingerprint,
+        )
+        assertEquals(
+            done.completedSession(),
+            current.executions.getValue(done.id()).original.execution().completedSession(),
+        )
+        assertEquals(edited, current.executions.getValue(done.id()).currentActual)
+        CoachingStore(context).deleteStrength(done.id())
+        data = SqliteGymExecutionRepository.exportData(db)
+        originalCheck(data)
+        current = checkedArchive(data)
+        assertTrue(current.executions.isEmpty())
+        assertNotNull(current.workouts.values.single().sourceSnapshot!!.sourceDeletedAt)
+        assertNull(current.workouts.values.single().sourceSnapshot!!.currentSourceFingerprint)
+        assertEquals(
+            originalHash,
+            current.workouts.values.single().sourceSnapshot!!.originalSourceFingerprint,
+        )
+    }
+
+    @Test
+    fun originalWireRowSizeCountsEscapedSlashesExactNumbersAndJavaUtf8RatherThanCompactJson() {
+        for (text in
+            listOf("normal / 🏋️", "\u0000\u001f\u2028\u2029", "\uD800", "/".repeat(140000))) {
+            val original =
+                JSONObject()
+                    .put("text", text)
+                    .put("kg", 82.25)
+                    .put("large", 9007199254740993L)
+                    .put("small", 0.0001)
+                    .put("zero", -0.0)
+            // Decode/re-encode through the old reader first: raw -0 tokens become integral zero.
+            val canonical = JSONObject(original.toString())
+            assertArrayEquals(
+                canonical.toString().toByteArray(Charsets.UTF_8),
+                LegacyGymRowJson.bytes(Json.parseToJsonElement(canonical.toString())),
+            )
+        }
+    }
 
     @Test
     fun originalAndSharedWritersInterleaveSetStagingRecoveryAndAtomicCompletion() {

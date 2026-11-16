@@ -115,25 +115,8 @@ internal class SqliteGymSources(
         return RepeatProof(kind, slots, hash, hash, null, null)
     }
 
-    private fun validateAvailable(row: Record, actual: StrengthSession?, execution: GymExecution?) {
-        val proof = requireNotNull(row.sourceSnapshot)
-        if (proof.sourceDeletedAt != null) {
-            require(actual == null && execution == null) {
-                "A deleted repeat source still appears as retained evidence."
-            }
-            return
-        }
-        require(actual != null && fingerprint(actual) == proof.currentSourceFingerprint) {
-            "The repeat source changed without an explicit retained decision."
-        }
-        if (proof.templateKind == TemplateKind.EXECUTION) {
-            require(execution != null && execution.slots() == proof.originalSourceSlots) {
-                "The original repeat structure changed."
-            }
-            GymWorkoutSourceValidator.repeatedExecution(row.definition, row.source, execution)
-        } else if (proof.sourceEditedAt == null)
-            GymWorkoutSourceValidator.repeatedActual(row.definition, row.source, actual)
-    }
+    private fun validateAvailable(row: Record, actual: StrengthSession?, execution: GymExecution?) =
+        FrozenGymWorkoutRecordJson.validateAvailable(row, actual, execution, fingerprints)
 
     fun acknowledgeChange(id: String, changed: StrengthSession?, at: Instant) {
         val rows =
@@ -177,9 +160,7 @@ internal class SqliteGymSources(
     }
 
     private fun fingerprint(actual: StrengthSession): String =
-        fingerprints.fingerprint(actual).also {
-            require(Regex("[0-9a-f]{64}").matches(it)) { "Invalid compatible source fingerprint." }
-        }
+        FrozenGymWorkoutRecordJson.compatibleFingerprint(actual, fingerprints)
 
     private fun bounded(payload: String): String =
         payload.also {

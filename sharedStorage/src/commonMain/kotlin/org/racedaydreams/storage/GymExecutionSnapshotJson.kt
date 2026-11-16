@@ -80,7 +80,8 @@ object GymExecutionSnapshotJson {
         put("partial", execution.partial())
     }
 
-    private fun decode(value: JsonObject): GymExecution {
+    /** Parent syntax/size must be checked before this DOM entry. State replay stays unchanged. */
+    fun decode(value: JsonObject): GymExecution {
         fields(
             value,
             "version",

@@ -3574,13 +3574,132 @@ incomplete migration merely because a focused checkpoint passes.
   remain unfinished. Working Mac/Xcode CI exists. Physical acceptance remains UNPERFORMED. No
   premature version bump, merge/publication or unrelated feature release.
 
+### Final recovery boundary — checkpoint81 ALL source pushed; Android AND Apple verified
+
+- Continue experiment/android-ios-kmp-compose, HEAD/remote
+  **befb74dc9d729e913e94acef74f1a77c0d265c38**.81 ALL source committed/pushed; PR24 OPEN/DRAFT
+  confirmed at this SHA and description updated with actual verification. Main85e1c39 /owner PR23
+  untouched. No version/schema/backup bump, merge or public experimental publication. Only this
+  final status note intentionally local; include with next source checkpoint, avoid docs-only CI
+  push. Preserve it if workspace survives. This boundary supersedes all prior pending81/80 notes.
+- Exact-head experiment **43886908160 FULL SUCCESS**: Android133367412273 /Apple133367411585.
+  Formatting **43886908141 SUCCESS**.527unique Android START/END sets matched; both new original
+  legacy gym archive/link parity cases ran.700189checks/48retained domain suites passed.
+- Digest-verified JVM14235428645
+  SHA256470ca90dd886a1f70ffe1cc180b8be33b56a69e2fdb012937dd9308b009a0b6b:
+  490domain+16health+376storage. Native14235627791
+  SHA256c63c40c2304dfaf7695ebd12a48f75865cdd5b2ce831685f49edfef0bedc6ab7:
+  449domain+18health+376storage. All0failure/error/skip. All9 BodyAndAchievementsArchiveTest,8
+  LegacyGymProgrammeArchiveTest and2 GymToolsArchiveElementTest methods matched exact common names,
+  ignoring ONLY [jvm]/[iosX64] suffixes. Both new Native SQLite archive contracts ran too. Proofs
+  scratch/gym-parent-befb-{jvm,native}/verification.json. Framework14235323013 NOT iOS app;
+  privateAPK14235023964. No claim of final full API28/35/36/iOS APP/visual gates.
+- All81 relevant local gates COMPLETE/PASS: focused20legacy/archive/repository cases1m10s;
+  full376storage JVM0failure/error/skip; metadata +Android test compilation **4m13s/64tasks**;
+  full376 rerun after timestamp fixture correction PASS52s.796format sources(701Kotlin/95Java),
+  exact schema1..19/75schema tests/source-provenance3 PASS. Logs scratch/kmp-gym-parent-
+  {final,time-fixed,format-final,safety}.log and kmp-legacy-gym-archive-focused.log.
+- Actual80 Apple failure is now RESOLVED on corrected81 source: replaced test-only JVM
+  Instant.plusSeconds with existing portable Instants.ofEpochSecond preserving seconds/nanos.
+  All9 body/achievement tests now compiled and ran on Native. Production time/recording/domain
+  unchanged; no assertions removed or weakened and no blind rerun of failing80 source.
+- Completed81: original legacy programme/current/optional decision archive guards + typed links
+  to exact legacy/authored sessions and real retained actual IDs; bounded consistent SQLite
+  snapshot with source-column checks; parent timer DOM entry retaining existing standalone16MiB
+  guards/mandatory execution ownership. Valid40,000-timer >16MiB/<32MiB stress passed on Native.
+  Private original payloads/unknown legacy fields, disabled programme history, references versus
+  entered loads and unassociated old actuals stay intact. No new durable bucket/table or commands.
+- NEXT EXACT IMPLEMENTATION: full strength-engine archive composition/validation from original
+  SqliteGymExecutionRepository.validate. Reuse FrozenGymWorkoutRecordJson, GymExecutionSnapshotJson,
+  StrengthEvidenceJson accepted actuals, SqliteGymSources source/receipt checks, pure domain source
+  validators and GymAssociationArchiveJson. Add parent DOM entries where needed without replacing
+  whole-parent32MiB with standalone16MiB. Preserve original256KiB normalized SQL row bounds,
+  exact frozen source/prescription/accepted-actual/edit receipts, one unfinished execution,
+  association provenance and original compatible fingerprint contract. Compare against REAL
+  original validator, including long rows/escaping/unknown evidence; do not reconstruct history
+  from the catalogue. Legacy81 snapshot/link +timer DOM guard already exist; do not redo them.
+- Then compose COMPLETE parent data validator with coaching/core/development/choices/support/0.8/
+  legacy/authored/execution/tool/body/achievement/retention sections, reminder mirror and retained
+  source guards. Components alone must NEVER be passed as complete BackupEnvelopeJson validation.
+  Finish SAME-DB transactional replacement, raw3/package1/compatible archived-detail reconciliation,
+  consent/preview/dataset epoch/active+paused+recoverable-recording safeguards. Native destructive
+  replacement/pruning remains disabled until complete validation and all safeguards are tested.
+  Development DB export must omit imported WEIGHT caches BEFORE owned-row/size caps, as original.
+- Full common root/navigation/state/data composition, native full permissions/HealthKit/recording/
+  BLE/notifications, REAL iOS host/entitlements/app build/runtime, final unfiltered Android28/35/36
+  +iOS APP/source-bound light/dark/200% visuals still unfinished. Working Mac/Xcode CI exists;
+  incomplete software is not an infrastructure blocker. Physical GalaxyS24/HealthKit/HC/GPS/BLE/
+  audio/locked-screen/OEM/human TalkBack UNPERFORMED. Keep PR24 DRAFT; no premature bump/merge/
+  public publication or unrelated release.
+
+### Checkpoint82 — Complete parent backup and immutable gym archive graph
+
+- Continue `experiment/android-ios-kmp-compose` /DRAFT PR24. All prior valid81 source and its
+  final verified recovery note are preserved. Main85e1c39 /owner PR23 untouched. No version,
+  schema, backup format, permissions, dependencies, merge or public publication change.
+- Added GymExecutionArchiveJson: original v1/v2 frozen revisions/preferences/executions/accepted
+  actuals/edit receipts/source fingerprints/association graph, exact Long revisions and original
+  256KiB normalized SQL row bounds. LegacyGymRowJson reuses original JSONObject-compatible
+  escaping, number spelling and Java UTF8; compact JSON cannot bypass escaped slash row limits.
+  Shared DOM entries retain standalone16MiB guards and whole-parent32MiB support. Repeat-source
+  guards extracted unchanged from SqliteGymSources and use the REAL portable fingerprint provider.
+- Added UserBackupDataJson: COMPLETE original store-v1 parent validator composing EVERY existing
+  feature archive, running reminder mirror, actual/programme/link/source cross-references, timer
+  execution ownership and removed-detail provenance. `inspect` uses this mandatory validator for
+  root1..13, not an isolated section callback. Current root13 export fills only missing old empty
+  defaults, preserves unknown original metadata/history, retains protected existing-user retention
+  and omits imported WEIGHT caches without mutating an inspected older archive. No restore/prune.
+- Added10 common gym graph cases,3 canonical row cases,10 complete parent cases and3 original
+  Android SQL/export/validator parity cases in existing SharedGymExecutionCommandsTest. Existing
+  SharedBackupEnvelopeTest root1..13 callback now ALSO checks the COMPLETE shared parent, alongside
+  the REAL original validator. Keeps actual50kg distinct from reference82.25kg and preserves exact
+  source hashes, accepted edits/deletion receipts and null older unassociated links. No assertions
+  weakened. Initial fixture incorrectly requested association review before workout completion;
+  fixed its timestamp and retained an assertion that premature review yields no proposal.
+- Local section gate:389storage JVM0failure/error/skip, common metadata+Android test compilation
+  PASS3m39s/64tasks. Full parent pre-privacy-final gate:398storage JVM0failure/error/skip; metadata,
+  APK, instrumentation APK and lint PASS7m12s/167tasks. FINAL privacy-projection source then passed
+ 399storage JVM0failure/error/skip +metadata/APKs/lint8m15s/167tasks. Logs scratch/kmp-complete-backup-
+  {final,owned-final}.log. This last build predates the following raw archive addition; final raw
+  compile/tests are RUNNING separately. Do not claim the older APK/lint includes later raw source.
+- Next in-order implementation within82: RecordingArchiveRows streams original raw1..3 row-graph
+  validation, keeping only bounded per-session metadata, not dense point arrays. Retains exact
+  Long clocks, contiguous point/event sequences, accepted monotonic/distance evidence, contexts,
+  owned finished summaries and removal receipts. Never fills GPS gaps/recalculates summary totals;
+  mixed removed/raw detail rejects. Failed row poisons the reader; malformed/truncated/duplicate/
+  future/over-budget rows cannot return a valid graph. Retains original versioned session/point
+  limits,8MiB line/512MiB dataset bounds and BOM compatibility. This is NOT ZIP/manifest/checksum
+  verification or transactional raw restore; platform framing/digest adapters must still be done.
+- Added10 common streamed-row cases and2 original Android export/parity cases in existing
+  SharedDetailRetentionArchiveTest (gaps+recovery+oldformats and truthful removal provenance).
+  Real original archive bytes/checksum are checked in the fixture; original idempotent restore
+  must preserve exact coordinates/summary/receipt. No production recording/filter changes.
+- Formatting805sources(710Kotlin95Java) PASS; exact schema1..19 /75schema tests /3source-provenance
+  checks PASS. Final409storage JVM0failure/error/skip, shared metadata and Android test compilation
+  PASS4m49s/64tasks, log scratch/kmp-raw-parent-final.log. No new Native/runtime result yet; expected409storage and532focused Android must be
+  verified from NEW exact-head CI after coherent commit/push. Last fully verified Native remains
+  checkpoint81(376storage), Android527. No current failing source assertions known.
+- NEXT EXACT: local409JVM/metadata/Android test compilation, XML and format are verified.
+  Commit/push coherent82 to EXISTING draft PR24. Exact-head CI builds/lints FULL current source,
+  including the later raw guard. Verify original backup root1..13 and5new original-store parity
+  methods; verify all33new common methods on Native (10gym+3row+10parent+10raw), not just successful
+  framework linkage. Update PR description with actual results/pending status.
+- Next implementation: SAME-DB bounded transactional user-data replacement + raw3/package1 archive
+  guards/reconciliation, retention consent/preview/dataset epoch and active/paused/recoverable run
+  protection. Native destructive restore/prune REMAINS DISABLED until those safeguards and tests
+  exist. DB development export must filter imported cached WEIGHT rows BEFORE owned-row/size caps;
+  the file projection implemented here does not excuse unbounded provider-cache capture.
+- Full common app root/navigation/state/native full services/HealthKit/permissions/recording/BLE/
+  notifications and REAL iOS app host/runtime remain incomplete. Working Mac/Xcode CI is available.
+  Final unfiltered28/35/36+iOS APP and source-bound light/dark/200% visuals remain final-readiness
+  work. Physical HealthKit/HC/GPS/BLE/audio/locked-screen/OEM/human TalkBack UNPERFORMED. Keep draft;
+  no premature version bump, merge/publication or unrelated feature release.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint81 above supersedes80pending boundary. Preserve all81 source and80final note.
-   Local376JVM/796format/metadata/Android test compile/schema75/provenance3 PASS. Commit/push81,
-   verify corrected Native test compilation +376Native storage /527focused Android exact-head CI.
-   Parent80 Android525/JVM364 passed; Apple FAILED on JVM-only test timestamp call, now fixed.
-   Last fully verified Native79 had355storage. Do not redo completed implementation.
+1. Checkpoint82 immediately above supersedes81's NEXT implementation list. Preserve all dirty82
+   source and81 final note; local409/metadata/Android test compile/805format PASS. Commit/push
+   and verify fresh Android/Apple CI.81 remains last fully verified REMOTE checkpoint until82 results are confirmed.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
@@ -3597,10 +3716,10 @@ incomplete migration merely because a focused checkpoint passes.
    compatible legacy fingerprint provider. Real provider73 is VERIFIED on Android and Native,
    including byte/number goldens and all21execution cases with system crypto; host wiring remains.
    No fixture lookup remains in these tests. Retention metadata snapshots/codec74 and required-
-   validator root1–13 envelope75 exist; COMPLETE parent data/graph normalization, raw3/package1
-   and transactional restore/pruning safeguards still need completion. Coaching76/core77/development78 /79 support/0.8/choices /80 body/achievements
+   validator root1–13 envelope75 exist; COMPLETE parent data/graph normalization is implemented82;
+   raw3/package1 and transactional restore/pruning safeguards still need completion. Coaching76/core77/development78 /79 support/0.8/choices /80 body/achievements
    archive components now exist; preserve their exact payloads/source indexes and privacy rules.
-   They are not the complete parent validator. Reuse71/73/74/75/76/77/78. Activity/result repositories are implemented in checkpoint53;
+   The COMPLETE composed parent validator is UserBackupDataJson82. Reuse71/73/74/75/76/77/78. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete

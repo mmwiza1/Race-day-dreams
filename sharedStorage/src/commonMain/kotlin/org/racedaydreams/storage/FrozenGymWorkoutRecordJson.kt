@@ -37,53 +37,49 @@ object FrozenGymWorkoutRecordJson {
         val sourceSnapshot: RepeatProof?,
     )
 
-    fun encode(record: Record): String {
+    fun encode(record: Record): String = write(element(record))
+
+    fun element(record: Record): JsonObject {
         validate(record)
-        return write(
-            buildJsonObject {
-                put("definition", FrozenGymWorkoutJson.element(record.definition))
-                put(
-                    "source",
-                    record.source?.let { GymExecutionSnapshotJson.source(it) } ?: JsonNull,
-                )
-                val proof = record.sourceSnapshot
-                put(
-                    "sourceSnapshot",
-                    if (proof == null) JsonNull
-                    else
-                        buildJsonObject {
-                            put("kind", "REPEATED_TEMPLATE")
-                            put("actualSessionId", record.source!!.id())
-                            put("definition", FrozenGymWorkoutJson.element(record.definition))
-                            put("templateKind", proof.templateKind.name)
-                            put(
-                                "originalSourceSlots",
-                                FrozenGymWorkoutJson.slots(proof.originalSourceSlots),
-                            )
-                            put("originalSourceFingerprint", proof.originalSourceFingerprint)
-                            put(
-                                "currentSourceFingerprint",
-                                proof.currentSourceFingerprint?.let { JsonPrimitive(it) }
-                                    ?: JsonNull,
-                            )
-                            put(
-                                "sourceEditedAt",
-                                proof.sourceEditedAt?.let { JsonPrimitive(it.toString()) }
-                                    ?: JsonNull,
-                            )
-                            put(
-                                "sourceDeletedAt",
-                                proof.sourceDeletedAt?.let { JsonPrimitive(it.toString()) }
-                                    ?: JsonNull,
-                            )
-                        },
-                )
-            }
-        )
+        return buildJsonObject {
+            put("definition", FrozenGymWorkoutJson.element(record.definition))
+            put("source", record.source?.let { GymExecutionSnapshotJson.source(it) } ?: JsonNull)
+            val proof = record.sourceSnapshot
+            put(
+                "sourceSnapshot",
+                if (proof == null) JsonNull
+                else
+                    buildJsonObject {
+                        put("kind", "REPEATED_TEMPLATE")
+                        put("actualSessionId", record.source!!.id())
+                        put("definition", FrozenGymWorkoutJson.element(record.definition))
+                        put("templateKind", proof.templateKind.name)
+                        put(
+                            "originalSourceSlots",
+                            FrozenGymWorkoutJson.slots(proof.originalSourceSlots),
+                        )
+                        put("originalSourceFingerprint", proof.originalSourceFingerprint)
+                        put(
+                            "currentSourceFingerprint",
+                            proof.currentSourceFingerprint?.let { JsonPrimitive(it) } ?: JsonNull,
+                        )
+                        put(
+                            "sourceEditedAt",
+                            proof.sourceEditedAt?.let { JsonPrimitive(it.toString()) } ?: JsonNull,
+                        )
+                        put(
+                            "sourceDeletedAt",
+                            proof.sourceDeletedAt?.let { JsonPrimitive(it.toString()) } ?: JsonNull,
+                        )
+                    },
+            )
+        }
     }
 
-    fun decode(payload: String): Record {
-        val root = read(payload)
+    fun decode(payload: String): Record = decode(read(payload))
+
+    /** Parent syntax/size must be checked before decoding this already-bounded DOM. */
+    fun decode(root: JsonObject): Record {
         fields(root, "definition", "source", "sourceSnapshot")
         val definition = FrozenGymWorkoutJson.decode(child(root, "definition"))
         val source =
@@ -126,6 +122,43 @@ object FrozenGymWorkoutRecordJson {
             }
         return Record(definition, source, proof).also { validate(it) }
     }
+
+    internal fun validateAvailable(
+        row: Record,
+        actual: StrengthSession?,
+        execution: GymExecution?,
+        fingerprints: LegacyStrengthFingerprint,
+    ) {
+        validate(row)
+        val proof = requireNotNull(row.sourceSnapshot)
+        if (proof.sourceDeletedAt != null) {
+            require(actual == null && execution == null) {
+                "A deleted repeat source still appears as retained evidence."
+            }
+            return
+        }
+        require(
+            actual != null &&
+                compatibleFingerprint(actual, fingerprints) == proof.currentSourceFingerprint
+        ) {
+            "The repeat source changed without an explicit retained decision."
+        }
+        if (proof.templateKind == TemplateKind.EXECUTION) {
+            require(execution != null && execution.slots() == proof.originalSourceSlots) {
+                "The original repeat structure changed."
+            }
+            GymWorkoutSourceValidator.repeatedExecution(row.definition, row.source, execution)
+        } else if (proof.sourceEditedAt == null)
+            GymWorkoutSourceValidator.repeatedActual(row.definition, row.source, actual)
+    }
+
+    internal fun compatibleFingerprint(
+        actual: StrengthSession,
+        fingerprints: LegacyStrengthFingerprint,
+    ): String =
+        fingerprints.fingerprint(actual).also {
+            require(Regex("[0-9a-f]{64}").matches(it)) { "Invalid compatible source fingerprint." }
+        }
 
     private fun validate(record: Record) {
         require(record.source?.kind() != GymExecution.SourceKind.SAVED_WORKOUT) {

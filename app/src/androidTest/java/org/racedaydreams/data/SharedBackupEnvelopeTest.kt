@@ -758,6 +758,7 @@ class SharedBackupEnvelopeTest {
     private fun checked(bytes: ByteArray) =
         BackupEnvelopeJson.inspect(bytes) {
             repository.validateSnapshot(JSONObject(it.toString()))
+            org.racedaydreams.storage.UserBackupDataJson.decode(it)
             it
         }
 

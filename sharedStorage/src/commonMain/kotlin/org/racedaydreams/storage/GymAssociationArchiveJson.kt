@@ -17,8 +17,8 @@ object GymAssociationArchiveJson {
 
     data class Link(
         val actualId: String,
-        val programmeKey: String,
-        val sessionId: String,
+        val programmeKey: String?,
+        val sessionId: String?,
         val plannedDate: String,
     )
 
