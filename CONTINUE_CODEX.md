@@ -3079,13 +3079,54 @@ incomplete migration merely because a focused checkpoint passes.
   public release change. Continue full root13/older/current backup/raw3/package1 restore/retention
   safeguards, then common app composition/native services/actual iOS host/app and final gates.
 
+### Checkpoint 75 — Portable supported root-backup envelope safety
+
+- Checkpoint74 committed/pushed **fb758eaa3e62487f713c0a7127c6489b3bf3c7ca**; PR24 OPEN/DRAFT
+  body updated. Experiment43862290924 RUNNING: Android133281900366 /Apple133281899719.
+  Format43862290879 SUCCESS. Android remains pending. Native14225240067
+  SHA256109d8e1fa1f6c94fb3ada0039ca376e3750feb5a7384fb76bc73b7e04a8373b5:
+  digest-verified449domain+18health+296storage,0failure/error/skip. All9 new retention cases
+  matched against Native XML. Proof scratch/retention-fb758-native/verification.json.
+  Framework14224627987 NOT iOS app. Expected513focused Android NOT yet verified.
+  Checkpoint73 FULL SUCCESS511Android/287storage JVM/287storage Native as documented above.
+- Added BackupEnvelopeJson with supported root1–13 format/version/date/required-section checks,
+  strict UTF8 (including original leading BOM support), one complete document and duplicate-key
+  rejection. Original root32MiB/depth32/2million structural-token/1MiB serialized-text budgets
+  remain distinct from standalone gym16MiB/depth20/1million-value/100000-text limits.
+  Existing strict scanner extracted to StoredJsonSyntax; original gym defaults/errors preserved.
+- Both inspection and export REQUIRE a caller-supplied COMPLETE snapshot validator; there is no
+  partial-validation default, replacement operation or native destructive restore. Complete shared
+  parent data/graph normalization and raw3/package1/retention reconciliation STILL remain needed.
+  Android production BackupManager/stores remain wired; original full validator is used only as
+  actual parity oracle here. This does not claim a complete native backup/restore implementation.
+- Added11 common envelope cases: all13read versions, section introduction boundaries, required
+  caller validation/fail-closed export, precise Longs and text, corrupt/future/duplicate/trailing/
+  malformed UTF8 rejection, BOM, original allocation limits and>16MiB/<32MiB syntax without loss.
+  Synthetic envelope-only data is explicitly NOT a substitute for complete typed row validation.
+  Added2 Android cases against REAL original BackupManager/SqliteBackupRepository across versions
+  1–13, both export directions, BOM and corrupt full-row failures without database replacement.
+- Focused11envelope +10existing frozen-workout JSON tests PASS,0failure/error/skip; Android test
+  compilation PASS **3m19s/57tasks**, scratch/kmp-backup-envelope-focused.log.
+  Full307storage JVM tests PASS,0failure/error/skip. Common metadata/bothAPKs/lint PASS
+  **6m21s/167tasks**, scratch/kmp-backup-envelope-final.log. Exact schema1..19,75schema tests,
+  release-note10 and3source-provenance tests PASS, scratch/kmp-backup-envelope-safety.log.
+  Formatting773sources(678Kotlin/95Java)
+  and3provenance checks PASS, scratch/kmp-backup-envelope-{format-final,provenance}.log.
+- Next exact: all75 local gates PASS. Inspect74 exact-head Android receipt/consent cases and
+  digest-verified JVM XML before a new push (avoid cancelling its running gate); Native is verified.
+  Commit/push75 coherent batch, keep PR24 DRAFT and inspect its exact-head Native/Android root
+  backup cases. No version/schema/backup format/publication/merge. Then complete full parent
+  snapshot normalization/transactional restore/raw archives/retention guards. Port the COMPLETE
+  SqliteBackupRepository.validated graph plus CoachingStore/DevelopmentStore/SupportStore/Release08
+  validation using completed shared codecs; never enable native replacement with a partial callback.
+  Common root/navigation/state/native services/actual iOS app and final gates remain unfinished.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint74 supersedes
-   older pending notes. Preserve current retention archive batch and pushed73 real fingerprint
-   provider. 73experiment43860039026 FULL SUCCESS511Android/287storage JVM/287storage Native;
-   all74local gates PASS296storage JVM/APKs/lint/769format/source-provenance3. Commit/push74.
-   Checkpoint72 FULL SUCCESS508Android/281storage Native/277storage JVM remains verified history.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint75 supersedes
+   older pending notes. Preserve current backup envelope/scanner batch and pushed74 retention
+   metadata. Inspect74experiment43862290924 (513Android pending,296Native verified);75 local
+   gates PASS307storage JVM/773format/metadata/APKs/lint/schema75/release10/provenance3. Commit/push75. Keep real-provider73 verification; no reimplementation needed.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
@@ -3099,9 +3140,11 @@ incomplete migration merely because a focused checkpoint passes.
    Reviewed authored/concrete activation and normalized execution readers are implemented in checkpoint68.
    Explicit associations and archive graph guards are implemented in checkpoint69.
    Source-validated execution/actual commands are implemented in checkpoint71, with a REQUIRED
-   compatible legacy fingerprint provider. Real provider implementation exists in73; exact-head Native/
-   Android runtime verification and host wiring remain needed. Common tests now use real system
-   crypto and independent goldens rather than fixture lookup. Reuse71/73. Activity/result repositories are implemented in checkpoint53;
+   compatible legacy fingerprint provider. Real provider73 is VERIFIED on Android and Native,
+   including byte/number goldens and all21execution cases with system crypto; host wiring remains.
+   No fixture lookup remains in these tests. Retention metadata snapshots/codec74 and required-
+   validator root1–13 envelope75 exist; COMPLETE parent data/graph normalization, raw3/package1
+   and transactional restore/pruning safeguards still need completion. Reuse71/73/74/75. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete

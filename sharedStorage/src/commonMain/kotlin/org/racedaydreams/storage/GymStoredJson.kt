@@ -84,124 +84,12 @@ internal object GymStoredJson {
 
     fun read(input: String): JsonObject {
         checkSize(input)
-        Syntax(input).validate()
+        StoredJsonSyntax(input, MAX_DEPTH, MAX_TOKENS, 100000, ::invalid).validate()
         return Json.parseToJsonElement(input) as? JsonObject ?: invalid("root object")
     }
 
     private fun checkSize(input: String) {
         if (input.length > MAX_BYTES || input.encodeToByteArray().size > MAX_BYTES)
             invalid("payload size")
-    }
-
-    private class Syntax(private val input: String) {
-        private var at = 0
-        private var tokens = 0
-
-        fun validate() {
-            whitespace()
-            if (at >= input.length || input[at] != '{') invalid("root object")
-            item(0)
-            whitespace()
-            if (at != input.length) invalid("trailing data")
-        }
-
-        private fun item(depth: Int) {
-            if (depth > MAX_DEPTH || ++tokens > MAX_TOKENS) invalid("structure limit")
-            whitespace()
-            if (at == input.length) invalid("unexpected end")
-            when (input[at]) {
-                '{' -> {
-                    at++
-                    val keys = mutableSetOf<String>()
-                    whitespace()
-                    if (take('}')) return
-                    do {
-                        whitespace()
-                        val start = at
-                        string()
-                        val key =
-                            (Json.parseToJsonElement(input.substring(start, at)) as JsonPrimitive)
-                                .content
-                        if (!keys.add(key)) invalid("duplicate field")
-                        whitespace()
-                        if (!take(':')) invalid("object separator")
-                        item(depth + 1)
-                        whitespace()
-                        if (take('}')) return
-                    } while (take(','))
-                    invalid("object ending")
-                }
-                '[' -> {
-                    at++
-                    whitespace()
-                    if (take(']')) return
-                    do {
-                        item(depth + 1)
-                        whitespace()
-                        if (take(']')) return
-                    } while (take(','))
-                    invalid("array ending")
-                }
-                '"' -> string()
-                't' -> literal("true")
-                'f' -> literal("false")
-                'n' -> literal("null")
-                else -> number()
-            }
-        }
-
-        private fun string() {
-            if (!take('"')) invalid("quoted string")
-            val start = at
-            while (at < input.length) {
-                val c = input[at++]
-                if (at - start > 100000) invalid("string limit")
-                if (c == '"') return
-                if (c < ' ') invalid("string control character")
-                if (c != '\\') continue
-                if (at == input.length) invalid("string escape")
-                val escaped = input[at++]
-                if (escaped == 'u') {
-                    repeat(4) {
-                        if (at == input.length || input[at++].digitToIntOrNull(16) == null)
-                            invalid("unicode escape")
-                    }
-                } else if (escaped !in "\"\\/bfnrt") invalid("string escape")
-            }
-            invalid("unfinished string")
-        }
-
-        private fun number() {
-            take('-')
-            if (!take('0')) digits()
-            if (take('.')) digits()
-            if (take('e') || take('E')) {
-                if (!take('+')) take('-')
-                digits()
-            }
-        }
-
-        private fun digits() {
-            val start = at
-            while (at < input.length && input[at] in '0'..'9') at++
-            if (start == at) invalid("number")
-        }
-
-        private fun literal(value: String) {
-            if (!input.startsWith(value, at)) invalid("literal")
-            at += value.length
-        }
-
-        private fun whitespace() {
-            while (at < input.length && input[at] in " \t\r\n") at++
-        }
-
-        private fun take(value: Char): Boolean {
-            if (at < input.length && input[at] == value) {
-                at++
-                return true
-            }
-            return false
-        }
     }
 }
