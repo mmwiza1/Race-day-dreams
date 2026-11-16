@@ -4270,14 +4270,70 @@ incomplete migration merely because a focused checkpoint passes.
  real common app composition/native services/actual iOS host/runtime and final unfiltered28/35/36 /
  iOS APP/source-bound visuals. No reset, early merge/publication or stable tag.
 
+### Checkpoint97 — protected restore population and exact retained-detail reconciliation
+
+- Resumed actual branch `experiment/android-ios-kmp-compose` / DRAFT24 from clean pushed
+  `91430d339dad7a0d6c40302169f0f1da557a76d5`; live main remains85e1c3903b61f1d45e444d120ba1a701ad3a2c36.
+  No reset/replacement PR/version bump. Separate owner PR23 untouched.
+-96 complete-package export is now VERIFIED: experiment43959621139 SUCCESS on Android133623204202
+  andApple133623204640; formatting43959621153 SUCCESS. Prior95 Maven429 does not apply to this head;
+  no skipped check/retry workaround.534unique Android START/END match, actual original Java ZIP /
+  SHA256 /BackupManager package parity ran;700189checks/48domain suites, build/lint/schema PASS.
+-96 digest-verified JVM14274852479 SHA2569656e1d95589fdd5cb44dc74dbafe2ab73968543afdc1fa5f3f5d5cb72d6c5fd:
+  490domain+16health+474storage. Apple14273872365
+  SHA25647efc4da6cc470568b73fb51d3e4c456640970a11d85de8cc5fa428a350ffa6f:
+  449domain+18health+474storage. ALL0failure/error/skip; all47new IO/SQL case names match across platforms,
+  including4actual complete-package cases. Proofs scratch/complete-914-{jvm,native}/verification.json,
+  native/all-case-proof.json and scratch/complete-914-android-job.log. Framework14274771984 NOT APP.
+-96 private APK14274987311 digest-verified ZIP1c015e6cbbf3648b2a5ee071536f97fcd069e31939b8066a99ebad9af4a968a5;
+  actual APK58172683bytes/SHA2561d3b0474ba2d5092a5e91bcb7f93e0ee66e9bed0c27c04fa27d26e3834711068,
+  code19/version0.12.3-test1/min28/noINTERNET, scratch/complete-914-apk/verification.json. Not published.
+-97 source adds SqliteRecordingEvidence.kt: original SHA256(sequence+":"+EXACT stored payload+newline),
+  no JSON normalization, clock coercion or route recalculation.512-key metadata pages and <=1MiB payload
+  batches (larger supported row alone), <=32KiB digest updates, count+hash comparison for BOTH tables.
+  Unsupported huge rows reject before payload hydration. Public operation is read-only verification.
+- SqliteRetentionRestore.kt is INTERNAL to future full replacement. One transaction checks active /
+  paused/recoverable runs AND unfinished gym recovery, every retained activity/source, and every
+  available raw count/hash BEFORE writes. Matching available detail removes only its receipt;
+  missing detail stays explicitly removed. No raw sample/event changes. Preferences preserve actual
+  backed-up choice, but fresh caller-supplied real dataset identity expires ALL old previews/approvals.
+  Missing singleton, reused epoch, source conflict and late failure reject/rollback. No cleanup enabled.
+- SqliteCoreBackupRestore.kt is INTERNAL population into ALL empty prepared core tables, never a
+  partial public restore or a clear command. Restores original profile/nullable baseline times/draft,
+  shoes, actual summaries/annotations, manual results and explicit preserved PBs, exact Long reminder
+  revisions, assessments and opaque historical plans/decisions. Never recalculates PBs, assigns today's
+  default shoe, imports health caches or generates observation clocks/IDs. Retained raw tables untouched.
+- SqliteArchiveBackupRestore.kt internally populates validated original coaching/evidence/choices /
+  exclusions/PB acknowledgements/legacy gym/support/0.8 archives; original FK table dependency order,
+  verbatim coaching payload strings, actual sets and original selections/decisions. All target tables
+  must be empty BEFORE writes. Old missing sections stay empty; supported older imported weight rows
+  are retained if present in a validated backup, but user-owned exports still omit those caches.
+- New contracts: RetentionRestoreRepositoryContract(8), CoreBackupRestoreRepositoryContract(5),
+  ArchiveBackupRestoreRepositoryContract(5), with real JDBC +Apple SQLite wrappers. Existing Android
+  SharedDetailRetentionArchiveTest's real GPS/gap fixture now verifies shared hashes against ORIGINAL
+  SqliteDetailRetentionRepository.evidenceHash/requireMatches, including rejection of changed stored
+  JSON bytes even when numerical evidence agrees. Original recording/archive assertions remain.
+- Initial test fixture missing-return and JUnit non-void inference errors fixed locally;13focused
+  retention/core cases +metadata PASS1m44s/13tasks in scratch/kmp-protected-restore-focused.log.
+  First4archive cases +metadata PASS1m26s/13tasks in scratch/kmp-archive-restore-focused.log. Added a fifth
+  old imported-weight case before final gate. NO source assertion was weakened.
+- FINAL LOCAL492storage JVM0failure/error/skip /metadata /Android test compilation PASS3m21s/64tasks in
+  scratch/kmp-protected-restore-final.log. Formatting859sources(764Kotlin95Java) PASS in
+  scratch/kmp-protected-restore-format-final.log. Exact schema1..19 and3source-provenance tests PASS.
+  Fresh Apple18 cases and extended Android runtime verification are PENDING a new pushed head.
+- Full restore is still NOT enabled: normalized authored/draft/concrete/custom programming, frozen
+  executions/actual edit receipts/associations/tools/body/awards writers, outer replacement guard /
+  clear order, compatible raw merge and final retained-sample/epoch reconciliation remain. Reuse these
+  internal population steps only in the complete validated outer transaction; do not expose them as
+  a user-facing partial restore. Native pruning remains OFF. Version/schema/formats unchanged.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint96 above is latest recovery boundary.95source0ae10b4 is pushed; experiment43956465891
-   RUNNING, formatting43956465677 failed on actual Maven HTTP429 (local842format passed).96shared
-   complete-package DB export is local;4JDBC/meta PASS, final474storage/meta/Android compile PASS3m7s/64tasks.
-   95experiment Native/JVM470/Android534/43cases verified; required formatting failedHTTP429.
-   Commit/push96 once, verify Native
-   474/Android534/original package parity and required format. Never bypass CI or enable unsafe restore.
+1. Checkpoint97 above is latest recovery boundary.96head91430d3 is fully green; exact experiment /
+   formatting and digest-verified results are recorded there.97protected core/archive/retention
+   population +exact original raw hash verification is committed with this handoff; local492/meta /
+   Android compile PASS3m21s/64tasks,859format/schema/source PASS. Push this coherent batch once. Then verify fresh Apple492/18new restore cases, Android534 and original hash
+   parity; update PR24 draft and this boundary with actual CI outcomes. Do not treat pending as pass.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

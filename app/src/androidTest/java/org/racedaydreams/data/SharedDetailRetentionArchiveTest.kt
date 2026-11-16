@@ -175,6 +175,44 @@ class SharedDetailRetentionArchiveTest {
         val points = store.points("raw-shared")
         assertTrue(points.any { it.discontinuity() })
         val summary = FeatureStore(context).activities().first { it.id() == actualId }
+        val db = ProfileDatabase.get(context).writableDatabase
+        val receipt =
+            RemovedRecordingDetail(
+                "raw-shared",
+                actualId,
+                summary.source().provider(),
+                "raw-shared",
+                summary.end(),
+                at.plusSeconds(200),
+                DetailRetention.Policy.LAST_24_MONTHS,
+                at,
+                0,
+                110000,
+                points.size.toLong(),
+                engine.events().size.toLong(),
+                SqliteDetailRetentionRepository.evidenceHash(db, "recording_points", "raw-shared"),
+                SqliteDetailRetentionRepository.evidenceHash(db, "recording_events", "raw-shared"),
+            )
+        val beforeHash = bridge.query("SELECT total_changes()")
+        SqliteDetailRetentionRepository.requireMatches(db, receipt)
+        SqliteRecordingEvidence(bridge).requireMatches(receipt)
+        assertEquals(beforeHash, bridge.query("SELECT total_changes()"))
+        // Hash receipts describe ORIGINAL stored bytes, even when alternate JSON is equivalent.
+        db.beginTransaction()
+        try {
+            bridge.execute(
+                "UPDATE recording_points SET payload=payload||' ' WHERE session_id='raw-shared' AND sequence=0"
+            )
+            assertThrows(IllegalArgumentException::class.java) {
+                SqliteDetailRetentionRepository.requireMatches(db, receipt)
+            }
+            assertThrows(IllegalArgumentException::class.java) {
+                SqliteRecordingEvidence(bridge).requireMatches(receipt)
+            }
+        } finally {
+            db.endTransaction() // Roll back the deliberately changed source bytes.
+        }
+        SqliteRecordingEvidence(bridge).requireMatches(receipt)
         val (archive, lines) = rawArchive()
         for (version in 1..3) {
             val reader = RecordingArchiveRows(version)
