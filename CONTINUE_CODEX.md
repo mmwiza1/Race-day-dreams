@@ -3839,13 +3839,54 @@ incomplete migration merely because a focused checkpoint passes.
   Final unfiltered28/35/36+iOS APP +source-bound light/dark/200% gates and physical HK/HC/GPS/BLE/
   audio/locked-screen/OEM/TalkBack acceptance remain unperformed. No early bump, merge/publication.
 
+### Checkpoint86 — recover Android parity assertion placement after workspace interruption
+
+- Current branch experiment/android-ios-kmp-compose, remote85 HEAD23c92bc6c3c55cfc76dd6ac8e8304ee35c83ab79;
+  existing PR24 OPEN/DRAFT. Preserve ALL82–85 source. Main85e1c39 /owner PR23 untouched. No reset,
+  amend, replacement PR, version/schema/format/permission change or experimental public release.
+-85 experiment43917103613: Apple133474093470 SUCCESS; Android133474093999 FAILURE. Formatting
+ 43917103264 SUCCESS. Android completed533unique START/END cases; exactly ONE failed method:
+  SharedBackupEnvelopeTest#sharedSupportArchiveMatchesOriginalSavedRunningEvidenceWithoutSideEffects.
+  Do NOT describe85 as full Android success.700189checks/48domain suites and build/lint/schema passed.
+- Confirmed root cause is TEST PLACEMENT, not production data loss: new SqliteDevelopmentArchive
+  comparison was accidentally inserted after the SUPPORT fixture's7record assertion, comparing
+  support-v1 rows with empty development-v1 records. Actual CI expected-support/actual-development
+  JSON and source lines374–382 demonstrate it. Corrected by moving the IDENTICAL8-line comparison
+  into developmentArchiveMatchesOriginalKindsAndManualWeightExportFilter immediately after its
+  DevelopmentArchiveJson decode/7record check. ALL original/new assertions remain;513-cache paging
+  and515retained-weight checks stay. No production logic/calculations/limits or test counts changed.
+- Local relocation survived environment restart. Final Android test compilation PASS1m31s/55tasks,
+  scratch/kmp-owned-evidence-parity-fix-compile.log;815format sources(720Kotlin95Java) PASS and
+  git diff --check clean. No local KVM, so no claim of local instrumentation. Fix is supported by
+  actual failed runtime fixture +exact relocation diff; fresh corrected-head CI must run methods.
+-85 digest-verified JVM14253956408 SHA256db4a5d4a99b255b4e32e72cffc53d5528e194ec497028d199ceeafe77a051b2a:
+  490domain+16health+427storage. Native14252242984
+  SHA2569ca675aa9f16de295bcb1d989e1a17a384dcada8be8fc568a7b49d9a3772d72b:
+  449domain+18health+427storage. ALL0failure/error/skip. ALL3new REAL Apple SQLite contract names
+  matched local JVM XML, including100001-cache /514cross-kind paging fixture; Native runtime17.891s.
+  Proofs scratch/owned-23c-{jvm,native}/verification.json, owned-23c-native/cache-case-proof.json.
+  Completed failure log scratch/owned-23c-android-job.log. Framework14252302847 NOT an iOS app.
+- NEXT EXACT: commit relocation+this recovery note, push existing draft24 normally; verify exact
+  new Android533 INCLUDING support/development methods and Native427/JVM427/format/build/lint.
+  Do not blindly rerun old23c source or weaken assertions. Update PR description to actual current
+  pending/failure/result state.84 remains last FULL remote until corrected86 CI passes.
+- Then continue ZIP container/file adapters and same-DB transactional restore/raw reconciliation /
+  consent/preview/epoch/active+paused+recoverable safeguards. Complete parent82, raw rows/real streamed
+  hash/framing83, package-v1 manifest84 and bounded owned development capture85 are implemented;
+  preserve/reuse them. Native destructive restore/prune stays OFF. Full common app root/navigation/
+  native services/HealthKit/recording/BLE/notifications and actual iOS host/app/runtime still pending.
+  Working Mac/Xcode CI exists; no infrastructure excuse. Final unfiltered28/35/36+iOS APP/source-bound
+  visuals and physical HK/HC/GPS/BLE/audio/locked-screen/OEM/TalkBack remain unperformed. Keep draft;
+  no premature merge, version bump, public APK or stable tag.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint85 immediately above is latest boundary.84 FULL remote43910500616 SUCCESS424storage/
-   533Android/700189checks48suites.85 first source97d527e committed locally; FINAL batched source/
-   expanded parity/source contracts are ready to commit, local3JDBC/metadata/test compile4m25s +
-   Android paging1m30s /815format PASS. Commit follow-up+note and push85 ONCE; verify NEW Native427/
-   Android533, especially real100001cache fixture, with artifacts/logs. No reset/amend/early merge.
+1. Checkpoint86 immediately above is latest recovery boundary.85 source23c92bc pushed; Native427/
+   JVM427 and700189checks48suites PASS, Android533 completed with ONE misplaced parity assertion.
+   Identical comparison is now moved from support fixture to intended development fixture; local
+   compile1m31s/815format PASS. Commit/push this correction+handoff, verify fresh exact-head533/
+   427Android/Native (and JVM427) plus format.84 remains last fully green until this correction passes.
+   Preserve all source; no reset/amend/replacement PR or early merge/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
