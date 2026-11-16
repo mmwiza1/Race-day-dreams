@@ -3952,13 +3952,44 @@ incomplete migration merely because a focused checkpoint passes.
  consent/preview/epoch/active+paused+recoverable protections. Native destructive operations OFF.
  Full common app/services/actual iOS host/build/runtime and final28/35/36+iOS APP/visual gates remain.
 
+### Checkpoint89 — portable streaming ZIP container export (in progress)
+
+-87/88 pushed together normally; current remote88 is5b2c3715432f9ffae9335d7d64223d17fc34f854;
+ PR24 still OPEN/DRAFT and body updated with actual86 pass/local88/pending Native status.
+ 88experiment43940777101 RUNNING (Android133557392264 /Apple133557393362);
+ format43940776911 SUCCESS. Do NOT cancel this expensive Native verification just for89.
+ Expected88:448storage JVM/Native,533Android; exact real runtime results still pending.
+-88 final local gate actually PASSED5m30s/64tasks:448JVM0failure/error/skip, shared metadata,
+ Android test compilation.828formatted sources, schema1..19 /3source-provenance PASS.86 full remote
+ 533Android/427JVM+Native/700189checks48domain suites remains last completely verified remote.
+-89 local new BackupZipWriter.kt +BackupZipWriterTest.kt, shared limits helper extracted from
+ BackupZipArchive.kt, original Android complete-export test extended. Preserve ALL changes.
+ Streaming STORED ZIP output uses original names and size budgets, bounded32KiB fresh blocks,
+ stable source-size/CRC checks across both passes, original local/central/EOCD headers and no new
+ dependencies. ZIP64 output is unnecessary under existing <600MiB budgets; ZIP64 input remains
+ supported87. Caller output remains private until all payload/document validation succeeds.
+-5common cases test exact original raw/manifest byte preservation, complete nested payload
+ preservation, missing/duplicate/unknown/oversize rejection before output, truncation/overproduction,
+ source mutation and immediate sink cancellation. Original Android exporter payloads are repacked
+ by shared writer then independently read using java.util.zip.ZipInputStream, compared byte-for-
+ byte and revalidated through complete inspection. No original assertions/counts removed.
+- FINAL local453storage JVM0failure/error/skip +metadata +Android test compilation PASS5m31s/64tasks in
+ scratch/kmp-backup-zip-writer-final.log. Formatting830sources(735Kotlin95Java), exact schema1..19
+ and3source-provenance PASS, scratch/kmp-backup-writer-{format,safety}.log. Do not claim pending
+ writer tests or new Native ZIP/POSIX runtime passed. No destructive replacement/prune enabled.
+- NEXT: check actual453/local final result and88CI; fix real failures. Commit89 coherently with
+ this recovery note when local gates pass. Push once88actual Native/Android gate completes so it
+ is not cancelled. Verify new453JVM/Native, all writer cases and533Android original-reader parity.
+ Then continue bounded DB raw export, same-DB transactional application/raw replacement and
+ compatible-detail merge/retention consent/preview/epoch/unfinished recording protections. Existing
+ Android stores remain authoritative. Full app/native services/real iOS host and final gates remain.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint88 above is latest recovery boundary.86FULL remote533Android/427JVM+Native/
-   domain70018948 verified.87ZIP commit1027712 local;88private staging/package inspection is local
-   verified448storage/metadata/Android compilation(5m30s)/828format.
-   Commit/push87+88 ONCE; verify actual Native zlib/POSIX and both original-export parity paths.
-   No reset, early merge, version bump or public publication. Existing Android remains authoritative.
+1. Checkpoint89 above is latest recovery boundary.88pushed5b2c371; Native/Android CI43940777101
+   RUNNING, format43940776911 PASS.89writer local453storage/metadata/Android compilation PASS (see final log);
+   830format/schema/source PASS. Commit coherently, inspect88actual results, avoid
+   cancelling expensive88CI. No reset, early merge/version bump/publication. PR24 remains draft.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

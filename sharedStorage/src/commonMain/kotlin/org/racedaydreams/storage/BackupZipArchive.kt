@@ -90,20 +90,7 @@ private constructor(
         )
 
         fun inspect(source: BackupArchiveSource, kind: Kind): BackupZipArchive {
-            val limits =
-                when (kind) {
-                    Kind.RECORDINGS ->
-                        linkedMapOf(
-                            "manifest.json" to 8192L,
-                            "recordings.jsonl" to RecordingArchiveRows.MAX_BYTES,
-                        )
-                    Kind.COMPLETE ->
-                        linkedMapOf(
-                            "manifest.json" to 8192L,
-                            "app.json" to BackupEnvelopeJson.MAX_BYTES.toLong(),
-                            "recordings.zip" to CompleteBackupManifest.MAX_RECORDINGS_ZIP_BYTES,
-                        )
-                }
+            val limits = backupZipLimits(kind)
             val size = source.size
             require(size in 22..(limits.values.sum() + 1024 * 1024)) {
                 "Unsupported backup ZIP size."
@@ -373,6 +360,21 @@ private constructor(
         }
     }
 }
+
+internal fun backupZipLimits(kind: BackupZipArchive.Kind): Map<String, Long> =
+    when (kind) {
+        BackupZipArchive.Kind.RECORDINGS ->
+            linkedMapOf(
+                "manifest.json" to 8192L,
+                "recordings.jsonl" to RecordingArchiveRows.MAX_BYTES,
+            )
+        BackupZipArchive.Kind.COMPLETE ->
+            linkedMapOf(
+                "manifest.json" to 8192L,
+                "app.json" to BackupEnvelopeJson.MAX_BYTES.toLong(),
+                "recordings.zip" to CompleteBackupManifest.MAX_RECORDINGS_ZIP_BYTES,
+            )
+    }
 
 internal class ArchiveCrc32 {
     private var crc = 0xffffffffL

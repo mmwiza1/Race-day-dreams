@@ -120,6 +120,37 @@ class SharedBackupEnvelopeTest {
         } finally {
             inspectedPackage.close()
         }
+        val sharedOutput = ByteArrayOutputStream()
+        org.racedaydreams.storage.BackupZipWriter.write(
+            org.racedaydreams.storage.BackupZipArchive.Kind.COMPLETE,
+            entries.map { (name, bytes) ->
+                org.racedaydreams.storage.BackupZipWriter.Source(name, sharedBackupZipSource(bytes))
+            },
+        ) {
+            sharedOutput.write(it)
+        }
+        val sharedEntries = linkedMapOf<String, ByteArray>()
+        ZipInputStream(ByteArrayInputStream(sharedOutput.toByteArray())).use { zip ->
+            while (true) {
+                val entry = zip.nextEntry ?: break
+                assertFalse(sharedEntries.containsKey(entry.name))
+                sharedEntries[entry.name] = zip.readBytes()
+                zip.closeEntry()
+            }
+        }
+        assertEquals(entries.keys, sharedEntries.keys)
+        entries.forEach { (name, bytes) -> assertArrayEquals(bytes, sharedEntries.getValue(name)) }
+        val sharedInspected =
+            org.racedaydreams.storage.InspectedBackupPackage.inspect(
+                sharedBackupZipSource(sharedOutput.toByteArray()),
+                context.cacheDir.absolutePath,
+            )
+        try {
+            assertEquals(parent.version, sharedInspected.application.version)
+            assertTrue(sharedInspected.recordings.sessions.isEmpty())
+        } finally {
+            sharedInspected.close()
+        }
         assertTrue(
             runCatching { manifest.verify(listOf(receipts.first(), receipts.first())) }.isFailure
         )
