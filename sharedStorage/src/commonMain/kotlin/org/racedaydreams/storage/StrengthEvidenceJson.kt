@@ -109,4 +109,48 @@ object StrengthEvidenceJson {
             row.number("metres"),
             row.number("rir"),
         )
+
+    /** New engine/association sections require every field, unlike historical coaching payloads. */
+    fun encodeAcceptedSession(actual: StrengthSession): String =
+        GymStoredJson.write(session(actual)).also { decodeAcceptedSession(it) }
+
+    fun decodeAcceptedSession(payload: String): StrengthSession =
+        readAcceptedSession(GymStoredJson.read(payload))
+
+    internal fun readAcceptedSession(value: JsonObject): StrengthSession {
+        with(GymStoredJson) {
+            fields(value, "id", "startedAt", "offset", "duration", "rpe", "notes", "exercises")
+            text(value, "id", 256)
+            text(value, "startedAt", 64)
+            text(value, "offset", 16)
+            text(value, "duration", 64)
+            nullableNumber(value, "rpe")
+            text(value, "notes", 10000)
+            for (item in array(value, "exercises", 100)) {
+                val block = row(item)
+                fields(block, "exercise", "sets")
+                val exercise = child(block, "exercise")
+                fields(exercise, "id", "name", "region", "mode", "estimate", "measurement")
+                text(exercise, "id", 256)
+                text(exercise, "name", 120)
+                choice<StrengthExercise.Region>(exercise, "region")
+                choice<StrengthExercise.Mode>(exercise, "mode")
+                bool(exercise, "estimate")
+                choice<StrengthExercise.MeasurementProfile>(exercise, "measurement")
+                for (item in array(block, "sets", 100)) {
+                    val set = row(item)
+                    fields(set, "id", "reps", "kg", "rpe", "warmUp", "seconds", "metres", "rir")
+                    text(set, "id", 256)
+                    integer(set, "reps")
+                    number(set, "kg")
+                    nullableNumber(set, "rpe")
+                    bool(set, "warmUp")
+                    nullableLong(set, "seconds")
+                    nullableNumber(set, "metres")
+                    nullableNumber(set, "rir")
+                }
+            }
+        }
+        return readSession(value)
+    }
 }

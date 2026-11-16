@@ -253,4 +253,76 @@ class StrengthEvidenceJsonTest {
         assertEquals(original, decoded)
         assertEquals(10000, decoded.exercises().sumOf { it.sets().size })
     }
+
+    @Test
+    fun acceptedActualsRoundTripEachModalityWithoutReinterpretingWorkingEvidence() {
+        for (profile in StrengthExercise.MeasurementProfile.entries) {
+            val actual =
+                session(
+                    listOf(StrengthSession.ExerciseSets(exercise(profile), listOf(set(profile))))
+                )
+            assertEquals(
+                actual,
+                StrengthEvidenceJson.decodeAcceptedSession(
+                    StrengthEvidenceJson.encodeAcceptedSession(actual)
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun acceptedActualsRequireCompleteFieldsButLegacyDefaultsStaySupported() {
+        val original = row()
+        val block = original.getValue("exercises").jsonArray.single().jsonObject
+        val exercise = block.getValue("exercise").jsonObject
+        val oldDefinition = JsonObject(block + ("exercise" to JsonObject(exercise - "measurement")))
+        val old =
+            JsonObject(original + ("exercises" to JsonArray(listOf(oldDefinition)))).toString()
+        assertEquals(session(), StrengthEvidenceJson.decodeSession(old))
+        assertFailsWith<IllegalArgumentException> {
+            StrengthEvidenceJson.decodeAcceptedSession(old)
+        }
+        val unknown = JsonObject(original + ("unknown" to JsonNull)).toString()
+        assertEquals(session(), StrengthEvidenceJson.decodeSession(unknown))
+        assertFailsWith<IllegalArgumentException> {
+            StrengthEvidenceJson.decodeAcceptedSession(unknown)
+        }
+        val originalSet = block.getValue("sets").jsonArray.single().jsonObject
+        val missingRir = withSets(JsonArray(listOf(JsonObject(originalSet - "rir"))))
+        assertNull(
+            StrengthEvidenceJson.decodeSession(missingRir)
+                .exercises()
+                .single()
+                .sets()
+                .single()
+                .repetitionsInReserve()
+        )
+        assertFailsWith<IllegalArgumentException> {
+            StrengthEvidenceJson.decodeAcceptedSession(missingRir)
+        }
+    }
+
+    @Test
+    fun strictAcceptedRepetitionTokensDifferFromLegacyWholeNumericCoachingValues() {
+        val source = StrengthEvidenceJson.encodeSession(session())
+        val exponent = source.replace("\"reps\":8", "\"reps\":8e0")
+        assertNotEquals(source, exponent)
+        assertEquals(session(), StrengthEvidenceJson.decodeSession(exponent))
+        assertFailsWith<IllegalArgumentException> {
+            StrengthEvidenceJson.decodeAcceptedSession(exponent)
+        }
+    }
+
+    @Test
+    fun acceptedEncodingValidatesRepresentabilityBeforeFutureStorageWrites() {
+        val tooLong = session().copy(id = "x".repeat(257))
+        assertFailsWith<IllegalArgumentException> {
+            StrengthEvidenceJson.encodeAcceptedSession(tooLong)
+        }
+        val actual = session()
+        assertEquals(
+            actual,
+            StrengthEvidenceJson.decodeSession(StrengthEvidenceJson.encodeAcceptedSession(actual)),
+        )
+    }
 }

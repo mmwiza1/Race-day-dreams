@@ -106,4 +106,49 @@ class SharedStrengthEvidenceCodecTest {
             StrengthEvidenceJson.decodeSession(payload.toString())
         }
     }
+
+    @Test
+    fun acceptedActualSectionsAgreeWithOriginalStrictReaderForAllModalities() {
+        for (profile in StrengthExercise.MeasurementProfile.values()) {
+            val actual = session(profile)
+            assertEquals(
+                actual,
+                StrengthEvidenceJson.decodeAcceptedSession(CoachingJson.strength(actual).toString()),
+            )
+            assertEquals(
+                actual,
+                GymAcceptedActualJson.read(
+                    JSONObject(StrengthEvidenceJson.encodeAcceptedSession(actual))
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun strictAcceptedSectionsKeepLegacyDefaultAndIntegerRulesSeparate() {
+        val actual = session(StrengthExercise.MeasurementProfile.LOAD_REPS)
+        val source = CoachingJson.strength(actual).toString()
+        val exponent = source.replace("\"reps\":8", "\"reps\":8e0")
+        assertNotEquals(source, exponent)
+        assertEquals(actual, CoachingJson.strength(JSONObject(exponent)))
+        assertEquals(actual, StrengthEvidenceJson.decodeSession(exponent))
+        assertThrows(IllegalArgumentException::class.java) {
+            GymAcceptedActualJson.read(JSONObject(exponent))
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            StrengthEvidenceJson.decodeAcceptedSession(exponent)
+        }
+        val legacy = JSONObject(source)
+        legacy
+            .getJSONArray("exercises")
+            .getJSONObject(0)
+            .getJSONObject("exercise")
+            .remove("measurement")
+        assertEquals(actual, CoachingJson.strength(legacy))
+        assertEquals(actual, StrengthEvidenceJson.decodeSession(legacy.toString()))
+        assertThrows(IllegalArgumentException::class.java) { GymAcceptedActualJson.read(legacy) }
+        assertThrows(IllegalArgumentException::class.java) {
+            StrengthEvidenceJson.decodeAcceptedSession(legacy.toString())
+        }
+    }
 }
