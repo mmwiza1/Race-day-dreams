@@ -1,5 +1,6 @@
 package org.racedaydreams.storage
 
+import kotlinx.serialization.json.*
 import org.racedaydreams.domain.isJavaBlank
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.domain.time.Instant
@@ -10,6 +11,85 @@ class SqliteLegacyGymProgrammes(
     private val now: () -> Instant,
     private val nextId: () -> String,
 ) {
+    /** Bounded read of the original tables; no current pointer or decision is applied. */
+    fun archiveSnapshot(): LegacyGymProgrammeArchiveJson.Snapshot =
+        database.transaction {
+            var minimumBytes = 0L
+            for ((table, maximum, size) in
+                listOf(
+                    Triple(
+                        "gym_plan_versions",
+                        1000,
+                        "LENGTH(CAST(version_id AS BLOB))+LENGTH(CAST(plan_id AS BLOB))+LENGTH(CAST(payload AS BLOB))",
+                    ),
+                    Triple(
+                        "gym_progression_decisions",
+                        100000,
+                        "LENGTH(CAST(id AS BLOB))+LENGTH(CAST(payload AS BLOB))",
+                    ),
+                )) {
+                val totals =
+                    database.query("SELECT COUNT(*),COALESCE(SUM($size),0) FROM $table").single()
+                require(totals[0].sqlLong() <= maximum) {
+                    "Too many gym archive records; nothing was truncated."
+                }
+                val bytes = totals[1].sqlLong()
+                require(bytes >= 0 && bytes <= BackupEnvelopeJson.MAX_BYTES - minimumBytes) {
+                    "Gym history exceeds the whole-backup budget; nothing was truncated."
+                }
+                minimumBytes += bytes
+            }
+            val versions =
+                database
+                    .query(
+                        "SELECT version_id,plan_id,version,payload FROM gym_plan_versions ORDER BY rowid DESC LIMIT 1001"
+                    )
+                    .map { row ->
+                        val payload = StoredJson.objectValue(row[3].sqlText())
+                        val p = LegacyGymProgrammePayloadJson.decode(payload)
+                        require(
+                            row[0].sqlText() == key(p) &&
+                                row[1].sqlText() == p.id() &&
+                                row[2].sqlLong() == p.version().toLong()
+                        ) {
+                            "Stored gym programme identity differs."
+                        }
+                        payload
+                    }
+            val decisions =
+                database
+                    .query(
+                        "SELECT id,payload FROM gym_progression_decisions ORDER BY rowid LIMIT 100001"
+                    )
+                    .map { row ->
+                        val payload = StoredJson.objectValue(row[1].sqlText())
+                        require(
+                            LegacyGymProgrammePayloadJson.decodeDecision(payload).id ==
+                                row[0].sqlText()
+                        ) {
+                            "Stored progression identity differs."
+                        }
+                        payload
+                    }
+            val current =
+                database.query("SELECT id,version_id FROM gym_current").also {
+                    require(it.size <= 1)
+                }
+            require(current.isEmpty() || current.single()[0].sqlLong() == 1L)
+            LegacyGymProgrammeArchiveJson.decode(
+                buildJsonObject {
+                    put("version", 1)
+                    put("versions", JsonArray(versions))
+                    put("decisions", JsonArray(decisions))
+                    put(
+                        "current",
+                        current.singleOrNull()?.get(1)?.sqlText()?.let { JsonPrimitive(it) }
+                            ?: JsonNull,
+                    )
+                }
+            )
+        }
+
     fun versions(): List<GymProgramme> =
         database
             .query("SELECT plan_id,version,payload FROM gym_plan_versions ORDER BY rowid DESC")

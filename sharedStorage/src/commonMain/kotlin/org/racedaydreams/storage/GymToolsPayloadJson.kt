@@ -19,44 +19,48 @@ import org.racedaydreams.storage.GymStoredJson.write
 object GymToolsPayloadJson {
     data class Snapshot(val preferences: GymRestTimer.Preferences, val timers: List<GymRestTimer>)
 
-    fun encode(snapshot: Snapshot): String =
-        write(
+    fun encode(snapshot: Snapshot): String = write(element(snapshot))
+
+    /** Parent backups retain their own whole-file budget rather than a second standalone cap. */
+    fun element(snapshot: Snapshot): JsonObject = buildJsonObject {
+        put("version", 1)
+        val p = snapshot.preferences
+        put(
+            "preferences",
             buildJsonObject {
-                put("version", 1)
-                val p = snapshot.preferences
-                put(
-                    "preferences",
-                    buildJsonObject {
-                        put("defaultSeconds", p.defaultSeconds())
-                        put("suggestAfterSet", p.suggestAfterSet())
-                        put("notifications", p.notifications())
-                        put("vibration", p.vibration())
-                        put("audio", p.audio())
-                    },
-                )
-                put(
-                    "timers",
-                    buildJsonArray {
-                        for (t in snapshot.timers) add(
-                            buildJsonObject {
-                                put("execution", t.executionId())
-                                put("trigger", t.triggerId())
-                                put("phase", t.phase().name)
-                                put("epoch", t.epoch())
-                                put("observed", t.observedMillis())
-                                put("remaining", t.remainingMillis())
-                                put("duration", t.durationMillis())
-                            }
-                        )
-                    },
-                )
-            }
+                put("defaultSeconds", p.defaultSeconds())
+                put("suggestAfterSet", p.suggestAfterSet())
+                put("notifications", p.notifications())
+                put("vibration", p.vibration())
+                put("audio", p.audio())
+            },
         )
+        put(
+            "timers",
+            buildJsonArray {
+                for (t in snapshot.timers) add(
+                    buildJsonObject {
+                        put("execution", t.executionId())
+                        put("trigger", t.triggerId())
+                        put("phase", t.phase().name)
+                        put("epoch", t.epoch())
+                        put("observed", t.observedMillis())
+                        put("remaining", t.remainingMillis())
+                        put("duration", t.durationMillis())
+                    }
+                )
+            },
+        )
+    }
 
     /** Null is the old-backup default; a timer without a retained execution is never accepted. */
     fun decode(payload: String?, knownExecutions: Set<String>): Snapshot {
         if (payload == null) return Snapshot(GymRestTimer.Preferences.defaults(), emptyList())
-        val root = read(payload)
+        return decode(read(payload), knownExecutions)
+    }
+
+    /** Call only after parent syntax/size validation; execution ownership is still mandatory. */
+    fun decode(root: JsonObject, knownExecutions: Set<String>): Snapshot {
         fields(root, "version", "preferences", "timers")
         version(root, 1)
         val p = child(root, "preferences")

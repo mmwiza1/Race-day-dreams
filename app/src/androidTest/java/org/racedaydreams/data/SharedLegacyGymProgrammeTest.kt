@@ -3,12 +3,16 @@ package org.racedaydreams.data
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.storage.*
 
@@ -79,6 +83,153 @@ class SharedLegacyGymProgrammeTest {
             ),
             listOf("Retained trade-off"),
         )
+
+    @Test
+    fun archiveMatchesOriginalExportAndRejectsBrokenRevisionGraphsWithoutChangingHistory() {
+        original.save(programme())
+        original.decide(programme(), programme(2), "session", "bench-press", "Reviewed evidence")
+        val db = ProfileDatabase.get(context).writableDatabase
+        val before = GymProgrammeStore.exportData(db)
+        GymProgrammeStore.validate(before)
+        val snapshot =
+            LegacyGymProgrammeArchiveJson.decode(
+                Json.parseToJsonElement(before.toString()) as JsonObject
+            )
+        assertEquals(original.versions().toSet(), snapshot.programmes.values.toSet())
+        assertEquals("programme:v2", snapshot.current)
+        assertEquals(
+            Json.parseToJsonElement(before.toString()),
+            LegacyGymProgrammeArchiveJson.element(snapshot),
+        )
+        GymProgrammeStore.validate(
+            JSONObject(LegacyGymProgrammeArchiveJson.element(snapshot).toString())
+        )
+        assertEquals(
+            LegacyGymProgrammeArchiveJson.element(snapshot),
+            LegacyGymProgrammeArchiveJson.element(shared.archiveSnapshot()),
+        )
+        val old =
+            JSONObject(before.toString()).apply {
+                remove("decisions")
+                put("current", JSONObject.NULL)
+            }
+        GymProgrammeStore.validate(old)
+        assertEquals(
+            Json.parseToJsonElement(old.toString()),
+            LegacyGymProgrammeArchiveJson.element(
+                LegacyGymProgrammeArchiveJson.decode(
+                    Json.parseToJsonElement(old.toString()) as JsonObject
+                )
+            ),
+        )
+        for (bad in
+            listOf(
+                JSONObject(before.toString()).put("version", 2),
+                JSONObject(before.toString()).put("current", "missing:v1"),
+                JSONObject(before.toString()).apply {
+                    getJSONArray("versions").put(getJSONArray("versions").getJSONObject(0))
+                },
+                JSONObject(before.toString()).apply {
+                    getJSONArray("decisions").getJSONObject(0).put("base", "missing:v1")
+                },
+            )) {
+            assertTrue(runCatching { GymProgrammeStore.validate(bad) }.isFailure)
+            assertTrue(
+                runCatching {
+                        LegacyGymProgrammeArchiveJson.decode(
+                            Json.parseToJsonElement(bad.toString()) as JsonObject
+                        )
+                    }
+                    .isFailure
+            )
+        }
+        assertEquals(before.toString(), GymProgrammeStore.exportData(db).toString())
+        assertTrue(bridge.query("SELECT id FROM strength_sessions").isEmpty())
+    }
+
+    @Test
+    fun archiveLinkGuardsMatchOriginalActualSessionAndDateReferencesWithoutInventingRecordedLoad() {
+        original.save(programme())
+        val actual =
+            StrengthSession(
+                "actual",
+                at,
+                ZoneOffset.UTC,
+                Duration.ofMinutes(30),
+                null,
+                "Recorded separately",
+                listOf(
+                    StrengthSession.ExerciseSets(
+                        ExerciseCatalog.definition("bench-press")!!.exercise(),
+                        listOf(StrengthSession.SetEntry("working", 5, 50.0, 8.0, false)),
+                    )
+                ),
+            )
+        CoachingStore(context).saveStrength(actual)
+        val db = ProfileDatabase.get(context).writableDatabase
+        val gym = GymProgrammeStore.exportData(db)
+        val coaching = CoachingStore.exportData(db)
+        val payload =
+            JSONObject()
+                .put("id", "actual")
+                .put("plannedDate", start.toString())
+                .put("gymVersion", "programme:v1")
+                .put("gymSession", "session")
+        fun evidence(p: JSONObject) =
+            JSONObject()
+                .put("version", 1)
+                .put(
+                    "records",
+                    JSONArray()
+                        .put(
+                            JSONObject()
+                                .put("kind", "STRENGTH_LINK")
+                                .put("id", p.getString("id"))
+                                .put("payload", p)
+                        ),
+                )
+        val development = evidence(payload)
+        DevelopmentStore.validate(development)
+        GymProgrammeStore.validateLinks(development, coaching, gym)
+        val snapshot =
+            LegacyGymProgrammeArchiveJson.decode(
+                Json.parseToJsonElement(gym.toString()) as JsonObject
+            )
+        fun sharedCheck(j: JSONObject) =
+            LegacyGymProgrammeArchiveJson.validateLinks(
+                snapshot,
+                DevelopmentArchiveJson.decode(Json.parseToJsonElement(j.toString()) as JsonObject),
+                setOf("actual"),
+            )
+        sharedCheck(development)
+        for (p in
+            listOf(
+                JSONObject(payload.toString()).put("id", "missing-actual"),
+                JSONObject(payload.toString()).put("gymSession", "missing-session"),
+                JSONObject(payload.toString()).put("gymVersion", "missing:v1"),
+                JSONObject(payload.toString()).put("plannedDate", start.plusDays(1).toString()),
+            )) {
+            val bad = evidence(p)
+            DevelopmentStore.validate(bad)
+            assertTrue(
+                runCatching { GymProgrammeStore.validateLinks(bad, coaching, gym) }.isFailure
+            )
+            assertTrue(runCatching { sharedCheck(bad) }.isFailure)
+        }
+        assertEquals(coaching.toString(), CoachingStore.exportData(db).toString())
+        assertEquals(
+            50.0,
+            CoachingStore(context)
+                .strength()
+                .single()
+                .exercises()
+                .single()
+                .sets()
+                .single()
+                .kilograms(),
+            0.0,
+        )
+    }
 
     @Test
     fun originalAndSharedCodecsAndWritersRetainImmutableVersionsAndDisableOnlyThePointer() {

@@ -196,7 +196,10 @@ class BodyAndAchievementsArchiveTest {
                             Source.GYM
                         else Source.RUN,
                         "actual-$index",
-                        at.plusSeconds(index * 7L * 86400),
+                        Instants.ofEpochSecond(
+                            at.getEpochSecond() + index * 7L * 86400,
+                            at.getNano().toLong(),
+                        ),
                         Offsets.ofTotalSeconds(0),
                         if (kind in listOf(Kind.FIRST_GYM, Kind.FIVE_GYM, Kind.FIFTY_GYM)) null
                         else 5000.0,

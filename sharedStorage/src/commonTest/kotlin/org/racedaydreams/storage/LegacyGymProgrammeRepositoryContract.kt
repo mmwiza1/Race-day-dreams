@@ -69,6 +69,54 @@ abstract class LegacyGymProgrammeRepositoryContract {
     }
 
     @Test
+    fun archiveSnapshotRetainsHistoryAndDecisionsWithoutChangingCurrentOrActuals() =
+        storage { db, plans ->
+            plans.save(programme())
+            plans.decide(programme(), programme(2), "session", "bench-press", "Reviewed evidence")
+            val changes = db.query("SELECT total_changes()")
+            val snapshot = plans.archiveSnapshot()
+            assertEquals(plans.versions().toSet(), snapshot.programmes.values.toSet())
+            assertEquals("programme:v2", snapshot.current)
+            assertEquals(plans.decisions(), snapshot.decisions)
+            assertEquals(changes, db.query("SELECT total_changes()"))
+            assertTrue(db.query("SELECT id FROM strength_sessions").isEmpty())
+            plans.disable()
+            val disabled = plans.archiveSnapshot()
+            assertNull(disabled.current)
+            assertEquals(2, disabled.programmes.size)
+        }
+
+    @Test
+    fun archivePreflightRejectsOversizedHistoryBeforeLoadingPayloadsAndPreservesRows() =
+        storage { db, plans ->
+            plans.save(programme())
+            db.execute("UPDATE gym_plan_versions SET payload=CAST(zeroblob(33554433) AS TEXT)")
+            val changes = db.query("SELECT total_changes()")
+            val guarded =
+                object : SqlDatabase by db {
+                    override fun query(
+                        sql: String,
+                        arguments: List<SqlValue>,
+                    ): List<List<SqlValue>> {
+                        check(!sql.contains("ORDER BY rowid")) {
+                            "Preflight must run before loading payloads."
+                        }
+                        return db.query(sql, arguments)
+                    }
+                }
+            val error =
+                assertFailsWith<IllegalArgumentException> {
+                    SqliteLegacyGymProgrammes(guarded, { at }, { "unused" }).archiveSnapshot()
+                }
+            assertTrue(error.message!!.contains("whole-backup budget"))
+            assertEquals(changes, db.query("SELECT total_changes()"))
+            assertEquals(
+                1L,
+                db.query("SELECT COUNT(*) FROM gym_plan_versions").single().single().sqlLong(),
+            )
+        }
+
+    @Test
     fun versionsStayImmutableAndDisablingNeverDeletesEvidence(): Unit = storage { db, plans ->
         assertNull(plans.current())
         assertTrue(plans.versions().isEmpty())
