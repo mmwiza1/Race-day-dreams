@@ -3206,12 +3206,57 @@ incomplete migration merely because a focused checkpoint passes.
   recording/BLE/permissions/notifications, REAL iOS host/app/runtime and final full release/visual
   gates remain unfinished. Mac/Xcode CI works; physical acceptance remains unperformed.
 
+### Checkpoint 77 — Core user-data backup graph and retained-source cross-checks
+
+- Checkpoint76 committed/pushed6999e80324f4113e63aeca7a8ca491ae6fa8b844. PR24 OPEN/DRAFT body
+  updated. Parent experiment43869009332 /format43869009125 FULL SUCCESS:517unique Android START/
+  END, both new original CoachingStore parity cases ran;700189checks/48suites. Digest-verified
+  JVM14228765023 SHA2567f6c3c79e8200fcba5403449c372ddd50d90be414422da6e29acec8fbf7376d3:
+  490domain+16health+317storage. Native14227143042
+  SHA2566be24ef83fe961ed452b05e888e9b8380c5ccccb7ef6a7ef892134fb4a3895a6:
+  449domain+18health+317storage. All0failure/error/skip; all8archive +2SQLite cases matched Native
+  XML (normalize only platform suffixes [jvm]/[iosX64] for method-name comparison).
+  Proofs scratch/coaching-6999-{jvm,native}/verification.json. Framework14227841914 NOT iOS app;
+  privateAPK14227622360. No public experimental release, main merge or version/schema/backup bump.
+- Added CoreBackupDataJson: original store-v1 profile/draft/manual baseline, user-owned activity,
+  shoe, manual result, retained rolling effort/provenance, annotation, settings, reminder revision,
+  assessment and legacy opaque-row guards. Reuses existing codecs and original limits/tolerance.
+  Duplicate IDs/sources, imported health activities, missing shoes/annotation notes, conflicting
+  distance codes, malformed settings/revisions and missing retained-source provenance reject.
+- Original activity totals/results remain actual evidence, never recalculated. Unknown optional
+  values stay null. Immutable typed snapshots preserve precise Long revisions and original source
+  identity; retained opaque legacy rows are copied. Matching rolling PB provenance can support
+  historical source references even without re-imported external activity, as in original validation.
+- Added explicit current-running reminder-mirror and removed-detail source cross-checks using the
+  completed coaching and retention archive snapshots. This is ONLY the core portion of parent
+  validation; feature archives/remaining cross-references/transactional restore are still required.
+  NEVER supply this component alone as the complete BackupEnvelopeJson validator. No native data
+  replacement/pruning command enabled; Android production stores remain wired and unchanged.
+- Added7 common core graph cases plus1 Android case in existing SharedBackupEnvelopeTest comparing
+  actual retained activity/results and corrupt source/annotation/settings rejection against REAL
+  original full SqliteBackupRepository validation. No class-list/format-config change needed.
+- All current77 local gates PASS:324storage JVM0failure/error/skip; common metadata/bothAPKs/lint
+  **6m42s/167tasks**, scratch/kmp-core-backup-final.log. Focused7core tests PASS58s build. Formatting
+  **779sources(684Kotlin/95Java) PASS**, scratch/kmp-core-backup-format.log. Exact schema1..19,
+  75schema tests and3source-provenance checks PASS, scratch/kmp-core-backup-safety.log. No known
+  source/build failure remains. New Native/Android cases await pushed CI; expected518focused
+  Android/324storage Native are NOT yet verified. Physical acceptance remains unperformed.
+- Next exact: commit/push coherent77 source+handoff to existing draft PR24 and inspect new exact-head
+  runtime/logs/digest-verified artifacts. Reuse completed core/coaching data guards; finish remaining
+  parent feature archives (DevelopmentStore/SupportStore/Release08, strength choices/programming/
+  execution links, tool/body/achievement sections) and full raw3/package1/retention restoration.
+  Native destructive operations stay disabled until COMPLETE validation and transaction/consent/
+  active-recording safeguards exist. Then common root/navigation/state/native services/full HealthKit/
+  recording/BLE/notifications and REAL iOS host/app/runtime plus final unfiltered API28/35/36/iOS APP/
+  source-bound light/dark/200% visuals. Do not start another release or merge/publish prematurely.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint76 supersedes
-   older pending notes. Preserve current coaching archive/export batch and all75 work. Parent75
-   FULL SUCCESS515Android/307JVM/307Native; current317JVM/777format/schema75/provenance3 pass.
-   All76local gates PASS (metadata/bothAPKs/lint4m31s). Commit/push and verify new exact-head CI.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint77 supersedes
+   older pending notes. Preserve core-backup batch and all committed work.76 FULL SUCCESS517Android/
+   317JVM/317Native.77local324JVM/779format/metadata/APKs/lint/schema75/provenance3 PASS.
+   Commit/push77 coherently, inspect518Android/324Native runtime and proceed with remaining parent
+   archives/full restore; do not mistake a component validator or framework for complete app delivery.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.

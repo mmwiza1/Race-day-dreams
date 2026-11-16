@@ -7,12 +7,15 @@ import java.io.ByteArrayOutputStream
 import java.time.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
+import org.racedaydreams.domain.activity.*
 import org.racedaydreams.portability.BackupManager
 import org.racedaydreams.storage.BackupEnvelopeJson
+import org.racedaydreams.storage.CoreBackupDataJson
 
 @RunWith(AndroidJUnit4::class)
 class SharedBackupEnvelopeTest {
@@ -20,6 +23,96 @@ class SharedBackupEnvelopeTest {
     private val at = Instant.parse("2026-11-16T10:00:00.123456789Z")
     private lateinit var repository: SqliteBackupRepository
     private lateinit var original: BackupManager
+
+    @Test
+    fun sharedCoreGuardsMatchOriginalWholeDataActivityResultAndAnnotationRules() {
+        val actual =
+            ActivityRecord(
+                "actual",
+                SourceIdentity("rdd", "run", null),
+                at,
+                at.plusSeconds(600),
+                ZoneOffset.UTC,
+                null,
+                3000.0,
+                Duration.ofSeconds(600),
+                null,
+                null,
+                null,
+                null,
+                6.0,
+                "Retained actual",
+                emptyList(),
+                emptyList(),
+                null,
+                null,
+            )
+        SqliteActivityRepository(context).upsertManualActivity(actual)
+        val result =
+            RecordedResult(
+                "race",
+                PerformanceDistance.FIVE_K,
+                Duration.ofMinutes(25),
+                LocalDate.of(2026, 11, 16),
+                "Race",
+                ResultSource.OFFICIAL_CHIP,
+                null,
+                "Recorded",
+            )
+        SqliteResultRepository(context).saveResult(result)
+        val before = repository.exportUserData()
+        val snapshot =
+            CoreBackupDataJson.decode(Json.parseToJsonElement(before.toString()) as JsonObject)
+        assertEquals(listOf(actual), snapshot.activities)
+        assertEquals(listOf(result), snapshot.results)
+        repository.validateSnapshot(before)
+        val duplicated =
+            JSONObject(before.toString())
+                .put(
+                    "activities",
+                    JSONArray()
+                        .put(before.getJSONArray("activities").getJSONObject(0))
+                        .put(before.getJSONArray("activities").getJSONObject(0)),
+                )
+        val external = JSONObject(before.toString())
+        external
+            .getJSONArray("activities")
+            .getJSONObject(0)
+            .getJSONObject("source")
+            .put("provider", "health-connect")
+        val missingNotes =
+            JSONObject(before.toString())
+                .put(
+                    "annotations",
+                    JSONArray()
+                        .put(
+                            JSONObject()
+                                .put("provider", "rdd")
+                                .put("recordId", "run")
+                                .put("rpe", 7.5)
+                                .put("shoeId", JSONObject.NULL)
+                        ),
+                )
+        for (bad in
+            listOf(
+                duplicated,
+                external,
+                missingNotes,
+                JSONObject(before.toString()).put("settings", JSONObject().put("invalid", 42)),
+            )) {
+            assertTrue(runCatching { repository.validateSnapshot(bad) }.isFailure)
+            assertTrue(
+                runCatching {
+                        CoreBackupDataJson.decode(
+                            Json.parseToJsonElement(bad.toString()) as JsonObject
+                        )
+                    }
+                    .isFailure
+            )
+        }
+        assertEquals(before.toString(), repository.exportUserData().toString())
+    }
+
     private val introduced =
         mapOf(
             "coaching" to 2,
