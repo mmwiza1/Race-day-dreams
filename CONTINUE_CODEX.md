@@ -2568,14 +2568,63 @@ incomplete migration merely because a focused checkpoint passes.
   platform gates remain. Readers intentionally expose no mutation/activation/restore; future command
   repositories must compose these same normalized readers and recheck fresh evidence atomically.
 
+### Checkpoint 66 — Draft commands, frozen repeat receipts and saved library
+
+- Continuing `experiment/android-ios-kmp-compose` /existing OPEN/DRAFT PR24. Preserved all old
+  source and the local verification note. HEAD/remote3405ed9; main85e1c39 unchanged. No version,
+  schema, backup bump, merge or public experimental publication.
+- Recovered65 **43818517597 FULL SUCCESS**, formatting43818517495 SUCCESS. Actual Android
+  133135954441 logs: **477unique START/END**, allcomplete, all3 new normalized-record cases ran;
+  **700189checks/48suites**. Digest-verified JVM14204490264
+  ZIPb202f4d811677aee6ac7f5380a284bb11644d4013b77c13a6993f07881fc8873 proves
+  **490domain+16health+175storage**. Native14204066359
+  ZIPdff73862861f531da46f42eebd1d7f41e506f4405645d6b466b22e7a88d33c45 proves
+  **449domain+18health+179storage**, all0failures/errors/skips. Proofs scratch/records-3405-
+  {jvm,native}.{zip,json}. Framework14203449830 linked, NOT an iOS app; private APK14204305681.
+- New `SqliteStrengthDrafts` commands compose completed normalized readers over SAME DB19:
+  weekly save/delete with original forward-revision/lost-ack rules; custom save/logging edits keep
+  typed metadata and legacy logging mirror atomic, reject stale/changed measurement tasks; concrete
+  previews use independent sequential draft revisions, stable base/candidate identity, known
+  legacy/authored/custom references, protected historical prescriptions, quota1000, row bounds and
+  exact deletion guards. Child replacement/outer transaction/trigger failure rolls back fully.
+  No acceptance/activation or actual set mutation. Existing Android repositories remain wired.
+- `FrozenGymWorkoutRecordJson` ports original definition/source/sourceSnapshot row, ACTUAL vs
+  EXECUTION repeat receipt, exact original/current fingerprint STRINGS, explicit edit/deletion
+  dates, original slots and cleared load-reference rules. Source helper visibility only private→
+  internal in GymExecutionSnapshotJson; the algorithms are unchanged. Archive concrete row-size
+  validation extracted unchanged for reuse by command writer.
+- CRITICAL: frozen receipt parsing is structural, NOT linked source approval. Do not enable native
+  execution/finalization from this codec alone. Actual/programme source content still needs full
+  transaction validation. New/edited native repeat fingerprints must retain the original Android
+  CoachingJson UTF8 hash-input contract; semantically equivalent JSON is not permission to rehash
+  retained strings with another serializer. No new native repeat proof generation/acknowledgement
+  implemented here. Android parity tests re-encode retained receipts, then call ORIGINAL source
+  validation before/after explicit actual edits/deletion.
+- `SqliteGymWorkouts` reads indexed frozen rows/definitions, bounded favourites and preferences,
+  and saves explicit preferences. Does not create workouts or executions or approve linked sources.
+  Preference INSERT-vs-UPDATE semantics match original (avoid REPLACE for existing preferences).
+- Added19 common realSQLite command tests,6 common frozen-receipt codec tests,6 common realSQLite
+  library tests; JDBC/Apple wrappers;9 Android original-store/parity cases. Focused experiment and
+  formatter targets include both new Android classes. Existing assertions/engines preserved.
+  One transition-time library rollback assertion caught the initial upsert mismatch; UPDATE path
+  and matching failed-update trigger now pass all6 tests. No weakening of rollback assertions.
+- Latest local sharedStorage **206tests PASS**,0failures/errors/skips. Draft-only APKs/lint PASS
+  5m33s/160tasks; frozen-codec source also bothAPKs/lint PASS5m33s/158tasks. FINAL source including
+  library **bothAPKs +lint PASS6m28s/160tasks**, scratch/kmp-gym-durability-verified.log. Formatting
+  **735sources (640Kotlin/95Java) PASS**, scratch/kmp-gym-durability-format.log. Exact schema
+  guard +75tests PASS, scratch/kmp-drafts-frozen-record-schema.log. No known current JVM failure.
+- All local checks PASS. Next: commit/push this coherent batch and update PR24 body; inspect its exact Android/Apple
+  runtime CI and digest-verified XML (expected486Android/210storage Native NOT yet passed).
+  Keep PR DRAFT. Continue reviewed authored programme activation and full source-validated gym
+  execution/association/actual storage; then full supported backups/retention and actual common
+  application/native services/iOS app. Do not enable partial native destructive restore/finalizer.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24 from latest checkpoint65.
-   Preserve any uncommitted files/final verification note. Verify latest exact child CI and original/
-   shared Android parity cases plus Apple/JVM XML. Checkpoint64 HEAD6dc4a7a Apple171storage
-   verified; Android474 pending in43816664754. Current reader source175storage JVM/723format/
-   Android compile/bothAPKs/lint PASS. Next typed reviewed programme mutation and
-   source-validated execution/association/actual repositories; compose the completed readers/codecs.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24; preserve ALL valid local
+   checkpoint66 files and this recovery note. HEAD/remote3405ed9 FULL SUCCESS477Android/
+   179storage Native as above. New draft/receipt/library batch206storage JVM/bothAPKs/lint/735format PASS. Finish verification, commit/push once coherent, inspect actual
+   latest CI; do not restart completed records/codecs/domain/UI ports or assume expected counts.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
@@ -2584,7 +2633,8 @@ incomplete migration merely because a focused checkpoint passes.
    as recorded in checkpoints55–59; preserve them. Programme, both association and concrete-preview codecs plus typed legacy gym history now exist
    as recorded in checkpoints60–63. Tools/timer storage and authoring decision/archive graph guards are implemented in checkpoint64.
    Normalized authored/draft/concrete/custom/decision readers are implemented in checkpoint65.
-   Reviewed authored/concrete commands and execution/association/strength-actual repositories are still needed. Activity/result repositories are implemented in checkpoint53;
+   Draft/custom/concrete-save commands and saved-workout library are implemented in checkpoint66.
+   Reviewed authored/concrete activation and execution/association/strength-actual repositories are still needed. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete

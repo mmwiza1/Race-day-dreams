@@ -157,14 +157,14 @@ object GymExecutionSnapshotJson {
         )
     }
 
-    private fun source(source: GymExecution.SourceReference): JsonObject = buildJsonObject {
+    internal fun source(source: GymExecution.SourceReference): JsonObject = buildJsonObject {
         put("kind", source.kind().name)
         put("id", source.id())
         put("revision", source.revision())
         put("sessionId", StoredJson.nullable(source.sessionId()))
     }
 
-    private fun readSource(row: JsonObject): GymExecution.SourceReference {
+    internal fun readSource(row: JsonObject): GymExecution.SourceReference {
         fields(row, "kind", "id", "revision", "sessionId")
         return GymExecution.SourceReference(
             choice<GymExecution.SourceKind>(row, "kind"),

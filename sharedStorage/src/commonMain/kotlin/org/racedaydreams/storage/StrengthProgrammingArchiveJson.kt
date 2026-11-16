@@ -121,14 +121,7 @@ object StrengthProgrammingArchiveJson {
             (if (version == 1) JsonArray(emptyList()) else array(json, "concreteDrafts", 1000))
                 .map {
                     val d = ConcreteStrengthDraftPayloadJson.decode(it.toString())
-                    validateRows(d.programme())
-                    val root = read(ConcreteStrengthDraftPayloadJson.encode(d))
-                    bounded(
-                        JsonObject(
-                            root + ("programme" to JsonObject(child(root, "programme") - "blocks"))
-                        ),
-                        262144,
-                    )
+                    validateRows(d)
                     require(concreteIds.add(d.id()) && d.programme().id() !in legacyIds) {
                         "Concrete draft identity."
                     }
@@ -272,6 +265,15 @@ object StrengthProgrammingArchiveJson {
         val root = read(StrengthProgrammingPayloadJson.encodeDraft(d))
         bounded(JsonObject(root - "blocks"), 262144)
         for (b in array(root, "blocks", 12)) bounded(row(b), 262144)
+    }
+
+    internal fun validateRows(draft: ConcreteStrengthProgrammeDraft) {
+        validateRows(draft.programme())
+        val root = read(ConcreteStrengthDraftPayloadJson.encode(draft))
+        bounded(
+            JsonObject(root + ("programme" to JsonObject(child(root, "programme") - "blocks"))),
+            262144,
+        )
     }
 
     private fun bounded(row: JsonObject, max: Int) {
