@@ -2395,14 +2395,41 @@ incomplete migration merely because a focused checkpoint passes.
   Retained source-content/actual-edit/atomicity safeguards, full supported backups/retention,
   common application root/native services/REAL iOS app host and final full gates remain required.
 
+### Checkpoint 61 — Both association decision families (16 November 2026)
+
+- Checkpoint60 pushed **fd5ac1e204f2bb392dd18ea58965e033247a8de3**. Experiment43780857820 RUNNING,
+  formatting43780857827 SUCCESS. Apple133017467014 SUCCESS: the JVM-only test-clock defect is fixed
+  on actual Native. Digest-verified14188097622 ZIP5a1920b1d0e980e4a226ecaa29fbd87a392fefcbf423dc601e30a4b52527b296
+  proves **449domain+18health+127storage Native**,all0failures/errors/skips. All source-case names
+  inspected; scratch/programming-fd5-native.{zip,json}. Framework14188596595 linked, NOT an iOS app.
+  Android133017466871 running expected460 cases; do not claim the runtime result yet.
+- Added GymAssociationDecisionJson preserving BOTH original legacyv1 and authoredv2 formats. Exact
+  authored Workout/fractional RIR/optional load references are not approximated as legacy Session.
+  Frozen actuals use the strict accepted reader; metadata/source/review/decision times and both
+  KEEP_EXTRA/COUNT_TOWARD_SESSION choices survive. Encoding revalidates representability before a
+  future storage write. Reading creates NO programme link, applied revision or actual workout.
+- Seven common tests cover both versions/choices, reference82.25 versus recorded80, warm-ups,
+  authored RIR/unknown reference, invalid family/field/version/integer/date/collection input,
+  incomplete actual evidence and review/completion ordering. Three actual Android old/shared
+  parity tests compare both readers/directions, exact family meanings and malformed decisions.
+- Local **130storage JVM PASS**,0failures/errors/skips. Full actual app/debug APK/instrumentation
+  APK/lint **PASS5m18s/160tasks**, scratch/kmp-gym-association-codec-build.log. Full formatting
+  **700sources(605Kotlin/95Java) PASS**. Existing75schema tests and exact1..19 boundary checker PASS
+  this session, no schema/version/backup/permissions/navigation or domain calculation changes.
+- Expected next source463Android/134storage Native NOT yet run. Next commit/push and verify actual
+  gates, then legacy GymProgramme/decision storage, concrete draft/tools/archive payloads and real
+  typed execution/programme/association repositories. Preserve all original Android stores/flows;
+  full native finalisation/source-content/actual-edit/retention/restore safeguards remain mandatory.
+  Common app root/native services/REAL iOS host and final full gates remain unfinished.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint60 source is local,
-   123storage JVM/Android app+test compile/format697/schema75 PASS. Commit/push and verify actual
-   Native fix +expected460Android/127storage Native. Parent610cf0b Apple133012552771 FAILED due
-   JVM-only plusSeconds in test fixture (fixed locally); Android133012552962 running456 when last
-   checked. Do not claim full green. Previousa79cd98 fully verified452Android/104JVM/108Native storage.
-   Preserve completed codecs and local handoff. Then next BOTH association formats/storage tasks.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24, remotefd5ac1e. Checkpoint61
+   both association formats are locally complete130storage JVM/build/bothAPKs/lint/format700 PASS
+   (commit follows this record). fd5ac1e experiment43780857820 RUNNING, format43780857827 SUCCESS;
+   Native127 verified including fixed execution clocks, Android460 still pending. Inspect runtime
+   results, commit/push next coherent batch and verify its actual platform cases. Then remaining
+   typed strength persistence/backups and real app composition; do not restart completed ports.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
