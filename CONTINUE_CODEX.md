@@ -2956,13 +2956,91 @@ incomplete migration merely because a focused checkpoint passes.
   remaining full root13/older backups/raw3/package1/retention safeguards and actual common app/
   OS services/iOS host/build afterwards; no premature merge, public release or version bump.
 
+### Final recovery boundary — checkpoint72 pushed; exact-head runtime pending
+
+- Continue branch `experiment/android-ios-kmp-compose`, HEAD/remote
+  **8941d64a5371932bf0bba35d9b1d15fb74306d1d**. Source71(a5d2cf4) and72 ALL committed/pushed;
+  PR24 OPEN/DRAFT confirmed at this exact head, body updated. Main85e1c39 /owner PR23 preserved.
+  No public experimental publication, merge or version/schema/backup bump. Only this final CI/status
+  note intentionally remains local for next coherent source checkpoint; avoid docs-only CI push.
+- Latest experiment **43855254049 RUNNING**; formatting **43855254014 SUCCESS**.
+  Expected508focused Android/281storage Native NOT passed until actual logs/digest-verified XML.
+  Next exact: inspect these jobs, including new Android800programme ORIGINAL-validator case and
+  both new Native programme-archive cases; fix real failures without weakening safeguards/reruns.
+- All current72 local checks PASS:277storage JVM0failure/error/skip, common metadata +bothAPKs +lint
+  **6m1s/167tasks** (scratch/kmp-nested-programming-verified.log),758source formatting
+  (663Kotlin/95Java), focused14programme-archive tests including1.744s large-history test. Schema75/
+  exact1..19 passed71 and unchanged. Built APK0.12.3-test1/code19/min28/target35/noINTERNET verified.
+- Parent71 **FULL SUCCESS**, experiment43852648767 /format43852648918.507unique Android START/
+  END, all6new real-original-hash source/staging/finalization/edit/delete/rollback/backup cases ran;
+  700189checks/48suites. Digest-verified JVM14219368344
+  SHA256348c06c5c7e45c53e080568cfb5ffc05a43db4fdf5edff1085919540cd476da4:
+  490domain+16health+275storage. Native14220336386
+  SHA2562ce4507be7eef8fe58044781d365ba6e7737d9939f99c501710c0def76ec6888:
+  449domain+18health+279storage; all21 command cases matched against XML. All0failure/error/skip.
+  Proofs scratch/execution-a5d2-{jvm,native}/verification.json. Native used TEST-ONLY known-fixture
+  fingerprint provider for transaction logic; this is NOT native production hashing verification.
+  Framework14221220755 NOT iOS app; privateAPK14219782764. No public experimental artifacts.
+- Completed72 extends only nested programme archive entry points; existing String16MiB bound,
+  all per-row/graph/current/context/lineage checks and immutable versions remain. Parent32MiB
+  budget belongs to enclosing validated backup. Full root13/older external backup normalization,
+  raw3/package1, restore/retention/pruning safety remains incomplete; no native destructive command.
+- Next implementation: implement/verify a REAL compatible Native LegacyStrengthFingerprint provider,
+  then wire the completed SqliteGymExecutions/source/actual commands. It must hash ORIGINAL Android
+  CoachingJson.strength(actual).toString UTF8 bytes, including number spelling, field order, escaping,
+  nulls and Java UTF8 handling; do not hash another serializer or ship fixture/constant hashes.
+  All Android production stores remain wired until safe replacements are complete. Shared execution
+  transactions, source validation, actual edits/deletions, repeat receipts, programme activation,
+  associations/readers/graphs are DONE; reuse them rather than restarting their implementation.
+- Remaining full scope: full backup/retention safeguards and common application root/navigation/
+  state/data composition, native permissions/full HealthKit/recording/BLE/notifications, REAL iOS
+  app host/entitlements/build/runtime. Then final full Android28/35/36/iOS APP/source-bound visuals/
+  light/dark/200% gates. Mac/Xcode CI works; an unfinished app is not an infrastructure blocker.
+  Physical HealthKit/Health Connect/GPS/BLE/audio/locked-screen/OEM/TalkBack still unperformed.
+
+### Checkpoint 73 — Real portable legacy strength evidence fingerprints
+
+- Preserved all checkpoint72 work and the local final-status note. Branch remains
+  `experiment/android-ios-kmp-compose`, existing PR24 DRAFT; live main85e1c39 and owner PR23 untouched.
+- Added PortableLegacyStrengthFingerprint: ORIGINAL CoachingJson field order, Android JSON escaping,
+  nulls, integer/negative-zero spelling and Java UTF8 isolated-surrogate replacement. JVM uses system
+  MessageDigest; Apple uses system CoreCrypto CC_SHA256. No runtime dependency/schema/backup bump.
+- LegacyStrengthNumbers implements bounded exact-binary decimal rendering for actual measurements,
+  avoiding Native Double.toString differences. Four JVM oracle cases compare against independent
+  java.lang.Double formatting, including100000 everyday values,2048 subnormals, all supported binary
+  exponent neighbours and seeded bit patterns. Native corpus golden comes from that independent
+  Java oracle, not the provider. No measurements are rounded or rewritten.
+- Six common provider cases cover real SHA standard vectors, all modalities, fractional RPE/RIR,
+  nulls, precise clocks, escaping/Unicode and legacy numeric corpus. ALL21 existing execution
+  transaction/source/edit/delete/rollback cases now use the real production provider instead of
+  test-only fixture lookup. New Android SharedLegacyFingerprintTest has3 cases comparing byte input
+  and hashes DIRECTLY with original CoachingJson, numeric round-trip bits and immutable receipt
+  strings; all6 SharedGymExecutionCommandsTest cases now use the real provider too.
+- Current full287storage JVM tests PASS,0failure/error/skip. Formatting766sources(671Kotlin/95Java)
+  PASS. Exact schema1..19 +75schema tests PASS. Common metadata/bothAPKs/lint PASS
+  **6m24s/167tasks**, scratch/kmp-legacy-provider-verified.log. APKcode19/min28/target35/noINTERNET checked.
+  New Android/Native runtime checks await coherent push; expected511Android/287storage Native are
+  NOT yet verified. Original Android stores remain wired; no native host/finalizer UI enabled.
+- Checkpoint72 experiment43855254049 +format43855254014 FULL SUCCESS:508unique Android START/END,
+  new800programme ORIGINAL-validator parity case ran;700189checks/48suites. Digest-verified JVM
+  14220304883 SHA256d2973621d263eb4350201aec85cf8ec29614b73639147bf0b4337ba9b8372b58:
+  490domain+16health+277storage. Native14221776525
+  SHA2566adeec14a9730a3a3342bc2cd5d491090ca956b6f7bccabf155bc3aa500d9dbd:
+  449domain+18health+281storage; both new nested-programme cases matched against Native XML.
+  All0failure/error/skip. Proof scratch/programming-8941-results/verification.json.
+  Framework14221751496 NOT iOS app; privateAPK14221364430. No public publication/merge.
+- Next exact: all local73 gates PASS. Commit/push coherent batch including prior local handoff,
+  keep PR24 DRAFT. Verify real Android serializer parity +Native system SHA/goldens and all21
+  execution cases against exact-head logs/digest-verified XML. Fix genuine differences, never
+  substitute fixture hashes. Then continue full root13/older/current backup/raw3/package1 and
+  retention safeguards; real common composition/native services/iOS app remain unfinished.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Final70 pushed boundary above
-   is authoritative: HEAD/remote2803c74, all source committed, only local verification note dirty.
-   Inspect43848459269 RUNNING /format43848459362 SUCCESS, expected501Android/258storage Native
-   not yet passed. Local254storage JVM/common metadata/bothAPKs/lint/752format PASS. Parent69
-   FULL SUCCESS500Android/257storage Native/253storage JVM. Do not restart completed ports.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint73 above supersedes
+   older pending notes. Preserve the real fingerprint provider batch and all prior source.
+   Checkpoint72 FULL SUCCESS508Android/281storage Native/277storage JVM. Complete73 local gates,
+   commit/push and verify real Android/Native fingerprint results before host wiring.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
@@ -2976,8 +3054,9 @@ incomplete migration merely because a focused checkpoint passes.
    Reviewed authored/concrete activation and normalized execution readers are implemented in checkpoint68.
    Explicit associations and archive graph guards are implemented in checkpoint69.
    Source-validated execution/actual commands are implemented in checkpoint71, with a REQUIRED
-   compatible legacy fingerprint provider. Production Native fingerprint implementation/verification
-   and host wiring remain needed; common-test fixture hashes are NOT production proof. Reuse71. Activity/result repositories are implemented in checkpoint53;
+   compatible legacy fingerprint provider. Real provider implementation exists in73; exact-head Native/
+   Android runtime verification and host wiring remain needed. Common tests now use real system
+   crypto and independent goldens rather than fixture lookup. Reuse71/73. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete

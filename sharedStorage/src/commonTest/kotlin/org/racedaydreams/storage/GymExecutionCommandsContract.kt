@@ -43,26 +43,19 @@ abstract class GymExecutionCommandsContract {
             tick(10),
         )
 
-    /** Deliberately NOT a production hash implementation. Unknown fixtures fail closed. */
-    private class FixtureFingerprints : LegacyStrengthFingerprint {
-        private val known = mutableMapOf<StrengthSession, String>()
-
-        fun register(s: StrengthSession): String =
-            known.getOrPut(s) { (known.size + 1).toString(16).padStart(64, '0') }
-
-        override fun fingerprint(actual: StrengthSession): String =
-            known[actual] ?: error("Unknown fingerprint fixture")
+    /** Every contract case uses the production portable byte renderer and platform SHA-256. */
+    private class ActualFingerprints :
+        LegacyStrengthFingerprint by PortableLegacyStrengthFingerprint {
+        fun hash(s: StrengthSession): String = fingerprint(s)
     }
 
-    private fun <T> storage(
-        block: (SqlDatabase, SqliteGymExecutions, FixtureFingerprints) -> T
-    ): T {
+    private fun <T> storage(block: (SqlDatabase, SqliteGymExecutions, ActualFingerprints) -> T): T {
         val db = database()
         try {
             ApplicationSchema.open(db) {
                 ApplicationSchema.NewInstallation(at.toString(), "test-install")
             }
-            val fingerprints = FixtureFingerprints()
+            val fingerprints = ActualFingerprints()
             return block(
                 db,
                 SqliteGymExecutions(db, { tick(10000000).wallTime() }, fingerprints),
@@ -430,7 +423,7 @@ abstract class GymExecutionCommandsContract {
         storage { db, r, hashes ->
             val original = finish(r)
             val actual = original.completedSession()!!
-            val firstHash = hashes.register(actual)
+            val firstHash = hashes.hash(actual)
             val repeat = GymWorkoutAdapter.repeatActual("repeat", 1, at, "Repeat", actual)
             r.saveWorkout(repeat.definition(), repeat.source())
             val library = SqliteGymWorkouts(db)
@@ -441,7 +434,7 @@ abstract class GymExecutionCommandsContract {
             )
             assertEquals(firstHash, before.sourceSnapshot!!.originalSourceFingerprint)
             val edited = actual.copy(notes = "Accepted explicit edit")
-            val secondHash = hashes.register(edited)
+            val secondHash = hashes.hash(edited)
             r.saveActual(edited)
             val changed = library.record("repeat", 1)!!
             assertEquals(before.definition, changed.definition)
@@ -472,7 +465,7 @@ abstract class GymExecutionCommandsContract {
         e.saveSet("a", set("working"), tick(100))
         val ended = e.finish(tick(1000), null, "Actual", false)
         r.finish(ended, 1)
-        hashes.register(ended.completedSession()!!)
+        hashes.hash(ended.completedSession()!!)
         val repeat = GymWorkoutAdapter.repeatExecution("repeat", 1, at, "Repeat", ended)
         r.saveWorkout(repeat.definition(), repeat.source())
         val proof = SqliteGymWorkouts(db).record("repeat", 1)!!.sourceSnapshot!!
@@ -480,7 +473,7 @@ abstract class GymExecutionCommandsContract {
         assertEquals(82.25, proof.originalSourceSlots.single().target()!!.referenceLoadKg())
         assertNull(repeat.definition().slots().single().target()!!.referenceLoadKg())
         val edited = ended.completedSession()!!.copy(notes = "Edited actual")
-        hashes.register(edited)
+        hashes.hash(edited)
         r.saveActual(edited)
         r.saveWorkout(repeat.definition(), repeat.source())
         assertEquals(ended.slots(), proof.originalSourceSlots)
@@ -490,11 +483,11 @@ abstract class GymExecutionCommandsContract {
     fun unacknowledgedActualChangesAndInvalidFingerprintNeverCreateNewReceipts(): Unit =
         storage { db, r, hashes ->
             val actual = finish(r).completedSession()!!
-            hashes.register(actual)
+            hashes.hash(actual)
             val repeat = GymWorkoutAdapter.repeatActual("repeat", 1, at, "Repeat", actual)
             r.saveWorkout(repeat.definition(), repeat.source())
             val edited = actual.copy(notes = "Unacknowledged change")
-            hashes.register(edited)
+            hashes.hash(edited)
             db.execute(
                 "UPDATE strength_sessions SET payload=?",
                 listOf(SqlValue.Text(StrengthEvidenceJson.encodeSession(edited))),
@@ -518,7 +511,7 @@ abstract class GymExecutionCommandsContract {
         storage { db, r, hashes ->
             val original = finish(r)
             val actual = original.completedSession()!!
-            hashes.register(actual)
+            hashes.hash(actual)
             val repeat = GymWorkoutAdapter.repeatActual("repeat", 1, at, "Repeat", actual)
             r.saveWorkout(repeat.definition(), repeat.source())
             r.savePreference(GymExecutionRepository.Preference("repeat", 1, true))
@@ -628,12 +621,12 @@ abstract class GymExecutionCommandsContract {
             assertNull(r.load("execution"))
             val original = finish(r)
             val actual = original.completedSession()!!
-            hashes.register(actual)
+            hashes.hash(actual)
             val repeat = GymWorkoutAdapter.repeatActual("repeat", 1, at, "Repeat", actual)
             r.saveWorkout(repeat.definition(), repeat.source())
             val before = SqliteGymWorkouts(db).record("repeat", 1)
             val edited = actual.copy(notes = "Edited")
-            hashes.register(edited)
+            hashes.hash(edited)
             assertFails {
                 db.transaction {
                     r.saveActual(edited)
@@ -660,11 +653,11 @@ abstract class GymExecutionCommandsContract {
         storage { db, r, hashes ->
             val original = finish(r)
             val actual = original.completedSession()!!
-            hashes.register(actual)
+            hashes.hash(actual)
             val repeat = GymWorkoutAdapter.repeatActual("repeat", 1, at, "Repeat", actual)
             r.saveWorkout(repeat.definition(), repeat.source())
             val edited = actual.copy(notes = "Edited")
-            hashes.register(edited)
+            hashes.hash(edited)
             for (trigger in
                 listOf(
                     "BEFORE UPDATE ON strength_workout_versions",
@@ -791,7 +784,7 @@ abstract class GymExecutionCommandsContract {
         storage { db, r, hashes ->
             val ended = finish(r)
             val actual = ended.completedSession()!!
-            hashes.register(actual)
+            hashes.hash(actual)
             val repeat = GymWorkoutAdapter.repeatActual("repeat", 1, at, "Repeat", actual)
             r.saveWorkout(repeat.definition(), repeat.source())
             val before = SqliteGymWorkouts(db).record("repeat", 1)
@@ -805,7 +798,7 @@ abstract class GymExecutionCommandsContract {
                             )
                         }
                 )
-            hashes.register(huge)
+            hashes.hash(huge)
             assertTrue(StrengthEvidenceJson.encodeSession(huge).encodeToByteArray().size > 262144)
             assertFails { r.saveActual(huge) }
             assertEquals(
@@ -843,11 +836,11 @@ abstract class GymExecutionCommandsContract {
         storage { db, r, hashes ->
             val ended = finish(r)
             val actual = ended.completedSession()!!
-            hashes.register(actual)
+            hashes.hash(actual)
             val repeat = GymWorkoutAdapter.repeatActual("repeat", 1, at, "Repeat", actual)
             r.saveWorkout(repeat.definition(), repeat.source())
             val edited = actual.copy(notes = "Explicit edit")
-            hashes.register(edited)
+            hashes.hash(edited)
             val before = SqliteGymWorkouts(db).record("repeat", 1)
             for (table in
                 listOf("strength_workout_versions", "strength_executions", "strength_sessions")) {

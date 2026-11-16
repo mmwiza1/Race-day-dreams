@@ -37,8 +37,7 @@ class SharedGymExecutionCommandsTest {
         db = ProfileDatabase.get(context).writableDatabase
         bridge = AndroidSqlTestConnection(db)
         original = SqliteGymExecutionRepository(context)
-        shared =
-            SqliteGymExecutions(bridge, { Instant.now() }, LegacyStrengthFingerprint(::fingerprint))
+        shared = SqliteGymExecutions(bridge, { Instant.now() }, PortableLegacyStrengthFingerprint)
     }
 
     @After
