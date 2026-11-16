@@ -2459,14 +2459,44 @@ incomplete migration merely because a focused checkpoint passes.
   and atomicity. Full supported backups/retention, common app composition/native services/REAL iOS
   host/app build and full release/visual/hardware gates remain unfinished. Keep PR24 draft.
 
+### Checkpoint 63 — Concrete draft previews and retained substitution provenance (16 November 2026)
+
+- Checkpoints61–62 pushed together: **736e52d**, then
+  **a7693750d11b9f5224fd3a7b16871dd4e2aff978**. Existing PR24 remains OPEN/DRAFT. Its experiment
+  **43783654594 RUNNING**, formatting43783654586 SUCCESS. Apple133026354939 and Android133026355179
+  are running expected144storage Native/466Android; verify actual results, do not assume counts.
+- Added ConcreteStrengthDraftPayloadJson matching original independently versioned v1
+  ConcreteStrengthProgrammeJson. Reuses exact authored programme codec, typed LEGACY/AUTHORED
+  base references and bounded substitution metadata. Draft revision remains distinct from candidate
+  programme revision and accepted base revision. No acceptance, activation or actual evidence is
+  inferred on read. Full preserved-base validation remains the separate existing validateAgainst.
+- Five common tests cover initial/legacy-replacement previews, forward revision/protected unchanged
+  workout preservation, fractional RIR and cleared incompatible load reference, malformed/future/
+  missing/unknown/coerced fields, wrong-family/stale base references, duplicate/oversize changes and
+  duplicate JSON. Two actual Android old/shared parity tests compare both directions, valid retained
+  proposals and rejected input against the original codec/domain, without mutating active state.
+- Local **145storage JVM PASS**,0failures/errors/skips; Android app/shared UI/instrumentation
+  compile **PASS2m37s/57tasks**, scratch/kmp-concrete-draft-payload-android-compile.log. Full format
+  **709sources(614Kotlin/95Java) PASS**. Latest child APK/lint/runtime/native pending next exact-head
+  CI; preceding checkpoint62 full bothAPKs/lint PASS5m4s/160tasks. No schema/version/backup bump or
+  permission/navigation/engine change, native destructive command, public publication or merge.
+- Expected next source468Android/149storage Native is unverified. Next commit this preview codec,
+  inspect a769375 gate and fix actual failures; push the next coherent batch. Then shared gym tools
+  preferences/timer persistence and strict archive validation (original SqliteGymToolsRepository
+  lines148–265), programming decision/archive records, and real authored programme/concrete draft/
+  execution/association/actual-edit repositories. Preserve actual source-content validation,
+  explicit acceptance, single DB transactions and backup/retention guards before native deletion.
+  Full supported backups/archives, real common app root/native OS services/iOS app host and final
+  full Android28/35/36 +iOS APP/source-bound visual/hardware gates remain incomplete. Keep PR24 draft.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Local736e52d + checkpoint62
-   are complete140storage JVM/build/bothAPKs/lint/format706 PASS (commit/push follows this record).
-   Parentfd5ac1e FULL SUCCESS460Android/700189checks/48suites/490domain+16health+123storage JVM/
-   449domain+18health+127storage Native; earlier Native-only test fixture failure is FIXED/verified.
-   After push inspect actual expected466Android/144Native; then remaining typed strength storage,
-   complete backups/retention and real application composition, not completed domain/UI ports.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24, remotea769375. Checkpoint63
+   concrete preview codec local145storage JVM/Android app+test compile/format709 PASS (commit follows
+   this record). Inspect a769375 experiment43783654594 RUNNING/format43783654586 SUCCESS; expected
+   466Android/144Native still pending. Previousfd5ac1e FULL SUCCESS460Android,700189checks/48suites,
+   490domain+16health+123storage JVM/449domain+18health+127storage Native. Preserve all valid work;
+   then next tools/archive/storage tasks from checkpoint63. No repeated domain/UI rewrite.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
