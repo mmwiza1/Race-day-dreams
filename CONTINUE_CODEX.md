@@ -3879,14 +3879,45 @@ incomplete migration merely because a focused checkpoint passes.
   visuals and physical HK/HC/GPS/BLE/audio/locked-screen/OEM/TalkBack remain unperformed. Keep draft;
   no premature merge, version bump, public APK or stable tag.
 
+### Checkpoint87 — shared bounded ZIP extraction and original exporter parity
+
+- Current pushed86 `dcf2fb222e20351e9028afabcc8c3bbfa4bb63c7`; experiment43934876478 Android
+ 133536725255 SUCCESS, Apple133536724689 still RUNNING at this checkpoint. Formatting43934876402
+ SUCCESS. Corrected Android533unique START/END matched, BOTH support/development fixture methods
+ ran successfully;700189checks/48domain suites. No remaining Android failure demonstrated.
+-86 digest-verified JVM14260644377 SHA2562ef10a81092ef0a94b6ec939fa9188af3d47f70ac23f87c48b0ded71b6c266a5:
+ 490domain+16health+427storage, ALL0failure/error/skip. Proof scratch/owned-dcf-jvm/verification.json;
+ actual corrected runtime log scratch/owned-dcf-android-job.log. Apple86 needs actual confirmation.
+-87 adds BackupZipArchive + real JVM Inflater/Apple zlib raw-DEFLATE implementations and10common
+ regression cases. Exact known entries/counts, bounded physical/expanded lengths, duplicate/path/
+ encrypted/unsupported rejection, central/local/descriptor agreement, overlap protection, CRC32,
+ stored/deflated/ZIP64 support, short source reads, large-output draining, cancellation cleanup and
+ changed/truncated source rejection. Extraction emits fresh <=32KiB blocks ONLY into private staging;
+ it NEVER authorises database replacement. Existing parent/raw/package validators stay mandatory.
+- Android existing actual original complete-package/raw archive exporter tests now additionally
+ validate/extract through shared ZIP reader and compare bytes/complete raw session graphs with
+ original readers. Original assertions remain. Android533expected count unchanged; runtime pending87.
+- Local final PASS437storage JVM0failure/error/skip +shared metadata +Android test compilation.
+ Workspace restart interrupted first complete Gradle process after tests; recovered run passed
+ 2m10s/64tasks in scratch/kmp-zip-container-recovered-final.log.10ZIP cases verified in XML.
+ Formatting820sources(725Kotlin95Java), exact schema1..19 and3source-provenance tests PASS.
+ Initial9/10ZIP run found a test mutation string was15bytes instead of required16; corrected fixture
+ name ../bad-files.bin, retaining length assertion. No production assertion weakened.
+- IMPORTANT Apple zlib source is NOT yet compiled/tested. Commit/push87 coherently after86 finishes;
+ verify real Native437, all10common ZIP cases and533Android original-export parity. Do NOT describe
+ this as completed restore/iOS application. No version/schema/backup/dependency/permission change.
+- NEXT: private platform staging-file adapters and real container export/validation composition;
+ same-DB transactional app/raw restore/reconciliation, consent/preview/epoch and active/paused/
+ recoverable safeguards. Native destructive restore/prune remains OFF. Original Android stores
+ remain authoritative. Full common app/native services/actual iOS host and final gates remain below.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint86 immediately above is latest recovery boundary.85 source23c92bc pushed; Native427/
-   JVM427 and700189checks48suites PASS, Android533 completed with ONE misplaced parity assertion.
-   Identical comparison is now moved from support fixture to intended development fixture; local
-   compile1m31s/815format PASS. Commit/push this correction+handoff, verify fresh exact-head533/
-   427Android/Native (and JVM427) plus format.84 remains last fully green until this correction passes.
-   Preserve all source; no reset/amend/replacement PR or early merge/publication.
+1. Checkpoint87 immediately above is latest recovery boundary.86 corrected Android533 and
+   domain700189/48/JVM427 passed; Apple86 is still pending.87 ZIP sources + original Android exporter
+   parity are locally verified437storage/metadata/Android compilation/820format. Preserve all.
+   Finish86 CI verification, then push coherent87 and verify real Apple zlib/437storage/533Android.
+   Continue private staging adapters/transactional restore; no reset, early merge or publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

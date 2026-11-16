@@ -35,6 +35,15 @@ import org.racedaydreams.storage.SqliteRunningSupportArchives
 import org.racedaydreams.storage.StrengthChoicesArchiveJson
 import org.racedaydreams.storage.SupportArchiveJson
 
+internal fun sharedBackupZipSource(bytes: ByteArray) =
+    object : org.racedaydreams.storage.BackupArchiveSource {
+        override val size: Long
+            get() = bytes.size.toLong()
+
+        override fun read(offset: Long, maximum: Int): ByteArray =
+            bytes.copyOfRange(offset.toInt(), minOf(bytes.size, offset.toInt() + maximum))
+    }
+
 @RunWith(AndroidJUnit4::class)
 class SharedBackupEnvelopeTest {
     private val context = ApplicationProvider.getApplicationContext<android.content.Context>()
@@ -57,6 +66,16 @@ class SharedBackupEnvelopeTest {
             }
         }
         assertEquals(setOf("manifest.json", "app.json", "recordings.zip"), entries.keys)
+        val checkedZip =
+            org.racedaydreams.storage.BackupZipArchive.inspect(
+                sharedBackupZipSource(output.toByteArray()),
+                org.racedaydreams.storage.BackupZipArchive.Kind.COMPLETE,
+            )
+        for ((name, originalBytes) in entries) {
+            val extracted = ByteArrayOutputStream()
+            checkedZip.extract(name) { extracted.write(it) }
+            assertArrayEquals(originalBytes, extracted.toByteArray())
+        }
         val manifest =
             org.racedaydreams.storage.CompleteBackupManifest.decode(
                 entries.getValue("manifest.json")

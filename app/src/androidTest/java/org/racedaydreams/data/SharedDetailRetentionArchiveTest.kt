@@ -82,7 +82,19 @@ class SharedDetailRetentionArchiveTest {
         }
         val rows = RecordingArchiveRows(3)
         lines.forEach(rows::acceptLine)
-        assertEquals(rows.finish().sessions, streamed.finish().sessions)
+        val expected = rows.finish().sessions
+        assertEquals(expected, streamed.finish().sessions)
+        val checkedZip =
+            BackupZipArchive.inspect(
+                sharedBackupZipSource(archive),
+                BackupZipArchive.Kind.RECORDINGS,
+            )
+        val extractedManifest = ByteArrayOutputStream()
+        checkedZip.extract("manifest.json") { extractedManifest.write(it) }
+        val checkedStream =
+            RecordingArchiveReader(RecordingArchiveManifest.decode(extractedManifest.toByteArray()))
+        checkedZip.extract("recordings.jsonl") { checkedStream.accept(it) }
+        assertEquals(expected, checkedStream.finish().sessions)
         return archive to lines
     }
 
