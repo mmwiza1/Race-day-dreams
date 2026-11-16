@@ -3739,13 +3739,49 @@ incomplete migration merely because a focused checkpoint passes.
   Continue full raw3/package1 container/transactional replacement/retention protection, then actual
   common application/native services/iOS host/runtime. No early merge/publication; PR24 stays draft.
 
+### Checkpoint84 — original complete-package v1 file integrity
+
+- HEAD/remote83 `3ce0116db5fa65fc0e20a97d1ee3cb4868d1adf9` committed/pushed to existing DRAFT
+  PR24.83 experiment43906545019 RUNNING, Android133436807431 /Apple133436806431;
+  format43906545248 SUCCESS. PR description accurately records current83 pending results and
+  verified82 evidence. Do not claim Native419/Android532 until artifacts/logs actually confirm.
+- Valid LOCAL84 (commit now; hold push until83 CI completes): CompleteBackupManifest.kt /CompleteBackupManifestTest.kt and1new
+  original Android export parity method in SharedBackupEnvelopeTest. Preserve all. No bump to
+  version/code/schema/root13/raw3/package1; no dependencies/permissions, writes or publication.
+- New v1 manifest checks original8KiB declaration limit and distinct app32MiB/rawZIP513MiB bounds,
+  exact integer lengths and SHA256 identities. Actual extracted payload receipts remain a list:
+  missing/duplicate/unknown names cannot disappear through a map overwrite. Private immutable
+  expected graph; harmless unknown original manifest metadata stays readable. Validation copies
+  receipt input and never replaces app data. BOTH inner documents +ZIP container validation remain
+  required; this is not a complete restore/ZIP extractor.
+- Added5 common cases and1 original Android CompleteBackup.exportTo parity case. Fixture measures
+  REAL extracted bytes/JVM SHA256, verifies original names/checksums, inspects actual app.json with
+  the complete parent validator, rejects duplicate receipts and asserts database export unchanged.
+- Local5focused common tests0failure/error/skip +shared metadata +Android test compilation
+  PASS4m33s/64tasks, scratch/kmp-package-manifest-focused.log. Formatting811sources(716Kotlin95Java)
+  and3source-provenance tests PASS. Expected full424storage /533focused Android on next CI remain
+  UNVERIFIED.83 already passed local419/metadata/test compile4m43s;82 FULL remote verified above.
+- NEXT EXACT:84 local source is stable and verified. Commit locally now; verify83 remote419/532/
+ 700189/48 plus Native streaming crypto10cases BEFORE pushing another head. Fix actual failures, no blind reruns/assertion changes.
+  Then commit/push coherent84+handoff to existing draft24; verify new Native424/Android533 plus
+  actual complete-package original-export case and5common manifest cases from artifacts/logs.
+- NEXT IMPLEMENTATION after84: real platform ZIP extraction with exact allowed entries/duplicates/
+  bounds/CRC and raw1..3 Reader83 +complete-package1 guards84; SAME SQLite19 transactional app
+  replacement/raw reconciliation and retention consent/preview/dataset epoch/active+paused+
+  recoverable-run protection. Source DB export must filter imported WEIGHT caches BEFORE owned
+  caps. Existing Android remains authoritative; native destructive replacement/pruning stays OFF.
+- Whole common app root/navigation/state/data wiring, full HealthKit/native permissions/recording/
+  BLE/notifications and REAL iOS host/app/runtime remain incomplete. Mac/Xcode CI DOES work; no
+  infrastructure excuse or framework-as-app claim. Final unfiltered28/35/36+iOS APP/visual gates
+  and physical HealthKit/HC/GPS/BLE/audio/locked-screen/OEM/human TalkBack remain unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. In-progress83 immediately above is the latest local recovery boundary.82 allsource pushed at
-   b68d71f FULL SUCCESS Android532/Native409/JVM409/700189checks48suites. Preserve dirty83 source,
-   tests and local handoff.83 final419/metadata/Android test compile/809format PASS; commit/push
-   stable83 and verify fresh Android/Apple CI.
-   No reset, docs-only CI push, version bump or merge/publication.
+1. Checkpoint84 immediately above is latest LOCAL boundary.83 allsource pushed at3ce0116;
+   CI43906545019 pending.84 manifest/tests/original Android parity +handoff are ready to commit
+   locally (focused5/metadata/Android compile4m33s/811format PASS). Verify83 CI, then push stable84
+   and verify Native424/Android533.82 FULL SUCCESS532/409/700189checks48suites remains last fully
+   verified remote until83 completes. No reset or premature merge/publication/version bump.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.

@@ -4,7 +4,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
 import java.time.*
+import java.util.zip.ZipInputStream
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.json.JSONArray
@@ -39,6 +41,50 @@ class SharedBackupEnvelopeTest {
     private val at = Instant.parse("2026-11-16T10:00:00.123456789Z")
     private lateinit var repository: SqliteBackupRepository
     private lateinit var original: BackupManager
+
+    @Test
+    fun completePackageManifestMatchesRealOriginalPayloadHashesWithoutReplacingAppData() {
+        val before = repository.exportUserData().toString()
+        val output = ByteArrayOutputStream()
+        CompleteBackup(context).exportTo(output)
+        val entries = linkedMapOf<String, ByteArray>()
+        ZipInputStream(ByteArrayInputStream(output.toByteArray())).use { zip ->
+            while (true) {
+                val entry = zip.nextEntry ?: break
+                assertFalse(entries.containsKey(entry.name))
+                entries[entry.name] = zip.readBytes()
+                zip.closeEntry()
+            }
+        }
+        assertEquals(setOf("manifest.json", "app.json", "recordings.zip"), entries.keys)
+        val manifest =
+            org.racedaydreams.storage.CompleteBackupManifest.decode(
+                entries.getValue("manifest.json")
+            )
+        val receipts =
+            entries
+                .filterKeys { it != "manifest.json" }
+                .map { (name, bytes) ->
+                    org.racedaydreams.storage.CompleteBackupManifest.Receipt(
+                        name,
+                        org.racedaydreams.storage.CompleteBackupManifest.Entry(
+                            bytes.size.toLong(),
+                            MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") {
+                                "%02x".format(it)
+                            },
+                        ),
+                    )
+                }
+        manifest.verify(receipts)
+        val parent =
+            org.racedaydreams.storage.UserBackupDataJson.inspect(entries.getValue("app.json"))
+        assertEquals(13, parent.version)
+        assertTrue(parent.snapshot.engine!!.executions.isEmpty())
+        assertTrue(
+            runCatching { manifest.verify(listOf(receipts.first(), receipts.first())) }.isFailure
+        )
+        assertEquals(before, repository.exportUserData().toString())
+    }
 
     @Test
     fun sharedBodyArchiveMatchesOriginalSourceIdentityAndOptionalGuidancePreferences() {
