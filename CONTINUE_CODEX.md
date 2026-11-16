@@ -3984,12 +3984,39 @@ incomplete migration merely because a focused checkpoint passes.
  compatible-detail merge/retention consent/preview/epoch/unfinished recording protections. Existing
  Android stores remain authoritative. Full app/native services/real iOS host and final gates remain.
 
+### Checkpoint90 — correct real Apple zlib C-string binding failure
+
+-89source committed locally as9c2e628295c578cb23a06cdb654b393a255f49db (not pushed yet, so88runtime
+ is not cancelled). FINAL writer gate PASS5m31s/64tasks:453storage JVM0failure/error/skip, shared
+ metadata and Android test compilation.830format sources(735Kotlin95Java), schema1..19 /
+ 3source-provenance PASS. No JVM/Android production change after this successful gate.
+-88experiment43940777101 Apple133557393362 FAILED at native compilation; Android133557392264
+ is still RUNNING. Do NOT call88green. Actual log scratch/backup-5b-native-job.log confirms ONE
+ reported source error at BackupInflate.ios.kt:16: zlibVersion() returns CPointer<ByteVar>?, but
+ inflateInit2_ expects String?. No Native storage runtime tests have passed for87–89 yet.
+- Focused source correction: requireNotNull(zlibVersion()).toKString() before passing the version
+ string to inflateInit2_. This is the actual SDK binding conversion, not a filtering/test/algorithm
+ change. Decompression, limits, CRC/byte checks, cleanup and all assertions remain unchanged.
+ Existing JVM453/metadata/Android compile results remain valid; real corrected Native compilation/
+ runtime still requires fresh CI. Formatter/source checks are recorded in scratch/
+ kmp-backup-zlib-version-format.log (check actual final status if interrupted).
+- NEXT EXACT: finish formatter; commit this Native binding correction +recovery note; let actual
+ Android88 job finish and inspect its results/logs. Fix any genuine additional failure. Push local
+ 89+90 ONCE to same DRAFT24 normally, then verify corrected Apple453storage (10ZIP+11staging/package+
+ 5writer cases), JVM453/Android533/original Java reader parity/domain/build/lint/format. This is a
+ targeted response to a demonstrated compiler failure; do NOT blindly rerun5b2c371 unchanged.
+- After verified IO, continue bounded owned raw export and same-DB transactional restore/raw merge,
+ retention consent/preview/epoch/active+paused+recoverable safeguards, real common app composition /
+ native services /actual iOS host/build/runtime, final unfiltered28/35/36+iOS APP and genuine visuals.
+ No version/schema/backup/permission change, destructive native restore/pruning, merge or publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint89 above is latest recovery boundary.88pushed5b2c371; Native/Android CI43940777101
-   RUNNING, format43940776911 PASS.89writer local453storage/metadata/Android compilation PASS (see final log);
-   830format/schema/source PASS. Commit coherently, inspect88actual results, avoid
-   cancelling expensive88CI. No reset, early merge/version bump/publication. PR24 remains draft.
+1. Checkpoint90 above is latest recovery boundary.88Native43940777101 FAILED on actual zlib C
+   string/pointer binding; source is corrected with requireNotNull(zlibVersion()).toKString().
+   Android88 still running; preserve local89writer9c2e628 (453tests/metadata/Android compile PASS).
+   Finish format, commit90, inspect completed Android88, then push89+90 once and verify fresh Native
+   runtime and original-reader Android parity. No reset, early merge/version bump/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

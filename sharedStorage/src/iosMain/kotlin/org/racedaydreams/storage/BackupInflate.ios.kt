@@ -13,7 +13,14 @@ internal actual fun inflateBackupEntry(
 ) = memScoped {
     val stream = alloc<z_stream>()
     memset(stream.ptr, 0, sizeOf<z_stream>().toULong())
-    require(inflateInit2_(stream.ptr, -15, zlibVersion(), sizeOf<z_stream>().toInt()) == Z_OK) {
+    require(
+        inflateInit2_(
+            stream.ptr,
+            -15,
+            requireNotNull(zlibVersion()).toKString(),
+            sizeOf<z_stream>().toInt(),
+        ) == Z_OK
+    ) {
         "Cannot initialise backup decompression."
     }
     try {
