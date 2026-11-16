@@ -13,6 +13,82 @@ abstract class ActivityRepositoryContract {
     private val today = CalendarDates.of(2026, 11, 15)
     private val clock = StoredInstant.parse("2026-11-15T12:00:00Z")
 
+    @Test
+    fun retentionMetadataSnapshotPreservesConsentProofsAndActualHistoryWithoutWriting() =
+        storage { db, activities, results ->
+            val expected = mutableListOf<org.racedaydreams.domain.storage.RemovedRecordingDetail>()
+            for (id in listOf("b", "a")) {
+                val actual = activity(id, "rdd", sampled = false)
+                activities.upsertManualActivity(actual)
+                val proof =
+                    org.racedaydreams.domain.storage.RemovedRecordingDetail(
+                        "record-$id",
+                        id,
+                        "rdd",
+                        "record-$id",
+                        actual.end(),
+                        clock,
+                        org.racedaydreams.domain.storage.DetailRetention.Policy.LAST_24_MONTHS,
+                        actual.start(),
+                        9007199254740993L,
+                        9007199254741993L,
+                        2,
+                        1,
+                        "ab".repeat(32),
+                        "cd".repeat(32),
+                    )
+                expected.add(proof)
+                db.execute(
+                    "INSERT INTO recording_detail_removals VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    listOf(
+                        SqlValue.Text(proof.sessionId()),
+                        SqlValue.Text(id),
+                        SqlValue.Text("rdd"),
+                        SqlValue.Text(proof.recordId()),
+                        SqlValue.Text(proof.endedAt().toString()),
+                        SqlValue.Text(clock.toString()),
+                        SqlValue.Text(proof.policy().name),
+                        SqlValue.Text(proof.startedAt().toString()),
+                        SqlValue.Integer(proof.startedMono()),
+                        SqlValue.Integer(proof.lastMono()),
+                        SqlValue.Integer(2),
+                        SqlValue.Integer(1),
+                        SqlValue.Text(proof.pointsHash()),
+                        SqlValue.Text(proof.eventsHash()),
+                    ),
+                )
+            }
+            results.saveResult(manualResult())
+            db.execute(
+                "UPDATE detail_retention_preferences SET policy='KEEP_FOREVER',choice='EXISTING_UNREVIEWED',chosen_at=NULL,choice_id=NULL"
+            )
+            val history = activities.activitySummaries()
+            val bests = results.results()
+            val totalChanges = db.query("SELECT total_changes()")
+            val repository = SqliteRecordingDetailReceipts(db)
+            val snapshot = repository.snapshot()
+            val decoded =
+                DetailRetentionArchiveJson.decode(DetailRetentionArchiveJson.element(snapshot))
+            assertEquals(
+                org.racedaydreams.domain.storage.DetailRetention.Preferences.existing(),
+                decoded.preferences,
+            )
+            assertEquals(expected.sortedBy { it.sessionId() }, decoded.removals)
+            assertEquals(decoded.removals.first(), repository.removal("record-a"))
+            assertEquals(history, activities.activitySummaries())
+            assertEquals(bests, results.results())
+            assertEquals(totalChanges, db.query("SELECT total_changes()"))
+            assertTrue(db.query("PRAGMA foreign_key_check").isEmpty())
+        }
+
+    @Test
+    fun retentionSnapshotFailsClosedForMissingConsentRowWithoutInventingNewInstallationChoice() =
+        storage { db, _, _ ->
+            db.execute("DELETE FROM detail_retention_preferences")
+            assertFails { SqliteRecordingDetailReceipts(db).snapshot() }
+            assertTrue(db.query("SELECT * FROM detail_retention_preferences").isEmpty())
+        }
+
     private fun <T> storage(block: (SqlDatabase, SqliteActivities, SqliteResults) -> T): T {
         val db = database()
         try {

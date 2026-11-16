@@ -3035,12 +3035,57 @@ incomplete migration merely because a focused checkpoint passes.
   substitute fixture hashes. Then continue full root13/older/current backup/raw3/package1 and
   retention safeguards; real common composition/native services/iOS app remain unfinished.
 
+### Checkpoint 74 — Retention consent and removed-detail backup metadata
+
+- Checkpoint73 committed/pushed **74ad42cb1632595f158a06ad7d9ed12c5f6ba7f9**; PR24 OPEN/DRAFT
+  body updated. Exact-head experiment43860039026 +format43860039120 FULL SUCCESS.
+  Android133274150702:511unique START/END, all3new original serializer/number/receipt cases and
+  all6real-provider execution cases ran;700189checks/48suites. JVM14224670719
+  SHA256612794c8d7a6aa79853d561344d19973b5d20780c85fcc7bcdd7455db83eddfe:
+  490domain+16health+287storage,0failure/error/skip, digest verified.
+  Proof scratch/fingerprint-74ad-jvm/verification.json; privateAPK14223283352.
+  Native14223347708 SHA256d0fc8c2a0505a27100ab844038bbc8ea93495da65be617b74ea76bb70d793518
+  digest-verified449domain+18health+287storage,0failure/error/skip. All6 REAL provider goldens and
+  all21 execution command cases matched against Native iosX64 XML. Proof scratch/fingerprint-74ad-native/
+  verification.json. Framework14222909455 NOT iOS app. Main85e1c39/owner PR23 unchanged.
+- Added DetailRetentionArchiveJson: original retention v1 fields, all three policies and choice
+  identities, null historic consent, exact monotonic Longs/times and original removal hashes.
+  Missing older sections return EXISTING_UNREVIEWED/KEEP_FOREVER without fabricated consent.
+  Immutable snapshots reject duplicate session/activity IDs and>100000receipts, never truncate.
+  Parent backup owns its total32MiB syntax/export budget; no second16MiB gym limit is imposed.
+- SqliteRecordingDetailReceipts.snapshot reads consent and ordered removal receipts under SAME
+  SQLite transaction with100001-row overflow detection. Existing single-receipt reader reused.
+  Export changes no summaries, PBs, detailed evidence or preferences. No native prune/restore API
+  or consent mutation was introduced. Original Android stores remain wired and unchanged.
+- Added7 common archive guard/roundtrip cases +2 real SQLite history/no-write/fail-closed cases
+  in ActivityRepositoryContract (run on JVM and Apple), plus2 Android ORIGINAL-validator/export
+  parity cases. Android cases include every policy, immutable historic hashes, invalid metadata
+  and protected older consent. Enclosing full backup must STILL validate activity/source references
+  and compatible raw evidence before transactional restore; section decoding alone is not approval.
+- Focused7archive tests and25JDBCactivity cases PASS,0failures/errors/skips; Android instrumentation
+  compilation PASS **3m26s/57tasks**, scratch/kmp-retention-archive-corrected-focused.log.
+  Initial test compilation used nonexistent saveActivity; corrected to existing upsertManualActivity
+  API and reran affected cases. No production API or assertion was weakened.
+  Formatting **769sources(674Kotlin/95Java) PASS**, scratch/kmp-retention-archive-format.log.
+  Full **296storage JVM tests PASS**,0failure/error/skip. Common metadata/bothAPKs/lint PASS
+  **2m49s/167tasks**, scratch/kmp-retention-archive-final.log. Release-note10 PASS.
+  Source provenance now includes new sharedStorage/src/jvmMain crypto implementation;3new
+  coverage checks verify ALL actual shared production source sets/builds and exact-byte fingerprint
+  inputs. Added to experiment CI. No screenshots have been regenerated or claimed verified.
+- Next exact: all74 local gates PASS;73 Android/Native/JVM runtime fully verified.
+  Commit/push74 coherently, preserving all
+  earlier source. Expected296storage Native and513focused Android remain pending until actual CI;
+  current296storage JVM are verified locally. Keep PR24 DRAFT; no merge/version/schema/backup/
+  public release change. Continue full root13/older/current backup/raw3/package1 restore/retention
+  safeguards, then common app composition/native services/actual iOS host/app and final gates.
+
 ### Exact next safe actions and remaining full scope
 
-1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint73 above supersedes
-   older pending notes. Preserve the real fingerprint provider batch and all prior source.
-   Checkpoint72 FULL SUCCESS508Android/281storage Native/277storage JVM. Complete73 local gates,
-   commit/push and verify real Android/Native fingerprint results before host wiring.
+1. Continue experiment/android-ios-kmp-compose /existing draft PR24. Checkpoint74 supersedes
+   older pending notes. Preserve current retention archive batch and pushed73 real fingerprint
+   provider. 73experiment43860039026 FULL SUCCESS511Android/287storage JVM/287storage Native;
+   all74local gates PASS296storage JVM/APKs/lint/769format/source-provenance3. Commit/push74.
+   Checkpoint72 FULL SUCCESS508Android/281storage Native/277storage JVM remains verified history.
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
 3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
