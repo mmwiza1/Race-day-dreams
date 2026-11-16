@@ -46,6 +46,8 @@ class RecordingArchiveRows(private val version: Int) {
         var lastDistance = 0.0
         var hasContext = false
         var hasActivity = false
+        var activityProvider: String? = null
+        var activityEnd: Instant? = null
         var removal: RemovedRecordingDetail? = null
 
         fun freeze() =
@@ -187,6 +189,8 @@ class RecordingArchiveRows(private val version: Int) {
                     "Recording summary disagrees with its owned source."
                 }
                 pending.hasActivity = true
+                pending.activityProvider = activity.source().provider()
+                pending.activityEnd = activity.end()
             }
             "removed" -> {
                 require(version >= 3 && header.state == "FINISHED" && pending.removal == null) {
@@ -216,6 +220,14 @@ class RecordingArchiveRows(private val version: Int) {
             }
             require(pending.removal == null || pending.points == 0 && pending.events == 0L) {
                 "Removed detail cannot contain raw rows."
+            }
+            pending.removal?.let { proof ->
+                require(
+                    proof.provider() == pending.activityProvider &&
+                        proof.endedAt() == pending.activityEnd
+                ) {
+                    "Removed detail disagrees with its recorded activity source or end."
+                }
             }
         }
         closed = true

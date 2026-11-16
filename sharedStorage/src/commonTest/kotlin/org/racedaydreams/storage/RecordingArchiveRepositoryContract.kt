@@ -15,6 +15,153 @@ abstract class RecordingArchiveRepositoryContract {
     private val at = StoredInstant.parse("2026-11-16T09:00:00.123456789Z")
     private val mono = 9007199254740993L
 
+    private fun inspected(db: SqlDatabase): InspectedRecordingArchive {
+        val file = SqliteRecordingArchive(db).export(directory())
+        return try {
+            InspectedRecordingArchive.inspect(file, directory())
+        } finally {
+            file.close()
+        }
+    }
+
+    @Test
+    fun inspectedRawReplayUsesSealedCopyAndPreservesExactOrderedLinesAndLongClocks() =
+        storage { db ->
+            session(db, "retained")
+            db.execute(
+                "INSERT INTO recording_points VALUES('retained',0,?)",
+                listOf(SqlValue.Text(point(0))),
+            )
+            val before = db.query("SELECT total_changes()")
+            val file = inspected(db)
+            try {
+                val original = StringBuilder()
+                BackupZipArchive.inspect(file.recordingArchive(), BackupZipArchive.Kind.RECORDINGS)
+                    .extract("recordings.jsonl") { original.append(it.decodeToString()) }
+                repeat(2) {
+                    val replayed = mutableListOf<String>()
+                    val graph = file.replay(replayed::add)
+                    assertEquals(
+                        original.toString().lineSequence().filter { it.isNotEmpty() }.toList(),
+                        replayed,
+                    )
+                    assertEquals(mono, graph.sessions.getValue("retained").startedMono)
+                    assertEquals(1, graph.sessions.getValue("retained").points)
+                    assertEquals(file.snapshot.sessions, graph.sessions)
+                }
+            } finally {
+                file.close()
+            }
+            assertEquals(before, db.query("SELECT total_changes()"))
+            assertFails { file.replay { error("Closed replay cannot deliver a row") } }
+            file.close()
+        }
+
+    @Test
+    fun consumerFailureRollsBackOuterSqlScopeAndDoesNotPreventExplicitFreshReplay() =
+        storage { db ->
+            session(db, "retained")
+            val file = inspected(db)
+            try {
+                assertFails {
+                    db.transaction {
+                        file.replay {
+                            db.execute("INSERT INTO settings VALUES('replayed','pending')")
+                            error("Caller rejects replay")
+                        }
+                    }
+                }
+                assertTrue(db.query("SELECT * FROM settings").isEmpty())
+                var rows = 0
+                assertEquals(file.snapshot.sessions, file.replay { rows++ }.sessions)
+                assertEquals(2, rows)
+            } finally {
+                file.close()
+            }
+        }
+
+    @Test
+    fun replayNeverRereadsMutableExternalSourceAfterPrivateInspection() = storage { db ->
+        session(db, "retained")
+        val original = SqliteRecordingArchive(db).export(directory())
+        var denied = false
+        var reads = 0
+        val provider =
+            object : BackupArchiveSource {
+                override val size: Long
+                    get() = if (denied) error("Provider closed") else original.size
+
+                override fun read(offset: Long, maximum: Int): ByteArray {
+                    check(!denied)
+                    reads++
+                    return original.read(offset, maximum)
+                }
+            }
+        val file =
+            try {
+                InspectedRecordingArchive.inspect(provider, directory())
+            } finally {
+                original.close()
+            }
+        try {
+            denied = true
+            val before = reads
+            assertEquals(1, file.replay {}.sessions.size)
+            assertEquals(before, reads)
+        } finally {
+            file.close()
+        }
+    }
+
+    @Test
+    fun truncatedChangingOrOversizedRawSourcesRejectWithoutChangingDatabase() = storage { db ->
+        session(db, "retained")
+        val before = db.query("SELECT total_changes()")
+        for (size in listOf(-1L, CompleteBackupManifest.MAX_RECORDINGS_ZIP_BYTES + 1, 5L)) {
+            val source =
+                object : BackupArchiveSource {
+                    override val size = size
+
+                    override fun read(offset: Long, maximum: Int) = ByteArray(0)
+                }
+            assertFails { InspectedRecordingArchive.inspect(source, directory()) }
+        }
+        var sizeReads = 0
+        val changing =
+            object : BackupArchiveSource {
+                override val size: Long
+                    get() = if (sizeReads++ == 0) 1 else 2
+
+                override fun read(offset: Long, maximum: Int) = byteArrayOf(0)
+            }
+        assertFails { InspectedRecordingArchive.inspect(changing, directory()) }
+        assertEquals(before, db.query("SELECT total_changes()"))
+        val valid = inspected(db)
+        try {
+            assertEquals(1, valid.snapshot.sessions.size)
+        } finally {
+            valid.close()
+        }
+    }
+
+    @Test
+    fun standaloneInspectionRetainsAllOriginalUnfinishedStatesWithoutCreatingActuals() =
+        storage { db ->
+            session(db, "live", "ACTIVE")
+            for (state in listOf("ACTIVE", "PAUSED", "RECOVERABLE")) {
+                db.execute("UPDATE recording_sessions SET state=?", listOf(SqlValue.Text(state)))
+                val file = inspected(db)
+                try {
+                    val graph = file.replay {}
+                    assertEquals(state, graph.sessions.getValue("live").state)
+                    assertFalse(graph.sessions.getValue("live").hasActivity)
+                    assertTrue(db.query("SELECT * FROM activities").isEmpty())
+                } finally {
+                    file.close()
+                }
+            }
+        }
+
     private fun <T> storage(block: (SqlDatabase) -> T): T {
         val db = database()
         try {

@@ -12,6 +12,11 @@ internal class SqliteApplicationBackupRestore(
 ) {
     fun replace(bytes: ByteArray) {
         val parent = UserBackupDataJson.inspect(bytes).snapshot
+        replaceValidated(parent)
+    }
+
+    /** Only a complete UserBackupDataJson inspection may supply this internal transaction step. */
+    internal fun replaceValidated(parent: UserBackupDataJson.Snapshot) {
         database.transaction {
             require(
                 database
@@ -32,6 +37,8 @@ internal class SqliteApplicationBackupRestore(
                 "Finish or discard the unfinished gym workout before replacing app data."
             }
             SqliteOwnedActivityRestore(database).requirePreserved(parent.core)
+            val contextRestore = SqliteRecordedContextRestore(database)
+            val contexts = contextRestore.preserve(parent.support)
             // Keep known removed-detail provenance when an older JSON predates its receipt.
             // Existing raw evidence is never erased or hidden by an imported metadata receipt.
             val retained = SqliteRecordingDetailReceipts(database).snapshot().removals
@@ -67,6 +74,7 @@ internal class SqliteApplicationBackupRestore(
             database.execute("DELETE FROM activities WHERE provider NOT IN ('rdd','gpx')")
             SqliteCoreBackupRestore(database).populate(parent.core, retainOwnedRecordings = true)
             SqliteArchiveBackupRestore(database).populate(parent)
+            contextRestore.populate(contexts)
             SqliteStrengthProgramming(
                     database,
                     { error("Restore cannot create programme timestamps") },

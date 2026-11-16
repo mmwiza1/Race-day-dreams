@@ -597,6 +597,189 @@ abstract class ApplicationBackupRestoreRepositoryContract {
             assertNotEquals(oldEpoch, epoch(target))
         }
 
+    private val recordedContext =
+        """{ "version":1, "mode":"quick", "steps":[{"label":"Easy running","kind":"RUN","millis":60000}], "note":"original source" }"""
+
+    private fun context(db: SqlDatabase, payload: String = recordedContext, id: String = "run") {
+        db.execute(
+            "INSERT INTO coach_support VALUES('execution',?,?)",
+            listOf(SqlValue.Text(id), SqlValue.Text(payload)),
+        )
+    }
+
+    @Test
+    fun olderBackupWithoutSupportRetainsRecordedContextButReplacesUnrelatedSupport() =
+        storage { source, target ->
+            raw(target)
+            context(target)
+            context(target, id = "unassociated-setup")
+            val data = snapshot(target)
+            val raw = target.query("SELECT * FROM recording_points")
+            replacement(target).replace(envelope(JsonObject(data - "support"), 5))
+            assertEquals(
+                listOf(
+                    listOf(
+                        SqlValue.Text("execution"),
+                        SqlValue.Text("run"),
+                        SqlValue.Text(recordedContext),
+                    )
+                ),
+                target.query("SELECT * FROM coach_support"),
+            )
+            assertEquals(raw, target.query("SELECT * FROM recording_points"))
+        }
+
+    @Test
+    fun matchingRecordedContextKeepsOriginalBytesDespiteObjectOrderAndWhitespace() =
+        storage { source, target ->
+            raw(target)
+            context(target)
+            val data = snapshot(target)
+            val support = data.getValue("support").jsonObject
+            val rows =
+                support.getValue("rows").jsonArray.map { row ->
+                    val r = row.jsonObject
+                    JsonObject(
+                        r +
+                            ("payload" to
+                                JsonObject(
+                                    r.getValue("payload").jsonObject.entries.reversed().associate {
+                                        it.toPair()
+                                    }
+                                ))
+                    )
+                }
+            replacement(target)
+                .replace(
+                    envelope(
+                        JsonObject(
+                            data + ("support" to JsonObject(support + ("rows" to JsonArray(rows))))
+                        )
+                    )
+                )
+            assertEquals(
+                recordedContext,
+                target
+                    .query("SELECT payload FROM coach_support WHERE id='run'")
+                    .single()
+                    .single()
+                    .sqlText(),
+            )
+        }
+
+    @Test
+    fun changedStepOrUnknownContextEvidenceRejectsBeforeAnyReplacementWrite() =
+        storage { source, target ->
+            raw(target)
+            context(target)
+            val data = snapshot(target)
+            val before = snapshot(target)
+            val oldEpoch = epoch(target)
+            var writes = 0
+            val observed =
+                object : SqlDatabase by target {
+                    override fun execute(sql: String, arguments: List<SqlValue>) {
+                        writes++
+                        target.execute(sql, arguments)
+                    }
+                }
+            for (different in
+                listOf(
+                    recordedContext.replace("60000", "30000"),
+                    recordedContext.replace("original source", "different evidence"),
+                )) {
+                val support = buildJsonObject {
+                    put("version", 1)
+                    put(
+                        "rows",
+                        buildJsonArray {
+                            add(
+                                buildJsonObject {
+                                    put("kind", "execution")
+                                    put("id", "run")
+                                    put("payload", Json.parseToJsonElement(different))
+                                }
+                            )
+                        },
+                    )
+                }
+                assertFails {
+                    replacement(observed)
+                        .replace(envelope(JsonObject(data + ("support" to support))))
+                }
+                assertEquals(0, writes)
+                assertEquals(before, snapshot(target))
+                assertEquals(oldEpoch, epoch(target))
+            }
+        }
+
+    @Test
+    fun excessiveRecordedContextBudgetRejectsBeforePayloadReadOrClearing() =
+        storage { source, target ->
+            raw(target)
+            context(target)
+            val file = bytes(target)
+            var payloadReads = 0
+            var writes = 0
+            val observed =
+                object : SqlDatabase by target {
+                    override fun query(
+                        sql: String,
+                        arguments: List<SqlValue>,
+                    ): List<List<SqlValue>> {
+                        if (
+                            sql.startsWith("SELECT COUNT(*)") &&
+                                sql.contains("JOIN recording_sessions")
+                        )
+                            return listOf(
+                                listOf(
+                                    SqlValue.Integer(1),
+                                    SqlValue.Integer(3),
+                                    SqlValue.Integer(BackupEnvelopeJson.MAX_BYTES.toLong() + 1),
+                                )
+                            )
+                        if (sql.startsWith("SELECT c.id,c.payload")) payloadReads++
+                        return target.query(sql, arguments)
+                    }
+
+                    override fun execute(sql: String, arguments: List<SqlValue>) {
+                        writes++
+                        target.execute(sql, arguments)
+                    }
+                }
+            assertFails { replacement(observed).replace(file) }
+            assertEquals(0, payloadReads)
+            assertEquals(0, writes)
+        }
+
+    @Test
+    fun callerRollbackRestoresOriginalRecordedContextAndAllOtherEvidence() =
+        storage { source, target ->
+            raw(target)
+            context(target)
+            val file = envelope(JsonObject(snapshot(target) - "support"), 5)
+            val before = snapshot(target)
+            val raw = target.query("SELECT * FROM recording_points")
+            val oldEpoch = epoch(target)
+            assertFails {
+                target.transaction {
+                    replacement(target).replace(file)
+                    assertEquals(
+                        recordedContext,
+                        target
+                            .query("SELECT payload FROM coach_support")
+                            .single()
+                            .single()
+                            .sqlText(),
+                    )
+                    error("Caller rejects replacement")
+                }
+            }
+            assertEquals(before, snapshot(target))
+            assertEquals(raw, target.query("SELECT * FROM recording_points"))
+            assertEquals(oldEpoch, epoch(target))
+        }
+
     @Test
     fun callerRollbackKeepsOriginalDataAndIncomingUnfinishedGymDoesNotBypassPreReplacementGuard() =
         storage { source, target ->

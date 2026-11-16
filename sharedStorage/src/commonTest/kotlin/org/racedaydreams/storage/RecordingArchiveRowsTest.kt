@@ -217,6 +217,21 @@ class RecordingArchiveRowsTest {
     }
 
     @Test
+    fun removalReceiptMustIdentifyTheSameProviderAndActivityEndRegardlessOfRowOrder() {
+        for (receipt in listOf(proof().copy(provider = "gpx"), proof().copy(endedAt = start))) {
+            for (receiptFirst in listOf(true, false)) {
+                val guard = RecordingArchiveRows(3)
+                guard.add(session())
+                val removed = row("removed", DetailRetentionArchiveJson.element(receipt))
+                if (receiptFirst) guard.add(removed)
+                guard.add(activity())
+                if (!receiptFirst) guard.add(removed)
+                assertFails { guard.finish() }
+            }
+        }
+    }
+
+    @Test
     fun duplicateSourcesBadEventsAndMismatchedRemovalProofReject() {
         val removal = DetailRetentionArchiveJson.element(proof())
         val badRows =

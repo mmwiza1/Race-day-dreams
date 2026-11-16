@@ -48,7 +48,9 @@ internal class SqliteOwnedActivityRestore(private val database: SqlDatabase) {
                 ) {
                     "Retained recording identity differs from its index."
                 }
-                require(measurements(old) == measurements(restored)) {
+                require(
+                    recordedActivityMeasurements(old) == recordedActivityMeasurements(restored)
+                ) {
                     "Archived summary conflicts with retained recording evidence; existing data retained."
                 }
                 if (restored.samples().isNotEmpty()) {
@@ -117,20 +119,23 @@ internal class SqliteOwnedActivityRestore(private val database: SqlDatabase) {
             .validate()
         return ActivityJson.decode(text)
     }
-
-    private fun measurements(a: ActivityRecord) =
-        a.copy(
-            notes = null,
-            rpe = null,
-            shoeId = null,
-            plannedWorkoutId = null,
-            samples = emptyList(),
-            distanceMetres = zero(a.distanceMetres()),
-            elevationGainMetres = zero(a.elevationGainMetres()),
-            cadence = zero(a.cadence()),
-        )
-
-    // JSONObject can read stored -0.0 summary values as integral zero. These are numerically
-    // identical; other values are never rounded, and raw receipt bytes remain exact.
-    private fun zero(value: Double?): Double? = if (value != null && value == 0.0) 0.0 else value
 }
+
+/**
+ * Compare immutable actual measurements; annotations and separately retained samples may differ.
+ */
+internal fun recordedActivityMeasurements(a: ActivityRecord) =
+    a.copy(
+        notes = null,
+        rpe = null,
+        shoeId = null,
+        plannedWorkoutId = null,
+        samples = emptyList(),
+        distanceMetres = recordedZero(a.distanceMetres()),
+        elevationGainMetres = recordedZero(a.elevationGainMetres()),
+        cadence = recordedZero(a.cadence()),
+    )
+
+// JSONObject can read -0.0 summaries as integral zero. Other values and raw hashes never normalize.
+private fun recordedZero(value: Double?): Double? =
+    if (value != null && value == 0.0) 0.0 else value

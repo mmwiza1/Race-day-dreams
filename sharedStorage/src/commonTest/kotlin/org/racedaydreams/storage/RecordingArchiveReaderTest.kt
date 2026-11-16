@@ -23,6 +23,39 @@ class RecordingArchiveReaderTest {
     private fun raw() = (session().toString() + "\r\n\n").encodeToByteArray()
 
     @Test
+    fun replayDeliversOnlyValidatedRowsAndConsumerFailureClosesReader() {
+        val bytes = raw()
+        val lines = mutableListOf<String>()
+        val reader = RecordingArchiveReader.replay(manifest(bytes)) { lines += it }
+        for (b in bytes) reader.accept(byteArrayOf(b))
+        reader.finish()
+        assertEquals(listOf(session().toString() + "\r"), lines)
+        val failing = RecordingArchiveReader.replay(manifest(bytes)) { error("Consumer rejects") }
+        assertFails { failing.accept(bytes) }
+        assertFails { failing.finish() }
+        assertFails { failing.accept(bytes) }
+        val bad = "{\"kind\":\"point\",\"id\":\"missing\"}\n".encodeToByteArray()
+        val invalid =
+            RecordingArchiveReader.replay(manifest(bad)) {
+                error("Invalid row must not be delivered")
+            }
+        val failure = assertFails { invalid.accept(bad) }
+        assertNotEquals("Invalid row must not be delivered", failure.message)
+    }
+
+    @Test
+    fun replayCallbackIsNotWholeArchiveApprovalAndBadFinalDigestStillRejects() {
+        val bytes = raw()
+        var rows = 0
+        val reader =
+            RecordingArchiveReader.replay(manifest(bytes).copy(sha256 = "00".repeat(32))) { rows++ }
+        reader.accept(bytes)
+        assertEquals(1, rows)
+        assertFails { reader.finish() }
+        assertFails { reader.accept(bytes) }
+    }
+
+    @Test
     fun realPlatformStreamingDigestMatchesPublishedEmptyAndAbcSha256Vectors() {
         for ((input, expected) in
             listOf(

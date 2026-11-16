@@ -1,5 +1,7 @@
 package org.racedaydreams.storage
 
+import kotlinx.serialization.json.*
+
 /**
  * Validates the actual complete-package container, both measured payload hashes and BOTH inner
  * documents. Raw ZIP bytes stay in bounded private scratch storage for a future protected restore.
@@ -9,11 +11,63 @@ class InspectedBackupPackage
 private constructor(
     val application: BackupEnvelopeJson.Checked<UserBackupDataJson.Snapshot>,
     val recordings: RecordingArchiveRows.Snapshot,
-    private val raw: BackupStagingFile,
+    private val raw: InspectedRecordingArchive,
 ) {
-    fun recordingArchive(): BackupArchiveSource = raw.also { it.size }
+    fun recordingArchive(): BackupArchiveSource = raw.recordingArchive()
+
+    internal fun replayRecordings(consume: (String) -> Unit) = raw.replay(consume)
 
     fun close() = raw.close()
+
+    /**
+     * Two valid documents may still contradict each other. Validate the cross-file evidence too.
+     */
+    private fun requireConsistentApplication() {
+        val parent = application.snapshot
+        val activities = parent.core.activities.associateBy { it.id() }
+        val contexts =
+            parent.support
+                ?.records
+                .orEmpty()
+                .filter { it.kind == SupportArchiveJson.Kind.EXECUTION }
+                .associateBy { it.id }
+        val removals = parent.retention.removals.associateBy { it.sessionId() }
+        for ((id, session) in recordings.sessions) {
+            if (application.version >= 6)
+                require(session.hasContext == (id in contexts)) {
+                    "Complete backup application and raw workout contexts disagree."
+                }
+            if (application.version >= 13)
+                require(removals[id] == session.removal) {
+                    "Complete backup application and raw removal provenance disagree."
+                }
+        }
+        raw.replay { line ->
+            val row = Json.parseToJsonElement(line.removePrefix("\uFEFF")).jsonObject
+            val id = row.getValue("id").jsonPrimitive.content
+            when (row.getValue("kind").jsonPrimitive.content) {
+                "activity" -> {
+                    val activity = ActivityJson.decode(row.getValue("payload").jsonObject)
+                    val summary =
+                        requireNotNull(activities[activity.id()]) {
+                            "Complete backup is missing an archived activity summary."
+                        }
+                    require(
+                        recordedActivityMeasurements(summary) ==
+                            recordedActivityMeasurements(activity)
+                    ) {
+                        "Complete backup application and raw measured summaries disagree."
+                    }
+                }
+                "context" -> {
+                    val original = contexts[id]
+                    require(original == null || original.payload == row.getValue("payload")) {
+                        "Complete backup application and raw workout instructions disagree."
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
         fun inspect(source: BackupArchiveSource, privateDirectory: String): InspectedBackupPackage {
@@ -36,18 +90,11 @@ private constructor(
                 val rawEvidence = measured(container, "recordings.zip", raw::append)
                 manifest.verify(listOf(appEvidence, rawEvidence))
                 val application = UserBackupDataJson.inspect(appBytes)
-                val archive = BackupZipArchive.inspect(raw.seal(), BackupZipArchive.Kind.RECORDINGS)
-                val recordingManifest =
-                    RecordingArchiveManifest.decode(entryBytes(archive, "manifest.json"))
-                val reader = RecordingArchiveReader(recordingManifest)
-                val recordings =
-                    try {
-                        archive.extract("recordings.jsonl", reader::accept)
-                        reader.finish()
-                    } finally {
-                        reader.close()
-                    }
-                return InspectedBackupPackage(application, recordings, raw)
+                raw.seal()
+                val inspected = InspectedRecordingArchive.inspectSealed(raw)
+                return InspectedBackupPackage(application, inspected.snapshot, inspected).also {
+                    it.requireConsistentApplication()
+                }
             } catch (error: Throwable) {
                 try {
                     raw.close()

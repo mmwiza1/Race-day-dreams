@@ -48,7 +48,23 @@ data class RecordingArchiveManifest(val version: Int, val bytes: Long, val sha25
  * entry/name/expansion checks still belong to the platform container reader. No database writes.
  * Feed bounded chunks and close on cancellation; finish closes resources on success or failure.
  */
-class RecordingArchiveReader(private val manifest: RecordingArchiveManifest) {
+class RecordingArchiveReader
+private constructor(
+    private val manifest: RecordingArchiveManifest,
+    private val consumeValidatedLine: ((String) -> Unit)?,
+) {
+    constructor(manifest: RecordingArchiveManifest) : this(manifest, null)
+
+    internal companion object {
+        /**
+         * Only for replay of an already inspected sealed private archive. Each callback follows
+         * line validation, but the WHOLE graph/hash is final only at finish(). Database consumers
+         * must use one outer transaction, propagating every replay/consumer/finish failure.
+         */
+        fun replay(manifest: RecordingArchiveManifest, consume: (String) -> Unit) =
+            RecordingArchiveReader(manifest, consume)
+    }
+
     private val digest = archiveSha256()
     private var rows: RecordingArchiveRows? = RecordingArchiveRows(manifest.version)
     private var buffer = ByteArray(4096)
@@ -71,6 +87,7 @@ class RecordingArchiveReader(private val manifest: RecordingArchiveManifest) {
                 if (value == 10.toByte()) {
                     val line = buffer.copyOf(used).decodeToString(throwOnInvalidSequence = true)
                     requireNotNull(rows).acceptLine(line)
+                    if (line.isNotEmpty()) consumeValidatedLine?.invoke(line)
                     used = 0
                 } else {
                     // Four bytes per UTF-16 unit is a conservative allocation bound. The original

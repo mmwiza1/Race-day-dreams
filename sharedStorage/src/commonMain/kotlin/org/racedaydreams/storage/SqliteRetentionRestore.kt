@@ -93,7 +93,7 @@ internal class SqliteRetentionRestore(
             }
         }
 
-    private fun insert(row: RemovedRecordingDetail) {
+    internal fun insert(row: RemovedRecordingDetail) {
         database.execute(
             "INSERT INTO recording_detail_removals(session_id,activity_id,provider,record_id,ended_at,removed_at,policy,started_at,started_mono,last_mono,point_count,event_count,points_hash,events_hash) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             listOf(

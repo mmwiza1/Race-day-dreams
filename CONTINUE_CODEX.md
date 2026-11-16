@@ -4465,15 +4465,83 @@ incomplete migration merely because a focused checkpoint passes.
   remain authoritative. Then full shared app/native services/iOS host and final full gates.
 - No schema19/root13/raw3/package1/version/code/dependency/permission change. No early merge/publication.
 
+### Checkpoint100 — recorded context preservation, staged raw replay and atomic complete restore
+
+- Recovered clean d772bc6 checkpoint99; fetched main unchanged85e1c39 and preserved DRAFT PR24 /
+  separate owner PR23.99 experiment43973710998 and format43973711057 are BOTH SUCCESS. Actual
+  Android job133672180700 has534 matching unique START/END tests,700,189checks/48suites, build/lint /
+  schema75 PASS. Digest-verified JVM14280972167:490domain+16health+520storage; Apple14280891388:
+  449domain+18health+520storage, ALL0failure/error/skip. ALL93 new IO/SQL/restore names match.
+  Proofs scratch/restore-d772-{jvm,native}/verification.json +native/all-case-proof.json and
+  scratch/restore-d772-android-job.log. No blind rerun or assertion weakening.
+- Actual99 private APK14281216044 ZIP30692786bytes SHA256
+  dfe11d8a2295e2b17719b58707b105bb55d2182c7dd381c5bbf19327a641cfe0; APK58238219bytes SHA256
+  5647a573ff7686d078ff88d39f9157afc2d8807a5707e921beda8673b85df888. Code19/version0.12.3-test1 /
+  min28/no INTERNET. scratch/restore-d772-apk/verification.json. Framework14281180095 is NOT APP.
+- New internal SqliteRecordedContextRestore preserves exact original execution-context bytes for
+  retained recording sessions when older JSON lacks support; incompatible steps OR unknown fields
+  reject BEFORE clearing. Bounded metadata/payload reads, original validation, caller rollback.
+  Five new real common application restore cases (16total) +Apple/JDBC inheritance.
+- InspectedRecordingArchive copies external raw ZIPs into bounded sealed private staging, validates
+  actual ZIP/manifest/UTF8/framing/graph/SHA before exposure, and internally replays that SAME file.
+  No provider re-read, route-wide buffering or second dense copy for complete packages. Existing
+  RecordingArchiveReader public read-only constructor preserved; internal replay delivers only
+  graph-validated lines and still requires successful final hash/EOF. Consumer failures close the
+  reader. ALL database replay callbacks/finish must remain in one outer transaction.
+- InspectedBackupPackage reuses the sealed raw inspection and cross-checks BOTH valid documents:
+  immutable measured summary/source, current support/context presence and original instructions,
+  and matching removal provenance. Correct individual hashes do not legitimise contradictory files.
+  Old root5 missing support can still recover real original context from its raw companion.
+- Internal SqliteRecordingArchiveRestore merges only inspected private sources. Preflight headers,
+  original source indexes/measurements, exact samples and coverage; source context remains immutable.
+  Incoming unfinished records become RECOVERABLE, never fabricated completed history. Known removed
+  detail is rehydrated only after exact original timing/count/hash verification, then only its
+  receipt is removed. Imported receipts cannot hide available data. Existing summaries/annotations /
+  PBs stay intact; only genuinely new activities derive new qualified PBs from real samples.
+  Late mismatch/failure/caller rejection rolls back rows, receipts and approval identity together.
+- Internal SqliteCompleteBackupRestore composes validated whole JSON +raw merge under ONE existing
+  SQLite19 outer transaction. One fresh identity, not two independent commits/approvals. Protected
+  outgoing recovery, closed private sources and missing existing owned history reject safely.
+  Parent changes roll back even when the final raw write fails. No native destructive UI enabled.
+- Focused context16 +metadata PASS1m17s. Initial replay run exposed a JUnit signature inference
+  error (Throwable instead of Unit) in a NEW test; corrected explicit Unit without changing assertions.
+  Stable raw batch55focused +metadata PASS1m19s; final composed batch67focused +metadata PASS1m18s:
+  app16, raw-archive10, raw-restore14, complete15, reader12, ALL0failure/error/skip. Logs:
+  scratch/kmp-{recorded-context,context-replay,raw-restore,complete-restore}-focused.log.
+- Preliminary557storage/meta/Android compilation PASS2m47s/64tasks; raw1/2/3 merge and closed-
+  source guards then559storage/meta/Android PASS1m33s/64tasks. Review added TWO RED provenance
+  tests proving provider/activity-end conflicts could pass despite matching raw hashes; both
+  actually FAILED in scratch/kmp-raw-provenance-red.log (42s), not hypothetical defects.
+  Fixed incoming RecordingArchiveRows graph validation using only bounded per-session source/end
+  metadata; existing receipts must also match actual indexed activity and FINISHED session metadata
+  before they can be consumed/reconciled. Hashes and original source bytes remain exact.
+- Initial561 run caught a NEW test fixture referencing a nonexistent activity, correctly rejected
+  by the existing SQLite FK. Fixed fixture by creating the separate real retained activity, keeping
+  FK enforcement and all assertions. FINAL current561storage JVM0failure/error/skip +metadata +
+  Android test compilation PASS1m31s/64tasks, scratch/kmp-raw-complete-restore-verified.log.
+  Current17raw restore cases include source/index/receipt conflicts, exact archive1/2/3 merging,
+  and closed-source rejection before ANY DB access. Total41new storage cases since99.
+- Pinned881sources(786Kotlin95Java), schema75/exact19/source3 PASS. This handoff is committed with
+  checkpoint100 source; resolve actual commit from git, then push ONCE. New Native561 /41cases and
+  Android534 results require fresh exact-head CI and are NOT yet passed. Expected new IO/SQL/restore
+  name proof131cases (prior93 +5app +5raw-export +11complete +17raw-restore); reader/graph cases
+  additionally run in the full561. DRAFT PR24 remains open. No new-source APK byte claim yet.
+- Native restore/cleanup UI remains OFF: full operation serialization, retention consent/preview /
+  epoch/bounded pruning safeguards and original Android archived-byte parity remain acceptance
+  work. Exact receipt conflict rejects safely; never normalize old raw payloads/hashes to force a
+  match. Final app composition/navigation/state/native services and REAL iOS host remain incomplete.
+- No schema19/root13/raw3/package1/version/code/dependency/permission change. No merge/publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint99 above is latest recovery boundary.98cfe5b38 is fully green and byte-verified.99gym /
-   whole-app JSON kernel is committed with this handoff; local520tests/meta/Android compile PASS /
-   2m58s/64tasks;874format, schema75/exact19 and source3 PASS. Push this batch once and inspect actual
-   fresh Native/JVM520/19new gym/app cases +Android534 results, update DRAFT24 and this boundary.
-   Native UI remains OFF until compatible raw/complete-package merge +full retention safeguards,
-   then full app/native services/iOS host and final gates. Never treat pending as pass or restart
-   completed domain/storage work. Keep schema/version/backup formats unchanged until justified.
+1. Checkpoint100 above is latest recovery boundary;99d772bc6 is fully green/byte-verified.
+   Current100 raw/context/complete restore batch is committed with this handoff and local561 /
+   metadata/Android compilation PASS1m31s/64tasks, format881/schema75/source3 PASS. Push ONCE if
+   not already pushed (inspect actual upstream), then inspect fresh Native/JVM561/41new cases,
+   expected131IO/SQL/restore names and Android534 results. Update DRAFT24 with actual head/run /
+   results. Native UI stays OFF until full operation/retention and original Android archived-byte
+   safeguards. Continue full common app/native services/iOS host and final gates; never restart
+   completed domain/storage work. Keep versions unchanged until cross-platform readiness.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
