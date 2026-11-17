@@ -69,11 +69,16 @@ COMMITTED/PUSHED; remote HEAD61e038d7daa8fec5e2a1fb4e4bd51c4f5d68817a. Experimen
 has Android SUCCESS610unique tests/0fail/skips +700189domain checks; Apple Native/framework
 still RUNNING. Formatting44106763460 SUCCESS. Prior12302efa0c passed
 601Android/700189domain and Native449/27/646/framework, independently verified below.
-LOCAL126 shared application composition is COMMITTED ase9a393b/locally verified. Preserve common
+126 shared application composition e9a393b +recoverya172b90 is SAFELY BACKED UP remotely at
+`checkpoint/android-ios-kmp-compose-126` while local branch remains the original experiment.
+PR24 branch still61e038d because useful125 Apple CI must finish before its fast-forward.
+Preserve common
 SharedCoachApplicationServices, Android root/baseline wrapper, actual SQL/root tests and workflow/
 format targets. FINAL metadata/debug+testAPK/lint PASS7m14s/176tasks,
 scratch/kmp-application-root-final.log. Format953+final changed test, schema19/source3 PASS.
-Do not push/cancel useful125 Apple CI. Next613Android/648Native pending. Shell gh API token
+Do not push the PR branch/cancel useful125 Apple CI. Recovery-branch pushes do not run these
+PR/main-only workflows; no replacement PR/tag/publication was made. Next613Android/648Native
+pending. Shell gh API token
 began401 at15:03; connected GitHub tools WORK and normal Git push DRY-RUN PASSED (no mutation).
 Use connector for CI polling; no credentials/history rewritten. Normal push remains available.
 125local gate PASS7m35s/176tasks;124health25/storage648 JVM +APKs/lint PASS8m24s. No schema/
@@ -5641,7 +5646,10 @@ restore/prune controls remain OFF until EVERY operation uses one real applicatio
   APK14340880308 ZIP30770328/SHA8159b83b47faeb752d059c83d78aab4ec06cbf27667ba8bb96bbd0126c479e6b;
   APK58434886bytes/SHA2304f167ba6fd34b66a599e1b2940bac376778a35ccf6207864b774618285efb,
   0.12.3-test1/code19/min28/noINTERNET. Proof scratch/kmp125-android/verification.json.
--126e9a393b common root +actual Android use +3SQL/root tests is COMMITTED LOCALLY, not pushed.
+-126e9a393b common root +actual Android use +3SQL/root tests is COMMITTED and backed up remotely
+  on checkpoint/android-ios-kmp-compose-126 (verified initial head a172b905f7c2d3d8cb6e11b7caf237eb8edf2e0d;
+  recovery-only docs may advance it). Original PR24 branch remains61e038d until useful125Apple ends.
+  No replacement PR, force push, tag or workflow/policy bypass. We have NOT switched local branches.
   Local final metadata/debug+testAPK/lint7m14s/176tasks PASS; format953+final root test/schema/source
   PASS. Additional recovery/architecture documentation has NO app-source/fixture changes.
 - At15:03 shell gh API returned401. Connected GitHub tools still work; normal Git ls-remote and
@@ -5651,11 +5659,18 @@ restore/prune controls remain OFF until EVERY operation uses one real applicatio
 
 ### Exact next safe actions and remaining full scope
 
-1. Preserve126e9a393b and this local recovery. Wait for useful125 Apple134121100041/run44106763790
+1. Preserve126e9a393b, recovery commits and remote checkpoint/android-ios-kmp-compose-126.
+   Wait for useful125 Apple134121100041/run44106763790
    using CONNECTED GitHub tools (shell gh API401). Android610/700189/JVM648 already verified.
    Inspect real Apple result and download/digest-check Native648 XML/framework. Do not cancel.
-   Once complete, normal Git push126+recovery ONCE to existing DRAFT24 (push dry-run succeeded);
-   verify next613Android/648Native/framework. Diagnose any actual failures; no blind reruns.
+   Once complete, normal Git push126+recovery ONCE to existing DRAFT24 (push dry-run succeeded):
+   git push origin experiment/android-ios-kmp-compose
+   Verify next613Android/648Native/framework. Diagnose actual failures; no blind reruns. If workspace
+   was lost, fetch checkpoint/android-ios-kmp-compose-126 and fast-forward the ORIGINAL experimental
+   branch when compatible; do not reset/discard surviving work or create a replacement PR. Remove
+   our temporary recovery branch only AFTER original PR branch contains the same commits.
+   Apple was still Native-test stage at15:16; live log BlobNotFound means not published yet, NOT
+   an assertion failure. Do not claim Native648/framework or126runtime acceptance from that state.
    Then actual iOS app host/active shared UI/navigation/SDK integration USING the common root,
    not another domain/storage restart or empty prototype. Native destructive UI remains OFF
    until one actual SqliteDataLifecycle owner covers every host operation. No early merge/pub.
