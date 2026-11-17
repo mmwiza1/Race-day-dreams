@@ -4799,17 +4799,69 @@ incomplete migration merely because a focused checkpoint passes.
   or engine. Platform IO/kernel adapters are not a complete iOS application. All physical checks
   remain unperformed. No premature release/final screenshot claim.
 
+### Checkpoint107 — staged read-only HealthKit running-workout imports
+
+- Continue SAME experiment branch / DRAFT PR24. Commit source+handoff together, push ONCE if
+  needed after inspecting upstream. No new version/schema/backup/permission/dependency at runtime.
+- Checkpoint106 `536ee94e704d43a4efb84525e374d44372d07427` is now FULLY GREEN for its targeted gate:
+  [44041687509](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44041687509), Android
+  133897522972 /Apple133897523471 SUCCESS, formatting44041687519 SUCCESS. Actual Android logs
+  prove544unique matching START/END including ALL5 exact icon pixel comparisons at identical
+  coordinates AND original→shared→original escaped-archive interop. Original543failure fixed by
+  matching capture geometry, not tolerance/removed assertion/changed icon.700189domain/48suites,
+  3successful builds/schema/lint PASS; scratch/archive-536-android-{job.log,proof.json}.
+- Downloaded/digest-verified JVM14310686519 ZIP180122/SHA
+  febc436918dd10ce885d6250b24e20ebfd70cbd2276c15b72de8a3d3badf412a has490domain/16health/616storage;
+  Native14309548258 ZIP170822/SHAed74abb21a3ec53f7caa74532b99326314c2f43220882e90efd6d2c6cf798e8a
+  has449/18/616, ALL0failure/error/skip. ALL184IO/SQL/lifecycle/scanner case names match;
+  scratch/archive-536-{jvm,native}/verification.json, native/all-case-proof.json. Framework14310311429
+  is still NOT an actual iOS app. No canonical final screenshots or hardware acceptance claimed.
+- PrivateAPK14311210389 ZIP30726531/SHA6caa105d685fe730881698c86a88d0fd1d5295c394d4a4f7fc6c7c1e6fe1329b;
+  APK58320139/SHA9988a90363c199b5b34678fb30ed43eecb2fd8a210447a8b7ab925641cccb393, code19/min28/
+  noINTERNET. scratch/archive-536-apk/verification.json. No experimental public publication.
+- New actual iOS SDK HealthKitRunningReader requests ONLY workout read access (no write types).
+  Apple's authorization completion never proves read permission. Query runs on Main, stops on
+  cancellation, bounds the SDK result at10001 to reject >10000 rather than truncate, filters actual
+  running workouts, app-owned source, read-window boundaries and unfinished/future endings.
+  Real SDK UUID/source bundle/start/end/optional totalDistance only; no GPS/heart rate/moving-time/
+  offsets/effort fabricated. Existing HealthKit body reader and Android Health Connect untouched.
+- HealthKitRunningRead freezes SDK observations and is ALWAYS VISIBLE_RECORDS_ONLY. It returns no
+  database writes or permission/coverage claim. Host must prepare its batch using CURRENT local
+  records/checkpoint INSIDE the app's serial import/SQL scope, not a snapshot retained across the
+  asynchronous SDK query. HealthKitRunningImport uses the EXISTING HealthImportPolicy.Batch /
+  commit policy with completeSnapshot=false, no inferred deletions and unchanged retained token.
+- Exact source/time/origin conflicts reject rather than overwrite historic measurements. Own app
+  workouts aren't reimported. Repeated identical observations deduplicate; conflicting UUIDs reject.
+  Missing distance stays null (genuine0 remains0); missing optional fields preserve compatible prior
+  evidence/opaque app ID/notes/shoe association. Existing recorded sets/PBs/programmes unchanged.
+- NINE common health cases cover observations/unknowns/source/nanoseconds, hidden/empty no-delete,
+  checkpoint preservation, existing optional evidence, self/outside/future filters, duplicate and
+  identity conflicts, invalid/oversized reads, immutable staging and fresh commit evidence. FOUR
+  real JDBC/Apple SQLite contracts prove repeated import, retained history/notes/checkpoint with
+  withheld data, caller rollback and rejection before SQL mutation. sharedStorage adds ONLY a TEST
+  dependency on existing sharedHealth, no production/runtime library or second database.
+- Focused9health PASS27s; full25health+4focused SQL PASS48s/10tasks. FINAL25health JVM +620storage
+  JVM, ALL0failure/error/skip +health common metadata +Android test compilation PASS3m8s/68tasks,
+  scratch/kmp-healthkit-running-final.log. Formatter914sources(819Kotlin/95Java), exact schema19 /
+  source3 PASS; schema75 last passed in preceding unchanged-SQL batch. No test weakening or blind
+  rerun. Fresh Native27health/620storage/SDK API compilation and Android544 remain PENDING.
+- This does NOT complete HealthKit/iOS app integration: native host/entitlements/usage strings /
+  permission UI/import-owner wiring, optional HR/route import and full service parity remain.
+  Next verify actual macOS compiler/API diagnostics, then bind real common app state/root and
+  native services/iOS host. ONE application-owned data-operation boundary must cover mutations /
+  backup paths; native destructive UI stays OFF. All physical provider/GPS/BLE/audio/TalkBack /
+  locked-screen checks remain UNPERFORMED. No premature merge/release.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint106 is latest recovery boundary. Inspect actual branch/status/HEAD/upstream; push ONCE
-   if ahead and update DRAFT24.105df52 Native610/JVM610 are byte-verified; Android542/543 with ONLY
-   pixel fixture failure, now corrected locally but runtime PENDING. New archive-byte regression
-   was reproduced/fixed; local616storage/meta,66focused+Android compilation, icon compile54s,
-   format908/schema75/source3 PASS. Expected next Native616,184matching IO/SQL/lifecycle/scanner
-   names and Android544 (adds actual old/shared escaped-archive interop case). Verify all before
-   claiming success; inspect/fix any real failure, no assertion weakening or blind rerun. Then
-   continue real common app/root/state/platform services/iOS host. Native destructive UI OFF;
-   no reset/restart, early version bump, merge or public publication.
+1. Checkpoint107 is latest recovery boundary. Inspect status/HEAD/upstream; commit/push ONCE if
+   needed and update DRAFT24.106536ee94 is fully green/byte-verified: Android544 incl exact icons /
+   original escaped archive; JVM616/Native616,184matching IO/SQL cases. New107 local25health /
+   620storage+metadata+Android compilation PASS3m8s/68tasks; formatter914/source3/schema19 PASS.
+   Expected Native27health/620storage plus new HealthKit SDK compilation and Android544 runtime
+   are PENDING exact-head CI. Check real Apple diagnostics first; fix causes, not assertions or
+   blind retries. Then continue actual root/state/owner/native services/iOS host integration.
+   No native destructive UI, reset/restart, early version bump, merge or public publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

@@ -14,7 +14,10 @@ kotlin {
             // Public nested-backup DOM entry points expose these types; keep the existing version.
             api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
         }
-        commonTest.dependencies { implementation kotlin('test') }
+        commonTest.dependencies {
+            implementation kotlin('test')
+            implementation project(':sharedHealth')
+        }
         jvmTest.dependencies { implementation 'org.xerial:sqlite-jdbc:3.46.1.3' }
     }
 }
