@@ -32,6 +32,10 @@ fun AppleRecordingScreen(
     val state by session.services.operations.state.collectAsState()
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
     val status by recorder.status.collectAsState()
+    val monitors by recorder.monitors.collectAsState()
+    val heartRate by recorder.heartRate.collectAsState()
+    var monitorId by remember { mutableStateOf<String?>(null) }
+    DisposableEffect(recorder) { onDispose { recorder.stopHeartRateScan() } }
     val cue by recorder.cue.collectAsState()
     val raceContext by recorder.raceContext.collectAsState()
     val workout by recorder.workout.collectAsState()
@@ -72,7 +76,7 @@ fun AppleRecordingScreen(
         SharedActiveRunPanel(
             s = live,
             w = workout,
-            hr = null,
+            hr = heartRate,
             cue = cue,
             race = raceContext,
             notice = error ?: storageError,
@@ -165,6 +169,27 @@ fun AppleRecordingScreen(
                 Checkbox(checked = spokenCues, onCheckedChange = { spokenCues = it })
                 Text("Speak coaching cues")
             }
+            TextButton(
+                onClick = {
+                    monitorId = null
+                    recorder.scanHeartRateMonitors()
+                }
+            ) {
+                Text("Find a Bluetooth heart-rate monitor")
+            }
+            if (monitorId != null) {
+                TextButton(onClick = { monitorId = null }) { Text("Record without a monitor") }
+            }
+            monitors.forEach { (id, name) ->
+                TextButton(
+                    onClick = {
+                        monitorId = id
+                        recorder.stopHeartRateScan()
+                    }
+                ) {
+                    Text(if (monitorId == id) "$name · selected" else name)
+                }
+            }
             CoachButton(if (plannedId == null) "Start recording" else "Start planned workout") {
                 command {
                     val planned =
@@ -174,7 +199,7 @@ fun AppleRecordingScreen(
                                 it,
                             )
                         }
-                    recorder.start(planned, imperial, spokenCues)
+                    recorder.start(planned, imperial, spokenCues, monitorId)
                 }
             }
         }

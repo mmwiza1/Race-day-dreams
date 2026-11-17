@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 170 Bluetooth heart rate on iOS
+
+PR #24 remains at 25adcc6. Both experiment 44195464653 jobs were running at
+the last check. Local checkpoints 167–170 are queued.
+
+170 adds explicit, time-limited discovery of standard Bluetooth heart-rate
+monitors. The chosen monitor connects during the run. Valid readings feed
+the original metrics engine and live panel, and stale or disconnected
+readings disappear. The recorder disconnects at finish/cancellation. Bluetooth
+usage text is in Info.plist. Kotlin formatting, plist parsing, diff and all
+19 schema checks passed. Apple SDK compilation and real monitor pairing,
+reconnect and locked-screen behavior remain unverified.
+
+Next inspect the active CI logs for actual build/startup failures, batch
+the pending changes and verify native compilation on macOS. Continue the
+remaining iOS routes, service parity and release gates. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 169 iOS background location
 
 PR #24 remains at 25adcc6. Android and Apple jobs in experiment 44195464653

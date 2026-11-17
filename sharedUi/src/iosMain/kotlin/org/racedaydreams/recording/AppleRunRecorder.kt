@@ -8,6 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -29,6 +30,42 @@ class AppleRunRecorder(
     private val commands = Mutex()
     private var cues = RecordingCueCoordinator()
     private var miles = false
+    private var monitor: AppleHeartRateSource? = null
+    private var scanTimeout: Job? = null
+    private var lastHeartRateTime = 0L
+    private val mutableMonitors = MutableStateFlow<Map<String, String>>(emptyMap())
+    val monitors = mutableMonitors.asStateFlow()
+    private val mutableHeartRate = MutableStateFlow<Double?>(null)
+    val heartRate = mutableHeartRate.asStateFlow()
+
+    fun scanHeartRateMonitors() {
+        check(NSThread.isMainThread && session == null)
+        val source =
+            monitor
+                ?: AppleHeartRateSource { bpm ->
+                        val time = AppleRecordingClock.monotonicMillis()
+                        session?.engine?.heartRate(bpm, time)
+                        lastHeartRateTime = time
+                        mutableHeartRate.value = bpm
+                    }
+                    .also { monitor = it }
+        if (scanTimeout?.isActive == true) return
+        source.scan()
+        scanTimeout =
+            scope.launch(Dispatchers.Main.immediate) {
+                kotlinx.coroutines.withTimeoutOrNull(15_000) {
+                    source.devices.collect { mutableMonitors.value = it }
+                }
+                source.stopScan()
+            }
+    }
+
+    fun stopHeartRateScan() {
+        scanTimeout?.cancel()
+        scanTimeout = null
+        monitor?.stopScan()
+    }
+
     private var speech: AppleCoachSpeech? = null
     private val mutableCue = MutableStateFlow<String?>(null)
     val cue = mutableCue.asStateFlow()
@@ -83,6 +120,7 @@ class AppleRunRecorder(
         planned: PlannedRecordingExecution? = null,
         imperial: Boolean = false,
         spokenCues: Boolean = false,
+        monitorId: String? = null,
     ) = command {
         check(session == null) { "A run is already recording." }
         check(location.canStart()) { "Location permission is required to record a run." }
@@ -106,6 +144,8 @@ class AppleRunRecorder(
         session = active
         mutableError.value = null
         location.start()
+        stopHeartRateScan()
+        if (monitorId != null) monitor?.connect(monitorId)
         publish()
         ticker =
             scope.launch(Dispatchers.Main.immediate) {
@@ -132,6 +172,7 @@ class AppleRunRecorder(
                     if (session === active) {
                         location.stop()
                         speech?.stop()
+                        monitor?.stop()
                     }
                 }
             }
@@ -194,6 +235,7 @@ class AppleRunRecorder(
             finishing = true
             speech?.stop()
             location.stop()
+            monitor?.stop()
             ticker?.cancel()
             ticker = null
             execution?.coordinator?.finishEarly()
@@ -232,6 +274,7 @@ class AppleRunRecorder(
 
     private fun publish(time: Long = AppleRecordingClock.monotonicMillis()) {
         val engine = session?.engine ?: return
+        if (time - lastHeartRateTime > 10_000) mutableHeartRate.value = null
         val status = engine.status(time)
         mutableStatus.value = status
         val planned = execution
