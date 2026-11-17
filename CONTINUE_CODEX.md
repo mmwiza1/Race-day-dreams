@@ -91,10 +91,12 @@ transient429/502/503/504 attempts, honours numeric/date Retry-After within SAME6
 keeps proxy/CA/pins/size/integrity validation and fails closed on permanent/excessive responses.
 18offline contracts PASS, scratch/kmp131-format-tests.log. No blind CI rerun or weakened check.
 
-131+132local gates PASS. Protect these SAME local commits on temporary recovery ref
-checkpoint/android-ios-kmp-compose-132 if130Apple still runs (do not cancel useful Native CI). Push to ORIGINAL PR24 only once current useful
-run completes; if interrupted earlier back up same commits on a temporary checkpoint ref without
-replacement PR/tag. Consult PR body for live run status. Actual iOS APP host/full SDK effects,
+131+132local gates PASS and source3d42395d95a7717224a3e0173dc0dc9b078f5513 is REMOTELY BACKED
+UP on checkpoint/android-ios-kmp-compose-132 (actual ls-remote verified). Local working branch
+remains experiment/android-ios-kmp-compose; ORIGINAL PR24 stayscc180117 while useful130Native
+CI finishes. Do not switch branches or create another PR. Normal push of THESE same commits to
+original PR24 after current useful run completes; only then delete redundant recovery ref after
+ancestor verification. This documentation-only checkpoint may advance recovery head, no app change. Consult PR body for live run status. Actual iOS APP host/full SDK effects,
 remaining feature-owned services/UI/navigation and final full Android28/35/36/iOS/visual gates
 remain unfinished. Framework is NOT an app. Version/code/schema/backups unchanged; no merge,
 publication or native destructive controls before full app-owned lifecycle integration. Physical
@@ -5771,15 +5773,19 @@ HealthKit/Health Connect/GPS/BLE/audio/TalkBack/VoiceOver acceptance remains unp
 
 ### Exact next safe actions and remaining full scope
 
-1.131UI and132tooling are locally committed/verified. Inspect status/log and recovery ref
-   checkpoint/android-ios-kmp-compose-132 before any mutation; do not reapply scratch scripts.
+1.131UI5300608 and132tooling3d42395 are COMMITTED and REMOTELY BACKED UP on temporary ref
+   checkpoint/android-ios-kmp-compose-132. Local branch stays experiment/android-ios-kmp-compose,
+   ahead of actual PR24cc180117. Fetch/inspect status/log/recovery ref first; no reapplying scripts.
    Inspect130experiment44128266830 jobs134197939370/134197938719 and actual completed logs/XML;
    formatting44128267170 HTTP429 is diagnosed and fixed LOCALLY132, not CI-passed. No blind reruns.
    Keep useful Native/framework run until complete, then normal push131/132ONCE to ORIGINAL PR24.
    If stopping before that, preserve local commits on a temporary checkpoint branch without a new
    PR or cancellation. Keep DRAFT24/version unchanged. Continue actual iOS host +remaining active
-   UI/navigation and feature-owned platform integrations. No domain/storage-kernel restart, empty
-   host/prototype, premature native destructive controls, merge or public publication.
+   UI/navigation and feature-owned platform integrations. Next concrete feature application port:
+   existing coach/strength/StrengthProgrammeViewModel.kt authoring/draft operations over completed
+   shared typed repositories, preserving SavedState/lifecycle as Android adapters; do not invent a
+   builder or duplicate programme/execution engine. Finish actual iOS host/services as required,
+   not a throwaway host. No domain/storage restart, early destructive controls/merge/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
