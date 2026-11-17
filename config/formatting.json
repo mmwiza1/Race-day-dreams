@@ -289,6 +289,8 @@
     "app/src/androidTest/java/org/racedaydreams/data/AndroidSchemaTestFixture.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedExerciseBrowseScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedProfileOperationsTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/SharedExerciseDetailTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedExerciseDetailTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedCalendarScreenTest.kt",
+    "app/src/main/java/org/racedaydreams/coach/CalendarScreen.kt"
   ]
 }

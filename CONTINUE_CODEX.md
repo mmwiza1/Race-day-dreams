@@ -68,8 +68,11 @@ Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Current pushed HEAD 
 `9cd4adf2c54a10bddb42ebca039ea4705b2d86f5` (116). Experiment44074597919 and formatting44074597892
 are SUCCESS: Android576 unique tests; byte-verified JVM490domain/25health/639storage and
 Native449domain/27health/639storage, zero failures/errors/skips; real shared framework linked.
-117 local Exercise Detail/exclusion/input extraction passes local metadata/debugAPK/testAPK/lint;
-116 success does NOT verify117. See latest117 recovery below. No version/formats changes,
+11752f511c and118889452c are committed locally with metadata/Android compile/lint and
+formatting PASS.119shared calendar presentation is currently local and compiling; preserve its
+new common screen/tests and intentional thin Android wrapper. Planned combined push expects
+Android592 =576verified +3detail +2exclusion +7preview +2calendar accessibility +2new calendar.
+116 success does NOT verify117–119. See latest119 recovery below. No version/formats changes,
 merge/publication/native destructive UI or fake bindings. Remaining services/UI/root/navigation/
 actual iOS app and complete final gates are unfinished.
 
@@ -5276,13 +5279,43 @@ actual iOS app and complete final gates are unfinished.
   compile/lint PASS5m44s/133tasks, formatting939(844Kotlin/95Java), diff clean; log scratch/kmp-gym-preview-final.log. New Native/framework/runtime
   results cannot be inferred from116 success. Continue remaining shared calendar presentation next.
 
+### Checkpoint119 local — existing training calendar in common Compose
+
+-11752f511c and118889452c are committed LOCALLY, not yet pushed.118final metadata/Android prod+test
+  compile/lint passed5m44s/133tasks; formatting939(844Kotlin/95Java). Original SEVEN preview tests
+  are retained unchanged and included in next actual runtime gate.116 remains latest pushed green.
+-119 preserves the ACTUAL full calendar: entry assembly and authored/legacy associations, exact
+  category/status marker Canvas, legend/disclosure, persistent List/Week/Month selection,
+  previous/today/next, six-row month and selected-day sheet, original workout/actual/logging links.
+  Android signature delegates and retains original UK labels/system-zone date arithmetic/units
+  and real ActivityHistoryScreen. Required host calendar/label/history hooks have no fake defaults.
+  Original bottom navigation and all plan/history calculations remain untouched.
+- Added TWO direct production common-calendar tests: dark200week/month prescription and original
+  navigation identity; List uses the required host content and returns view choices to its owner.
+  Existing TWO CalendarAccessibilityTest cases added unchanged, existing WeeklyUxTest retained.
+  Combined expected Android592; domain/storage639 unchanged. Native compile/full APP/screenshots
+  are NOT inferred from an Android compile or the prior116 framework.
+- Initial119 common compilation found2JVM-only Duration.toMinutes calls. Replaced with the
+  EXACT original whole-seconds/60 conversion; no elapsed/timing or training rule change. Corrected
+  metadata/debugAPK/testAPK/lint PASS6m23s/176tasks in scratch/kmp-calendar-corrected-final.log;
+  formatting942(847Kotlin/95Java) passed before the two-call fix; final formatter recheck PASS942sources
+  in scratch/kmp-calendar-corrected-format.log. Source3/exact schema19 PASS, focused
+  YAML list parses and contains110distinct classes. A script stopped at an assertion while adding
+  the final formatting target (old last target had no comma); safely finished through parsed JSON.
+  All source files survive; no discarded/restarted implementation and no runtime pass claimed.
+- Exact next: inspect CURRENT119 compile/lint/format, fix genuine failures; commit119 +updated
+  recovery and push117–119 ONCE to existing DRAFT24. Last116 CI is complete. Verify exact new
+  Android592/Native639/framework gates and new detail/calendar/preview cases before claiming pass.
+  Then continue remaining original application services/active UI/root/navigation and native host/
+  platform bindings. No version bump, merge, public build or native destructive controls yet.
+
 ### Exact next safe actions and remaining full scope
 
-1.117 common metadata/debugAPK/testAPK/lint and formatting/source checks PASS. Commit the
-   coherent extraction; continue next shared programme-preview application service before one
-   batched push to existing DRAFT24; prior116
-   CI is complete, so no useful run needs cancellation. Verify new Android581/Native639/framework.
-   Continue remaining shared services/active UI/root/native host; preserve all completed work.
+1. Inspect current119 metadata/debugAPK/testAPK/lint and formatting outcomes; correct real
+   failures.11752f511c and118889452c local compile/lint/format are green. Commit119 with recovery,
+   push the coherent117–119 batch ONCE to DRAFT24, then inspect exact Android592/Native639 /
+   framework results. Latest pushed1169cd4adf is fully green/byte-verified. Continue original
+   remaining services/active screens/root/navigation/native host; do not stop at framework success.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
