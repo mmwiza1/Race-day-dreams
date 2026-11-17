@@ -20,19 +20,31 @@ import org.racedaydreams.data.createAndroidSchemaFixture
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.storage.*
 
-/** Actual shared operations and real SQL; clocks/alerts are explicitly controlled platform effects. */
+/**
+ * Actual shared operations and real SQL; clocks/alerts are explicitly controlled platform effects.
+ */
 @RunWith(AndroidJUnit4::class)
 class SharedGymNowCoordinatorTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val now = Instant.parse("2026-11-17T12:00:00.123456789Z")
+
     private class Retained : GymNowRetainedState {
         val values = mutableMapOf<String, Any?>()
+
         override fun get(key: String): Any? = values[key]
-        override fun set(key: String, value: Any?) { values[key] = value }
-        override fun remove(key: String) { values.remove(key) }
+
+        override fun set(key: String, value: Any?) {
+            values[key] = value
+        }
+
+        override fun remove(key: String) {
+            values.remove(key)
+        }
+
         override fun strings(key: String): List<String>? =
             (values[key] as? List<*>)?.map { it as String }
     }
+
     private inner class Fixture(val raw: SQLiteDatabase, val scope: CoroutineScope) {
         val calls = AtomicInteger()
         val db = AndroidSqlConnection {
@@ -45,37 +57,70 @@ class SharedGymNowCoordinatorTest {
         val ids = AtomicInteger()
         val retained = Retained()
         val gym = SqliteGymExecutions(db, { now }, PortableLegacyStrengthFingerprint)
+        var failSaveBeforeWrite: Exception? = null
         var loseSaveAcknowledgement = false
-        val writes = object : GymExecutionRepository by gym {
-            override fun save(snapshot: GymExecution, expectedRevision: Long): GymExecutionRepository.Stored {
-                val saved = gym.save(snapshot, expectedRevision)
-                if (loseSaveAcknowledgement) {
-                    loseSaveAcknowledgement = false
-                    throw IllegalStateException("Saved, but acknowledgement interrupted.")
+        val writes =
+            object : GymExecutionRepository by gym {
+                override fun save(
+                    snapshot: GymExecution,
+                    expectedRevision: Long,
+                ): GymExecutionRepository.Stored {
+                    failSaveBeforeWrite?.let { failure ->
+                        failSaveBeforeWrite = null
+                        throw failure
+                    }
+                    val saved = gym.save(snapshot, expectedRevision)
+                    if (loseSaveAcknowledgement) {
+                        loseSaveAcknowledgement = false
+                        throw IllegalStateException("Saved, but acknowledgement interrupted.")
+                    }
+                    return saved
                 }
-                return saved
             }
-        }
         val alerts = mutableListOf<GymRestTimer?>()
         lateinit var model: SharedGymNowCoordinator
+
         fun construct(): SharedGymNowCoordinator {
             val result = AtomicReference<SharedGymNowCoordinator>()
             instrumentation.runOnMainSync {
-                result.set(SharedGymNowCoordinator(
-                    db, writes, SqliteGymAssociations(db) { now },
-                    SqliteStrengthProgramming(db, { now }, { java.time.LocalDate.of(2026, 11, 17) }),
-                    SqliteCoachingRepository(db, { now }, { "coaching-${ids.incrementAndGet()}" }, PortableLegacyStrengthFingerprint),
-                    { null }, { _, _ -> null }, gym::favourites, gym::recentActual, gym::finishedActualIds,
-                    retained, scope,
-                    GymWorkoutSessionCoordinator.TickSource { GymExecution.Tick("process", millis.get(), now) },
-                    { GymRestTimer.Clock(epoch.get(), millis.get()) },
-                    { timer, _ -> alerts.add(timer) }, { now }, { ZoneOffset.ofHours(14) },
-                    { "gym-event-${ids.incrementAndGet()}" },
-                ))
+                result.set(
+                    SharedGymNowCoordinator(
+                        db,
+                        writes,
+                        SqliteGymAssociations(db) { now },
+                        SqliteStrengthProgramming(
+                            db,
+                            { now },
+                            { java.time.LocalDate.of(2026, 11, 17) },
+                        ),
+                        SqliteCoachingRepository(
+                            db,
+                            { now },
+                            { "coaching-${ids.incrementAndGet()}" },
+                            PortableLegacyStrengthFingerprint,
+                        ),
+                        { null },
+                        { _, _ -> null },
+                        gym::favourites,
+                        gym::recentActual,
+                        gym::finishedActualIds,
+                        retained,
+                        scope,
+                        GymWorkoutSessionCoordinator.TickSource {
+                            GymExecution.Tick("process", millis.get(), now)
+                        },
+                        { GymRestTimer.Clock(epoch.get(), millis.get()) },
+                        { timer, _ -> alerts.add(timer) },
+                        { now },
+                        { ZoneOffset.ofHours(14) },
+                        { "gym-event-${ids.incrementAndGet()}" },
+                    )
+                )
             }
             return result.get()
         }
     }
+
     private fun fixture(block: (Fixture) -> Unit) {
         val raw = SQLiteDatabase.create(null)
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -90,13 +135,16 @@ class SharedGymNowCoordinatorTest {
             raw.close()
         }
     }
+
     private fun command(f: Fixture, action: () -> Unit): GymNowState {
         instrumentation.runOnMainSync { action() }
         runBlocking { withTimeout(20000) { f.model.state.first { !it.busy && !it.loading } } }
         instrumentation.waitForIdleSync()
         return f.model.state.value
     }
-    @Test fun lostAcknowledgementRetainsFormAndExactRetryDoesNotDuplicateActual() = fixture { f ->
+
+    @Test
+    fun lostAcknowledgementRetainsFormAndExactRetryDoesNotDuplicateActual() = fixture { f ->
         command(f) { f.model.refresh() }
         var ready = false
         val started = command(f) { f.model.startFree { ready = true } }
@@ -109,13 +157,18 @@ class SharedGymNowCoordinatorTest {
         assertNotNull(invalid.error)
         assertEquals("invalid", invalid.form.kilograms)
         assertTrue(invalid.view!!.observed()!!.actualSets().isEmpty())
-        command(f) { f.model.updateForm { it.copy(kilograms = "80", repetitions = "6", effort = "7") } }
+        command(f) {
+            f.model.updateForm { it.copy(kilograms = "80", repetitions = "6", effort = "7") }
+        }
         val entered = f.model.state.value.form
         f.loseSaveAcknowledgement = true
         val pending = command(f) { f.model.saveSet() }
         assertNotNull(pending.view!!.pending())
         assertEquals(entered, pending.form)
-        assertEquals(1, f.gym.load(pending.view!!.observed()!!.id())!!.execution().actualSets().size)
+        assertEquals(
+            1,
+            f.gym.load(pending.view!!.observed()!!.id())!!.execution().actualSets().size,
+        )
         val saved = command(f) { f.model.retry() }
         assertNull(saved.view!!.pending())
         assertEquals(1, saved.view!!.observed()!!.actualSets().size)
@@ -123,13 +176,53 @@ class SharedGymNowCoordinatorTest {
         assertNotEquals(entered.id, saved.form.id)
         assertTrue(f.db.query("SELECT * FROM strength_sessions").isEmpty())
     }
-    @Test fun builderSupersetRetainsIdentityAndTimerEpochDoesNotInventElapsedRest() = fixture { f ->
+
+    @Test
+    fun appleStorageExceptionKeepsPendingWriteAndInputUntilExplicitRetry() = fixture { f ->
         command(f) { f.model.refresh() }
-        val exercises = ExerciseCatalog.exercises().filter { it.id() in setOf("bench-press", "dumbbell-row") }
+        command(f) { f.model.startFree {} }
+        command(f) {
+            f.model.addExercise(ExerciseCatalog.exercises().first { it.id() == "bench-press" })
+        }
+        command(f) {
+            f.model.updateForm { it.copy(kilograms = "60", repetitions = "8", effort = "7") }
+        }
+        val entered = f.model.state.value.form
+        f.failSaveBeforeWrite = StorageException("Local database operation failed; files retained.")
+        val failed = command(f) { f.model.saveSet() }
+        assertNotNull(failed.error)
+        assertNotNull(failed.view!!.pending())
+        assertEquals(entered, failed.form)
+        assertTrue(f.gym.load(failed.view!!.observed()!!.id())!!.execution().actualSets().isEmpty())
+        val retry = command(f) { f.model.retry() }
+        assertNull(retry.error)
+        assertNull(retry.view!!.pending())
+        assertEquals(1, retry.view!!.observed()!!.actualSets().size)
+        assertEquals("", retry.form.kilograms)
+        assertNotEquals(entered.id, retry.form.id)
+        assertTrue(f.db.query("SELECT * FROM strength_sessions").isEmpty())
+    }
+
+    @Test
+    fun builderSupersetRetainsIdentityAndTimerEpochDoesNotInventElapsedRest() = fixture { f ->
+        command(f) { f.model.refresh() }
+        val exercises =
+            ExerciseCatalog.exercises().filter { it.id() in setOf("bench-press", "dumbbell-row") }
         assertEquals(2, exercises.size)
         command(f) { f.model.builderTitle("Original grouped workout") }
         for (exercise in exercises) command(f) {
-            assertTrue(f.model.builderPutSlot(null, exercise, GymSlotInput(sets = "2", minimumReps = "6", maximumReps = "8", restSeconds = "90")))
+            assertTrue(
+                f.model.builderPutSlot(
+                    null,
+                    exercise,
+                    GymSlotInput(
+                        sets = "2",
+                        minimumReps = "6",
+                        maximumReps = "8",
+                        restSeconds = "90",
+                    ),
+                )
+            )
         }
         val id = f.model.state.value.builder.id
         val first = f.model.state.value.builder.slots.first().id()

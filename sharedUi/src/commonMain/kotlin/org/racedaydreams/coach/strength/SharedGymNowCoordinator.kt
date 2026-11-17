@@ -203,7 +203,7 @@ class SharedGymNowCoordinator(
                             accepted = true
                         } catch (cancelled: CancellationException) {
                             throw cancelled
-                        } catch (error: RuntimeException) {
+                        } catch (error: Exception) {
                             failure =
                                 error.message
                                     ?: "The workout could not be saved. Your entered values are retained."
@@ -234,7 +234,9 @@ class SharedGymNowCoordinator(
                             fresh = panel(mutable.value.favouritePage)
                             if (fresh?.restTimer != null)
                                 restNow() // initialise private epoch on IO
-                        } catch (error: RuntimeException) {
+                        } catch (cancelled: CancellationException) {
+                            throw cancelled
+                        } catch (error: Exception) {
                             if (failure == null)
                                 failure =
                                     error.message ?: "Saved workout information could not be read."
@@ -807,7 +809,7 @@ class SharedGymNowCoordinator(
                             observeWorkoutTime()
                         } catch (cancelled: CancellationException) {
                             throw cancelled
-                        } catch (error: RuntimeException) {
+                        } catch (error: Exception) {
                             mutable.update {
                                 it.copy(
                                     error =

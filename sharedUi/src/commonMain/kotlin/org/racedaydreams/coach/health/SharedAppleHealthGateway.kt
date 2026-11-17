@@ -48,13 +48,20 @@ class SharedAppleHealthGateway(
 
     override suspend fun sync(store: HealthImportRepository): HealthSyncResult {
         require(store === activities) { "Health import must use the application's own repository." }
+        return syncSelection(bodyOnly = false)
+    }
+
+    /** Explicit body-screen refresh never reads workouts, even when selected elsewhere. */
+    suspend fun syncBodyMeasurements(): HealthSyncResult = syncSelection(bodyOnly = true)
+
+    private suspend fun syncSelection(bodyOnly: Boolean): HealthSyncResult {
         if (availability() != HealthAvailability.AVAILABLE)
             return HealthSyncResult(
                 HealthSyncStatus.UNAVAILABLE,
                 message =
                     "Apple Health is unavailable. Manual details and retained training remain available.",
             )
-        val wantWorkouts = selectedWorkouts()
+        val wantWorkouts = !bodyOnly && selectedWorkouts()
         val metrics = selectedBodyMetrics().toSet()
         if (!wantWorkouts && metrics.isEmpty())
             return HealthSyncResult(

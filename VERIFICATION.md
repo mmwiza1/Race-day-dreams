@@ -1,3 +1,21 @@
+# Experimental Android/iOS migration — checkpoint142 (not release acceptance)
+
+Branch `experiment/android-ios-kmp-compose`, draft PR24. Original Gym Now operations and entry,
+execution, builder/editor and authored-programme screens now share production code with Android.
+Typed body measurements, body-only Apple Health refresh and manual/history/protein content are
+shared. A checked Apple SQLite error now retains Gym input and the existing pending retry flow.
+No schema/version/backup/permission change; native destructive restore/cleanup remains disabled.
+
+Final local common metadata/debug APK/test APK/lint passed6m36s/176tasks after an environment-
+terminated attempt. Three new real JDBC body contracts passed,0failures/errors/skips. Pinned991
+formatting targets,18formatter contracts, exact19schema boundaries,3source-fingerprint tests and
+10release-note tests passed/applied. Latest Android runtime/Apple tests/framework are PENDING
+for this source; expected640focused Android and Native449/27/658. An actual iOS app host and
+remaining native services/full API28/35/36/app/visual acceptance remain unfinished. No publication
+or physical-device acceptance is claimed. `CONTINUE_CODEX.md` records the exact recovery boundary.
+
+The completed0.12.3 release records below describe the earlier main build, not this experiment.
+
 # 0.12.3-test1 — merged, verified and published
 
 PR22squashmerged as`0f866185beac51760a3459806ad725eeda10ac56`, identical tree to verifiedPRheadb80a1e0.

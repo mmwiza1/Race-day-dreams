@@ -62,7 +62,68 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, Gym UI through140 locally verified
+### Latest recovery pointer — 17 November, through142 locally verified
+
+Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24. All workspace edits137–138
+survived and recovery-only5235f2f was safely fast-forwarded.137–138committed0e01af2;139–140committed
+532f64e.141–142are locally verified in THIS coherent checkpoint. Ready for ONE combined normal
+push; inspect actual PR head/run first if resuming, never repeat pushes or cancel useful Native CI.
+Main85e1c39/ownerPR23 untouched; no replacement PR, version bump or public artifact publication.
+
+Completed137–140: original Gym Now operations, entry/live/builder/slot-editor and authored programme
+screens are COMMON and USED by Android. Same execution/association coordinators, one SQL pool,
+IO mutex, retained inputs, exact-retry acknowledgements, timers/supersets/warm-ups/exclusions/swaps.
+Android keeps real lifecycle/back/permission, process+monotonic/rest clocks/alerts, UK dates and
+exact target/actual formatting. Original Home/plan/root/authoring/generation/recovery/body/milestone
+operations were already shared; do not repeat these ports or the COMPLETE0Java-domain conversion.
+
+Completed141–142: SqliteBodyMeasurements implements original typed body interface over EXISTING
+height/context stores; Native can reuse manual history/preferences and the established visible-only
+HealthKit import. Apple visible reads cannot replace retained windows. Existing shared+real Apple
+SDK facades now offer body-only refresh through SAME import pipeline, never globally selected
+workouts. New actual SQL/shared-gateway privacy case is registered. Original body manual/history/
+protein UI is shared and USED by Android with required real dates/numbers/access-note bindings and
+SDK provider-control slot. Android public API/lifecycle/tokens/copy retained. Empty Apple permission
+identifiers remain UNKNOWN, never invented grants or inferred denial. Actual iOS host still missing.
+
+Also corrected demonstrated exception mismatch: AppleSqliteDatabase throws StorageException,
+which is an Exception rather than RuntimeException. Shared Gym command/panel/display handlers
+now preserve cancellation and expose original pending-write retry after such failures. New third
+real SQL Gym case injects that exact exception BEFORE a write, retaining input/no persisted set
+until explicit retry. Original after-persist lost-ack and superset/timer cases/assertions remain.
+New Gym test added to pinned formatting targets; all126prior focused test classes retained.
+
+Actual LOCAL gates:138metadata/APKs/lint PASS6m08/176;139PASS6m48/176;140PASS6m18/176;
+141targeted3JDBC+metadata/APKs/lint PASS9m03/180. XML JdbcBodyMeasurementsTest proves3tests,
+0fail/errors/skips: same-store/explicit-basis/outer rollback; visible Apple no deletion/basis;
+authoritative window scope +late weight failure rolls back heights, null metric preserves history.
+Same3actual Apple SQLite tests registered, NOT tested on Linux.142first gate was TERMINATED by
+workspace restart during shared compilation, no failure/completion result; process/session vanished.
+Resumed ONLY interrupted final gate: scratch/kmp142-body-resumed.log PASS6m36/176tasks. First
+incomplete log scratch/kmp142-body-final.log is NOT a pass/failing-test result. Formatting991files
+(896Kotlin95Java) applied; format18contracts/schema19exact/source3/release10/diffcheck PASS.
+Current debugAPK aapt:0.12.3-test1/code19/min28/noINTERNET. No physical/emulator runtime pass
+is claimed by compilation. Expected next640focused Android and Native449domain/27health/658storage
+plus real framework remain PENDING until exact new-head CI. A framework is NOT an iOS application.
+
+Prior13664fa114 experiment44142035037 BOTH jobs SUCCESS636Android; independently SHA/ZIP/XML
+verified JVM490/25/655 and Native449/27/655 all0fail/errors/skips. Proofs scratch/kmp136-verified/.
+Recovery-only5235experiment44157873531 BOTH jobs SUCCESS. These are prior-source results only.
+
+Next exact tasks: finish one coherent push through142 to existing PR24 if not already there;
+inspect real Android/Apple jobs and new runtime cases, fix actual failures without weakened tests
+or blind reruns. Then remaining active shared UI/navigation/platform input/assets and REAL native
+application/SDK composition (recording/location, BLE, notifications/audio/documents, clocks and
+retained input), iOS host/entitlements/usage strings. Body typed adapter/SDK body-only flow now
+exist; finish their host wiring, not another kernel. ONE actual app-owned operation guard must
+cover EVERY native backup/restore/cleanup path before destructive controls are enabled; they stay
+OFF. Existing shared storage/backup/retention kernels are complete. Final full API28/35/36 and
+actual iOS APP/runtime, backup/migrations, authentic source-bound light/dark/200% visual gates
+remain mandatory when implementation ready. Physical device tests remain UNPERFORMED.
+Version0.12.3-test1/code19/schema19/rootJSON13/raw3/package1 unchanged. No merge/publication
+until complete cross-platform acceptance; do not mistake this locally verified checkpoint for it.
+
+### Latest recovery pointer — 17 November, Gym UI through140 locally verified (historical)
 
 Continue experiment/android-ios-kmp-compose / DRAFT PR24.137–138committed locally0e01af2,
 recovering ALL surviving edits and safely fast-forwarding5235f2f.139–140now applied/locally verified:
@@ -80,12 +141,29 @@ All126prior focused test classes/assertions retained; only new SharedGymNowCoord
 Source136archives independently verified as below. Recovery5235experiment44157873531 BOTH jobs
 SUCCESS. No running useful old Native job to cancel; next push should be coherent new source.
 
-Next141PREPARED ONLY in scratch/body141/{apply.py,SqliteBodyMeasurements.kt,
-BodyMeasurementsRepositoryContract.kt}: missing typed body adapter over EXISTING heights/context
-and explicit body-only Apple refresh. Reuses existing visible-only import; no new storage kernel.
-Inspect actual files before applying ONCE. Run new3JDBC contracts, metadata/APKs/lint and actual
-Native verification, add body-only runtime privacy case (next expected639Android/658storage).
-Then one combined push to PR24 and inspect exact-head Android/Apple results; no premature merge.
+141is APPLIED/uncommitted, not just prepared: SqliteBodyMeasurements implements the existing
+body interface using original heights/context stores, rejects visible-only Apple window replacement,
+and keeps the existing HealthKit merge owner. Shared+real Apple SDK facades expose body-only sync
+through the SAME import pipeline without reading globally selected workouts. New3actual JDBC
+contracts PASS0fail/error/skip (XML JdbcBodyMeasurementsTest); same3Apple tests registered, NOT
+run locally. New actual Android shared-gateway body-only privacy case added, runtime pending.
+Current metadata/debugAPK/testAPK/lint command still running: scratch/kmp141-body-gate.log.
+No claim of final141build/lint/Android/Native acceptance. Next expected639Android/658storage.
+
+142body UI is APPLIED/uncommitted. Actual manual/history/protein content is shared with
+required real date/number/access-note bindings and actual SDK provider-control slot. Android
+public API/lifecycle/tokens/copy retained; no unknown Apple grant is labelled denied by shared UI.
+Also fixes demonstrated platform exception mismatch: AppleSqliteDatabase throws StorageException
+(checked Exception), while original shared Gym Now caught only RuntimeException. Command/panel/
+display handlers now catch Exception with cancellation rethrow, retaining pending exact-retry.
+New third Gym SQL case injects the actual StorageException class before saving and asserts
+unchanged input/no persisted set until explicit retry; both old cases/assertions remain. Added
+new Gym test to pinned formatter targets. Expected next640Android/658storage, NOT yet verified.
+141FINAL targeted3JDBC+metadata/APKs/lint PASS9m03s/180tasks, scratch/kmp141-body-gate.log.
+142FINAL metadata/APKs/lint still running/queued after formatter: scratch/kmp142-body-final.log.
+Do NOT rerun applied scratch/port_body_ui142.py or body141/apply.py. Last formatting990files
+before the added Gym test target; final991(896Kotlin95Java) pending confirmation. Format18/schema19/
+source3/release10 PASS. Then coherent commit and ONE combined PR24 push; inspect exact-head CI.
 Remaining full native host/SDK/navigation/UI/lifecycle guard/final app+matrix/visual gates remain
 as recorded below. All physical acceptance UNPERFORMED. Version/formats remain19/19/13/3/1.
 

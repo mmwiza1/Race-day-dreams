@@ -52,6 +52,9 @@ class AppleHealthGateway(
 
     override suspend fun sync(store: HealthImportRepository) = shared.sync(store)
 
+    /** Uses only selected body categories and the same owned database/import pipeline. */
+    @Throws(Exception::class) suspend fun syncBodyMeasurements() = shared.syncBodyMeasurements()
+
     /** Completion means only that Apple's request sheet finished, never that read access exists. */
     @Throws(Exception::class) suspend fun requestWorkoutReadAccess() = workouts.requestReadAccess()
 

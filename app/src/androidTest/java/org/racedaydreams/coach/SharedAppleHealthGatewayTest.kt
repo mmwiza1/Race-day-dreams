@@ -126,6 +126,28 @@ class SharedAppleHealthGatewayTest {
         }
     }
 
+    @Test
+    fun bodyOnlyRefreshCannotImportGloballySelectedWorkoutsOrInferReadGrants() = fixture { f ->
+        assertTrue(f.selection.workouts)
+        val result = runBlocking { f.gateway.syncBodyMeasurements() }
+        assertEquals(HealthSyncStatus.PARTIAL, result.status)
+        assertEquals(0, f.source.workoutCalls)
+        assertEquals(1, f.source.bodyCalls)
+        assertTrue(f.activities.activities().isEmpty())
+        assertEquals(1, f.context.weights().size)
+        assertEquals(1, f.heights.heights(20, 0).size)
+        assertFalse(f.heights.preferences().proteinEnabled())
+        assertNull(f.heights.preferences().basis())
+        assertTrue(runBlocking { f.gateway.grantedPermissions() }.isEmpty())
+        val before = rows(f)
+        f.selection.metrics = emptySet()
+        val none = runBlocking { f.gateway.syncBodyMeasurements() }
+        assertEquals(HealthSyncStatus.PERMISSION_REQUIRED, none.status)
+        assertEquals(0, f.source.workoutCalls)
+        assertEquals(1, f.source.bodyCalls)
+        assertEquals(before, rows(f))
+    }
+
     private fun rows(f: Fixture) =
         listOf(
             f.db.query("SELECT * FROM activities ORDER BY id"),
