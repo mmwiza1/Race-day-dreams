@@ -66,13 +66,16 @@ incomplete migration merely because a focused checkpoint passes.
 
 Continue `experiment/android-ios-kmp-compose` / DRAFT PR24.1249d4554f +12561e038d are
 COMMITTED/PUSHED; remote HEAD61e038d7daa8fec5e2a1fb4e4bd51c4f5d68817a. Experiment44106763790
-is running610Android/648Native/framework; formatting44106763460 SUCCESS. Prior12302efa0c passed
+has Android SUCCESS610unique tests/0fail/skips +700189domain checks; Apple Native/framework
+still RUNNING. Formatting44106763460 SUCCESS. Prior12302efa0c passed
 601Android/700189domain and Native449/27/646/framework, independently verified below.
-LOCAL126 shared application composition is COMPLETE/locally verified. Preserve common
+LOCAL126 shared application composition is COMMITTED ase9a393b/locally verified. Preserve common
 SharedCoachApplicationServices, Android root/baseline wrapper, actual SQL/root tests and workflow/
 format targets. FINAL metadata/debug+testAPK/lint PASS7m14s/176tasks,
 scratch/kmp-application-root-final.log. Format953+final changed test, schema19/source3 PASS.
-Commit126+handoff locally, but do not push/cancel useful125 CI. Next613Android/648Native pending.
+Do not push/cancel useful125 Apple CI. Next613Android/648Native pending. Shell gh API token
+began401 at15:03; connected GitHub tools WORK and normal Git push DRY-RUN PASSED (no mutation).
+Use connector for CI polling; no credentials/history rewritten. Normal push remains available.
 125local gate PASS7m35s/176tasks;124health25/storage648 JVM +APKs/lint PASS8m24s. No schema/
 backup/version/permission change. Main85e1c39 and owner PR23 preserved. Actual iOS APP/full active
 UI/navigation/platform/final gates remain incomplete; framework is not app acceptance. Native
@@ -5627,16 +5630,35 @@ restore/prune controls remain OFF until EVERY operation uses one real applicatio
   formatting44106763460 SUCCESS. No schema/backup/version/permission/publication changes; Native
   destructive UI remains disabled. Actual app/platform/navigation/SDK integration remains next.
 
+### Current remote125 proof /126 exact recovery
+
+-125Android134121100783 SUCCESS on61e038d: completed log has610unique matching START/END cases,
+  all three new running-evidence/health/settings cases +existing running-plan/strength cases3each,
+  zero failure/skips,700189domain checks. scratch/kmp125-android-job.log. Apple134121100041 is still
+  usefully RUNNING Native tests as last observed15:06; no current648Native/framework pass claimed.
+- Byte/digest-verified125 JVM490domain/25health/648storage ALL0fail/error/skip:
+  artifact14339821998,185995bytes,SHA043075c2fd035858bbf8ad2f7c8a4cabf868719b2eb3267fc29570fdb2735028.
+  APK14340880308 ZIP30770328/SHA8159b83b47faeb752d059c83d78aab4ec06cbf27667ba8bb96bbd0126c479e6b;
+  APK58434886bytes/SHA2304f167ba6fd34b66a599e1b2940bac376778a35ccf6207864b774618285efb,
+  0.12.3-test1/code19/min28/noINTERNET. Proof scratch/kmp125-android/verification.json.
+-126e9a393b common root +actual Android use +3SQL/root tests is COMMITTED LOCALLY, not pushed.
+  Local final metadata/debug+testAPK/lint7m14s/176tasks PASS; format953+final root test/schema/source
+  PASS. Additional recovery/architecture documentation has NO app-source/fixture changes.
+- At15:03 shell gh API returned401. Connected GitHub tools still work; normal Git ls-remote and
+  push --dry-run both SUCCESS, without ref mutation. Managed runtime guidance/status inspected:
+  environment ready, no credential values exposed/rewritten. No owner reconnect required for
+  Git transport; use connector fetch_workflow_run_jobs/artifacts/logs instead of expired gh API.
+
 ### Exact next safe actions and remaining full scope
 
-1.126local root build is PASS7m14s/176tasks (metadata/debug+testAPK/lint), format953+final
-   root test/schema19/source3 PASS. Commit126+current recovery locally. Inspect125 experiment
-   44106763790 actual610Android/648Native/framework without cancellation; format44106763460PASS.
-   Only once useful125 CI finishes, push126 once and verify613Android/648Native/framework. Fix
-   actual failures; never infer Native/runtime from local compilation. Then prioritize REAL iOS
-   app host +active shared UI/navigation and platform SDK effects USING the actual shared root.
-   Do not restart domain/storage kernels or create an empty host/prototype. One real lifecycle
-   owner across every host data operation remains required before destructive Native UI.
+1. Preserve126e9a393b and this local recovery. Wait for useful125 Apple134121100041/run44106763790
+   using CONNECTED GitHub tools (shell gh API401). Android610/700189/JVM648 already verified.
+   Inspect real Apple result and download/digest-check Native648 XML/framework. Do not cancel.
+   Once complete, normal Git push126+recovery ONCE to existing DRAFT24 (push dry-run succeeded);
+   verify next613Android/648Native/framework. Diagnose any actual failures; no blind reruns.
+   Then actual iOS app host/active shared UI/navigation/SDK integration USING the common root,
+   not another domain/storage restart or empty prototype. Native destructive UI remains OFF
+   until one actual SqliteDataLifecycle owner covers every host operation. No early merge/pub.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

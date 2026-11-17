@@ -62,6 +62,14 @@ SavedStateHandle draft protection and compatibility entry points. `CoachOperatio
 serialises commands and publishes one coherent `CoachUiState` through `CoachSnapshotReader`;
 features do not create competing snapshots or duplicate core training rules.
 
+The experimental Android/iOS migration uses `SharedCoachApplicationServices` in common code
+for the actual coordinator composition, one runner and `SharedCoachSnapshotReader`. Android
+supplies its existing repositories and SDK effects through required `CoachRepositories` and
+`CoachPlatformBindings`, retaining its lifecycle/timezone adapters. Construction performs no
+storage IO. Native app/SDK bindings and final application verification remain unfinished;
+compiling the shared framework alone is not iOS application acceptance. Native destructive
+restore/cleanup stays disabled until one actual lifecycle owner protects every operation.
+
 ```text
 CoachActivity + feature destination registrations + presentation screens
   -> feature application coordinators / one command runner + coherent read model
