@@ -4968,17 +4968,61 @@ incomplete migration merely because a focused checkpoint passes.
   remain unfinished. ONE data-operation owner must guard ALL app/service mutation and backup paths.
   Native destructive UI stays OFF; no early merge/version bump/publication or next release.
 
+### Checkpoint110 — shared coherent snapshot and confirmed Native test fix (17 November)
+
+- Preserved109b69b886 and all earlier checkpoints. Experiment44057707591 completed MIXED:
+  Android133951222121 SUCCESS with560unique START/END tests,700,189domain/48suites, schema75,
+  all3builds/lint; Apple133951222515 failed compiling ONLY the new common rollback test at
+  CoachingRepositoryContract.kt:130. JVM accepts a lambda through Runnable; Native's actual
+  CoachingTransaction interface does not. Corrected the SAME rollback test to an explicit
+  object implementing run(); no transaction API, implementation or assertion weakened.
+- Independently verified109JVM artifact14317916693 ZIP183,913bytes/SHA256
+  d9abc285f1a8cf3dda8d67c99ca32531b980de7344cccb3342dc2e055b425254:
+  490domain/25health/628storage,0fail/error/skip. PrivateAPK14317572059 ZIP30,741,210bytes /
+  SHA95a024d0514e2a9fb601d0205fc273bc1fcfb5a130ec197f5d13f6373c36d8e6; APK58,352,966bytes /
+  SHA7561a9db169a68a5003271d885b2613da713307721b9084204974ec695af2cff. aaptcode19/min28/noINTERNET.
+  Proofs scratch/coaching-b69-{jvm,apk}/verification.json and coaching-b69-android-{job.log,proof.json}.
+  This is NOT a green Apple checkpoint and NOT a publishable complete migration.
+- Extracted the ACTUAL Android CoachSnapshotReader orchestration into common SharedCoachSnapshotReader.
+  Same baseline/manual-overlay/eligibility calculations; same actual evidence, optional adaptive
+  proposal/weekly-review deduplication; same reminder reconciliation order; same authored-versus-
+  legacy Strength Today selection; same stored-input priority, choices/exclusions/links and settings.
+  Uses the existing common AdaptiveCoaching kernel (JVM Optional wrapper removed from caller),
+  injected real clock/local date and platform IO dispatcher. No training/recording calculation changed.
+- CoachSnapshotSources is a REQUIRED typed host boundary, without empty/default implementations:
+  actual permission reads, imported coverage, profile/draft, retained development/gym/user evidence
+  and reminder delivery stay explicitly host-bound. Existing Android CoachSnapshotReader constructor
+  stays source-compatible and now only binds these real Android stores/services to the shared reader.
+  Android continues using the shared reader through the existing CoachApplicationServices/serial runner.
+- SIX new real SQLite Android tests cover Strength-only/no race/no health setup without invented
+  evidence/SQL writes; permission revocation as unknown; granted permission without fabricated
+  activity/eligibility; recent-versus84day import coverage with exact nanoseconds; saved-input/units/
+  choices/exclusions/provenance; repeated optional weekly review stored once BEFORE reminder
+  reconciliation without plan activation. Existing completion/onboarding/interaction tests retained.
+  Added this class to focused CI: new expected566Android (560+6). Native should run corrected
+  628storage with205matching IO/SQL/health/coaching names and compile the ACTUAL shared snapshot.
+- Local common metadata, corrected8coaching JVM tests and Android production/test compilation PASS
+  2m32s/77tasks before final formatting. FINAL formatted8coaching JVM tests/common metadata/Android
+  production+test compile/lint PASS4m36s/137tasks, scratch/kmp-shared-snapshot-final.log. Pinned926
+  sources(831Kotlin/95Java), exact19migration boundaries and75schema tests PASS; diff checks clean.
+- NEXT: inspect this new exact-head CI, fix actual failures before changing persistence further.
+  Then bind shared snapshot sources to real shared repositories (operational weekly/development
+  context is still Android-hosted), migrate remaining application services/root/navigation and
+  implement actual iOS app host/services/permissions. No new fake empty native bindings; no separate
+  product/demo. Full native HealthKit owner/HR/route, GPS/BLE/notifications/audio/lifecycle and ONE
+  all-mutation/backup operation owner remain unfinished. Native destructive UI OFF. Full final gates,
+  screenshots, physical checks, no early bump/merge/publication remain as below.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint109 is latest recovery boundary.108ce74dca is fully green/byte-verified: actual
-   common-state/command-runner/NativeIO compilation, Android549, JVM25health/620storage and Native
-   27health/620storage,197matching IO/SQL/HealthKit cases. New109local628storage/meta/Android test
-   compile/lint PASS3m32s/126tasks, format923/formatter14/schema19/source3 PASS. Inspect upstream,
-   push ONCE if ahead and update DRAFT24. Verify new actual Native628/205matching cases and Android
-   560runtime including new borrowed-driver tests and original CoachingStore/browser tests. Fix
-   real failures before expanding; no test weakening or blind retry. Then actual shared snapshot /
-   app services/root/navigation, native services/iOS host. No destructive native UI, reset/restart,
-   early version bump, merge or public publication.
+1. Checkpoint110 is latest recovery boundary: shared operational coaching backend/state/runner
+   AND actual snapshot orchestration now implemented and used by Android.109Android560/JVM628
+   passed, but109Apple failed compiling one common test lambda;110uses an explicit transaction
+   object with the SAME assertions. Verify110local final compile/lint/format/schema, commit/push
+   ONCE if ahead, then inspect exact-head Native628/common snapshot/framework and Android566runtime.
+   Do not claim a green Native result from109. Fix real failures, never weaken tests or blindly rerun.
+   Then actual shared snapshot-source repositories/app services/root/navigation/native host. No
+   destructive native UI/reset/restart/early version bump/merge/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

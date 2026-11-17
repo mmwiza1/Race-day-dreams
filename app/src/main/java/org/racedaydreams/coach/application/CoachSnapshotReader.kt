@@ -1,10 +1,7 @@
 package org.racedaydreams.coach.application
 
-import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.CoachUiState
 import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.data.GymProgrammeStore
@@ -14,16 +11,11 @@ import org.racedaydreams.data.StrengthUserStore
 import org.racedaydreams.domain.activity.ActivityRepository
 import org.racedaydreams.domain.activity.ResultRepository
 import org.racedaydreams.domain.activity.ShoeRepository
-import org.racedaydreams.domain.baseline.BaselineEngine
 import org.racedaydreams.domain.baseline.BaselineRepository
-import org.racedaydreams.domain.baseline.PerformanceEligibilityEvaluator
-import org.racedaydreams.domain.body.MassUnit
-import org.racedaydreams.domain.coaching.AdaptiveCoachingEngine
 import org.racedaydreams.domain.coaching.CoachingRepository
 import org.racedaydreams.domain.coaching.PlannedWorkoutRepository
 import org.racedaydreams.domain.coaching.WeeklyCoaching
 import org.racedaydreams.domain.settings.PrimaryFocusRepository
-import org.racedaydreams.health.HealthAvailability
 import org.racedaydreams.health.HealthConnectGateway
 import org.racedaydreams.reminders.EveningReminders
 
@@ -47,95 +39,54 @@ class CoachSnapshotReader(
     private val savedDraft: () -> String?,
     private val programming: org.racedaydreams.domain.strength.StrengthProgrammingRepository? = null,
 ) {
-    suspend fun read(): CoachUiState {
-        val permissions =
-            if (health.availability() == HealthAvailability.AVAILABLE) {
-                try {
-                    health.grantedPermissions()
-                } catch (_: Exception) {
-                    emptySet()
-                }
-            } else emptySet()
-        val snapshot =
-            withContext(Dispatchers.IO) {
-                val profile = profiles.load().orElse(null)
-                val activities = activitiesRepository.coachingActivities(LocalDate.now())
-                val results = resultsRepository.results()
-                val manual = baselineRepository.savedManualBaseline()
-                val now = Instant.now()
-                val healthWindow =
+    private val shared =
+        SharedCoachSnapshotReader(
+            activitiesRepository,
+            resultsRepository,
+            shoesRepository,
+            baselineRepository,
+            settings,
+            planned,
+            object : CoachSnapshotSources {
+                override fun primaryFocus() = focus.load().orElse(null)
+
+                override fun profile() = profiles.load().orElse(null)
+
+                override fun profileDraft() = profiles.loadDraft().orElse(null)
+
+                override fun importWindow() =
                     HealthConnectGateway.importWindow(
                         activitiesRepository.importToken(HealthConnectGateway.PROVIDER)
                     )
-                val from =
-                    maxOf(
-                        healthWindow?.first ?: now.minus(Duration.ofDays(84)),
-                        now.minus(Duration.ofDays(84)),
-                    )
-                val derived = BaselineEngine.derive(activities, results, from, now)
-                val baseline =
-                    BaselineEngine.applyManualOverlay(
-                        derived,
-                        manual,
-                        baselineRepository.manualBaselineRecordedAt(),
-                    )
-                val eligibility =
-                    PerformanceEligibilityEvaluator.evaluate(
-                        baseline,
-                        now,
-                        baselineRepository.manualBaselineRecordedAt(),
-                    )
-                val currentPlan = coaching.current()
-                val strength = coaching.strength()
-                val responses = coaching.responses()
-                if (currentPlan != null) {
-                    AdaptiveCoachingEngine.review(
-                            currentPlan,
-                            activities,
-                            responses,
-                            strength,
-                            LocalDate.now(),
-                            now,
-                        )
-                        .ifPresent { proposal ->
-                            if (!coaching.proposalKnown(proposal.id()))
-                                coaching.saveProposal(proposal)
-                        }
-                }
-                val history = coaching.versions()
-                val review =
-                    currentPlan?.let {
-                        WeeklyCoaching.review(
-                            it,
-                            history,
-                            activities,
-                            responses,
-                            strength,
-                            results,
-                            LocalDate.now(),
-                            development.interruption(),
-                            development.sessionDecisions(),
-                            baseline.confidence(),
-                            baselineRepository.assessments(),
-                        )
-                    }
-                if (review != null && !development.reviewKnown(review.id()))
+
+                override fun shoeDiscomfort(): Set<String> =
+                    release.get("config", "shoe-feedback")?.getJSONArray("activities")?.let { a ->
+                        (0 until a.length()).map { a.getString(it) }.toSet()
+                    } ?: emptySet()
+
+                override fun interruption() = development.interruption()
+
+                override fun sessionDecisions() = development.sessionDecisions()
+
+                override fun reviewKnown(id: String) = development.reviewKnown(id)
+
+                override fun saveReview(review: WeeklyCoaching.Review) =
                     development.saveReview(review)
-                reminders.reconcile()
-                val programmeReference = programming?.currentReference()
-                val authoredGymProgramme =
-                    if (
-                        programmeReference?.owner() ==
-                            org.racedaydreams.domain.strength.StrengthProgrammingRepository.Owner
-                                .AUTHORED
-                    )
-                        programming?.programme(
-                            programmeReference.id(),
-                            programmeReference.revision(),
-                        ) ?: error("The current authored programme is missing.")
-                    else null
-                val gymProgramme = if (authoredGymProgramme == null) gym.current() else null
-                val gymLinks =
+
+                override fun decisionForReview(review: WeeklyCoaching.Review) =
+                    development.decisionForReview(review)
+
+                override fun reconcileReminders() = reminders.reconcile()
+
+                override fun reminderPreferences() = reminders.preferences().shared()
+
+                override fun weights() = development.weights()
+
+                override fun historicalStrength() = development.historical()
+
+                override fun strengthLinks() = development.strengthLinks()
+
+                override fun gymLinks() =
                     development.gymLinks().mapValues { (_, link) ->
                         org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
                             link.actualSessionId(),
@@ -143,103 +94,48 @@ class CoachSnapshotReader(
                             link.prescribedSessionId(),
                         )
                     }
-                val associations =
-                    gymLinks.values.map {
-                        org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
-                            it.actualSessionId(),
-                            it.versionKey(),
-                            it.prescribedSessionId(),
+
+                override fun gymProgramme() = gym.current()
+
+                override fun gymVersions() = gym.versions()
+
+                override fun gymDecisions() =
+                    gym.decisions().map { decision ->
+                        org.racedaydreams.storage.LegacyGymProgrammePayloadJson.Decision(
+                            decision.id(),
+                            decision.baseVersion(),
+                            decision.resultingVersion(),
+                            decision.prescribedSession(),
+                            decision.exerciseId(),
+                            decision.choice(),
+                            decision.evidence(),
+                            decision.at(),
                         )
                     }
-                val strengthToday =
-                    if (authoredGymProgramme != null)
-                        org.racedaydreams.domain.presentation.StrengthTodaySummary.fromAuthored(
-                            authoredGymProgramme,
-                            strength,
-                            associations,
-                            LocalDate.now(),
-                            now,
+
+                override fun exerciseChoices() =
+                    choices.choices().map { choice ->
+                        org.racedaydreams.storage.SqliteStrengthChoices.Choice(
+                            choice.exerciseId(),
+                            choice.favourite(),
+                            choice.archived(),
                         )
-                    else
-                        org.racedaydreams.domain.presentation.StrengthTodaySummary.from(
-                            gymProgramme,
-                            strength,
-                            associations,
-                            LocalDate.now(),
-                            now,
-                        )
-                CoachUiState(
-                    loading = false,
-                    startingPath = settings.getSetting("starting.path"),
-                    primaryFocus = focus.load().orElse(null),
-                    shoeDiscomfort =
-                        release.get("config", "shoe-feedback")?.getJSONArray("activities")?.let { a
-                            ->
-                            (0 until a.length()).map { a.getString(it) }.toSet()
-                        } ?: emptySet(),
-                    profile = profile,
-                    activities = activities,
-                    results = results,
-                    shoes = shoesRepository.shoes(),
-                    assessments = baselineRepository.assessments(),
-                    baseline = baseline,
-                    manualBaseline = manual,
-                    currentPlan = currentPlan,
-                    planVersions = history,
-                    weights = development.weights(),
-                    historicalStrength = development.historical(),
-                    massUnit =
-                        runCatching { MassUnit.valueOf(settings.getSetting("mass.unit") ?: "KG") }
-                            .getOrDefault(MassUnit.KG),
-                    gymLinks = gymLinks,
-                    gymProgressionDecisions =
-                        gym.decisions().map { decision ->
-                            org.racedaydreams.storage.LegacyGymProgrammePayloadJson.Decision(
-                                decision.id(),
-                                decision.baseVersion(),
-                                decision.resultingVersion(),
-                                decision.prescribedSession(),
-                                decision.exerciseId(),
-                                decision.choice(),
-                                decision.evidence(),
-                                decision.at(),
-                            )
-                        },
-                    gymProgramme = gymProgramme,
-                    authoredGymProgramme = authoredGymProgramme,
-                    strengthToday = strengthToday,
-                    gymVersions = gym.versions(),
-                    exerciseChoices =
-                        choices.choices().map { choice ->
-                            org.racedaydreams.storage.SqliteStrengthChoices.Choice(
-                                choice.exerciseId(),
-                                choice.favourite(),
-                                choice.archived(),
-                            )
-                        },
-                    exerciseExclusions = choices.exclusions(),
-                    acknowledgedPbs = choices.acknowledged(),
-                    calendarView = settings.getSetting("calendar.view") ?: "List",
-                    workoutDecisions = development.sessionDecisions(),
-                    weeklyReview = review,
-                    weeklyDecision = review?.let { development.decisionForReview(it) },
-                    proposals =
-                        coaching.proposals().filter { it.baseVersionId() == currentPlan?.id() },
-                    strengthPlannedDates = development.strengthLinks(),
-                    strengthSessions = strength,
-                    exercises = coaching.exercises(),
-                    runResponses = responses,
-                    plannedWorkouts = planned.plannedWorkouts(),
-                    milestonesEnabled = settings.getSetting("milestones.enabled") == "true",
-                    reminderPreferences = reminders.preferences().shared(),
-                    performanceEligible = eligibility.eligible(),
-                    eligibilityReasons = eligibility.reasons(),
-                    baselineReviewed = settings.getSetting("baseline.reviewed") == "true",
-                    draft = savedDraft() ?: profiles.loadDraft().orElse(null),
-                    healthAvailability = health.availability(),
-                    healthPermissions = permissions,
-                )
-            }
-        return snapshot
-    }
+                    }
+
+                override fun exerciseExclusions() = choices.exclusions()
+
+                override fun acknowledgedPbs() = choices.acknowledged()
+
+                override fun healthAvailability() = health.availability()
+
+                override suspend fun grantedHealthPermissions() = health.grantedPermissions()
+            },
+            coaching,
+            savedDraft,
+            programming,
+            Instant::now,
+            LocalDate::now,
+        )
+
+    suspend fun read(): CoachUiState = shared.read()
 }

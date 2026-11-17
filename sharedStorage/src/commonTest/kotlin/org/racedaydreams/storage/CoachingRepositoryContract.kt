@@ -127,11 +127,15 @@ abstract class CoachingRepositoryContract {
     fun oneRejectedInterfaceTransactionRollsBackRunningAndStrengthCommandsTogether() =
         storage { _, repository ->
             assertFailsWith<IllegalStateException> {
-                repository.transaction {
-                    repository.saveCurrent(CoachingArchiveFixtures.version())
-                    repository.saveStrength(LegacyFingerprintFixtures.session())
-                    error("Reject the combined operation")
-                }
+                repository.transaction(
+                    object : CoachingTransaction {
+                        override fun run() {
+                            repository.saveCurrent(CoachingArchiveFixtures.version())
+                            repository.saveStrength(LegacyFingerprintFixtures.session())
+                            error("Reject the combined operation")
+                        }
+                    }
+                )
             }
             assertNull(repository.current())
             assertTrue(repository.versions().isEmpty())
