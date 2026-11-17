@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 169 iOS background location
+
+PR #24 remains at 25adcc6. Android and Apple jobs in experiment 44195464653
+were running at the last check. Local checkpoints 167–169 are queued.
+
+169 configures the iOS location background mode and enables background GPS
+delivery only within a user-started recording, with the existing When In Use
+permission and location indicator. Stopping the source disables background
+delivery. Batched fixes now keep their shared receipt clock throughout cue
+publication, avoiding a backwards-time exception on the next fix in the batch.
+Pinned touched formatting, plist parsing, diff and all 19 schema checks passed.
+Native compilation and actual locked-screen recording remain unverified.
+
+Next inspect the active CI result, correct demonstrated failures, then push
+the queued batch. Continue BLE, remaining iOS routes and release verification.
+Do not count simulator startup as physical recording acceptance.
+
 ### Latest recovery pointer — checkpoint 168 spoken Live Coach cues
 
 PR #24 remains at 25adcc6. Both platform jobs in experiment 44195464653

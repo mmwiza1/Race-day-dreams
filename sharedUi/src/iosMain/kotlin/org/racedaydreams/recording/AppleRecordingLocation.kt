@@ -106,6 +106,8 @@ class AppleRecordingLocation(
         check(canStart()) { "Location permission is required to record a run." }
         if (listening) return
         listening = true
+        manager.allowsBackgroundLocationUpdates = true
+        manager.showsBackgroundLocationIndicator = true
         manager.startUpdatingLocation()
     }
 
@@ -114,6 +116,7 @@ class AppleRecordingLocation(
         if (!listening) return
         listening = false
         manager.stopUpdatingLocation()
+        manager.allowsBackgroundLocationUpdates = false
     }
 
     private fun authorized(manager: CLLocationManager): Boolean =

@@ -19,12 +19,16 @@
 	<key>NSHealthShareUsageDescription</key>
 	<string>Race Day Dreams can read the workouts and body measurements you choose to import.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Race Day Dreams uses your location to record your route when you start an outdoor run.</string>
+	<string>Race Day Dreams uses your location during an outdoor run you start, including when the screen is locked.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

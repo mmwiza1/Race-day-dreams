@@ -63,11 +63,12 @@ class AppleRunRecorder(
                 val engine = session?.engine
                 if (engine != null && engine.qualifyDelivery(fix, received, wall))
                     engine.accept(fix)
-                publish()
+                // Multiple fixes in a Core Location batch share one receipt time.
+                publish(received)
             },
             onUnavailable = { time, wall ->
                 session?.engine?.missingFix(time, wall)
-                publish()
+                publish(time)
             },
             onAuthorizationChanged = { granted -> mutablePermission.value = granted },
         )
@@ -229,9 +230,8 @@ class AppleRunRecorder(
         id
     }
 
-    private fun publish() {
+    private fun publish(time: Long = AppleRecordingClock.monotonicMillis()) {
         val engine = session?.engine ?: return
-        val time = AppleRecordingClock.monotonicMillis()
         val status = engine.status(time)
         mutableStatus.value = status
         val planned = execution
