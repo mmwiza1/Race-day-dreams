@@ -118,3 +118,24 @@ jobs:
           name: experimental-shared-ios-framework
           path: sharedUi/build/bin/ios*/debugFramework/
           if-no-files-found: error
+
+      - name: Build the iOS simulator application
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            target=iosSimulatorArm64
+          else
+            target=iosX64
+          fi
+          xcodebuild -project iosApp/RaceDayDreams.xcodeproj -target RaceDayDreams \
+            -configuration Debug -sdk iphonesimulator ARCHS="$(uname -m)" \
+            CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="$PWD/iosApp/build" \
+            RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework" build
+          test -x iosApp/build/RaceDayDreams.app/RaceDayDreams
+          ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: experimental-ios-simulator-app
+          path: iosApp/build/RaceDayDreams-simulator.zip
+          if-no-files-found: error

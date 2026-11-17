@@ -55,7 +55,17 @@ class AppleCoachPlatform<File>(
     fun bindings(): CoachPlatformBindings<File> =
         CoachPlatformBindings(
             object : CoachSnapshotPlatform {
-                override fun importWindow() = readWindow().let { it.from to it.until }
+                override fun importWindow() =
+                    readWindow().let {
+                        Instants.ofEpochSecond(
+                            it.from.epochSeconds,
+                            it.from.nanosecondsOfSecond.toLong(),
+                        ) to
+                            Instants.ofEpochSecond(
+                                it.until.epochSeconds,
+                                it.until.nanosecondsOfSecond.toLong(),
+                            )
+                    }
 
                 override fun reconcileReminders() = this@AppleCoachPlatform.reconcileReminders()
 

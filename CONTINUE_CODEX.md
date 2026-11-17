@@ -62,6 +62,28 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 156 iOS application target
+
+Experiment 44186678584 at a85fcf0 finished Android successfully. Apple Native
+tests passed, then shared UI compilation failed on NSTimeZone.systemTimeZone
+and the inherited read-only notification properties. The batched changes
+replace the time-zone call with the existing Kotlinx calendar and use the
+mutable notification setter methods. SDK verification of those fixes is pending.
+
+156 adds iosApp/RaceDayDreams.xcodeproj, the SwiftUI entry, HealthKit entitlement,
+usage strings and Compose AppleAppHost. The host opens one app-private SQLite
+session and mounts shared first-run, recording/recovery and backup settings.
+Explicit Apple Health selection and request/import are wired. The Apple CI job
+now builds a simulator application after framework linking and archives the app
+with executable permissions. Local plist/YAML parsing, formatting and diff checks
+passed. Linux cannot verify xcodebuild. Check actual new CI before claiming success.
+
+This is partial production wiring. The full shared navigation, Home, running
+history/plan, strength and health screens, app lifecycle and remaining native
+services are still unfinished. Maintain draft PR #24. Next diagnose the new
+Apple compile/build results, launch the actual simulator app and continue the
+existing screen integrations. Do not claim feature parity, release or hardware testing.
+
 ### Latest recovery pointer — checkpoint 155 iOS recording screen
 
 Draft PR #24 is still at a85fcf0. Experiment 44186678584 had Android running

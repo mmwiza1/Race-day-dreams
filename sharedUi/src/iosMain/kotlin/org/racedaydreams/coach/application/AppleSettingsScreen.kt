@@ -17,7 +17,11 @@ import platform.UIKit.UIViewController
 
 /** iOS settings content wired to the real session and system document picker. */
 @Composable
-fun AppleSettingsScreen(session: AppleCoachSession<*>, presenter: UIViewController) {
+fun AppleSettingsScreen(
+    session: AppleCoachSession<*>,
+    presenter: UIViewController,
+    health: @Composable () -> Unit = {},
+) {
     val state by session.services.operations.state.collectAsState()
     val reminderFailure by session.platform.reminderFailure.collectAsState()
     val scope = rememberCoroutineScope()
@@ -51,6 +55,7 @@ fun AppleSettingsScreen(session: AppleCoachSession<*>, presenter: UIViewControll
 
     CoachPage {
         CoachHeading("Settings")
+        health()
         SharedPrimaryFocusSettings(state) { session.services.settings.primaryFocus(it) }
         SharedBackupSettings(
             busy = state.busy || exporting,
@@ -61,7 +66,7 @@ fun AppleSettingsScreen(session: AppleCoachSession<*>, presenter: UIViewControll
                     "The complete backup also includes detailed recordings still on this device. " +
                     "These backups are not encrypted by the app. Keep them somewhere you trust.",
         )
-        val feedback = message ?: state.error ?: reminderFailure
+        val feedback = message ?: state.error ?: state.message ?: reminderFailure
         if (feedback != null) {
             Text(feedback, Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         }

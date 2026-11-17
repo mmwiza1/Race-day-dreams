@@ -1,0 +1,30 @@
+// !$*UTF8*$!
+{
+ archiveVersion = 1;
+ classes = {};
+ objectVersion = 56;
+ objects = {
+  A00000000000000000000001 = {isa = PBXProject; buildConfigurationList = A0000000000000000000000B; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; mainGroup = A00000000000000000000002; productRefGroup = A00000000000000000000003; targets = (A00000000000000000000004,); };
+  A00000000000000000000002 = {isa = PBXGroup; children = (A00000000000000000000005,A00000000000000000000003,); sourceTree = "<group>"; };
+  A00000000000000000000003 = {isa = PBXGroup; children = (A00000000000000000000006,); name = Products; sourceTree = "<group>"; };
+  A00000000000000000000004 = {isa = PBXNativeTarget; buildConfigurationList = A0000000000000000000000C; buildPhases = (A00000000000000000000007,); buildRules = (); dependencies = (); name = RaceDayDreams; productName = RaceDayDreams; productReference = A00000000000000000000006; productType = "com.apple.product-type.application"; };
+  A00000000000000000000005 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceDayDreams.swift; sourceTree = "<group>"; };
+  A00000000000000000000006 = {isa = PBXFileReference; explicitFileType = wrapper.application; path = RaceDayDreams.app; sourceTree = BUILT_PRODUCTS_DIR; };
+  A00000000000000000000007 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A00000000000000000000008,); runOnlyForDeploymentPostprocessing = 0; };
+  A00000000000000000000008 = {isa = PBXBuildFile; fileRef = A00000000000000000000005; };
+  A00000000000000000000009 = {isa = XCBuildConfiguration; name = Debug; buildSettings = {SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; }; };
+  A0000000000000000000000A = {isa = XCBuildConfiguration; name = Debug; buildSettings = {
+   CODE_SIGN_ENTITLEMENTS = RaceDayDreams.entitlements;
+   FRAMEWORK_SEARCH_PATHS = ("$(inherited)", "$(RDD_FRAMEWORK_DIRECTORY)");
+   INFOPLIST_FILE = Info.plist;
+   OTHER_LDFLAGS = ("$(inherited)", "-framework", RaceDayShared, "-lsqlite3", "-lz");
+   PRODUCT_BUNDLE_IDENTIFIER = org.racedaydreams.ios;
+   PRODUCT_NAME = "$(TARGET_NAME)";
+   SWIFT_VERSION = 5.0;
+   TARGETED_DEVICE_FAMILY = "1,2";
+  }; };
+  A0000000000000000000000B = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000009,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+  A0000000000000000000000C = {isa = XCConfigurationList; buildConfigurations = (A0000000000000000000000A,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+ };
+ rootObject = A00000000000000000000001;
+}

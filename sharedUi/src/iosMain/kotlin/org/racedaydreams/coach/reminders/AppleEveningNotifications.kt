@@ -66,9 +66,9 @@ class AppleEveningNotifications {
                         val identifier = PREFIX + reminder.workoutId()
                         val content =
                             UNMutableNotificationContent().apply {
-                                title = reminder.title()
-                                body = reminder.message()
-                                sound = UNNotificationSound.defaultSound()
+                                setTitle(reminder.title())
+                                setBody(reminder.message())
+                                setSound(UNNotificationSound.defaultSound())
                             }
                         val trigger =
                             UNTimeIntervalNotificationTrigger.triggerWithTimeInterval(
