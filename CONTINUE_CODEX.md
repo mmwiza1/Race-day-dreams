@@ -62,7 +62,39 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, workspace outage during137–138
+### Latest recovery pointer — 17 November,137–138 locally verified
+
+Continue original experiment/android-ios-kmp-compose / DRAFT PR24. Workspace recovered; ALL six
+local137–138 files survived. Safely fetched/fast-forwarded recovery-only5235f2f with source edits
+preserved. SharedGymNowCoordinator and actual shared entry UI are now used by Android. Original
+execution/association coordinators, one pool/IO mutex, pending exact-retry, retained inputs,
+immutable actuals, exclusions/substitutions, builder/supersets/timers and actual clocks/alerts
+remain. SharedPlainWorkoutTarget now renders original instructions with required exact-target
+formatter; native date/back bindings stay required. No new engine/schema/permissions/version.
+
+Recovered138log FAILED47s at missing common LocalDate.isBefore and Android-only PlainWorkoutTarget.
+Fixed with exact epochDay comparisons and real shared target UI + original Android formatter,
+not changed targets/assertions. FINAL metadata/debugAPK/testAPK/lint PASS6m08s/176tasks,
+scratch/kmp138-gym-corrected.log. New2real-SQL tests COMPILE; runtime/Apple for137–138 pending638.
+All previous focused classes/assertions remain. Schema19 exact/source3/release10 PASS. Final
+format count and commit identity to inspect on resume. DO NOT rerun applied scratch port scripts.
+
+136actual44142035037 BOTH jobs SUCCESS636Android. Downloaded source-bound archives independently
+SHA/ZIP/XML verified NOW: JVM14356076893(186882bytes/SHA7c92b7fe78bdde7b90afd077bab7d98b87641e896c3ec45556d76ed379d9fcb8)
+490domain/25health/655storage; Native14356821481(178563bytes/SHA46fafe61b1d8f8dd4b6e0471665a38e71fcc210dad16df1d00149ce42e6cd8da)
+449domain/27health/655storage. ALL0fail/errors/skips. scratch/kmp136-verified/verification.json.
+This is PRIOR136proof, NOT137–138acceptance. Recovery5235workflow44157873531 still running when
+last inspected; no cancelling useful Native verification or early intermediate push.
+
+Next coherent batch139: actual live workout and workout builder/slot editor UI sharing, retaining
+Android lifecycle/back/permissions/numeric labels and all existing fields/actions. Scratch helper
+port_gym_ui139.py is PREPARED ONLY at this pointer; inspect actual files before running it ONCE.
+Then focused local metadata/APKs/lint/schema/source/format gates, coherent checkpoint and one
+combined push to existing PR24; inspect actual exact-head Android/Apple runtime. Remaining native
+SDK/body/app composition/host/full app and full final matrix scope below remains, not optional.
+No merge/publication until complete Android+iOS APP readiness. Physical tests UNPERFORMED.
+
+### Latest recovery pointer — 17 November, workspace outage during137–138 (historical)
 
 Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24. This is a recovery-only
 remote documentation commit made because the executor became UNAVAILABLE. Implementation
