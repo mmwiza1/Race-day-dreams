@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.racedaydreams.coach.CoachHeading
@@ -16,6 +17,7 @@ import org.racedaydreams.coach.SharedBackupSettings
 import org.racedaydreams.coach.SharedPrimaryFocusSettings
 import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
+import org.racedaydreams.storage.SqliteRecordingInventory
 import platform.UIKit.UIViewController
 
 /** iOS settings content wired to the real session and system document picker. */
@@ -132,9 +134,57 @@ fun AppleSettingsScreen(
                     "The complete backup also includes detailed recordings still on this device. " +
                     "These backups are not encrypted by the app. Keep them somewhere you trust.",
         )
+        AppleRecordingStorage(session.backupDocuments)
         val feedback = message ?: state.error ?: state.message ?: reminderFailure
         if (feedback != null) {
             Text(feedback, Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        }
+    }
+}
+
+@Composable
+private fun AppleRecordingStorage(documents: AppleBackupDocuments) {
+    var expanded by remember { mutableStateOf(false) }
+    var usage by remember { mutableStateOf<SqliteRecordingInventory.Usage?>(null) }
+    var unavailable by remember { mutableStateOf(false) }
+    LaunchedEffect(expanded, documents) {
+        if (expanded) {
+            usage = null
+            unavailable = false
+            try {
+                usage = documents.recordingInventory().usage
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                unavailable = true
+            }
+        }
+    }
+    TextButton(
+        onClick = { expanded = !expanded },
+        modifier =
+            Modifier.semantics { stateDescription = if (expanded) "Expanded" else "Collapsed" },
+    ) {
+        Text("Recording storage")
+    }
+    if (expanded) {
+        val current = usage
+        when {
+            unavailable ->
+                Text(
+                    "Recording storage is temporarily unavailable. Close and reopen this section to try again."
+                )
+            current == null -> Text("Checking recording storage…")
+            else -> {
+                Text("${current.activityRows} activity summaries retained")
+                Text(
+                    "${current.pointRows} recorded points and ${current.eventRows} recording events"
+                )
+                Text("Detailed recording content: ${current.detailPayloadBytes} bytes")
+                Text(
+                    "This counts stored recording content. Database files, backups and other app data use additional space."
+                )
+            }
         }
     }
 }

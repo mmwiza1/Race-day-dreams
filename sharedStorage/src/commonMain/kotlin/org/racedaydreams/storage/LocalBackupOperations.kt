@@ -60,6 +60,9 @@ class LocalBackupOperations(
 
     private val operations = LocalDataOperations()
 
+    fun recordingInventory(): SqliteRecordingInventory.Inventory =
+        operations.review { SqliteRecordingInventory(database).inspect() }
+
     fun writeApp(write: (ByteArray) -> Unit) {
         operations.backup { write(SqliteApplicationBackup(database).encode(now())) }
     }

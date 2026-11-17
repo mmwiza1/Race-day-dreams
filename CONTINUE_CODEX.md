@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 177 iOS recording storage
+
+A read-only Recording storage disclosure in iOS Settings now uses the
+existing SQLite inventory under the same operation owner as backup and
+replacement. It reports retained summaries, points, events and logical
+recording content bytes. It does not claim physical device usage or expose
+cleanup. The focused JDBC inventory suite passed in 1m 20s; schema parity,
+touched-file formatting and diff checks passed. Native rendering is pending.
+
+PR #24 remains at 7558809 with experiment 44198176072 still running at
+last check. Preserve the live jobs. After they finish, inspect their
+results, correct any root cause and push checkpoints 174–177. On macOS,
+verify simulator launch, backup picker confirmation and storage disclosure.
+Next connect informed retention preferences and read-only preview through
+the same owner. Require explicit guarded approval before exposing deletion.
+
 ### Latest recovery pointer — checkpoint 176 iOS complete backup import
 
 PR #24 is at 7558809. The Android and Apple jobs on experiment run

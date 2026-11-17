@@ -167,6 +167,8 @@ class AppleBackupDocuments(
         }
     }
 
+    suspend fun recordingInventory() = withContext(io) { exports.recordingInventory() }
+
     fun restoreReviewed(reviewed: ReviewedBackup) = exports.restoreReviewed(reviewed)
 
     private inner class ImportPicker(private val selected: (NSURL?) -> Unit) :
