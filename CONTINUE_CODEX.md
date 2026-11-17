@@ -62,6 +62,28 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 150 Apple application composition
+
+Draft PR #24 remains at checkpoint 148 (86006bc). The Android job in
+44183141942 passed. The Apple job reached framework linking after its
+Native test step, and was still running at the last check. Preserve that run.
+Local checkpoint 149 (a34ce07) contains the Apple recording bindings.
+
+Checkpoint 150 adds AppleCoachSession, the lifecycle owner for the real
+Apple SQLite database, shared coaching services, HealthKit gateway and
+recording repository. It opens storage on IO, resolves interrupted recording
+before its first snapshot, and cancels and joins owned work before closing
+SQLite. It requires real platform bindings from the eventual host.
+Pinned Kotlin formatter, diff check and exact 19-boundary schema check passed.
+Apple compilation and runtime remain pending for local checkpoints 149–150.
+
+Next: after the running Apple gate finishes, push the two local checkpoints
+together on PR #24 and verify Apple compile errors against real SDK output.
+Wire concrete host settings/reminders, document IO, navigation and shared
+screens through AppleCoachSession. Add the runnable Xcode app target and
+HealthKit/location configuration, then expand native services and run final
+cross-platform gates. No runnable app target or public build exists yet.
+
 ### Latest recovery pointer — checkpoint 149 Apple recording bindings
 
 Draft PR #24 remains on experiment/android-ios-kmp-compose. Remote checkpoint
