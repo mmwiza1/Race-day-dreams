@@ -86,6 +86,23 @@ abstract class RetentionPolicyRepositoryContract {
             .associateWith { db.query("SELECT * FROM $it") }
 
     @Test
+    fun applicationOwnerPreviewsAndSavesWithoutRemovingEvidence() = storage { db ->
+        val owner = LocalBackupOperations(db, { now }) { "owner-choice-${++sequence}" }
+        val policy = DetailRetention.Policy.LAST_5_YEARS
+        val before = evidence(db)
+        val previous = owner.retentionPreferences()
+        assertEquals(1, owner.previewRetention(policy).recordings().size)
+        assertEquals(previous, owner.retentionPreferences())
+        owner.writeApp {
+            assertFailsWith<IllegalStateException> { owner.acknowledgeRetention(policy) }
+        }
+        owner.acknowledgeRetention(policy)
+        assertEquals(policy, owner.retentionPreferences().policy())
+        assertEquals(DetailRetention.Choice.ACKNOWLEDGED, owner.retentionPreferences().choice())
+        assertEquals(before, evidence(db))
+    }
+
+    @Test
     fun existingUserCanPreviewConsequencesButCannotApproveUntilInformedAcknowledgement() =
         storage { db ->
             db.execute(

@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 178 iOS retention choice and preview
+
+PR #24 remains at 7558809. Jobs in experiment 44198176072 were still
+running at the last check. Preserve them and inspect the results before
+pushing the queued local checkpoints.
+
+iOS Settings now reads and explicitly saves the three existing retention
+policies and offers a read-only eligibility preview. Backup, replacement,
+policy saving and preview use the same operation owner. Saving a choice
+leaves all recording evidence intact. The focused JVM gate passed 19
+tests, including the new overlapping-export and unchanged-evidence
+contract. Pinned formatting, diff checks and all 19 schema boundaries
+passed. Native UI validation is pending.
+
+Next verify the Apple build and actual simulator launch. Wire separately
+confirmed cleanup through this same owner and the existing per-recording
+transaction, preserving cancellation between batches and reporting any
+partial progress. Verify stale previews, recording guards and removed
+detail presentation before promoting the feature. No merge or publication.
+
 ### Latest recovery pointer — checkpoint 177 iOS recording storage
 
 A read-only Recording storage disclosure in iOS Settings now uses the

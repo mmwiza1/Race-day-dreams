@@ -6,6 +6,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.storage.BackupArchiveSource
 import org.racedaydreams.storage.BackupEnvelopeJson
 import org.racedaydreams.storage.BackupStagingFile
@@ -166,6 +167,14 @@ class AppleBackupDocuments(
             throw failure
         }
     }
+
+    suspend fun retentionPreferences() = withContext(io) { exports.retentionPreferences() }
+
+    suspend fun acknowledgeRetention(policy: DetailRetention.Policy) =
+        withContext(io) { exports.acknowledgeRetention(policy) }
+
+    suspend fun previewRetention(policy: DetailRetention.Policy) =
+        withContext(io) { exports.previewRetention(policy) }
 
     suspend fun recordingInventory() = withContext(io) { exports.recordingInventory() }
 

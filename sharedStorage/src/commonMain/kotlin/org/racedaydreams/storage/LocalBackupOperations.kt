@@ -1,5 +1,6 @@
 package org.racedaydreams.storage
 
+import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.domain.time.Instant
 
 /**
@@ -59,6 +60,18 @@ class LocalBackupOperations(
     }
 
     private val operations = LocalDataOperations()
+
+    private val retention =
+        SqliteRetentionPolicy(database, freshEpoch, operations::replacementInProgress)
+
+    fun retentionPreferences(): DetailRetention.Preferences =
+        operations.review { SqliteRetentionPreferences(database).load() }
+
+    fun acknowledgeRetention(policy: DetailRetention.Policy) =
+        operations.replace { retention.acknowledge(policy, now()) }
+
+    fun previewRetention(policy: DetailRetention.Policy): DetailRetention.Preview =
+        operations.review { retention.preview(policy, now()) }
 
     fun recordingInventory(): SqliteRecordingInventory.Inventory =
         operations.review { SqliteRecordingInventory(database).inspect() }
