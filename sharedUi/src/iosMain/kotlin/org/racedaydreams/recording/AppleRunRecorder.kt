@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.storage.SqliteRecordingStaging
 import platform.Foundation.NSThread
@@ -25,6 +26,9 @@ class AppleRunRecorder(
     private val nextId: () -> String,
 ) {
     private val commands = Mutex()
+    private var execution: PlannedRecordingExecution? = null
+    private val mutableWorkout = MutableStateFlow<WorkoutExecutionEngine.State?>(null)
+    val workout = mutableWorkout.asStateFlow()
     private var session: SharedRecordingSessionCoordinator? = null
     private var ticker: Job? = null
     private var finishing = false
@@ -66,22 +70,23 @@ class AppleRunRecorder(
 
     fun requestLocationPermission() = location.requestPermission()
 
-    suspend fun start(executionContext: () -> String?, origin: String?) = command {
+    suspend fun start(planned: PlannedRecordingExecution? = null) = command {
         check(session == null) { "A run is already recording." }
         check(location.canStart()) { "Location permission is required to record a run." }
         val id = nextId()
         val wall = AppleRecordingClock.now()
         val mono = AppleRecordingClock.monotonicMillis()
-        val context = executionContext()
-        withContext(io) { repository.start(id, wall, mono, context, origin) }
+        val context = planned?.snapshot()
+        withContext(io) { repository.start(id, wall, mono, context, null) }
         val active =
             SharedRecordingSessionCoordinator(
                 RecordingStageSession(id, "ACTIVE", wall, mono, mono),
                 repository,
                 io,
                 { finalTime ?: AppleRecordingClock.monotonicMillis() },
-                executionContext,
+                { execution?.snapshot() },
             )
+        execution = planned
         session = active
         mutableError.value = null
         location.start()
@@ -153,6 +158,15 @@ class AppleRunRecorder(
         active.flush()
     }
 
+    suspend fun changeWorkoutStep(skip: Boolean) = command {
+        val active = checkNotNull(session)
+        val planned = checkNotNull(execution)
+        check(!finishing)
+        if (skip) planned.coordinator.skip() else planned.coordinator.completeOpen()
+        publish()
+        active.flush()
+    }
+
     suspend fun finish(): String = command {
         val active = checkNotNull(session)
         check(active.engine.pointCount() >= 2) { "Waiting for usable GPS" }
@@ -161,6 +175,8 @@ class AppleRunRecorder(
             location.stop()
             ticker?.cancel()
             ticker = null
+            execution?.coordinator?.finishEarly()
+            publish()
             val time = AppleRecordingClock.monotonicMillis()
             finalTime = time
             active.engine.event("FINISH", time, AppleRecordingClock.now())
@@ -182,6 +198,8 @@ class AppleRunRecorder(
         pendingFinish = null
         finalTime = null
         session = null
+        execution = null
+        mutableWorkout.value = null
         finishing = false
         mutableStatus.value = null
         mutableError.value = null
@@ -189,7 +207,21 @@ class AppleRunRecorder(
     }
 
     private fun publish() {
-        mutableStatus.value = session?.engine?.status(AppleRecordingClock.monotonicMillis())
+        val engine = session?.engine ?: return
+        val time = AppleRecordingClock.monotonicMillis()
+        val status = engine.status(time)
+        mutableStatus.value = status
+        execution?.coordinator?.update(status)?.let { update ->
+            mutableWorkout.value = update.state()
+            update.newEvents().forEach { event ->
+                engine.sensorEvent(
+                    event.type(),
+                    event.step().toDouble(),
+                    time,
+                    AppleRecordingClock.now(),
+                )
+            }
+        }
     }
 
     private suspend fun <T> command(action: suspend () -> T): T {

@@ -16,14 +16,20 @@ import org.racedaydreams.coach.*
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.time.Durations
+import org.racedaydreams.recording.PlannedRecordingExecution
 
 /** Native command bindings for the existing active run panel and retained run recovery. */
 @Composable
-fun AppleRecordingScreen(session: AppleCoachSession<*>, openSaved: (String) -> Unit) {
+fun AppleRecordingScreen(
+    session: AppleCoachSession<*>,
+    plannedId: String? = null,
+    openSaved: (String) -> Unit,
+) {
     val recorder = session.recording
     val state by session.services.operations.state.collectAsState()
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
     val status by recorder.status.collectAsState()
+    val workout by recorder.workout.collectAsState()
     val authorized by recorder.permission.collectAsState()
     val retained by recorder.recovery.collectAsState()
     val storageError by recorder.error.collectAsState()
@@ -59,7 +65,7 @@ fun AppleRecordingScreen(session: AppleCoachSession<*>, openSaved: (String) -> U
     if (live != null) {
         SharedActiveRunPanel(
             s = live,
-            w = null,
+            w = workout,
             hr = null,
             cue = null,
             race = null,
@@ -70,6 +76,8 @@ fun AppleRecordingScreen(session: AppleCoachSession<*>, openSaved: (String) -> U
                     "PAUSE" -> command { recorder.pause() }
                     "RESUME" -> command { recorder.resume() }
                     "FINISH" -> command { saved(recorder.finish()) }
+                    "COMPLETE_OPEN" -> command { recorder.changeWorkoutStep(skip = false) }
+                    "SKIP_STEP" -> command { recorder.changeWorkoutStep(skip = true) }
                     else -> Unit
                 }
             },
@@ -147,7 +155,18 @@ fun AppleRecordingScreen(session: AppleCoachSession<*>, openSaved: (String) -> U
             Text("Allow location access to record your outdoor route.")
             CoachButton("Allow location access") { recorder.requestLocationPermission() }
         } else if (!working) {
-            CoachButton("Start recording") { command { recorder.start({ null }, null) } }
+            CoachButton(if (plannedId == null) "Start recording" else "Start planned workout") {
+                command {
+                    val planned =
+                        plannedId?.let {
+                            PlannedRecordingExecution(
+                                requireNotNull(state.currentPlan) { "No current plan." },
+                                it,
+                            )
+                        }
+                    recorder.start(planned)
+                }
+            }
         }
         error?.let { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
     }

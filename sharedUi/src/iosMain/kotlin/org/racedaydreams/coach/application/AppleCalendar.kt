@@ -68,6 +68,7 @@ internal fun AppleCalendar(
     session: AppleCoachSession<*>,
     initialWorkout: String?,
     initialStrength: String?,
+    startPlanned: (String) -> Unit,
     activity: (String) -> Unit,
 ) {
     val state by session.services.operations.state.collectAsState()
@@ -90,6 +91,12 @@ internal fun AppleCalendar(
                     Text(AppleCalendarDates.label(workout.date()))
                     workout.distanceKm()?.let { Text(distanceLabel(it * 1_000, imperial)) }
                     workout.duration()?.let { Text("${it.getSeconds() / 60} min planned") }
+                    val completed =
+                        state.runResponses.any { it.plannedWorkoutId() == runId } ||
+                            state.activities.any { it.plannedWorkoutId() == runId }
+                    if (state.currentPlan != null && !completed) {
+                        CoachButton("Start with Live Coach") { startPlanned(runId) }
+                    }
                     workout.segments().forEach { segment ->
                         CoachCard {
                             Text(

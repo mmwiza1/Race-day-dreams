@@ -145,11 +145,19 @@ private fun AppleAppContent(
     var page by remember { mutableStateOf(ApplePage.START) }
     var calendarWorkout by remember { mutableStateOf<String?>(null) }
     var calendarStrength by remember { mutableStateOf<String?>(null) }
+    var recordingWorkout by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
         FlowRow(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
             TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
-            TextButton(onClick = { page = ApplePage.RECORD }) { Text("Record") }
+            TextButton(
+                onClick = {
+                    recordingWorkout = null
+                    page = ApplePage.RECORD
+                }
+            ) {
+                Text("Record")
+            }
             TextButton(onClick = { page = ApplePage.PLAN }) { Text("Plan") }
             TextButton(onClick = { page = ApplePage.GYM }) { Text("Gym") }
             TextButton(
@@ -180,12 +188,20 @@ private fun AppleAppContent(
                         healthControls = { health(true) },
                     )
                 ApplePage.RECORD ->
-                    AppleRecordingScreen(session) {
+                    AppleRecordingScreen(session, recordingWorkout) {
                         activityId = it
                         page = ApplePage.ACTIVITY
                     }
                 ApplePage.HISTORY ->
-                    AppleCalendar(session, calendarWorkout, calendarStrength) {
+                    AppleCalendar(
+                        session,
+                        calendarWorkout,
+                        calendarStrength,
+                        startPlanned = {
+                            recordingWorkout = it
+                            page = ApplePage.RECORD
+                        },
+                    ) {
                         activityId = it
                         page = ApplePage.ACTIVITY
                     }
@@ -315,9 +331,20 @@ private fun AppleAppContent(
                                 calendarStrength = null
                                 page = ApplePage.HISTORY
                             },
-                            record = { page = ApplePage.RECORD },
+                            record = {
+                                recordingWorkout = null
+                                page = ApplePage.RECORD
+                            },
                             quick = { route ->
                                 when {
+                                    route.startsWith("execute/") -> {
+                                        val version = state.currentPlan
+                                        val prefix = "execute/${version?.id()}/"
+                                        if (version != null && route.startsWith(prefix)) {
+                                            recordingWorkout = route.removePrefix(prefix)
+                                            page = ApplePage.RECORD
+                                        }
+                                    }
                                     route.startsWith("activity/") -> {
                                         activityId = route.removePrefix("activity/")
                                         page = ApplePage.ACTIVITY
@@ -344,7 +371,7 @@ private fun AppleAppContent(
                             },
                             race = { page = ApplePage.PLAN },
                             hasRoute = {
-                                it !in setOf("execute", "progress/trends", "achievements")
+                                it !in setOf("progress/trends", "achievements")
                             },
                         )
                     }

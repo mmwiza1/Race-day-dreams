@@ -62,6 +62,29 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 166 planned run execution
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 passed Android,
+Apple Native tests and framework linking. Xcode app build was running at
+the last check. Preserve it. Local checkpoints 157–166 are queued.
+
+166 binds iOS planned runs to the existing WorkoutExecutionCoordinator
+and retained plan version/workout prescription. Step state drives the
+shared recording panel. Explicit complete-open, skip and finish-early
+commands preserve the original step events in staged execution context
+and the normalized event stream. The existing SQLite finaliser links
+the saved actual. Audio cues and physical device behavior are pending.
+
+Shared UI common metadata compiled in 47s (18 tasks). Pinned formatting,
+diff and exact 19-schema boundaries passed. Log:
+/workspace/scratch/kmp166-planned.log. Native runtime for this batch is pending.
+
+Next inspect the actual Xcode result, fix build errors, push the local
+batch after CI finishes and verify the simulator launch gate. Continue
+native cues, background/BLE, full planned detail and remaining app routes,
+data lifecycle safeguards, accessibility and final platform verification.
+Keep PR draft.
+
 ### Latest recovery pointer — checkpoint 165 retained routes and splits
 
 Draft PR #24 remains at 2172096. In experiment 44189952813 Android and
