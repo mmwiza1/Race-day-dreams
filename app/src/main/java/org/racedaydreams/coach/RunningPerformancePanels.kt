@@ -23,19 +23,6 @@ import org.racedaydreams.domain.activity.PersonalBestCalculator
 import org.racedaydreams.domain.activity.RecordedResult
 import org.racedaydreams.domain.activity.RecordedWeek
 
-internal enum class RunningTrendMetric(val label: String, val heading: String) {
-    DISTANCE("Distance", "Weekly recorded distance"),
-    PACE("Pace", "Weekly elapsed average pace"),
-    TIME("Training time", "Weekly recorded running time"),
-}
-
-/** Derived presentation only; this never replaces an activity's historical totals. */
-internal data class RunningTrendPoint(
-    val week: RecordedWeek,
-    val value: Double?,
-    val measuredRuns: Int,
-)
-
 internal fun runningTrendPoints(
     weeks: List<RecordedWeek>,
     activities: List<ActivityRecord>,
@@ -43,42 +30,7 @@ internal fun runningTrendPoints(
     today: LocalDate,
     zone: ZoneId,
 ): List<RunningTrendPoint> =
-    weeks.map { week ->
-        val weekStart =
-            requireNotNull(week.weekStart()) { "Generated week must retain its calendar identity." }
-        val runs =
-            activities.filter {
-                val date = it.start().atZone(zone).toLocalDate()
-                !date.isBefore(weekStart) &&
-                    date.isBefore(weekStart.plusWeeks(1)) &&
-                    !date.isAfter(today)
-            }
-        when (metric) {
-            RunningTrendMetric.DISTANCE ->
-                RunningTrendPoint(
-                    week,
-                    week.distanceMetres(),
-                    week.activityCount() - week.missingDistanceCount(),
-                )
-            RunningTrendMetric.TIME ->
-                RunningTrendPoint(
-                    week,
-                    runs.takeIf { it.isNotEmpty() }?.sumOf { it.elapsedTime().toMillis() / 1000.0 },
-                    runs.size,
-                )
-            RunningTrendMetric.PACE -> {
-                val measured = runs.filter { (it.distanceMetres() ?: 0.0) > 0.0 }
-                val metres = measured.sumOf { it.distanceMetres()!! }
-                RunningTrendPoint(
-                    week,
-                    if (metres > 0)
-                        measured.sumOf { it.elapsedTime().toMillis() / 1000.0 } / (metres / 1000.0)
-                    else null,
-                    measured.size,
-                )
-            }
-        }
-    }
+    sharedRunningTrendPoints(weeks, activities, metric, today) { it.atZone(zone).toLocalDate() }
 
 /** Reuse the existing source-precedence calculator before ranking display rows. */
 internal fun rankedRunningResults(

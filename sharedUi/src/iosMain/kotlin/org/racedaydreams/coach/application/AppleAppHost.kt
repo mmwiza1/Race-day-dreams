@@ -131,6 +131,7 @@ private enum class ApplePage {
     STRENGTH_HISTORY,
     STRENGTH_ANALYTICS,
     ACHIEVEMENTS,
+    RUNNING_TRENDS,
     STRENGTH_RECORD,
     ACTIVITY,
     SETTINGS,
@@ -261,6 +262,7 @@ private fun AppleAppContent(
                         StrengthMeasurementPolicy::duration,
                         AthleteLanguage.WORKING_SETS,
                     )
+                ApplePage.RUNNING_TRENDS -> AppleRunningTrends(state) { page = ApplePage.START }
                 ApplePage.ACHIEVEMENTS ->
                     AppleAchievements(
                         session,
@@ -386,6 +388,7 @@ private fun AppleAppContent(
                                         calendarStrength = date?.toString()
                                         page = ApplePage.HISTORY
                                     }
+                                    route == "progress/trends" -> page = ApplePage.RUNNING_TRENDS
                                     route == "achievements" -> page = ApplePage.ACHIEVEMENTS
                                     route == "progress/weight" -> page = ApplePage.BODY
                                     route == "gym-now" || route.startsWith("strength") ->
@@ -393,7 +396,6 @@ private fun AppleAppContent(
                                 }
                             },
                             race = { page = ApplePage.PLAN },
-                            hasRoute = { it != "progress/trends" },
                         )
                     }
             }

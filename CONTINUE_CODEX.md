@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 172 shared running trends
+
+PR #24 remains at 25adcc6. Experiment 44195464653 reached Apple framework
+linking. Check its current result before pushing queued checkpoints 167–172.
+
+172 shares the Android weekly chart and trend aggregation with iOS. The iOS
+Today route opens measured weekly distance, elapsed pace and running time,
+with date range and metric selection. Android retains its existing formatting
+and history inputs. The iOS heart-rate trends panel remains to be wired.
+
+Shared metadata and Android debug Kotlin compilation passed in 1m 58s.
+Pinned formatting, diff and all 19 schema checks passed. Apple compilation
+and app startup remain pending. Log: /workspace/scratch/kmp172-trends.log.
+
+Next inspect 44195464653 and fix actual macOS or launch errors. Push the
+queued commits after that useful run completes, then continue data-operation
+safeguards, remaining native feature parity and full Android/iOS verification.
+
 ### Latest recovery pointer — checkpoint 171 recorded milestones
 
 PR #24 remains at 25adcc6. Experiment 44195464653 was still running Android
