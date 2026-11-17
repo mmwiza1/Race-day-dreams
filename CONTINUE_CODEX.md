@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 152 platform wiring
+
+Draft PR #24 remote head a85fcf0 has checkpoints 149–151. Experiment
+44186678584 was still running on both platforms at last check. Preserve it.
+Checkpoint 152 is local and connects AppleCoachPlatform to AppleCoachSession.
+Shared snapshot and settings callbacks now load and coalesce real reminder
+work, use the owned HealthKit gateway, and use the device regional timezone
+for gym actions and manual running times. Reminder errors are exposed for
+the host. The session supplies one guarded backup-export facade to the
+document adapter. It can stream complete backups and leaves destructive
+controls unavailable. The actual document picker and app UI are still pending.
+
+Pinned formatting and diff checks passed. Shared storage JVM compilation
+passed in 41s, and all 19 schema migration boundaries match Android.
+Log: /workspace/scratch/kmp152-platform.log. Apple source compilation is pending.
+
+Next inspect 44186678584 and fix any actual Apple SDK compiler errors before
+batching the next push. Implement the real document export adapter, production
+screen/navigation composition and runnable Xcode app target. Reuse the owned
+database and platform services. Full platform and physical gates remain open.
+
 ### Latest recovery pointer — checkpoint 151 Apple reminders
 
 Checkpoint 148 at 86006bc passed Android and Apple experiment 44183141942.

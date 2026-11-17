@@ -1,21 +1,19 @@
 package org.racedaydreams.coach.application
 
 import kotlinx.coroutines.*
+import kotlinx.datetime.TimeZone
 import org.racedaydreams.coach.health.AppleHealthGateway
 import org.racedaydreams.coach.reminders.AppleCoachReminders
-import org.racedaydreams.domain.time.CalendarDates
-import org.racedaydreams.domain.time.Offsets
+import org.racedaydreams.domain.time.LocalDate
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
 import org.racedaydreams.recording.AppleRunRecorder
 import org.racedaydreams.recording.SqliteRecordingStageRepository
+import org.racedaydreams.reminders.KotlinxReminderCalendar
 import org.racedaydreams.storage.*
-import platform.Foundation.NSDate
 import platform.Foundation.NSThread
-import platform.Foundation.NSTimeZone
 import platform.Foundation.NSUUID
-import platform.Foundation.timeIntervalSince1970
 
 /** The app owns one database and one scope across navigation and scene changes. */
 class AppleCoachSession<File>
@@ -26,6 +24,7 @@ private constructor(
     val health: AppleHealthGateway,
     val recording: AppleRunRecorder,
     val reminders: AppleCoachReminders,
+    val platform: AppleCoachPlatform<File>,
     val interruptedRecording: SqliteRecordingStaging.Recovery?,
 ) {
     private var closed = false
@@ -48,10 +47,8 @@ private constructor(
             selectedWorkouts: () -> Boolean,
             selectedBodyMetrics: () -> Set<BodyMetric>,
             savedDraft: () -> String?,
-            bindPlatform:
-                (
-                    AppleSqliteDatabase, AppleHealthGateway, AppleRunRecorder, AppleCoachReminders,
-                ) -> CoachPlatformBindings<File>,
+            documents: (LocalBackupExports) -> SettingsPlatform<File>,
+            shortDate: (LocalDate) -> String,
         ): AppleCoachSession<File> {
             check(NSThread.isMainThread)
             val io = applicationIoDispatcher()
@@ -64,12 +61,7 @@ private constructor(
                 val now = AppleRecordingClock::now
                 val newId = { NSUUID().UUIDString }
                 val today = {
-                    val wall = NSDate()
-                    val offset = NSTimeZone.systemTimeZone.secondsFromGMTForDate(wall).toInt()
-                    CalendarDates.atOffset(
-                        AppleRecordingClock.instant(wall.timeIntervalSince1970),
-                        Offsets.ofTotalSeconds(offset),
-                    )
+                    KotlinxReminderCalendar.at(now(), TimeZone.currentSystemDefault().id).date
                 }
                 val activities = SqliteActivities(database, now)
                 val health =
@@ -91,10 +83,16 @@ private constructor(
                         newId,
                     )
                 val reminders = AppleCoachReminders(database, io)
-                val platform = bindPlatform(database, health, recording, reminders)
-                check(platform.healthGateway === health) {
-                    "The application must use its owned HealthKit gateway."
-                }
+                val platform =
+                    AppleCoachPlatform(
+                        scope,
+                        health,
+                        recording,
+                        reminders,
+                        readWindow,
+                        documents(LocalBackupExports(database, now)),
+                        shortDate,
+                    )
                 val services =
                     SharedCoachApplicationServices(
                         database,
@@ -115,7 +113,7 @@ private constructor(
                             ),
                             SqliteStrengthProgramming(database, now, today),
                         ),
-                        platform,
+                        platform.bindings(),
                         now,
                         today,
                         newId,
@@ -129,6 +127,7 @@ private constructor(
                     health,
                     recording,
                     reminders,
+                    platform,
                     interrupted,
                 )
             } catch (failure: Throwable) {
