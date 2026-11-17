@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 155 iOS recording screen
+
+Draft PR #24 is still at a85fcf0. Experiment 44186678584 had Android running
+focused instrumentation and Apple running Native tests at the last check.
+Preserve that run. Checkpoints 152–155 are local.
+
+155 binds the existing SharedActiveRunPanel to AppleRunRecorder for ordinary
+iOS runs. It uses stored units, explicit location permission, route geometry
+prepared only for the route tab, and the shared finish confirmation. It also
+adds interrupted save/discard UI backed by the recorder's single recovery flow.
+No structured execution, BLE, background recording or Dream Route integration
+is claimed for this screen. It needs an actual native navigation entry.
+Pinned formatter, diff check and all 19 schema boundaries passed.
+Apple compilation and runtime remain pending.
+
+Next verify the running Apple gate, then push the coherent local batch and
+fix actual SDK errors. Build the runnable Xcode target and navigation host
+that mounts production shared screens including AppleRecordingScreen and
+AppleSettingsScreen. Connect remaining platform SDK effects and complete
+the original cross-platform acceptance gates. Do not publish this draft.
+
 ### Latest recovery pointer — checkpoint 154 shared settings cards
 
 Draft PR #24 remote head a85fcf0 is still running experiment 44186678584

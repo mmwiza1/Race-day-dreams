@@ -27,7 +27,6 @@ private constructor(
     val reminders: AppleCoachReminders,
     val platform: AppleCoachPlatform<File>,
     val backupDocuments: AppleBackupDocuments,
-    val interruptedRecording: SqliteRecordingStaging.Recovery?,
 ) {
     private var closed = false
 
@@ -122,7 +121,7 @@ private constructor(
                         today,
                         newId,
                     )
-                val interrupted = recording.restoreInterrupted()
+                recording.restoreInterrupted()
                 services.operations.refresh()
                 return AppleCoachSession(
                     database,
@@ -133,7 +132,6 @@ private constructor(
                     reminders,
                     platform,
                     backupDocuments,
-                    interrupted,
                 )
             } catch (failure: Throwable) {
                 withContext(NonCancellable) {

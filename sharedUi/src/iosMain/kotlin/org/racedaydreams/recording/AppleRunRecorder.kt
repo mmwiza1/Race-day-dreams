@@ -37,6 +37,13 @@ class AppleRunRecorder(
     val status = mutableStatus.asStateFlow()
     val error = mutableError.asStateFlow()
     val permission = mutablePermission.asStateFlow()
+    private val mutableRecovery = MutableStateFlow<SqliteRecordingStaging.Recovery?>(null)
+    val recovery = mutableRecovery.asStateFlow()
+
+    fun routePoints(): List<RunMetricsEngine.Point> {
+        check(NSThread.isMainThread)
+        return session?.engine?.points().orEmpty()
+    }
 
     private val location =
         AppleRecordingLocation(
@@ -110,19 +117,24 @@ class AppleRunRecorder(
     suspend fun restoreInterrupted(): SqliteRecordingStaging.Recovery? = command {
         check(session == null)
         withContext(io) {
-            repository.markRecoverable()
-            repository.recovery()
-        }
+                repository.markRecoverable()
+                repository.recovery()
+            }
+            .also { mutableRecovery.value = it }
     }
 
     suspend fun saveInterrupted(expected: SqliteRecordingStaging.Session): String = command {
         check(session == null)
-        withContext(io) { repository.saveRecovery(expected) }
+        withContext(io) { repository.saveRecovery(expected) }.also { mutableRecovery.value = null }
     }
 
     suspend fun discardInterrupted(expected: SqliteRecordingStaging.Session): Boolean = command {
         check(session == null)
-        withContext(io) { repository.discardRecovery(expected) }
+        withContext(io) { repository.discardRecovery(expected) to repository.recovery() }
+            .let { (discarded, remaining) ->
+                mutableRecovery.value = remaining
+                discarded
+            }
     }
 
     suspend fun pause() = command {
