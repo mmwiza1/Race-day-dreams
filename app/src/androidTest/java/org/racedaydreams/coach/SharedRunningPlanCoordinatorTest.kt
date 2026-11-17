@@ -45,7 +45,7 @@ class SharedRunningPlanCoordinatorTest {
         val ids: AtomicInteger,
     )
 
-    private fun fixture(block: (Fixture) -> Unit) {
+    private fun fixture(forGeneratedRebuild: Boolean = false, block: (Fixture) -> Unit) {
         val raw = SQLiteDatabase.create(null)
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         try {
@@ -63,7 +63,9 @@ class SharedRunningPlanCoordinatorTest {
                     RaceGoal(RaceDistance.GENERAL_FITNESS, "", null, GoalMode.FINISH, null),
                     TrainingPreferences(
                         TrainingStrategy.BALANCED,
-                        DayOfWeek.values().toSet(),
+                        if (forGeneratedRebuild)
+                            setOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SUNDAY)
+                        else DayOfWeek.values().toSet(),
                         3,
                         DayOfWeek.SUNDAY,
                         emptySet(),
@@ -74,10 +76,34 @@ class SharedRunningPlanCoordinatorTest {
                 )
             profiles.save(profile)
             profiles.saveDraft(""" {"step":2,"input":"Retained draft"} """)
+            // Same-day preservation applies to matching generator identities, not arbitrary IDs
+            // absent from a rebuilt programme. Seed this case through the real production
+            // generator.
+            val generatedSeed =
+                if (forGeneratedRebuild)
+                    OriginalTrainingPlanGenerator()
+                        .generate(
+                            PlanRequest(
+                                profile,
+                                org.racedaydreams.domain.baseline.RunnerBaseline.empty(
+                                    now.minusSeconds(84L * 86400),
+                                    now,
+                                ),
+                                today,
+                                setOf(today.plusDays(3)),
+                                emptyList(),
+                                45,
+                                "MORE_SHORTER",
+                            )
+                        )
+                else null
+            val completedId =
+                generatedSeed?.workouts()?.single { it.date() == today }?.id() ?: "done"
+            val planId = generatedSeed?.id() ?: "original-plan"
             val workouts =
                 listOf(
                     PlannedWorkout(
-                        "done",
+                        completedId,
                         today,
                         WorkoutCategory.EASY_RUN,
                         3.0,
@@ -107,13 +133,13 @@ class SharedRunningPlanCoordinatorTest {
             val original =
                 PlanVersion(
                     "original-version",
-                    "original-plan",
+                    planId,
                     1,
                     now.minusSeconds(60),
                     "Original athlete choice",
                     profile,
                     "Original evidence",
-                    TrainingPlan("original-plan", today, today.plusWeeks(2), emptyList(), workouts),
+                    TrainingPlan(planId, today, today.plusWeeks(2), emptyList(), workouts),
                 )
             coaching.saveCurrent(original)
             val actual =
@@ -134,14 +160,14 @@ class SharedRunningPlanCoordinatorTest {
                     "Actual entered run",
                     emptyList(),
                     emptyList(),
-                    "done",
+                    completedId,
                     null,
                 )
             activities.upsertManualActivity(actual)
             coaching.saveResponse(
                 RunExecution(
                     actual.id(),
-                    "done",
+                    completedId,
                     original.id(),
                     null,
                     null,
@@ -211,7 +237,7 @@ class SharedRunningPlanCoordinatorTest {
 
     @Test
     fun rebuildUsesStoredScheduleAndPreservesCompletedPrescriptionActualSourceAndDraft() =
-        fixture { f ->
+        fixture(forGeneratedRebuild = true) { f ->
             val draft = f.profiles.loadDraft()
             val response = f.coaching.responses().single()
             f.db.execute(
@@ -230,7 +256,7 @@ class SharedRunningPlanCoordinatorTest {
             assertEquals(f.original, f.coaching.versions().single { it.id() == f.original.id() })
             assertEquals(
                 f.original.plan().workouts().first(),
-                current.plan().workouts().single { it.id() == "done" },
+                current.plan().workouts().single { it.id() == f.actual.plannedWorkoutId() },
             )
             assertTrue(current.plan().workouts().none { it.date() == today.plusDays(3) })
             assertTrue(current.evidenceSnapshot().contains("45 minute usual budget; more shorter"))

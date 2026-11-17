@@ -64,18 +64,17 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote HEAD remains
-`1e2d6ff9adc09470e9c4c1dd67e4ab5ac052e8f2` (122). Apple Native449domain/27health/643storage and
-framework SUCCESS, artifact byte-verified below. After pinned POM returned200 locally and Apple
-finished, retried ONLY failed Android once:44091963612attempt2 /job134082808137 now running
-instrumentation (dependency/JVM/domain/schema/APK stages PASSED). No598runtime pass claimed yet.
-123shared StrengthCoordinator +typed historical/legacy association commands/tests are LOCAL,
-passes FINAL local JVM6460fail/error/skip +metadata/debugAPK/testAPK/lint9m23s/180tasks,
-kmp-strength-coordinator-final.log. Format946/schema19/source3 PASS. Preserve all
-uncommitted source, intentional Android coordinator deletion and prior local handoff. Do not
-push/cancel useful Android retry. See latest123 below; expected next601Android/646Native/framework.
-No version/format/permission change or early merge/publication/native destructive UI. Actual iOS
-application/root/platform/full final gates remain unfinished; a framework is not an app.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Local checkpoint123 is committed
+as `534b7c3`; shared StrengthCoordinator, typed history/association commands and their tests
+passed JVM646 (0 failures/errors/skips), common metadata, debug/test APK and lint (9m23s).
+Remote122 `1e2d6ff` run44091963612attempt2 completed: Android597/598 passed; sole failure was
+new regeneration test's arbitrary ID absent from real generated plan. Corrected fixture seeds
+actual generator identities; ALL original history/source/target assertions retained. Production
+preservation rules unchanged. Focused real-generator probe PASS; corrected test APK/lint PASS
+2m16s/140tasks. Format946 PASS. Apple449domain/27health/643storage/framework passed for122.
+Push123 +fixture correction once; no useful job remains running. Expected next601Android /
+646storage Native/framework. Continue remaining application services/shared UI/root and REAL iOS
+app; framework is not app acceptance. No schema/backup/version/permission/publication changes.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5541,11 +5540,11 @@ application/root/platform/full final gates remain unfinished; a framework is not
 
 ### Exact next safe actions and remaining full scope
 
-1. Preserve123local StrengthCoordinator/context/kernel/test edits and prior local recovery.
-   Local kmp-strength-coordinator-final.log PASS9m23s/180tasks,646JVM0f/e/skip,
-   metadata/debug+testAPK/lint; format946/schema/source PASS. Inspect Android retry44091963612attempt2 job134082808137598cases; prior
-   Apple643/framework passed, not123646proof. Commit123+handoff and push once useful retry ends;
-   then verify new601Android/646Native/framework. No restart/domain duplication/early merge/pub.
+1. Preserve123commit534b7c3 and corrected generation fixture. Final local testAPK/lint PASS
+   2m16s/140tasks, format946 PASS. Commit correction and push coherent candidate to existing
+   DRAFT24; prior run finished597/598 (fixture issue above), Apple643/framework SUCCESS.
+   Verify next601Android/646Native/framework; diagnose actual failures. Continue original remaining
+   services/UI/root/native application; no premature merge/publication or destructive native UI.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
