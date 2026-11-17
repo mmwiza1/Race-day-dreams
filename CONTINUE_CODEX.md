@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 153 Apple backup documents
+
+Draft PR #24 remote head a85fcf0 remains under experiment 44186678584.
+At the last check Apple was running Native tests and Android was compiling
+the app and instrumentation APK. Preserve this run. Checkpoints 152 and 153
+are local, with 152 at 804f119.
+
+153 wires one AppleBackupDocuments instance into AppleCoachSession, sharing
+the existing LocalBackupExports owner. It stages ordinary app JSON or a
+streamed complete package in a private temporary directory, then presents
+the native export-as-copy picker. Success, cancellation and staging errors
+remove the temporary copy. No restoration, reset or retention control is
+enabled. Pinned Kotlin formatter, git diff --check and exact 19-boundary
+schema check passed. UIKit compilation and picker runtime remain pending.
+
+Next inspect the preceding Apple compile output and fix SDK issues if found.
+Integrate the export actions in the production iOS settings screen, compose
+shared navigation and screens, and add the runnable Xcode target. Continue
+remaining lifecycle and native services and full platform acceptance. The
+export adapter has not been invoked by an actual iOS application yet.
+
 ### Latest recovery pointer — checkpoint 152 platform wiring
 
 Draft PR #24 remote head a85fcf0 has checkpoints 149–151. Experiment

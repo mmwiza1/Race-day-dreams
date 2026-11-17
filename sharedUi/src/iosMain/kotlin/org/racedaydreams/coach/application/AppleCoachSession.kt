@@ -2,6 +2,7 @@ package org.racedaydreams.coach.application
 
 import kotlinx.coroutines.*
 import kotlinx.datetime.TimeZone
+import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.coach.health.AppleHealthGateway
 import org.racedaydreams.coach.reminders.AppleCoachReminders
 import org.racedaydreams.domain.time.LocalDate
@@ -25,6 +26,7 @@ private constructor(
     val recording: AppleRunRecorder,
     val reminders: AppleCoachReminders,
     val platform: AppleCoachPlatform<File>,
+    val backupDocuments: AppleBackupDocuments,
     val interruptedRecording: SqliteRecordingStaging.Recovery?,
 ) {
     private var closed = false
@@ -83,6 +85,8 @@ private constructor(
                         newId,
                     )
                 val reminders = AppleCoachReminders(database, io)
+                val exports = LocalBackupExports(database, now)
+                val backupDocuments = AppleBackupDocuments(exports, io)
                 val platform =
                     AppleCoachPlatform(
                         scope,
@@ -90,7 +94,7 @@ private constructor(
                         recording,
                         reminders,
                         readWindow,
-                        documents(LocalBackupExports(database, now)),
+                        documents(exports),
                         shortDate,
                     )
                 val services =
@@ -128,6 +132,7 @@ private constructor(
                     recording,
                     reminders,
                     platform,
+                    backupDocuments,
                     interrupted,
                 )
             } catch (failure: Throwable) {
