@@ -1,9 +1,6 @@
 package org.racedaydreams.recording
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import org.racedaydreams.data.RecordingStore
@@ -64,26 +61,53 @@ internal class SqliteRecordingRepository(private val store: RecordingStore) : Re
  */
 internal class RecordingSessionCoordinator(
     val session: RecordingStore.Session,
-    private val repository: RecordingRepository,
-    private val io: CoroutineDispatcher,
-    private val monotonicMillis: () -> Long,
-    private val executionContext: () -> JSONObject? = { null },
-    private val executionEvents: () -> List<WorkoutExecutionEngine.Event> = { emptyList() },
+    repository: RecordingRepository,
+    io: CoroutineDispatcher,
+    monotonicMillis: () -> Long,
+    executionContext: () -> JSONObject? = { null },
+    executionEvents: () -> List<WorkoutExecutionEngine.Event> = { emptyList() },
 ) {
-    val engine = RunMetricsEngine(session.mono, session.start)
-    private val flushLock = Mutex()
-    private var pointIndex = 0
-    private var eventIndex = 0
+    private val shared =
+        SharedRecordingSessionCoordinator(
+            session.shared(),
+            object : RecordingStageRepository {
+                override fun append(batch: RecordingStageBatch) =
+                    repository.append(
+                        RecordingBatch(
+                            batch.sessionId,
+                            batch.points,
+                            batch.events,
+                            batch.fromPoint,
+                            batch.fromEvent,
+                            batch.lastMonotonic,
+                            batch.state,
+                            batch.executionContextPayload?.let(::JSONObject),
+                        )
+                    )
 
-    suspend fun flush() =
-        flushLock.withLock {
-            val fromPoint = pointIndex
-            val fromEvent = eventIndex
-            val points = engine.pointsFrom(fromPoint)
-            val events = engine.eventsFrom(fromEvent)
-            val now = monotonicMillis()
-            val state = if (engine.status(now).paused()) "PAUSED" else "ACTIVE"
-            val context =
+                override fun unfinished() = repository.unfinished()?.shared()
+
+                override fun finish(
+                    session: RecordingStageSession,
+                    movingMillis: Long?,
+                    recovered: Boolean,
+                ) =
+                    repository.finish(
+                        RecordingStore.Session(
+                            session.id,
+                            session.state,
+                            session.start,
+                            session.mono,
+                            session.last,
+                        ),
+                        movingMillis,
+                        recovered,
+                    )
+            },
+            io,
+            monotonicMillis,
+            {
+                // Original Android codec and caller-thread capture, byte-for-byte existing shape.
                 executionContext()?.let { retained ->
                     val rows = JSONArray()
                     executionEvents().forEach {
@@ -95,28 +119,16 @@ internal class RecordingSessionCoordinator(
                                 .put("active", it.activeMillis())
                         )
                     }
-                    JSONObject(retained.toString()).put("events", rows)
+                    JSONObject(retained.toString()).put("events", rows).toString()
                 }
-            val batch =
-                RecordingBatch(
-                    session.id,
-                    points,
-                    events,
-                    fromPoint,
-                    fromEvent,
-                    now,
-                    state,
-                    context,
-                )
-            withContext(io) { repository.append(batch) }
-            pointIndex = fromPoint + points.size
-            eventIndex = fromEvent + events.size
-        }
+            },
+        )
+    val engine
+        get() = shared.engine
 
-    /** Called after sensors/ticker stop and the final observed batch is durable. */
-    suspend fun finish(): String {
-        val retained = withContext(io) { repository.unfinished() } ?: error("No staged recording")
-        val movingMillis = engine.status(monotonicMillis()).movingMillis()
-        return withContext(io) { repository.finish(retained, movingMillis, false) }
-    }
+    suspend fun flush() = shared.flush()
+
+    suspend fun finish(): String = shared.finish()
 }
+
+private fun RecordingStore.Session.shared() = RecordingStageSession(id, state, start, mono, last)

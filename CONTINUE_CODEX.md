@@ -62,7 +62,61 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, through144 locally verified
+### Latest recovery pointer — 17 November,144 pushed /145 locally verified
+
+Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24. Through144 is NOW pushed
+at3e95c70d4065f71c6166264d86b930a390d4351f;143349ddcd precedes it. Current experiment44171902763:
+Android134352935583 SUCCESS, Apple134352935067 Native tests passed, framework LINK still running
+at last check. Formatting44171902185 SUCCESS; actual logs18contracts/997files(902Kotlin95Java)
+checked. Do not cancel useful Native linking by pushing an intermediate checkpoint.
+142fully verified640/700189/48/JVM490-25-658/Native449-27-658 proofs below remain historical.
+144Android exact counts/artifacts not yet independently parsed here; inspect completed logs.
+
+145is applied and locally VERIFIED in THIS coherent commit, not yet pushed at commit time.
+Original active running metrics+staging cursor coordinator now COMMON and USED by Android:
+sharedUi/commonMain/org/racedaydreams/recording/SharedRecordingSessionCoordinator.kt adds typed
+RecordingStageSession/RecordingStageBatch/RecordingStageRepository and same original coordinator.
+Exactly ONE RunMetricsEngine, same flush mutex/captured deltas, Main-before-IO snapshot, both
+cursors advance ONLY after successful append, same latest retained header/active-time finalisation.
+Constructing it never reads SQL, starts sensors or resumes missing data. Real repo/IO/monotonic/
+context snapshot callbacks required. Encoded execution context is EXISTING recording context
+format, not a new generic data bucket or schema concept. Native backend/codec still must be real.
+
+Android app recording/RecordingSessionCoordinator.kt retains original APIs/RecordingStore.Session,
+actual RecordingRepository/SqliteRecordingRepository and EXACT org.json event codec. Only maps
+immutable header/batches at the boundary; callback builds original context on caller/Main before
+serial IO. Existing SQL store, finalisation, activity/PBs/associations and foreground service are
+UNTOUCHED. No GPS/pace/distance/filter/timing/sensor changes, no second recorder/engine.
+All original RecordingSessionCoordinatorTest assertions/cases retained. New legacy wire golden
+checks integer/fraction/quote/newline payload, event replacement, source immutability and cursors.
+This is a declared repository/codec fixture, NOT physical SDK recording acceptance.
+FINAL145common metadata/debugAPK/testAPK/lint PASS5m29s/176tasks:
+scratch/kmp145-recording-coordinator.log. Formatting998files(903Kotlin95Java) applied; final check/
+schema/source validation at commit. New runtime expected641Android and unchanged Native449/27/658
+plus framework are PENDING for145; cannot inherit144or142acceptance.
+
+Next exact tasks: finish current144Native gate and parse actual Android640/domain/JVM/Native
+artifacts, fixing any actual failure without weakened tests or blind reruns. Then ONE normal145
+push to existing PR24 if not already there and inspect new-head gates; consult actual PR body/head
+before repeating a push. No temporary branch or replacement PR needed. Do not reapply source port
+scripts. Shared coordinator is now extracted; next native recording boundary is REAL typed staging
+append/recovery/finalisation from app/data/RecordingStore.kt and existing shared archive/evidence/
+activity/context codecs. Reuse RunMetricsEngine and archive/retention kernels; preserve exact
+normalized observations, atomic context/point/event batches, idempotence, qualified PBs, planned
+links, gaps and explicit recovery. Do not create a stub/fake native recorder or duplicate engine.
+
+Remaining full scope: actual native Core Location/BLE/clocks/notifications/audio/documents,
+retained input and SDK/application composition, iOS HOST/entitlements/usage strings, remaining
+active Progress/history/settings/storage/running UI/assets/navigation. Strength/Gym/body/manual/
+custom/templates/reviews and feature coordinators now already exist in common and are used by
+Android; do not repeat them or COMPLETE0Java-domain/storage kernel ports. ONE real app-owned
+operation guard across EVERY native backup/restore/cleanup path before destructive controls;
+Native controls remain OFF. Final full Android28/35/36 and actual iOS APP/runtime/backup/migration/
+authentic source-bound light/dark/200% visual gates mandatory when ready. All physical checks
+UNPERFORMED. Version0.12.3-test1/code19/schema19/rootJSON13/raw3/package1 unchanged. Main85e1c39/
+ownerPR23 untouched; no version bump, merge or public publication until full cross-platform ready.
+
+### Latest recovery pointer — 17 November, through144 locally verified (historical)
 
 Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24.142ced0982 is pushed and BOTH
 experiment44166903090 jobs SUCCESS.143manual/custom programme UI committed locally349ddcd;
