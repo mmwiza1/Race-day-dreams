@@ -15,20 +15,42 @@ class SqliteBodyHeights(private val database: SqlDatabase) {
                 "SELECT id,metres,observed_at,offset_seconds,provider,source_id,origin,imported_at FROM body_heights ORDER BY observed_seconds DESC,observed_nanos DESC,id LIMIT ? OFFSET ?",
                 listOf(SqlValue.Integer(limit.toLong()), SqlValue.Integer(offset.toLong())),
             )
-            .map { row ->
-                BodyHeight(
-                    row.text(0),
-                    (row[1] as SqlValue.Real).value,
-                    StoredInstant.parse(row.text(2)),
-                    if (row[3] == SqlValue.Null) null
-                    else Offsets.ofTotalSeconds((row[3] as SqlValue.Integer).value.toInt()),
-                    row.text(4),
-                    row.text(5),
-                    row.nullableText(6),
-                    row.nullableText(7)?.let { StoredInstant.parse(it) },
-                )
-            }
+            .map(::read)
     }
+
+    internal fun bySource(
+        provider: String,
+        source: String,
+    ): org.racedaydreams.domain.body.BodyHeight? =
+        find("provider=? AND source_id=?", listOf(SqlValue.Text(provider), SqlValue.Text(source)))
+
+    internal fun byId(id: String): org.racedaydreams.domain.body.BodyHeight? =
+        find("id=?", listOf(SqlValue.Text(id)))
+
+    private fun find(
+        where: String,
+        arguments: List<SqlValue>,
+    ): org.racedaydreams.domain.body.BodyHeight? =
+        database
+            .query(
+                "SELECT id,metres,observed_at,offset_seconds,provider,source_id,origin,imported_at FROM body_heights WHERE $where",
+                arguments,
+            )
+            .singleOrNull()
+            ?.let(::read)
+
+    private fun read(row: List<SqlValue>): BodyHeight =
+        BodyHeight(
+            row.text(0),
+            (row[1] as SqlValue.Real).value,
+            StoredInstant.parse(row.text(2)),
+            if (row[3] == SqlValue.Null) null
+            else Offsets.ofTotalSeconds((row[3] as SqlValue.Integer).value.toInt()),
+            row.text(4),
+            row.text(5),
+            row.nullableText(6),
+            row.nullableText(7)?.let { StoredInstant.parse(it) },
+        )
 
     fun saveHeight(value: BodyHeight) =
         database.transaction {

@@ -64,27 +64,24 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24.1249d4554f +12561e038d are
-COMMITTED/PUSHED; remote HEAD61e038d7daa8fec5e2a1fb4e4bd51c4f5d68817a. Experiment44106763790
-has Android SUCCESS610unique tests/0fail/skips +700189domain checks; Apple Native/framework
-still RUNNING. Formatting44106763460 SUCCESS. Prior12302efa0c passed
-601Android/700189domain and Native449/27/646/framework, independently verified below.
-126 shared application composition e9a393b +recoverya172b90 is SAFELY BACKED UP remotely at
-`checkpoint/android-ios-kmp-compose-126` while local branch remains the original experiment.
-PR24 branch still61e038d because useful125 Apple CI must finish before its fast-forward.
-Preserve common
-SharedCoachApplicationServices, Android root/baseline wrapper, actual SQL/root tests and workflow/
-format targets. FINAL metadata/debug+testAPK/lint PASS7m14s/176tasks,
-scratch/kmp-application-root-final.log. Format953+final changed test, schema19/source3 PASS.
-Do not push the PR branch/cancel useful125 Apple CI. Recovery-branch pushes do not run these
-PR/main-only workflows; no replacement PR/tag/publication was made. Next613Android/648Native
-pending. Shell gh API token
-began401 at15:03; connected GitHub tools WORK and normal Git push DRY-RUN PASSED (no mutation).
-Use connector for CI polling; no credentials/history rewritten. Normal push remains available.
-125local gate PASS7m35s/176tasks;124health25/storage648 JVM +APKs/lint PASS8m24s. No schema/
-backup/version/permission change. Main85e1c39 and owner PR23 preserved. Actual iOS APP/full active
-UI/navigation/platform/final gates remain incomplete; framework is not app acceptance. Native
-restore/prune controls remain OFF until EVERY operation uses one real application lifecycle owner.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Working branch preserved with126
+sourcee9a393b +recoverya172b90/8a2935c backed up on checkpoint/android-ios-kmp-compose-126.
+Remote PR branch remains61e038d7daa8fec5e2a1fb4e4bd51c4f5d68817a;125experiment44106763790 is
+NOW SUCCESS on BOTH jobs:610Android/700189domain, Native449/27/648 independently verified;
+framework linked. No longer wait for that completed run. Main85e1c39/owner PR23 unchanged.
+LOCAL127 Apple Health integration is COMPLETE/locally verified: SqliteHealthKitBodyImport,
+shared/native AppleHealthGateway, height reader reuse,7JDBC/Apple contracts and3Android gateway
+cases/targets. Preserve these files; no scripts need reapplication. Initial six-contract storage
+JVM654 +metadata/debug+testAPK/lint PASS8m36s; final7-contract/selection-aware shared gateway
+build PASS9m38s/180tasks, scratch/kmp-apple-health-gateway-final.log: JVM655ALL0fail/error/skip,
+metadata/debug+testAPK/lint. Format960(865Kotlin/95Java), schema19/source3 PASS. New Native655 /
+Android616 (610+root3+gateway3) acceptance still pending.126local root APKs/lint7m14s/format953 PASS.
+When final127 local checks pass, commit +push126/127/recovery ONCE to ORIGINAL PR24 branch, then
+verify actual new Native/framework/runtime results. Delete our recovery branch only AFTER that
+PR branch contains all its commits. Normal Git works; stale shell gh API401 -> use connector.
+No schema/backup/version/permission change, early merge or publication. Actual iOS app host,
+active shared UI/navigation/full platform effects and final gates still unfinished. Native
+restore/prune UI remains OFF until EVERY operation uses one actual lifecycle owner.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5657,23 +5654,55 @@ restore/prune controls remain OFF until EVERY operation uses one real applicatio
   environment ready, no credential values exposed/rewritten. No owner reconnect required for
   Git transport; use connector fetch_workflow_run_jobs/artifacts/logs instead of expired gh API.
 
+### Checkpoint127 in progress — actual Apple SDK gateway and immutable visible-body import
+
+- Existing native HealthKitRunningReader/HealthKitBodyReader are reused by new thin native
+  AppleHealthGateway; real shared provider orchestration lives in SharedAppleHealthGateway.
+  Athlete-selected workouts/body categories only are read. No SDK access sheet is launched by
+  sync; request methods remain explicit. grantedPermissions returns EMPTY/UNKNOWN, never a fake
+  Apple read grant. Native root must use explicit request+sync actions, not Android's Set-based
+  permissionResult handler or fabricated permission tokens. Selected body reads are part of sync.
+- ALL selected SDK evidence is staged before SQL. Common gateway checks exact body scope/provider/
+  unknown-offset semantics; qualified workouts resolve against CURRENT repository data inside
+  SAME transaction as body. Different repository owner is rejected. Visible-only results never
+  imply deletion or authorised coverage; HealthSyncResult windowStart/windowEnd remain null.
+  Unselected categories are omitted from result counts, not presented as zero training evidence.
+- SqliteHealthKitBodyImport uses original typed heights/context tables. New cache entries retain
+  source UUID/origin/nanoseconds; repeat/empty reads never delete/rewrite history or choose a
+  protein basis. Compatible old IDs, first import dates and legitimate older offset metadata
+  stay byte-identical. Missing origin stays unknown; conflicting KNOWN origins/value/time reject.
+  Late failures roll back workouts/body/checkpoint, and unselected weight payloads are not loaded.
+- Seven real JDBC/Apple contracts verify source/precision/manual/basis protection, repeats and
+  empty-read byte identity, immutable conflicts/manual ID collision, duplicate/limit handling,
+  outer workout+body rollback, caller rollback/unrelated malformed weight, older unknown origin.
+  Three actual Android SQL/shared-gateway cases verify body-only privacy/no grants/coverage/basis,
+  SDK staging failure +late-body rollback, and unavailable/unselected/mismatched/foreign-owner
+  rejection. Expected616Android /655storage Native. No existing assertion removed or weakened.
+- INITIAL six-case kernel JVM654ALL0fail/error/skip +common metadata/debug+testAPK/lint PASS
+  8m36s/180tasks,scratch/kmp-apple-health-import-final.log. FINAL seven-case/selection-aware shared
+  gateway JVM655ALL0fail/error/skip +metadata/debug+testAPK/lint PASS9m38s/180tasks,
+  scratch/kmp-apple-health-gateway-final.log. Format960(865Kotlin/95Java), schema19/source3 PASS.
+  Native SDK facade has NOT been compiled/tested locally (Linux); upcoming real Apple gate is
+  mandatory. Actual iOS host/selection UI/entitlements remain unfinished, no false app acceptance.
+-12561e038d finished BOTH jobs successfully: Native artifact14342256195,178284bytes,
+  SHA7fa4662d229ffdce4dfa27317c1edae6dc24abf1031593d4f3ab061ecc7db501 independently verified
+  449domain/27health/648storage ALL0fail/error/skip. scratch/kmp125-native/verification.json.
+  Framework14342368146 linked, metadata62140355bytes/SHAe1157be705d1e5888a2dd3f937918333fc921cffdcdf6f4a94f6aef4c370478c.
+  This is prior-source proof, not new127655/616 acceptance. No further wait/cancellation needed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Preserve126e9a393b, recovery commits and remote checkpoint/android-ios-kmp-compose-126.
-   Wait for useful125 Apple134121100041/run44106763790
-   using CONNECTED GitHub tools (shell gh API401). Android610/700189/JVM648 already verified.
-   Inspect real Apple result and download/digest-check Native648 XML/framework. Do not cancel.
-   Once complete, normal Git push126+recovery ONCE to existing DRAFT24 (push dry-run succeeded):
-   git push origin experiment/android-ios-kmp-compose
-   Verify next613Android/648Native/framework. Diagnose actual failures; no blind reruns. If workspace
-   was lost, fetch checkpoint/android-ios-kmp-compose-126 and fast-forward the ORIGINAL experimental
-   branch when compatible; do not reset/discard surviving work or create a replacement PR. Remove
-   our temporary recovery branch only AFTER original PR branch contains the same commits.
-   Apple was still Native-test stage at15:16; live log BlobNotFound means not published yet, NOT
-   an assertion failure. Do not claim Native648/framework or126runtime acceptance from that state.
-   Then actual iOS app host/active shared UI/navigation/SDK integration USING the common root,
-   not another domain/storage restart or empty prototype. Native destructive UI remains OFF
-   until one actual SqliteDataLifecycle owner covers every host operation. No early merge/pub.
+1.127local final gate PASS9m38s/180tasks: JVM6550fail/error/skip, metadata/debug+testAPK/lint;
+   format960/schema/source PASS. Preserve/commit127+handoff and126backed-up root. Next scoped
+   batch shares ACTUAL existing Home +first-run focus Compose UI with required platform formatting/
+   navigation actions, no redesign. Prior125 BOTH jobs finished; do NOT wait again. After coherent
+   local UI gate, normal push ONCE: git push origin experiment/android-ios-kmp-compose
+   Verify next616Android/655Native/framework on actual head, especially new root3/gateway3 and
+   Apple7 SQL contracts/thin Native SDK facade. Remove our temporary recovery ref only AFTER
+   PR branch contains those commits. Keep DRAFT24; no version bump/merge/public release.
+   Then actual iOS application host +active shared UI/navigation/SDK services USING the common
+   root and real AppleHealthGateway. No empty host/prototype or domain/storage-kernel restart.
+   Native destructive UI stays OFF until one real data-lifecycle owner covers every operation.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
