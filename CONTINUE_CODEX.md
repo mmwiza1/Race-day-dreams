@@ -62,6 +62,30 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 149 Apple recording bindings
+
+Draft PR #24 remains on experiment/android-ios-kmp-compose. Remote checkpoint
+148 at 86006bc passed the formatting workflow 44183142014. Experimental run
+44183141942 was still running both platform jobs at the most recent check.
+Keep that run in place while useful.
+
+Checkpoint 149 is local. AppleRecordingLocation binds Core Location permission,
+fixes and errors, preserving unknown sensor values and sending timestamped
+observations through the existing delivery checks. AppleRunRecorder binds
+the real SQLite staging repository and shared metrics engine to a host-owned
+main scope. It adds periodic staging, pause/resume, and explicit interrupted
+save/discard. Finish freezes the last time and retries with the retained header.
+These are Apple-only files. Pinned formatter and git diff --check passed.
+macOS compilation and runtime are pending, and no host currently invokes them.
+
+Next verify 148 CI, then push 149 in a coherent batch. Continue actual iOS
+application composition: existing AppleApplicationDatabase, SharedCoachApplicationServices,
+real HealthKit controls and shared navigation/screens. Attach the recorder to
+the app lifecycle, provide location usage strings and verify permission denial,
+suspension and resume. Background recording capabilities, BLE, audio, native
+document IO, app-owned data-operation guard and full platform acceptance remain
+unfinished. Do not merge or publish until the actual iOS app and full gates pass.
+
 ### Latest recovery pointer — checkpoint 148 recording recovery
 
 Checkpoint 145 at d00370e passed Android and Apple experiment 44178248333.
