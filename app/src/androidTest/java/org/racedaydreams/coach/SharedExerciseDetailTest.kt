@@ -16,7 +16,6 @@ import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.racedaydreams.domain.presentation.AthleteLanguage
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.storage.SqliteStrengthChoices
 
@@ -105,10 +104,10 @@ class SharedExerciseDetailTest {
         )
         compose.onNodeWithText("PBs").performClick()
         compose
-            .onNodeWithText(AthleteLanguage.recordLabel("6RM"))
+            .onNodeWithText("Best weight for 6 repetitions")
             .performScrollTo()
             .assertIsDisplayed()
-        compose.onNodeWithText("82.3 kg × 6").assertExists()
+        compose.onAllNodesWithText("82.3 kg × 6").assertCountEquals(2)
         compose
             .onNodeWithText("Estimated maximum for one repetition:", substring = true)
             .performScrollTo()
