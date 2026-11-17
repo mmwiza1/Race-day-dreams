@@ -68,11 +68,11 @@ Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Current pushed HEAD 
 `9cd4adf2c54a10bddb42ebca039ea4705b2d86f5` (116). Experiment44074597919 and formatting44074597892
 are SUCCESS: Android576 unique tests; byte-verified JVM490domain/25health/639storage and
 Native449domain/27health/639storage, zero failures/errors/skips; real shared framework linked.
-11752f511c and118889452c are committed locally with metadata/Android compile/lint and
-formatting PASS.119shared calendar presentation is currently local and compiling; preserve its
-new common screen/tests and intentional thin Android wrapper. Planned combined push expects
-Android592 =576verified +3detail +2exclusion +7preview +2calendar accessibility +2new calendar.
-116 success does NOT verify117–119. See latest119 recovery below. No version/formats changes,
+11752f511c,118889452c and119bec8ea0 are committed LOCALLY with metadata/Android compile/lint
+and formatting PASS.120body-weight commands/shared ProgressCoordinator work passes local JVM641 and metadata/Android
+build/lint; preserve its new common coordinator, original Android deletion and typed writer tests.
+Planned ONE combined push expects Android592 and Native/JVM641storage (639+2new contracts).
+116 success does NOT verify117–120. See latest120 recovery below. No version/formats changes,
 merge/publication/native destructive UI or fake bindings. Remaining services/UI/root/navigation/
 actual iOS app and complete final gates are unfinished.
 
@@ -5309,13 +5309,39 @@ actual iOS app and complete final gates are unfinished.
   Then continue remaining original application services/active UI/root/navigation and native host/
   platform bindings. No version bump, merge, public build or native destructive controls yet.
 
+### Checkpoint120 local — typed body-weight commands and common progress application service
+
+-119bec8ea0 is committed locally: corrected metadata/debugAPK/testAPK/lint6m23s/176tasks PASS,
+  formatter942(847Kotlin/95Java), source3/schema19 PASS.117–119 are NOT yet pushed; preserve them.
+-120 moves exact manual weight save/delete and authoritative half-open provider-window replacement
+  into existing SqliteCoachingContext over SAME coach_evidence rows/SQLite pool. DevelopmentStore
+  delegates, retaining independent old backup helpers. No new schema, fields or inferred history.
+  Visible-only Apple reads MUST keep their existing qualified merge, never window replacement.
+- Actual ProgressCoordinator moves common (same FQN): same future-date guard, current unit
+  conversion, original identity/edit semantics, manual provenance and serial runner. Android root
+  supplies real per-action system-zone local noon/today and UUID over its existing lazy IO-checked
+  database. No cached timezone, fake provider data, new DB or parallel coaching engine.
+- TWO new common SQL contracts (both inherited by JDBC/Apple) cover manual/edit/delete provenance,
+  unchanged imported bytes/user-owned export/no invented training, inclusive-start/exclusive-end
+  provider scope, late mixed-provider failure rollback and repeatable replacement. Expected storage
+  641 (639+2). Existing Android WeeklyUx/body/health/store/backup cases remain in focused runtime.
+- FINAL JVM641storage (0fail/error/skip) +common metadata/debugAPK/testAPK/lint PASS,
+  scratch/kmp-weight-commands-final.log. Formatter942/exact schema19/source3 PASS. Local APK
+  inspection:0.12.3-test1/code19/min28/noINTERNET; no public upload. No120Android runtime/Native
+  pass inferred from this local result; actual new checkpoint CI is required.
+- Exact next: inspect this CURRENT120 build and XML, fix real failures; commit120+recovery and push
+ 117–120 ONCE to existing DRAFT24. Prior116 is fully green, no running gate to cancel. Inspect exact
+  new Android592/Native641/framework and all newly included UI/preview/weight contracts. Then
+  remaining application services/active UI/root/navigation/full native permissions and real iOS
+  app host. Destructive native UI remains OFF; no premature version bump/merge/publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect current119 metadata/debugAPK/testAPK/lint and formatting outcomes; correct real
-   failures.11752f511c and118889452c local compile/lint/format are green. Commit119 with recovery,
-   push the coherent117–119 batch ONCE to DRAFT24, then inspect exact Android592/Native639 /
-   framework results. Latest pushed1169cd4adf is fully green/byte-verified. Continue original
-   remaining services/active screens/root/navigation/native host; do not stop at framework success.
+1. Inspect120 JVM storage/common metadata/debugAPK/testAPK/lint and XML, fix genuine failures.
+  11752f511c/118889452c/119bec8ea0 are locally committed/compile-lint-format green. Commit120
+   with recovery; push117–120 ONCE to DRAFT24 and inspect exact Android592/Native641/framework.
+   Latest pushed1169cd4adf is green/byte-verified. Continue remaining original application services,
+   active UI/root/native app and platform bindings; a framework alone is not app acceptance.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

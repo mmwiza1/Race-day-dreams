@@ -52,52 +52,21 @@ public final class DevelopmentStore {
     }
 
     public void deleteWeight(String id) {
-        db().delete("coach_evidence", "kind='WEIGHT' AND id=?", new String[] {id});
+        coachingContext.deleteWeight(id);
     }
 
     public List<BodyWeight> weights() {
         return coachingContext.weights();
     }
 
-    public void saveWeight(BodyWeight w) {
-        put(
-                "WEIGHT",
-                w.id(),
-                json(
-                        "id",
-                        w.id(),
-                        "kg",
-                        w.kilograms(),
-                        "at",
-                        w.at().toString(),
-                        "offset",
-                        w.offset().toString(),
-                        "provider",
-                        w.provider(),
-                        "sourceId",
-                        w.sourceId(),
-                        "origin",
-                        w.origin()));
+    public void saveWeight(BodyWeight weight) {
+        coachingContext.saveWeight(weight);
     }
 
     /** Replace only a successfully fetched provider window; manual data is untouched. */
     public void replaceWeightWindow(
             String provider, Instant from, Instant to, List<BodyWeight> weights) {
-        var db = db();
-        db.beginTransaction();
-        try {
-            for (var w : weights())
-                if (w.provider().equals(provider) && !w.at().isBefore(from) && w.at().isBefore(to))
-                    deleteWeight(w.id());
-            for (var w : weights) {
-                if (!w.provider().equals(provider) || w.at().isBefore(from) || !w.at().isBefore(to))
-                    throw new IllegalArgumentException("Weight is outside its import scope.");
-                saveWeight(w);
-            }
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        coachingContext.replaceWeightWindow(provider, from, to, weights);
     }
 
     private static BodyWeight weight(JSONObject j) {

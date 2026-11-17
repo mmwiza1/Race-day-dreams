@@ -83,6 +83,111 @@ abstract class CoachingContextRepositoryContract {
         )
 
     @Test
+    fun manualWeightCommandsKeepProviderProvenanceAndNeverCreateTrainingEvidence() =
+        storage { db, context, _, ids ->
+            val imported = weight("retained-import", now, "health-kit")
+            insert(db, "WEIGHT", imported)
+            val before = db.query("SELECT payload FROM coach_evidence WHERE id='retained-import'")
+            val manual =
+                org.racedaydreams.domain.body.BodyWeight(
+                    "manual-weight",
+                    87.125,
+                    now,
+                    Offsets.ofTotalSeconds(19815),
+                    "manual",
+                    "manual-weight",
+                    null,
+                )
+            context.saveWeight(manual)
+            assertEquals(manual, context.weights().single { it.id() == manual.id() })
+            assertEquals(
+                listOf("manual-weight"),
+                SqliteDevelopmentArchive(db).snapshot().records.map { it.id },
+            )
+            val edited =
+                org.racedaydreams.domain.body.BodyWeight(
+                    manual.id(),
+                    86.75,
+                    manual.at(),
+                    manual.offset(),
+                    manual.provider(),
+                    manual.sourceId(),
+                    manual.origin(),
+                )
+            context.saveWeight(edited)
+            assertEquals(2, context.weights().size)
+            assertEquals(edited, context.weights().single { it.id() == manual.id() })
+            context.deleteWeight(manual.id())
+            context.deleteWeight(manual.id())
+            assertEquals(
+                before,
+                db.query("SELECT payload FROM coach_evidence WHERE id='retained-import'"),
+            )
+            assertEquals(listOf("retained-import"), context.weights().map { it.id() })
+            assertTrue(db.query("SELECT * FROM strength_sessions").isEmpty())
+            assertTrue(db.query("SELECT * FROM activities").isEmpty())
+            assertEquals(0, ids())
+        }
+
+    @Test
+    fun authoritativeWeightWindowIsHalfOpenScopedTransactionalAndRepeatable() =
+        storage { db, context, _, _ ->
+            val until = StoredInstant.parse("2026-11-18T09:00:00Z")
+            insert(db, "WEIGHT", weight("manual", now, "manual"))
+            insert(db, "WEIGHT", weight("other-provider", now, "health-kit"))
+            insert(db, "WEIGHT", weight("old-at-start", now, "health-connect"))
+            insert(db, "WEIGHT", weight("keep-at-end", until, "health-connect"))
+            fun snapshot() = db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id")
+            val before = snapshot()
+            val replacement =
+                org.racedaydreams.domain.body.BodyWeight(
+                    "replacement",
+                    87.5,
+                    now,
+                    Offsets.ofTotalSeconds(0),
+                    "health-connect",
+                    "actual-source",
+                    "provider-origin",
+                )
+            val foreign =
+                org.racedaydreams.domain.body.BodyWeight(
+                    "foreign",
+                    90.0,
+                    now,
+                    Offsets.ofTotalSeconds(0),
+                    "manual",
+                    "foreign",
+                    null,
+                )
+            assertFailsWith<IllegalArgumentException> {
+                context.replaceWeightWindow(
+                    "health-connect",
+                    now,
+                    until,
+                    listOf(replacement, foreign),
+                )
+            }
+            assertEquals(
+                before,
+                snapshot(),
+                "A late scope failure must roll back deletions AND earlier insertions",
+            )
+            context.replaceWeightWindow("health-connect", now, until, listOf(replacement))
+            assertEquals(
+                setOf("manual", "other-provider", "keep-at-end", "replacement"),
+                context.weights().map { it.id() }.toSet(),
+            )
+            assertEquals(replacement, context.weights().single { it.id() == replacement.id() })
+            val after = snapshot()
+            context.replaceWeightWindow("health-connect", now, until, listOf(replacement))
+            assertEquals(after, snapshot())
+            assertEquals(
+                before.filter { it[1].sqlText() != "old-at-start" },
+                after.filter { it[1].sqlText() != "replacement" },
+            )
+        }
+
+    @Test
     fun importedAndManualWeightsRemainVisibleInTimeOrderWithoutBecomingUserOwnedExports() =
         storage { db, context, _, _ ->
             val recent = weight("a-later", now, "manual")

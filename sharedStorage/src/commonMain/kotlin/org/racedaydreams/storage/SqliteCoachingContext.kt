@@ -24,6 +24,59 @@ class SqliteCoachingContext(
             rows(Kind.WEIGHT).map { (it.evidence as Evidence.Weight).value }.sortedBy { it.at() }
         )
 
+    fun saveWeight(value: BodyWeight) =
+        put(
+            Kind.WEIGHT,
+            value.id(),
+            buildJsonObject {
+                put("id", value.id())
+                put("kg", value.kilograms())
+                put("at", value.at().toString())
+                put("offset", value.offset().toString())
+                put("provider", value.provider())
+                put("sourceId", value.sourceId())
+                put("origin", StoredJson.nullable(value.origin()))
+            },
+        )
+
+    fun deleteWeight(id: String) {
+        database.execute(
+            "DELETE FROM coach_evidence WHERE kind='WEIGHT' AND id=?",
+            listOf(SqlValue.Text(id)),
+        )
+    }
+
+    /**
+     * Only an authoritative completed provider window may replace its records. Visible-only Apple
+     * reads must use their existing qualified merge instead, never this command.
+     */
+    fun replaceWeightWindow(
+        provider: String,
+        from: Instant,
+        until: Instant,
+        values: List<BodyWeight>,
+    ) =
+        database.transaction {
+            for (value in weights()) {
+                if (
+                    value.provider() == provider &&
+                        !value.at().isBefore(from) &&
+                        value.at().isBefore(until)
+                )
+                    deleteWeight(value.id())
+            }
+            for (value in values) {
+                require(
+                    value.provider() == provider &&
+                        !value.at().isBefore(from) &&
+                        value.at().isBefore(until)
+                ) {
+                    "Weight is outside its import scope."
+                }
+                saveWeight(value)
+            }
+        }
+
     fun historical(): List<HistoricalStrengthRecord> =
         Immutable.copyList(
             rows(Kind.HISTORICAL_PB).map { (it.evidence as Evidence.Historical).value }

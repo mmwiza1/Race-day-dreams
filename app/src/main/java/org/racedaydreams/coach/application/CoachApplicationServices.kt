@@ -92,7 +92,21 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             coaching,
         )
     val strength = StrengthCoordinator(gym, choices, operations, coaching, development)
-    val progress = ProgressCoordinator(operations, development)
+    val progress =
+        ProgressCoordinator(
+            operations,
+            org.racedaydreams.storage.SqliteCoachingContext(
+                database,
+                Instant::now,
+                { UUID.randomUUID().toString() },
+            ),
+            LocalDate::now,
+            { date ->
+                val at = date.atTime(12, 0).atZone(java.time.ZoneId.systemDefault())
+                at.toInstant() to at.offset
+            },
+            { UUID.randomUUID().toString() },
+        )
     val health =
         HealthCoordinator(
             operations,
