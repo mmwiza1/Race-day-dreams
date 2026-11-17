@@ -62,51 +62,44 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, locally verified134
+### Latest recovery pointer — 17 November, pushed134 / local135
 
-Continue experiment/android-ios-kmp-compose / DRAFT PR24. This checkpoint preserves local131
-5300608,1323d42395,recoverya01f220,133authoring7abc285 and134generation. New source is ready
-for ONE normal push to ORIGINAL PR24 at commit time; inspect live PR head/run BEFORE repeating
-that action on resume. Actual post-push head/run status is maintained in PR body. No reset,
-replacement PR or branch switch; main85e1c39 and separate owner PR23 unchanged.
+Continue experiment/android-ios-kmp-compose / DRAFT PR24. ORIGINAL PR head is now
+ac9a84560f8e8df0ea7dc4ae277936cd1125c97f:131workout UI5300608/132formatter3d42395/recoverya01f220/
+133authoring7abc285/134generation are contained. Redundant132recovery branch was removed only
+AFTER ancestor +actual ls-remote checks. Main85e1c39/owner PR23 unchanged. No branch switch,
+reset/replacement PR/version bump/merge/publication.135source below is in this local checkpoint.
 
-133SharedStrengthProgrammeCoordinator and shared GymSlotInput/parser are committed/used by
-Android;134SharedStrengthGenerationCoordinator is NOW implemented and locally VERIFIED/used by
-Android. SAME repositories, lifecycle/SavedState keys, real clock/date/UUID, actual/execution
-readers and all original public APIs (authoring25methods/generation24). No engine, programme,
-actual/history, permission or schema change. Common date ordering uses epoch days; exact checked
-revision increment remains. Six new real SQL/coordinator cases cover retained callback ordering,
-no Main IO, stale reviews/fresh exclusions, original vs future revision, no automatic activation,
-modality/reference/RPE/RIR distinction and insufficient evidence cannot save progression.
+ACTUAL134format44136116072 SUCCESS:18formatter contracts,880Kotlin/95Java checked in completed
+job134225993053 logs. Old130HTTP429before-source failure diagnosed/fixed132; no blind rerun or
+weakened checks.134experiment44136116110 is still RUNNING: Android134225992836 in focused
+runtime, Apple134225993535 in Native tests. New632runtime/655Native/framework totals not yet
+verified. Preserve useful CI before next source push.13044128266830 BOTH jobs SUCCESS,626Android/
+700189domain, JVM490/25/655 +Native449/27/655 digest/XML verified; framework linked. Proofs and
+artifact hashes remain recorded below and scratch/kmp130-verified/. This is prior-source proof.
 
-FINAL133 metadata/debugAPK/testAPK/lint PASS6m45s/176tasks, scratch/kmp133-authoring-final.log;
-format973(878Kotlin/95Java). FINAL134 same gate PASS6m45s/176tasks,
-scratch/kmp134-generation-final.log; format975(880Kotlin/95Java), exact schema19/source3 PASS.
-132formatter18offline contracts reconfirmed PASS. New632Android/655Native/framework still
-PENDING until exact new-head CI runs. Existing122focused classes/assertions preserved,2added.
+135SharedTrainingRecoveryCoordinator contains original conservative actual/cache review,
+explicit no-write Keep, fresh reviewed preview-only lower-conflict move/lighter-week choices.
+Android wrapper preserves4public methods, SAME actual repositories, HealthIntelligenceStore
+read, primary focus, lifecycle, current real clock/offset/UUID; no new medical score or engine.
+Common CalendarDates uses exact supplied offset, not UTC guessing. Two actual SQL/coordinator
+cases verify missing health/actual evidence across+14date boundary, no-write Keep/unsupported
+proposal rejection, genuine hybrid schedule preview/current running+gym histories unchanged,
+and interleaved programme stop rejects stale preview. Provider fixture explicitly has no health
+observations; it is not claimed as SDK/hardware coverage. Existing recovery UI tests retained.
+FINAL135 common metadata/debugAPK/testAPK/lint PASS6m14s/176tasks,
+scratch/kmp135-recovery-final.log; format977(882Kotlin/95Java) PASS. New634Android and135Native
+acceptance PENDING.133/134each local gate PASS6m45s, no repeated storage/domain implementation.
 
-130experiment44128266830 finished SUCCESS on BOTH jobs. Actual Android134197939370 proves626
-unique matching START/END cases,0failures/skips,700189domain checks/48suites. SHA/ZIP/XML verified
-JVM490domain/25health/655storage and Native449domain/27health/655storage ALL0failures/errors/skips.
-Proofs scratch/kmp130-verified/{verification.json,runtime-checks.json,android-job.log}.
-Native artifact14350566778 178641bytes/SHA9cc2fb6b408cb9ba0405f5db5376c44bb6730996d3cb7ee83162f21350711be7;
-JVM14349837115 186980bytes/SHAa17497390c9deba132f0489db1866e0245c134f904e02b1dd4010c3dd1253209.
-APK14350355890 verified58484038bytes/SHAb6772773b7bd3c220d3998fcc04dc20c8a6814895b1e96b1da302842fd440258,
-code19/min28/noINTERNET. Actual Apple framework linked,14351032160(metadata62225996bytes/
-SHAc7d13d9038dea696eca4ed341d9c2e7bbd85b4abc32542704a13f211ba6df1b6; ZIP not downloaded).
-This is PRIOR130proof, not new134acceptance. Framework is NOT an iOS app. Do not wait130again.
-
-130separate format workflow44128267170 failed before source check (MavenHTTP429). Root fix132
-is committed/18local tests; combined push must verify it in CI. No blind rerun, weakened checks or
-claim of already-green current formatting. After original PR branch contains ALL132recovery
-commits, delete redundant checkpoint/android-ios-kmp-compose-132 only after ancestor check.
-
-Next inspect new exact-head CI/fix real failures, then finish remaining Gym Now/recovery/body
-feature orchestration, active shared UI/navigation and actual iOS app host/full SDK effects. Do
-not restart completed domain/storage/root/authoring/generation. Native destructive controls OFF
-until every operation uses one actual app-owned lifecycle guard. Version0.12.3-test1/code19,
-schema19/root13/raw3/package1 unchanged; no merge/public release before BOTH full apps and final
-gates pass. Physical HealthKit/Health Connect/GPS/BLE/audio/TalkBack/VoiceOver unperformed.
+Next scoped batch is original optional BodyMeasurementsViewModel operations with actual typed
+repository, provider visibility/sync, clock/timezone/ID/lifecycle bindings; body State and protein
+policy are already common.136preparatory script exists ONLY outside repo so far; inspect status
+before applying. Do not rerun earlier scripts or duplicate kernels. Preserve135while useful134
+CI runs; commit/coherent local body gate before normal combined push. If interrupted first,
+protect SAME local commits on a temporary recovery ref, no replacement PR or cancelled useful
+job. Actual iOS host, GymNow/body/full SDK bindings and remaining active UI/final release gates
+still unfinished. Framework is NOT an app. Native destructive UI OFF pending one real full
+lifecycle owner. Version/code/schema/backups unchanged, physical acceptance unperformed.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5808,18 +5801,30 @@ gates pass. Physical HealthKit/Health Connect/GPS/BLE/audio/TalkBack/VoiceOver u
   Formatter975(880Kotlin/95Java), schema19/source3 PASS;132formatter18offline contracts reconfirmed PASS.
   Previous133metadata/APKs/lint PASS6m45s/176tasks, format973; no new runtime/Native claims.
 
+### Checkpoint135 — original recovery/hybrid review and explicit preview operations
+
+- SharedTrainingRecoveryCoordinator borrows original typed programming/draft/gym/actual/activity
+  repositories and required real health-cache/focus/lifecycle/clock/offset/ID callbacks. Android
+  wrapper retains actual SDK/cache effects and4public methods. Original TrainingRecovery and
+  RecoveryProgrammeProposal rules are reused, no readiness score/new engine/automatic activation.
+- Two real SQL tests cover missing evidence/local-date rollover/no-write Keep/unsupported deload,
+  genuine hybrid lower-conflict preview with preserved running and active strength programmes,
+  and fresh interleaved programme changes rejecting stale review before another write. Existing
+  light/dark/200% recovery UI and domain/backup assertions remain unchanged. Expected634Android.
+- Metadata/debugAPK/testAPK/lint PASS6m14s/176tasks, scratch/kmp135-recovery-final.log;
+  format977(882Kotlin/95Java) PASS. Runtime/Native for135 still PENDING; current134CI useful.
+
 ### Exact next safe actions and remaining full scope
 
-1.1337abc285 and134source are locally compiled/test-compiled/linted/formatted; preserve with
-  131–132. Normal-push combined131–134ONCE to ORIGINAL PR24 if not already there. Inspect live
-   head/run first; never repush/cancel useful CI.130both jobs already SUCCESS; new632Android /
-  449domain+27health+655storage Native/framework and format fix132 require current-head proof.
-   Use actual completed logs/XML/digests; fix real failures without weakening assertions or blind
-   reruns. Remove132recovery ref only after original PR branch contains ALL its commits.
-   Then continue remaining original feature-owned GymNow/recovery/body orchestration and active
-   UI/navigation/full native effects/actual iOS app host. Authoring/generation and target parser
-   now shared; do NOT repeat them or domain/storage/root kernels. No empty host/prototype,
-   early native destructive controls, version bump, merge or public publication.
+1. Preserve/commit135with exact local results. ORIGINAL PR headac9a845134 is running experiment
+  44136116110 jobs134225992836/134225993535;18contract/975file formatting44136116072 SUCCESS.
+   Inspect actual completed runtime logs/XML before claiming632cases or Native acceptance.
+   Next optional body-measurement application operations should reuse existing common models,
+   ProteinGuidance and typed repository with actual provider callbacks; no policy rewrite/new
+   fake permission tokens. Keep135/next body source while useful134CI finishes, then one combined
+   normal push to ORIGINAL PR24. If interruption earlier, back up SAME commits on temporary ref.
+   Keep DRAFT24, no version/publication/merge. Remaining actual iOS host/GymNow/full native effects
+   and active UI/final full gates still mandatory; no empty prototype/domain/storage restart.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
