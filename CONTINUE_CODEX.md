@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 148 recording recovery
+
+Checkpoint 145 at d00370e passed Android and Apple experiment 44178248333.
+Completed Android logs show 641 unique matching starts and ends. Both CI jobs
+succeeded, including Apple framework linking. This is the experimental gate.
+
+Checkpoint 148 adds interrupted recording summaries and explicit save/discard
+repository commands. Discard requires a matching RECOVERABLE header. It removes
+only that recording and its staging context in one transaction. Recovery uses
+the same retained event timeline as finalisation and preserves the last stored time.
+Shared UI metadata compilation and 11 focused JDBC tests passed in 1m 56s.
+All 19 schema boundaries match Android. Log: /workspace/scratch/kmp148-gate.log.
+
+Checkpoints 146–148 are delivered together to the existing draft PR #24.
+Verify the new head on Android and Apple CI. Next wire real Core Location
+and monotonic clocks, native recovery UI, and the iOS app host. Physical
+recording and the full app release gates are still outstanding.
+
 ### Latest recovery pointer — checkpoint 147 recording finalisation
 
 The existing draft PR #24 still has checkpoint 145 at d00370e. Experiment

@@ -94,6 +94,32 @@ abstract class RecordingInventoryRepositoryContract {
         assertEquals(2, activity.samples().size)
     }
 
+    @Test
+    fun recoveryReportsOnlyRetainedTimeAndDiscardRequiresCurrentInterruptedHeader() =
+        storage { db ->
+            val staging = SqliteRecordingStaging(db)
+            staging.start("run", at, 0, "{}", "{}")
+            val pause = RunMetricsEngine.Event("PAUSE", 10, at)
+            staging.append("run", emptyList(), listOf(pause), 0, 0, 30, "PAUSED", null)
+            val live = assertNotNull(staging.unfinished())
+            assertNull(staging.recovery())
+            assertFalse(staging.discardRecovery(live))
+            staging.markRecoverable()
+            val recovery = assertNotNull(staging.recovery())
+            assertEquals(30L, recovery.elapsedMillis)
+            assertEquals(10L, recovery.activeMillis)
+            assertEquals(0L, recovery.pointCount)
+            assertTrue(recovery.paused)
+            assertTrue(recovery.structured)
+            assertFalse(staging.discardRecovery(recovery.session.copy(lastMono = 29)))
+            assertTrue(staging.discardRecovery(recovery.session))
+            assertFalse(staging.discardRecovery(recovery.session))
+            assertNull(staging.unfinished())
+            assertTrue(db.query("SELECT payload FROM recording_events").isEmpty())
+            assertTrue(db.query("SELECT payload FROM coach_support WHERE id='run'").isEmpty())
+            assertTrue(db.query("SELECT payload FROM release08 WHERE id='run'").isEmpty())
+        }
+
     private fun seed(
         db: SqlDatabase,
         id: String = "run",

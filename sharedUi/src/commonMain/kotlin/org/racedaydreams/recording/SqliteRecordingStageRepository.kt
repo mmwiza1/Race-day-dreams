@@ -20,6 +20,16 @@ class SqliteRecordingStageRepository(
 
     fun markRecoverable() = staging.markRecoverable()
 
+    fun recovery(): SqliteRecordingStaging.Recovery? = staging.recovery()
+
+    fun discardRecovery(expected: SqliteRecordingStaging.Session): Boolean =
+        staging.discardRecovery(expected)
+
+    fun saveRecovery(expected: SqliteRecordingStaging.Session): String {
+        require(expected.state == "RECOVERABLE")
+        return finalisation.finish(expected, movingMillis = null, recovered = true)
+    }
+
     override fun unfinished(): RecordingStageSession? =
         staging.unfinished()?.let {
             RecordingStageSession(it.id, it.state, it.start, it.startedMono, it.lastMono)

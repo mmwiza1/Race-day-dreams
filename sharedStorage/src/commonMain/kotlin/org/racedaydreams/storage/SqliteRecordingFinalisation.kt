@@ -48,19 +48,16 @@ class SqliteRecordingFinalisation(
             }
             if (header[0].sqlText() == "FINISHED") return@transaction header[1].sqlText()
 
+            if (session.state == "RECOVERABLE") {
+                require(header[0].sqlText() == session.state) {
+                    "Recovery state changed; reload before saving"
+                }
+            }
             val points = payloads("recording_points", session.id).map(RecordingPointJson::decode)
             require(points.size >= 2) {
                 "At least two usable GPS points are needed. Staged evidence is retained."
             }
-            val events =
-                payloads("recording_events", session.id).map { payload ->
-                    val row = StoredJson.objectValue(payload)
-                    RunMetricsEngine.Event(
-                        requireNotNull(row.text("type")),
-                        long(row, "mono"),
-                        StoredInstant.parse(requireNotNull(row.text("wall"))),
-                    )
-                }
+            val events = readRecordingEvents(database, session.id)
             val elapsed = (session.lastMono - session.startedMono).coerceAtLeast(1)
             val active =
                 movingMillis
@@ -255,3 +252,18 @@ class SqliteRecordingFinalisation(
         )
     }
 }
+
+internal fun readRecordingEvents(database: SqlDatabase, id: String): List<RunMetricsEngine.Event> =
+    database
+        .query(
+            "SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",
+            listOf(Text(id)),
+        )
+        .map {
+            val row = StoredJson.objectValue(it.single().sqlText())
+            RunMetricsEngine.Event(
+                requireNotNull(row.text("type")),
+                long(row, "mono"),
+                StoredInstant.parse(requireNotNull(row.text("wall"))),
+            )
+        }

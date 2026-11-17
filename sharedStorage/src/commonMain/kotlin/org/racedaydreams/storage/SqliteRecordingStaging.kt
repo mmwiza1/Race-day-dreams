@@ -2,6 +2,7 @@ package org.racedaydreams.storage
 
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.racedaydreams.domain.recording.RecordingTimeline
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.storage.SqlValue.Integer
@@ -109,6 +110,53 @@ class SqliteRecordingStaging(private val database: SqlDatabase) {
             "UPDATE recording_sessions SET state='RECOVERABLE' WHERE state IN ('ACTIVE','PAUSED')"
         )
     }
+
+    data class Recovery(
+        val session: Session,
+        val elapsedMillis: Long,
+        val activeMillis: Long,
+        val pointCount: Long,
+        val paused: Boolean,
+        val structured: Boolean,
+    )
+
+    fun recovery(): Recovery? =
+        database.transaction {
+            val session =
+                unfinished()?.takeIf { it.state == "RECOVERABLE" } ?: return@transaction null
+            val key = listOf(Text(session.id))
+            val events = readRecordingEvents(database, session.id)
+            Recovery(
+                session,
+                (session.lastMono - session.startedMono).coerceAtLeast(0),
+                RecordingTimeline.activeMillis(session.startedMono, session.lastMono, events),
+                database
+                    .query("SELECT COUNT(*) FROM recording_points WHERE session_id=?", key)
+                    .single()
+                    .single()
+                    .sqlLong(),
+                RecordingTimeline.pausedAt(session.startedMono, session.lastMono, events),
+                database
+                    .query("SELECT 1 FROM coach_support WHERE kind='execution' AND id=?", key)
+                    .isNotEmpty(),
+            )
+        }
+
+    /** Only a still-matching interrupted session may be explicitly discarded. */
+    fun discardRecovery(expected: Session): Boolean =
+        database.transaction {
+            if (expected.state != "RECOVERABLE" || unfinished() != expected) {
+                return@transaction false
+            }
+            val key = listOf(Text(expected.id))
+            database.execute(
+                "DELETE FROM recording_sessions WHERE id=? AND state='RECOVERABLE'",
+                key,
+            )
+            database.execute("DELETE FROM coach_support WHERE kind='execution' AND id=?", key)
+            database.execute("DELETE FROM release08 WHERE kind='origin' AND id=?", key)
+            true
+        }
 
     private fun nextSequence(table: String, id: String): Long {
         val max =
