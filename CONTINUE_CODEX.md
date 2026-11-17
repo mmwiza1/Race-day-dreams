@@ -62,7 +62,83 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, locally verified136
+### Latest recovery pointer — 17 November, workspace outage during137–138
+
+Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24. This is a recovery-only
+remote documentation commit made because the executor became UNAVAILABLE. Implementation
+through136 remains pushed at64fa114281123f07d63bf2afaf6ce359e41ca8d0. Preserve all surviving
+uncommitted137–138 files; do NOT reset or reapply scratch migration scripts blindly.
+The new remote documentation commit does NOT include or validate the local source changes.
+
+**Confirmed136 CI:** experiment44142035037 BOTH Android134247098540 and Apple134247099136
+completed SUCCESS. Actual Android completed logs say636tests,0failed/0skipped; Apple actual
+Native-test and framework-link steps SUCCESS. Source136 artifacts were NOT independently
+downloaded/XML/digest-verified in this session. Prior134 proofs below remain historical.
+Formatting44142034932 was already SUCCESS. Framework is NOT an actual iOS application.
+
+**Surviving local changes at last successful git status:**
+- MODIFIED app/src/main/java/org/racedaydreams/coach/strength/GymNowViewModel.kt:
+  original public methods now forward to internal val shared:SharedGymNowCoordinator.
+  Actual same AndroidSqlConnection, original execution/association/programming/coaching/legacy
+  stores, SavedState keys, viewModelScope, UUID/process clock, elapsedRealtime, Instant/offset,
+  GymRestClock and GymRestAlerts bound. Shared retained List values converted to ArrayList in
+  SavedStateHandle; no replacement service or engine.
+- UNTRACKED sharedUi/src/commonMain/kotlin/org/racedaydreams/coach/strength/SharedGymNowCoordinator.kt:
+  original GymNowState/GymSetDraft/GymBuilderDraft and original ~1100line operations moved.
+  IDs/time are REQUIRED platform effects (no common fake clock or UUID); form/builder have
+  required identity/time and internal newForm/newBuilderDraft factories. Constructor requires
+  SAME SqlDatabase, GymExecutionRepository, GymAssociationRepository, programming/coaching,
+  legacy current/version, favourite/recent/finished-ID readers, GymNowRetainedState, lifecycle
+  scope, real execution TickSource/rest clock/alert effect, now/offset/ID and IO dispatcher.
+  Uses existing SqliteGymTools/SqliteStrengthChoices/SqliteExerciseExclusions over same pool.
+  One original mutex/command/ack callback/terminal projection/pending exact-retry protocol.
+  Original retained builder codec uses FrozenGymWorkoutJson, original parser takes newId;
+  Collections.swap becomes identical element swap. Initial compile found only visibility:
+  Android wrapper could not call internal shared observeWorkoutTime; shared method made public
+  suspend (Android wrapper remains internal). That correction is NOT yet compiled.
+- MODIFIED app/src/main/java/org/racedaydreams/coach/strength/GymNowScreen.kt and UNTRACKED
+  sharedUi/src/commonMain/kotlin/org/racedaydreams/coach/strength/SharedGymNowScreen.kt:
+  original entry/one-off/planned/favourites/repeat/recovery UI moved without redesign.
+  Android retains lifecycle collection, actual UK LocalDate/Instant date formatters and
+  BackHandler. Shared UI takes model/state/today/date+recorded-date/back-handler bindings.
+  Shared date sort uses epochDay; UK enum casing uses locale-independent existing ASCII enums.
+- UNTRACKED app/src/androidTest/java/org/racedaydreams/coach/SharedGymNowCoordinatorTest.kt:
+  two actual SQL tests, lost save acknowledgement after persistence/exact retry/no duplicate/
+  retained input/no completed actual before finish; builder/superset saved-state identity,
+  90sec rest→30sec elapsed→pause60sec→explicit resume→changed boot epoch INTERRUPTED, no fake
+  actual. Original catalogue IDs bench-press/dumbbell-row and GymSlotInput minimumReps/
+  maximumReps/restSeconds corrected; provider clocks/alerts declared controlled fixtures.
+  Tests have NOT compiled or run yet; inspect all fixture assumptions rather than claiming pass.
+- MODIFIED .github/workflows/multiplatform.yml: added only new SharedGymNowCoordinatorTest to
+  existing focused list; all old classes/assertions retained. Next expected638, UNVERIFIED.
+
+**Actual validation boundary:** first metadata+Android Kotlin compile in
+scratch/kmp137-gym-compile.log FAILED1m45 ONLY Android wrapper access to internal shared
+observeWorkoutTime; visibility corrected afterwards. Initial common metadata/shared Android
+compilation passed before that access failure. Later complete metadata/debugAPK/testAPK/lint
+command queued behind formatter in session67730. Last successful observation: formatter process
+still running, scratch/kmp138-gym-gate.log did NOT EXIST YET. Do NOT claim formatter/final build/
+test compilation/lint/runtime/Native results. Processes may have continued; inspect logs first.
+Scratch helpers port_gym137.py and port_gym_home138.py already APPLIED; do NOT rerun on applied
+files. Last successful git diff --check PASS; no implementation commits/pushes performed.
+
+**Exact next action after executor returns:** inspect git status/diff and surviving files/logs.
+Fetch this recovery-only remote commit and safely fast-forward with local changes preserved
+(the remote changes only this handoff); do not discard source. Finish/review137–138, compile
+common metadata/debug+test APK/lint, fix actual compile/test failures, format/schema/source
+checks, add any missing targeted cases. Commit coherent SOURCE only when locally validated,
+push once to PR24 and inspect actual Android/Apple gates. Existing GymNow integration cases
+remain mandatory. If local files disappeared, reconstruct ONLY137–138 from the original
+64fa114 GymNowViewModel/GymNowScreen with bindings above; do not restart136 or storage/domain.
+
+Remaining scope unchanged: actual shared Gym workout/builder and remaining UI/navigation/
+assets; Native body repository/SDK composition; actual iOS host/entitlements/usage strings and
+real recording/BLE/notifications/audio/document effects; ONE real app-owned guard before native
+destructive controls; final full Android28/35/36 + actual iOS APP/runtime/backup/visual gates.
+Version0.12.3-test1/code19/schema19/root13/raw3/package1 unchanged. No merge/publication.
+Physical tests all UNPERFORMED. OwnerPR23/main untouched.
+
+### Latest recovery pointer — 17 November, locally verified136 (historical)
 
 Continue experiment/android-ios-kmp-compose / DRAFT PR24. Preserve pushed134ac9a845 +local135
 recoveryaeac08a and136optional body operations in this checkpoint. Ready for ONE combined normal
