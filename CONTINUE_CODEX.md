@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoints 157–166 delivered
+
+Experiment 44189952813 at 2172096 finished successfully on both Android
+and Apple, including Native tests, framework linking and the first actual
+Xcode simulator application build. That run did not contain the later
+simulator launch/database startup gate. Do not claim startup acceptance.
+
+The ten local checkpoints 157–166 are now queued for one normal push.
+They contain shared history, calendar, running plan, Gym Now and programme
+authoring, exercise library, Today, body guidance, route/splits and planned
+execution. The prior entries record their actual focused verification.
+Inspect the new head CI before accepting Apple compilation of this batch.
+
+Next fix actual new-head Native/Xcode failures, verify simulator launch and
+startup screenshot, then continue missing native audio/BLE/background
+recording, full navigation and data-operation safeguards. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 166 planned run execution
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 passed Android,
