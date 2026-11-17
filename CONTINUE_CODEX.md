@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 151 Apple reminders
+
+Checkpoint 148 at 86006bc passed Android and Apple experiment 44183141942.
+Checkpoints 149–151 are delivered together to draft PR #24 on
+experiment/android-ios-kmp-compose. Check live PR head and CI before pushing.
+
+151 adds native User Notifications scheduling and preference storage on the
+same SQLite connection as AppleCoachSession. The shared reminder calendar and
+rules select actual versioned planned workouts. The Apple adapter replaces
+only evening-run requests, checks actual authorization, and respects available
+notification slots. Permission requests remain explicit. Android is untouched.
+Pinned Kotlin formatting, datetime API inspection and exact schema check passed.
+Apple compilation for the three new native checkpoints is pending CI.
+
+Next wire the host snapshot and settings callbacks to AppleCoachReminders and
+attach HealthKit, recording and existing screens to the runnable Xcode app.
+Document IO, app-owned destructive operation guards, BLE, audio, app lifecycle
+and full acceptance are still pending. Simulator/physical reminder delivery
+has not been verified. Keep the PR draft until the original scope and gates pass.
+
 ### Latest recovery pointer — checkpoint 150 Apple application composition
 
 Draft PR #24 remains at checkpoint 148 (86006bc). The Android job in

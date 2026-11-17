@@ -2,6 +2,7 @@ package org.racedaydreams.coach.application
 
 import kotlinx.coroutines.*
 import org.racedaydreams.coach.health.AppleHealthGateway
+import org.racedaydreams.coach.reminders.AppleCoachReminders
 import org.racedaydreams.domain.time.CalendarDates
 import org.racedaydreams.domain.time.Offsets
 import org.racedaydreams.health.body.BodyMetric
@@ -24,6 +25,7 @@ private constructor(
     val services: SharedCoachApplicationServices<File>,
     val health: AppleHealthGateway,
     val recording: AppleRunRecorder,
+    val reminders: AppleCoachReminders,
     val interruptedRecording: SqliteRecordingStaging.Recovery?,
 ) {
     private var closed = false
@@ -48,7 +50,7 @@ private constructor(
             savedDraft: () -> String?,
             bindPlatform:
                 (
-                    AppleSqliteDatabase, AppleHealthGateway, AppleRunRecorder,
+                    AppleSqliteDatabase, AppleHealthGateway, AppleRunRecorder, AppleCoachReminders,
                 ) -> CoachPlatformBindings<File>,
         ): AppleCoachSession<File> {
             check(NSThread.isMainThread)
@@ -88,7 +90,8 @@ private constructor(
                         io,
                         newId,
                     )
-                val platform = bindPlatform(database, health, recording)
+                val reminders = AppleCoachReminders(database, io)
+                val platform = bindPlatform(database, health, recording, reminders)
                 check(platform.healthGateway === health) {
                     "The application must use its owned HealthKit gateway."
                 }
@@ -119,7 +122,15 @@ private constructor(
                     )
                 val interrupted = recording.restoreInterrupted()
                 services.operations.refresh()
-                return AppleCoachSession(database, owner, services, health, recording, interrupted)
+                return AppleCoachSession(
+                    database,
+                    owner,
+                    services,
+                    health,
+                    recording,
+                    reminders,
+                    interrupted,
+                )
             } catch (failure: Throwable) {
                 withContext(NonCancellable) {
                     owner.cancelAndJoin()
