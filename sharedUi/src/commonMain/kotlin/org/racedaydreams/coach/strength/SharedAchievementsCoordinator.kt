@@ -66,7 +66,7 @@ class SharedAchievementsCoordinator(
                     mutable.value = value
                 } catch (cancelled: CancellationException) {
                     throw cancelled
-                } catch (error: RuntimeException) {
+                } catch (_: Exception) {
                     mutable.update {
                         it.copy(
                             loading = false,

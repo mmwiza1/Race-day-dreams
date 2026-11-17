@@ -43,28 +43,7 @@ internal fun AppleExerciseLibrary(session: AppleCoachSession<*>, back: () -> Uni
     val source = sourceId
     val strength = session.services.strength
     when {
-        source != null ->
-            CoachPage {
-                CoachButton("Back to exercise") { sourceId = null }
-                CoachHeading("Recorded strength workout")
-                val workout = state.strengthSessions.firstOrNull { it.id() == source }
-                if (workout == null) Text("This source workout is unavailable.")
-                else
-                    workout.exercises().forEach { group ->
-                        CoachCard {
-                            Text(group.exercise().name())
-                            group.sets().forEach { set ->
-                                Text(
-                                    displaySet(
-                                        set,
-                                        state.massUnit,
-                                        state.profile?.preferences()?.units() ?: UnitSystem.METRIC,
-                                    )
-                                )
-                            }
-                        }
-                    }
-            }
+        source != null -> AppleStrengthRecord(state, source) { sourceId = null }
         custom -> {
             LaunchedEffect(session.authoring) { session.authoring.reload() }
             SharedCustomStrengthExerciseScreen(
@@ -164,3 +143,27 @@ private fun number(value: Double): String {
     val tenths = (value * 10).roundToLong()
     return (tenths / 10).toString() + "." + kotlin.math.abs(tenths % 10)
 }
+
+@Composable
+internal fun AppleStrengthRecord(state: CoachUiState, source: String, back: () -> Unit) =
+    CoachPage {
+        CoachButton("Back", back)
+        CoachHeading("Recorded strength workout")
+        val workout = state.strengthSessions.firstOrNull { it.id() == source }
+        if (workout == null) Text("This source workout is unavailable.")
+        else
+            workout.exercises().forEach { group ->
+                CoachCard {
+                    Text(group.exercise().name())
+                    group.sets().forEach { set ->
+                        Text(
+                            displaySet(
+                                set,
+                                state.massUnit,
+                                state.profile?.preferences()?.units() ?: UnitSystem.METRIC,
+                            )
+                        )
+                    }
+                }
+            }
+    }

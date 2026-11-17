@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 171 recorded milestones
+
+PR #24 remains at 25adcc6. Experiment 44195464653 was still running Android
+instrumentation and Apple Native tests at the last check. Local 167–171
+are queued so those jobs can complete.
+
+171 mounts the shared achievements screen from iOS Today and Gym. It uses
+retained running and strength evidence, shared recognition and celebration
+settings, and links to the source workouts. Shared error handling now also
+surfaces checked SQLite failures while preserving coroutine cancellation.
+Common UI metadata compiled in 32s, and pinned touched-file formatting,
+diff check and all 19 schema checks passed. Apple compilation and simulator
+behavior await macOS CI. Log: /workspace/scratch/kmp171-achievements.log.
+
+Next inspect the active jobs, address demonstrated issues and batch the
+pending commits. Continue running trends, remaining native services and
+data-operation safeguards before the full Android and iOS gates. Keep draft.
+
 ### Latest recovery pointer — checkpoint 170 Bluetooth heart rate on iOS
 
 PR #24 remains at 25adcc6. Both experiment 44195464653 jobs were running at

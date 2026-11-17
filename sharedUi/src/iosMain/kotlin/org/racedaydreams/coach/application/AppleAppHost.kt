@@ -130,6 +130,8 @@ private enum class ApplePage {
     EXERCISES,
     STRENGTH_HISTORY,
     STRENGTH_ANALYTICS,
+    ACHIEVEMENTS,
+    STRENGTH_RECORD,
     ACTIVITY,
     SETTINGS,
 }
@@ -233,6 +235,9 @@ private fun AppleAppContent(
                             TextButton(onClick = { page = ApplePage.STRENGTH_ANALYTICS }) {
                                 Text("Strength trends")
                             }
+                            TextButton(onClick = { page = ApplePage.ACHIEVEMENTS }) {
+                                Text("Recorded milestones")
+                            }
                         }
                         Box(Modifier.weight(1f)) {
                             AppleGymScreen(session) { page = ApplePage.START }
@@ -256,6 +261,23 @@ private fun AppleAppContent(
                         StrengthMeasurementPolicy::duration,
                         AthleteLanguage.WORKING_SETS,
                     )
+                ApplePage.ACHIEVEMENTS ->
+                    AppleAchievements(
+                        session,
+                        back = { page = ApplePage.START },
+                        openRun = {
+                            activityId = it
+                            page = ApplePage.ACTIVITY
+                        },
+                        openGym = {
+                            activityId = it
+                            page = ApplePage.STRENGTH_RECORD
+                        },
+                    )
+                ApplePage.STRENGTH_RECORD ->
+                    activityId?.let {
+                        AppleStrengthRecord(state, it) { page = ApplePage.ACHIEVEMENTS }
+                    }
                 ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it) }
                 ApplePage.START ->
                     if (state.loading) {
@@ -364,13 +386,14 @@ private fun AppleAppContent(
                                         calendarStrength = date?.toString()
                                         page = ApplePage.HISTORY
                                     }
+                                    route == "achievements" -> page = ApplePage.ACHIEVEMENTS
                                     route == "progress/weight" -> page = ApplePage.BODY
                                     route == "gym-now" || route.startsWith("strength") ->
                                         page = ApplePage.GYM
                                 }
                             },
                             race = { page = ApplePage.PLAN },
-                            hasRoute = { it !in setOf("progress/trends", "achievements") },
+                            hasRoute = { it != "progress/trends" },
                         )
                     }
             }
