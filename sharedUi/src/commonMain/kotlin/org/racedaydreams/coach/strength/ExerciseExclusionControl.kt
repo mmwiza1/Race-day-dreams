@@ -21,7 +21,8 @@ fun ExerciseExclusionControl(
     change: (Reason?) -> Unit,
 ) {
     var confirm by rememberSaveable(name) { mutableStateOf(false) }
-    var reason by rememberSaveable(name) { mutableStateOf(Reason.PREFERENCE) }
+    var reasonName by rememberSaveable(name) { mutableStateOf(Reason.PREFERENCE.name) }
+    val reason = Reason.valueOf(reasonName)
     if (excluded) {
         Text(
             "Excluded from new programme and alternative recommendations. Your history, PBs, favourites and existing targets remain."
@@ -57,7 +58,7 @@ fun ExerciseExclusionControl(
                     Reason.values().forEach { value ->
                         CoachFilterChip(
                             selected = reason == value,
-                            onClick = { reason = value },
+                            onClick = { reasonName = value.name },
                             label = {
                                 Text(
                                     when (value) {

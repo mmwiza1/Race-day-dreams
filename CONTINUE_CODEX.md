@@ -64,15 +64,14 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24.114`378d135` is pushed/FULLY GREEN:
-Android571, Native449domain/27health/639storage +real shared framework, JVM490/25/639; byte-verified
-artifacts/results below.115`7ae6d68` complete shared Exercise Library is locally committed,
-compile/lint5m8s/133tasks +format935/tools PASS.116shared ProfileOperations/Android binding and
-3SQL tests are complete locally: metadata/debug+testAPK/lint6m20s/176tasks, format936/schema/source3
-PASS. Commit116and push115+116ONCE; next expectedAndroid576/Native639/framework results are NOT
-claimed before actual CI. See latest116/END exact-next. Preserve all work/deleted superseded Android
-classes; remaining services/UI/root/navigation/actual iOS app/full final gates unfinished.0.12.3 /
-code19/formats19/13/3/1 unchanged; no premature merge/publication/native cleanup UI/fake bindings.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Current pushed HEAD is
+`9cd4adf2c54a10bddb42ebca039ea4705b2d86f5` (116). Experiment44074597919 and formatting44074597892
+are SUCCESS: Android576 unique tests; byte-verified JVM490domain/25health/639storage and
+Native449domain/27health/639storage, zero failures/errors/skips; real shared framework linked.
+117 local Exercise Detail/exclusion/input extraction passes local metadata/debugAPK/testAPK/lint;
+116 success does NOT verify117. See latest117 recovery below. No version/formats changes,
+merge/publication/native destructive UI or fake bindings. Remaining services/UI/root/navigation/
+actual iOS app and complete final gates are unfinished.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5235,15 +5234,38 @@ code19/formats19/13/3/1 unchanged; no premature merge/publication/native cleanup
   Then remaining application services/active UI/root/navigation/actual native host/services. Native
   destructive UI OFF, no early bump/merge/publication. This is still the FULL agreed migration.
 
+### Checkpoint116 actual remote verification; checkpoint117 surviving local work
+
+-116 was committed/pushed as9cd4adf2c54a10bddb42ebca039ea4705b2d86f5, including1157ae6d68.
+  Both experiment44074597919 jobs and formatting44074597892 are SUCCESS. Android job134009270049
+  has576 matching unique START/END cases, including all2shared-browser and3profile SQL tests.
+  Apple134009269492 passed actual Native tests AND separate framework linkage. No profile fixture
+  issue was demonstrated; do not change valid tests based on an earlier unverified suspicion.
+- Independently downloaded/digest-verified result ZIPs: Native14326021083 (176032bytes,
+  SHA280ca031983127222097edb057cdba7705427e81bf047d983302aade4c7d670a):449domain/27health/
+  639storage; JVM14324918435 (184937bytes,SHA882765a91b357a873bab972e5dd22ab220abaf21a083b08a9943500b31f4f332):
+  490domain/25health/639storage. ALL zero failures/errors/skips. Exact source116. Proof
+  /workspace/scratch/kmp116-results/verification.json and kmp116-android-job.log.
+-117 uncommitted work moves the ACTUAL existing four-tab Exercise Detail into common Compose,
+  with required original host date/number/set formatters, technique/artwork and explicit actions.
+  Android signature delegates; no altered PB/history/progression formulas. Exclusion control moves
+  to common sameFQN, saved reason uses enum name for portability. Plain text/decimal input is common;
+  Android date-picker path retained. Three new direct production UI tests cover actual/estimated
+  PB distinction/source navigation, dark200custom rename/restore with frozen history, timed PB
+  with unknown date and no invented estimated lift. Existing2exclusion tests added to focused gate.
+  Next expected Android581 (576+3+2), storage639 unchanged.
+- Initial local117 compile caught a malformed extracted function signature; corrected before the
+  current full metadata/debugAPK/testAPK/lint build. CURRENT outcome is SUCCESS; log
+  /workspace/scratch/kmp-exercise-detail-final.log. Never infer a pass from116 or the old failed log.
+  New files and intentional old exclusion deletion must be preserved. Formatting938sources (843Kotlin/95Java), exact schema19, source3 and formatter14 tests PASS. No117runtime/screenshot claim.
+
 ### Exact next safe actions and remaining full scope
 
-1. Latest116shared ProfileOperations implementation passes common metadata/debug+testAPK /
-   lint6m20s/176tasks, format936/schema/source3.1157ae6d68shared Exercise Library is locally
-   committed with compile/lint5m8s/133tasks, format935/formatter14/source3. Commit116and push115+116
-   ONCE; new expectedAndroid576/Native639/framework results must be inspected, not assumed. Remote
-   114378d135is fully green/byte-verified(Android571/Native639/framework). Keep all work; next
-   remaining application services/active screens/root/navigation/actual iOS host/services. No
-   duplicate kernel ports/native destructive UI/reset/restart/early bump/merge/publication.24DRAFT.
+1.117 common metadata/debugAPK/testAPK/lint and formatting/source checks PASS. Commit the
+   coherent extraction; continue next shared programme-preview application service before one
+   batched push to existing DRAFT24; prior116
+   CI is complete, so no useful run needs cancellation. Verify new Android581/Native639/framework.
+   Continue remaining shared services/active UI/root/native host; preserve all completed work.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

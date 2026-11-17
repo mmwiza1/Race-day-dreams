@@ -2,12 +2,14 @@ package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -54,4 +56,25 @@ fun CoachCard(content: @Composable ColumnScope.() -> Unit) {
             content = content,
         )
     }
+}
+
+/** Existing plain text/decimal field; platform date-picker detection stays in its host wrapper. */
+@Composable
+fun CoachTextInput(
+    label: String,
+    value: String,
+    change: (String) -> Unit,
+    decimal: Boolean = false,
+) {
+    OutlinedTextField(
+        value,
+        change,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = if (decimal) KeyboardType.Decimal else KeyboardType.Text
+            ),
+        singleLine = true,
+    )
 }

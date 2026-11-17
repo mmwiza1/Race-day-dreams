@@ -211,8 +211,7 @@ private fun CompletionForm(state: CoachUiState, model: CoachViewModel, version: 
 @Composable
 fun CoachInput(label: String, value: String, change: (String) -> Unit, decimal: Boolean = false) {
     if(label.contains("YYYY-MM-DD")){DateInput(label.substringBefore(" ("),value,change);return}
-    OutlinedTextField(value, change, label={Text(label)}, modifier=Modifier.fillMaxWidth(),
-        keyboardOptions=KeyboardOptions(keyboardType=if(decimal) KeyboardType.Decimal else KeyboardType.Text), singleLine=true)
+    CoachTextInput(label, value, change, decimal)
 }
 
 @Composable
