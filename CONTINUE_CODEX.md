@@ -4717,15 +4717,45 @@ incomplete migration merely because a focused checkpoint passes.
   Compose, preserving actual Android routes/lifecycle/graphs. Inspect git status/diff; finish its
   focused compilation/UI tests before claiming it verified. Do not overwrite those local files.
 
+### Checkpoint105 — original application shell now shared Compose
+
+- COMMITTED with104storage owner; inspect actual HEAD/upstream and push these coherent commits
+  ONCE if needed. SAME experiment branch / DRAFT PR24; no version/schema/publication changes.
+- Actual production CoachActivity now delegates its EXISTING top bar, five bottom destinations,
+  adaptive navigation rail, snackbar host and inset content slot to common CoachShell. Original
+  routing/NavHost/feature graphs, model lifetime, Android permissions/document pickers, start
+  destination, gym-workout back handling and running service remain authoritative in the host.
+  This is a real Android-used extraction, NOT a new app/navigation engine or completed iOS root.
+- CoachDestinationIcon shares the five exact original RDD vector path strings,24dp viewport and
+  even-odd fill. Dynamic tint/labels/order/large-font semantics remain unchanged; no icon library,
+  replacement branding or permissions. Original Android assets remain for notification/compatibility.
+- FIVE new Android interaction tests cover destination order/selection/callbacks; detail Back /
+  Settings delegation; dark200% accessible destination controls; dated Strength rail selection;
+  exact pixel comparison of ALL5 shared icons against real original Android drawable resources.
+  FeatureNavigationTest's2 existing actual graph/reactive snapshot tests now join focused CI too.
+  Focused runtime expectation543 unique (prior536+5+2), NOT a final unfiltered release matrix.
+- Local metadata+Android production/test compilation PASS2m51s/62tasks,
+  scratch/kmp-shell-compile.log. ALL610storage JVM/0failure/error/skip passed in104. Full pinned
+  formatter907sources(812Kotlin/95Java), schema75, exact schema1..19 and source3 PASS;
+  scratch/kmp-shell-format.log, kmp-composition-{schema,source}.log. git diff --check clean.
+- Fresh Apple610storage tests +real common shell/framework compilation and Android543 runtime /
+  icon pixel test are PENDING the next exact-head CI run. Diagnose real failures; no weaker pixel
+  or navigation assertions, arbitrary delay or blind retry. Native destructive UI stays OFF.
+- Next finish actual application owner/root/navigation/state bindings and native services/iOS host,
+  including all mutation/backup operation paths. Framework success never equals actual iOS app.
+  Preserve remaining original archived-payload/receipt byte safeguards; do not normalize old hashes.
+  No early merge/publication; complete final app/runtime/accessibility/matrix gates only when ready.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint104 above is current storage recovery boundary;103e502e74 is fully green/byte-verified.
-   Inspect local shell extraction and its compile log before editing; preserve that ongoing batch.
-   Finish shell compilation/interaction tests, formatter/schema/source checks; commit coherent
-   source+handoff and push ONCE. Verify real Native610 plus new Android shell/route tests on actual
-   final head. Native destructive UI OFF until ONE real application owner wraps all operation paths.
-   Continue common app/navigation/state/native services/real iOS host and final full gates.
-   No reset/restart, early version bump, merge or public publication.
+1. Checkpoint105 above is latest source recovery boundary;103e502e74 is fully green/byte-verified.
+   Local104 storage610/meta/Android compilation and105 shell/meta/test compilation/format907 /
+   schema75/source3 PASS. Push ONCE if ahead (inspect actual upstream), update DRAFT24; inspect
+   exact-head workflow Native610,178 IO/SQL/guard/lifecycle names and Android543 runtime including
+   exact original-icon pixels and graph contracts. No final runtime pass claimed yet for105.
+   Native destructive UI OFF until ONE real app owner wraps ALL operation paths. Continue actual
+   common app/navigation/state/native services/iOS host and final full gates. No reset/restart,
+   early version bump, merge or public publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
