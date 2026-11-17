@@ -800,4 +800,96 @@ abstract class StorageContract {
             db.close()
         }
     }
+
+    @Test
+    fun typedOnboardingDraftKeepsExactInputAndClearingDoesNotDeleteProfileOrHistory() {
+        val db = opened()
+        try {
+            val profiles = SqliteAthleteProfile(db)
+            val original = athlete()
+            profiles.save(original)
+            db.execute(
+                "INSERT INTO activities VALUES('retained','rdd','source',NULL,10,20,'original history')"
+            )
+            assertNull(profiles.loadDraft())
+            val draft = """ { "step":2, "unknown":"café 🏃", "target":null } """
+            profiles.saveDraft(draft)
+            assertEquals(draft, SqliteAthleteProfile(db).loadDraft())
+            assertEquals(original, profiles.load())
+            profiles.clearDraft()
+            assertNull(profiles.loadDraft())
+            assertEquals(original, profiles.load())
+            assertEquals(
+                SqlValue.Text("original history"),
+                db.query("SELECT payload FROM activities WHERE id='retained'").single().single(),
+            )
+            assertTrue(db.query("PRAGMA foreign_key_check").isEmpty())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun invalidDraftAndRejectedReplacementRetainOriginalFormInput() {
+        val db = opened()
+        try {
+            val profiles = SqliteAthleteProfile(db)
+            val original = """ {"step":2,"retainedUnknown":"Original input"} """
+            profiles.saveDraft(original)
+            for (invalid in listOf("not JSON", "[]", "null", "42")) {
+                assertFails { profiles.saveDraft(invalid) }
+                assertEquals(original, profiles.loadDraft())
+            }
+            assertFailsWith<IllegalStateException> {
+                db.transaction {
+                    profiles.saveDraft("""{"step":3}""")
+                    assertEquals("""{"step":3}""", profiles.loadDraft())
+                    error("Reject the enclosing edit")
+                }
+            }
+            assertEquals(original, profiles.loadDraft())
+            assertNull(profiles.load())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun shoeFeedbackProjectionReadsOnlyThatPreferenceAndNeverLoadsOrRewritesUnrelatedData() {
+        val db = opened()
+        try {
+            val reader = SqliteRunningSupportArchives(db)
+            assertTrue(reader.shoeDiscomfort().isEmpty())
+            db.execute(
+                "INSERT INTO release08(kind,id,payload) VALUES('custom','unrelated','not a loaded route/workout')"
+            )
+            db.execute(
+                "INSERT INTO release08(kind,id,payload) VALUES('config','shoe-feedback',?)",
+                listOf(
+                    SqlValue.Text(
+                        """{"version":1,"type":"shoe_feedback","activities":["retained-run","older-run"]}"""
+                    )
+                ),
+            )
+            val before = db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id")
+            assertEquals(setOf("retained-run", "older-run"), reader.shoeDiscomfort())
+            assertEquals(before, db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"))
+            db.execute(
+                "UPDATE release08 SET payload=? WHERE kind='config' AND id='shoe-feedback'",
+                listOf(
+                    SqlValue.Text(
+                        """{"version":2,"type":"shoe_feedback","activities":["retained-run"]}"""
+                    )
+                ),
+            )
+            val rejected = db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id")
+            assertFails { reader.shoeDiscomfort() }
+            assertEquals(
+                rejected,
+                db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"),
+            )
+        } finally {
+            db.close()
+        }
+    }
 }

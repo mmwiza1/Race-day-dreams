@@ -1,7 +1,11 @@
 package org.racedaydreams.coach.application
 
 import android.app.Application
+import java.time.Instant
+import java.time.LocalDate
+import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
+import org.racedaydreams.data.AndroidSqlConnection
 import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.data.FeatureStore
@@ -27,24 +31,38 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
     private val focus = SqlitePrimaryFocusRepository(store.settingsRepository())
     val healthGateway = HealthConnectGateway(app)
     private val snapshot =
-        CoachSnapshotReader(
+        SharedCoachSnapshotReader(
             store.activityRepository(),
             store.resultRepository(),
             store.shoeRepository(),
             store.baselineRepository(),
             store.settingsRepository(),
-            focus,
             store.plannedWorkoutRepository(),
-            release,
-            gym,
-            choices,
+            SqliteCoachSnapshotSources(
+                AndroidSqlConnection.forApplication(app),
+                Instant::now,
+                { UUID.randomUUID().toString() },
+                object : CoachSnapshotPlatform {
+                    override fun importWindow() =
+                        HealthConnectGateway.importWindow(
+                            store.activityRepository().importToken(HealthConnectGateway.PROVIDER)
+                        )
+
+                    override fun reconcileReminders() = reminders.reconcile()
+
+                    override fun reminderPreferences() = reminders.preferences().shared()
+
+                    override fun healthAvailability() = healthGateway.availability()
+
+                    override suspend fun grantedHealthPermissions() =
+                        healthGateway.grantedPermissions()
+                },
+            ),
             coaching,
-            development,
-            profiles,
-            reminders,
-            healthGateway,
             savedDraft,
             org.racedaydreams.data.SqliteStrengthProgrammingRepository(app),
+            Instant::now,
+            LocalDate::now,
         )
     val operations = CoachOperationRunner(scope, snapshot::read)
     val profile = ProfileOperations(profiles, store.settingsRepository())

@@ -97,4 +97,22 @@ class AndroidSqlConnectionTest {
         }
         assertTrue(connection.query("SELECT * FROM history").isEmpty())
     }
+
+    @Test
+    fun applicationPoolFactoryRejectsUiThreadSqlBeforeOpeningTheBorrowedDatabase() {
+        val context =
+            androidx.test.core.app.ApplicationProvider.getApplicationContext<
+                android.content.Context
+            >()
+        androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            val connection = AndroidSqlConnection.forApplication(context)
+            connection.close()
+            try {
+                connection.query("SELECT 1")
+                fail("Application SQL must be dispatched off the UI thread.")
+            } catch (expected: IllegalStateException) {
+                assertEquals("Coaching storage requires IO.", expected.message)
+            }
+        }
+    }
 }

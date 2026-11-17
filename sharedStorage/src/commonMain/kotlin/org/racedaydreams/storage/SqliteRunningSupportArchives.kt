@@ -4,6 +4,43 @@ import kotlinx.serialization.json.*
 
 /** Read-only original support tables in one existing-database transaction. No restore commands. */
 class SqliteRunningSupportArchives(private val database: SqlDatabase) {
+    /** Read only the original shoe-feedback preference; never hydrate unrelated route payloads. */
+    fun shoeDiscomfort(): Set<String> {
+        val payload =
+            database
+                .query("SELECT payload FROM release08 WHERE kind='config' AND id='shoe-feedback'")
+                .firstOrNull()
+                ?.single()
+                ?.sqlText() ?: return emptySet()
+        val snapshot =
+            Release08ArchiveJson.decode(
+                buildJsonObject {
+                    put("version", 1)
+                    put(
+                        "rows",
+                        buildJsonArray {
+                            add(
+                                buildJsonObject {
+                                    put("kind", "config")
+                                    put("id", "shoe-feedback")
+                                    put("payload", StoredJson.objectValue(payload))
+                                }
+                            )
+                        },
+                    )
+                }
+            )
+        return org.racedaydreams.domain.coaching.Immutable.copySet(
+            snapshot.records
+                .single()
+                .payload
+                .getValue("activities")
+                .jsonArray
+                .map { (it as? JsonPrimitive)?.content ?: it.toString() }
+                .toSet()
+        )
+    }
+
     class Snapshot
     internal constructor(
         val support: SupportArchiveJson.Snapshot,

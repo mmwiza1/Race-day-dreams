@@ -1,8 +1,10 @@
 package org.racedaydreams.data
 
+import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteCursor
 import android.database.sqlite.SQLiteDatabase
+import android.os.Looper
 import org.racedaydreams.storage.SqlDatabase
 import org.racedaydreams.storage.SqlValue
 
@@ -11,8 +13,19 @@ import org.racedaydreams.storage.SqlValue
  * thread/lifecycle checks. Nested scopes use savepoints on the same Android transaction/session.
  */
 class AndroidSqlConnection(private val source: () -> SQLiteDatabase) : SqlDatabase {
-    private companion object {
-        val sequence = java.util.concurrent.atomic.AtomicLong()
+    companion object {
+        private val sequence = java.util.concurrent.atomic.AtomicLong()
+
+        /** Lazy borrowed application pool; never opens or reads the database on the UI thread. */
+        fun forApplication(context: Context): AndroidSqlConnection {
+            val app = context.applicationContext
+            return AndroidSqlConnection {
+                check(Looper.myLooper() != Looper.getMainLooper()) {
+                    "Coaching storage requires IO."
+                }
+                ProfileDatabase.get(app).writableDatabase
+            }
+        }
     }
 
     override fun execute(sql: String, arguments: List<SqlValue>) {

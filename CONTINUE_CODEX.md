@@ -5080,17 +5080,48 @@ incomplete migration merely because a focused checkpoint passes.
   inspect the next actual Native636/Android568result and fix actual failures before further binding.
   Keep24DRAFT. No merge/version bump/public APK. All full cross-platform scope remains below.
 
+### Checkpoint113 IN PROGRESS — actual common snapshot repository binding
+
+-1117212d4a/context and11216e8c65/Android-fixture correction are LOCALLY COMMITTED, not pushed;
+  remote remains1102c08a7c.110Android failed ONLY6new unversioned-memory fixtures;112retains the
+  safeguard/assertions and uses original Android schema owner.110Apple133964517015 still running;
+  let it finish before pushing, rather than cancelling useful Native compilation/tests.
+- Surviving113local work: common SqliteCoachSnapshotSources binds all profile/draft/focus,
+  coaching context, legacy gym, choices/exclusions/PB acknowledgement and shoe-feedback inputs
+  over ONE borrowed database. CoachSnapshotPlatform REQUIRES the six actual health/import/reminder
+  hooks; no empty fake native defaults. Android CoachApplicationServices now uses this common
+  source and shared reader directly, retaining real HealthConnectGateway/EveningReminders hooks.
+  Superseded Android CoachSnapshotReader wrapper is deleted; do not reconstruct it.
+- AndroidSqlConnection.forApplication is a lazy IO-checked view of the SAME ProfileDatabase
+  pool, no new database/ownership/permission. SqliteAthleteProfile now has exact-byte draft
+  load/save/clear; SqliteRunningSupportArchives has a targeted typed shoe-feedback read which
+  never hydrates unrelated routes/workouts. Existing schema/backup versions and source guards stay.
+- Three real JDBC/Apple cases cover exact/invalid/rollback draft input and independent shoe
+  preference reads; two actual SQL snapshot tests cover full stored-input projection and persisted
+  optional weekly-review deduplication without activation; one Android factory case guards UI-
+  thread SQL. Expected next CI639storage/571Android (not yet runtime-verified).
+- Initial common metadata/Android production compile PASS2m33s/62tasks. Formatted focused
+  StorageTest/common metadata/Android production+test compilation RUNNING in
+  scratch/kmp-snapshot-binding-tests.log. Original932formatter-source count should remain unchanged
+  (one common source added, old Android wrapper removed); run final check after changes.
+- Exact next: finish113focused compilation/tests, fix real failures, run final639storage/meta /
+  Android compile/lint/format/schema/source checks, update this boundary and commit. Inspect110Apple,
+  then push111+112+113ONCE, keeping24DRAFT and actual pending/failed gates explicit. Verify the new
+  Native639/framework and571Android gate; fix genuine failures before expanding. Next real scope
+  is remaining services/root/navigation/native app/permissions/platform services, not redoing this
+  shared reader or source binding. Native destructive UI stays OFF; full readiness/physical checks
+  remain unfinished. No early bump/merge/publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint112 is the latest recovery boundary.1117212d4a is locally committed;1102c08a7c is
-   remote.110Android failed ONLY6new fixtures (android_metadata/unversioned guard BEFORE assertions);
-  112uses original Android schema owner in test-only new memory DBs, preserves guard/assertions,
-   and fixes the2new context fixtures too.112Android compile/lint PASS2m31s/115tasks; wait for
-   still-running110Apple133964517015 before pushing to avoid cancelling its useful Native628 /
-   shared snapshot/transaction fix verification. Then push111+112ONCE and inspect Native636 /
-   Android568/213matchingIOcases; do not claim pending tests or rerun without diagnosis. Continue
-   actual shared snapshot-source repository/application bindings then services/root/navigation /
-   native app. No destructive native UI/reset/restart/early bump/merge/publication.
+1. Checkpoint113 local work is latest recovery boundary: actual common snapshot data binding /
+   production Android composition, draft/shoe inputs and focused tests as above.111+112are committed
+   locally;110Apple is still running,110Android failed6new fixture initialisation BEFORE assertions,
+   corrected by112through original Android schema owner with no weaker guard/assertions. Finish113
+   tests/lint/format, record results, commit; inspect110Apple before pushing so it is not cancelled.
+   Push the coherent111–113batch ONCE; expect Native639storage/Android571. Never claim pending
+   results. Continue remaining services/root/navigation/real iOS app, preserving ALL completed work.
+   No native destructive UI/reset/restart/early version bump/merge/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

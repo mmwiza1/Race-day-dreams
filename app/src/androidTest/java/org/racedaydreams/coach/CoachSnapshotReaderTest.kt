@@ -9,8 +9,10 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.racedaydreams.coach.application.CoachSnapshotPlatform
 import org.racedaydreams.coach.application.CoachSnapshotSources
 import org.racedaydreams.coach.application.SharedCoachSnapshotReader
+import org.racedaydreams.coach.application.SqliteCoachSnapshotSources
 import org.racedaydreams.data.AndroidSqlConnection
 import org.racedaydreams.data.createAndroidSchemaFixture
 import org.racedaydreams.domain.*
@@ -30,7 +32,7 @@ class CoachSnapshotReaderTest {
     private val now = Instant.parse("2026-11-17T09:00:00.123456789Z")
     private val day = LocalDate.of(2026, 11, 17)
 
-    private class Sources : CoachSnapshotSources {
+    private class Sources : CoachSnapshotSources, CoachSnapshotPlatform {
         var selectedFocus: PrimaryFocus? = PrimaryFocus.STRENGTH
         var savedProfile: UserProfile? = null
         var draft: String? = "Persisted onboarding draft"
@@ -143,7 +145,7 @@ class CoachSnapshotReaderTest {
 
     private fun reader(
         db: SqlDatabase,
-        sources: Sources,
+        sources: CoachSnapshotSources,
         coaching: CoachingRepository,
         savedDraft: () -> String? = { null },
     ): SharedCoachSnapshotReader =
@@ -293,6 +295,120 @@ class CoachSnapshotReaderTest {
             assertEquals(original, second.currentPlan)
             assertEquals(listOf(original), coaching.versions())
             assertTrue(coaching.responses().isEmpty())
+            assertTrue(db.query("PRAGMA foreign_key_check").isEmpty())
+        }
+
+    @Test
+    fun actualSqliteSnapshotSourcesLoadStoredChoicesDraftAndShoeFeedbackWithoutInventingWorkouts() =
+        database { db, platform, coaching ->
+            val draft = """ { "step":2, "retainedUnknown":"café 🏃" } """
+            SqliteAthleteProfile(db).saveDraft(draft)
+            SqlitePrimaryFocus(SqliteSettings(db)).save(PrimaryFocus.STRENGTH)
+            SqliteStrengthChoices(db).save(SqliteStrengthChoices.Choice("plank", true, false))
+            SqliteStrengthChoices(db).acknowledge("historic-pb")
+            val exclusion =
+                ExerciseExclusionRepository.Exclusion(
+                    "bench-press",
+                    ExerciseExclusionRepository.Reason.PREFERENCE,
+                    now,
+                )
+            SqliteExerciseExclusions(db).exclude(exclusion)
+            db.execute(
+                "INSERT INTO release08(kind,id,payload) VALUES('config','shoe-feedback',?)",
+                listOf(
+                    SqlValue.Text(
+                        """{"version":1,"type":"shoe_feedback","activities":["retained-run"]}"""
+                    )
+                ),
+            )
+            val before = db.query("SELECT total_changes()")
+            platform.selectedFocus =
+                PrimaryFocus.HYBRID // Platform hooks must not replace stored focus.
+            platform.availability = HealthAvailability.AVAILABLE
+            platform.permissions = setOf("actual-granted-read")
+            val sources =
+                SqliteCoachSnapshotSources(
+                    db,
+                    { now },
+                    { error("A snapshot must not invent a revision ID.") },
+                    platform,
+                )
+            val state = runBlocking { reader(db, sources, coaching).read() }
+            assertEquals(PrimaryFocus.STRENGTH, state.primaryFocus)
+            assertEquals(draft, state.draft)
+            assertEquals(
+                listOf(SqliteStrengthChoices.Choice("plank", true, false)),
+                state.exerciseChoices,
+            )
+            assertEquals(listOf(exclusion), state.exerciseExclusions)
+            assertEquals(setOf("historic-pb"), state.acknowledgedPbs)
+            assertEquals(setOf("retained-run"), state.shoeDiscomfort)
+            assertEquals(setOf("actual-granted-read"), state.healthPermissions)
+            assertNull(state.profile)
+            assertNull(state.currentPlan)
+            assertTrue(state.gymLinks.isEmpty())
+            assertTrue(state.activities.isEmpty())
+            assertTrue(state.strengthSessions.isEmpty())
+            assertEquals(before, db.query("SELECT total_changes()"))
+            assertEquals(listOf("reminders"), platform.events)
+        }
+
+    @Test
+    fun realSqliteSourcesPersistOneWeeklyReviewAcrossRefreshWithoutActivatingAChoice() =
+        database { db, platform, coaching ->
+            val profile =
+                UserProfile(
+                    RaceGoal(RaceDistance.GENERAL_FITNESS, "", null, GoalMode.FINISH, null),
+                    TrainingPreferences(
+                        TrainingStrategy.BALANCED,
+                        setOf(java.time.DayOfWeek.TUESDAY),
+                        1,
+                        java.time.DayOfWeek.TUESDAY,
+                        emptySet(),
+                        ScheduleType.FLEXIBLE,
+                        UnitSystem.METRIC,
+                    ),
+                    false,
+                )
+            SqliteAthleteProfile(db).save(profile)
+            val original =
+                PlanVersion(
+                    "retained",
+                    "plan",
+                    1,
+                    now,
+                    "Athlete chose",
+                    profile,
+                    "Actual evidence",
+                    TrainingPlan("plan", day, day.plusDays(28), emptyList(), emptyList()),
+                )
+            coaching.saveCurrent(original)
+            val sources =
+                SqliteCoachSnapshotSources(
+                    db,
+                    { now },
+                    { error("Refresh cannot accept a revision.") },
+                    platform,
+                )
+            val reader = reader(db, sources, coaching)
+            val first = runBlocking { reader.read() }
+            val saved = db.query("SELECT payload FROM coach_evidence WHERE kind='WEEKLY_REVIEW'")
+            val second = runBlocking { reader.read() }
+            assertEquals(1, saved.size)
+            assertEquals(
+                saved,
+                db.query("SELECT payload FROM coach_evidence WHERE kind='WEEKLY_REVIEW'"),
+            )
+            assertEquals(first.weeklyReview, second.weeklyReview)
+            assertEquals(profile, second.profile)
+            assertNull(second.weeklyDecision)
+            assertTrue(
+                db.query("SELECT id FROM coach_evidence WHERE kind='REVIEW_DECISION'").isEmpty()
+            )
+            assertEquals(original, second.currentPlan)
+            assertEquals(listOf(original), coaching.versions())
+            assertEquals(listOf("reminders", "reminders"), platform.events)
+            assertEquals(0, platform.permissionReads)
             assertTrue(db.query("PRAGMA foreign_key_check").isEmpty())
         }
 }

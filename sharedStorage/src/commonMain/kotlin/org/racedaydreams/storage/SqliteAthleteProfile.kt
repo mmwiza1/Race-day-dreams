@@ -7,6 +7,24 @@ import org.racedaydreams.domain.time.*
 
 /** Same normalised profile tables and atomic replacement as Android, without SDK/Optional types. */
 class SqliteAthleteProfile(private val database: SqlDatabase) {
+    /** Retain the exact app-owned form input, including unknown fields and interior whitespace. */
+    fun loadDraft(): String? =
+        database
+            .query("SELECT payload FROM onboarding_draft WHERE id=1")
+            .firstOrNull()
+            ?.single()
+            ?.sqlText()
+
+    fun saveDraft(json: String) {
+        StoredJson.objectValue(json)
+        database.execute(
+            "INSERT OR REPLACE INTO onboarding_draft(id,payload) VALUES(1,?)",
+            listOf(SqlValue.Text(json)),
+        )
+    }
+
+    fun clearDraft() = database.execute("DELETE FROM onboarding_draft")
+
     fun load(): UserProfile? =
         database.transaction {
             val profile =
