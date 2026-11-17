@@ -134,7 +134,7 @@ private fun AppleAppContent(
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
             TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
             TextButton(onClick = { page = ApplePage.RECORD }) { Text("Record") }
-            TextButton(onClick = { page = ApplePage.HISTORY }) { Text("History") }
+            TextButton(onClick = { page = ApplePage.HISTORY }) { Text("Calendar") }
             TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
         }
         Box(Modifier.weight(1f)) {
@@ -146,7 +146,7 @@ private fun AppleAppContent(
                         page = ApplePage.ACTIVITY
                     }
                 ApplePage.HISTORY ->
-                    AppleHistoryScreen(session) {
+                    AppleCalendar(session) {
                         activityId = it
                         page = ApplePage.ACTIVITY
                     }

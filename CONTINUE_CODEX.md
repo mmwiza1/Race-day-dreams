@@ -62,6 +62,28 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 158 iOS Calendar
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 was still running
+Android instrumentation and Apple Native tests at the last check.
+Checkpoints 157 and 158 are local. Preserve CI before batching the next push.
+
+158 mounts the existing shared Calendar with list/week/month navigation,
+the SQLite-backed history list, device-local date handling and saved view
+preference. Recorded rows open retained run details. Planned running and
+strength rows open read-only prescription previews. Android keeps its
+existing log-workout action and all calendar controls. Full planned-workout
+editing, structured recording and Gym Now navigation are not yet wired on iOS.
+
+Common metadata and Android debug compilation passed in 1m 58s, 62 tasks.
+Pinned touched-file formatting, diff check and 19 schema boundaries passed.
+Log: /workspace/scratch/kmp158-calendar.log. Apple runtime remains pending.
+
+Next inspect the first Xcode build and fix actual Native or Xcode errors.
+Launch the simulator application. Then continue wiring the existing running
+plan, gym execution, health and activity detail flows. Full release gates and
+physical verification remain open.
+
 ### Latest recovery pointer — checkpoint 157 shared activity history
 
 Draft PR #24 remote head 2172096 has experiment 44189952813 running both

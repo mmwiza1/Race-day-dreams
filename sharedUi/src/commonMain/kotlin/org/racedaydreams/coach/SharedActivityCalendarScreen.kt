@@ -205,6 +205,7 @@ fun SharedActivityCalendarScreen(
     activity: (String) -> Unit,
     dates: CoachCalendarDates,
     distanceLabel: (Double) -> String,
+    strengthAction: String = "Log workout",
     history: @Composable () -> Unit,
 ) {
     var focus by rememberSaveable { mutableStateOf(dates.today().toString()) }
@@ -369,6 +370,7 @@ fun SharedActivityCalendarScreen(
                                 activity,
                                 dates,
                                 distanceLabel,
+                                strengthAction,
                             )
                         }
                     }
@@ -384,6 +386,7 @@ fun SharedActivityCalendarScreen(
                         activity,
                         dates,
                         distanceLabel,
+                        strengthAction,
                     )
                 }
         }
@@ -400,6 +403,7 @@ private fun CalendarDay(
     activity: (String) -> Unit,
     dates: CoachCalendarDates,
     distanceLabel: (Double) -> String,
+    strengthAction: String,
 ) = CoachCard {
     Text(
         "${d.getDayOfWeek().name.lowercase().replaceFirstChar{it.uppercase()}} · ${dates.label(d)}",
@@ -456,7 +460,7 @@ private fun CalendarDay(
                         onClick = { strength(d.toString()) },
                         modifier = Modifier.heightIn(min = 48.dp),
                     ) {
-                        Text("$text · Log workout")
+                        Text("$text · $strengthAction")
                     }
                 entry.category() == CalendarData.Category.STRENGTH -> Text(text)
                 entry.id() != null && entry.state() != CalendarData.State.SKIPPED ->

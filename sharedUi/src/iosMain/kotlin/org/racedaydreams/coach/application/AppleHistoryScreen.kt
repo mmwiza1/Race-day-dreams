@@ -114,7 +114,7 @@ private fun dateLabel(instant: Instant, offset: ZoneOffset?): String {
     return "$day/$month/${date.getYear()}"
 }
 
-private fun distanceLabel(metres: Double, miles: Boolean): String {
+internal fun distanceLabel(metres: Double, miles: Boolean): String {
     val hundredths = (metres / (if (miles) 1609.344 else 1000.0) * 100).roundToLong()
     val fraction = (hundredths % 100).toString().padStart(2, '0')
     return "${hundredths / 100}.$fraction ${if (miles) "mi" else "km"}"
