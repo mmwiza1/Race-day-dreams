@@ -62,32 +62,31 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, shared Home checkpoint128
+### Latest recovery pointer — 17 November, shared running-plan checkpoint129
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Local126 root/recovery and127
-Apple Health integration commits are preserved, latest committed127=`aba505d`. Current128
-uncommitted work shares the ACTUAL Home and first-run choices, without redesign or new defaults.
-New SharedHomeScreen/SharedStartingPath +thin Android bindings +5UI cases are applied; do not
-reapply scratch scripts. Original Android routes, formatters, Strength Today content and
-success-only focus routing remain. Common date ordering uses epoch days (LocalDate expect is
-not Comparable; do NOT widen its ABI). First compile found that JVM-only sort and it is fixed.
-Corrected metadata/debugAPK/testAPK/lint PASS6m44s/176tasks in
-`/workspace/scratch/kmp-home-start-corrected-final.log`. No assertion/primitive ABI changes.
-Formatter964(869Kotlin/95Java), exact schema19/source3 PASS.127 final local metadata/APKs/lint
-and JVM6550fail/error/skip PASS9m38s/180tasks. Expected combined621Android/655Native remain
-PENDING runtime; no new Native pass claimed. Native AppleHealthGateway must compile in CI.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Preserve126shared root +127Apple
+Health integrationaba505d +128shared Home/first-run25923f3 +129actual running-plan UI.
+129metadata/debugAPK/testAPK/lint PASS7m27s/176tasks,
+`/workspace/scratch/kmp129-plan-corrected.log`; format966(871Kotlin/95Java) PASS. Original week
+clamping/labels/calendar/rest/completed states, routine evidence, decisions and explicit rebuild
+confirmation retained. Initial common compile found JVM AdaptiveCoachingEngine facade; it now
+calls the SAME AdaptiveCoaching.isQuality function, no rule change. Three new plan UI cases await
+runtime.128gate PASS6m44s/176tasks +formatter964/schema19/source3;127gate PASS9m38s/180tasks,
+retained JVM6550fail/error/skip reconfirmed from71XMLs. Expected624Android/655Native PENDING.
+Next coherent batch moves original optional milestone recognition operation/state into common,
+using existing typed milestone store/real repositories; preserve historical recognition and actuals.
+Only130scratch preparations exist outside repo so far; inspect status before applying them.
+After focused local gate, commit/push combined126–130ONCE to ORIGINAL PR24 branch and inspect
+actual Android/Native/framework results. Never claim a pending pass or merge experimental code.
 
 Remote PR branch remains61e038d;125experiment44106763790 SUCCESS on BOTH jobs,610Android/
-700189domain, Native449/27/648 independently digest-verified; framework linked. Main85e1c39
-unchanged. Do not wait for125again. After corrected128 local checks, commit128+handoff and
-normal push ONCE to ORIGINAL PR24 branch, then inspect actual new CI. Delete temporary recovery
-branch checkpoint/android-ios-kmp-compose-126 only AFTER original PR branch contains its commits.
-Git transport works; use GitHub connector instead of expired shell gh API credential.
-Next coherent batch is actual running-plan UI sharing with original week navigation, domain
-calendar states and explicit rebuild confirmation; then finish actual iOS host/services and
-remaining active UI/navigation. No empty host/prototype or domain/storage restart. No version/
-schema/backup/permission change or premature merge/publication. Native destructive UI remains
-OFF until EVERY real operation uses one actual lifecycle owner. Hardware acceptance unperformed.
+700189domain, Native449/27/648 digest-verified; framework linked. Main85e1c39 unchanged. Do not
+wait for125again. Delete temporary recovery branch checkpoint/android-ios-kmp-compose-126 only
+AFTER original PR branch contains its commits. Git works; use connector instead of stale gh API.
+Actual iOS host/full platform effects, remaining active shared UI/navigation and final gates are
+unfinished. No empty host/prototype, domain/storage restart, version/schema/backup/permission
+change, merge or public publication. Native destructive UI OFF until every real operation uses
+one actual lifecycle owner. Physical acceptance remains unperformed.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5712,17 +5711,32 @@ OFF until EVERY real operation uses one actual lifecycle owner. Hardware accepta
   ordering; no broadened expect ABI, changed training values or weakened assertion. Runtime/Native
   and authentic source-bound visual acceptance remain pending; expected621Android/655Native.
 
+### Checkpoint129 — actual running-plan presentation and explicit athlete choice
+
+- SharedTrainingPlanScreen contains original weekly hierarchy/date clamping, existing common
+  calendar states, run/strength destinations, optional warm-up/cool-down/mobility slots, retained
+  version/evidence details and original rebuild dialog. Android binds same UK date/units labels,
+  real routine-history content and original RunningPlanCoordinator commands. AdjustmentCard also
+  shared unchanged; no second adaptive engine, new prescription or automatic activation.
+- Three new focused cases cover no-plan/no-automatic-generation, dark200% week navigation and
+  original workout/routine identities, keep/rebuild confirmation without actual/history mutation,
+  and explicit proposal choice. Existing integration and assertions remain; next expected624 cases.
+- Common metadata/debugAPK/testAPK/lint PASS7m27s/176tasks,
+  scratch/kmp129-plan-corrected.log; format966(871Kotlin/95Java) PASS. Initial1min compile failure
+  used JVM facade name; changed to its existing common AdaptiveCoaching delegate, same rules.
+  Runtime/Native/current-source visual acceptance still pending. No storage/domain/schema change.
+
 ### Exact next safe actions and remaining full scope
 
-1.128local gate PASSED, preserve/commit with127aba505d and126root/recovery. Next coherent batch
-   shares ACTUAL running-plan UI, required platform date/routine effects and original explicit
-   rebuild/decision actions. Focused local gate, then push combined checkpoint ONCE to ORIGINAL
-   PR24 branch.125 BOTH jobs already finished; do NOT wait again. Verify actual current-head
-   Android/Native/framework especially new root3/gateway3/Home3/first-run2 and seven Apple SQL
-   contracts/thin SDK facade. Delete temporary recovery branch only AFTER original branch contains
-   its commits. Keep DRAFT24; no version bump/merge/public release. Then actual iOS application
-   host +active shared UI/navigation/SDK services USING common root and real AppleHealthGateway.
-   No empty host/prototype or domain/storage-kernel restart. Native destructive UI stays OFF until
+1.129local gate PASSED; preserve/commit alongside12825923f3/127aba505d/126root/recovery. Next
+   coherent batch shares existing optional milestone recognition/state with real typed repository
+   and lifecycle bindings. Focused local gate, then push combined source ONCE to ORIGINAL PR24.
+  125 BOTH jobs already finished; do NOT wait again. Verify actual current-head Android/Native/
+   framework, especially root3/gateway3/Home3/first-run2/plan3 and seven Apple SQL contracts/thin
+   SDK facade. Delete temporary recovery branch only AFTER original branch contains its commits.
+   Keep DRAFT24; no version bump/merge/public release. Then actual iOS application host +remaining
+   active shared UI/navigation/SDK services USING common root and real AppleHealthGateway. No
+   empty host/prototype or domain/storage-kernel restart. Native destructive UI stays OFF until
    one real data-lifecycle owner covers every operation.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
