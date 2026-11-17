@@ -84,29 +84,8 @@ public final class DevelopmentStore {
         }
     }
 
-    public void saveHistorical(HistoricalStrengthRecord r) {
-        put(
-                "HISTORICAL_PB",
-                r.id(),
-                json(
-                        "id",
-                        r.id(),
-                        "exercise",
-                        CoachingJson.exercise(r.exercise()),
-                        "kg",
-                        r.kilograms(),
-                        "reps",
-                        r.reps(),
-                        "date",
-                        r.date() == null ? null : r.date().toString(),
-                        "precision",
-                        r.precision().name(),
-                        "notes",
-                        r.notes(),
-                        "seconds",
-                        r.durationSeconds(),
-                        "metres",
-                        r.distanceMetres()));
+    public void saveHistorical(HistoricalStrengthRecord record) {
+        coachingContext.saveHistorical(record);
     }
 
     public List<HistoricalStrengthRecord> historical() {
@@ -114,7 +93,7 @@ public final class DevelopmentStore {
     }
 
     public void deleteHistorical(String id) {
-        db().delete("coach_evidence", "kind='HISTORICAL_PB' AND id=?", new String[] {id});
+        coachingContext.deleteHistorical(id);
     }
 
     private static HistoricalStrengthRecord historical(JSONObject j) {
@@ -176,34 +155,15 @@ public final class DevelopmentStore {
     }
 
     public void linkGym(String actual, LocalDate planned, String version, String session) {
-        put(
-                "STRENGTH_LINK",
-                actual,
-                json(
-                        "id",
-                        actual,
-                        "plannedDate",
-                        planned.toString(),
-                        "gymVersion",
-                        version,
-                        "gymSession",
-                        session));
+        coachingContext.linkGym(actual, planned, version, session);
     }
 
     public void deleteStrengthLink(String id) {
-        var db = db();
-        db.beginTransaction();
-        try {
-            SqliteGymAssociationRepository.removeLegacyLink(db, id);
-            db.delete("coach_evidence", "kind='STRENGTH_LINK' AND id=?", new String[] {id});
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        coachingContext.deleteStrengthLink(id);
     }
 
     public void linkStrength(String sessionId, LocalDate planned) {
-        put("STRENGTH_LINK", sessionId, json("id", sessionId, "plannedDate", planned.toString()));
+        coachingContext.linkStrength(sessionId, planned);
     }
 
     public WeeklyCoaching.Interruption interruption() {

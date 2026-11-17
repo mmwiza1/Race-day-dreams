@@ -1,24 +1,29 @@
 package org.racedaydreams.coach.application
 
-import java.time.Instant
-import java.time.LocalDate
-import org.racedaydreams.data.DevelopmentStore
-import org.racedaydreams.data.GymProgrammeStore
-import org.racedaydreams.data.StrengthUserStore
 import org.racedaydreams.domain.coaching.CoachingRepository
+import org.racedaydreams.domain.coaching.CoachingTransaction
+import org.racedaydreams.domain.strength.ExerciseExclusionRepository
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.domain.strength.HistoricalStrengthRecord
 import org.racedaydreams.domain.strength.StrengthExercise
 import org.racedaydreams.domain.strength.StrengthSession
+import org.racedaydreams.domain.time.Instant
+import org.racedaydreams.domain.time.LocalDate
+import org.racedaydreams.storage.SqliteCoachingContext
+import org.racedaydreams.storage.SqliteLegacyGymProgrammes
+import org.racedaydreams.storage.SqliteStrengthChoices
 
 /** Strength sessions, programme versions and evidence-backed progression commands. */
 class StrengthCoordinator(
-    private val gym: GymProgrammeStore,
-    private val choices: StrengthUserStore,
+    private val gym: SqliteLegacyGymProgrammes,
+    private val choices: SqliteStrengthChoices,
+    private val exclusions: ExerciseExclusionRepository,
     private val operations: CoachOperationRunner,
     private val coaching: CoachingRepository,
-    private val development: DevelopmentStore,
-    private val programmes: GymProgrammeOperations = GymProgrammeOperations(),
+    private val development: SqliteCoachingContext,
+    private val programmes: SharedGymProgrammeOperations,
+    private val now: () -> Instant,
+    private val today: () -> LocalDate,
 ) {
     fun previewGenerated(settings: GymProgramme.Settings): GymProgramme {
         val snapshot = operations.current
@@ -81,9 +86,7 @@ class StrengthCoordinator(
             val repository = gym
             val p =
                 repository.current() ?: throw IllegalArgumentException("No current gym programme.")
-            require(org.racedaydreams.data.GymProgrammeStore.key(p) == base) {
-                "The programme changed. Review the current suggestion."
-            }
+            require(key(p) == base) { "The programme changed. Review the current suggestion." }
             val prescription =
                 p.sessions()
                     .first { it.id() == sessionId }
@@ -94,7 +97,7 @@ class StrengthCoordinator(
                 org.racedaydreams.domain.strength.StrengthProgressionAdvisor.review(
                     prescription,
                     actual,
-                    Instant.now(),
+                    now(),
                 )
             val evidence =
                 advice.reason() +
@@ -124,8 +127,8 @@ class StrengthCoordinator(
                         sessionId,
                         exerciseId,
                         requireNotNull(advice.suggestedKilograms()),
-                        LocalDate.now(),
-                        Instant.now(),
+                        today(),
+                        now(),
                         development.strengthLinks().values.toSet(),
                     )
                 } else null
@@ -150,21 +153,19 @@ class StrengthCoordinator(
             require(coaching.exercises().any { it.id() == id }) {
                 "Exercise is no longer available."
             }
-            if (reason == null) choices.restoreExercise(id)
+            if (reason == null) exclusions.restoreExercise(id)
             else
-                choices.exclude(
+                exclusions.exclude(
                     org.racedaydreams.domain.strength.ExerciseExclusionRepository.Exclusion(
                         id,
                         reason,
-                        Instant.now(),
+                        now(),
                     )
                 )
         }
 
     fun exerciseChoice(id: String, favourite: Boolean, archived: Boolean) =
-        operations.submit {
-            choices.save(org.racedaydreams.data.StrengthUserStore.Choice(id, favourite, archived))
-        }
+        operations.submit { choices.save(SqliteStrengthChoices.Choice(id, favourite, archived)) }
 
     fun acknowledgePb(id: String) = operations.submit { choices.acknowledge(id) }
 
@@ -177,29 +178,38 @@ class StrengthCoordinator(
             "Strength workout saved. PB history is derived from retained sets.",
             onSuccess,
         ) {
-            coaching.transaction {
-                coaching.saveStrength(session)
-                if (plannedDate != null && session.id() !in development.strengthLinks()) {
-                    val gym = gym.current()
-                    val prescription = gym?.sessions()?.firstOrNull { it.date() == plannedDate }
-                    if (gym != null && prescription != null)
-                        development.linkGym(
-                            session.id(),
-                            plannedDate,
-                            org.racedaydreams.data.GymProgrammeStore.key(gym),
-                            prescription.id(),
-                        )
-                    else development.linkStrength(session.id(), plannedDate)
+            coaching.transaction(
+                object : CoachingTransaction {
+                    override fun run() {
+                        coaching.saveStrength(session)
+                        if (plannedDate != null && session.id() !in development.strengthLinks()) {
+                            val plan = gym.current()
+                            val prescription =
+                                plan?.sessions()?.firstOrNull { it.date() == plannedDate }
+                            if (plan != null && prescription != null)
+                                development.linkGym(
+                                    session.id(),
+                                    plannedDate,
+                                    key(plan),
+                                    prescription.id(),
+                                )
+                            else development.linkStrength(session.id(), plannedDate)
+                        }
+                    }
                 }
-            }
+            )
         }
 
     fun deleteStrength(id: String) =
         operations.submit("Strength workout removed; PB history has been recalculated.") {
-            coaching.transaction {
-                coaching.deleteStrength(id)
-                development.deleteStrengthLink(id)
-            }
+            coaching.transaction(
+                object : CoachingTransaction {
+                    override fun run() {
+                        coaching.deleteStrength(id)
+                        development.deleteStrengthLink(id)
+                    }
+                }
+            )
         }
 
     fun saveExercise(exercise: StrengthExercise) =
@@ -212,11 +222,13 @@ class StrengthCoordinator(
     fun saveHistorical(record: HistoricalStrengthRecord, done: () -> Unit = {}) =
         operations.submit(onSuccess = done) {
             val date = record.date()
-            require(date == null || date <= LocalDate.now()) {
+            require(date == null || date.toEpochDay() <= today().toEpochDay()) {
                 "A historical PB cannot be in the future."
             }
             development.saveHistorical(record)
         }
 
     fun deleteHistorical(id: String) = operations.submit { development.deleteHistorical(id) }
+
+    private fun key(plan: GymProgramme) = "${plan.id()}:v${plan.version()}"
 }

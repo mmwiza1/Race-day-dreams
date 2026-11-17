@@ -64,17 +64,18 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote HEAD is
-`7e19a63e2a6d133522f3d29ae2b24ec47977b6d8` (121baseline +corrected detail test). Experiment44086846386:
-Android STOPPED BEFORE TESTS because Maven Central returned429 for pinned Kotlin2.1.21 POMs;
-Apple tests/framework SUCCESS. Format44086846391 SUCCESS. No595runtime pass claimed.
-Prior1206d72b94 has verified Native449domain/27health/641storage/framework, JVM490/25/641 and
-591of592Android passed (one incorrect new test oracle, FIXED in992bcba). Preserve those proofs.
-122running-plan application service +targeted schedule projection and tests pass FINAL current
-JVM643/metadata/APKs/lint5m5s/180tasks +format945/schema/source checks. Numeric coercion uses the
-existing codec and persisted regression variants. Ready to commit/push; next598Android/643storage.
-See latest122 below. No version/formats changes, merge/publication/native destructive UI or fake
-bindings. Full actual iOS app/services/navigation and final complete gates remain unfinished.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote HEAD remains
+`1e2d6ff9adc09470e9c4c1dd67e4ab5ac052e8f2` (122). Apple Native449domain/27health/643storage and
+framework SUCCESS, artifact byte-verified below. After pinned POM returned200 locally and Apple
+finished, retried ONLY failed Android once:44091963612attempt2 /job134082808137 now running
+instrumentation (dependency/JVM/domain/schema/APK stages PASSED). No598runtime pass claimed yet.
+123shared StrengthCoordinator +typed historical/legacy association commands/tests are LOCAL,
+passes FINAL local JVM6460fail/error/skip +metadata/debugAPK/testAPK/lint9m23s/180tasks,
+kmp-strength-coordinator-final.log. Format946/schema19/source3 PASS. Preserve all
+uncommitted source, intentional Android coordinator deletion and prior local handoff. Do not
+push/cancel useful Android retry. See latest123 below; expected next601Android/646Native/framework.
+No version/format/permission change or early merge/publication/native destructive UI. Actual iOS
+application/root/platform/full final gates remain unfinished; a framework is not an app.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5460,13 +5461,91 @@ bindings. Full actual iOS app/services/navigation and final complete gates remai
   root/backup checks. Continue remaining RunningEvidence/Strength/Health/Settings services,
   active UI/root/navigation/native permissions and REAL iOS application, no fake empty host.
 
+### Exact recovery after122 push — repeated Maven outage, no Android tests executed
+
+- Source1221e2d6ff9adc09470e9c4c1dd67e4ab5ac052e8f2 is COMMITTED/PUSHED; PR24 still OPEN/DRAFT.
+  All valid source, migrations, archive kernels and prior ports preserved. No resets/force pushes.
+  No version/schema/format/permission change or public release. Latest README/PR description must
+  distinguish whole-app remaining scope from actual Native framework success.
+- New experiment44091963612 Android134069104331 FAILED at13:23:25 BEFORE tests/configuration
+  completed: same repo.maven.apache.orgHTTP429 Kotlin Gradle plugin2.1.21, plugins BOM and Compose
+  compiler-plugin POMs. Previous121failed12:51:30; actual32-minute cooldown did NOT restore service.
+  Log scratch/kmp122-android-job.log. This is a confirmed external dependency-resolution blocker,
+  not a new assertion/compilation failure. No598runtime/domain/JVM CI pass for current1e inferred.
+- Apple134069104897 is STILL RUNNING (last observed Native test stage). Preserve it; no cancellation
+  or whole-workflow rerun. Inspect actual conclusion/XML/framework later. Expected Native643 but
+  not claimed until verified. Current formatting run44091963522 is SUCCESS.
+- FINAL local current1e source PASS:643sharedStorage JVM,0fail/error/skip; common metadata/debugAPK/
+  testAPK/lint5m5s/180tasks; format945(850Kotlin/95Java), exact schema19/source3. Numeric schedule
+  compatibility and original Android JSON coercions are tested; no engine/prescription change.
+  New common running-plan3tests and baseline3tests await actual Android runtime. Detail-test fix
+  asserts actual supported label and exactly2actual record categories; do not reintroduce literal6RM.
+- Prior121exact7e19a63 Apple/framework passed. Independently verified artifact14331556396 Native
+  449domain/27health/641storage ALL0fail/error/skip; scratch/kmp121-native/verification.json.
+  This is previous-source proof, NOT current643 proof or iOS application acceptance.
+- Immediate next: inspect existing44091963612Apple result;44091963522format is SUCCESS. Once dependency
+  service is demonstrably available/adequately cooled down, use ONE bounded failed-Android-job
+  retry for exact1e, not repeated blind full workflows. If429 persists, preserve/report exact
+  external limitation; do not substitute an insecure/unverified repository or weaken checks.
+  When Android runs, inspect all598cases and fix real failures; verify new643JDBC/Apple XML and
+  actual Native framework. Then remaining RunningEvidence/Strength/Health/Settings orchestration,
+  active UI/shared root/navigation, native permissions/HealthKit/recording/BLE/notifications and
+  REAL iOS app host/entitlements/build/runtime. Full Android28/35/36 +actual iOSAPP/canonical visual
+  gates only at readiness. Native destructive controls OFF until one actual application operation
+  owner binds every path. Physical S24/iPhone/HK/HC/GPS/BLE/audio/TalkBack remains unperformed.
+- This last recovery note is intentionally LOCAL/uncommitted while useful Apple CI runs. A
+  documentation-only push would cancel it under existing concurrency. Include the note with the
+  next coherent implementation checkpoint; all IMPLEMENTATION is already safely remote at1e.
+
+### Checkpoint123 local — full shared strength orchestration; diagnosed Android retry running
+
+- Recovered exact1e2d6ff branch and surviving uncommitted recovery note; main85e1c39 unchanged,
+  PR24OPEN/DRAFT, no source discarded or replacement PR. Read AGENTS/development workflow.
+-122Apple SUCCESS: independently verified artifact14332373621,176074bytes,
+  SHA4b4e3b757c042dea23cd3f966e9d18cb9d348cbc609e0a56cfa5bcb60abc0811;
+  Native449domain/27health/643storage ALL0fail/error/skip. kmp122-native/verification.json.
+  Actual framework linked (artifact14332818275 metadata62025757bytes,
+  SHA59fb539108ac092003b28c71cb747a02feca8a38af789c11b7be92313e1c4f3a), not iOS app.
+- Maven pinned-plugin POM HEAD returnedHTTP200 from workspace at13:37 (not a guarantee for GHA).
+  Once original Apple job finished, ONE failed-Android-only rerun at13:45 after actual cooldown:
+  run44091963612attempt2, Android134082808137. Resolution +JVM/domain/schema/build stages now PASS,
+  actual instrumentation running. No dependencies/repositories/TLS/cache policy/check changes.
+  Preserve this useful runtime job and inspect actual598 cases before claiming a pass.
+-123moves ACTUAL StrengthCoordinator common, same FQN: same preview/explicit progression and load
+  safeguards, exclusions vs favourites/archive/acknowledgements, actual save/delete, frozen custom
+  definitions and historical PB future/unknown-date rules. Android root binds existing typed
+  legacy gym/choices/exclusions/context over SAME borrowed DB and original real clock/ID adapter.
+  Existing GymProgrammeOperations.shared becomes internal solely to reuse its genuine binding;
+  no fake defaults/second engine. Cross-platform transactions use explicit CoachingTransaction.
+- Added common typed Historical PB save/delete and legacy generic/gym link commands to existing
+  SqliteCoachingContext; original DevelopmentStore delegates, independent backup helpers remain.
+  Legacy row+normalized projection are ONE transaction; existing explicit decisions cannot be
+  changed/removed by implicit link writes. Original nullable generic-target semantics retained.
+  Historical exercise definitions/date precision/modalities retained, never fabricated actuals.
+- THREE new JDBC/Apple SQL contracts verify frozen timed/weighted unknown-date PBs and caller
+  rollback/no actual creation; generic/gym projection and explicit-decision protection; injected
+  projection failure/outer rollback/idempotent deletion preserving exact bytes. Existing contracts
+  unchanged. THREE new actual SQL/runner StrengthCoordinator tests verify save/link/rename/archive/
+  exclusion/restore preserving actual/PB history; late association failure rolls back actual+link;
+  historical future guard and unknown dates do not create workouts. Next expected601Android,
+  storage646(643+3), no current-source Native or Android runtime acceptance inferred.
+- FINAL local JVM646/common metadata/debugAPK/testAPK/lint PASS9m23s/180tasks,
+  scratch/kmp-strength-coordinator-final.log. JVM646 ALL0fail/error/skip. Formatting946(851Kotlin/95Java), exact schema19 /
+  source3 PASS, diff checks clean. No schema/backup/version/permission/publication changes.
+- Exact next: finish local123 tasks and inspect actual current Android retry598. Diagnose/fix
+  genuine failures without weakened assertions or speculative dependency workarounds. Commit123
+  +updated handoff once local checks pass; push once prior useful retry completes. Verify new
+ 601Android/646JVM/Apple/framework, exact new SQL cases and source identity. Continue remaining
+  RunningEvidence/platform health/settings/application root/active UI/navigation and genuine iOS
+  host/services. Native destructive controls remain OFF until full operation-owner bindings.
+
 ### Exact next safe actions and remaining full scope
 
-1.122FINAL corrected local JVM643/metadata/APKs/lint5m5s/format945/schema19/source3PASS.
-   Commit122+handoff and push ONCE. Prior121Apple/framework/verified641PASS; its Android never
-   ran tests because of confirmed Maven429. Verify new598Android/Native643/framework, correcting
-   actual failures without weakening checks. Preserve all completed application/common UI work;
-   remaining native host and platform/full app acceptance is not completed by a framework.
+1. Preserve123local StrengthCoordinator/context/kernel/test edits and prior local recovery.
+   Local kmp-strength-coordinator-final.log PASS9m23s/180tasks,646JVM0f/e/skip,
+   metadata/debug+testAPK/lint; format946/schema/source PASS. Inspect Android retry44091963612attempt2 job134082808137598cases; prior
+   Apple643/framework passed, not123646proof. Commit123+handoff and push once useful retry ends;
+   then verify new601Android/646Native/framework. No restart/domain duplication/early merge/pub.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

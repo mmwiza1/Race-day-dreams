@@ -13,7 +13,7 @@ class GymProgrammeOperations(
     private val clock: Clock? = null,
     newId: () -> String = { UUID.randomUUID().toString() },
 ) {
-    private val shared =
+    internal val shared =
         SharedGymProgrammeOperations(
             clockForAction = {
                 // Resolve the device zone per action, not when a retained coordinator is created.

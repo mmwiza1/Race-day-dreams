@@ -188,6 +188,130 @@ abstract class CoachingContextRepositoryContract {
         }
 
     @Test
+    fun historicalCommandsRetainFrozenDefinitionsUnknownDatesAndMeasurementModalities() =
+        storage { db, context, coaching, ids ->
+            val exercise = LegacyFingerprintFixtures.session().exercises().first().exercise()
+            val old =
+                HistoricalStrengthRecord(
+                    "old-load",
+                    exercise,
+                    82.25,
+                    6,
+                    null,
+                    HistoricalStrengthRecord.DatePrecision.UNKNOWN,
+                    "Original note",
+                    null,
+                    null,
+                )
+            val plank = ExerciseCatalog.definition("plank")!!.exercise()
+            val timed =
+                HistoricalStrengthRecord(
+                    "old-time",
+                    plank,
+                    0.0,
+                    0,
+                    StoredDate.parse("2026-11-16"),
+                    HistoricalStrengthRecord.DatePrecision.APPROXIMATE,
+                    "Retained timed effort",
+                    75,
+                    null,
+                )
+            context.saveHistorical(old)
+            context.saveHistorical(timed)
+            assertEquals(listOf(old, timed), context.historical())
+            assertTrue(coaching.strength().isEmpty())
+            val before = db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id")
+            assertFailsWith<IllegalStateException> {
+                db.transaction {
+                    context.deleteHistorical(old.id())
+                    error("Reject enclosing edit")
+                }
+            }
+            assertEquals(
+                before,
+                db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id"),
+            )
+            context.deleteHistorical(timed.id())
+            context.deleteHistorical(timed.id())
+            assertEquals(listOf(old), context.historical())
+            assertEquals(0, ids())
+        }
+
+    @Test
+    fun legacyLinksProjectGenericAndProgrammeTargetsButCannotRewriteExplicitChoices() =
+        storage { db, context, _, ids ->
+            val date = StoredDate.parse("2026-11-16")
+            context.linkStrength("actual", date)
+            assertEquals(date, context.strengthLinks()["actual"])
+            assertTrue(context.gymLinks().isEmpty())
+            assertEquals(
+                listOf(SqlValue.Null, SqlValue.Null, SqlValue.Text(date.toString()), SqlValue.Null),
+                db.query(
+                        "SELECT programme_key,session_id,planned_date,decision_id FROM strength_association_targets"
+                    )
+                    .single(),
+            )
+            context.linkGym("actual", date, "programme:v2", "prescription")
+            assertEquals("programme:v2", context.gymLinks().getValue("actual").versionKey())
+            // Projection protects an existing decision identity without decoding/revising its
+            // payload.
+            db.execute(
+                "INSERT INTO strength_association_decisions VALUES('explicit','actual','2026-11-17T09:00:00Z','{\"retained\":true}')"
+            )
+            db.execute(
+                "UPDATE strength_association_targets SET decision_id='explicit' WHERE actual_id='actual'"
+            )
+            context.linkGym("actual", date, "programme:v2", "prescription")
+            val before = db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id")
+            val target = db.query("SELECT * FROM strength_association_targets")
+            assertFailsWith<IllegalArgumentException> {
+                context.linkStrength("actual", date.plusDays(1))
+            }
+            assertFailsWith<IllegalArgumentException> { context.deleteStrengthLink("actual") }
+            assertEquals(
+                before,
+                db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id"),
+            )
+            assertEquals(target, db.query("SELECT * FROM strength_association_targets"))
+            assertEquals(0, ids())
+            assertTrue(db.query("PRAGMA foreign_key_check").isEmpty())
+        }
+
+    @Test
+    fun failedLegacyProjectionAndOuterRollbackRetainExactLinkEvidence() =
+        storage { db, context, _, _ ->
+            val date = StoredDate.parse("2026-11-16")
+            context.linkGym("actual", date, "programme:v2", "prescription")
+            val before = db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id")
+            val targets = db.query("SELECT * FROM strength_association_targets")
+            db.execute(
+                "CREATE TRIGGER reject_projection BEFORE INSERT ON strength_association_targets BEGIN SELECT RAISE(ABORT,'injected projection failure'); END"
+            )
+            assertFails { context.linkStrength("actual", date.plusDays(1)) }
+            assertEquals(
+                before,
+                db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id"),
+            )
+            assertEquals(targets, db.query("SELECT * FROM strength_association_targets"))
+            db.execute("DROP TRIGGER reject_projection")
+            assertFailsWith<IllegalStateException> {
+                db.transaction {
+                    context.linkStrength("new", date)
+                    error("Reject enclosing save")
+                }
+            }
+            assertEquals(
+                before,
+                db.query("SELECT kind,id,payload FROM coach_evidence ORDER BY kind,id"),
+            )
+            assertEquals(targets, db.query("SELECT * FROM strength_association_targets"))
+            context.deleteStrengthLink("actual")
+            context.deleteStrengthLink("actual")
+            assertTrue(context.strengthLinks().isEmpty())
+            assertTrue(db.query("SELECT * FROM strength_association_targets").isEmpty())
+        }
+
+    @Test
     fun importedAndManualWeightsRemainVisibleInTimeOrderWithoutBecomingUserOwnedExports() =
         storage { db, context, _, _ ->
             val recent = weight("a-later", now, "manual")

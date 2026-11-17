@@ -77,6 +77,95 @@ class SqliteCoachingContext(
             }
         }
 
+    fun saveHistorical(value: HistoricalStrengthRecord) =
+        put(
+            Kind.HISTORICAL_PB,
+            value.id(),
+            buildJsonObject {
+                put("id", value.id())
+                put("exercise", StrengthEvidenceJson.exercise(value.exercise()))
+                put("kg", value.kilograms())
+                put("reps", value.reps())
+                put("date", StoredJson.nullable(value.date()?.toString()))
+                put("precision", value.precision().name)
+                put("notes", StoredJson.nullable(value.notes()))
+                put("seconds", value.durationSeconds()?.let { JsonPrimitive(it) } ?: JsonNull)
+                put("metres", value.distanceMetres()?.let { JsonPrimitive(it) } ?: JsonNull)
+            },
+        )
+
+    fun deleteHistorical(id: String) {
+        database.execute(
+            "DELETE FROM coach_evidence WHERE kind='HISTORICAL_PB' AND id=?",
+            listOf(SqlValue.Text(id)),
+        )
+    }
+
+    fun linkGym(actual: String, planned: LocalDate, version: String, session: String) =
+        saveStrengthLink(actual, planned, version, session)
+
+    fun linkStrength(actual: String, planned: LocalDate) =
+        saveStrengthLink(actual, planned, null, null)
+
+    private fun saveStrengthLink(
+        actual: String,
+        planned: LocalDate,
+        version: String?,
+        session: String?,
+    ) =
+        database.transaction {
+            val payload = buildJsonObject {
+                put("id", actual)
+                put("plannedDate", planned.toString())
+                if (version != null) {
+                    put("gymVersion", version)
+                    put("gymSession", session)
+                }
+            }
+            put(Kind.STRENGTH_LINK, actual, payload)
+            val values =
+                listOf(sqlText(version), sqlText(session), SqlValue.Text(planned.toString()))
+            val retained =
+                database
+                    .query(
+                        "SELECT programme_key,session_id,planned_date,decision_id FROM strength_association_targets WHERE actual_id=?",
+                        listOf(SqlValue.Text(actual)),
+                    )
+                    .firstOrNull()
+            if (retained != null && retained[3] != SqlValue.Null) {
+                require(retained.take(3) == values) {
+                    "The workout or association changed. Review the saved evidence again."
+                }
+            } else {
+                database.execute(
+                    "INSERT OR REPLACE INTO strength_association_targets(actual_id,programme_key,session_id,planned_date,decision_id) VALUES(?,?,?,?,NULL)",
+                    listOf(SqlValue.Text(actual)) + values,
+                )
+            }
+        }
+
+    fun deleteStrengthLink(id: String) =
+        database.transaction {
+            val retained =
+                database
+                    .query(
+                        "SELECT decision_id FROM strength_association_targets WHERE actual_id=?",
+                        listOf(SqlValue.Text(id)),
+                    )
+                    .firstOrNull()
+            require(retained == null || retained.single() == SqlValue.Null) {
+                "Review the explicit association choice before removing it."
+            }
+            database.execute(
+                "DELETE FROM strength_association_targets WHERE actual_id=?",
+                listOf(SqlValue.Text(id)),
+            )
+            database.execute(
+                "DELETE FROM coach_evidence WHERE kind='STRENGTH_LINK' AND id=?",
+                listOf(SqlValue.Text(id)),
+            )
+        }
+
     fun historical(): List<HistoricalStrengthRecord> =
         Immutable.copyList(
             rows(Kind.HISTORICAL_PB).map { (it.evidence as Evidence.Historical).value }
