@@ -64,11 +64,16 @@ internal object AppleCalendarDates : CoachCalendarDates {
 }
 
 @Composable
-internal fun AppleCalendar(session: AppleCoachSession<*>, activity: (String) -> Unit) {
+internal fun AppleCalendar(
+    session: AppleCoachSession<*>,
+    initialWorkout: String?,
+    initialStrength: String?,
+    activity: (String) -> Unit,
+) {
     val state by session.services.operations.state.collectAsState()
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
-    var plannedId by remember { mutableStateOf<String?>(null) }
-    var strengthDate by remember { mutableStateOf<String?>(null) }
+    var plannedId by remember(initialWorkout) { mutableStateOf(initialWorkout) }
+    var strengthDate by remember(initialStrength) { mutableStateOf(initialStrength) }
     val runId = plannedId
     val gymDate = strengthDate
     when {

@@ -117,10 +117,12 @@ private enum class ApplePage {
     START,
     RECORD,
     HISTORY,
+    PLAN,
     ACTIVITY,
     SETTINGS,
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AppleAppContent(
     session: AppleCoachSession<Unit>,
@@ -129,12 +131,23 @@ private fun AppleAppContent(
 ) {
     val state by session.services.operations.state.collectAsState()
     var page by remember { mutableStateOf(ApplePage.START) }
+    var calendarWorkout by remember { mutableStateOf<String?>(null) }
+    var calendarStrength by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+        FlowRow(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
             TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
             TextButton(onClick = { page = ApplePage.RECORD }) { Text("Record") }
-            TextButton(onClick = { page = ApplePage.HISTORY }) { Text("Calendar") }
+            TextButton(onClick = { page = ApplePage.PLAN }) { Text("Plan") }
+            TextButton(
+                onClick = {
+                    calendarWorkout = null
+                    calendarStrength = null
+                    page = ApplePage.HISTORY
+                }
+            ) {
+                Text("Calendar")
+            }
             TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
         }
         Box(Modifier.weight(1f)) {
@@ -146,10 +159,24 @@ private fun AppleAppContent(
                         page = ApplePage.ACTIVITY
                     }
                 ApplePage.HISTORY ->
-                    AppleCalendar(session) {
+                    AppleCalendar(session, calendarWorkout, calendarStrength) {
                         activityId = it
                         page = ApplePage.ACTIVITY
                     }
+                ApplePage.PLAN ->
+                    AppleRunningPlan(
+                        session,
+                        openWorkout = {
+                            calendarWorkout = it
+                            calendarStrength = null
+                            page = ApplePage.HISTORY
+                        },
+                        openStrength = {
+                            calendarWorkout = null
+                            calendarStrength = it.toString()
+                            page = ApplePage.HISTORY
+                        },
+                    )
                 ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it) }
                 ApplePage.START ->
                     if (state.loading) {
@@ -161,11 +188,19 @@ private fun AppleAppContent(
                                     page = ApplePage.RECORD
                                 }
                             },
-                            race = { session.services.settings.startingPath("race") },
+                            race = {
+                                session.services.settings.startingPath("race") {
+                                    page = ApplePage.PLAN
+                                }
+                            },
                             strength = {
                                 session.services.settings.primaryFocus(PrimaryFocus.STRENGTH)
                             },
-                            hybrid = { session.services.settings.startingPath("hybrid") },
+                            hybrid = {
+                                session.services.settings.startingPath("hybrid") {
+                                    page = ApplePage.PLAN
+                                }
+                            },
                         )
                     } else {
                         CoachPage {

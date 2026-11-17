@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 159 running plan on iOS
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 was running
+focused Android instrumentation and Apple Native tests at the last check.
+Checkpoints 157–159 are local. Preserve the live run.
+
+159 mounts SharedTrainingPlanScreen in the iOS host and connects the existing
+generator, adjustment decisions, calendar prescription previews and optional
+movement guidance. The iOS goal form uses the existing RaceGoal, preferences
+and profile validation/persistence. Saving does not regenerate the plan
+silently. Race and hybrid first-run paths lead to Plan. The native screen
+still needs full planned detail editing/structured execution and durable
+onboarding drafts for parity. Pinned formatter, diff check and all 19 schema
+boundaries passed. This Apple-only checkpoint awaits macOS compilation.
+
+Next read 44189952813 actual results and fix demonstrated errors. Then push
+157–159 in one batch and verify the simulator app builds and launches.
+Continue Gym Now/strength, running detail execution and native services.
+No final acceptance, merge or publication yet.
+
 ### Latest recovery pointer — checkpoint 158 iOS Calendar
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 was still running
