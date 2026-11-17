@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 179 iOS retention cleanup
+
+iOS can separately confirm removal from the reviewed preview for a saved
+retention choice. The application backup owner checks approval and delegates
+to the existing per-recording transaction, yielding between recordings.
+The storage panel refreshes totals and reports committed progress if a
+later recording fails approval. Existing-user consent and active recording
+guards remain in the domain and transaction. Native behavior is unverified.
+
+The focused JDBC retention gate passed 10 tests, including stale approval,
+backup overlap, idempotent retry and preserved summary evidence through the
+actual iOS storage owner. Formatting, diff checks and 19 shared schema
+boundaries passed.
+
+Local checkpoints 174–179 await the existing run 44198176072 on PR #24 head
+7558809. Android reached artifact upload and Apple was still compiling and
+testing. Inspect their actual conclusions before pushing and fix any errors.
+Next verify native simulator startup, complete backup restore and retention
+dialogs, including cancellation, active recording and truthful removed-route
+presentation. Remaining platform parity and full gates still block merge.
+
 ### Latest recovery pointer — checkpoint 178 iOS retention choice and preview
 
 PR #24 remains at 7558809. Jobs in experiment 44198176072 were still

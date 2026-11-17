@@ -73,6 +73,12 @@ class LocalBackupOperations(
     fun previewRetention(policy: DetailRetention.Policy): DetailRetention.Preview =
         operations.review { retention.preview(policy, now()) }
 
+    fun approveRetentionCleanup(preview: DetailRetention.Preview): DetailRetention.Approval =
+        operations.review { retention.approve(preview, now()) }
+
+    fun cleanRecordingDetail(approval: DetailRetention.Approval, sessionId: String): Boolean =
+        SqliteRecordingDetailCleanup(database, operations).cleanOne(approval, sessionId, now())
+
     fun recordingInventory(): SqliteRecordingInventory.Inventory =
         operations.review { SqliteRecordingInventory(database).inspect() }
 

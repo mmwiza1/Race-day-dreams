@@ -103,6 +103,28 @@ abstract class RetentionPolicyRepositoryContract {
     }
 
     @Test
+    fun ownerRequiresFreshApprovalAndSerializesCleanupWithBackup() = storage { db ->
+        var clock = now
+        val owner = LocalBackupOperations(db, { clock }) { "cleanup-choice-${++sequence}" }
+        val policy = DetailRetention.Policy.LAST_24_MONTHS
+        owner.acknowledgeRetention(policy)
+        val preview = owner.previewRetention(policy)
+        val approval = owner.approveRetentionCleanup(preview)
+        owner.writeApp {
+            assertFailsWith<IllegalStateException> { owner.cleanRecordingDetail(approval, "run") }
+        }
+        clock = later(86401)
+        assertFails { owner.cleanRecordingDetail(approval, "run") }
+        assertEquals(1L, owner.recordingInventory().usage.pointRows)
+        val fresh = owner.approveRetentionCleanup(owner.previewRetention(policy))
+        assertTrue(owner.cleanRecordingDetail(fresh, "run"))
+        assertFalse(owner.cleanRecordingDetail(fresh, "run"))
+        val usage = owner.recordingInventory().usage
+        assertEquals(0L, usage.pointRows)
+        assertEquals(1L, usage.activityRows)
+    }
+
+    @Test
     fun existingUserCanPreviewConsequencesButCannotApproveUntilInformedAcknowledgement() =
         storage { db ->
             db.execute(

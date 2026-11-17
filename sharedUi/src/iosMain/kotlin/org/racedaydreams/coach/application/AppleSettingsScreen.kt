@@ -180,7 +180,7 @@ private fun AppleRecordingStorage(documents: AppleBackupDocuments) {
                 )
             current == null -> Text("Checking recording storage…")
             else -> {
-                AppleRetentionPreferences(documents)
+                AppleRetentionPreferences(documents) { usage = it }
                 Text("${current.activityRows} activity summaries retained")
                 Text(
                     "${current.pointRows} recorded points and ${current.eventRows} recording events"
@@ -196,7 +196,10 @@ private fun AppleRecordingStorage(documents: AppleBackupDocuments) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun AppleRetentionPreferences(documents: AppleBackupDocuments) {
+private fun AppleRetentionPreferences(
+    documents: AppleBackupDocuments,
+    onInventory: (SqliteRecordingInventory.Usage) -> Unit,
+) {
     val scope = rememberCoroutineScope()
     var preferences by remember { mutableStateOf<DetailRetention.Preferences?>(null) }
     var selected by remember { mutableStateOf(DetailRetention.Policy.KEEP_FOREVER) }
@@ -204,6 +207,9 @@ private fun AppleRetentionPreferences(documents: AppleBackupDocuments) {
     var confirming by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+
+    var cleanupReview by remember { mutableStateOf<DetailRetention.Preview?>(null) }
+    var cleanupStatus by remember { mutableStateOf<String?>(null) }
 
     suspend fun load() {
         val saved = documents.retentionPreferences()
@@ -265,9 +271,61 @@ private fun AppleRetentionPreferences(documents: AppleBackupDocuments) {
             Text("Retry retention settings")
         }
     }
-    preview?.let {
+    preview?.let { inspected ->
         Text(
-            "${it.recordings().size} finished recordings eligible for the selected policy. ${it.points()} recorded points and ${it.events()} events."
+            "${inspected.recordings().size} finished recordings eligible for the selected policy. ${inspected.points()} recorded points and ${inspected.events()} events."
+        )
+        if (
+            saved != null &&
+                saved.choice() != DetailRetention.Choice.EXISTING_UNREVIEWED &&
+                saved.policy() == inspected.policy() &&
+                inspected.recordings().isNotEmpty()
+        ) {
+            TextButton(onClick = { cleanupReview = inspected }, enabled = !busy) {
+                Text("Review removal")
+            }
+        }
+    }
+    cleanupStatus?.let { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+    cleanupReview?.let { inspected ->
+        AlertDialog(
+            onDismissRequest = { cleanupReview = null },
+            title = { Text("Remove detailed recordings?") },
+            text = {
+                Text(
+                    "Remove GPS routes and sensor detail from ${inspected.recordings().size} finished recordings? Saved summaries, personal bests and training history stay. Removed detail can only be restored from a compatible backup that contains it."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        cleanupReview = null
+                        preview = null
+                        cleanupStatus = null
+                        operate {
+                            var removed = 0
+                            try {
+                                documents.cleanRetention(inspected) {
+                                    removed = it
+                                    cleanupStatus =
+                                        "Removed detail from $removed recordings so far."
+                                }
+                                cleanupStatus =
+                                    "Removed detail from $removed recordings. Saved summaries and training history remain."
+                            } catch (cancelled: CancellationException) {
+                                throw cancelled
+                            } catch (_: Exception) {
+                                cleanupStatus =
+                                    "Cleanup stopped after $removed recordings. Finish any open run or data operation, then check a fresh preview."
+                            }
+                            onInventory(documents.recordingInventory().usage)
+                        }
+                    }
+                ) {
+                    Text("Remove recording detail")
+                }
+            },
+            dismissButton = { TextButton(onClick = { cleanupReview = null }) { Text("Cancel") } },
         )
     }
     error?.let { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }

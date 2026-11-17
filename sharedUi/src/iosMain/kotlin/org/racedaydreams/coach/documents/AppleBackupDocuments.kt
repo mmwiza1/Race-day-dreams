@@ -6,6 +6,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.storage.BackupArchiveSource
 import org.racedaydreams.storage.BackupEnvelopeJson
@@ -175,6 +176,17 @@ class AppleBackupDocuments(
 
     suspend fun previewRetention(policy: DetailRetention.Policy) =
         withContext(io) { exports.previewRetention(policy) }
+
+    suspend fun cleanRetention(preview: DetailRetention.Preview, onProgress: (Int) -> Unit) {
+        val approval = withContext(io) { exports.approveRetentionCleanup(preview) }
+        var removed = 0
+        for (recording in approval.preview().recordings()) {
+            yield()
+            val changed =
+                withContext(io) { exports.cleanRecordingDetail(approval, recording.sessionId()) }
+            if (changed) onProgress(++removed)
+        }
+    }
 
     suspend fun recordingInventory() = withContext(io) { exports.recordingInventory() }
 
