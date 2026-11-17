@@ -4574,14 +4574,68 @@ incomplete migration merely because a focused checkpoint passes.
 - Full retention/operation safeguards, common app/root/navigation/state, native services and REAL
   iOS app host still unfinished. No schema/version/format change, merge or publication.
 
+### Checkpoint102 — shared inventory and non-destructive retention policy workflow
+
+- 10139a58c807dce7d3a1c32a2e8c0cbe015b7721dc2 COMMITTED/PUSHED. Experiment44020784624 and
+  format44020784727 BOTH SUCCESS. Android133829507771 has535matched unique START/END tests,
+  including the actual original cleanup/end-bound regression;700,189checks/48suites, build/lint /
+  schema75 PASS. Digest-verified JVM14301058867:490domain+16health+564storage; Apple14300974176:
+  449domain+18health+564storage; ALL0failure/error/skip. ALL132 IO/SQL/restore names match.
+  Proofs scratch/retention-39a-{jvm,native}/verification.json, native/all-case-proof.json and
+  scratch/retention-39a-android-job.log. This does NOT verify102's new services.
+- 101 private APK14301472930 ZIP30710655bytes SHA256
+  3cb108f2192df94472c73e50dd48b90e39e4cae0a8914e4a6aaa9f97a04bae6c; APK58270987bytes SHA256
+  1db000e4d2495c391dea9451e0a709587f88fa34cab9ee8fbbeea2fcafc5a4ed. Code19/version0.12.3-test1 /
+  min28/noINTERNET, scratch/retention-39a-apk/verification.json. Framework14300949202 is NOT APP.
+- New SqliteRecordingInventory ports the original read-only normalized-stream inventory, without
+  decoding route/summary payloads or recalculating evidence. Pre-join point/event aggregates avoid
+  cross-products; fixed query count, bounded100k headers/32MiB metadata and explicit overflow checks.
+  SQL UTF8 payload bytes are distinct from optional approximate physical DB/WAL/SHM observation.
+  Missing physical data stays null, never false zero/reclaimed-space claims. Old inline activity
+  samples are retained and never eligible for removal through this normalized-stream boundary.
+- Original indexed end_millis +1ms remains an ELIGIBILITY upper bound, not an actual end timestamp.
+  Integer quotient/remainder preserves negative milliseconds and Long.MIN/MAX without overflow /
+  Double rounding. Internal single-session recheck matches the same inventory projection. Unknown
+  source/end/recovery states remain ineligible or explicitly fail, never assumed safe/finished.
+- Eight new common real SQLite inventory cases +Apple/JDBC wrappers cover aggregate counts/UTF8,
+  unknowns/active/paused/recovery, full Long bounds, fixed scoped read-only queries, physical unknown /
+  failure, header/metadata allocation budgets, overflow and future states. First run caught NEW
+  negative-time fixture violating existing end>=start CHECK; fixed valid start, never disabled FK /
+  CHECK/assertions. Eight +metadata +Android compilation PASS2m34s/64tasks. Intermediate572storage /
+  metadata/Android PASS57s/64tasks in scratch/kmp-recording-inventory-{focused,android-focused,final}.log.
+- Added actual Android original-inventory comparison, reusing the production recording fixture:
+  shared records/counts/clocks/source/logical bytes equal SqliteRecordingInventoryRepository output;
+  no SQL mutation and unknown physical observation stays unknown. Expected536 targeted tests on new
+  head; that NEW runtime case is not yet verified. Prior535 is101 only.
+- New SqliteRetentionPolicy ports informed acknowledgement, read-only consequence preview and
+  domain approval over one SQLite snapshot. Required real replacement-state callback, original
+  policy/clock/deadline/recovery/epoch rules; fresh choice IDs invalidate old decision identity.
+  Existing users may preview but cannot approve until acknowledgement. KEEP_FOREVER never approves
+  deletion. Current backup13 records retain exact chosen time/policy/choice ID; no new JSON bucket.
+- Eight real common policy cases +Apple/JDBC wrappers: grandfathering/all3choices/current backup,
+  duplicate/invalid IDs before writes,24h/backwards-clock/restored epoch, all recovery/replacement
+  guards, snapshot scope, failed SQL write and caller rollback. NO CLEANUP COMMAND EXISTS in this
+  public policy service; approval alone cannot delete evidence. Full operation serialization and
+  bounded deletion kernel are still required before exposing native destructive UI.
+- Focused16 inventory/policy +metadata +Android compilation PASS3m48s/64tasks. FINAL580storage JVM /
+  0failure/error/skip +metadata +Android test compilation PASS4m36s/64tasks after final metadata-byte
+  budget; scratch/kmp-{retention-policy-focused,inventory-policy-final}.log. Pinned890sources
+  (795Kotlin95Java), exact schema19, schema75 and source3 PASS; scratch/kmp-inventory-policy-
+  {format,schema}.log. This source/handoff are committed together; resolve actual HEAD and push
+  ONCE if needed. New Native580/16cases +Android536 are pending. Expected IO/SQL proof148names.
+- No schema19/root13/raw3/package1/version/code/dependency/permission change. Native destructive
+  UI OFF. Full operation/pruning safeguards and actual common app/root/native services/iOS APP
+  remain required. No merge, public publication or actual-device acceptance claim.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint101 above is latest recovery boundary;100179fcc8 is fully green/byte-verified.
-   Current101 end-bound correction is committed with this handoff; local564/meta/Android compile
-   PASS1m2s/64tasks +format882/schema75/source3 PASS. Push ONCE if needed (inspect actual upstream),
-   update DRAFT24, verify fresh Native564/new535Android before claiming runtime success. Continue
-   original inventory/retention consent/preview/operation protections on SAME DB and real common
-   app/native services/iOS host. Native destructive UI OFF; no early merge/version/publication.
+1. Checkpoint102 above is latest recovery boundary;10139a58c8 is fully green/byte-verified.
+   Current102 source and this handoff are committed together; local580/meta/Android compilation
+   PASS4m36s/64tasks +format890/schema75/source3 PASS. Push ONCE if needed (inspect upstream),
+   update DRAFT24 and verify actual Native/JVM580,148IO/SQL names, new536Android before claiming
+   runtime success. Native destructive UI OFF until full operation and bounded pruning safeguards.
+   Continue actual common app/navigation/state/native services/real iOS host and final gates.
+   No reset/restart, premature version bump, merge or public publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

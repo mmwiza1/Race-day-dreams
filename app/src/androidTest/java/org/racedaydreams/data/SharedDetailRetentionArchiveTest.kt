@@ -260,23 +260,8 @@ class SharedDetailRetentionArchiveTest {
     @Test
     fun actualOriginalCleanupUpperBoundRemainsReadableBySharedArchiveInspection() {
         val id = "original-cleanup-bound"
-        val engine = org.racedaydreams.domain.recording.RunMetricsEngine(0, at)
-        for (i in 0..60) engine.accept(
-            org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
-                at.plusSeconds(i.toLong()),
-                i * 1000L,
-                51.5,
-                -.12 + i * .00003,
-                3.0,
-                null,
-                null,
-                3.0,
-            )
-        )
+        val actualId = recordOriginal(id)
         val store = RecordingStore(context)
-        store.start(id, at, 0)
-        store.appendBatch(id, engine.points(), engine.events(), 0, 0, 60000, "ACTIVE")
-        val actualId = store.finish(requireNotNull(store.unfinished()), null, "rdd", false)
         val summary = FeatureStore(context).activities().single { it.id() == actualId }
         val before =
             bridge.query(
@@ -317,6 +302,48 @@ class SharedDetailRetentionArchiveTest {
             ),
         )
         assertTrue(store.points(id).isEmpty())
+    }
+
+    private fun recordOriginal(id: String): String {
+        val engine = org.racedaydreams.domain.recording.RunMetricsEngine(0, at)
+        for (i in 0..60) engine.accept(
+            org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
+                at.plusSeconds(i.toLong()),
+                i * 1000L,
+                51.5,
+                -.12 + i * .00003,
+                3.0,
+                null,
+                null,
+                3.0,
+            )
+        )
+        val store = RecordingStore(context)
+        store.start(id, at, 0)
+        store.appendBatch(id, engine.points(), engine.events(), 0, 0, 60000, "ACTIVE")
+        return store.finish(requireNotNull(store.unfinished()), null, "rdd", false)
+    }
+
+    @Test
+    fun sharedInventoryMatchesActualOriginalSqlCountsClocksAndSourceWithoutLoadingRoutes() {
+        recordOriginal("original-inventory")
+        val before = bridge.query("SELECT total_changes()")
+        val original = SqliteRecordingInventoryRepository(context).inspect()
+        val shared =
+            SqliteRecordingInventory(bridge) { original.usage().databaseFileBytes() }.inspect()
+        assertEquals(original.recordings(), shared.recordings)
+        assertEquals(original.unfinishedRecording(), shared.unfinishedRecording)
+        assertEquals(original.usage().pointRows(), shared.usage.pointRows)
+        assertEquals(original.usage().eventRows(), shared.usage.eventRows)
+        assertEquals(original.usage().detailPayloadBytes(), shared.usage.detailPayloadBytes)
+        assertEquals(original.usage().activityRows(), shared.usage.activityRows)
+        assertEquals(original.usage().activityPayloadBytes(), shared.usage.activityPayloadBytes)
+        assertEquals(
+            original.usage().databaseFileBytes(),
+            requireNotNull(shared.usage.databaseFileBytes),
+        )
+        assertNull(SqliteRecordingInventory(bridge).inspect().usage.databaseFileBytes)
+        assertEquals(before, bridge.query("SELECT total_changes()"))
     }
 
     private fun retainReceipt(): RemovedRecordingDetail {
