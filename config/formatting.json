@@ -307,6 +307,7 @@
     "app/src/androidTest/java/org/racedaydreams/coach/SharedAchievementsCoordinatorTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedStrengthProgrammeCoordinatorTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedStrengthGenerationCoordinatorTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/SharedTrainingRecoveryCoordinatorTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedTrainingRecoveryCoordinatorTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedBodyMeasurementsCoordinatorTest.kt"
   ]
 }
