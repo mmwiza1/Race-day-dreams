@@ -62,26 +62,32 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November
+### Latest recovery pointer — 17 November, shared Home checkpoint128
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Working branch preserved with126
-sourcee9a393b +recoverya172b90/8a2935c backed up on checkpoint/android-ios-kmp-compose-126.
-Remote PR branch remains61e038d7daa8fec5e2a1fb4e4bd51c4f5d68817a;125experiment44106763790 is
-NOW SUCCESS on BOTH jobs:610Android/700189domain, Native449/27/648 independently verified;
-framework linked. No longer wait for that completed run. Main85e1c39/owner PR23 unchanged.
-LOCAL127 Apple Health integration is COMPLETE/locally verified: SqliteHealthKitBodyImport,
-shared/native AppleHealthGateway, height reader reuse,7JDBC/Apple contracts and3Android gateway
-cases/targets. Preserve these files; no scripts need reapplication. Initial six-contract storage
-JVM654 +metadata/debug+testAPK/lint PASS8m36s; final7-contract/selection-aware shared gateway
-build PASS9m38s/180tasks, scratch/kmp-apple-health-gateway-final.log: JVM655ALL0fail/error/skip,
-metadata/debug+testAPK/lint. Format960(865Kotlin/95Java), schema19/source3 PASS. New Native655 /
-Android616 (610+root3+gateway3) acceptance still pending.126local root APKs/lint7m14s/format953 PASS.
-When final127 local checks pass, commit +push126/127/recovery ONCE to ORIGINAL PR24 branch, then
-verify actual new Native/framework/runtime results. Delete our recovery branch only AFTER that
-PR branch contains all its commits. Normal Git works; stale shell gh API401 -> use connector.
-No schema/backup/version/permission change, early merge or publication. Actual iOS app host,
-active shared UI/navigation/full platform effects and final gates still unfinished. Native
-restore/prune UI remains OFF until EVERY operation uses one actual lifecycle owner.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Local126 root/recovery and127
+Apple Health integration commits are preserved, latest committed127=`aba505d`. Current128
+uncommitted work shares the ACTUAL Home and first-run choices, without redesign or new defaults.
+New SharedHomeScreen/SharedStartingPath +thin Android bindings +5UI cases are applied; do not
+reapply scratch scripts. Original Android routes, formatters, Strength Today content and
+success-only focus routing remain. Common date ordering uses epoch days (LocalDate expect is
+not Comparable; do NOT widen its ABI). First compile found that JVM-only sort and it is fixed.
+Corrected metadata/debugAPK/testAPK/lint PASS6m44s/176tasks in
+`/workspace/scratch/kmp-home-start-corrected-final.log`. No assertion/primitive ABI changes.
+Formatter964(869Kotlin/95Java), exact schema19/source3 PASS.127 final local metadata/APKs/lint
+and JVM6550fail/error/skip PASS9m38s/180tasks. Expected combined621Android/655Native remain
+PENDING runtime; no new Native pass claimed. Native AppleHealthGateway must compile in CI.
+
+Remote PR branch remains61e038d;125experiment44106763790 SUCCESS on BOTH jobs,610Android/
+700189domain, Native449/27/648 independently digest-verified; framework linked. Main85e1c39
+unchanged. Do not wait for125again. After corrected128 local checks, commit128+handoff and
+normal push ONCE to ORIGINAL PR24 branch, then inspect actual new CI. Delete temporary recovery
+branch checkpoint/android-ios-kmp-compose-126 only AFTER original PR branch contains its commits.
+Git transport works; use GitHub connector instead of expired shell gh API credential.
+Next coherent batch is actual running-plan UI sharing with original week navigation, domain
+calendar states and explicit rebuild confirmation; then finish actual iOS host/services and
+remaining active UI/navigation. No empty host/prototype or domain/storage restart. No version/
+schema/backup/permission change or premature merge/publication. Native destructive UI remains
+OFF until EVERY real operation uses one actual lifecycle owner. Hardware acceptance unperformed.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5690,19 +5696,34 @@ restore/prune UI remains OFF until EVERY operation uses one actual lifecycle own
   Framework14342368146 linked, metadata62140355bytes/SHAe1157be705d1e5888a2dd3f937918333fc921cffdcdf6f4a94f6aef4c370478c.
   This is prior-source proof, not new127655/616 acceptance. No further wait/cancellation needed.
 
+### Checkpoint128 — existing Home and primary-focus UI are shared
+
+- SharedHomeScreen contains the actual original Today hierarchy and navigation, with required
+  real platform date/unit/pace/route-encoding bindings and actual existing Strength Today content.
+  Android Home uses its same formatters and route callbacks; no recording/service ownership moves.
+  SharedStartingPath retains all four original choices; Android still saves focus/path and routes
+  only after the original successful operation. No fake default callbacks were added to common UI.
+- Five new UI cases cover original target/encoded route vs actual evidence, completed runs and
+  independent recording at dark200%, Strength-only no-race Home, all first-run choices/no implicit
+  action and dark200% choice accessibility. Registered alongside every retained focused test.
+- FINAL common metadata/debugAPK/testAPK/lint PASS6m44s/176tasks,
+  scratch/kmp-home-start-corrected-final.log. Formatter964(869Kotlin/95Java), exact schema19/source3
+  PASS. Initial JVM-only date comparison compile error fixed by epoch-day sort with identical ISO
+  ordering; no broadened expect ABI, changed training values or weakened assertion. Runtime/Native
+  and authentic source-bound visual acceptance remain pending; expected621Android/655Native.
+
 ### Exact next safe actions and remaining full scope
 
-1.127local final gate PASS9m38s/180tasks: JVM6550fail/error/skip, metadata/debug+testAPK/lint;
-   format960/schema/source PASS. Preserve/commit127+handoff and126backed-up root. Next scoped
-   batch shares ACTUAL existing Home +first-run focus Compose UI with required platform formatting/
-   navigation actions, no redesign. Prior125 BOTH jobs finished; do NOT wait again. After coherent
-   local UI gate, normal push ONCE: git push origin experiment/android-ios-kmp-compose
-   Verify next616Android/655Native/framework on actual head, especially new root3/gateway3 and
-   Apple7 SQL contracts/thin Native SDK facade. Remove our temporary recovery ref only AFTER
-   PR branch contains those commits. Keep DRAFT24; no version bump/merge/public release.
-   Then actual iOS application host +active shared UI/navigation/SDK services USING the common
-   root and real AppleHealthGateway. No empty host/prototype or domain/storage-kernel restart.
-   Native destructive UI stays OFF until one real data-lifecycle owner covers every operation.
+1.128local gate PASSED, preserve/commit with127aba505d and126root/recovery. Next coherent batch
+   shares ACTUAL running-plan UI, required platform date/routine effects and original explicit
+   rebuild/decision actions. Focused local gate, then push combined checkpoint ONCE to ORIGINAL
+   PR24 branch.125 BOTH jobs already finished; do NOT wait again. Verify actual current-head
+   Android/Native/framework especially new root3/gateway3/Home3/first-run2 and seven Apple SQL
+   contracts/thin SDK facade. Delete temporary recovery branch only AFTER original branch contains
+   its commits. Keep DRAFT24; no version bump/merge/public release. Then actual iOS application
+   host +active shared UI/navigation/SDK services USING common root and real AppleHealthGateway.
+   No empty host/prototype or domain/storage-kernel restart. Native destructive UI stays OFF until
+   one real data-lifecycle owner covers every operation.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

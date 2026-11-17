@@ -299,6 +299,8 @@
     "app/src/androidTest/java/org/racedaydreams/coach/SharedHealthCoordinatorTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedSettingsCoordinatorTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedCoachApplicationServicesTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/SharedAppleHealthGatewayTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedAppleHealthGatewayTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedHomeScreenTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedStartingPathTest.kt"
   ]
 }
