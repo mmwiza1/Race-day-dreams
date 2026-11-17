@@ -469,4 +469,59 @@ class SharedDetailRetentionArchiveTest {
         assertEquals(original.toString(), SqliteDetailRetentionRepository.exportData(db).toString())
         assertEquals(summaries, SqliteActivities(bridge) { at }.activitySummaries())
     }
+
+    @Test
+    fun actualAndroidEscapedPayloadsRoundTripThroughSharedAndOriginalArchiveReadersWithoutChangingHashes() {
+        recordOriginal("escaped-native")
+        val arguments = listOf(SqlValue.Text("escaped-native"))
+        for (table in listOf("recording_points", "recording_events")) {
+            val first =
+                bridge
+                    .query(
+                        "SELECT sequence,payload FROM $table WHERE session_id=? ORDER BY sequence LIMIT 1",
+                        arguments,
+                    )
+                    .firstOrNull() ?: continue
+            val changed =
+                JSONObject(first[1].let { (it as SqlValue.Text).value })
+                    .put("diagnostic", "Bridge / tunnel · café")
+                    .put("nested", JSONObject().put("payload", "A different field / not the row"))
+                    .toString()
+            bridge.execute(
+                "UPDATE $table SET payload=? WHERE session_id=? AND sequence=?",
+                listOf(SqlValue.Text(changed), SqlValue.Text("escaped-native"), first[0]),
+            )
+        }
+        fun rows() =
+            listOf("recording_points", "recording_events").map { table ->
+                bridge.query(
+                    "SELECT sequence,payload FROM $table WHERE session_id=? ORDER BY sequence",
+                    arguments,
+                )
+            }
+        val before = rows()
+        val oldZip = ByteArrayOutputStream()
+        RecordingArchive(context).exportTo(oldZip)
+        var epoch = 0
+        val lifecycle =
+            SqliteDataLifecycle(
+                bridge,
+                context.cacheDir.absolutePath,
+                { "escaped-roundtrip-${++epoch}" },
+                { "unused-choice" },
+            )
+        lifecycle.restoreRecordingArchive(sharedBackupZipSource(oldZip.toByteArray()))
+        assertEquals(before, rows())
+        val sharedZip = ByteArrayOutputStream()
+        lifecycle.withRecordingArchive { source ->
+            var offset = 0L
+            while (offset < source.size) {
+                val bytes = source.read(offset, minOf(32768L, source.size - offset).toInt())
+                sharedZip.write(bytes)
+                offset += bytes.size
+            }
+        }
+        RecordingArchive(context).restoreFrom(ByteArrayInputStream(sharedZip.toByteArray()))
+        assertEquals(before, rows())
+    }
 }

@@ -147,29 +147,28 @@ class SharedCoachShellTest {
                 "progress" to R.drawable.ic_nav_progress,
                 "strength" to R.drawable.ic_nav_strength,
             )
+        val currentRoute = mutableStateOf("home")
+        val showShared = mutableStateOf(false)
         compose.setContent {
             RaceDayTheme(dynamicColour = false) {
                 Surface {
-                    Column {
-                        originals.forEach { (route, drawable) ->
-                            Row {
-                                Box(Modifier.testTag("shared-$route")) {
-                                    CoachDestinationIcon(route)
-                                }
-                                Icon(
-                                    painterResource(drawable),
-                                    null,
-                                    Modifier.testTag("original-$route"),
-                                )
-                            }
-                        }
+                    // Capture at IDENTICAL device coordinates. Side-by-side comparisons give
+                    // different GPU antialias rounding at translated viewport edges.
+                    Box(Modifier.testTag("navigation-icon")) {
+                        if (showShared.value) CoachDestinationIcon(currentRoute.value)
+                        else Icon(painterResource(originals.getValue(currentRoute.value)), null)
                     }
                 }
             }
         }
         originals.keys.forEach { route ->
-            val shared = compose.onNodeWithTag("shared-$route").captureToImage().toPixelMap()
-            val original = compose.onNodeWithTag("original-$route").captureToImage().toPixelMap()
+            compose.runOnIdle {
+                currentRoute.value = route
+                showShared.value = false
+            }
+            val original = compose.onNodeWithTag("navigation-icon").captureToImage().toPixelMap()
+            compose.runOnIdle { showShared.value = true }
+            val shared = compose.onNodeWithTag("navigation-icon").captureToImage().toPixelMap()
             assertEquals(original.width, shared.width)
             assertEquals(original.height, shared.height)
             for (x in 0 until original.width) for (y in 0 until original.height) {

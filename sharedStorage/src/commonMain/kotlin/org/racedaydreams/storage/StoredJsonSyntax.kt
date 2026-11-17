@@ -12,6 +12,15 @@ internal class StoredJsonSyntax(
 ) {
     private var at = 0
     private var tokens = 0
+    private var captureField: String? = null
+    private var capturedValue: String? = null
+
+    /** Retain the exact value spelling after full strict validation, never JSON reserialization. */
+    fun validatedRootField(name: String): String? {
+        captureField = name
+        validate()
+        return capturedValue
+    }
 
     fun validate() {
         whitespace()
@@ -41,7 +50,11 @@ internal class StoredJsonSyntax(
                     if (!keys.add(key)) invalid("duplicate field")
                     whitespace()
                     if (!take(':')) invalid("object separator")
+                    whitespace()
+                    val valueStart = at
                     item(depth + 1)
+                    if (depth == 0 && key == captureField)
+                        capturedValue = input.substring(valueStart, at)
                     whitespace()
                     if (take('}')) return
                 } while (take(','))

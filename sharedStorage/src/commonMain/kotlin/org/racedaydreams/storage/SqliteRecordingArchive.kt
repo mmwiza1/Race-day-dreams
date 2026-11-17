@@ -31,8 +31,7 @@ class SqliteRecordingArchive(private val database: SqlDatabase) {
                         ) {
                             "Unsupported recording headers; nothing was truncated."
                         }
-                        fun row(value: JsonObject) {
-                            val text = value.toString()
+                        fun writeRow(text: String) {
                             graph.acceptLine(text)
                             val bytes =
                                 (text + "\n").encodeToByteArray(throwOnInvalidSequence = true)
@@ -43,6 +42,24 @@ class SqliteRecordingArchive(private val database: SqlDatabase) {
                                     minOf(bytes.size, at + BackupStagingFile.BLOCK_BYTES),
                                 )
                             )
+                        }
+                        fun row(value: JsonObject) = writeRow(value.toString())
+                        fun rawSample(kind: String, id: String, sequence: Long, text: String) {
+                            // The original proof hashes stored bytes. Do not rewrite escapes,
+                            // numeric spellings or interior spacing by serializing parsed JSON.
+                            // JSONL cannot represent literal line breaks or outside-value spaces
+                            // without losing those bytes; fail closed rather than export a lie.
+                            require(text == text.trim() && '\n' !in text && '\r' !in text) {
+                                "Recording payload cannot be preserved in one archive line; existing data retained."
+                            }
+                            val header =
+                                buildJsonObject {
+                                        put("kind", kind)
+                                        put("id", id)
+                                        put("seq", sequence)
+                                    }
+                                    .toString()
+                            writeRow(header.dropLast(1) + ",\"payload\":" + text + "}")
                         }
                         var after: String? = null
                         while (true) {
@@ -88,10 +105,10 @@ class SqliteRecordingArchive(private val database: SqlDatabase) {
                                     )
                                     ?.let { payload("context", it) }
                                 denseRows("recording_points", id) { sequence, value ->
-                                    payload("point", value, sequence)
+                                    rawSample("point", id, sequence, value)
                                 }
                                 denseRows("recording_events", id) { sequence, value ->
-                                    payload("event", value, sequence)
+                                    rawSample("event", id, sequence, value)
                                 }
                                 session[5].nullableSqlText()?.let { activity ->
                                     singlePayload(
@@ -186,7 +203,7 @@ class SqliteRecordingArchive(private val database: SqlDatabase) {
         return payload(text)
     }
 
-    private fun denseRows(table: String, session: String, consume: (Long, JsonObject) -> Unit) {
+    private fun denseRows(table: String, session: String, consume: (Long, String) -> Unit) {
         var after: Long? = null
         while (true) {
             val arguments = mutableListOf<SqlValue>(SqlValue.Text(session))
@@ -222,7 +239,9 @@ class SqliteRecordingArchive(private val database: SqlDatabase) {
                 require(values.size == batch.size) { "Incomplete recording snapshot." }
                 for (row in batch) {
                     val sequence = row[0].sqlLong()
-                    consume(sequence, payload(values.getValue(sequence)))
+                    val text = values.getValue(sequence)
+                    payload(text) // Retain the existing independent syntax/size/object guards.
+                    consume(sequence, text)
                 }
                 first = end
             }

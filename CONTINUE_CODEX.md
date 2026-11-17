@@ -4746,16 +4746,70 @@ incomplete migration merely because a focused checkpoint passes.
   Preserve remaining original archived-payload/receipt byte safeguards; do not normalize old hashes.
   No early merge/publication; complete final app/runtime/accessibility/matrix gates only when ready.
 
+### Checkpoint106 — exact archived sample bytes and deterministic icon comparison
+
+- SAME experiment branch / DRAFT PR24. Resolve actual HEAD/upstream; source+handoff committed
+  together and push ONCE if ahead. No reset, format/version/schema change, merge or publication.
+- Checkpoint105df52ab24b8f5602507a0f29b874e10df6bbfc581: experiment44038551289 completed
+  FAILURE only in new Android icon pixel test; formatting44038551313 SUCCESS. Apple133887248589
+  SUCCESS, real shared shell/framework compiled. Downloaded/digest-verified Native14307969295 /
+  ZIP169758 / SHA ee8807853c60a0071d44c73336ba0fce81b2452e0c5a89cb3b18ef5debe78489 has449domain /
+  18health /610storage; JVM14309590097 /ZIP179233 /SHA5e8112d4347e8fa091ea9ffce99ad31c86a33b85a6874282c5968037f53eb0e4
+  has490/16/610, ALL0failure/error/skip. All178IO/SQL/guard/lifecycle case names match. Proofs
+  scratch/composition-df52-{jvm,native}/verification.json and native/all-case-proof.json.
+- Actual Android133887248359:543 matching START/END,542pass/ONEfailure, no skipped tests. Four
+  shell navigation/light/dark200%/rail tests and both original graph tests PASS. Icon comparison
+  failed at home pixel20,5: red248 versus247 (green/blue/alpha unchanged), at DIFFERENT device
+  coordinates despite exact same source paths. Fixture now captures original/shared sequentially
+  at IDENTICAL bounds to remove translated GPU antialias rounding from the comparison. All5icons
+  still require EXACT every-pixel equality, no tolerance, deleted assertion, sleep or blind rerun.
+  Actual runtime proof of this correction is PENDING. Log scratch/composition-df52-android-job.log.
+  No df52 APK published/generated as verified; prior e502 privateAPK remains last byte-checked.
+- Demonstrated NEW archive defect before fixing: valid stored point/event payload with original
+  escaping/interior whitespace rejected its OWN exported archive at SqliteRecordingArchiveRestore
+  old==payload.toString(), with original receipt hashes intact. One focused test FAILED at that
+  exact conflict, scratch/kmp-archive-escape-confirmed-failure.log. Cause is JSON reserialization,
+  not GPS/filtering/coordinates/summary arithmetic. No historical hash normalization is allowed.
+- Export now embeds validated point/event object text VERBATIM in existing raw3 JSONL. Restore
+  uses a bounded exact root-field span from the EXISTING strict scanner, preserving original
+  escapes, numeric spelling and interior spacing. Entire document must validate before returning
+  that value; duplicate/escaped duplicate names, malformed suffixes and original depth/token /
+  string budgets remain enforced. Nested payload names cannot shadow the row's root payload.
+- JSONL cannot preserve literal CR/LF or outside-value whitespace in a stored source object;
+  export now rejects those safely instead of producing misleading proof-incompatible detail.
+  Original rows remain unchanged. No extra wire fields, version bump, route recalculation or
+  weakened receipt check. Already incompatible legacy archives still fail honestly; missing bytes
+  are never invented. Native destructive UI remains OFF.
+- TWO new real SQL cleanup/archive cases: unchanged retry then exact receipt rehydration with
+  unknown/nested escaped fields; unrepresentable source rejects export without any DB changes.
+  FOUR scanner cases verify exact spans, escaped root names, suffix/duplicate validation and
+  existing allocation budgets. ONE new Android test exercises ACTUAL original JSONObject-built
+  raw payloads (slashes/non-ASCII/nested names) through old→shared and shared→old archive readers,
+  preserving exact SQL evidence. This Android case remains PENDING runtime verification.
+- Local corrected repro PASS1m11s. Focused66cleanup/restore/complete/lifecycle/scanner tests +common
+  metadata +Android test compilation PASS3m49s/64tasks, scratch/kmp-archive-bytes-focused.log.
+  FINAL616storage JVM,0failure/error/skip +metadata PASS1m25s/13tasks, kmp-archive-bytes-final.log.
+  Icon fixture Android test compilation PASS54s/55tasks, kmp-icon-fixture-compile.log. Pinned908
+  sources(813Kotlin/95Java), exact schema1..19 and source3 PASS; schema75 passed unchanged earlier
+  this batch. New exact-head Native616 /184IO/SQL/lifecycle/scanner names /Android544 are PENDING.
+- Next verify those exact-head gates, diagnose any real icon/old-reader failure, then continue
+  actual application state/root/platform bindings and iOS host. CoachUiState currently references
+  three Android store DTOs, HealthAvailability and JVM ReminderPreferences/ZoneId defaults; reuse
+  existing shared projection/ReminderSettings types when migrating, do not fork a second app state
+  or engine. Platform IO/kernel adapters are not a complete iOS application. All physical checks
+  remain unperformed. No premature release/final screenshot claim.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint105 above is latest source recovery boundary;103e502e74 is fully green/byte-verified.
-   Local104 storage610/meta/Android compilation and105 shell/meta/test compilation/format907 /
-   schema75/source3 PASS. Push ONCE if ahead (inspect actual upstream), update DRAFT24; inspect
-   exact-head workflow Native610,178 IO/SQL/guard/lifecycle names and Android543 runtime including
-   exact original-icon pixels and graph contracts. No final runtime pass claimed yet for105.
-   Native destructive UI OFF until ONE real app owner wraps ALL operation paths. Continue actual
-   common app/navigation/state/native services/iOS host and final full gates. No reset/restart,
-   early version bump, merge or public publication.
+1. Checkpoint106 is latest recovery boundary. Inspect actual branch/status/HEAD/upstream; push ONCE
+   if ahead and update DRAFT24.105df52 Native610/JVM610 are byte-verified; Android542/543 with ONLY
+   pixel fixture failure, now corrected locally but runtime PENDING. New archive-byte regression
+   was reproduced/fixed; local616storage/meta,66focused+Android compilation, icon compile54s,
+   format908/schema75/source3 PASS. Expected next Native616,184matching IO/SQL/lifecycle/scanner
+   names and Android544 (adds actual old/shared escaped-archive interop case). Verify all before
+   claiming success; inspect/fix any real failure, no assertion weakening or blind rerun. Then
+   continue real common app/root/state/platform services/iOS host. Native destructive UI OFF;
+   no reset/restart, early version bump, merge or public publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

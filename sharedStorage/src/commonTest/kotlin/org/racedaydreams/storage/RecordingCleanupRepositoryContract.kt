@@ -530,4 +530,68 @@ abstract class RecordingCleanupRepositoryContract {
             assertTrue(SqliteRecordingDetailCleanup(watched, op).cleanOne(approval, "run", now))
             assertFalse(op.inside)
         }
+
+    @Test
+    fun originalEscapesAndInteriorSpacingSurviveArchiveRetryAndReceiptRehydrationByteForByte() =
+        storage { db, op ->
+            for (table in listOf("recording_points", "recording_events")) {
+                val original =
+                    db.query("SELECT payload FROM $table WHERE session_id='run' AND sequence=0")
+                        .single()
+                        .single()
+                        .sqlText()
+                val special =
+                    original.dropLast(1) +
+                        ", \"annotation\":\"tunnel \\/ caf\\u00e9\", \"nested\":{ \"payload\":\"not the row\" }}"
+                db.execute(
+                    "UPDATE $table SET payload=? WHERE session_id='run' AND sequence=0",
+                    listOf(SqlValue.Text(special)),
+                )
+            }
+            val before = raw(db)
+            val exported = SqliteRecordingArchive(db).export(directory())
+            val inspected =
+                try {
+                    InspectedRecordingArchive.inspect(exported, directory())
+                } finally {
+                    exported.close()
+                }
+            var epoch = 0
+            try {
+                SqliteRecordingArchiveRestore(db) { "escape-restored-${++epoch}" }.merge(inspected)
+                assertEquals(before, raw(db))
+                val approval = approve(db, op)
+                assertTrue(SqliteRecordingDetailCleanup(db, op).cleanOne(approval, "run", now))
+                SqliteRecordingArchiveRestore(db) { "escape-restored-${++epoch}" }.merge(inspected)
+                assertEquals(before, raw(db))
+                assertNull(SqliteRecordingDetailReceipts(db).removal("run"))
+            } finally {
+                inspected.close()
+            }
+        }
+
+    @Test
+    fun unrepresentableRawWhitespaceRejectsExportWithoutChangingOriginalEvidence() =
+        storage { db, _ ->
+            val original =
+                db.query(
+                        "SELECT payload FROM recording_points WHERE session_id='run' AND sequence=0"
+                    )
+                    .single()
+                    .single()
+                    .sqlText()
+            for (text in listOf(original + " ", original.dropLast(1) + ",\n\"unknown\":1}")) {
+                db.execute(
+                    "UPDATE recording_points SET payload=? WHERE session_id='run' AND sequence=0",
+                    listOf(SqlValue.Text(text)),
+                )
+                val before = raw(db)
+                val changes = db.query("SELECT total_changes()")
+                assertFailsWith<IllegalArgumentException> {
+                    SqliteRecordingArchive(db).export(directory())
+                }
+                assertEquals(before, raw(db))
+                assertEquals(changes, db.query("SELECT total_changes()"))
+            }
+        }
 }

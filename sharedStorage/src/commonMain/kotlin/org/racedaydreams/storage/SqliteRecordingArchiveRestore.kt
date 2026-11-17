@@ -146,6 +146,22 @@ internal class SqliteRecordingArchiveRestore(
                             val table =
                                 if (kind == "point") "recording_points" else "recording_events"
                             val sequence = row.exactLong("seq")
+                            val originalPayload =
+                                requireNotNull(
+                                    StoredJsonSyntax(
+                                            line.removePrefix("\uFEFF"),
+                                            32,
+                                            2000000,
+                                            RecordingArchiveRows.MAX_LINE,
+                                        ) {
+                                            throw IllegalArgumentException(
+                                                "Invalid recording row: $it"
+                                            )
+                                        }
+                                        .validatedRootField("payload")
+                                ) {
+                                    "Missing recording sample payload."
+                                }
                             val arguments = listOf(SqlValue.Text(id), SqlValue.Integer(sequence))
                             if (id in skipped) {
                                 val metadata =
@@ -171,13 +187,13 @@ internal class SqliteRecordingArchiveRestore(
                                         .sqlText()
                                 // Preserve existing bytes; do not reinterpret JSON to hide a
                                 // mismatch.
-                                require(old == payload.toString()) {
+                                require(old == originalPayload) {
                                     "Existing recorded sample conflicts with the archive."
                                 }
                             } else
                                 database.execute(
                                     "INSERT INTO $table VALUES(?,?,?)",
-                                    arguments + SqlValue.Text(payload.toString()),
+                                    arguments + SqlValue.Text(originalPayload),
                                 )
                         }
                         "activity" -> {
