@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 168 spoken Live Coach cues
+
+PR #24 remains at 25adcc6. Both platform jobs in experiment 44195464653
+were running at the last check. Local checkpoints 167 and 168 are queued.
+
+168 adds optional on-device speech for the already-selected coaching cues.
+Athletes opt in before each run. Pause, finish and recorder cancellation
+stop speech, and busy speech does not queue stale cues. Pinned touched-file
+formatting, diff check and all 19 schema boundaries passed. Apple SDK
+compilation and speech behavior remain unverified.
+
+Next inspect 44195464653 for actual compiler or simulator launch failures,
+batch corrections with 167–168, and push once the useful run finishes.
+Continue native recording lifecycle, BLE, remaining navigation and data
+safeguards before full platform verification. PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 167 visual Live Coach cues
 
 PR #24 is at 25adcc6. Experimental run 44195464653 was still running

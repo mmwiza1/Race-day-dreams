@@ -1,9 +1,12 @@
 package org.racedaydreams.coach.application
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -36,6 +39,7 @@ fun AppleRecordingScreen(
     val retained by recorder.recovery.collectAsState()
     val storageError by recorder.error.collectAsState()
     val scope = rememberCoroutineScope()
+    var spokenCues by remember { mutableStateOf(false) }
     var working by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var confirmDiscard by remember { mutableStateOf(false) }
@@ -157,6 +161,10 @@ fun AppleRecordingScreen(
             Text("Allow location access to record your outdoor route.")
             CoachButton("Allow location access") { recorder.requestLocationPermission() }
         } else if (!working) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = spokenCues, onCheckedChange = { spokenCues = it })
+                Text("Speak coaching cues")
+            }
             CoachButton(if (plannedId == null) "Start recording" else "Start planned workout") {
                 command {
                     val planned =
@@ -166,7 +174,7 @@ fun AppleRecordingScreen(
                                 it,
                             )
                         }
-                    recorder.start(planned, imperial)
+                    recorder.start(planned, imperial, spokenCues)
                 }
             }
         }
