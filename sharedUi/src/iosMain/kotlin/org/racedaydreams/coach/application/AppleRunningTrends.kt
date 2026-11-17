@@ -18,7 +18,7 @@ import org.racedaydreams.reminders.KotlinxReminderCalendar
 internal fun AppleRunningTrends(state: CoachUiState, back: () -> Unit) {
     var window by rememberSaveable { mutableIntStateOf(8) }
     var selection by rememberSaveable { mutableStateOf(RunningTrendMetric.DISTANCE.name) }
-    val metric = RunningTrendMetric.valueOf(selection)
+    val metric = RunningTrendMetric.entries.firstOrNull { it.name == selection }
     val today = AppleCalendarDates.today()
     val zone = TimeZone.currentSystemDefault().id
     val weeks =
@@ -29,9 +29,11 @@ internal fun AppleRunningTrends(state: CoachUiState, back: () -> Unit) {
         }
     val points =
         remember(weeks, state.activities, metric, today, zone) {
-            sharedRunningTrendPoints(weeks, state.activities, metric, today) {
-                KotlinxReminderCalendar.at(it, zone).date
-            }
+            if (metric == null) emptyList()
+            else
+                sharedRunningTrendPoints(weeks, state.activities, metric, today) {
+                    KotlinxReminderCalendar.at(it, zone).date
+                }
         }
     val presentation = appleHomePresentation(state)
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
@@ -55,17 +57,40 @@ internal fun AppleRunningTrends(state: CoachUiState, back: () -> Unit) {
                     label = { Text(it.label) },
                 )
             }
+            CoachFilterChip(
+                selected = metric == null,
+                onClick = { selection = "HEART_RATE" },
+                label = { Text("Heart rate") },
+            )
         }
-        SharedWeeklyRunningChart(
-            weeks,
-            points,
-            metric,
-            imperial,
-            presentation.distance,
-            presentation.decimal,
-            presentation.paceSeconds,
-            presentation.shortDate,
-            presentation.friendlyDate,
-        )
+        if (metric == null) {
+            val earliest = requireNotNull(weeks.first().weekStart()).toEpochDay()
+            val latest = today.toEpochDay()
+            val runs =
+                remember(state.activities, earliest, latest, zone) {
+                    state.activities.filter {
+                        KotlinxReminderCalendar.at(it.start(), zone).date.toEpochDay() in
+                            earliest..latest
+                    }
+                }
+            SharedRunningHeartRatePanel(
+                runs,
+                presentation.activityDate,
+                presentation.activityDate,
+                presentation.distance,
+            )
+        } else {
+            SharedWeeklyRunningChart(
+                weeks,
+                points,
+                metric,
+                imperial,
+                presentation.distance,
+                presentation.decimal,
+                presentation.paceSeconds,
+                presentation.shortDate,
+                presentation.friendlyDate,
+            )
+        }
     }
 }

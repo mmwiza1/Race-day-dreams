@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 173 shared heart-rate trends
+
+The draft PR remains at 25adcc6. Experiment 44195464653 has a completed
+Apple compile failure, corrected locally as documented below. The Android
+instrumentation job was still running when this batch began. Inspect the
+live job before pushing the queued changes.
+
+173 shares the existing heart-rate panel across Android and iOS. The new
+iOS Trends metric shows retained averages and maxima for the chosen range
+and preserves explicit missing readings and zone-evidence limits.
+Shared metadata and Android debug Kotlin compilation passed in 1m 59s,
+and pinned formatting, diff and all 19 schema checks passed.
+Log: /workspace/scratch/kmp173-heart-rate-trends.log.
+
+Next push the queued batch once preceding Android instrumentation ends,
+then verify the new Apple compile, app build and simulator startup.
+Continue data-operation safeguards and the remaining platform routes.
+
 ### Latest recovery pointer — Apple compiler corrections
 
 The Apple job in experiment 44195464653 passed Native tests and failed at
