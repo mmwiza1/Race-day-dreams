@@ -61,20 +61,6 @@ data class GymSetDraft(
     val warmUp: Boolean = false,
 )
 
-data class GymSlotInput(
-    val open: Boolean = false,
-    val sets: String = "3",
-    val minimumReps: String = "",
-    val maximumReps: String = "",
-    val seconds: String = "",
-    val metres: String = "",
-    val minimumEffort: String = "",
-    val maximumEffort: String = "",
-    val rir: Boolean = false,
-    val restSeconds: String = "",
-    val referenceKilograms: String = "",
-)
-
 data class GymBuilderDraft(
     val id: String = UUID.randomUUID().toString(),
     val revision: Int = 1,
