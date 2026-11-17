@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 161 strength programmes on iOS
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 Android passed;
+Apple Native tests were still running at the last check. Preserve that run.
+Checkpoints 157–161 are local.
+
+161 mounts the existing manual builder, generated/template drafts and custom
+exercise form from the iOS Gym screen. The coordinators use the same local
+SQLite and existing version/activation safeguards. Private preferences retain
+only the selected draft IDs. Explicit activation refreshes shared coaching
+and Gym Now state. The Apple target text retains exact effort and optional
+reference weights. Strict DD/MM/YYYY input uses the shared calendar validator.
+
+Pinned touched Kotlin formatting, diff check and exact 19-boundary schema
+check passed. Apple-only code awaits macOS compilation. Next inspect
+44189952813, correct any actual build errors and push the coherent batch
+after the previous gate completes. Verify iOS app build/launch. Continue
+Strength Today, exercise browsing, progress, structured recording, remaining
+native services and final Android/iOS verification. Keep PR draft.
+
 ### Latest recovery pointer — checkpoint 160 Gym Now on iOS
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 was still running

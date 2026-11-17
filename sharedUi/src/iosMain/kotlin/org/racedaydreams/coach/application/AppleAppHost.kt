@@ -119,6 +119,7 @@ private enum class ApplePage {
     HISTORY,
     PLAN,
     GYM,
+    PROGRAMMES,
     ACTIVITY,
     SETTINGS,
 }
@@ -179,7 +180,16 @@ private fun AppleAppContent(
                             page = ApplePage.HISTORY
                         },
                     )
-                ApplePage.GYM -> AppleGymScreen(session) { page = ApplePage.START }
+                ApplePage.GYM ->
+                    Column {
+                        TextButton(onClick = { page = ApplePage.PROGRAMMES }) {
+                            Text("Strength programmes")
+                        }
+                        Box(Modifier.weight(1f)) {
+                            AppleGymScreen(session) { page = ApplePage.START }
+                        }
+                    }
+                ApplePage.PROGRAMMES -> AppleStrengthProgrammes(session) { page = ApplePage.GYM }
                 ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it) }
                 ApplePage.START ->
                     if (state.loading) {

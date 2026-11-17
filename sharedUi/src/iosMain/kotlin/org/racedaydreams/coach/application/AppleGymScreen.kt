@@ -53,7 +53,7 @@ internal fun AppleGymScreen(session: AppleCoachSession<*>, back: () -> Unit) {
                         KotlinxReminderCalendar.at(it, TimeZone.currentSystemDefault().id).date
                     )
                 },
-                ::target,
+                ::appleGymTarget,
                 // The shared entry screen provides explicit Back controls on iOS.
                 { _, _ -> },
             )
@@ -64,7 +64,7 @@ internal fun AppleGymScreen(session: AppleCoachSession<*>, back: () -> Unit) {
                 workout,
                 entry,
                 { it.name() },
-                ::target,
+                ::appleGymTarget,
                 ::number,
             )
         GymPage.WORKOUT -> {
@@ -81,7 +81,7 @@ internal fun AppleGymScreen(session: AppleCoachSession<*>, back: () -> Unit) {
                 { PaceCalculator.formatTime(Durations.ofMillis(it)) },
                 ::actual,
                 { it.name() },
-                ::target,
+                ::appleGymTarget,
                 AppleCalendarDates::label,
                 restControls = { _, enabled ->
                     CoachCard {
@@ -185,8 +185,13 @@ internal fun AppleGymScreen(session: AppleCoachSession<*>, back: () -> Unit) {
     }
 }
 
-private fun target(slot: GymWorkoutDefinition.Slot): String =
-    StrengthPrescriptionText.instructions(slot).joinToString(" ")
+internal fun appleGymTarget(slot: GymWorkoutDefinition.Slot): String = buildString {
+    append(StrengthPrescriptionText.instructions(slot).joinToString(" "))
+    slot.target()?.effort()?.let { append(" ").append(StrengthPrescriptionText.effortDetails(it)) }
+    slot.target()?.referenceLoadKg()?.let {
+        append(" Optional reference: ").append(number(it)).append(" kg.")
+    }
+}
 
 private fun actual(set: StrengthSession.SetEntry, exercise: StrengthExercise): String {
     val load =

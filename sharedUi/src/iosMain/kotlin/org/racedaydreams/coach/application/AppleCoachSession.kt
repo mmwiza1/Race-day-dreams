@@ -5,7 +5,7 @@ import kotlinx.datetime.TimeZone
 import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.coach.health.AppleHealthGateway
 import org.racedaydreams.coach.reminders.AppleCoachReminders
-import org.racedaydreams.coach.strength.SharedGymNowCoordinator
+import org.racedaydreams.coach.strength.*
 import org.racedaydreams.domain.time.LocalDate
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
@@ -16,6 +16,7 @@ import org.racedaydreams.reminders.KotlinxReminderCalendar
 import org.racedaydreams.storage.*
 import platform.Foundation.NSThread
 import platform.Foundation.NSUUID
+import platform.Foundation.NSUserDefaults
 
 /** The app owns one database and one scope across navigation and scene changes. */
 class AppleCoachSession<File>
@@ -27,6 +28,8 @@ private constructor(
     val activities: SqliteActivities,
     val recording: AppleRunRecorder,
     val gym: SharedGymNowCoordinator,
+    val authoring: SharedStrengthProgrammeCoordinator,
+    val generation: SharedStrengthGenerationCoordinator,
     val reminders: AppleCoachReminders,
     val platform: AppleCoachPlatform<File>,
     val backupDocuments: AppleBackupDocuments,
@@ -108,6 +111,37 @@ private constructor(
                         PortableLegacyStrengthFingerprint,
                     )
                 val gym = appleGymCoordinator(database, scope, programming, coaching, newId)
+                val defaults = NSUserDefaults.standardUserDefaults
+                val executions =
+                    SqliteGymExecutions(database, now, PortableLegacyStrengthFingerprint)
+                val authoring =
+                    SharedStrengthProgrammeCoordinator(
+                        database,
+                        programming,
+                        coaching,
+                        executions::recentActual,
+                        scope,
+                        { defaults.stringForKey("strength.manual.draft") },
+                        { defaults.setObject(it, "strength.manual.draft") },
+                        now,
+                        today,
+                        newId,
+                    )
+                val generation =
+                    SharedStrengthGenerationCoordinator(
+                        database,
+                        SqliteConcreteStrengthProgrammes(database, now, today),
+                        programming,
+                        coaching,
+                        executions,
+                        executions::recentActual,
+                        scope,
+                        { defaults.stringForKey("strength.concrete.draft") },
+                        { defaults.setObject(it, "strength.concrete.draft") },
+                        now,
+                        today,
+                        newId,
+                    )
                 val services =
                     SharedCoachApplicationServices(
                         database,
@@ -138,6 +172,8 @@ private constructor(
                     activities,
                     recording,
                     gym,
+                    authoring,
+                    generation,
                     reminders,
                     platform,
                     backupDocuments,
