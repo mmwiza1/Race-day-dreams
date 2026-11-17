@@ -4,6 +4,7 @@ import kotlinx.serialization.json.*
 import org.racedaydreams.domain.WorkoutCategory
 import org.racedaydreams.domain.WorkoutSegment
 import org.racedaydreams.domain.coaching.PlanVersion
+import org.racedaydreams.domain.execution.RecordingCueCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.race.RaceStrategyEngine
@@ -35,6 +36,14 @@ class PlannedRecordingExecution(version: PlanVersion, workoutId: String) {
                     )
                 }
         } else WorkoutExecutionEngine.from(workout)
+
+    val raceTarget =
+        if (race)
+            RecordingCueCoordinator.RaceTarget(
+                goal.distance().kilometres() * 1_000,
+                goal.targetTime()?.getSeconds(),
+            )
+        else null
 
     val coordinator = WorkoutExecutionCoordinator(steps)
 

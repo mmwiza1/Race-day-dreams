@@ -29,6 +29,8 @@ fun AppleRecordingScreen(
     val state by session.services.operations.state.collectAsState()
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
     val status by recorder.status.collectAsState()
+    val cue by recorder.cue.collectAsState()
+    val raceContext by recorder.raceContext.collectAsState()
     val workout by recorder.workout.collectAsState()
     val authorized by recorder.permission.collectAsState()
     val retained by recorder.recovery.collectAsState()
@@ -67,8 +69,8 @@ fun AppleRecordingScreen(
             s = live,
             w = workout,
             hr = null,
-            cue = null,
-            race = null,
+            cue = cue,
+            race = raceContext,
             notice = error ?: storageError,
             imperial = imperial,
             send = { action ->
@@ -164,7 +166,7 @@ fun AppleRecordingScreen(
                                 it,
                             )
                         }
-                    recorder.start(planned)
+                    recorder.start(planned, imperial)
                 }
             }
         }

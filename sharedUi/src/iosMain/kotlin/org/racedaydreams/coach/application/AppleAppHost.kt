@@ -370,9 +370,7 @@ private fun AppleAppContent(
                                 }
                             },
                             race = { page = ApplePage.PLAN },
-                            hasRoute = {
-                                it !in setOf("progress/trends", "achievements")
-                            },
+                            hasRoute = { it !in setOf("progress/trends", "achievements") },
                         )
                     }
             }

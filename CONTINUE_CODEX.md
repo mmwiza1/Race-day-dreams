@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 167 visual Live Coach cues
+
+PR #24 is at 25adcc6. Experimental run 44195464653 was still running
+on Android and Apple. The separate formatting job failed on the one-line
+AppleAppHost route predicate. The pinned formatter fixed that locally.
+Preserve the running simulator verification before pushing.
+
+167 connects the shared cue coordinator to iOS live recording. The panel
+shows selected cues and race context, using the chosen distance units.
+Pace events are retained with the recording. Audio and device verification
+remain pending. Pinned touched-file formatting, diff check and all 19
+schema boundaries passed. Native compilation awaits CI. Next inspect run
+44195464653 for actual build or launch failures, batch any corrections and
+push to the existing draft PR. Continue native audio and services and
+the remaining release gates.
+
 ### Latest recovery pointer — checkpoints 157–166 delivered
 
 Experiment 44189952813 at 2172096 finished successfully on both Android

@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.racedaydreams.domain.execution.RecordingCueCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.storage.SqliteRecordingStaging
@@ -26,6 +27,12 @@ class AppleRunRecorder(
     private val nextId: () -> String,
 ) {
     private val commands = Mutex()
+    private var cues = RecordingCueCoordinator()
+    private var miles = false
+    private val mutableCue = MutableStateFlow<String?>(null)
+    val cue = mutableCue.asStateFlow()
+    private val mutableRaceContext = MutableStateFlow<String?>(null)
+    val raceContext = mutableRaceContext.asStateFlow()
     private var execution: PlannedRecordingExecution? = null
     private val mutableWorkout = MutableStateFlow<WorkoutExecutionEngine.State?>(null)
     val workout = mutableWorkout.asStateFlow()
@@ -70,53 +77,56 @@ class AppleRunRecorder(
 
     fun requestLocationPermission() = location.requestPermission()
 
-    suspend fun start(planned: PlannedRecordingExecution? = null) = command {
-        check(session == null) { "A run is already recording." }
-        check(location.canStart()) { "Location permission is required to record a run." }
-        val id = nextId()
-        val wall = AppleRecordingClock.now()
-        val mono = AppleRecordingClock.monotonicMillis()
-        val context = planned?.snapshot()
-        withContext(io) { repository.start(id, wall, mono, context, null) }
-        val active =
-            SharedRecordingSessionCoordinator(
-                RecordingStageSession(id, "ACTIVE", wall, mono, mono),
-                repository,
-                io,
-                { finalTime ?: AppleRecordingClock.monotonicMillis() },
-                { execution?.snapshot() },
-            )
-        execution = planned
-        session = active
-        mutableError.value = null
-        location.start()
-        publish()
-        ticker =
-            scope.launch(Dispatchers.Main.immediate) {
-                try {
-                    while (isActive) {
-                        delay(1_000)
-                        commands.withLock {
-                            if (session !== active || finishing) return@withLock
-                            val time = AppleRecordingClock.monotonicMillis()
-                            active.engine.missingFix(time, AppleRecordingClock.now())
-                            publish()
-                            try {
-                                active.flush()
-                                mutableError.value = null
-                            } catch (error: CancellationException) {
-                                throw error
-                            } catch (_: Exception) {
-                                mutableError.value =
-                                    "Could not save the latest recording details. Retrying."
+    suspend fun start(planned: PlannedRecordingExecution? = null, imperial: Boolean = false) =
+        command {
+            check(session == null) { "A run is already recording." }
+            check(location.canStart()) { "Location permission is required to record a run." }
+            val id = nextId()
+            val wall = AppleRecordingClock.now()
+            val mono = AppleRecordingClock.monotonicMillis()
+            val context = planned?.snapshot()
+            withContext(io) { repository.start(id, wall, mono, context, null) }
+            val active =
+                SharedRecordingSessionCoordinator(
+                    RecordingStageSession(id, "ACTIVE", wall, mono, mono),
+                    repository,
+                    io,
+                    { finalTime ?: AppleRecordingClock.monotonicMillis() },
+                    { execution?.snapshot() },
+                )
+            cues = RecordingCueCoordinator()
+            miles = imperial
+            execution = planned
+            session = active
+            mutableError.value = null
+            location.start()
+            publish()
+            ticker =
+                scope.launch(Dispatchers.Main.immediate) {
+                    try {
+                        while (isActive) {
+                            delay(1_000)
+                            commands.withLock {
+                                if (session !== active || finishing) return@withLock
+                                val time = AppleRecordingClock.monotonicMillis()
+                                active.engine.missingFix(time, AppleRecordingClock.now())
+                                publish()
+                                try {
+                                    active.flush()
+                                    mutableError.value = null
+                                } catch (error: CancellationException) {
+                                    throw error
+                                } catch (_: Exception) {
+                                    mutableError.value =
+                                        "Could not save the latest recording details. Retrying."
+                                }
                             }
                         }
+                    } finally {
+                        if (session === active) location.stop()
                     }
-                } finally {
-                    if (session === active) location.stop()
                 }
-            }
-    }
+        }
 
     /** Call during host startup, before presenting the first recording action. */
     suspend fun restoreInterrupted(): SqliteRecordingStaging.Recovery? = command {
@@ -200,6 +210,8 @@ class AppleRunRecorder(
         session = null
         execution = null
         mutableWorkout.value = null
+        mutableCue.value = null
+        mutableRaceContext.value = null
         finishing = false
         mutableStatus.value = null
         mutableError.value = null
@@ -211,7 +223,9 @@ class AppleRunRecorder(
         val time = AppleRecordingClock.monotonicMillis()
         val status = engine.status(time)
         mutableStatus.value = status
-        execution?.coordinator?.update(status)?.let { update ->
+        val planned = execution
+        val workoutUpdate = planned?.coordinator?.update(status)
+        workoutUpdate?.let { update ->
             mutableWorkout.value = update.state()
             update.newEvents().forEach { event ->
                 engine.sensorEvent(
@@ -222,6 +236,21 @@ class AppleRunRecorder(
                 )
             }
         }
+        if (finishing) return
+        val result =
+            cues.update(
+                status,
+                workoutUpdate,
+                planned?.coordinator?.steps().orEmpty(),
+                planned?.raceTarget,
+                hilly = false,
+                sustainedMillis = 45_000L,
+                miles = miles,
+                announceSplits = true,
+            )
+        mutableRaceContext.value = result.raceContext()
+        result.selected()?.let { mutableCue.value = it.text() }
+        result.paceEvent()?.let { engine.event(it, time, AppleRecordingClock.now()) }
     }
 
     private suspend fun <T> command(action: suspend () -> T): T {
