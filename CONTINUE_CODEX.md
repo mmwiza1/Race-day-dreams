@@ -5013,16 +5013,59 @@ incomplete migration merely because a focused checkpoint passes.
   all-mutation/backup operation owner remain unfinished. Native destructive UI OFF. Full final gates,
   screenshots, physical checks, no early bump/merge/publication remain as below.
 
+### Checkpoint111 — operational coaching context and weekly decisions (17 November)
+
+- Preserved1102c08a7c and its shared snapshot. Added SqliteCoachingContext over the SAME schema19
+  coach_evidence rows, using the established DevelopmentArchiveJson typed decoder. Imported
+  weights stay available LOCALLY; the unchanged backup exporter still excludes provider caches.
+  Historical PBs retain unknown dates/measurement identity; generic strength dates and explicit
+  gym associations remain distinct. Existing row/time ordering, exact nanoseconds and optional
+  values are preserved; reads never create actual workouts or rewrite retained payloads.
+- Existing session decisions/interruption/review writes and explicit weekly choices now use this
+  common implementation. The SAME WeeklyCoaching.apply and full shared CoachingRepository enforce
+  base/choice/completed-prescription guards. Only an explicit nonempty replacement creates a new
+  immutable revision. Keep creates only a decision receipt. Receipt and revision share the original
+  DB/outer transaction; enclosing rejection rolls both back. Existing week/recommendation/ordered-
+  observations matching is retained; no freshness score or new coaching engine/calculation.
+- Production Android DevelopmentStore delegates these reads/commands through lazy borrowed
+  AndroidSqlConnection over its original ProfileDatabase. Roughly180duplicate operational Java
+  lines removed. Original independent backup export/validate/restore and remaining manual-weight /
+  historical/link writers are retained; legacy association projections remain authoritative.
+- EIGHT new JDBC/Apple contracts cover local imported/manual weight order and export distinction;
+  unknown historical dates/generic vs gym links without fabricated actuals; retained interruption /
+  decision times; complete optional review context without activation; keep/double choice/context
+  matching; one explicitly accepted revision retaining completed prescription/response; stale /
+  unknown/completed rejection before writes; whole-operation rollback of revision AND receipt.
+- TWO new real Android tests use the UNCHANGED original DevelopmentStore exporter/validator/
+  restorer against common reviews/decisions and imported/manual weight rows. Complete review
+  observations/channels/replacements/nullable longest value and chosen immutable revision must
+  remain readable; export/restore preserves the decision and original programme history.
+  Added to focused CI: expected568Android (566+2), new636storage JVM/Native and213matching
+  IO/SQL/health/coaching/context names. No schema/backup/permissions/dependency/version change.
+- Focused8new JVM tests +metadata/Android production+test compilation PASS4m6s/66tasks; earlier
+  metadata/Android production compilation PASS2m30s/51tasks. Final636storage JVM, zero fail/error/
+  skip, already observed; final formatted metadata/Android compilation/lint remains running.
+  Pinned931sources(836Kotlin/95Java), formatter14/source3/exact19migration boundaries PASS. No
+  new Android/Native runtime result claimed before exact-head CI.
+- NEXT: bind the shared snapshot inputs to common profile/draft, gym, preferences and this coaching
+  context through the real application owner. Then remaining app services/root/navigation and
+  actual iOS host/platform services. Preserve the existing Android permission/reminder/Health
+  Connect/recording adapters. No fake native defaults or demo replacing the agreed full app.
+  Native all-mutation/backup owner and full host/permissions/HealthKit/GPS/BLE/audio/notifications,
+  actual iOS APP runtime and final full gates remain unfinished; destructive native UI stays OFF.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint110 is latest recovery boundary: shared operational coaching backend/state/runner
-   AND actual snapshot orchestration now implemented and used by Android.109Android560/JVM628
-   passed, but109Apple failed compiling one common test lambda;110uses an explicit transaction
-   object with the SAME assertions. Verify110local final compile/lint/format/schema, commit/push
-   ONCE if ahead, then inspect exact-head Native628/common snapshot/framework and Android566runtime.
-   Do not claim a green Native result from109. Fix real failures, never weaken tests or blindly rerun.
-   Then actual shared snapshot-source repositories/app services/root/navigation/native host. No
-   destructive native UI/reset/restart/early version bump/merge/publication.
+1. Checkpoint111 is latest local recovery boundary.1102c08a7c is pushed with experiment44061576597
+   running (Apple133964517015 /Android133964517505) and format44061576411SUCCESS.109Android560/
+   JVM628passed; its sole Native test lambda compile failure is corrected in110, with SAME rollback
+   assertions.111adds real operational coaching context/weekly decisions, production Android binding,
+   8SQL+2interop cases. FINAL636storage JVM/meta/Android prod+test compilation/lint PASS4m12s/137tasks,
+   format931/formatter14/source3/exact-schema PASS. Verify live110result BEFORE pushing111to avoid
+   cancelling its useful new Native snapshot/rollback verification. After111push expect Native636/
+   213matchingIOcases and Android568. Never claim pending results or weaken assertions. Continue
+   shared snapshot-source repository/application bindings then services/root/navigation/native app.
+   No destructive native UI/reset/restart/early bump/merge/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

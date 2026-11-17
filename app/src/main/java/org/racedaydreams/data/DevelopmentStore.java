@@ -17,9 +17,15 @@ import java.util.*;
 /** Schema-five app-owned evidence. Typed validation is also used before transactional restore. */
 public final class DevelopmentStore {
     private final ProfileDatabase helper;
+    private final org.racedaydreams.storage.SqliteCoachingContext coachingContext;
 
     public DevelopmentStore(Context context) {
         helper = ProfileDatabase.get(context);
+        coachingContext =
+                new org.racedaydreams.storage.SqliteCoachingContext(
+                        new AndroidSqlConnection(this::db),
+                        Instant::now,
+                        () -> UUID.randomUUID().toString());
     }
 
     private SQLiteDatabase db() {
@@ -45,26 +51,12 @@ public final class DevelopmentStore {
         }
     }
 
-    private List<JSONObject> rows(String kind) {
-        List<JSONObject> values = new ArrayList<>();
-        try (Cursor c =
-                db().rawQuery(
-                                "SELECT payload FROM coach_evidence WHERE kind=? ORDER BY id",
-                                new String[] {kind})) {
-            while (c.moveToNext()) values.add(object(c.getString(0)));
-        }
-        return values;
-    }
-
     public void deleteWeight(String id) {
         db().delete("coach_evidence", "kind='WEIGHT' AND id=?", new String[] {id});
     }
 
     public List<BodyWeight> weights() {
-        List<BodyWeight> out = new ArrayList<>();
-        for (var j : rows("WEIGHT")) out.add(weight(j));
-        out.sort(Comparator.comparing(BodyWeight::at));
-        return out;
+        return coachingContext.weights();
     }
 
     public void saveWeight(BodyWeight w) {
@@ -149,9 +141,7 @@ public final class DevelopmentStore {
     }
 
     public List<HistoricalStrengthRecord> historical() {
-        List<HistoricalStrengthRecord> out = new ArrayList<>();
-        for (var j : rows("HISTORICAL_PB")) out.add(historical(j));
-        return out;
+        return coachingContext.historical();
     }
 
     public void deleteHistorical(String id) {
@@ -176,31 +166,11 @@ public final class DevelopmentStore {
     }
 
     public void saveSessionDecision(WorkoutDecision d) {
-        put(
-                "SESSION_DECISION",
-                d.id(),
-                json(
-                        "id",
-                        d.id(),
-                        "workoutId",
-                        d.workoutId(),
-                        "versionId",
-                        d.versionId(),
-                        "originalDate",
-                        d.originalDate().toString(),
-                        "movedTo",
-                        d.movedTo() == null ? null : d.movedTo().toString(),
-                        "kind",
-                        d.kind().name(),
-                        "at",
-                        d.at().toString()));
+        coachingContext.saveSessionDecision(d);
     }
 
     public List<WorkoutDecision> sessionDecisions() {
-        var out = new ArrayList<WorkoutDecision>();
-        for (var j : rows("SESSION_DECISION")) out.add(sessionDecision(j));
-        out.sort(Comparator.comparing(WorkoutDecision::at));
-        return out;
+        return coachingContext.sessionDecisions();
     }
 
     private static WorkoutDecision sessionDecision(JSONObject j) {
@@ -219,30 +189,20 @@ public final class DevelopmentStore {
     }
 
     public Map<String, LocalDate> strengthLinks() {
-        Map<String, LocalDate> out = new HashMap<>();
-        for (var j : rows("STRENGTH_LINK"))
-            try {
-                out.put(required(j, "id"), LocalDate.parse(required(j, "plannedDate")));
-            } catch (JSONException e) {
-                throw invalid(e);
-            }
-        return out;
+        return coachingContext.strengthLinks();
     }
 
     public record GymLink(String actualSessionId, String versionKey, String prescribedSessionId) {}
 
     public Map<String, GymLink> gymLinks() {
         Map<String, GymLink> out = new HashMap<>();
-        for (var j : rows("STRENGTH_LINK"))
-            try {
-                String version = text(j, "gymVersion"), session = text(j, "gymSession");
-                if (version != null && session != null) {
-                    String actual = required(j, "id");
-                    out.put(actual, new GymLink(actual, version, session));
-                }
-            } catch (JSONException e) {
-                throw invalid(e);
-            }
+        for (var entry : coachingContext.gymLinks().entrySet()) {
+            var link = entry.getValue();
+            out.put(
+                    entry.getKey(),
+                    new GymLink(
+                            link.actualSessionId(), link.versionKey(), link.prescribedSessionId()));
+        }
         return out;
     }
 
@@ -278,125 +238,27 @@ public final class DevelopmentStore {
     }
 
     public WeeklyCoaching.Interruption interruption() {
-        var rows = rows("INTERRUPTION");
-        if (rows.isEmpty()) return null;
-        try {
-            var j = rows.get(0);
-            return new WeeklyCoaching.Interruption(
-                    LocalDate.parse(required(j, "from")),
-                    LocalDate.parse(required(j, "returned")),
-                    required(j, "reason"));
-        } catch (JSONException e) {
-            throw invalid(e);
-        }
+        return coachingContext.interruption();
     }
 
     public void saveInterruption(WeeklyCoaching.Interruption i) {
-        put(
-                "INTERRUPTION",
-                "current",
-                json(
-                        "id",
-                        "current",
-                        "from",
-                        i.from().toString(),
-                        "returned",
-                        i.returned().toString(),
-                        "reason",
-                        i.reason()));
+        coachingContext.saveInterruption(i);
     }
 
     public boolean reviewKnown(String id) {
-        try (Cursor c =
-                db().rawQuery(
-                                "SELECT 1 FROM coach_evidence WHERE kind='WEEKLY_REVIEW' AND id=?",
-                                new String[] {id})) {
-            return c.moveToFirst();
-        }
+        return coachingContext.reviewKnown(id);
     }
 
     public String reviewDecision(String id) {
-        try (Cursor c =
-                db().rawQuery(
-                                "SELECT payload FROM coach_evidence WHERE kind='REVIEW_DECISION'"
-                                        + " AND id=?",
-                                new String[] {id})) {
-            if (!c.moveToFirst()) return null;
-            try {
-                return object(c.getString(0)).getString("choice");
-            } catch (JSONException e) {
-                throw invalid(e);
-            }
-        }
+        return coachingContext.reviewDecision(id);
     }
 
     public String decisionForReview(WeeklyCoaching.Review review) {
-        for (var decision : rows("REVIEW_DECISION")) {
-            try {
-                String id = required(decision, "id");
-                try (Cursor c =
-                        db().rawQuery(
-                                        "SELECT payload FROM coach_evidence WHERE"
-                                                + " kind='WEEKLY_REVIEW' AND id=?",
-                                        new String[] {id})) {
-                    if (c.moveToFirst()
-                            && review.week()
-                                    .toString()
-                                    .equals(object(c.getString(0)).optString("week"))
-                            && review.recommendation()
-                                    .equals(object(c.getString(0)).optString("recommendation"))
-                            && new JSONArray(review.observations())
-                                    .toString()
-                                    .equals(
-                                            object(c.getString(0))
-                                                    .optJSONArray("observations")
-                                                    .toString()))
-                        return required(decision, "choice");
-                }
-            } catch (JSONException e) {
-                throw invalid(e);
-            }
-        }
-        return null;
+        return coachingContext.decisionForReview(review);
     }
 
     public void saveReview(WeeklyCoaching.Review r) {
-        JSONArray channels = new JSONArray(), choices = new JSONArray();
-        for (var c : r.channels())
-            channels.put(json("name", c.name(), "state", c.state().name(), "reason", c.reason()));
-        for (var c : r.choices()) {
-            JSONArray changes = new JSONArray();
-            for (var w : c.replacements()) changes.put(planned(w));
-            choices.put(json("id", c.id(), "label", c.label(), "replacements", changes));
-        }
-        put(
-                "WEEKLY_REVIEW",
-                r.id(),
-                json(
-                        "id",
-                        r.id(),
-                        "base",
-                        r.baseVersionId(),
-                        "week",
-                        r.week().toString(),
-                        "planned",
-                        r.planned(),
-                        "completed",
-                        r.completed(),
-                        "km",
-                        r.kilometres(),
-                        "strength",
-                        r.strengthSessions(),
-                        "longest",
-                        r.longestKm(),
-                        "observations",
-                        new JSONArray(r.observations()),
-                        "channels",
-                        channels,
-                        "recommendation",
-                        r.recommendation(),
-                        "choices",
-                        choices));
+        coachingContext.saveReview(r);
     }
 
     public void decide(
@@ -404,49 +266,7 @@ public final class DevelopmentStore {
             String choice,
             CoachingRepository coaching,
             Set<String> completed) {
-        var db = db();
-        db.beginTransaction();
-        try {
-            if (reviewDecision(r.id()) != null)
-                throw new IllegalArgumentException("This review was already resolved.");
-            var current = coaching.current();
-            var selected =
-                    r.choices().stream()
-                            .filter(c -> c.id().equals(choice))
-                            .findFirst()
-                            .orElseThrow(
-                                    () -> new IllegalArgumentException("Choose a review option."));
-            var plan = WeeklyCoaching.apply(current, r, selected, completed);
-            String resulting = current.id();
-            if (!selected.replacements().isEmpty()) {
-                resulting = UUID.randomUUID().toString();
-                coaching.saveCurrent(
-                        new PlanVersion(
-                                resulting,
-                                current.planId(),
-                                current.version() + 1,
-                                Instant.now(),
-                                "Weekly review: " + selected.label(),
-                                current.goalSnapshot(),
-                                current.evidenceSnapshot(),
-                                plan));
-            }
-            put(
-                    "REVIEW_DECISION",
-                    r.id(),
-                    json(
-                            "id",
-                            r.id(),
-                            "base",
-                            current.id(),
-                            "choice",
-                            choice,
-                            "result",
-                            resulting));
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        coachingContext.decide(r, choice, coaching, completed);
     }
 
     private static void validatePayload(String kind, String id, JSONObject j) {
