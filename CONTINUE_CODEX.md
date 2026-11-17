@@ -62,24 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, shared running-plan checkpoint129
+### Latest recovery pointer — 17 November, verified-local checkpoint130
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Preserve126shared root +127Apple
-Health integrationaba505d +128shared Home/first-run25923f3 +129actual running-plan UI.
-129metadata/debugAPK/testAPK/lint PASS7m27s/176tasks,
-`/workspace/scratch/kmp129-plan-corrected.log`; format966(871Kotlin/95Java) PASS. Original week
-clamping/labels/calendar/rest/completed states, routine evidence, decisions and explicit rebuild
-confirmation retained. Initial common compile found JVM AdaptiveCoachingEngine facade; it now
-calls the SAME AdaptiveCoaching.isQuality function, no rule change. Three new plan UI cases await
-runtime.128gate PASS6m44s/176tasks +formatter964/schema19/source3;127gate PASS9m38s/180tasks,
-retained JVM6550fail/error/skip reconfirmed from71XMLs. Expected624Android/655Native PENDING.
-Next coherent batch moves original optional milestone recognition operation/state into common,
-using existing typed milestone store/real repositories; preserve historical recognition and actuals.
-Only130scratch preparations exist outside repo so far; inspect status before applying them.
-After focused local gate, commit/push combined126–130ONCE to ORIGINAL PR24 branch and inspect
-actual Android/Native/framework results. Never claim a pending pass or merge experimental code.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Committed local126root/recovery +
+127Apple Healthaba505d +128Home/first-run25923f3 +129running-plan89b74d7 are preserved.130source
+is applied in this committed checkpoint: SharedAchievementsCoordinator/AchievementsState over existing
+SqliteTrainingMilestones and actual caller repositories/scope/clock; Android ViewModel delegates,
+existing screen uses same recognition fields. Two new real SQLite cases retain recognition/actual
+bytes, summary-only reads, failures/retry. Original light/dark/200% UI cases retained. Do NOT rerun
+scratch copy/preparation scripts.130metadata/debugAPK/testAPK/lint PASS7m23s/176tasks in
+`/workspace/scratch/kmp130-achievements-final.log`. No local build failure remains.
+130format968(873Kotlin/95Java) PASS; all116previous focused classes retained,6new classes added
+with no duplicates. Combined expected626Android/655Native are PENDING, not passed.
+129metadata/APKs/lint PASS7m27s/176tasks +format966;128PASS6m44s/176tasks +format964/schema19/
+source3;127PASS9m38s/180tasks +JVM6550fail/error/skip (71XMLs reconfirmed). Current source is locally verified, not yet runtime/Native accepted. Normal push of combined
+126–130to ORIGINAL PR24 is next at commit time; on resume inspect live branch/PR and exact-head
+CI BEFORE repeating a push. The PR body records the actual subsequent push/run identity.
 
-Remote PR branch remains61e038d;125experiment44106763790 SUCCESS on BOTH jobs,610Android/
+Last remote checkpoint before130push was61e038d;125experiment44106763790 SUCCESS on BOTH jobs,610Android/
 700189domain, Native449/27/648 digest-verified; framework linked. Main85e1c39 unchanged. Do not
 wait for125again. Delete temporary recovery branch checkpoint/android-ios-kmp-compose-126 only
 AFTER original PR branch contains its commits. Git works; use connector instead of stale gh API.
@@ -5726,22 +5726,36 @@ one actual lifecycle owner. Physical acceptance remains unperformed.
   used JVM facade name; changed to its existing common AdaptiveCoaching delegate, same rules.
   Runtime/Native/current-source visual acceptance still pending. No storage/domain/schema change.
 
+### Checkpoint130 — existing milestone recognition orchestration
+
+- Existing AchievementsViewModel operation/state moved to SharedAchievementsCoordinator, with
+  required real clock, lifecycle scope, original coaching/activity repositories and same schema19
+  SqliteTrainingMilestones. Android wrapper retains automatic initial refresh, original actions,
+  idempotent recognition, cancellation/failure wording, notice/toggle behaviour and local dates.
+  No new eligibility, achievement, route hydration, database, engine or historical rewrite.
+- Two new real SQLite/common-operation tests check lazy construction/no Main SQL, summary-only
+  reads, exact original actual/recognition preservation over repeat reads, optional celebrations
+  and source failure/known-state retention/explicit retry. Existing three light/dark/200% screen
+  tests and all previous116focused classes remain. Expected next626Android/655Native/framework.
+- FINAL metadata/debugAPK/testAPK/lint PASS7m23s/176tasks, scratch/kmp130-achievements-final.log;
+  formatter968(873Kotlin/95Java), exact schema19/source3 PASS. APK code19/version0.12.3-test1/min28/
+  noINTERNET verified. Runtime/Native remain pending; do not reapply already-applied scratch scripts.129gate PASS7m27s;128gate PASS6m44s;127JVM655all0failure/error/skip.
+
 ### Exact next safe actions and remaining full scope
 
-1.129local gate PASSED; preserve/commit alongside12825923f3/127aba505d/126root/recovery. Next
-   coherent batch shares existing optional milestone recognition/state with real typed repository
-   and lifecycle bindings. Focused local gate, then push combined source ONCE to ORIGINAL PR24.
-  125 BOTH jobs already finished; do NOT wait again. Verify actual current-head Android/Native/
-   framework, especially root3/gateway3/Home3/first-run2/plan3 and seven Apple SQL contracts/thin
-   SDK facade. Delete temporary recovery branch only AFTER original branch contains its commits.
-   Keep DRAFT24; no version bump/merge/public release. Then actual iOS application host +remaining
-   active shared UI/navigation/SDK services USING common root and real AppleHealthGateway. No
-   empty host/prototype or domain/storage-kernel restart. Native destructive UI stays OFF until
-   one real data-lifecycle owner covers every operation.
+1.130local gate PASSED. Preserve/commit130+handoff with12989b74d7/12825923f3/127aba505d/126root/
+   recovery, then normal push combined source ONCE to ORIGINAL PR24. First inspect live branch:
+   if130already pushed, do NOT repush or cancel useful CI. Consult PR body for actual run/head.
+   Verify current-head Android/Native/framework, especially root3/gateway3/Home3/first-run2/plan3/
+   milestone2 and seven Apple SQL contracts/thin SDK facade.125 BOTH jobs already finished;
+   do NOT wait again. Remove temporary recovery branch only AFTER original branch contains its
+   commits. Keep DRAFT24; no version bump/merge/public release. Continue actual iOS app host +
+   remaining active shared UI/navigation/SDK services USING common root and real AppleHealthGateway.
+   No empty host/prototype, domain/storage-kernel restart or premature native destructive controls.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
-3. Continue sharedStorage typed repositories/codecs/backup/retention over the SAME SQLite19 model.
+3. SharedStorage typed repositories/codecs/backup/retention kernels are COMPLETE over the SAME SQLite19 model; finish actual app binding, not another kernel restart.
    Existing native/schema/settings/exclusions/profile/focus/height/milestone/shoe/baseline/retention reader are
    implemented as above; preserve them. Running/actual/frozen workout/execution codecs are now shared
    as recorded in checkpoints55–59; preserve them. Programme, both association and concrete-preview codecs plus typed legacy gym history now exist
@@ -5763,8 +5777,10 @@ one actual lifecycle owner. Physical acceptance remains unperformed.
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
    consent/preview/transaction/restore safeguards exist. Existing Android stores remain authoritative; checkpoint55 adds only a semantic reminder comparator for cross-codec compatibility.
-4. State/runner, operational coaching/context AND actual snapshot/source bindings are common and
-   used by Android (108–113). Continue remaining application services/shared root/navigation, full permissions/
+4. State/runner, operational coaching/context, snapshot/source bindings and application root are
+   COMMON and USED by Android (108–126); do not repeat them. Milestone orchestration is common130.
+   Remaining feature-owned Gym Now/programme-generation/authoring/body/recovery orchestration,
+   active UI/navigation and native app/SDK effects still need completion, including full permissions/
    HealthKit, native recording/BLE/notifications and real iOS app host/entitlements/usage strings,
    preserving Android Health Connect and all existing features. Visible-only health snapshots
    cannot infer deletion. Use actual shared screens and domain, not a separate product/prototype.
@@ -5785,7 +5801,7 @@ one actual lifecycle owner. Physical acceptance remains unperformed.
   -Dorg.gradle.workers.max=2 -Pkotlin.compiler.execution.strategy=in-process ...`.
 - Local Gradle cache properties use inherited proxy/system CA trust; do not commit/expose them.
   Gradle needs socket/network access even for its daemon. No local Xcode/KVM, but actual GitHub
-  **macOS / Xcode 26.6 / arm64 works**. Do NOT claim unavailable macOS infrastructure: workflow
+  **macOS 26 Intel / Xcode 26.6 works**. Do NOT claim unavailable macOS infrastructure: workflow
   `multiplatform.yml` already compiled/tested real Native modules and shared UI frameworks.
 - `scripts/test-domain.sh` uses Gradle `:domain:prepareOfflineTests` to retain the original Java
   main-suite/audit harness with shared Kotlin dependencies, not a weakened substitute.

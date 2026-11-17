@@ -16,9 +16,9 @@ fun AchievementsScreen(
     val recognized = run {
         state.awards.map { stored ->
             SharedRecognizedMilestone(
-                stored.award(),
+                stored.award,
                 friendlyDate(
-                    stored.recognizedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                    stored.recognizedAt.atZone(java.time.ZoneId.systemDefault()).toLocalDate()
                 ),
             )
         }
