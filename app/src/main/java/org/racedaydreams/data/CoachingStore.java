@@ -20,9 +20,16 @@ import java.util.*;
  */
 public final class CoachingStore implements CoachingRepository {
     private final ProfileDatabase helper;
+    private final org.racedaydreams.storage.SqliteCoachingRepository repository;
 
     public CoachingStore(Context context) {
         helper = ProfileDatabase.get(context);
+        repository =
+                new org.racedaydreams.storage.SqliteCoachingRepository(
+                        new AndroidSqlConnection(this::db),
+                        Instant::now,
+                        () -> UUID.randomUUID().toString(),
+                        org.racedaydreams.storage.PortableLegacyStrengthFingerprint.INSTANCE);
     }
 
     private SQLiteDatabase db() {
@@ -31,318 +38,68 @@ public final class CoachingStore implements CoachingRepository {
         return helper.getWritableDatabase();
     }
 
-    private interface Parser<T> {
-        T read(JSONObject row) throws JSONException;
-    }
-
-    private static <T> List<T> rows(SQLiteDatabase db, String sql, Parser<T> parser) {
-        List<T> out = new ArrayList<>();
-        try (Cursor c = db.rawQuery(sql, null)) {
-            while (c.moveToNext()) out.add(parser.read(FeatureJson.object(c.getString(0))));
-        } catch (JSONException e) {
-            throw FeatureJson.invalid(e);
-        }
-        return org.racedaydreams.domain.coaching.Immutable.copyList(out);
-    }
-
     public void transaction(Runnable action) {
-        SQLiteDatabase db = db();
-        db.beginTransaction();
-        try {
-            action.run();
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        repository.transaction(action);
     }
 
     public List<PlanVersion> versions() {
-        return rows(
-                db(),
-                "SELECT payload FROM coach_plan_versions ORDER BY rowid DESC",
-                CoachingJson::version);
+        return repository.versions();
     }
 
     public PlanVersion current() {
-        var rows =
-                rows(
-                        db(),
-                        "SELECT v.payload FROM coach_current_plan c JOIN coach_plan_versions v ON"
-                                + " c.version_id=v.id WHERE c.id=1",
-                        CoachingJson::version);
-        return rows.isEmpty() ? null : rows.get(0);
+        return repository.current();
     }
 
     public List<StrengthExercise> exercises() {
-        var all = new LinkedHashMap<String, StrengthExercise>();
-        for (var e : StrengthExercise.starters()) all.put(e.id(), e);
-        for (var e :
-                rows(
-                        db(),
-                        "SELECT payload FROM strength_exercises ORDER BY id",
-                        CoachingJson::exercise)) all.put(e.id(), e);
-        return org.racedaydreams.domain.coaching.Immutable.copyList(all.values());
+        return repository.exercises();
     }
 
     public List<StrengthSession> strength() {
-        return rows(
-                db(),
-                "SELECT payload FROM strength_sessions ORDER BY started_at DESC,id",
-                CoachingJson::strength);
+        return repository.strength();
     }
 
     public List<RunExecution> responses() {
-        return rows(
-                db(),
-                "SELECT payload FROM run_responses ORDER BY activity_id",
-                CoachingJson::response);
+        return repository.responses();
     }
 
     public List<AdjustmentProposal> proposals() {
-        return rows(
-                db(),
-                "SELECT payload FROM coach_proposals WHERE decision IS NULL ORDER BY rowid DESC",
-                CoachingJson::proposal);
+        return repository.proposals();
     }
 
     public boolean proposalKnown(String id) {
-        try (Cursor c =
-                db().rawQuery("SELECT 1 FROM coach_proposals WHERE id=?", new String[] {id})) {
-            return c.moveToFirst();
-        }
+        return repository.proposalKnown(id);
     }
 
-    public void saveExercise(StrengthExercise e) {
-        var database = db();
-        database.beginTransaction();
-        try {
-            if (!SqliteStrengthProgrammingRepository.updateLoggingDefinition(database, e)) {
-                ContentValues v = payload(e.id(), CoachingJson.exercise(e));
-                upsert(database, "strength_exercises", "id", e.id(), v);
-            }
-            database.setTransactionSuccessful();
-        } finally {
-            database.endTransaction();
-        }
+    public void saveExercise(StrengthExercise exercise) {
+        repository.saveExercise(exercise);
     }
 
-    public void saveStrength(StrengthSession s) {
-        if (s.startedAt().isAfter(Instant.now()))
-            throw new IllegalArgumentException(
-                    "A completed strength session cannot be in the future.");
-        SQLiteDatabase db = db();
-        db.beginTransaction();
-        try {
-            // A deliberate actual edit stays separate from the original live execution evidence.
-            SqliteGymExecutionRepository.recordActualEdit(db, s, Instant.now());
-            ContentValues v = payload(s.id(), CoachingJson.strength(s));
-            v.put("started_at", s.startedAt().toString());
-            upsert(db, "strength_sessions", "id", s.id(), v);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+    public void saveStrength(StrengthSession actual) {
+        repository.saveStrength(actual);
     }
 
     public void deleteStrength(String id) {
-        SQLiteDatabase db = db();
-        db.beginTransaction();
-        try {
-            SqliteGymExecutionRepository.deleteCompleted(db, id);
-            SqliteGymAssociationRepository.deleteActual(db, id);
-            db.delete("strength_sessions", "id=?", new String[] {id});
-            db.delete("coach_evidence", "kind='STRENGTH_LINK' AND id=?", new String[] {id});
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        repository.deleteStrength(id);
     }
 
-    public void saveResponse(RunExecution r) {
-        SQLiteDatabase db = db();
-        if (r.planVersionId() != null) {
-            PlanVersion version =
-                    versions().stream()
-                            .filter(v -> v.id().equals(r.planVersionId()))
-                            .findFirst()
-                            .orElseThrow(
-                                    () -> new IllegalArgumentException("Plan version not found."));
-            if (version.plan().workouts().stream()
-                    .noneMatch(w -> w.id().equals(r.plannedWorkoutId())))
-                throw new IllegalArgumentException("Workout is not in this plan version.");
-        }
-        ContentValues v = new ContentValues();
-        v.put("activity_id", r.activityId());
-        v.put("planned_workout_id", r.plannedWorkoutId());
-        v.put("plan_version_id", r.planVersionId());
-        v.put("payload", CoachingJson.response(r).toString());
-        upsert(db, "run_responses", "activity_id", r.activityId(), v);
+    public void saveResponse(RunExecution response) {
+        repository.saveResponse(response);
     }
 
     public void saveFeedback(String activityId, String versionId, RunFeedback feedback) {
-        ContentValues v = new ContentValues();
-        v.put("activity_id", activityId);
-        v.put("plan_version_id", versionId);
-        v.put("payload", CoachingJson.feedback(feedback).toString());
-        upsert(db(), "run_feedback", "activity_id", activityId, v);
+        repository.saveFeedback(activityId, versionId, feedback);
     }
 
-    public void saveProposal(AdjustmentProposal p) {
-        var v = payload(p.id(), CoachingJson.proposal(p));
-        v.put("base_version_id", p.baseVersionId());
-        db().insertOrThrow("coach_proposals", null, v);
+    public void saveProposal(AdjustmentProposal proposal) {
+        repository.saveProposal(proposal);
     }
 
     public void saveCurrent(PlanVersion version) {
-        SQLiteDatabase db = db();
-        db.beginTransaction();
-        try {
-            saveCurrent(db, version);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    private static void saveCurrent(SQLiteDatabase db, PlanVersion version) {
-        Map<String, PlannedWorkout> proposed = new HashMap<>();
-        for (var w : version.plan().workouts()) proposed.put(w.id(), w);
-        Map<String, PlanVersion> history = new HashMap<>();
-        for (var response :
-                rows(
-                        db,
-                        "SELECT payload FROM run_responses WHERE plan_version_id IS NOT NULL",
-                        CoachingJson::response)) {
-            if (!proposed.containsKey(response.plannedWorkoutId())) continue;
-            PlanVersion original = history.get(response.planVersionId());
-            if (original == null) {
-                try (Cursor c =
-                        db.rawQuery(
-                                "SELECT payload FROM coach_plan_versions WHERE id=?",
-                                new String[] {response.planVersionId()})) {
-                    if (!c.moveToFirst())
-                        throw new IllegalArgumentException(
-                                "Completed prescription version is missing.");
-                    try {
-                        original = CoachingJson.version(FeatureJson.object(c.getString(0)));
-                    } catch (JSONException e) {
-                        throw FeatureJson.invalid(e);
-                    }
-                }
-                history.put(original.id(), original);
-            }
-            final String workoutId = response.plannedWorkoutId();
-            var prescription =
-                    original.plan().workouts().stream()
-                            .filter(w -> w.id().equals(workoutId))
-                            .findFirst()
-                            .orElseThrow(
-                                    () ->
-                                            new IllegalArgumentException(
-                                                    "Completed prescription is missing."));
-            if (!prescription.equals(proposed.get(workoutId)))
-                throw new IllegalArgumentException(
-                        "A completed prescription cannot be overwritten. Its original targets must"
-                                + " be retained.");
-        }
-        var v = payload(version.id(), CoachingJson.version(version));
-        v.put("plan_id", version.planId());
-        v.put("version", version.version());
-        db.insertOrThrow("coach_plan_versions", null, v);
-        ContentValues pointer = new ContentValues();
-        pointer.put("id", 1);
-        pointer.put("version_id", version.id());
-        upsert(db, "coach_current_plan", "id", "1", pointer);
-        // Only the authoritative current version drives reminders. History lives in immutable
-        // versions.
-        Map<String, Long> revisions = new HashMap<>();
-        Map<String, String> previous = new HashMap<>();
-        try (Cursor c = db.rawQuery("SELECT id,revision,payload FROM planned_workouts", null)) {
-            while (c.moveToNext()) {
-                revisions.put(c.getString(0), c.getLong(1));
-                previous.put(c.getString(0), c.getString(2));
-            }
-        }
-        db.delete("planned_workouts", null, null);
-        for (var w : version.plan().workouts()) {
-            ContentValues values = payload(w.id(), FeatureJson.planned(w));
-            values.put("scheduled_date", w.date().toString());
-            values.put(
-                    "revision",
-                    revisions.getOrDefault(w.id(), 0L)
-                            + (samePrescription(previous.get(w.id()), w) ? 0 : 1));
-            db.insertOrThrow("planned_workouts", null, values);
-        }
-    }
-
-    /** Portable codecs may spell the same JSON number differently; targets drive revisions. */
-    private static boolean samePrescription(String saved, PlannedWorkout proposed) {
-        if (saved == null) return false;
-        return org.racedaydreams.storage.PlannedWorkoutJson.samePrescription(
-                FeatureJson.planned(FeatureJson.object(saved)), proposed);
+        repository.saveCurrent(version);
     }
 
     public void decide(AdjustmentProposal proposal, String optionId, Set<String> completed) {
-        SQLiteDatabase db = db();
-        db.beginTransaction();
-        try {
-            PlanVersion current = current();
-            if (current == null || !current.id().equals(proposal.baseVersionId()))
-                throw new IllegalArgumentException(
-                        "The plan has changed. Review the current recommendation.");
-            try (Cursor c =
-                    db.rawQuery(
-                            "SELECT decision FROM coach_proposals WHERE id=?",
-                            new String[] {proposal.id()})) {
-                if (!c.moveToFirst() || !c.isNull(0))
-                    throw new IllegalArgumentException("This proposal has already been resolved.");
-            }
-            var option =
-                    proposal.options().stream()
-                            .filter(o -> o.id().equals(optionId))
-                            .findFirst()
-                            .orElseThrow(
-                                    () ->
-                                            new IllegalArgumentException(
-                                                    "Choose a proposal option."));
-            String result = current.id();
-            if (option.action() != AdjustmentProposal.Action.KEEP) {
-                TrainingPlan changed =
-                        AdaptiveCoachingEngine.apply(current.plan(), proposal, option, completed);
-                result = UUID.randomUUID().toString();
-                saveCurrent(
-                        db,
-                        new PlanVersion(
-                                result,
-                                current.planId(),
-                                current.version() + 1,
-                                Instant.now(),
-                                "Runner chose: " + option.label(),
-                                current.goalSnapshot(),
-                                current.evidenceSnapshot(),
-                                changed));
-            }
-            ContentValues v = new ContentValues();
-            v.put("decision", optionId);
-            v.put("result_version_id", result);
-            db.update("coach_proposals", v, "id=?", new String[] {proposal.id()});
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    private static ContentValues payload(String id, JSONObject j) {
-        ContentValues v = new ContentValues();
-        v.put("id", id);
-        v.put("payload", j.toString());
-        return v;
-    }
-
-    private static void upsert(
-            SQLiteDatabase db, String table, String key, String id, ContentValues values) {
-        if (db.update(table, values, key + "=?", new String[] {id}) == 0)
-            db.insertOrThrow(table, null, values);
+        repository.decide(proposal, optionId, completed);
     }
 
     static final String[] TABLES = {

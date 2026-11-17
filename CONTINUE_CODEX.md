@@ -4909,16 +4909,76 @@ incomplete migration merely because a focused checkpoint passes.
   explicit-version rules when moving it, not a fake read-only/prototype replacement. No destructive
   native UI until ONE data owner covers every operation path. All physical checks unperformed.
 
+### Checkpoint109 — full shared coaching repository now used by Android
+
+- SAME experiment branch / DRAFT PR24, all completed work retained. Commit source+handoff together,
+  inspect upstream and push ONCE if ahead. No schema/version/backup/permission/runtime dependency
+  change. Existing main85e1c3903b61f1d45e444d120ba1a701ad3a2c36 /owner PR23 remain untouched.
+- Checkpoint108 ce74dcaadfc534d493b5f8d7f697652e8dac2a7b ACTUALLY GREEN: experiment44049185240,
+  Apple133922402424 /Android133922403181 SUCCESS; formatting44049185186 SUCCESS. Actual common
+  state/runner, Native IO extension and framework compiled. Android549unique matching START/END,
+  including exact reminder mode/zone/nanosecond roundtrips, original3command-runner contracts,
+  icon equality and old/shared archive interop;700189checks/48suites/3successful builds/schema/lint.
+- Digest-verified Native14314116050 ZIP173366/SHAa5029c4720b56ec9cd53717893ee245715d52c346fadc5741d677bcdf1aa498b
+  has449domain/27health/620storage; JVM14313153551 ZIP181906 /
+  SHAa4347b1ce2e5a72872f91c45a18b6ed54b35ff9f083a6c4653ad0bbb57a5d6fd has490/25/620, ALL0f/e/skip.
+  ALL197IO/SQL/HealthKit names match; scratch/application-ce74-{jvm,native}/verification.json,
+  native/all-case-proof.json, application-ce74-android-{job.log,proof.json}. Framework14314375278
+  is NOT an app. Physical HealthKit/recording/provider acceptance remains unperformed.
+- PrivateAPK14313018959 ZIP30737739/SHAab67851b6ddab0d3533559ab74ee275b6aa7cf878e5442ab16c00c6d936882bb;
+  APK58352966/SHA436a84e4b70f5fecb902fefcfe9569e08510d735aec394a3f3f00e1871c2ec4a,code19/min28/
+  noINTERNET, scratch/application-ce74-apk/verification.json. No public experimental publication.
+- NEW SqliteCoachingRepository implements the ENTIRE EXISTING CoachingRepository interface.
+  It COMPOSES already-implemented SqliteRunningCoaching +SqliteGymExecutions +SqliteStrengthDrafts.
+  Do NOT reimplement those commands or confuse SqliteCoachingArchive with missing command support.
+  Original running decisions/history, explicit actual edit/delete provenance, unfinished guards,
+  custom metadata/measurement compatibility and required legacy fingerprint provider are reused.
+  Reads preserve original canonical/override order and full actual history; no fake strength stubs,
+  replacement database, parallel adaptive/execution engine or historical recalculation.
+- PRODUCTION Android CoachingStore now delegates its commands to that shared implementation;
+  roughly270 old operational Java lines removed. Its Android helper/IO guard and independent legacy
+  backup export/validate/clear/restore helpers remain. Construction opens NO database: a lazy
+  source supplies the SAME ProfileDatabase writable pool only when an operation executes.
+- New AndroidSqlConnection reuses established typed cursor/bind behavior, preserving SQL NULL /
+  exact Long/Double/text/blob. Transactions share the existing Android session; nested/caller-
+  owned scopes use unique atomic savepoints. Borrowed close() does NOT close/open the app pool;
+  ProfileDatabase still owns its lifetime. Original test bridge stays independent for comparison.
+- EIGHT real JDBC/Apple contract cases verify full-interface canonical overrides/frozen actual
+  definitions; edits/deletion without new prescriptions; future-actual rejection; optional proposal /
+  keep/no extra version; completed-prescription protection; whole running+strength rollback;
+  custom metadata/measurement guards; unfinished execution cannot be replaced/deleted. Existing
+  verified kernel suites still cover full execution/association/backup behavior.
+- FOUR new Android driver cases cover lazy borrowed lifetime, exact >2^53 integers/NULL/unicode /
+  real/blob, cross-wrapper nested rollback, and caller-owned Android transaction rollback. Existing
+  CoachingStore tests remain unchanged and will now exercise the real shared backend. SEVEN existing
+  ExerciseBrowseScreenTest cases join focused CI because108migrated their choice/state types;
+  all assertions are retained (only two fixtures use the equivalent common DTO).
+- Focused6new SQL cases PASS1m18s; metadata+6+Android compile PASS2m41s/66tasks. FINAL628storage
+  JVM/0failure/error/skip +metadata +Android production/test compile +lint PASS3m32s/126tasks,
+  scratch/kmp-coaching-binding-final.log. Pinned923sources(828Kotlin/95Java), formatter-tool14,
+  exact schema19/source3 PASS; schema75 remains unchanged/green in108CI. Diff checks clean.
+- New Native628 /205matching IO/SQL/HealthKit/coaching names and Android560runtime (549+4new
+  driver+7existing browser) are PENDING exact-head CI. This is an actual Android persistence path
+  change: inspect real failures before continuing, never weaken assertions or blindly rerun.
+- NEXT: bind the shared operational repositories/state/runner into the actual shared application
+  snapshot/services/root/navigation and native host, retaining side-effect ordering for optional
+  proposals/reviews/reminder reconciliation. Current Android CoachSnapshotReader remains host-owned.
+  Native permissions/full HealthKit import owner/HR/route integration, GPS/BLE/notifications/audio,
+  actual iOS host/entitlements/build/runtime and final unfiltered Android28/35/36/iOS APP/screenshots
+  remain unfinished. ONE data-operation owner must guard ALL app/service mutation and backup paths.
+  Native destructive UI stays OFF; no early merge/version bump/publication or next release.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint108 is latest recovery boundary;1077d79b25 is fully green/byte-verified: actual new
-   HealthKit SDK compilation, Android544, JVM25health/620storage, Native27health/620storage and197
-   matching IO/SQL/HealthKit cases. Local108 full25/620 +700189domain/48suites +common metadata /
-   Android test compilation PASS4m48s/82tasks; formatter917/source3/schema19 PASS. Inspect upstream,
-   push ONCE if ahead, update DRAFT24; verify real Native common-state/runner compilation and
-   Android549 incl new exact reminder conversion and original command-runner tests. No pending
-   runtime pass claimed. Next operational CoachingRepository, actual common snapshot/root/services
-   and iOS app host. No reset, early version bump, destructive native UI, merge or publication.
+1. Checkpoint109 is latest recovery boundary.108ce74dca is fully green/byte-verified: actual
+   common-state/command-runner/NativeIO compilation, Android549, JVM25health/620storage and Native
+   27health/620storage,197matching IO/SQL/HealthKit cases. New109local628storage/meta/Android test
+   compile/lint PASS3m32s/126tasks, format923/formatter14/schema19/source3 PASS. Inspect upstream,
+   push ONCE if ahead and update DRAFT24. Verify new actual Native628/205matching cases and Android
+   560runtime including new borrowed-driver tests and original CoachingStore/browser tests. Fix
+   real failures before expanding; no test weakening or blind retry. Then actual shared snapshot /
+   app services/root/navigation, native services/iOS host. No destructive native UI, reset/restart,
+   early version bump, merge or public publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
@@ -4937,14 +4997,14 @@ incomplete migration merely because a focused checkpoint passes.
    including byte/number goldens and all21execution cases with system crypto; host wiring remains.
    No fixture lookup remains in these tests. Retention metadata snapshots/codec74 and required-
    validator root1–13 envelope75 exist; COMPLETE parent data/graph normalization is implemented82;
-   raw3/package1 and transactional restore/pruning safeguards still need completion. Coaching76/core77/development78 /79 support/0.8/choices /80 body/achievements
+   raw1–3/package1 inspection/export/transactional restore and protected internal pruning now exist (103–109); remaining work is full host/operation/UI binding and final acceptance, not restarting kernels. Coaching76/core77/development78 /79 support/0.8/choices /80 body/achievements
    archive components now exist; preserve their exact payloads/source indexes and privacy rules.
    The COMPLETE composed parent validator is UserBackupDataJson82. Reuse71/73/74/75/76/77/78. Activity/result repositories are implemented in checkpoint53;
    preserve them. scripts/shared-schema.py --check
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
    consent/preview/transaction/restore safeguards exist. Existing Android stores remain authoritative; checkpoint55 adds only a semantic reminder comparator for cross-codec compatibility.
-4. Then wire real common application composition/navigation/state/data sources, full permissions/
+4. State/command runner and operational coaching composition are now common (108–109). Wire them into actual shared root/navigation/data sources, full permissions/
    HealthKit, native recording/BLE/notifications and real iOS app host/entitlements/usage strings,
    preserving Android Health Connect and all existing features. Visible-only health snapshots
    cannot infer deletion. Use actual shared screens and domain, not a separate product/prototype.
