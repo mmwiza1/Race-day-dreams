@@ -62,7 +62,47 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, through142 locally verified
+### Latest recovery pointer — 17 November,142 pushed /143 locally verified
+
+Original experiment/android-ios-kmp-compose / DRAFT PR24. Through142 NOW committed/pushed:
+ced0982b64313f10277947315e126bd4c8245aa3, preceding532f64e/0e01af2. Remote experiment44166903090
+is IN PROGRESS (Android134335277396 runtime; Apple134335277843 Native tests). Expected640Android. Native tests HAVE NOW passed; downloaded14366587100 independently
+SHA/ZIP/XML verified449domain27health658storage ALL0fail/errors/skips.178977bytes/
+SHA0768cd80964773ad8500e3d599fab9fc17fdfd19c736f3a570f894f1b80e84a0, sourceced0982.
+Proof scratch/kmp142-native-verified/verification.json. Framework link still running when checked;
+Android640runtime still pending. These results do NOT accept local143. Format44166903228 SUCCESS; actual completed
+logs verify18formatter contracts/991files(896Kotlin95Java). Other release/canonical/publication
+jobs SKIPPED on experimental draft; not full release acceptance. Current PR body has exact IDs.
+Do not cancel useful Native CI with an intermediate push. Source142 worktree was clean after push.
+
+143is NOW locally VERIFIED in this coherent commit: original manual programme builder and custom-exercise UI are now
+common and used by Android, with SAME SharedStrengthProgrammeCoordinator. Android VM exposes
+internal shared for UI only; original lifecycle/SavedState and25methods intact. Required
+ProgrammeScreenPresentation supplies exact friendly/input date parsing, ISO weekday factory/
+labels and exercise/target/number formatters; actual BackHandler supplied by Android. Same strict
+UK parser, human values, field/reset/duplicate/move/block/draft/preview/activation/custom-save
+flows. Existing programmeLabel enum mapping moved to SharedProgrammeLabels, locale-neutral ASCII
+labels, same names. SharedGymSlotEditor reused, no second parser or programme engine.
+Paths: app coach/strength/{StrengthProgrammeBuilderScreen,CustomStrengthExerciseScreen,
+StrengthProgrammeViewModel}.kt; sharedUi common coach/strength/{SharedStrengthProgrammeBuilderScreen,
+SharedCustomStrengthExerciseScreen,SharedProgrammeLabels}.kt. No durable data/schema changes.
+143first metadata/Android compile FAILED55s ONLY mixed named/positional SlotEditor arguments;
+fixed explicit slot/exercises/favourites/recent/archived/excluded/error bindings without defaults
+or removed assertions. FINAL143metadata/debugAPK/testAPK/lint PASS6m39s/176tasks:
+scratch/kmp143-programme-ui-corrected.log. Formatting994files(899Kotlin95Java) applied;
+diffcheck/schema19/source3 PASS. Android/Native runtime for143 NOT yet run.
+
+144helper scratch/port_generation_ui144.py PREPARED ONLY: existing template/revision screen and
+swap/progression/history dialogs, required real date/today/identity/back and exact formatter
+bindings. Approved SharedProgrammeProgressionSheet.kt content MUST NOT be overwritten; helper
+creates separate SharedProgrammeReviewDialogs.kt and SharedProgrammeSwapDialog.kt. Inspect actual
+files before applying ONCE, since scratch source scripts are not idempotent. After143gate inspect
+result; complete144coherently, targeted compile/APKs/lint/source/schema/format, commit and wait
+useful142Native CI before next combined push. Keep all prior tests/assertions. If142CIfails,
+inspect actual completed logs and fix root cause before any rerun. No merging/publishing while
+actual iOS host/services/full app acceptance remain unfinished. Other remaining scope below.
+
+### Latest recovery pointer — 17 November, through142 locally verified (historical)
 
 Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24. All workspace edits137–138
 survived and recovery-only5235f2f was safely fast-forwarded.137–138committed0e01af2;139–140committed

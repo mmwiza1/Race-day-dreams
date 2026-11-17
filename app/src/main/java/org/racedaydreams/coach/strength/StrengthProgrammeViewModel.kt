@@ -13,7 +13,7 @@ import org.racedaydreams.domain.strength.*
 class StrengthProgrammeViewModel(app: Application, private val retained: SavedStateHandle) :
     AndroidViewModel(app) {
     private val executions = SqliteGymExecutionRepository(app)
-    private val shared =
+    internal val shared =
         SharedStrengthProgrammeCoordinator(
             AndroidSqlConnection.forApplication(app),
             SqliteStrengthProgrammingRepository(app),
