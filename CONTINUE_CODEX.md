@@ -5259,6 +5259,23 @@ actual iOS app and complete final gates are unfinished.
   /workspace/scratch/kmp-exercise-detail-final.log. Never infer a pass from116 or the old failed log.
   New files and intentional old exclusion deletion must be preserved. Formatting938sources (843Kotlin/95Java), exact schema19, source3 and formatter14 tests PASS. No117runtime/screenshot claim.
 
+### Checkpoint118 local — common gym programme preview operations
+
+-11752f511c is committed locally, not yet pushed: metadata/debugAPK/testAPK/lint SUCCESS6m11s/
+  176tasks; format938 (843Kotlin/95Java), exact schema19/source3/formatter14 PASS. Original detail,
+  history/PBs/exclusions/host technique preserved. Runtime expected581 remains pending.
+-118 local work moves actual generate/move/reduce/skip/swap/alternative/conflict operations into
+  SharedGymProgrammeOperations. Original Android API delegates and supplies ONE real clock/zone
+  per action, default zone resolved per action so retained coordinators observe timezone changes.
+  Explicit fixed test clocks and real UUID generation are retained. Common operations require
+  clock/ID bindings; no fake defaults, storage writes, auto-activation or new training formula.
+- Existing SEVEN GymProgrammeOperationsTest cases are unchanged and added to focused gate:
+  immutable regeneration, targeted edits, completed-history protection, incompatible-load removal,
+  equipment/measurement alternatives, actual lower-body conflicts, retained-timezone behavior.
+  Next batch expected588Android (581+7), storage639 unchanged. FINAL metadata/Android prod+test
+  compile/lint PASS5m44s/133tasks, formatting939(844Kotlin/95Java), diff clean; log scratch/kmp-gym-preview-final.log. New Native/framework/runtime
+  results cannot be inferred from116 success. Continue remaining shared calendar presentation next.
+
 ### Exact next safe actions and remaining full scope
 
 1.117 common metadata/debugAPK/testAPK/lint and formatting/source checks PASS. Commit the
