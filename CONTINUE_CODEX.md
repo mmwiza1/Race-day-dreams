@@ -62,31 +62,43 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, verified-local checkpoint130
+### Latest recovery pointer — 17 November, pushed130 / local131–132
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Committed local126root/recovery +
-127Apple Healthaba505d +128Home/first-run25923f3 +129running-plan89b74d7 are preserved.130source
-is applied in this committed checkpoint: SharedAchievementsCoordinator/AchievementsState over existing
-SqliteTrainingMilestones and actual caller repositories/scope/clock; Android ViewModel delegates,
-existing screen uses same recognition fields. Two new real SQLite cases retain recognition/actual
-bytes, summary-only reads, failures/retry. Original light/dark/200% UI cases retained. Do NOT rerun
-scratch copy/preparation scripts.130metadata/debugAPK/testAPK/lint PASS7m23s/176tasks in
-`/workspace/scratch/kmp130-achievements-final.log`. No local build failure remains.
-130format968(873Kotlin/95Java) PASS; all116previous focused classes retained,6new classes added
-with no duplicates. Combined expected626Android/655Native are PENDING, not passed.
-129metadata/APKs/lint PASS7m27s/176tasks +format966;128PASS6m44s/176tasks +format964/schema19/
-source3;127PASS9m38s/180tasks +JVM6550fail/error/skip (71XMLs reconfirmed). Current source is locally verified, not yet runtime/Native accepted. Normal push of combined
-126–130to ORIGINAL PR24 is next at commit time; on resume inspect live branch/PR and exact-head
-CI BEFORE repeating a push. The PR body records the actual subsequent push/run identity.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote HEAD is now
+cc18011715bf240ef230e392f8d6e40423ee9c2a:126root,127Apple gateway/body,128Home/first-run,
+129running-plan and130milestone orchestration are COMMITTED/PUSHED to ORIGINAL PR24. All126
+recovery commits are contained; our redundant checkpoint/android-ios-kmp-compose-126 ref was
+verified then deleted. Main85e1c39/owner PR23 unchanged. Source130local metadata/APKs/lint PASS
+7m23s/176tasks, format968/schema19/source3;129PASS7m27s;128PASS6m44s;127JVM655all0fail/error/skip.
 
-Last remote checkpoint before130push was61e038d;125experiment44106763790 SUCCESS on BOTH jobs,610Android/
-700189domain, Native449/27/648 digest-verified; framework linked. Main85e1c39 unchanged. Do not
-wait for125again. Delete temporary recovery branch checkpoint/android-ios-kmp-compose-126 only
-AFTER original PR branch contains its commits. Git works; use connector instead of stale gh API.
-Actual iOS host/full platform effects, remaining active shared UI/navigation and final gates are
-unfinished. No empty host/prototype, domain/storage restart, version/schema/backup/permission
-change, merge or public publication. Native destructive UI OFF until every real operation uses
-one actual lifecycle owner. Physical acceptance remains unperformed.
+ACTUAL130CI: experiment44128266830 is RUNNING, Android134197939370 is in focused runtime,
+Apple134197938719 in Native tests. Android shared-JVM/domain/schema/build steps SUCCESS; no
+new runtime/Native totals claimed yet (expected626Android/Native449+27+655/framework). Separate
+workflow44128267170 formatting134197940917 FAILED BEFORE SOURCE CHECK: pinned formatter
+fetch got Maven HTTP429, all14tool unit tests passed. Local pinned formatting passes. Do NOT
+blindly rerun it or describe this as a source-formatting mismatch.132below fixes actual download
+handling; no green current-head formatting CI claim. Useful Apple CI must finish before new push.
+
+LOCAL131 is APPLIED (do NOT rerun scratch scripts): actual original WorkoutCard, workout detail,
+move/skip/link and manual completion UI now common in SharedPlannedWorkoutScreen. Android
+PlanScreens is thin original bindings; SAME RunningPlanCoordinator/RunningEvidenceCoordinator,
+real date/time/input/recovery/routine callbacks, existing metric/imperial actual-entry assertions.
+No calculation, target, actual/history or activation changes.131metadata/APKs/lint PASS6m30s/176tasks at
+`/workspace/scratch/kmp131-workout-final.log`. No local build failure remains. Format970(875Kotlin/
+95Java) PASS. Existing real CoachingInteractionTest completion/imperial/history cases remain.
+LOCAL132 formatter correction APPLIED in scripts/format-code.py +test-format-code.py: up to3
+transient429/502/503/504 attempts, honours numeric/date Retry-After within SAME60s total budget;
+keeps proxy/CA/pins/size/integrity validation and fails closed on permanent/excessive responses.
+18offline contracts PASS, scratch/kmp131-format-tests.log. No blind CI rerun or weakened check.
+
+Next preserve committed131UI and commit132formatter+handoff, preserve while
+130Apple runs (do not cancel useful Native CI). Push to ORIGINAL PR24 only once current useful
+run completes; if interrupted earlier back up same commits on a temporary checkpoint ref without
+replacement PR/tag. Consult PR body for live run status. Actual iOS APP host/full SDK effects,
+remaining feature-owned services/UI/navigation and final full Android28/35/36/iOS/visual gates
+remain unfinished. Framework is NOT an app. Version/code/schema/backups unchanged; no merge,
+publication or native destructive controls before full app-owned lifecycle integration. Physical
+HealthKit/Health Connect/GPS/BLE/audio/TalkBack/VoiceOver acceptance remains unperformed.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5741,17 +5753,32 @@ one actual lifecycle owner. Physical acceptance remains unperformed.
   formatter968(873Kotlin/95Java), exact schema19/source3 PASS. APK code19/version0.12.3-test1/min28/
   noINTERNET verified. Runtime/Native remain pending; do not reapply already-applied scratch scripts.129gate PASS7m27s;128gate PASS6m44s;127JVM655all0failure/error/skip.
 
+### Checkpoints131–132 in progress — actual workout UI and demonstrated CI download failure
+
+-131moves original workout summary/detail, exact effort/pace instructions, explicit move/skip,
+  completed-activity links, manual actual form and source identities into common Compose. Required
+  original coordinators and real OS date/time/input/recovery/routine bindings remain; Android
+  wrappers invoke SAME commands. Existing actual metric/imperial/history integration assertions
+  are retained, not duplicated/weakened. PlanScreens bindings now pinned-format scoped. Local
+  metadata/APKs/lint PASS6m30s/176tasks at scratch/kmp131-workout-final.log; format970/source3PASS.
+-132fixes actual130format-job HTTP429 before source check, using bounded server-aware retry under
+  original60s budget. HTTP dates/numeric delays, exhaustion, permanent responses, budget/size/time
+  rejection tested; pins/JAR/cache/proxy/CA/symlink/check-mode protections remain. All18offline
+  formatter contracts PASS, scratch/kmp131-format-tests.log. CI fix still unpushed/unverified.
+-130source cc180117 is remote, experiment44128266830 still useful on actual Android/Apple; expected
+  626/655 not claimed passed. Formatting44128267170 FAILED (download429), no blind rerun. Do not
+  cancel this run by pushing131early. Earlier125610/648 proof remains historical, not new source.
+
 ### Exact next safe actions and remaining full scope
 
-1.130local gate PASSED. Preserve/commit130+handoff with12989b74d7/12825923f3/127aba505d/126root/
-   recovery, then normal push combined source ONCE to ORIGINAL PR24. First inspect live branch:
-   if130already pushed, do NOT repush or cancel useful CI. Consult PR body for actual run/head.
-   Verify current-head Android/Native/framework, especially root3/gateway3/Home3/first-run2/plan3/
-   milestone2 and seven Apple SQL contracts/thin SDK facade.125 BOTH jobs already finished;
-   do NOT wait again. Remove temporary recovery branch only AFTER original branch contains its
-   commits. Keep DRAFT24; no version bump/merge/public release. Continue actual iOS app host +
-   remaining active shared UI/navigation/SDK services USING common root and real AppleHealthGateway.
-   No empty host/prototype, domain/storage-kernel restart or premature native destructive controls.
+1.131local gate PASS6m30s/176tasks. Preserve committed131UI and commit132tooling+handoff.
+   Inspect130experiment44128266830 jobs134197939370/134197938719 and actual completed logs/XML;
+   formatting44128267170 HTTP429 is diagnosed and fixed LOCALLY132, not CI-passed. No blind reruns.
+   Keep useful Native/framework run until complete, then normal push131/132ONCE to ORIGINAL PR24.
+   If stopping before that, preserve local commits on a temporary checkpoint branch without a new
+   PR or cancellation. Keep DRAFT24/version unchanged. Continue actual iOS host +remaining active
+   UI/navigation and feature-owned platform integrations. No domain/storage-kernel restart, empty
+   host/prototype, premature native destructive controls, merge or public publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

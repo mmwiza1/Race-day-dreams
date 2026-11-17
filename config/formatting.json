@@ -26,6 +26,7 @@
     "app/src/main/java/org/racedaydreams/coach/CoachUiState.kt",
     "app/src/main/java/org/racedaydreams/coach/CoachViewModel.kt",
     "app/src/main/java/org/racedaydreams/coach/HomeScreen.kt",
+    "app/src/main/java/org/racedaydreams/coach/PlanScreens.kt",
     "app/src/main/java/org/racedaydreams/coach/StrengthTodayScreen.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/StrengthTodayScreenTest.kt",
     "domain/src/main/java/org/racedaydreams/domain/presentation/StrengthTodaySummary.java",
