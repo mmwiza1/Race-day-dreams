@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 154 shared settings cards
+
+Draft PR #24 remote head a85fcf0 is still running experiment 44186678584
+at the last check. Preserve the Android runtime and Apple test/link jobs.
+Checkpoints 152–154 are local on experiment/android-ios-kmp-compose.
+
+154 extracts the existing Android primary-focus and backup settings cards
+into common Compose. Android keeps its actions, test tags, copy and layout.
+AppleSettingsScreen uses those cards with the owned settings coordinator and
+AppleBackupDocuments, including ordinary and complete export actions and
+accessible result feedback. iOS still needs a navigation entry and app host.
+Restore/reset/retention are not exposed by this screen.
+
+Local shared UI metadata and Android debug Kotlin compilation passed in
+2m 18s (62 tasks). Pinned touched-file formatting and diff checks passed.
+Log: /workspace/scratch/kmp154-settings.log. Native compilation and runtime pending.
+Next inspect Apple CI and fix any SDK issues, then push the coherent batch.
+Continue the runnable Xcode app and shared navigation, including this settings
+screen, then complete remaining services and full software/physical verification.
+
 ### Latest recovery pointer — checkpoint 153 Apple backup documents
 
 Draft PR #24 remote head a85fcf0 remains under experiment 44186678584.
