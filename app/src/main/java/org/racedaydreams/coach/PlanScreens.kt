@@ -201,7 +201,7 @@ private fun CompletionForm(state: CoachUiState, model: CoachViewModel, version: 
         CoachInput("Notes (optional)", notes, { notes=it })
         error?.let { Text(it) }
         Button(enabled = !state.busy, onClick = {
-            try { model.runningEvidence.completeRun(version.id(), workout.id(), km.toDouble() * (if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) 1.609344 else 1.0), PaceCalculator.parseTime(duration), LocalDate.parse(date), LocalTime.parse(time),
+            try { model.runningEvidence.completeRun(version.id(), workout.id(), km.toDouble() * (if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL) 1.609344 else 1.0), PaceCalculator.parseTime(duration), LocalDate.parse(date), LocalTime.parse(time).toString(),
                 rpe.takeIf { it.isNotBlank() }?.toDouble(), notes, done); error=null }
             catch (e: Exception) { error=e.message ?: "Check actual values." }
         }, modifier = Modifier.fillMaxWidth().heightIn(min=48.dp)) { Text("Save actual run") }

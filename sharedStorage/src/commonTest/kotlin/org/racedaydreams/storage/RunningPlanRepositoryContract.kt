@@ -639,4 +639,61 @@ abstract class RunningPlanRepositoryContract {
         assertTrue(plans.proposals().isEmpty())
         assertTrue(mirror.plannedWorkouts().isEmpty())
     }
+
+    @Test
+    fun originalRunAssociationAndShoeCommandsRetainIdentityAndJoinCallerRollback() =
+        storage { db, _, _ ->
+            val support = SqliteRunningSupportArchives(db)
+            support.saveShoeDiscomfort(setOf("z-run", "a-run"))
+            assertEquals(setOf("a-run", "z-run"), support.shoeDiscomfort())
+            val original = db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id")
+            assertFails {
+                db.transaction {
+                    support.saveShoeDiscomfort(emptySet())
+                    support.saveRunAssociation("actual", "v1", "done", at)
+                    error("Reject caller batch")
+                }
+            }
+            assertEquals(
+                original,
+                db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"),
+            )
+            support.saveRunAssociation("actual", "v1", "done", at)
+            val association = support.snapshot().release08.records.single { it.id == "actual" }
+            assertEquals(Release08ArchiveJson.Kind.ASSOCIATION, association.kind)
+            assertEquals("actual", association.payload.getValue("activity").jsonPrimitive.content)
+            assertEquals("v1", association.payload.getValue("planVersion").jsonPrimitive.content)
+            assertEquals("done", association.payload.getValue("workout").jsonPrimitive.content)
+            assertEquals(at.toString(), association.payload.getValue("at").jsonPrimitive.content)
+            assertTrue(db.query("SELECT id FROM activities").isEmpty())
+            assertTrue(db.query("SELECT activity_id FROM run_responses").isEmpty())
+        }
+
+    @Test
+    fun originalRunSupportValidatesBeforeWritingAndLateInsertFailureRollsBack() =
+        storage { db, _, _ ->
+            val support = SqliteRunningSupportArchives(db)
+            support.saveShoeDiscomfort(setOf("original"))
+            val original = db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id")
+            assertFails { support.saveShoeDiscomfort(setOf("")) }
+            assertFails { support.saveRunAssociation("", "v1", "done", at) }
+            assertFails { support.saveRunAssociation("actual", "", "done", at) }
+            assertEquals(
+                original,
+                db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"),
+            )
+            db.execute(
+                "CREATE TRIGGER reject_link BEFORE INSERT ON release08 WHEN NEW.kind='association' BEGIN SELECT RAISE(ABORT,'Rejected receipt'); END"
+            )
+            assertFails {
+                db.transaction {
+                    support.saveShoeDiscomfort(setOf("changed"))
+                    support.saveRunAssociation("actual", "v1", "done", at)
+                }
+            }
+            assertEquals(
+                original,
+                db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"),
+            )
+        }
 }

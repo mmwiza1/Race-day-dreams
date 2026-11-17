@@ -229,7 +229,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
             distanceKm,
             duration,
             date,
-            time,
+            time.toString(),
             rpe,
             notes,
             onSuccess,

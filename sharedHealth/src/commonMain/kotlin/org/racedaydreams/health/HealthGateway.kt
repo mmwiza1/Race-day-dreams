@@ -1,7 +1,7 @@
 package org.racedaydreams.health
 
-import java.time.Instant
 import org.racedaydreams.domain.health.HealthImportRepository
+import org.racedaydreams.domain.time.Instant
 
 enum class HealthSyncStatus {
     SUCCESS,

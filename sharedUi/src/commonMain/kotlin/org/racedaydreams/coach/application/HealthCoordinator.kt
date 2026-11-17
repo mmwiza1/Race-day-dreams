@@ -1,26 +1,24 @@
 package org.racedaydreams.coach.application
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.health.HealthAvailability
-import org.racedaydreams.health.HealthConnectGateway
+import org.racedaydreams.health.HealthGateway
 
-/** Optional Health Connect orchestration; core training does not depend on permission. */
+/** Optional platform health orchestration; core training never depends on health access. */
 class HealthCoordinator(
     private val operations: CoachOperationRunner,
-    private val health: HealthConnectGateway,
+    private val health: HealthGateway,
     private val imports: org.racedaydreams.domain.health.HealthImportRepository,
     private val settings: org.racedaydreams.domain.settings.SettingsRepository,
-    private val development: DevelopmentStore,
-    private val bodyMeasurements: org.racedaydreams.data.SqliteBodyMeasurementsRepository,
+    private val bodyPermissions: Set<String>,
+    private val syncBodyMeasurements: suspend () -> String,
 ) {
     fun syncHealth() =
         operations.submit {
             val result = health.sync(imports)
             val bodyMessage =
-                if (health.grantedPermissions().any { it in HealthConnectGateway.BODY_PERMISSIONS })
-                    health.syncBodyMeasurements(bodyMeasurements)
+                if (health.grantedPermissions().any { it in bodyPermissions })
+                    syncBodyMeasurements()
                 else null
             operations.update {
                 it.copy(message = listOfNotNull(result.message, bodyMessage).joinToString("\n"))
@@ -43,9 +41,11 @@ class HealthCoordinator(
         if (autoImport && health.availability() == HealthAvailability.AVAILABLE) {
             val granted = health.grantedPermissions()
             val needsReview =
-                withContext(Dispatchers.IO) { settings.getSetting("baseline.reviewed") != "true" }
+                withContext(applicationIoDispatcher()) {
+                    settings.getSetting("baseline.reviewed") != "true"
+                }
             if (needsReview && granted.isNotEmpty()) {
-                val result = withContext(Dispatchers.IO) { health.sync(imports) }
+                val result = withContext(applicationIoDispatcher()) { health.sync(imports) }
                 operations.update { it.copy(message = result.message) }
             }
         }

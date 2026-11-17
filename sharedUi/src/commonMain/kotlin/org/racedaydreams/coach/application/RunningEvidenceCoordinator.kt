@@ -1,12 +1,5 @@
 package org.racedaydreams.coach.application
 
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.util.UUID
-import org.racedaydreams.data.Release08Store
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.ActivityRepository
 import org.racedaydreams.domain.activity.RecordedResult
@@ -15,18 +8,33 @@ import org.racedaydreams.domain.activity.Shoe
 import org.racedaydreams.domain.activity.ShoeRepository
 import org.racedaydreams.domain.activity.SourceIdentity
 import org.racedaydreams.domain.coaching.CoachingRepository
+import org.racedaydreams.domain.coaching.CoachingTransaction
 import org.racedaydreams.domain.coaching.RunExecution
 import org.racedaydreams.domain.coaching.RunScoreEngine
+import org.racedaydreams.domain.time.*
+import org.racedaydreams.storage.SqliteRunningSupportArchives
 
 /** Actual running evidence and its explicit preserved-prescription associations. */
 class RunningEvidenceCoordinator(
-    private val release: Release08Store,
+    private val release: SqliteRunningSupportArchives,
     private val operations: CoachOperationRunner,
     private val activities: ActivityRepository,
     private val results: ResultRepository,
     private val shoes: ShoeRepository,
     private val coaching: CoachingRepository,
+    private val now: () -> Instant,
+    private val today: () -> LocalDate,
+    private val newId: () -> String,
+    private val localTiming: (LocalDate, String, Duration) -> Timing,
 ) {
+    /** Resolved by the real platform timezone, including an offset change during the run. */
+    data class Timing(
+        val start: Instant,
+        val end: Instant,
+        val startOffset: ZoneOffset,
+        val endOffset: ZoneOffset,
+    )
+
     fun saveResult(result: RecordedResult, onSuccess: () -> Unit = {}) =
         operations.submit("Result saved with its stated source.", onSuccess) {
             results.saveResult(result)
@@ -52,15 +60,7 @@ class RunningEvidenceCoordinator(
             }
             val ids = operations.current.shoeDiscomfort.toMutableSet()
             if (noted) ids.add(activityId) else ids.remove(activityId)
-            release.save(
-                "config",
-                "shoe-feedback",
-                org.json
-                    .JSONObject()
-                    .put("version", 1)
-                    .put("type", "shoe_feedback")
-                    .put("activities", org.json.JSONArray(ids.sorted())),
-            )
+            release.saveShoeDiscomfort(ids)
         }
 
     fun linkRun(activityId: String, versionId: String, workoutId: String, reps: Int? = null) =
@@ -77,7 +77,7 @@ class RunningEvidenceCoordinator(
             val workout =
                 version.plan().workouts().firstOrNull { it.id() == workoutId }
                     ?: throw IllegalArgumentException("Workout not found.")
-            require(workout.date() <= LocalDate.now()) {
+            require(workout.date().toEpochDay() <= today().toEpochDay()) {
                 "A future workout cannot be marked completed."
             }
             require(
@@ -96,25 +96,19 @@ class RunningEvidenceCoordinator(
                     null,
                     "Runner explicitly linked activity to prescription",
                 )
-            coaching.transaction {
-                coaching.saveResponse(response)
-                release.save(
-                    "association",
-                    activityId,
-                    org.json
-                        .JSONObject()
-                        .put("version", 1)
-                        .put("activity", activityId)
-                        .put("planVersion", versionId)
-                        .put("workout", workoutId)
-                        .put("at", Instant.now().toString()),
-                )
-                coaching.saveFeedback(
-                    activity.id(),
-                    version.id(),
-                    RunScoreEngine.analyse(workout, activity, response),
-                )
-            }
+            coaching.transaction(
+                object : CoachingTransaction {
+                    override fun run() {
+                        coaching.saveResponse(response)
+                        release.saveRunAssociation(activityId, versionId, workoutId, now())
+                        coaching.saveFeedback(
+                            activity.id(),
+                            version.id(),
+                            RunScoreEngine.analyse(workout, activity, response),
+                        )
+                    }
+                }
+            )
         }
 
     fun completeRun(
@@ -123,21 +117,23 @@ class RunningEvidenceCoordinator(
         distanceKm: Double,
         duration: Duration,
         date: LocalDate,
-        time: LocalTime,
+        time: String,
         rpe: Double?,
         notes: String,
         onSuccess: (String) -> Unit,
     ) {
-        val id = UUID.randomUUID().toString()
+        val id = newId()
         operations.submit(onSuccess = { onSuccess(id) }) {
             require(distanceKm.isFinite() && distanceKm > 0 && distanceKm <= 300) {
                 "Enter an actual distance between 0 and 300 km."
             }
-            require(!duration.isZero && !duration.isNegative && duration <= Duration.ofHours(48)) {
+            require(
+                !duration.isZero() && !duration.isNegative() && duration <= Durations.ofHours(48)
+            ) {
                 "Enter a positive actual duration of up to 48 hours."
             }
-            val start = date.atTime(time).atZone(ZoneId.systemDefault())
-            require(!start.toInstant().plus(duration).isAfter(Instant.now())) {
+            val timing = localTiming(date, time, duration)
+            require(!timing.end.isAfter(now())) {
                 "A completed run must end before the current time."
             }
             val version =
@@ -146,7 +142,7 @@ class RunningEvidenceCoordinator(
             val workout =
                 version.plan().workouts().firstOrNull { it.id() == workoutId }
                     ?: throw IllegalArgumentException("Workout not found.")
-            require(workout.date() <= LocalDate.now()) {
+            require(workout.date().toEpochDay() <= today().toEpochDay()) {
                 "A future prescription cannot be marked completed."
             }
             require(activities.activities().none { it.plannedWorkoutId() == workoutId }) {
@@ -156,10 +152,10 @@ class RunningEvidenceCoordinator(
                 ActivityRecord(
                     id,
                     SourceIdentity("manual", id, null),
-                    start.toInstant(),
-                    start.toInstant().plus(duration),
-                    start.offset,
-                    start.plus(duration).offset,
+                    timing.start,
+                    timing.end,
+                    timing.startOffset,
+                    timing.endOffset,
                     distanceKm * 1000,
                     null,
                     null,
@@ -182,15 +178,19 @@ class RunningEvidenceCoordinator(
                     null,
                     "Manually recorded actual run; no splits or reps invented",
                 )
-            coaching.transaction {
-                activities.upsertManualActivity(activity)
-                coaching.saveResponse(response)
-                coaching.saveFeedback(
-                    id,
-                    versionId,
-                    RunScoreEngine.analyse(workout, activity, response),
-                )
-            }
+            coaching.transaction(
+                object : CoachingTransaction {
+                    override fun run() {
+                        activities.upsertManualActivity(activity)
+                        coaching.saveResponse(response)
+                        coaching.saveFeedback(
+                            id,
+                            versionId,
+                            RunScoreEngine.analyse(workout, activity, response),
+                        )
+                    }
+                }
+            )
         }
     }
 }

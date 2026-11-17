@@ -2,7 +2,7 @@ package org.racedaydreams.storage
 
 import kotlinx.serialization.json.*
 
-/** Read-only original support tables in one existing-database transaction. No restore commands. */
+/** Original running-support records over the existing database. No independent restore owner. */
 class SqliteRunningSupportArchives(private val database: SqlDatabase) {
     data class SchedulePreferences(
         val maximumMinutes: Int,
@@ -37,6 +37,65 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
                     .toSet()
             )
         } ?: emptySet()
+
+    /** The existing preference, not a new data bucket or an inferred cause of discomfort. */
+    fun saveShoeDiscomfort(activities: Set<String>) =
+        saveOriginal(
+            "config",
+            "shoe-feedback",
+            buildJsonObject {
+                put("version", 1)
+                put("type", "shoe_feedback")
+                put("activities", JsonArray(activities.sorted().map(::JsonPrimitive)))
+            },
+        )
+
+    /** Explicit link receipt; the calling coaching transaction also saves response and feedback. */
+    fun saveRunAssociation(
+        activity: String,
+        planVersion: String,
+        workout: String,
+        at: org.racedaydreams.domain.time.Instant,
+    ) =
+        saveOriginal(
+            "association",
+            activity,
+            buildJsonObject {
+                put("version", 1)
+                put("activity", activity)
+                put("planVersion", planVersion)
+                put("workout", workout)
+                put("at", at.toString())
+            },
+        )
+
+    private fun saveOriginal(kind: String, id: String, payload: JsonObject) {
+        // Validate through the exact existing archive contract before modifying retained bytes.
+        Release08ArchiveJson.decode(
+            buildJsonObject {
+                put("version", 1)
+                put(
+                    "rows",
+                    buildJsonArray {
+                        add(
+                            buildJsonObject {
+                                put("kind", kind)
+                                put("id", id)
+                                put("payload", payload)
+                            }
+                        )
+                    },
+                )
+            }
+        )
+        val values =
+            listOf(SqlValue.Text(payload.toString()), SqlValue.Text(kind), SqlValue.Text(id))
+        database.transaction {
+            database.execute("UPDATE release08 SET payload=? WHERE kind=? AND id=?", values)
+            if (database.query("SELECT changes()").single().single().sqlLong() == 0L)
+                database.execute("INSERT INTO release08(payload,kind,id) VALUES(?,?,?)", values)
+        }
+    }
 
     private fun configuration(id: String): JsonObject? {
         val payload =

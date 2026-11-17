@@ -64,17 +64,19 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Local checkpoint123 is committed
-as `534b7c3`; shared StrengthCoordinator, typed history/association commands and their tests
-passed JVM646 (0 failures/errors/skips), common metadata, debug/test APK and lint (9m23s).
-Remote122 `1e2d6ff` run44091963612attempt2 completed: Android597/598 passed; sole failure was
-new regeneration test's arbitrary ID absent from real generated plan. Corrected fixture seeds
-actual generator identities; ALL original history/source/target assertions retained. Production
-preservation rules unchanged. Focused real-generator probe PASS; corrected test APK/lint PASS
-2m16s/140tasks. Format946 PASS. Apple449domain/27health/643storage/framework passed for122.
-Push123 +fixture correction once; no useful job remains running. Expected next601Android /
-646storage Native/framework. Continue remaining application services/shared UI/root and REAL iOS
-app; framework is not app acceptance. No schema/backup/version/permission/publication changes.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote checkpoint123 +fixture fix
+is `02efa0cbe2e8156e52017b66be4e90812dc4d634`: experiment44100154646 SUCCESS on BOTH Android
+and Apple. Completed Android log confirms601unique tests/0failures/skips,700189domain checks;
+Native449domain/27health/646storage XML independently digest-verified, framework linked.
+Formatting44100154566 SUCCESS. Main85e1c39 and separate owner PR23 unchanged.
+LOCAL124 running-evidence +health orchestration is complete and locally verified. Health25 /
+storage648 JVM0fail/error/skip, common metadata/debug+test APK/lint PASS8m24s/182tasks,
+scratch/kmp-running-health-final.log. Format949(854Kotlin/95Java), schema19/source3 PASS.
+Preserve moved common sources and real Android bindings. Next prepared batch is actual settings
+orchestration/native document+alarm boundary. Combine coherent changes before the next push;
+current124 would expect607Android/648Native, not yet runtime/Native verified.
+No schema/backup/version/permission change, early merge/publication or native destructive UI.
+Actual iOS APP/root/platform/final gates remain incomplete; framework is not app acceptance.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5538,13 +5540,51 @@ app; framework is not app acceptance. No schema/backup/version/permission/public
   RunningEvidence/platform health/settings/application root/active UI/navigation and genuine iOS
   host/services. Native destructive controls remain OFF until full operation-owner bindings.
 
+### Checkpoint124 — actual shared running evidence and optional health orchestration
+
+- Original RunningEvidenceCoordinator now common, same FQN and business rules. Results, shoes,
+  notes, explicit associations, completion guards and no-invented-splits/effort remain unchanged.
+  Required actual platform callbacks supply clock/today/IDs and local date/time+duration conversion
+  with BOTH original offsets, including DST and nanoseconds. Existing ViewModel LocalTime API
+  retained; direct shared calls pass canonical time text (including old completion test).
+- Original release08 shoe-feedback and run-association commands have typed shared entrypoints
+  through the existing codec. UPDATE/INSERT join the original outer coaching transaction,
+  preserving actual/response/receipt/feedback atomicity. No new JSON bucket, schema or engine.
+- TWO new real JDBC/Apple contracts verify exact association identity/time, sorted shoe choices,
+  no actual creation, before-write validation, caller rollback and late receipt insertion failure.
+  THREE actual Android SQL/runner cases cover DST/nanoseconds/manual-source/default shoe/unknown
+  effort/no invented samples, immutable original targets, duplicate/future guards, imported
+  provenance +raw-payload preservation, explicit receipts and feedback-failure rollback. Callback
+  observation uses Main idle barrier, not arbitrary delays.
+- Actual HealthGateway/result types and HealthCoordinator now common; original Health Connect
+  SDK/permission/body-reader work remains Android, supplied through required boundaries. Original
+  empty/partial/revoked permissions and reviewed-baseline auto-import rules remain unchanged.
+  THREE new Android cases verify optional manual fallback, selective body sync, fresh permission
+  checks and availability/review gating; no HealthKit read grant is fabricated.
+- Final local health25/storage648 JVM ALL0fail/error/skip, metadata/debugAPK/testAPK/lint PASS
+  8m24s/182tasks, scratch/kmp-running-health-final.log. Format949(854Kotlin/95Java), exact schema19 /
+  source3 PASS. Initial test build identified direct old LocalTime call; adapted SAME time value,
+  assertions untouched. Corrected running-only testAPK/lint passed2m32s before health batch.
+- Remote12302efa0c experiment44100154646 is now SUCCESS:601unique Android0fail/skips,
+  700189domain checks; JVM490/25/646 and Native449/27/646 independently digest-verified. JVM
+  artifact14337745181 SHA6b1a148e3c5370d90ab16c6064741c2cf4dc100614af526b79e5138365ca5ff5;
+  Native14335498585 SHAaef6c8854a5e2d811ee05dc95b87ee92c8e0116e8dafc4263aeaa81b6c93d53d.
+  Framework14337046422 linked (metadata62068122/SHA0c4ccc6a8fa350afeb1bce005fb335dde2a6ef080af638ef25e4c81f42c603c5),
+  NOT iOS app. APK14337590293 verified58418502bytes/SHA342af9fc08817215a1398e5170e57d34825fa2a1b298bab9e5ba6954884fd985,
+  code19/min28/noINTERNET. Proof scratch/kmp123-{android,native}/verification.json.
+- Next: actual SettingsCoordinator common orchestration +native document/backup/alarm adapter,
+  preserving existing backup/reminder owners. Prepared script scratch/share_settings_coordinator.py
+  is NOT yet applied. Then final local compilation/relevant tests and one coherent push to DRAFT24.
+  Current124 would expect607Android/648Native; never infer that result from prior123 proof.
+
 ### Exact next safe actions and remaining full scope
 
-1. Preserve123commit534b7c3 and corrected generation fixture. Final local testAPK/lint PASS
-   2m16s/140tasks, format946 PASS. Commit correction and push coherent candidate to existing
-   DRAFT24; prior run finished597/598 (fixture issue above), Apple643/framework SUCCESS.
-   Verify next601Android/646Native/framework; diagnose actual failures. Continue original remaining
-   services/UI/root/native application; no premature merge/publication or destructive native UI.
+1. Preserve124 locally verified running-evidence/health source. Apply prepared settings batch
+   only after completed build; inspect resulting source and add/run required focused tests.
+   Prior remote12302efa0c passed601Android/Native646/framework; next candidate results pending.
+   Finish settings batch, update handoff, commit/push coherent source once, inspect actual CI.
+   Then prioritize shared application root/active navigation and REAL iOS app host/platform wiring;
+   do not restart completed domain/storage kernels. Native destructive UI remains disabled.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

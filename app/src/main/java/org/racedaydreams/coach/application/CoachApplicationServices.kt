@@ -8,9 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.racedaydreams.coach.shortDate
 import org.racedaydreams.data.AndroidSqlConnection
 import org.racedaydreams.data.CoachingStore
-import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.data.FeatureStore
-import org.racedaydreams.data.Release08Store
 import org.racedaydreams.data.SqlitePrimaryFocusRepository
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.health.HealthConnectGateway
@@ -29,10 +27,8 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
         )
     private val store = FeatureStore(app)
     private val coaching = CoachingStore(app)
-    private val development = DevelopmentStore(app)
     private val profiles = SqliteUserPreferencesRepository(app)
     private val reminders = EveningReminders(app, store)
-    private val release = Release08Store(app)
     private val focus = SqlitePrimaryFocusRepository(store.settingsRepository())
     val healthGateway = HealthConnectGateway(app)
     private val snapshot =
@@ -88,12 +84,28 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
         )
     val runningEvidence =
         RunningEvidenceCoordinator(
-            release,
+            org.racedaydreams.storage.SqliteRunningSupportArchives(database),
             operations,
             store.activityRepository(),
             store.resultRepository(),
             store.shoeRepository(),
             coaching,
+            Instant::now,
+            LocalDate::now,
+            { UUID.randomUUID().toString() },
+            { date, time, duration ->
+                val start =
+                    date
+                        .atTime(java.time.LocalTime.parse(time))
+                        .atZone(java.time.ZoneId.systemDefault())
+                val end = start.plus(duration)
+                RunningEvidenceCoordinator.Timing(
+                    start.toInstant(),
+                    end.toInstant(),
+                    start.offset,
+                    end.offset,
+                )
+            },
         )
     val strength =
         StrengthCoordinator(
@@ -128,8 +140,12 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             healthGateway,
             store.activityRepository(),
             store.settingsRepository(),
-            development,
-            org.racedaydreams.data.SqliteBodyMeasurementsRepository(app),
+            HealthConnectGateway.BODY_PERMISSIONS,
+            {
+                healthGateway.syncBodyMeasurements(
+                    org.racedaydreams.data.SqliteBodyMeasurementsRepository(app)
+                )
+            },
         )
     val settings =
         SettingsCoordinator(
