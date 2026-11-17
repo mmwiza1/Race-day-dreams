@@ -316,7 +316,7 @@ private fun AppleAppContent(
                     activityId?.let {
                         AppleStrengthRecord(state, it) { page = ApplePage.ACHIEVEMENTS }
                     }
-                ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it) }
+                ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it, controller) }
                 ApplePage.START ->
                     if (state.loading) {
                         CoachPage { Text("Loading local training…") }

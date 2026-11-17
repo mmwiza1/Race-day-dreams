@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 181 shared GPX export and Apple compile fix
+
+The iOS recorded-route view can export retained GPX via the existing native
+document picker. Android and iOS now use one writer for coordinates,
+timestamps, elevation and segment boundaries. Removed or insufficient
+detail cannot be exported. The focused GPX writer test and Android debug
+Kotlin compilation passed. Native document picker behavior and GPX import
+on iOS remain pending.
+
+Experiment 44198176072 ended with Android success and Apple Native test
+success, then failed compiling the Compose framework on the unresolved
+AVSpeechBoundaryImmediate import. The call now uses the AVSpeechBoundary
+enum member. Push the queued batch and check the new Apple compile before
+claiming a fix. Continue simulator startup and the unfinished native
+feature parity and full verification. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 180 truthful iOS run history
 
 Run details now read the stored recording-removal receipt alongside the

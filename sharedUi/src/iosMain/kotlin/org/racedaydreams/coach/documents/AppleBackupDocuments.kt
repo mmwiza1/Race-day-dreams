@@ -7,12 +7,14 @@ import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import org.racedaydreams.domain.portability.RecordedGpxWriter
 import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.storage.BackupArchiveSource
 import org.racedaydreams.storage.BackupEnvelopeJson
 import org.racedaydreams.storage.BackupStagingFile
 import org.racedaydreams.storage.LocalBackupOperations
 import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
+import org.racedaydreams.storage.SqliteActivities
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSThread
 import platform.Foundation.NSURL
@@ -44,6 +46,37 @@ class AppleBackupDocuments(
     private var importPicker: ImportPicker? = null
 
     suspend fun export(kind: Kind, presenter: UIViewController, complete: (Outcome) -> Unit) {
+        exportDocument(presenter, complete) {
+            stage(kind.filename) { directory, write ->
+                when (kind) {
+                    Kind.APP -> exports.writeApp(write)
+                    Kind.COMPLETE -> exports.writeComplete(directory, write)
+                }
+            }
+        }
+    }
+
+    suspend fun exportRecordedRoute(
+        activityId: String,
+        activities: SqliteActivities,
+        presenter: UIViewController,
+        complete: (Outcome) -> Unit,
+    ) =
+        exportDocument(presenter, complete) {
+            val route = activities.recordedRoute(activityId)
+            check(!route.detailRemoved) {
+                "Detailed route data was removed. The run summary is retained."
+            }
+            stage("Race-Day-Dreams-run.gpx") { _, write ->
+                RecordedGpxWriter.write(route.points) { write(it.encodeToByteArray()) }
+            }
+        }
+
+    private suspend fun exportDocument(
+        presenter: UIViewController,
+        complete: (Outcome) -> Unit,
+        stage: () -> StagedDocument,
+    ) {
         check(NSThread.isMainThread)
         check(
             !staging &&
@@ -53,11 +86,11 @@ class AppleBackupDocuments(
         ) {
             "Finish the open document export first."
         }
-        check(presenter.viewIfLoaded?.window != null) { "Open the app before exporting a backup." }
+        check(presenter.viewIfLoaded?.window != null) { "Open the app before exporting a file." }
         staging = true
         var document: StagedDocument? = null
         try {
-            withContext(io) { document = stage(kind) }
+            withContext(io) { document = stage() }
             val staged = checkNotNull(document)
             check(
                 presenter.viewIfLoaded?.window != null && presenter.presentedViewController == null
@@ -249,10 +282,13 @@ class AppleBackupDocuments(
         }
     }
 
-    private fun stage(kind: Kind): StagedDocument {
+    private fun stage(
+        filename: String,
+        capture: (String, (ByteArray) -> Unit) -> Unit,
+    ): StagedDocument {
         val directory = NSTemporaryDirectory().trimEnd('/') + "/rdd-export-" + NSUUID().UUIDString
         check(mkdir(directory, 448u.toUShort()) == 0) { "Cannot create private export directory." }
-        val document = StagedDocument(directory, "$directory/${kind.filename}")
+        val document = StagedDocument(directory, "$directory/$filename")
         try {
             val stream = checkNotNull(fopen(document.path, "wb")) { "Cannot open private export." }
             try {
@@ -263,22 +299,19 @@ class AppleBackupDocuments(
                                 fwrite(it.addressOf(0), 1u, bytes.size.toULong(), stream)
                             }
                         check(count == bytes.size.toULong()) {
-                            "Could not write the complete backup."
+                            "Could not write the complete export."
                         }
                     }
                 }
-                when (kind) {
-                    Kind.APP -> exports.writeApp(write)
-                    Kind.COMPLETE -> exports.writeComplete(directory, write)
-                }
+                capture(directory, write)
                 check(fflush(stream) == 0 && fsync(fileno(stream)) == 0) {
-                    "Could not flush the backup."
+                    "Could not flush the export."
                 }
             } catch (failure: Throwable) {
                 fclose(stream)
                 throw failure
             }
-            check(fclose(stream) == 0) { "Could not close the backup." }
+            check(fclose(stream) == 0) { "Could not close the export." }
             return document
         } catch (failure: Throwable) {
             document.remove()

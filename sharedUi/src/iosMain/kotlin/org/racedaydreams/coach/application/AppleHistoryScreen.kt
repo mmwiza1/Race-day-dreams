@@ -5,8 +5,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import kotlin.math.roundToLong
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.*
+import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.activity.ActivityRecord
@@ -14,6 +16,7 @@ import org.racedaydreams.domain.activity.ActivitySources
 import org.racedaydreams.domain.activity.SplitAnalysis
 import org.racedaydreams.domain.activity.SplitCalculator
 import org.racedaydreams.domain.time.*
+import platform.UIKit.UIViewController
 
 @Composable
 fun AppleHistoryScreen(
@@ -73,7 +76,10 @@ fun AppleHistoryScreen(
 }
 
 @Composable
-fun AppleRunDetails(session: AppleCoachSession<*>, id: String) {
+fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIViewController) {
+    val scope = rememberCoroutineScope()
+    var exporting by remember(id) { mutableStateOf(false) }
+    var exportStatus by remember(id) { mutableStateOf<String?>(null) }
     val state by session.services.operations.state.collectAsState()
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
     var activity by remember(id) { mutableStateOf<ActivityRecord?>(null) }
@@ -168,6 +174,48 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String) {
                             else -> SharedLiveRecordedRoute(route, unavailable = route == null)
                         }
                     }
+                    if (
+                        showRoute &&
+                            !routeLoading &&
+                            !routeFailed &&
+                            !detailRemoved &&
+                            (route?.xy?.size ?: 0) >= 2
+                    ) {
+                        TextButton(
+                            enabled = !exporting,
+                            onClick = {
+                                exporting = true
+                                exportStatus = null
+                                scope.launch {
+                                    try {
+                                        session.backupDocuments.exportRecordedRoute(
+                                            id,
+                                            session.activities,
+                                            presenter,
+                                        ) {
+                                            exporting = false
+                                            exportStatus =
+                                                when (it) {
+                                                    AppleBackupDocuments.Outcome.SAVED ->
+                                                        "GPX file saved."
+                                                    AppleBackupDocuments.Outcome.CANCELLED ->
+                                                        "GPX export cancelled."
+                                                }
+                                        }
+                                    } catch (cancelled: CancellationException) {
+                                        throw cancelled
+                                    } catch (failure: Exception) {
+                                        exporting = false
+                                        exportStatus =
+                                            failure.message ?: "Could not export the route."
+                                    }
+                                }
+                            },
+                        ) {
+                            Text("Export recorded route (GPX)")
+                        }
+                    }
+                    exportStatus?.let { Text(it) }
                     TextButton(onClick = { showSplits = !showSplits }) {
                         Text(if (showSplits) "Hide splits" else "View splits")
                     }

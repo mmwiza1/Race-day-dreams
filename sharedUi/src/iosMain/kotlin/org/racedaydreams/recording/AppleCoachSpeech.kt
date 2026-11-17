@@ -2,7 +2,7 @@
 
 package org.racedaydreams.recording
 
-import platform.AVFAudio.AVSpeechBoundaryImmediate
+import platform.AVFAudio.AVSpeechBoundary
 import platform.AVFAudio.AVSpeechSynthesizer
 import platform.AVFAudio.AVSpeechUtterance
 
@@ -17,6 +17,6 @@ internal class AppleCoachSpeech {
     }
 
     fun stop() {
-        synthesizer.stopSpeakingAtBoundary(AVSpeechBoundaryImmediate)
+        synthesizer.stopSpeakingAtBoundary(AVSpeechBoundary.AVSpeechBoundaryImmediate)
     }
 }
