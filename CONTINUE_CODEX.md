@@ -64,16 +64,15 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Pushed HEAD is
-`6d72b94042b7f4401c903e174bd709e7011bdc0c` (117–120 batch). Experiment44083171900 is RUNNING;
-format44083171002 SUCCESS. Native449domain/27health/641storage is now byte-verified PASS; Android592/framework are pending. Prior1169cd4adf
-is fully green/byte-verified (Android576, Native449domain/27health/639storage, JVM490/25/639).
-120local JVM641 +metadata/debugAPK/testAPK/lint9m21s/180tasks, format942/source3/schema19 PASS.
-121shared baseline service +3new SQL/runner tests passes local metadata/APKs/lint6m29s,
-final corrected-input testAPK/lint45s and format944. Detail-test oracle correction is local
-commit992bcba; baseline service is ready to commit. Neither is pushed yet. Preserve all files/commits. See latest121.
-No version/formats changes, merge/publication/native destructive UI or fake bindings. Remaining
-services/UI/root/navigation/actual iOS app and complete final gates remain unfinished.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Pushed120HEAD is
+`6d72b94042b7f4401c903e174bd709e7011bdc0c`. Experiment44083171900 completed: Apple tests/framework
+SUCCESS; Android591of592passed, ONE confirmed new-test oracle error (literal6RM). Format44083171002
+SUCCESS. Byte-verified Native449domain/27health/641storage and JVM490/25/641 have0fail/error/skip.
+Corrective test commit992bcba +baseline service3eb93a5 are committed LOCALLY, not yet pushed.
+121metadata/APKs/lint6m29s +FINAL corrected-input testAPK/lint45s/format944/source3/schema19 PASS.
+Push121+this recovery ONCE (prior useful gate complete), verify595Android/Native641/framework.
+See latest121actual evidence below. No version/formats changes, merge/publication/native destructive
+UI or fake bindings. Remaining services/UI/root/navigation/actual iOS app/full gates are unfinished.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5372,14 +5371,35 @@ services/UI/root/navigation/actual iOS app and complete final gates remain unfin
   testAPK/lint/format, commit121+handoff and push ONCE, expected595Android/Native641/framework.
   Then remaining services/root/active UI and real iOS host; never merge incomplete migration.
 
+### Checkpoint120 final CI outcome /121 ready to push
+
+- Experiment44083171900 COMPLETED on6d72b94. Apple134038689805 SUCCESS: Native tests15m14s and
+  real common UI framework linkage4m45s. Framework artifact14328624574 (metadata ZIP61978408bytes,
+  SHA49222470c7aecd2ba18fbc33a5c8d82ebeb011dc941487a076db26ed499b7d02); not an iOS app.
+- Android134038690212 executed592distinct matching START/END tests; exactly ONE failed:
+  SharedExerciseDetailTest.recordedAndEstimatedRecordsStayDistinctAndOpenTheActualSourceWorkout
+  expected literal6RM (no such label). Other591passed, including BOTH new calendar tests, existing
+  calendar accessibility, seven preview cases, exclusions and remaining detail tests. Actual log
+  scratch/kmp120-android-job.log. No product/PB engine defect asserted or masked; do not rerun bad head.
+  Fix992bcba already uses the actual label and exactly2actual value nodes (stronger correct oracle).
+- Independently downloaded/digest-verified JVM artifact14329965774:185441bytes,
+  SHA1df147a211c98299dde9f538e3ee76535934e65a422c8bdbf2f3725d7f3385e1,
+  490domain/25health/641storage ALL0fail/error/skip. Native14328303292 proof above also641PASS.
+  scratch/kmp120-jvm/verification.json; Native kmp120-native/verification.json. No APK artifact
+  published/uploaded from failing Android checkpoint; no public build or merge.
+-121baseline source3eb93a5 and test correction992bcba are committed locally and fully compiled:
+  metadata/debugAPK/testAPK/lint6m29s/176tasks, final exact corrected-input testAPK/lint45s/140tasks,
+  format944(849Kotlin/95Java)/schema19/source3 PASS. Native/runtime of121pending. Preserve both.
+- Next: push these local commits +this coherent recovery ONCE to existing DRAFT24 (old CI now
+  complete, no cancellation). New expected595Android/Native641/framework. Inspect exact result,
+  fix real failures; continue original remaining application services/active UI/root/native app.
+
 ### Exact next safe actions and remaining full scope
 
-1.121local metadata/APKs/lint6m29s +FINAL corrected-input testAPK/lint45s/format944 PASS.
-   Commit baseline service+handoff; local test-oracle fix992bcba is already committed. Inspect
-   pushed120experiment44083171900 actual Android592/framework (format and byte-verified Native641
-   passed). Diagnose real failures, preserving stronger correct label/value count assertion.
-   Push121 ONCE when prior useful gate completes; then verify595Android/Native641/framework.
-   Continue remaining original application/root/native app scope; never merge framework-only work.
+1. Push121baseline3eb93a5 +corrective test992bcba +this recovery ONCE.120CI has completed:
+   Apple/framework and byte-verified JVM/Native641PASS, Android591of592pass with the confirmed
+   already-corrected literal6RM test oracle failure. Verify NEW595Android/Native641/framework,
+   not old results; no weakened assertions/retries of bad head. Continue remaining actual app scope.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
