@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 180 truthful iOS run history
+
+Run details now read the stored recording-removal receipt alongside the
+summary. Removed detail gives an explicit explanation in both route and
+split views without calculating splits or rehydrating GPS samples.
+The shared route reader recognizes receipts by activity even when no
+finished session header is available.
+
+The focused JVM retention and recording inventory gates passed 21 tests.
+These include retained distance, empty samples and coordinates, and
+explicit removal provenance after cleanup. Pinned formatting, diff checks
+and 19 migration boundaries passed.
+
+Remote PR #24 head is 7558809. Android completed successfully on run
+44198176072. Apple was still compiling and testing at the last check.
+Preserve this run and inspect its final result before pushing checkpoints
+174–180. Native startup, backup picker, storage and retention dialogs still
+need simulator verification. Continue platform parity and full gates
+before merge or publication.
+
 ### Latest recovery pointer — checkpoint 179 iOS retention cleanup
 
 iOS can separately confirm removal from the reviewed preview for a saved

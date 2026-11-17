@@ -79,6 +79,7 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String) {
     var activity by remember(id) { mutableStateOf<ActivityRecord?>(null) }
     var splits by remember(id, imperial) { mutableStateOf<SplitAnalysis?>(null) }
     var route by remember(id) { mutableStateOf<PreparedLiveRoute?>(null) }
+    var splitDetailRemoved by remember(id) { mutableStateOf(false) }
     var detailRemoved by remember(id) { mutableStateOf(false) }
     var showRoute by remember(id) { mutableStateOf(false) }
     var showSplits by remember(id) { mutableStateOf(false) }
@@ -86,16 +87,23 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String) {
     var failed by remember(id) { mutableStateOf(false) }
     LaunchedEffect(id, imperial) {
         try {
-            val (run, analysis) =
+            val (detail, analysis) =
                 withContext(applicationIoDispatcher()) {
-                    val run = session.activities.activityDetail(id)
-                    run to
-                        run?.let {
-                            SplitCalculator.calculate(it, if (imperial) 1609.344 else 1000.0)
-                        }
+                    val detail = session.activities.recordedRunDetail(id)
+                    val analysis =
+                        detail
+                            ?.takeUnless { it.detailRemoved }
+                            ?.let {
+                                SplitCalculator.calculate(
+                                    it.activity,
+                                    if (imperial) 1609.344 else 1000.0,
+                                )
+                            }
+                    detail to analysis
                 }
-            activity = run
+            activity = detail?.activity
             splits = analysis
+            splitDetailRemoved = detail?.detailRemoved == true
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {
@@ -165,8 +173,11 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String) {
                     }
                     if (showSplits) {
                         val analysis = splits
-                        if (analysis?.splits().isNullOrEmpty())
+                        if (splitDetailRemoved) {
+                            Text("Detailed recording data was removed. Splits are unavailable.")
+                        } else if (analysis?.splits().isNullOrEmpty()) {
                             Text("Qualified split data is unavailable.")
+                        }
                         analysis?.reasons()?.forEach { Text(it) }
                         analysis?.splits()?.forEach { split ->
                             Text(

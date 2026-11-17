@@ -122,6 +122,13 @@ abstract class RetentionPolicyRepositoryContract {
         val usage = owner.recordingInventory().usage
         assertEquals(0L, usage.pointRows)
         assertEquals(1L, usage.activityRows)
+        val activities = SqliteActivities(db) { clock }
+        val detail = assertNotNull(activities.recordedRunDetail("activity"))
+        assertTrue(detail.detailRemoved)
+        assertTrue(detail.activity.samples().isEmpty())
+        assertEquals(100.0, detail.activity.distanceMetres())
+        assertTrue(activities.recordedRoute("activity").detailRemoved)
+        assertTrue(activities.recordedRoute("activity").points.isEmpty())
     }
 
     @Test

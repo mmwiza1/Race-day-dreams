@@ -135,11 +135,34 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
         return activity.copy(samples = samples)
     }
 
+    data class RecordedRunDetail(val activity: ActivityRecord, val detailRemoved: Boolean)
+
+    fun recordedRunDetail(activityId: String): RecordedRunDetail? =
+        database.transaction {
+            val activity =
+                snapshot(false, onlyId = activityId).firstOrNull() ?: return@transaction null
+            val removed = hasRemovalReceipt(activityId)
+            RecordedRunDetail(
+                if (removed) activity.copy(samples = emptyList())
+                else withRetainedSamples(activity),
+                removed,
+            )
+        }
+
+    private fun hasRemovalReceipt(activityId: String): Boolean =
+        database
+            .query(
+                "SELECT 1 FROM recording_detail_removals WHERE activity_id=?",
+                listOf(SqlValue.Text(activityId)),
+            )
+            .isNotEmpty()
+
     data class RecordedRoute(val points: List<RunMetricsEngine.Point>, val detailRemoved: Boolean)
 
     /** Reads only retained normalized coordinates. Missing coordinates are never reconstructed. */
     fun recordedRoute(activityId: String): RecordedRoute =
         database.transaction {
+            if (hasRemovalReceipt(activityId)) return@transaction RecordedRoute(emptyList(), true)
             val key =
                 database
                     .query(
@@ -149,9 +172,8 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
                     .firstOrNull()
                     ?.single()
                     ?.sqlText() ?: return@transaction RecordedRoute(emptyList(), false)
-            val removed = SqliteRecordingDetailReceipts(database).removal(key) != null
-            val points = buildList { if (!removed) readRecordingPoints(key) { add(it) } }
-            RecordedRoute(points, removed)
+            val points = buildList { readRecordingPoints(key) { add(it) } }
+            RecordedRoute(points, false)
         }
 
     private fun readRecordingPoints(key: String, consume: (RunMetricsEngine.Point) -> Unit) {
