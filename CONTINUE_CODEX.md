@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 182 shared GPX import storage
+
+Shared SQLite can ingest timestamped GPX track segments through the
+existing recording engine and atomic finalisation. It preserves segment
+breaks, avoids inventing distance across gaps, leaves moving time unknown,
+deduplicates identical imported tracks and protects unfinished recordings.
+The focused JDBC recording inventory gate passed 12 tests. Pinned touched
+formatting, diff checks and 19 shared schema boundaries passed.
+
+PR #24 is at 9bc0737. Experiment 44201909878 is running Android and Apple.
+Keep this run intact. Next wire a bounded iOS XML decoder and document
+picker to the tested storage path. Confirm duplicate behavior for exported
+native runs and verify Android/iOS interoperability before claiming GPX
+import parity. Continue native simulator startup and full release checks.
+This checkpoint does not yet expose GPX import on iOS.
+
 ### Latest recovery pointer — checkpoint 181 shared GPX export and Apple compile fix
 
 The iOS recorded-route view can export retained GPX via the existing native

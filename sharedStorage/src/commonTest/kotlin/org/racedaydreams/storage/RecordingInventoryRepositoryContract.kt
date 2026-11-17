@@ -1,6 +1,7 @@
 package org.racedaydreams.storage
 
 import kotlin.test.*
+import org.racedaydreams.domain.portability.TrackPoint
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.domain.time.*
@@ -20,6 +21,46 @@ abstract class RecordingInventoryRepositoryContract {
         } finally {
             db.close()
         }
+    }
+
+    @Test
+    fun gpxImportKeepsSegmentsAndDeduplicatesWithoutOverwritingAnOpenRun() = storage { db ->
+        val importer = SqliteGpxImport(db, { at }) { error("No new identifier required") }
+        fun point(seconds: Long, latitude: Double) =
+            TrackPoint(
+                Instants.ofEpochSecond(at.getEpochSecond() + seconds),
+                latitude,
+                -0.1,
+                null,
+                null,
+                null,
+                null,
+            )
+        val track =
+            listOf(
+                listOf(point(0, 51.5), point(10, 51.5002)),
+                listOf(point(40, 51.51), point(50, 51.5102)),
+            )
+        val staging = SqliteRecordingStaging(db)
+        staging.start("open", at, 0, null, null)
+        assertFailsWith<IllegalArgumentException> { importer.importTrack(track) }
+        assertEquals("open", staging.unfinished()?.id)
+        assertTrue(SqliteActivities(db) { at }.activitySummaries().isEmpty())
+        db.execute("DELETE FROM recording_sessions WHERE id='open'")
+
+        val id = importer.importTrack(track)
+        assertEquals(id, importer.importTrack(track))
+        val activities = SqliteActivities(db) { at }
+        val route = activities.recordedRoute(id)
+        assertEquals(4, route.points.size)
+        assertTrue(route.points[2].discontinuity())
+        assertEquals(route.points[1].cumulativeMetres(), route.points[2].cumulativeMetres())
+        val summary = activities.activitySummaries().single()
+        assertEquals("gpx", summary.source().provider())
+        assertNull(summary.movingTime())
+        assertTrue(requireNotNull(summary.distanceMetres()) in 40.0..50.0)
+        assertFailsWith<IllegalArgumentException> { importer.importTrack(track.reversed()) }
+        assertEquals(1, activities.activitySummaries().size)
     }
 
     @Test
