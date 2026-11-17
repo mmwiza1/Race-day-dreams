@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 162 strength overview and library
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 Android passed and
+Apple was still running its Native test step at the last check. Preserve
+the run. Local checkpoints 157–162 are queued.
+
+162 mounts the shared Strength Today, exercise search and detail tabs, and
+strength volume analytics. Actual history, exclusions, favourites, custom
+metadata and source workout lookups use existing repositories and commands.
+iOS displays the original written technique with a thumbnail placeholder
+until the reviewed illustrations are ported. PBs are accessible per exercise.
+There is no dedicated iOS PB index yet. Pinned touched Kotlin formatting,
+diff check and exact 19-boundary schema check passed. Apple compile and runtime
+remain pending.
+
+Next check 44189952813 again. Correct actual Native/Xcode errors and push the
+local batch when the useful run finishes. Verify an actual simulator launch.
+Continue running/hybrid Today, full workout detail, remaining native services
+and cross-platform acceptance before merge. No publication or hardware claim.
+
 ### Latest recovery pointer — checkpoint 161 strength programmes on iOS
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 Android passed;

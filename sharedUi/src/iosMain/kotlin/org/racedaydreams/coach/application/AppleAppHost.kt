@@ -10,9 +10,12 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import org.racedaydreams.coach.*
+import org.racedaydreams.coach.strength.SharedStrengthAnalyticsScreen
 import org.racedaydreams.coach.theme.SharedRaceDayTheme
+import org.racedaydreams.domain.presentation.AthleteLanguage
 import org.racedaydreams.domain.reminders.ReminderSettings
 import org.racedaydreams.domain.settings.PrimaryFocus
+import org.racedaydreams.domain.strength.StrengthMeasurementPolicy
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
@@ -120,6 +123,9 @@ private enum class ApplePage {
     PLAN,
     GYM,
     PROGRAMMES,
+    EXERCISES,
+    STRENGTH_HISTORY,
+    STRENGTH_ANALYTICS,
     ACTIVITY,
     SETTINGS,
 }
@@ -185,11 +191,36 @@ private fun AppleAppContent(
                         TextButton(onClick = { page = ApplePage.PROGRAMMES }) {
                             Text("Strength programmes")
                         }
+                        FlowRow {
+                            TextButton(onClick = { page = ApplePage.EXERCISES }) {
+                                Text("Exercises & technique")
+                            }
+                            TextButton(onClick = { page = ApplePage.STRENGTH_ANALYTICS }) {
+                                Text("Strength trends")
+                            }
+                        }
                         Box(Modifier.weight(1f)) {
                             AppleGymScreen(session) { page = ApplePage.START }
                         }
                     }
                 ApplePage.PROGRAMMES -> AppleStrengthProgrammes(session) { page = ApplePage.GYM }
+                ApplePage.EXERCISES -> AppleExerciseLibrary(session) { page = ApplePage.GYM }
+                ApplePage.STRENGTH_HISTORY ->
+                    AppleHistoryScreen(session, strengthOnly = true) {
+                        activityId = it
+                        page = ApplePage.ACTIVITY
+                    }
+                ApplePage.STRENGTH_ANALYTICS ->
+                    SharedStrengthAnalyticsScreen(
+                        state.strengthSessions,
+                        { page = ApplePage.GYM },
+                        AppleRecordingClock.now(),
+                        AppleCalendarDates.today(),
+                        AppleCalendarDates::label,
+                        { it.toString().removeSuffix(".0") },
+                        StrengthMeasurementPolicy::duration,
+                        AthleteLanguage.WORKING_SETS,
+                    )
                 ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it) }
                 ApplePage.START ->
                     if (state.loading) {
@@ -216,6 +247,33 @@ private fun AppleAppContent(
                                     page = ApplePage.PLAN
                                 }
                             },
+                        )
+                    } else if (
+                        state.primaryFocus == PrimaryFocus.STRENGTH && state.strengthToday != null
+                    ) {
+                        val today = AppleCalendarDates.today()
+                        SharedStrengthTodayScreen(
+                            requireNotNull(state.strengthToday),
+                            today,
+                            AppleCalendarDates.label(today),
+                            state.authoredGymProgramme != null || state.gymProgramme != null,
+                            state.gymProgramme?.settings()?.minutes(),
+                            open = { route ->
+                                page =
+                                    when {
+                                        route == "gym" -> ApplePage.PROGRAMMES
+                                        route == "exercises" || route == "strength/pbs" ->
+                                            ApplePage.EXERCISES
+                                        route.startsWith("history") -> ApplePage.STRENGTH_HISTORY
+                                        else -> ApplePage.GYM
+                                    }
+                            },
+                            openSession = {
+                                calendarWorkout = null
+                                calendarStrength = today.toString()
+                                page = ApplePage.HISTORY
+                            },
+                            gymNow = { page = ApplePage.GYM },
                         )
                     } else {
                         CoachPage {

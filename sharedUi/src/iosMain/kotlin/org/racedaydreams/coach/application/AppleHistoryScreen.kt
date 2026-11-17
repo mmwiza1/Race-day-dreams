@@ -13,10 +13,14 @@ import org.racedaydreams.domain.activity.ActivitySources
 import org.racedaydreams.domain.time.*
 
 @Composable
-fun AppleHistoryScreen(session: AppleCoachSession<*>, open: (String) -> Unit) {
+fun AppleHistoryScreen(
+    session: AppleCoachSession<*>,
+    strengthOnly: Boolean = false,
+    open: (String) -> Unit,
+) {
     val state by session.services.operations.state.collectAsState()
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
-    var showStrength by remember { mutableStateOf(false) }
+    var showStrength by remember { mutableStateOf(strengthOnly) }
     if (showStrength) {
         CoachPage {
             CoachHeading("Strength history")
