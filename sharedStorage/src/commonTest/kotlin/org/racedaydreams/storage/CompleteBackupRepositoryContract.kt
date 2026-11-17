@@ -355,13 +355,19 @@ abstract class CompleteBackupRepositoryContract {
             try {
                 target { target ->
                     replacement(target).replace(file)
+                    val indexedEnd =
+                        target
+                            .query("SELECT end_millis FROM activities WHERE id='activity'")
+                            .single()
+                            .single()
+                            .sqlLong() + 1
                     val receipt =
                         org.racedaydreams.domain.storage.RemovedRecordingDetail(
                             "run",
                             "activity",
                             "rdd",
                             "run",
-                            Instants.ofEpochSecond(at.getEpochSecond() + 60, at.getNano().toLong()),
+                            Instants.ofEpochSecond(indexedEnd / 1000, indexedEnd % 1000 * 1000000),
                             Instants.ofEpochSecond(at.getEpochSecond() + 120),
                             org.racedaydreams.domain.storage.DetailRetention.Policy.LAST_24_MONTHS,
                             at,

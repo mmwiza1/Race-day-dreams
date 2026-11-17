@@ -224,7 +224,9 @@ class RecordingArchiveRows(private val version: Int) {
             pending.removal?.let { proof ->
                 require(
                     proof.provider() == pending.activityProvider &&
-                        proof.endedAt() == pending.activityEnd
+                        pending.activityEnd?.let {
+                            removedDetailMatchesActivityEnd(proof.endedAt(), it)
+                        } == true
                 ) {
                     "Removed detail disagrees with its recorded activity source or end."
                 }

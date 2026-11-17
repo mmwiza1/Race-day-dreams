@@ -257,6 +257,68 @@ class SharedDetailRetentionArchiveTest {
         assertTrue(RecordingStore(context).points(proof.sessionId()).isEmpty())
     }
 
+    @Test
+    fun actualOriginalCleanupUpperBoundRemainsReadableBySharedArchiveInspection() {
+        val id = "original-cleanup-bound"
+        val engine = org.racedaydreams.domain.recording.RunMetricsEngine(0, at)
+        for (i in 0..60) engine.accept(
+            org.racedaydreams.domain.recording.RunMetricsEngine.Fix(
+                at.plusSeconds(i.toLong()),
+                i * 1000L,
+                51.5,
+                -.12 + i * .00003,
+                3.0,
+                null,
+                null,
+                3.0,
+            )
+        )
+        val store = RecordingStore(context)
+        store.start(id, at, 0)
+        store.appendBatch(id, engine.points(), engine.events(), 0, 0, 60000, "ACTIVE")
+        val actualId = store.finish(requireNotNull(store.unfinished()), null, "rdd", false)
+        val summary = FeatureStore(context).activities().single { it.id() == actualId }
+        val before =
+            bridge.query(
+                "SELECT payload FROM activities WHERE id=?",
+                listOf(SqlValue.Text(actualId)),
+            )
+        val now = at.plusSeconds(3 * 365 * 86400L)
+        val original = SqliteDetailRetentionRepository(context)
+        original.acknowledge(DetailRetention.Policy.LAST_24_MONTHS, now)
+        val approval =
+            original.approve(original.preview(DetailRetention.Policy.LAST_24_MONTHS, now), now)
+        assertTrue(original.cleanOne(approval, id, now))
+        val receipt = requireNotNull(original.removal(id))
+        assertNotEquals(summary.end(), receipt.endedAt())
+        assertEquals(
+            Instant.ofEpochMilli(summary.end().toEpochMilli()).plusMillis(1),
+            receipt.endedAt(),
+        )
+        val (archive, _) = rawArchive()
+        val checked =
+            InspectedRecordingArchive.inspect(
+                sharedBackupZipSource(archive),
+                context.cacheDir.absolutePath,
+            )
+        try {
+            val retained = checked.snapshot.sessions.getValue(id)
+            assertEquals(receipt, retained.removal)
+            assertEquals(0, retained.points)
+            assertEquals(0L, retained.events)
+        } finally {
+            checked.close()
+        }
+        assertEquals(
+            before,
+            bridge.query(
+                "SELECT payload FROM activities WHERE id=?",
+                listOf(SqlValue.Text(actualId)),
+            ),
+        )
+        assertTrue(store.points(id).isEmpty())
+    }
+
     private fun retainReceipt(): RemovedRecordingDetail {
         val activity =
             ActivityRecord(

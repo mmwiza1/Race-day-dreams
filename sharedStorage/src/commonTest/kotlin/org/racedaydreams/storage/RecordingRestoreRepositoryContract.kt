@@ -397,6 +397,39 @@ abstract class RecordingRestoreRepositoryContract {
     }
 
     @Test
+    fun originalAndroidInventoryCeilingReceiptRestoresItsExactArchivedDetail() =
+        storage { source, target ->
+            seed(source)
+            seed(target)
+            val endMillis =
+                target
+                    .query("SELECT end_millis FROM activities WHERE id='activity'")
+                    .single()
+                    .single()
+                    .sqlLong() + 1
+            val original =
+                proof(target)
+                    .copy(
+                        endedAt =
+                            Instants.ofEpochSecond(endMillis / 1000, endMillis % 1000 * 1000000)
+                    )
+            prune(target, original)
+            val summaries = target.query("SELECT * FROM activities")
+            val file = archive(source)
+            try {
+                restore(target).merge(file)
+                assertNull(SqliteRecordingDetailReceipts(target).removal("run"))
+                assertEquals(summaries, target.query("SELECT * FROM activities"))
+                assertEquals(
+                    source.query("SELECT * FROM recording_points"),
+                    target.query("SELECT * FROM recording_points"),
+                )
+            } finally {
+                file.close()
+            }
+        }
+
+    @Test
     fun exactlyMatchingArchivedDetailRemovesOnlyItsOriginalRemovalReceipt() =
         storage { source, target ->
             seed(source)
@@ -463,7 +496,9 @@ abstract class RecordingRestoreRepositoryContract {
     fun newRemovedSessionRetainsSummaryAndProvenanceWithoutInventingPoints() =
         storage { source, target ->
             seed(source)
-            val receipt = proof(source)
+            val receipt =
+                proof(source)
+                    .copy(endedAt = Instants.ofEpochSecond(at.getEpochSecond() + 60, 124000000))
             prune(source, receipt)
             val file = archive(source)
             try {

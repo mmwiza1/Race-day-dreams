@@ -4532,16 +4532,56 @@ incomplete migration merely because a focused checkpoint passes.
   match. Final app composition/navigation/state/native services and REAL iOS host remain incomplete.
 - No schema19/root13/raw3/package1/version/code/dependency/permission change. No merge/publication.
 
+### Checkpoint101 — original Android receipt end-bound compatibility
+
+- 100179fcc8750f51c19dee32813e73960fc009770e1 is committed/pushed. Experiment43980336373 and
+  format43980336386 BOTH SUCCESS. Actual Android133694861142:534matched unique tests,700,189 /
+  48domain suites, build/lint/schema75 PASS. Digest-verified JVM14283945992:490domain+16health /
+  561storage; Apple14284680190:449domain+18health+561storage; ALL0failure/error/skip. ALL131
+  IO/SQL/restore case names match. Proofs scratch/restore-179-{jvm,native}/verification.json,
+  native/all-case-proof.json, scratch/restore-179-android-job.log. This does NOT verify101.
+- 100 private APK14283921037 ZIP30710049bytes SHA256
+  990f277997613e9601b648319f663096d77b40ff90a07703fdf93200a82c5023; APK58270987bytes SHA256
+  d436ff3a0ce017ba2b8e442de0e6bf351e2ef02e8dda15eb36a128e5ecc3a92d. Code19/version0.12.3-test1 /
+  min28/noINTERNET. scratch/restore-179-apk/verification.json. Framework14284361021 is NOT APP.
+- Inspected ORIGINAL active Android SqliteRecordingInventoryRepository.java: inspect()/recording()
+  uses Instant.ofEpochMilli(end_millis).plusMillis(1), a conservative upper bound. ORIGINAL
+  SqliteDetailRetentionRepository.cleanOne stores row.endedAt() in RemovedRecordingDetail.
+  Therefore100's strict receipt.end == actual.end would reject legitimate ORIGINAL Android receipts.
+  TWO new RED regression tests actually FAILED42s in scratch/kmp-original-retention-ceiling-red.log.
+- Local RemovedDetailEnd.kt now accepts ONLY exact actual end OR the original indexed +1ms bound,
+  using integer seconds/nanoseconds (including negative seconds and second carry). Incoming graph /
+  existing receipt reconciliation both reuse it. Provider/activity/header checks, exact byte hashes
+  and immutable actual timestamps remain unchanged. Arbitrary nearby times still reject.
+- Three new common tests cover original upper-bound graph acceptance/rejection, exact fractional /
+  negative/second-carry/Long>2^53 clock comparisons, and SQL-derived original end_millis+1 receipt
+  rehydration. Existing removed-session/complete recovery fixtures also use original ceiling proof.
+- Added real Android regression actualOriginalCleanupUpperBoundRemainsReadableBySharedArchiveInspection:
+  original RecordingStore -> actual original acknowledge/preview/approve/cleanOne -> original ZIP ->
+  common graph/export/private inspection, preserving summary and honest removed-detail status.
+  This is production-code evidence, not merely a manually constructed receipt. Not runtime-verified
+  until new-head Android CI; expected535 targeted tests, not100's534.
+- Workspace restarted while the first focused Gradle run was compiling; log lacked completion and
+  no process survived. ALL files survived, no reset/discard. Resumed focused46JVM (Rows13/raw18 /
+  complete15) +metadata +Android test compilation PASS2m45s/64tasks in scratch/kmp-original-
+  retention-ceiling-recovered.log. FINAL564storage JVM0failure/error/skip +metadata +Android
+  test compilation PASS1m2s/64tasks, scratch/kmp-original-retention-ceiling-final.log.
+- Pinned882sources(787Kotlin95Java), exact schema19, schema75 and source3 PASS; logs scratch/kmp-
+  original-retention-ceiling-{format,schema}.log. This source and handoff are committed together;
+  resolve actual HEAD and push ONCE if not already pushed. Fresh Native564/new535Android runtime
+  gates are pending, NOT passed. UI remains OFF. Next finish native inventory/retention/operation
+  safeguards on the SAME SQLite19/typed policy and then real common app/native host.
+- Full retention/operation safeguards, common app/root/navigation/state, native services and REAL
+  iOS app host still unfinished. No schema/version/format change, merge or publication.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint100 above is latest recovery boundary;99d772bc6 is fully green/byte-verified.
-   Current100 raw/context/complete restore batch is committed with this handoff and local561 /
-   metadata/Android compilation PASS1m31s/64tasks, format881/schema75/source3 PASS. Push ONCE if
-   not already pushed (inspect actual upstream), then inspect fresh Native/JVM561/41new cases,
-   expected131IO/SQL/restore names and Android534 results. Update DRAFT24 with actual head/run /
-   results. Native UI stays OFF until full operation/retention and original Android archived-byte
-   safeguards. Continue full common app/native services/iOS host and final gates; never restart
-   completed domain/storage work. Keep versions unchanged until cross-platform readiness.
+1. Checkpoint101 above is latest recovery boundary;100179fcc8 is fully green/byte-verified.
+   Current101 end-bound correction is committed with this handoff; local564/meta/Android compile
+   PASS1m2s/64tasks +format882/schema75/source3 PASS. Push ONCE if needed (inspect actual upstream),
+   update DRAFT24, verify fresh Native564/new535Android before claiming runtime success. Continue
+   original inventory/retention consent/preview/operation protections on SAME DB and real common
+   app/native services/iOS host. Native destructive UI OFF; no early merge/version/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

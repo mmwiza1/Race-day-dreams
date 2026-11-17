@@ -309,7 +309,7 @@ internal class SqliteRecordingArchiveRestore(
         require(
             actual.source().provider() == receipt.provider() &&
                 actual.source().recordId() == receipt.recordId() &&
-                actual.end() == receipt.endedAt() &&
+                removedDetailMatchesActivityEnd(receipt.endedAt(), actual.end()) &&
                 database
                     .query(
                         "SELECT provider,record_id FROM activities WHERE id=?",

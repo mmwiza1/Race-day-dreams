@@ -232,6 +232,74 @@ class RecordingArchiveRowsTest {
     }
 
     @Test
+    fun originalInventoryUpperBoundAndExactActualEndAreAcceptedButNearbyTimesAreNot() {
+        val upper = Instants.ofEpochSecond(end.getEpochSecond(), 124000000)
+        for (recordedEnd in listOf(end, upper)) {
+            val guard = RecordingArchiveRows(3)
+            guard.add(session())
+            guard.add(activity())
+            guard.add(
+                row(
+                    "removed",
+                    DetailRetentionArchiveJson.element(
+                        proof()
+                            .copy(
+                                endedAt = recordedEnd,
+                                removedAt = Instants.ofEpochSecond(end.getEpochSecond() + 1),
+                            )
+                    ),
+                )
+            )
+            assertEquals(recordedEnd, guard.finish().sessions.getValue("run").removal!!.endedAt())
+        }
+        for (wrong in listOf(123000000L, 123456790L, 124000001L, 125000000L)) {
+            val guard = RecordingArchiveRows(3)
+            guard.add(session())
+            guard.add(activity())
+            guard.add(
+                row(
+                    "removed",
+                    DetailRetentionArchiveJson.element(
+                        proof()
+                            .copy(
+                                endedAt = Instants.ofEpochSecond(end.getEpochSecond(), wrong),
+                                removedAt = Instants.ofEpochSecond(end.getEpochSecond() + 1),
+                            )
+                    ),
+                )
+            )
+            assertFails { guard.finish() }
+        }
+    }
+
+    @Test
+    fun originalMillisecondUpperBoundHandlesNegativeSecondsFractionsAndSecondCarryExactly() {
+        for (seconds in listOf(-86400L, -1L, 0L, 1L, 9007199254740993L)) {
+            for (nanos in listOf(0L, 1L, 123456789L, 999000000L, 999999999L)) {
+                val actual = Instants.ofEpochSecond(seconds, nanos)
+                val bound = Instants.ofEpochSecond(seconds, (nanos / 1000000 + 1) * 1000000)
+                assertTrue(removedDetailMatchesActivityEnd(actual, actual))
+                assertTrue(removedDetailMatchesActivityEnd(bound, actual))
+                assertFalse(
+                    removedDetailMatchesActivityEnd(
+                        Instants.ofEpochSecond(seconds, nanos - 1),
+                        actual,
+                    )
+                )
+                assertFalse(
+                    removedDetailMatchesActivityEnd(
+                        Instants.ofEpochSecond(
+                            bound.getEpochSecond(),
+                            bound.getNano().toLong() + 1,
+                        ),
+                        actual,
+                    )
+                )
+            }
+        }
+    }
+
+    @Test
     fun duplicateSourcesBadEventsAndMismatchedRemovalProofReject() {
         val removal = DetailRetentionArchiveJson.element(proof())
         val badRows =
