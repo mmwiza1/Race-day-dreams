@@ -1,6 +1,7 @@
 package org.racedaydreams.storage
 
 import kotlin.test.*
+import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.domain.time.*
 
@@ -19,6 +20,43 @@ abstract class RecordingInventoryRepositoryContract {
         } finally {
             db.close()
         }
+    }
+
+    @Test
+    fun stagingRetryPreservesEvidenceAndLateConflictRollsBackTheBatch() = storage { db ->
+        val staging = SqliteRecordingStaging(db)
+        staging.start("run", at, 0, null, null)
+        val pause = RunMetricsEngine.Event("PAUSE", 10, at)
+        staging.append("run", emptyList(), listOf(pause), 0, 0, 10, "PAUSED", null)
+        staging.append("run", emptyList(), listOf(pause), 0, 0, 10, "PAUSED", null)
+        val point =
+            RunMetricsEngine.Point(
+                RunMetricsEngine.Fix(at, 11, 51.5, -0.1, null, null, null, null),
+                0.0,
+                0,
+                0,
+                false,
+                null,
+                null,
+            )
+        assertFailsWith<IllegalStateException> {
+            staging.append(
+                "run",
+                listOf(point),
+                listOf(RunMetricsEngine.Event("RESUME", 11, at)),
+                0,
+                0,
+                11,
+                "ACTIVE",
+                null,
+            )
+        }
+        assertTrue(db.query("SELECT payload FROM recording_points").isEmpty())
+        assertEquals(1, db.query("SELECT payload FROM recording_events").size)
+        assertEquals(10L, staging.unfinished()?.lastMono)
+        assertEquals("PAUSED", staging.unfinished()?.state)
+        staging.markRecoverable()
+        assertEquals("RECOVERABLE", staging.unfinished()?.state)
     }
 
     private fun seed(

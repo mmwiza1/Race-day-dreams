@@ -62,6 +62,25 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 146 staging
+
+Draft PR #24 on `experiment/android-ios-kmp-compose` has checkpoint 145 at
+`d00370ee5b16676a7734b7b19f81cd0cd9465798`. [Experiment 44178248333](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44178248333)
+was running on both platforms at the last check. Formatting 44178248372 passed.
+
+Checkpoint 146 adds shared SQLite session creation, point/event append with exact
+retry checks, atomic context updates and recoverable state. It uses existing
+normalized tables and point codec. The shared SQLite inventory contract now
+tests duplicate retries and rollback of a new point after a late event conflict.
+All 19 schema boundaries match Android. Focused JDBC suite passed 9 tests with no failures or skips. Log:
+`/workspace/scratch/kmp146-staging-test.log`. Formatting applied to 904 Kotlin and 95 Java files.
+Leave the prior CI run in place while it is useful.
+
+Next: connect staging to the existing shared recording coordinator after implementing
+real canonical finalisation, including activity/PB/association writes in one transaction.
+Then bind native SDK effects and the iOS app host. Android continues to use its existing
+storage/service. There is no native recording entry point yet.
+
 ### Latest recovery pointer — checkpoint 145 delivery
 
 The workspace recovered with clean local commit `640c633`. Checkpoint 144
