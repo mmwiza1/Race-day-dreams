@@ -285,6 +285,7 @@
     "app/src/androidTest/java/org/racedaydreams/coach/SharedRunDurabilityCardTest.kt",
     "app/src/main/java/org/racedaydreams/data/AndroidSqlConnection.kt",
     "app/src/androidTest/java/org/racedaydreams/data/AndroidSqlConnectionTest.kt",
-    "app/src/androidTest/java/org/racedaydreams/data/SharedCoachingContextTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/data/SharedCoachingContextTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/data/AndroidSchemaTestFixture.kt"
   ]
 }

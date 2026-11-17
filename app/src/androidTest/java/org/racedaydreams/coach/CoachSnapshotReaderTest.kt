@@ -12,6 +12,7 @@ import org.junit.runner.RunWith
 import org.racedaydreams.coach.application.CoachSnapshotSources
 import org.racedaydreams.coach.application.SharedCoachSnapshotReader
 import org.racedaydreams.data.AndroidSqlConnection
+import org.racedaydreams.data.createAndroidSchemaFixture
 import org.racedaydreams.domain.*
 import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.presentation.StrengthTodaySummary
@@ -120,8 +121,9 @@ class CoachSnapshotReaderTest {
         val original = SQLiteDatabase.create(null)
         val db = AndroidSqlConnection { original }
         try {
+            createAndroidSchemaFixture(original)
             ApplicationSchema.open(db) {
-                ApplicationSchema.NewInstallation(now.toString(), "snapshot-test")
+                error("The original Android fixture is already versioned.")
             }
             var ids = 0
             block(

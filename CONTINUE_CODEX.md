@@ -5054,18 +5054,43 @@ incomplete migration merely because a focused checkpoint passes.
   Native all-mutation/backup owner and full host/permissions/HealthKit/GPS/BLE/audio/notifications,
   actual iOS APP runtime and final full gates remain unfinished; destructive native UI stays OFF.
 
+### Checkpoint112 — correct Android snapshot fixtures without relaxing migration safety
+
+-110experiment44061576597: Android133964517505 finished with6failures, ALL the new snapshot
+  tests failing BEFORE their assertions with "Unversioned existing database; files retained."
+  Existing560cases still passed. Completed log scratch/snapshot-2c08-android-job.log inspected.
+  Cause: Android SQLiteDatabase.create(null) creates android_metadata, so it is NOT an empty
+  portable SQLite connection. ApplicationSchema's guard correctly rejects unversioned tables.
+  Do NOT weaken that production guard or remove domain/assertion coverage to force a pass.
+- New test-only createAndroidSchemaFixture requires a NEW :memory:/version0database, then calls
+  actual ProfileDatabase.onConfigure/onCreate and sets the ORIGINAL current version transactionally.
+  The helper never opens its own named database or changes the shared application helper; its
+  borrowed fixture is still closed by each test. Subsequent ApplicationSchema.open must find the
+  versioned schema and must NOT call the fresh-install callback. No dropping metadata, no special
+  production migration exception, and no test assertion weakening.
+- Applied to the SIX existing snapshot tests and TWO new context/old-backup interoperability
+  tests (the latter would have hit the same fixture issue). Production code is unchanged from111.
+  Pinned932sources(837Kotlin/95Java) PASS. Corrected Android test compilation/lint PASS2m31s/
+  115tasks, scratch/kmp-android-schema-fixture-final.log. Actual runtime verification of these8
+  cases remains pending.111's636JVM storage/meta/Android compile/
+  lint result is valid; it does not establish Android fixture/runtime success.
+-1117212d4a is committed locally, not yet pushed.110Apple133964517015 is STILL RUNNING; let this
+  useful corrected Native transaction/snapshot compilation/test gate finish rather than cancelling
+  it with an immediate branch push. Then commit/push this coherent fixture correction with111,
+  inspect the next actual Native636/Android568result and fix actual failures before further binding.
+  Keep24DRAFT. No merge/version bump/public APK. All full cross-platform scope remains below.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint111 is latest local recovery boundary.1102c08a7c is pushed with experiment44061576597
-   running (Apple133964517015 /Android133964517505) and format44061576411SUCCESS.109Android560/
-   JVM628passed; its sole Native test lambda compile failure is corrected in110, with SAME rollback
-   assertions.111adds real operational coaching context/weekly decisions, production Android binding,
-   8SQL+2interop cases. FINAL636storage JVM/meta/Android prod+test compilation/lint PASS4m12s/137tasks,
-   format931/formatter14/source3/exact-schema PASS. Verify live110result BEFORE pushing111to avoid
-   cancelling its useful new Native snapshot/rollback verification. After111push expect Native636/
-   213matchingIOcases and Android568. Never claim pending results or weaken assertions. Continue
-   shared snapshot-source repository/application bindings then services/root/navigation/native app.
-   No destructive native UI/reset/restart/early bump/merge/publication.
+1. Checkpoint112 is the latest recovery boundary.1117212d4a is locally committed;1102c08a7c is
+   remote.110Android failed ONLY6new fixtures (android_metadata/unversioned guard BEFORE assertions);
+  112uses original Android schema owner in test-only new memory DBs, preserves guard/assertions,
+   and fixes the2new context fixtures too.112Android compile/lint PASS2m31s/115tasks; wait for
+   still-running110Apple133964517015 before pushing to avoid cancelling its useful Native628 /
+   shared snapshot/transaction fix verification. Then push111+112ONCE and inspect Native636 /
+   Android568/213matchingIOcases; do not claim pending tests or rerun without diagnosis. Continue
+   actual shared snapshot-source repository/application bindings then services/root/navigation /
+   native app. No destructive native UI/reset/restart/early bump/merge/publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

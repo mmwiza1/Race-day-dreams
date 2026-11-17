@@ -23,8 +23,9 @@ class SharedCoachingContextTest {
         val db = SQLiteDatabase.create(null)
         try {
             val connection = AndroidSqlConnection { db }
+            createAndroidSchemaFixture(db)
             ApplicationSchema.open(connection) {
-                ApplicationSchema.NewInstallation(now.toString(), "context-interop")
+                error("The original Android fixture is already versioned.")
             }
             val coaching =
                 SqliteCoachingRepository(
