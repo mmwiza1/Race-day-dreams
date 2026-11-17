@@ -4,16 +4,51 @@ import kotlinx.serialization.json.*
 
 /** Read-only original support tables in one existing-database transaction. No restore commands. */
 class SqliteRunningSupportArchives(private val database: SqlDatabase) {
+    data class SchedulePreferences(
+        val maximumMinutes: Int,
+        val distribution: String,
+        val unavailable: Set<org.racedaydreams.domain.time.LocalDate>,
+    )
+
+    /** Read only the original schedule; unrelated dense route payloads are not hydrated. */
+    fun schedule(): SchedulePreferences? =
+        configuration("schedule")?.let { payload ->
+            SchedulePreferences(
+                SupportPayloadJson.integer(payload, "maximumMinutes"),
+                SupportPayloadJson.text(payload, "distribution"),
+                org.racedaydreams.domain.coaching.Immutable.copySet(
+                    payload
+                        .getValue("unavailable")
+                        .jsonArray
+                        .map { StoredDate.parse((it as? JsonPrimitive)?.content ?: it.toString()) }
+                        .toSet()
+                ),
+            )
+        }
+
     /** Read only the original shoe-feedback preference; never hydrate unrelated route payloads. */
-    fun shoeDiscomfort(): Set<String> {
+    fun shoeDiscomfort(): Set<String> =
+        configuration("shoe-feedback")?.let { payload ->
+            org.racedaydreams.domain.coaching.Immutable.copySet(
+                payload
+                    .getValue("activities")
+                    .jsonArray
+                    .map { (it as? JsonPrimitive)?.content ?: it.toString() }
+                    .toSet()
+            )
+        } ?: emptySet()
+
+    private fun configuration(id: String): JsonObject? {
         val payload =
             database
-                .query("SELECT payload FROM release08 WHERE kind='config' AND id='shoe-feedback'")
+                .query(
+                    "SELECT payload FROM release08 WHERE kind='config' AND id=?",
+                    listOf(SqlValue.Text(id)),
+                )
                 .firstOrNull()
                 ?.single()
-                ?.sqlText() ?: return emptySet()
-        val snapshot =
-            Release08ArchiveJson.decode(
+                ?.sqlText() ?: return null
+        return Release08ArchiveJson.decode(
                 buildJsonObject {
                     put("version", 1)
                     put(
@@ -22,7 +57,7 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
                             add(
                                 buildJsonObject {
                                     put("kind", "config")
-                                    put("id", "shoe-feedback")
+                                    put("id", id)
                                     put("payload", StoredJson.objectValue(payload))
                                 }
                             )
@@ -30,15 +65,9 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
                     )
                 }
             )
-        return org.racedaydreams.domain.coaching.Immutable.copySet(
-            snapshot.records
-                .single()
-                .payload
-                .getValue("activities")
-                .jsonArray
-                .map { (it as? JsonPrimitive)?.content ?: it.toString() }
-                .toSet()
-        )
+            .records
+            .single()
+            .payload
     }
 
     class Snapshot

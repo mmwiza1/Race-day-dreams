@@ -1,53 +1,54 @@
 package org.racedaydreams.coach.application
 
-import java.time.Instant
-import java.time.LocalDate
-import java.util.UUID
-import org.racedaydreams.data.DevelopmentStore
-import org.racedaydreams.data.Release08Store
-import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.PlannedWorkout
 import org.racedaydreams.domain.activity.ActivityRepository
 import org.racedaydreams.domain.coaching.AdjustmentProposal
 import org.racedaydreams.domain.coaching.CoachingRepository
+import org.racedaydreams.domain.coaching.CoachingTransaction
 import org.racedaydreams.domain.coaching.OriginalTrainingPlanGenerator
 import org.racedaydreams.domain.coaching.PlanPreservation
 import org.racedaydreams.domain.coaching.PlanRequest
 import org.racedaydreams.domain.coaching.PlanVersion
 import org.racedaydreams.domain.coaching.WeeklyCoaching
 import org.racedaydreams.domain.coaching.WorkoutDecision
+import org.racedaydreams.domain.time.Instant
+import org.racedaydreams.domain.time.LocalDate
+import org.racedaydreams.storage.SqliteAthleteProfile
+import org.racedaydreams.storage.SqliteCoachingContext
+import org.racedaydreams.storage.SqliteRunningSupportArchives
 
 /** Version-preserving running programme commands and explicit athlete decisions. */
 class RunningPlanCoordinator(
-    private val release: Release08Store,
+    private val release: SqliteRunningSupportArchives,
     private val operations: CoachOperationRunner,
     private val activities: ActivityRepository,
-    private val profiles: SqliteUserPreferencesRepository,
+    private val profiles: SqliteAthleteProfile,
     private val coaching: CoachingRepository,
-    private val development: DevelopmentStore,
+    private val development: SqliteCoachingContext,
+    private val now: () -> Instant,
+    private val today: () -> LocalDate,
+    private val newId: () -> String,
+    private val formatScheduleDate: (LocalDate) -> String,
 ) {
     fun generatePlan() =
         operations.submit {
             val profile =
-                profiles.load().orElse(null)
+                profiles.load()
                     ?: throw IllegalArgumentException("Save your goal and availability first.")
             val baseline = operations.current.baseline
-            val schedule = release.get("config", "schedule")
-            val unavailable =
-                schedule?.getJSONArray("unavailable")?.let { a ->
-                    (0 until a.length()).map { LocalDate.parse(a.getString(it)) }.toSet()
-                } ?: emptySet()
+            val schedule = release.schedule()
+            val unavailable = schedule?.unavailable ?: emptySet()
             val candidate =
                 OriginalTrainingPlanGenerator()
                     .generate(
                         PlanRequest(
                             profile,
                             baseline,
-                            LocalDate.now(),
+                            today(),
                             unavailable,
                             coaching.strength(),
-                            schedule?.getInt("maximumMinutes"),
-                            schedule?.getString("distribution") ?: "BALANCED",
+                            schedule?.maximumMinutes,
+                            schedule?.distribution ?: "BALANCED",
                         )
                     )
             val versions = coaching.versions()
@@ -73,23 +74,23 @@ class RunningPlanCoordinator(
                         ?.plan()
                         ?.workouts()
                         ?.firstOrNull { it.id() == actual.plannedWorkoutId() }
-                        ?.let { completed.putIfAbsent(it.id(), it) }
+                        ?.let { if (!completed.containsKey(it.id())) completed[it.id()] = it }
             }
             val generated = PlanPreservation.retainCompleted(candidate, completed)
             val evidence =
                 "Baseline window ${baseline.windowStart()} to ${baseline.windowEnd()}; confidence ${baseline.confidence()}; " +
                     "weekly km ${baseline.weeklyDistanceKm() ?: "unknown"}; longest km ${baseline.longestRunKm() ?: "unknown"}; " +
                     "consistent weeks ${baseline.consistentWeeks() ?: "unknown"}; sources ${baseline.provenance()}. " +
-                    "History, manual inputs and assessment evidence remain distinct. No race prediction is inferred. Schedule preferences: ${schedule?.let{"${it.getInt("maximumMinutes")} minute usual budget; ${it.getString("distribution").lowercase().replace('_',' ')}; one-off unavailable dates: ${unavailable.sorted().joinToString{d->d.format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu",java.util.Locale.UK))}}"}?:"defaults"}."
+                    "History, manual inputs and assessment evidence remain distinct. No race prediction is inferred. Schedule preferences: ${schedule?.let{"${it.maximumMinutes} minute usual budget; ${it.distribution.lowercase().replace('_',' ')}; one-off unavailable dates: ${unavailable.sortedBy{ it.toEpochDay() }.joinToString{d->formatScheduleDate(d)}}"}?:"defaults"}."
             coaching.saveCurrent(
                 PlanVersion(
-                    UUID.randomUUID().toString(),
+                    newId(),
                     generated.id(),
                     (coaching
                         .versions()
                         .filter { it.planId() == generated.id() }
                         .maxOfOrNull { it.version() } ?: 0) + 1,
-                    Instant.now(),
+                    now(),
                     if (coaching.current() == null) "Runner requested initial programme"
                     else "Runner explicitly requested remaining programme rebuild",
                     profile,
@@ -125,7 +126,9 @@ class RunningPlanCoordinator(
 
     fun reportInterruption(from: LocalDate, returned: LocalDate, reason: String) =
         operations.submit {
-            require(returned <= LocalDate.now()) { "Return date cannot be in the future." }
+            require(returned.toEpochDay() <= today().toEpochDay()) {
+                "Return date cannot be in the future."
+            }
             development.saveInterruption(WeeklyCoaching.Interruption(from, returned, reason))
         }
 
@@ -135,7 +138,7 @@ class RunningPlanCoordinator(
         ) {
             val current = coaching.current() ?: error("No current plan")
             val original = current.plan().workouts().first { it.id() == workoutId }
-            require(original.date() >= LocalDate.now()) {
+            require(original.date().toEpochDay() >= today().toEpochDay()) {
                 "Only current or future sessions can be changed."
             }
             require(
@@ -157,10 +160,10 @@ class RunningPlanCoordinator(
                 )
             coaching.saveCurrent(
                 PlanVersion(
-                    UUID.randomUUID().toString(),
+                    newId(),
                     current.planId(),
                     current.version() + 1,
-                    Instant.now(),
+                    now(),
                     "Runner chose easy: $reason",
                     current.goalSnapshot(),
                     current.evidenceSnapshot(),
@@ -185,7 +188,10 @@ class RunningPlanCoordinator(
                 "Completed sessions cannot be changed."
             }
             if (movedTo != null) {
-                require(movedTo >= LocalDate.now() && movedTo <= current.plan().endDate()) {
+                require(
+                    movedTo.toEpochDay() >= today().toEpochDay() &&
+                        movedTo.toEpochDay() <= current.plan().endDate().toEpochDay()
+                ) {
                     "Choose a current or future date within this programme. A one-off move does not change recurring days."
                 }
                 require(
@@ -193,17 +199,12 @@ class RunningPlanCoordinator(
                 ) {
                     "A run is already planned on that date."
                 }
-                val monday =
-                    movedTo.with(
-                        java.time.temporal.TemporalAdjusters.previousOrSame(
-                            java.time.DayOfWeek.MONDAY
-                        )
-                    )
+                val monday = movedTo.minusDays((movedTo.getDayOfWeek().getValue() - 1).toLong())
                 require(
                     current.plan().workouts().count {
                         it.id() != workoutId &&
-                            it.date() >= monday &&
-                            it.date() < monday.plusWeeks(1)
+                            it.date().toEpochDay() >= monday.toEpochDay() &&
+                            it.date().toEpochDay() < monday.plusWeeks(1).toEpochDay()
                     } < current.goalSnapshot().preferences().runsPerWeek()
                 ) {
                     "This move would exceed your maximum runs/week."
@@ -227,13 +228,13 @@ class RunningPlanCoordinator(
                                 "Moved by the runner. " + w.note(),
                             )
                     }
-                    .sortedBy { it.date() }
+                    .sortedBy { it.date().toEpochDay() }
             val next =
                 PlanVersion(
-                    UUID.randomUUID().toString(),
+                    newId(),
                     current.planId(),
                     current.version() + 1,
-                    Instant.now(),
+                    now(),
                     if (movedTo == null) "Runner skipped a session" else "Runner moved a session",
                     current.goalSnapshot(),
                     current.evidenceSnapshot(),
@@ -245,20 +246,24 @@ class RunningPlanCoordinator(
                         workouts,
                     ),
                 )
-            coaching.transaction {
-                coaching.saveCurrent(next)
-                development.saveSessionDecision(
-                    WorkoutDecision(
-                        UUID.randomUUID().toString(),
-                        workoutId,
-                        current.id(),
-                        workout.date(),
-                        movedTo,
-                        if (movedTo == null) WorkoutDecision.Kind.SKIPPED
-                        else WorkoutDecision.Kind.MOVED,
-                        Instant.now(),
-                    )
-                )
-            }
+            coaching.transaction(
+                object : CoachingTransaction {
+                    override fun run() {
+                        coaching.saveCurrent(next)
+                        development.saveSessionDecision(
+                            WorkoutDecision(
+                                newId(),
+                                workoutId,
+                                current.id(),
+                                workout.date(),
+                                movedTo,
+                                if (movedTo == null) WorkoutDecision.Kind.SKIPPED
+                                else WorkoutDecision.Kind.MOVED,
+                                now(),
+                            )
+                        )
+                    }
+                }
+            )
         }
 }

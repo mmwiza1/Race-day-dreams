@@ -892,4 +892,78 @@ abstract class StorageContract {
             db.close()
         }
     }
+
+    @Test
+    fun runningScheduleReadsOnlyItsPreferenceWithOriginalDuplicateDateSemantics() {
+        val db = opened()
+        try {
+            val reader = SqliteRunningSupportArchives(db)
+            assertNull(reader.schedule())
+            db.execute(
+                "INSERT INTO release08(kind,id,payload) VALUES('custom','unrelated','not a loaded dense route')"
+            )
+            val payload =
+                """ {"version":1,"type":"schedule","maximumMinutes":45,"distribution":"MORE_SHORTER","unavailable":["2026-11-18","2026-11-18","2026-11-20"],"retainedUnknown":"café 🏃"} """
+            db.execute(
+                "INSERT INTO release08(kind,id,payload) VALUES('config','schedule',?)",
+                listOf(SqlValue.Text(payload)),
+            )
+            val before = db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id")
+            val schedule = assertNotNull(reader.schedule())
+            assertEquals(45, schedule.maximumMinutes)
+            assertEquals("MORE_SHORTER", schedule.distribution)
+            assertEquals(
+                setOf(StoredDate.parse("2026-11-18"), StoredDate.parse("2026-11-20")),
+                schedule.unavailable,
+            )
+            assertEquals(before, db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"))
+            assertTrue(db.query("SELECT * FROM coach_plan_versions").isEmpty())
+            // Preserve Android JSONObject.getInt coercion, including numeric strings/Long wrap.
+            for (literal in listOf("45.9", "\"45\"", "\"45.9\"", "4294967341")) {
+                val legacy =
+                    payload.replace("\"maximumMinutes\":45,", "\"maximumMinutes\":$literal,")
+                assertNotEquals(payload, legacy)
+                db.execute(
+                    "UPDATE release08 SET payload=? WHERE kind='config' AND id='schedule'",
+                    listOf(SqlValue.Text(legacy)),
+                )
+                val retained = db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id")
+                assertEquals(45, assertNotNull(reader.schedule()).maximumMinutes)
+                assertEquals(
+                    retained,
+                    db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"),
+                )
+            }
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun unsupportedOrMalformedRunningPreferencesAreNotReplacedWithInventedDefaults() {
+        val db = opened()
+        try {
+            val reader = SqliteRunningSupportArchives(db)
+            for (payload in
+                listOf(
+                    """{"version":2,"type":"schedule","maximumMinutes":45,"distribution":"BALANCED","unavailable":[]}""",
+                    """{"version":1,"type":"schedule","distribution":"BALANCED","unavailable":[]}""",
+                    """{"version":1,"type":"schedule","maximumMinutes":45,"distribution":"BALANCED","unavailable":["2026-02-30"]}""",
+                )) {
+                db.execute(
+                    "INSERT OR REPLACE INTO release08(kind,id,payload) VALUES('config','schedule',?)",
+                    listOf(SqlValue.Text(payload)),
+                )
+                val before = db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id")
+                assertFails { reader.schedule() }
+                assertEquals(
+                    before,
+                    db.query("SELECT kind,id,payload FROM release08 ORDER BY kind,id"),
+                )
+                assertTrue(db.query("SELECT * FROM coach_plan_versions").isEmpty())
+            }
+        } finally {
+            db.close()
+        }
+    }
 }

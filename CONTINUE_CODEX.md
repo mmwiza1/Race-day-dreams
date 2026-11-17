@@ -64,15 +64,17 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Pushed120HEAD is
-`6d72b94042b7f4401c903e174bd709e7011bdc0c`. Experiment44083171900 completed: Apple tests/framework
-SUCCESS; Android591of592passed, ONE confirmed new-test oracle error (literal6RM). Format44083171002
-SUCCESS. Byte-verified Native449domain/27health/641storage and JVM490/25/641 have0fail/error/skip.
-Corrective test commit992bcba +baseline service3eb93a5 are committed LOCALLY, not yet pushed.
-121metadata/APKs/lint6m29s +FINAL corrected-input testAPK/lint45s/format944/source3/schema19 PASS.
-Push121+this recovery ONCE (prior useful gate complete), verify595Android/Native641/framework.
-See latest121actual evidence below. No version/formats changes, merge/publication/native destructive
-UI or fake bindings. Remaining services/UI/root/navigation/actual iOS app/full gates are unfinished.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote HEAD is
+`7e19a63e2a6d133522f3d29ae2b24ec47977b6d8` (121baseline +corrected detail test). Experiment44086846386:
+Android STOPPED BEFORE TESTS because Maven Central returned429 for pinned Kotlin2.1.21 POMs;
+Apple tests/framework SUCCESS. Format44086846391 SUCCESS. No595runtime pass claimed.
+Prior1206d72b94 has verified Native449domain/27health/641storage/framework, JVM490/25/641 and
+591of592Android passed (one incorrect new test oracle, FIXED in992bcba). Preserve those proofs.
+122running-plan application service +targeted schedule projection and tests pass FINAL current
+JVM643/metadata/APKs/lint5m5s/180tasks +format945/schema/source checks. Numeric coercion uses the
+existing codec and persisted regression variants. Ready to commit/push; next598Android/643storage.
+See latest122 below. No version/formats changes, merge/publication/native destructive UI or fake
+bindings. Full actual iOS app/services/navigation and final complete gates remain unfinished.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5394,12 +5396,77 @@ UI or fake bindings. Remaining services/UI/root/navigation/actual iOS app/full g
   complete, no cancellation). New expected595Android/Native641/framework. Inspect exact result,
   fix real failures; continue original remaining application services/active UI/root/native app.
 
+### Checkpoint122 local — actual running-plan orchestration;121 external dependency failure
+
+-1213eb93a5baseline +992bcbadetail-test fix +recovery7e19a63 were pushed normally. PR24DRAFT,
+  latest remote7e19a63e2a6d133522f3d29ae2b24ec47977b6d8. Format44086846391 SUCCESS.
+- Actual121experiment44086846386 Android134051388442 FAILED BEFORE ANY TESTS during root
+  classpath configuration: repo.maven.apache.org returnedHTTP429 for pinned Kotlin2.1.21 Gradle
+  plugin/BOM/Compose-plugin POMs. No JVM results/APKs/runtime tests were produced. Exact log
+  scratch/kmp121-android-job.log. This is a confirmed dependency-download failure, NOT a test or
+  compilation assertion failure. No repository/dependency pin/TLS/check changes or blind reruns.
+  Apple134051387693 continues usefully (Native tests passed; framework linking as last checked).
+  Let it finish; next coherent candidate may retry resolution after the actual cooldown once.
+-122moves the ACTUAL RunningPlanCoordinator into common sameFQN. Same completed-response/legacy
+  actual preservation on regeneration, explicit weekly choices/interruption/easy/move/skip rules,
+  race/occupied-day/maximum-weekly-frequency guards and frozen source/goal/evidence/version data.
+  Same atomic revision+decision transaction uses explicit cross-platform CoachingTransaction,
+  no Native-unsupported SAM. Date ordering/Monday derive from exact ISO epoch-day/weekday; UK
+  evidence labels/today/wall-clock/real UUID remain required actual Android bindings. No formula change.
+- Original schedule has a targeted typed projection over existing release08config row using the
+  already-reviewed codec. Shoe feedback reuses the same targeted reader; unrelated dense/custom
+  payloads are not hydrated. No rewrite/new legacy bucket data/database/schema. Shared profile/
+  context objects in Android root reuse ONE original lazy IO-checked database.
+- TWO common JDBC/Apple SQL contracts cover absent schedule, untouched bytes/unknown metadata,
+  duplicate unavailable-day semantics/unrelated malformed routes, future/missing/invalid prefs
+  rejection without invented defaults. Review found new reader's lexical.int would reject old
+  JSONObject.getInt-compatible encodings; corrected to EXISTING SupportPayloadJson.integer and
+  added real persisted decimal/quoted/Long-wrap variants asserting45 and byte preservation.
+- THREE new real SQLite/runner application tests cover stored schedule with immutable completed
+  prescription/actual/source/draft, explicit move/revision/provenance plus completed guard, and
+  late decision insertion rollback retaining original plan/actual/response/draft. Existing tests
+  unchanged. Next expected598Android (595+3) /643storage (641+2).
+- Initial122 JVM643(0fail/error/skip)/common metadata/debugAPK/testAPK/lint PASS8m17s/180tasks.
+  FINAL numeric-compatibility-corrected source PASS5m5s/180tasks, JVM643ALL0fail/error/skip,
+  scratch/kmp-running-plan-corrected-final.log; format945(850Kotlin/95Java), schema19/source3
+  PASS, kmp-running-plan-corrected-format.log. No new runtime/Native acceptance inferred.
+- Exact next: inspect final122 build/XML/formatter, fix real failures; inspect121Apple final
+  result without cancellation. Commit122+handoff when local gates pass, then one normal push
+  once old useful Apple finishes. Verify new598Android/643Native/framework and corrected detail/
+  baseline/running-plan tests. If Maven429 recurs, record actual failure and avoid repeated blind
+  retry or repository/verification bypass. Continue remaining RunningEvidence/Strength/Health/
+  Settings application services, active UI/shared root/navigation and REAL iOS host/platform
+  bindings. Native destructive controls remain OFF; no premature merge/version/publication.
+
+### Checkpoint122 final local verification and121 actual Apple result
+
+- FINAL122 corrected local source passes643storage JVM (ALL0fail/error/skip), common metadata,
+  debugAPK/testAPK/lint5m5s/180tasks. This includes numeric strings/decimals/Long-wrap compatibility
+  and all unchanged repository/backup/retention contracts. Source3/exact schema19 and formatting945
+  (850Kotlin/95Java) PASS. Initial pre-correction build8m17s also passed; do not confuse its result
+  with final corrected source. No new Android runtime/Native/visual screenshot pass claimed.
+-121Apple134051387693 SUCCESS on7e19a63: real Native tests/framework. Independently verified
+  Native artifact14331556396 (177169bytes,SHAfded762ca458221e98f993a2062239ad7938d179a0e002c34cd8e111e66f746f):
+  449domain/27health/641storage,0fail/error/skip. scratch/kmp121-native/verification.json. Framework
+  artifact14331632496 metadataZIP61988191/SHA00584411fbc000c17d363bfa03bdbd15cb48963e16bd81528cc11642d2714e96;
+  compiled and linked, still NOT an iOS application. No false infra/Xcode blocker.
+-121Android remains UNVERIFIED (before all tests) due confirmed Maven429 at12:51. Current13:20+
+  is a real cooldown; no dependency/repository/TLS/cache-policy change, assertion reduction or
+  blind rerun. The next coherent source candidate retries normal pinned resolution once. If429
+  persists, record exact external limitation, preserve work and avoid endless retries.
+- Exact next: commit122+this recovery, push once to existing DRAFT24 (121useful Apple has finished,
+  so no cancellation). Expected598Android /Native643/framework. Inspect all corrected detail,
+  baseline and running-plan tests, compare exact new SQL cases on JDBC/Apple and preserve final
+  root/backup checks. Continue remaining RunningEvidence/Strength/Health/Settings services,
+  active UI/root/navigation/native permissions and REAL iOS application, no fake empty host.
+
 ### Exact next safe actions and remaining full scope
 
-1. Push121baseline3eb93a5 +corrective test992bcba +this recovery ONCE.120CI has completed:
-   Apple/framework and byte-verified JVM/Native641PASS, Android591of592pass with the confirmed
-   already-corrected literal6RM test oracle failure. Verify NEW595Android/Native641/framework,
-   not old results; no weakened assertions/retries of bad head. Continue remaining actual app scope.
+1.122FINAL corrected local JVM643/metadata/APKs/lint5m5s/format945/schema19/source3PASS.
+   Commit122+handoff and push ONCE. Prior121Apple/framework/verified641PASS; its Android never
+   ran tests because of confirmed Maven429. Verify new598Android/Native643/framework, correcting
+   actual failures without weakening checks. Preserve all completed application/common UI work;
+   remaining native host and platform/full app acceptance is not completed by a framework.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

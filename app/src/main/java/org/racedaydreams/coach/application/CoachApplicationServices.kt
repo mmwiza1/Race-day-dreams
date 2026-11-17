@@ -5,6 +5,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
+import org.racedaydreams.coach.shortDate
 import org.racedaydreams.data.AndroidSqlConnection
 import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.DevelopmentStore
@@ -21,6 +22,13 @@ import org.racedaydreams.reminders.EveningReminders
 /** Composition root only: features share a helper/command boundary, not business ownership. */
 class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDraft: () -> String?) {
     private val database = AndroidSqlConnection.forApplication(app)
+    private val sharedProfiles = org.racedaydreams.storage.SqliteAthleteProfile(database)
+    private val sharedContext =
+        org.racedaydreams.storage.SqliteCoachingContext(
+            database,
+            Instant::now,
+            { UUID.randomUUID().toString() },
+        )
     private val store = FeatureStore(app)
     private val coaching = CoachingStore(app)
     private val development = DevelopmentStore(app)
@@ -66,21 +74,21 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             LocalDate::now,
         )
     val operations = CoachOperationRunner(scope, snapshot::read)
-    val profile =
-        ProfileOperations(
-            org.racedaydreams.storage.SqliteAthleteProfile(database),
-            store.settingsRepository(),
-        )
+    val profile = ProfileOperations(sharedProfiles, store.settingsRepository())
     val baseline =
         BaselineCoordinator(operations, store.baselineRepository(), store.settingsRepository())
     val runningPlan =
         RunningPlanCoordinator(
-            release,
+            org.racedaydreams.storage.SqliteRunningSupportArchives(database),
             operations,
             store.activityRepository(),
-            profiles,
+            sharedProfiles,
             coaching,
-            development,
+            sharedContext,
+            Instant::now,
+            LocalDate::now,
+            { UUID.randomUUID().toString() },
+            ::shortDate,
         )
     val runningEvidence =
         RunningEvidenceCoordinator(
@@ -95,11 +103,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
     val progress =
         ProgressCoordinator(
             operations,
-            org.racedaydreams.storage.SqliteCoachingContext(
-                database,
-                Instant::now,
-                { UUID.randomUUID().toString() },
-            ),
+            sharedContext,
             LocalDate::now,
             { date ->
                 val at = date.atTime(12, 0).atZone(java.time.ZoneId.systemDefault())

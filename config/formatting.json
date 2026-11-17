@@ -292,6 +292,7 @@
     "app/src/androidTest/java/org/racedaydreams/coach/SharedExerciseDetailTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedCalendarScreenTest.kt",
     "app/src/main/java/org/racedaydreams/coach/CalendarScreen.kt",
-    "app/src/androidTest/java/org/racedaydreams/coach/SharedBaselineCoordinatorTest.kt"
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedBaselineCoordinatorTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedRunningPlanCoordinatorTest.kt"
   ]
 }
