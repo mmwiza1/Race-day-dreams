@@ -9,7 +9,6 @@ import org.racedaydreams.coach.shortDate
 import org.racedaydreams.data.AndroidSqlConnection
 import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.FeatureStore
-import org.racedaydreams.data.SqlitePrimaryFocusRepository
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.health.HealthConnectGateway
 import org.racedaydreams.recording.RunRecordingService
@@ -29,7 +28,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
     private val coaching = CoachingStore(app)
     private val profiles = SqliteUserPreferencesRepository(app)
     private val reminders = EveningReminders(app, store)
-    private val focus = SqlitePrimaryFocusRepository(store.settingsRepository())
+    private val focus = org.racedaydreams.storage.SqlitePrimaryFocus(store.settingsRepository())
     val healthGateway = HealthConnectGateway(app)
     private val snapshot =
         SharedCoachSnapshotReader(
@@ -149,13 +148,10 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
         )
     val settings =
         SettingsCoordinator(
-            app,
             operations,
-            store.backupRepository(),
             store.settingsRepository(),
             focus,
-            profiles,
-            reminders,
+            AndroidSettingsPlatform(app, store.backupRepository(), profiles, reminders),
             { RunRecordingService.running.value },
         )
 }

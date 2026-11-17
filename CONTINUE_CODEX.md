@@ -72,9 +72,12 @@ Formatting44100154566 SUCCESS. Main85e1c39 and separate owner PR23 unchanged.
 LOCAL124 running-evidence +health orchestration is complete and locally verified. Health25 /
 storage648 JVM0fail/error/skip, common metadata/debug+test APK/lint PASS8m24s/182tasks,
 scratch/kmp-running-health-final.log. Format949(854Kotlin/95Java), schema19/source3 PASS.
-Preserve moved common sources and real Android bindings. Next prepared batch is actual settings
-orchestration/native document+alarm boundary. Combine coherent changes before the next push;
-current124 would expect607Android/648Native, not yet runtime/Native verified.
+Checkpoint124 is COMMITTED locally as9d4554f, not yet pushed. Checkpoint125 settings extraction
+is COMPLETE/locally verified; preserve shared SettingsCoordinator, AndroidSettingsPlatform,
+new test and root/reminder bindings. DO NOT rerun scratch preparation scripts. FINAL settings
+metadata/debug+testAPK/lint PASS7m35s/176tasks, scratch/kmp-settings-final.log; format951 PASS
+plus final changed test pinned ktfmt PASS. Push124+125once; expected610Android/648Native,
+NOT yet runtime/Native verified. Do not infer acceptance from prior123601/646 proof.
 No schema/backup/version/permission change, early merge/publication or native destructive UI.
 Actual iOS APP/root/platform/final gates remain incomplete; framework is not app acceptance.
 
@@ -5572,19 +5575,43 @@ Actual iOS APP/root/platform/final gates remain incomplete; framework is not app
   Framework14337046422 linked (metadata62068122/SHA0c4ccc6a8fa350afeb1bce005fb335dde2a6ef080af638ef25e4c81f42c603c5),
   NOT iOS app. APK14337590293 verified58418502bytes/SHA342af9fc08817215a1398e5170e57d34825fa2a1b298bab9e5ba6954884fd985,
   code19/min28/noINTERNET. Proof scratch/kmp123-{android,native}/verification.json.
-- Next: actual SettingsCoordinator common orchestration +native document/backup/alarm adapter,
-  preserving existing backup/reminder owners. Prepared script scratch/share_settings_coordinator.py
-  is NOT yet applied. Then final local compilation/relevant tests and one coherent push to DRAFT24.
-  Current124 would expect607Android/648Native; never infer that result from prior123 proof.
+-124source is committed locally as9d4554f (not pushed).125settings is now ALREADY APPLIED below;
+  scratch preparation scripts must NOT be reapplied. Current combined candidate expects610Android /
+  648Native; never infer that result from prior123 proof.
+
+### Checkpoint125 — shared settings and original Android document/alarm owner
+
+- Actual SettingsCoordinator now common, generic only for actual native selected-file identity.
+  Original allowlist, focus/starting-path/milestone decisions, reset review and command callbacks
+  are retained. Existing common SqlitePrimaryFocus uses SAME settings rows; original JVM Optional
+  repository remains available unchanged. No new preferences or automatic programme changes.
+- AndroidSettingsPlatform retains original BackupManager/URI IO, prepares bytes BEFORE truncating
+  a selected document, cancels alarms before restore/reset and reconciles in finally even after
+  rejection. No second backup/reset engine or Native destructive controls have been introduced.
+- Common coordinator uses EXISTING ReminderSettings. Existing ViewModel ReminderPreferences API
+  remains; native Android adapter converts via existing fromShared with exact nanos/quiet/zone.
+  Actual settings UI calls that existing ViewModel wrapper; permission-declined disabling retained.
+- THREE new Android cases cover actual typed focus/allowlisted storage and invalid command
+  retention, selected-document forwarding and restore success/failure callbacks, active recording
+  reset REVIEW guard plus exact reminder settings/milestone toggle. No arbitrary delays; success
+  callback observation uses Main idle barrier. These await actual runtime verification.
+- FINAL125 local metadata/debugAPK/testAPK/lint PASS7m35s/176tasks,
+  scratch/kmp-settings-final.log. Format951(856Kotlin/95Java) PASS, final changed settings test
+  individually pinned ktfmt PASS. Health25/storage648 JVM from124passed unchanged; no SQL/domain
+  change requires repeat local runs. Exact schema19/source3 PASS. APK remains0.12.3-test1/code19/
+  minAPI28/noINTERNET. Expected610Android/Native648 pending; do not claim runtime/Native acceptance.
+  Commit125+handoff and push124+125once. DO NOT rerun already-applied scratch scripts.
 
 ### Exact next safe actions and remaining full scope
 
-1. Preserve124 locally verified running-evidence/health source. Apply prepared settings batch
-   only after completed build; inspect resulting source and add/run required focused tests.
-   Prior remote12302efa0c passed601Android/Native646/framework; next candidate results pending.
-   Finish settings batch, update handoff, commit/push coherent source once, inspect actual CI.
-   Then prioritize shared application root/active navigation and REAL iOS app host/platform wiring;
-   do not restart completed domain/storage kernels. Native destructive UI remains disabled.
+1. Local1249d4554f and125source are verified: final settings metadata/debug+testAPK/lint PASS
+   7m35s/176tasks; format951+final changed test PASS, schema19/source3. Commit125+this handoff and
+   push124+125once to existing DRAFT24 (prior601/646 CI finished successfully). Verify new expected
+   610Android/648Native/framework; inspect actual failures without weakened assertions or blind
+   reruns. Then prioritize REAL shared application composition/root/active UI/navigation and iOS
+   host/platform wiring. Main feature coordinators are now common; do not restart completed domain
+   or storage kernels. Native destructive UI stays OFF until EVERY host operation uses ONE actual
+   SqliteDataLifecycle owner. Final API28/35/36 +actual iOS APP gates remain pending.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

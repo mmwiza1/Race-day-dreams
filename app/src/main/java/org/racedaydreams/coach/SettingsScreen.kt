@@ -308,9 +308,9 @@ private fun ReminderSettings(state: CoachUiState, model: CoachViewModel) {
                 permissionPending = false
                 try {
                     val chosen = preferences()
-                    if (granted) model.settings.saveReminderPreferences(chosen)
+                    if (granted) model.saveReminderPreferences(chosen)
                     else {
-                        model.settings.saveReminderPreferences(
+                        model.saveReminderPreferences(
                             ReminderPreferences(
                                 ReminderPreferences.Mode.DISABLED,
                                 chosen.eveningTime(),
@@ -369,7 +369,7 @@ private fun ReminderSettings(state: CoachUiState, model: CoachViewModel) {
                     ) {
                         permissionPending = true
                         notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    } else model.settings.saveReminderPreferences(chosen)
+                    } else model.saveReminderPreferences(chosen)
                 } catch (_: Exception) {
                     error =
                         "Enter valid times in HH:MM format. Quiet hours must start and end at different times."
