@@ -62,6 +62,16 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — Apple compiler corrections
+
+The Apple job in experiment 44195464653 passed Native tests and failed at
+shared UI compilation. Its logs identify two source issues, both corrected
+locally: the calendar needed a named history callback after the signature
+added a strength-only flag, and the exercise library lacked the coroutine
+cancellation import. Pinned formatting and diff checks passed. A fresh
+macOS compile is required. Android instrumentation was still active at the
+last check. Keep the queued batch local until that useful run ends.
+
 ### Latest recovery pointer — checkpoint 172 shared running trends
 
 PR #24 remains at 25adcc6. Experiment 44195464653 reached Apple framework

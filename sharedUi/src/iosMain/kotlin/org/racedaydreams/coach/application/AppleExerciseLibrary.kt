@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToLong
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.*
 import org.racedaydreams.coach.strength.SharedCustomStrengthExerciseScreen

@@ -161,7 +161,7 @@ internal fun AppleCalendar(
                 dates = AppleCalendarDates,
                 distanceLabel = { distanceLabel(it, imperial) },
                 strengthAction = "View workout",
-                history = { AppleHistoryScreen(session, activity) },
+                history = { AppleHistoryScreen(session, open = activity) },
             )
     }
 }
