@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — 17 November
+
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Latest implementation113`a8849cd`
+shares actual snapshot sources/Android binding;111`7212d4a`context and112`16e8c65`original-Android-
+fixture correction are committed too. Local639storage JVM/common metadata/Android compile/lint /
+format932/schema/source checks PASS.114separates Native tests/framework stages without reducing
+coverage.110workflow44061576597 was cancelled for diagnosis after40minutes: Native449domain /
+27health PASS; storage/UI/test compilation succeeded, storage execution/framework unfinished.
+Android560old cases passed;6new pre-assertion fixture failures corrected locally, guard unchanged.
+Commit114and push111–114ONCE, inspect new exact-head Native639/Android571 and fix actual failures.
+See checkpoints110–114/END exact-next for evidence. No early merge/publication: actual iOS APP,
+remaining services/root/navigation/operation owner and full final gates still unfinished.
+Version0.12.3/code19/formats19/13/3/1 unchanged. Preserve all prior work; no fake native defaults.
+
 ### Branch, baseline and completed checkpoints
 
 - Continue `experiment/android-ios-kmp-compose`; DRAFT [PR #24](https://github.com/mmwiza1/Race-day-dreams/pull/24).
@@ -5043,8 +5057,9 @@ incomplete migration merely because a focused checkpoint passes.
   Added to focused CI: expected568Android (566+2), new636storage JVM/Native and213matching
   IO/SQL/health/coaching/context names. No schema/backup/permissions/dependency/version change.
 - Focused8new JVM tests +metadata/Android production+test compilation PASS4m6s/66tasks; earlier
-  metadata/Android production compilation PASS2m30s/51tasks. Final636storage JVM, zero fail/error/
-  skip, already observed; final formatted metadata/Android compilation/lint remains running.
+  metadata/Android production compilation PASS2m30s/51tasks. FINAL636storage JVM, zero fail/error/
+  skip, common metadata/Android compilation/lint PASS4m12s/137tasks,
+  scratch/kmp-coaching-context-final.log.
   Pinned931sources(836Kotlin/95Java), formatter14/source3/exact19migration boundaries PASS. No
   new Android/Native runtime result claimed before exact-head CI.
 - NEXT: bind the shared snapshot inputs to common profile/draft, gym, preferences and this coaching
@@ -5080,7 +5095,7 @@ incomplete migration merely because a focused checkpoint passes.
   inspect the next actual Native636/Android568result and fix actual failures before further binding.
   Keep24DRAFT. No merge/version bump/public APK. All full cross-platform scope remains below.
 
-### Checkpoint113 IN PROGRESS — actual common snapshot repository binding
+### Checkpoint113 — actual common snapshot repository binding
 
 -1117212d4a/context and11216e8c65/Android-fixture correction are LOCALLY COMMITTED, not pushed;
   remote remains1102c08a7c.110Android failed ONLY6new unversioned-memory fixtures;112retains the
@@ -5100,28 +5115,63 @@ incomplete migration merely because a focused checkpoint passes.
   preference reads; two actual SQL snapshot tests cover full stored-input projection and persisted
   optional weekly-review deduplication without activation; one Android factory case guards UI-
   thread SQL. Expected next CI639storage/571Android (not yet runtime-verified).
-- Initial common metadata/Android production compile PASS2m33s/62tasks. Formatted focused
-  StorageTest/common metadata/Android production+test compilation RUNNING in
-  scratch/kmp-snapshot-binding-tests.log. Original932formatter-source count should remain unchanged
-  (one common source added, old Android wrapper removed); run final check after changes.
-- Exact next: finish113focused compilation/tests, fix real failures, run final639storage/meta /
-  Android compile/lint/format/schema/source checks, update this boundary and commit. Inspect110Apple,
-  then push111+112+113ONCE, keeping24DRAFT and actual pending/failed gates explicit. Verify the new
-  Native639/framework and571Android gate; fix genuine failures before expanding. Next real scope
-  is remaining services/root/navigation/native app/permissions/platform services, not redoing this
-  shared reader or source binding. Native destructive UI stays OFF; full readiness/physical checks
-  remain unfinished. No early bump/merge/publication.
+- Initial common metadata/Android production compile PASS2m33s/62tasks; focused32StorageTest /
+  common metadata/Android production+test compile PASS4m26s/77tasks. FINAL639storage JVM with0
+  failure/error/skip +common metadata/Android production+test compilation/lint PASS3m39s/137tasks,
+  scratch/kmp-snapshot-binding-final.log. Pinned932sources(837Kotlin/95Java), exact19migration
+  boundaries and source3tests PASS; diff checks clean. No new native/Android runtime pass claimed.
+-113a8849cd is committed locally with1117212d4a and11216e8c65; remote remains1102c08a7c.
+ 110Apple133964517015/experiment44061576597 remains in progress beyond its preceding13minute
+  successful job; live log download returned404/BlobNotFound, so the actual cause is unknown.
+  Inspect actual output before any retry. Then push this coherent111–113batch ONCE, keep24DRAFT,
+  and verify new Native639/framework and Android571. No weaker assertion/migration guard, blind
+  retry, early version bump, merge or publication. Full native app and final gates remain pending.
+
+### Checkpoint114 — inspect slow Apple run and expose Native verification stages
+
+- The already-failing110workflow44061576597 was cancelled for DIAGNOSIS after about40minutes
+  (previous complete Apple run13minutes), when GitHub's live-log endpoint returned404. GitHub now
+  confirms CANCELLED, not successful. Completed Apple133964517015 output is saved at
+  scratch/snapshot-2c08-apple-job.log. No blind retry or claimed iOS-app/Native-storage pass.
+- Actual evidence: cold Gradle cache and LLVM/libffi downloads; all common storage/test/UI Kotlin
+  compilation completed (including the corrected transaction-interface test). Native DOMAIN449
+  and HEALTH27tests completed0fail/error/skip. Storage test execution and Compose framework link
+  were still incomplete at cancellation; no test failure/application cause was reported. The
+  output shows overlapping heavy framework codegen and simulator work, but contention/deadlock is
+  NOT established as a confirmed product defect. Do not speculate or claim a complete Native gate.
+- Downloaded actual partial Native artifact14320987624:80,892ZIPbytes/SHA256
+  784ec941b6cc92564290e08cde05bb9a4d6dfa6f084cdca6a78a6e835ac7f3d8. Only449domain/27health XML
+  is present, NOT storage results. Proof scratch/snapshot-2c08-native/partial-results.json.
+  Actual JVM14318853705:183,656ZIPbytes/SHAa31804cce0b5d4a65134b0590575f9c5015fadd3847810d8b5eecce915304641,
+  490domain/25health/628storage all0fail/error/skip. Android566unique START/END /560passed and6new
+  fixture failures BEFORE assertions independently checked; original-sourceproofs in
+  scratch/snapshot-2c08-{jvm,android-proof.json}. No experimental public APK published.
+- TARGETED diagnostic workflow correction: run the SAME Native domain/health/storage suites
+  with max2workers/no parallel projects/info; upload completed XML BEFORE a separate framework
+  link step. Both iOSX64 and simulatorArm64 targets and framework builds remain; tests/assertions
+  are not removed/filtered, failure does not permit framework/publication.60minute Apple job bound
+  avoids the default6hour invisible wait. No cache-policy/Android/full-release-gate bypass.
+  Parsed YAML checks confirm all6test targets, both framework targets, strict stage order and
+  early XMLartifact preservation. Full exact-head runtime verification is still REQUIRED.
+- NEXT: commit114workflow/recovery, push the complete111–114batch ONCE, update DRAFT24 and inspect
+  the new actual Native639storage/framework and Android571results (including original Android-
+  schema fixture correction). Fix any true failure before another retry. Local639storage/meta /
+  Android compile/lint, format932/exact-schema/source3 remain green from113. Next actual migration
+  work is remaining application services/root/navigation/native host, not repeated kernel ports.
 
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint113 local work is latest recovery boundary: actual common snapshot data binding /
-   production Android composition, draft/shoe inputs and focused tests as above.111+112are committed
-   locally;110Apple is still running,110Android failed6new fixture initialisation BEFORE assertions,
-   corrected by112through original Android schema owner with no weaker guard/assertions. Finish113
-   tests/lint/format, record results, commit; inspect110Apple before pushing so it is not cancelled.
-   Push the coherent111–113batch ONCE; expect Native639storage/Android571. Never claim pending
-   results. Continue remaining services/root/navigation/real iOS app, preserving ALL completed work.
-   No native destructive UI/reset/restart/early version bump/merge/publication.
+1. Latest implementation is113a8849cd, plus114targeted Native-stage diagnostics/recovery.
+   Local1117212d4a/context and11216e8c65/fixture fix are preserved. FINAL639storage JVM/common
+   metadata/Android production+test compile/lint PASS3m39s/137tasks; format932/exact-schema/source3
+   PASS.110run44061576597 is CANCELLED after diagnostic40minute wait: Native449domain/27health
+   actually passed; storage/UI/test code compiled, but storage execution/framework did NOT finish.
+   Android560old cases passed;6new fixture initialisation failures are corrected through original
+   Android schema owner with NO weaker guard/assertion. Native tests and framework now separate,
+   same targets with bounded parallelism and early XMLartifact. Commit114/push111–114ONCE, inspect
+   actual new head Native639/Android571before further mutation; do not blindly retry/claim pending
+   results. Then remaining services/root/navigation/actual iOS app. No native destructive UI,
+   reset/restart/early bump/merge/publication. PR24 stays DRAFT.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
@@ -5147,7 +5197,8 @@ incomplete migration merely because a focused checkpoint passes.
    proves exact Android schema1..19 statements/BOUNDARIES/current VERSION. Fresh retention identity
    uses real clock/UUID; upgrades remain protected/unreviewed. No native pruning until complete
    consent/preview/transaction/restore safeguards exist. Existing Android stores remain authoritative; checkpoint55 adds only a semantic reminder comparator for cross-codec compatibility.
-4. State/command runner and operational coaching composition are now common (108–109). Wire them into actual shared root/navigation/data sources, full permissions/
+4. State/runner, operational coaching/context AND actual snapshot/source bindings are common and
+   used by Android (108–113). Continue remaining application services/shared root/navigation, full permissions/
    HealthKit, native recording/BLE/notifications and real iOS app host/entitlements/usage strings,
    preserving Android Health Connect and all existing features. Visible-only health snapshots
    cannot infer deletion. Use actual shared screens and domain, not a separate product/prototype.

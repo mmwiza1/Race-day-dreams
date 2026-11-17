@@ -72,6 +72,7 @@ jobs:
     if: github.head_ref == 'experiment/android-ios-kmp-compose' || github.event_name == 'workflow_dispatch'
     # macos-latest arm64 has sustained capacity queues; keep real Apple tests on the Intel pool.
     runs-on: macos-26-intel
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -83,20 +84,18 @@ jobs:
         run: |
           xcodebuild -version
           xcrun simctl list devices available
+      # Keep Native tests and Compose framework code generation separately observable and
+      # avoid overlapping heavy Native work on cold runners; no test is omitted.
       - name: Compile and test the real shared code for this simulator architecture
         shell: bash
         run: |
           set -euo pipefail
           if [ "$(uname -m)" = arm64 ]; then
-            ./gradlew :sharedDomain:iosSimulatorArm64Test :sharedHealth:iosSimulatorArm64Test :sharedStorage:iosSimulatorArm64Test :sharedUi:linkDebugFrameworkIosSimulatorArm64
+            ./gradlew --max-workers=2 --no-parallel --info :sharedDomain:iosSimulatorArm64Test :sharedHealth:iosSimulatorArm64Test :sharedStorage:iosSimulatorArm64Test
           else
-            ./gradlew :sharedDomain:iosX64Test :sharedHealth:iosX64Test :sharedStorage:iosX64Test :sharedUi:linkDebugFrameworkIosX64
+            ./gradlew --max-workers=2 --no-parallel --info :sharedDomain:iosX64Test :sharedHealth:iosX64Test :sharedStorage:iosX64Test
           fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: experimental-shared-ios-framework
-          path: sharedUi/build/bin/ios*/debugFramework/
-          if-no-files-found: error
+      # Preserve completed XML evidence before starting the separately observable framework stage.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,3 +104,17 @@ jobs:
             sharedDomain/build/test-results/
             sharedHealth/build/test-results/
             sharedStorage/build/test-results/
+      - name: Link the real shared Compose framework after Native tests pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            ./gradlew --max-workers=2 --no-parallel --info :sharedUi:linkDebugFrameworkIosSimulatorArm64
+          else
+            ./gradlew --max-workers=2 --no-parallel --info :sharedUi:linkDebugFrameworkIosX64
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: experimental-shared-ios-framework
+          path: sharedUi/build/bin/ios*/debugFramework/
+          if-no-files-found: error
