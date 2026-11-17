@@ -25,7 +25,7 @@ abstract class RecordingInventoryRepositoryContract {
 
     @Test
     fun gpxImportKeepsSegmentsAndDeduplicatesWithoutOverwritingAnOpenRun() = storage { db ->
-        val importer = SqliteGpxImport(db, { at }) { error("No new identifier required") }
+        val importer = LocalBackupOperations(db, { at }) { error("No new identifier required") }
         fun point(seconds: Long, latitude: Double) =
             TrackPoint(
                 Instants.ofEpochSecond(at.getEpochSecond() + seconds),
@@ -43,13 +43,13 @@ abstract class RecordingInventoryRepositoryContract {
             )
         val staging = SqliteRecordingStaging(db)
         staging.start("open", at, 0, null, null)
-        assertFailsWith<IllegalArgumentException> { importer.importTrack(track) }
+        assertFailsWith<IllegalArgumentException> { importer.importGpx(track) }
         assertEquals("open", staging.unfinished()?.id)
         assertTrue(SqliteActivities(db) { at }.activitySummaries().isEmpty())
         db.execute("DELETE FROM recording_sessions WHERE id='open'")
 
-        val id = importer.importTrack(track)
-        assertEquals(id, importer.importTrack(track))
+        val id = importer.importGpx(track)
+        assertEquals(id, importer.importGpx(track))
         val activities = SqliteActivities(db) { at }
         val route = activities.recordedRoute(id)
         assertEquals(4, route.points.size)
@@ -59,7 +59,7 @@ abstract class RecordingInventoryRepositoryContract {
         assertEquals("gpx", summary.source().provider())
         assertNull(summary.movingTime())
         assertTrue(requireNotNull(summary.distanceMetres()) in 40.0..50.0)
-        assertFailsWith<IllegalArgumentException> { importer.importTrack(track.reversed()) }
+        assertFailsWith<IllegalArgumentException> { importer.importGpx(track.reversed()) }
         assertEquals(1, activities.activitySummaries().size)
     }
 

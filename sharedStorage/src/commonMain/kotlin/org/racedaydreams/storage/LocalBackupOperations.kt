@@ -1,5 +1,6 @@
 package org.racedaydreams.storage
 
+import org.racedaydreams.domain.portability.TrackPoint
 import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.domain.time.Instant
 
@@ -78,6 +79,9 @@ class LocalBackupOperations(
 
     fun cleanRecordingDetail(approval: DetailRetention.Approval, sessionId: String): Boolean =
         SqliteRecordingDetailCleanup(database, operations).cleanOne(approval, sessionId, now())
+
+    fun importGpx(segments: List<List<TrackPoint>>): String =
+        operations.replace { SqliteGpxImport(database, now, freshEpoch).importTrack(segments) }
 
     fun recordingInventory(): SqliteRecordingInventory.Inventory =
         operations.review { SqliteRecordingInventory(database).inspect() }

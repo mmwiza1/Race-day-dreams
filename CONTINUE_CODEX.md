@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 183 iOS GPX file import
+
+iOS Settings opens the existing system document picker for GPX. The native
+decoder caps input at 24 MiB, disallows DTDs/entities, and reads one
+timestamped track with the existing point limit. GPX import uses the same
+exclusive operation owner as backup/restore and retention, then refreshes
+history. The focused JVM recording inventory suite passed 12 tests after
+routing import through that owner. Pinned formatting, plist parse, diff
+and all 19 shared schema checks passed. Native decoder tests were added;
+they have not run on Linux.
+
+PR #24 remains at 9bc0737. Preserve experiment 44201909878 while it runs.
+After inspecting its result, push local checkpoints 182–183 together.
+Verify native decoder compilation and tests with sharedUi iosX64Test (or
+iosSimulatorArm64Test on ARM), then launch the app and exercise the picker.
+Exact re-import of a native recorded run and cross-platform GPX behavior
+remain to verify. Continue native parity and final gates before merging.
+
 ### Latest recovery pointer — checkpoint 182 shared GPX import storage
 
 Shared SQLite can ingest timestamped GPX track segments through the

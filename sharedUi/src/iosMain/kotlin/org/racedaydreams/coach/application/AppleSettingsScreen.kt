@@ -138,6 +138,37 @@ fun AppleSettingsScreen(
                     "The complete backup also includes detailed recordings still on this device. " +
                     "These backups are not encrypted by the app. Keep them somewhere you trust.",
         )
+        TextButton(
+            enabled = !importing && !exporting && !state.busy,
+            onClick = {
+                importing = true
+                message = null
+                try {
+                    session.backupDocuments.chooseGpx(presenter) { url ->
+                        if (url == null) importing = false
+                        else
+                            scope.launch {
+                                try {
+                                    session.backupDocuments.importGpx(url)
+                                    session.services.operations.refresh()
+                                    message = "The GPX run is available in history."
+                                } catch (cancelled: CancellationException) {
+                                    throw cancelled
+                                } catch (failure: Exception) {
+                                    message = failure.message ?: "Could not import the GPX track."
+                                } finally {
+                                    importing = false
+                                }
+                            }
+                    }
+                } catch (failure: Exception) {
+                    importing = false
+                    message = failure.message ?: "Could not open the GPX picker."
+                }
+            },
+        ) {
+            Text("Import recorded route (GPX)")
+        }
         AppleRecordingStorage(session.backupDocuments)
         val feedback = message ?: state.error ?: state.message ?: reminderFailure
         if (feedback != null) {

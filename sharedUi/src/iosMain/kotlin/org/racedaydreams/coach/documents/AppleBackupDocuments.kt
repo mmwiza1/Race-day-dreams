@@ -117,7 +117,17 @@ class AppleBackupDocuments(
         }
     }
 
-    fun chooseBackup(presenter: UIViewController, selected: (NSURL?) -> Unit) {
+    fun chooseBackup(presenter: UIViewController, selected: (NSURL?) -> Unit) =
+        chooseDocument(presenter, listOf("public.json", "public.zip-archive"), selected)
+
+    fun chooseGpx(presenter: UIViewController, selected: (NSURL?) -> Unit) =
+        chooseDocument(presenter, listOf("com.topografix.gpx", "public.xml"), selected)
+
+    private fun chooseDocument(
+        presenter: UIViewController,
+        types: List<String>,
+        selected: (NSURL?) -> Unit,
+    ) {
         check(NSThread.isMainThread)
         check(
             !staging &&
@@ -128,7 +138,7 @@ class AppleBackupDocuments(
         ) {
             "Finish the open document action first."
         }
-        val picker = ImportPicker(selected)
+        val picker = ImportPicker(types, selected)
         importPicker = picker
         try {
             presenter.presentViewController(picker.controller, animated = true, completion = null)
@@ -137,6 +147,33 @@ class AppleBackupDocuments(
             throw failure
         }
     }
+
+    suspend fun importGpx(url: NSURL): String =
+        withContext(io) {
+            val path = requireNotNull(url.path) { "This GPX file has no readable local copy." }
+            val file = checkNotNull(fopen(path, "rb")) { "Could not read the GPX file." }
+            val bytes =
+                try {
+                    check(fseeko(file, 0, SEEK_END) == 0) { "Could not size the GPX file." }
+                    val size = ftello(file)
+                    require(size in 1..AppleGpxDecoder.MAX_BYTES.toLong()) {
+                        "Choose a GPX file no larger than 24 MiB."
+                    }
+                    check(fseeko(file, 0, SEEK_SET) == 0) { "Could not read the GPX file." }
+                    ByteArray(size.toInt()).also { destination ->
+                        val count =
+                            destination.usePinned {
+                                fread(it.addressOf(0), 1u, size.toULong(), file)
+                            }
+                        check(count == size.toULong() && fgetc(file) == EOF && ferror(file) == 0) {
+                            "The GPX file changed while it was being read."
+                        }
+                    }
+                } finally {
+                    fclose(file)
+                }
+            exports.importGpx(AppleGpxDecoder.decode(bytes))
+        }
 
     suspend fun review(url: NSURL): ReviewedBackup {
         var reviewed: ReviewedBackup? = null
@@ -225,11 +262,11 @@ class AppleBackupDocuments(
 
     fun restoreReviewed(reviewed: ReviewedBackup) = exports.restoreReviewed(reviewed)
 
-    private inner class ImportPicker(private val selected: (NSURL?) -> Unit) :
+    private inner class ImportPicker(types: List<String>, private val selected: (NSURL?) -> Unit) :
         NSObject(), UIDocumentPickerDelegateProtocol {
         val controller =
             UIDocumentPickerViewController(
-                    documentTypes = listOf("public.json", "public.zip-archive"),
+                    documentTypes = types,
                     inMode = UIDocumentPickerModeImport,
                 )
                 .apply { delegate = this@ImportPicker }
