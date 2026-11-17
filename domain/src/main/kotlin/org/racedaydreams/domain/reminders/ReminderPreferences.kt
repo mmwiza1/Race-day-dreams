@@ -51,7 +51,7 @@ data class ReminderPreferences(
 
     fun zone(): ZoneId = zone!!
 
-    internal fun shared(): ReminderSettings =
+    fun shared(): ReminderSettings =
         ReminderSettings(
             ReminderSettings.Mode.valueOf(mode!!.name),
             eveningTime!!.toNanoOfDay(),
@@ -63,6 +63,18 @@ data class ReminderPreferences(
         "ReminderPreferences[mode=$mode, eveningTime=$eveningTime, quietHours=$quietHours, zone=$zone]"
 
     companion object {
+        /** Platform boundary only; no scheduling decisions or time-zone substitution. */
+        @JvmStatic
+        fun fromShared(value: ReminderSettings): ReminderPreferences =
+            ReminderPreferences(
+                Mode.valueOf(value.mode.name),
+                LocalTime.ofNanoOfDay(value.eveningNanoOfDay),
+                value.quietHours?.let {
+                    QuietHours(LocalTime.ofNanoOfDay(it.start), LocalTime.ofNanoOfDay(it.end))
+                },
+                ZoneId.of(value.zoneId),
+            )
+
         @JvmStatic
         fun defaults(zone: ZoneId?): ReminderPreferences {
             if (zone == null) throw NullPointerException("local time zone")

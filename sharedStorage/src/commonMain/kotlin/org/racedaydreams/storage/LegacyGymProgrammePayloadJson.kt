@@ -22,7 +22,23 @@ object LegacyGymProgrammePayloadJson {
         val choice: String,
         val evidence: String,
         val at: Instant,
-    )
+    ) {
+        fun id(): String = id
+
+        fun baseVersion(): String = baseVersion
+
+        fun resultingVersion(): String = resultingVersion
+
+        fun prescribedSession(): String = prescribedSession
+
+        fun exerciseId(): String = exerciseId
+
+        fun choice(): String = choice
+
+        fun evidence(): String = evidence
+
+        fun at(): Instant = at
+    }
 
     fun encode(programme: GymProgramme): String = element(programme).toString()
 

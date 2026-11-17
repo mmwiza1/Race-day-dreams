@@ -278,7 +278,7 @@ private fun primaryFocusLabel(focus: PrimaryFocus): String =
 @Composable
 private fun ReminderSettings(state: CoachUiState, model: CoachViewModel) {
     val context = LocalContext.current
-    val saved = state.reminderPreferences
+    val saved = ReminderPreferences.fromShared(state.reminderPreferences)
     var mode by rememberSaveable(saved) { mutableStateOf(saved.mode().name) }
     var time by rememberSaveable(saved) { mutableStateOf(saved.eveningTime().toString()) }
     var quiet by rememberSaveable(saved) { mutableStateOf(saved.quietHours() != null) }

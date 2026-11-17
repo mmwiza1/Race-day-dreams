@@ -3,7 +3,6 @@ package org.racedaydreams.coach.application
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +23,7 @@ import org.racedaydreams.coach.CoachUiState
 class CoachOperationRunner(
     private val scope: CoroutineScope,
     private val readSnapshot: suspend () -> CoachUiState,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher = applicationIoDispatcher(),
 ) {
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow(CoachUiState())
@@ -99,3 +98,5 @@ class CoachOperationRunner(
         update { it.copy(loading = false, busy = false, error = message) }
     }
 }
+
+internal expect fun applicationIoDispatcher(): CoroutineDispatcher

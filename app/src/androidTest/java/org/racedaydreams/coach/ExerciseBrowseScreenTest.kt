@@ -31,7 +31,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.racedaydreams.coach.strength.ExerciseBrowseScreen
-import org.racedaydreams.data.StrengthUserStore
 import org.racedaydreams.domain.strength.CustomStrengthExercise
 import org.racedaydreams.domain.strength.ExerciseCatalog
 import org.racedaydreams.domain.strength.ExerciseMetadata
@@ -173,7 +172,14 @@ class ExerciseBrowseScreenTest {
                 exercises = listOf(bench, goblet, exercise("plank"), exercise("pull-up")),
                 strengthSessions = listOf(recent),
                 gymProgramme = programme,
-                exerciseChoices = listOf(StrengthUserStore.Choice(bench.id(), true, false)),
+                exerciseChoices =
+                    listOf(
+                        org.racedaydreams.storage.SqliteStrengthChoices.Choice(
+                            bench.id(),
+                            true,
+                            false,
+                        )
+                    ),
             )
         compose.setContent { MaterialTheme { ExerciseBrowseScreen(state, {}, { opened = it }) } }
         clickTag("exercise-shortcut-Recent")
@@ -197,7 +203,14 @@ class ExerciseBrowseScreenTest {
             CoachUiState(
                 loading = false,
                 exercises = exercises("bench-press", "plank"),
-                exerciseChoices = listOf(StrengthUserStore.Choice("bench-press", false, true)),
+                exerciseChoices =
+                    listOf(
+                        org.racedaydreams.storage.SqliteStrengthChoices.Choice(
+                            "bench-press",
+                            false,
+                            true,
+                        )
+                    ),
             )
         compose.setContent {
             val density = LocalDensity.current

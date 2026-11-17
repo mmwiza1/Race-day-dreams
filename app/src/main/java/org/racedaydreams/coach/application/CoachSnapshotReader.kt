@@ -135,7 +135,14 @@ class CoachSnapshotReader(
                         ) ?: error("The current authored programme is missing.")
                     else null
                 val gymProgramme = if (authoredGymProgramme == null) gym.current() else null
-                val gymLinks = development.gymLinks()
+                val gymLinks =
+                    development.gymLinks().mapValues { (_, link) ->
+                        org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
+                            link.actualSessionId(),
+                            link.versionKey(),
+                            link.prescribedSessionId(),
+                        )
+                    }
                 val associations =
                     gymLinks.values.map {
                         org.racedaydreams.domain.presentation.StrengthTodaySummary.Association(
@@ -185,12 +192,31 @@ class CoachSnapshotReader(
                         runCatching { MassUnit.valueOf(settings.getSetting("mass.unit") ?: "KG") }
                             .getOrDefault(MassUnit.KG),
                     gymLinks = gymLinks,
-                    gymProgressionDecisions = gym.decisions(),
+                    gymProgressionDecisions =
+                        gym.decisions().map { decision ->
+                            org.racedaydreams.storage.LegacyGymProgrammePayloadJson.Decision(
+                                decision.id(),
+                                decision.baseVersion(),
+                                decision.resultingVersion(),
+                                decision.prescribedSession(),
+                                decision.exerciseId(),
+                                decision.choice(),
+                                decision.evidence(),
+                                decision.at(),
+                            )
+                        },
                     gymProgramme = gymProgramme,
                     authoredGymProgramme = authoredGymProgramme,
                     strengthToday = strengthToday,
                     gymVersions = gym.versions(),
-                    exerciseChoices = choices.choices(),
+                    exerciseChoices =
+                        choices.choices().map { choice ->
+                            org.racedaydreams.storage.SqliteStrengthChoices.Choice(
+                                choice.exerciseId(),
+                                choice.favourite(),
+                                choice.archived(),
+                            )
+                        },
                     exerciseExclusions = choices.exclusions(),
                     acknowledgedPbs = choices.acknowledged(),
                     calendarView = settings.getSetting("calendar.view") ?: "List",
@@ -205,7 +231,7 @@ class CoachSnapshotReader(
                     runResponses = responses,
                     plannedWorkouts = planned.plannedWorkouts(),
                     milestonesEnabled = settings.getSetting("milestones.enabled") == "true",
-                    reminderPreferences = reminders.preferences(),
+                    reminderPreferences = reminders.preferences().shared(),
                     performanceEligible = eligibility.eligible(),
                     eligibilityReasons = eligibility.reasons(),
                     baselineReviewed = settings.getSetting("baseline.reviewed") == "true",

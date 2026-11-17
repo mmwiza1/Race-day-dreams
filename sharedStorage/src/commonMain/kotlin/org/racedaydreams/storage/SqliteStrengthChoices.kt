@@ -6,7 +6,13 @@ import kotlinx.serialization.json.*
  * Existing reversible favourites/archive choices and PB acknowledgement, separate from evidence.
  */
 class SqliteStrengthChoices(private val database: SqlDatabase) {
-    data class Choice(val exerciseId: String, val favourite: Boolean, val archived: Boolean)
+    data class Choice(val exerciseId: String, val favourite: Boolean, val archived: Boolean) {
+        fun exerciseId(): String = exerciseId
+
+        fun favourite(): Boolean = favourite
+
+        fun archived(): Boolean = archived
+    }
 
     /** One bounded read in the shared transaction; no exclusions or PB records are changed. */
     fun archiveSnapshot(): StrengthChoicesArchiveJson.Snapshot =

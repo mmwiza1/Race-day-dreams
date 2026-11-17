@@ -4852,16 +4852,73 @@ incomplete migration merely because a focused checkpoint passes.
   backup paths; native destructive UI stays OFF. All physical provider/GPS/BLE/audio/TalkBack /
   locked-screen checks remain UNPERFORMED. No premature merge/release.
 
+### Checkpoint108 — ONE shared application read-state and command runner
+
+- SAME experiment branch / DRAFT PR24; main refetched unchanged85e1c3903b61f1d45e444d120ba1a701ad3a2c36.
+  Commit source+handoff together and push ONCE if ahead. All work stays experimental/unpublished.
+- Checkpoint107 7d79b25c56f769165cc38422291dc62a763aeda9 is ACTUALLY GREEN: experiment44044723070,
+  Android133907473548 /Apple133907474019 SUCCESS; formatting44044723086 SUCCESS. Actual native
+  HealthKit SDK adapter compiled and linked. This proves API compilation, not authorised real reads.
+  Android544unique matching START/END,700189domain/48suites,3successful builds/schema/lint PASS.
+- Digest-verified JVM14311522787 ZIP182483/SHA694a29c0960bdaac161df5faba3553c46e0b64746242c316c537390378dd30b8
+  has490domain/25health/620storage; Native14310779772 ZIP173708 /
+  SHA5c1d027f1fbf3bf45a577ac3953af325fe50de47fef3985a521239336dbcad12 has449/27/620;
+  ALL0failure/error/skip. ALL197 IO/SQL/lifecycle/HealthKit case names match across platforms,
+  including actual SQLite source import/rollback cases. scratch/healthkit-7d79-{jvm,native}/
+  verification.json, native/all-case-proof.json, healthkit-7d79-android-{job.log,proof.json}.
+- PrivateAPK14311956887 ZIP30723789/SHA71bc7c90b39ce81cce86af1680b3736ccd6c4f2d73898c47fab49a0e65ab2b85;
+  APK58336582/SHA5f6e25efdd80febf6a35be49a67b30b2eb0933c3064225c82366d71980093656,code19/min28/
+  noINTERNET, scratch/healthkit-7d79-apk/verification.json. Framework14311921825 is NOT an iOS app.
+- Actual CoachUiState moved from app to sharedUi/commonMain, SAME package/name and coherent model,
+  not a second/native-only state. Existing common StrengthTodaySummary.Association, typed legacy
+  gym-decision/choice DTOs and ReminderSettings replace Android store/Java-time wrapper fields.
+  Android snapshot reader only copies original values into those existing models. Field values,
+  order, source IDs, favourites/exclusions, version/association provenance and nullable metrics stay
+  intact. Empty baseline retains original84-day/no-observation semantics with real local clock;
+  no recorded measurement/eligibility/coaching calculation is invented or changed.
+- Existing narrow JVM ReminderPreferences adapter now exposes its existing shared() conversion and
+  fromShared() reverse binding. Mode, exact nanoseconds/quiet bounds and zone ID are retained;
+  no scheduling changes. Android Settings still uses its original platform form/notification API.
+  Provider HealthAvailability enum moved unchanged to sharedHealth; AVAILABLE is NOT read authority.
+- Actual CoachOperationRunner moved VERBATIM to common UI/application ownership (same package/API,
+  mutex/command/callback/retained-state rules), except its default dispatcher uses a tiny required
+  expect/actual factory. Android retains Dispatchers.IO; Native imports its documented IO extension.
+  kotlinx-coroutines-core1.9.0 is explicitly api in sharedUi because public signatures expose it;
+  this reuses the ALREADY present version/library, not a new runtime dependency or second engine.
+  New Android/iOS runtime source sets are covered by formatter and source fingerprint guards.
+- Cross-module public properties cannot be smart-cast: RunFeedbackSection now captures its current
+  plan ONCE for both list and callback, preserving coherent version identity. Failed compilation
+  diagnosed/corrected at these references, not by weakening tests. Common Dispatchers.IO absence
+  corrected with platform factories; exact coroutines1.9 source confirms public Native extension.
+- TWO Android binding tests cover every reminder mode, four zones, optional quiet periods, exact
+  subsecond values, original defaults and unknown training evidence. Two existing exercise-browser
+  fixtures now supply the same values in common choice DTOs, with assertions unchanged. THREE
+  EXISTING command-runner concurrency/failure/callback tests also join focused CI (not new tests).
+- FINAL local25health /620storage JVM,0failure/error/skip +700189original domainchecks/48suites +
+  common UI metadata +Android production/test compilation PASS4m48s/82tasks,
+  scratch/kmp-shared-application-final.log. Formatter917sources(822Kotlin/95Java), exact schema19 /
+  source3 PASS; schema75 remains unchanged and green in107CI. git diff --check clean.
+- New actual Native state/runner/framework compilation and Android549focused runtime (544+2new
+  bindings+3existing runner tests) are PENDING next exact-head CI. No final screenshots/whole app
+  acceptance/physical pass claimed. Legacy Android state/runner originals removed, not duplicated.
+- NEXT real software gap: shared operational CoachingRepository commands. SqliteCoachingArchive
+  currently snapshots/validates; it does NOT implement CoachingRepository. Reuse actual original
+  CoachingStore.java rules and existing common codecs/execution edit provenance, then bind shared
+  application snapshot/services/root, platform providers and actual iOS host. Original snapshot
+  reader also appends optional coaching proposals/reviews and reconciles reminders; preserve those
+  explicit-version rules when moving it, not a fake read-only/prototype replacement. No destructive
+  native UI until ONE data owner covers every operation path. All physical checks unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint107 is latest recovery boundary. Inspect status/HEAD/upstream; commit/push ONCE if
-   needed and update DRAFT24.106536ee94 is fully green/byte-verified: Android544 incl exact icons /
-   original escaped archive; JVM616/Native616,184matching IO/SQL cases. New107 local25health /
-   620storage+metadata+Android compilation PASS3m8s/68tasks; formatter914/source3/schema19 PASS.
-   Expected Native27health/620storage plus new HealthKit SDK compilation and Android544 runtime
-   are PENDING exact-head CI. Check real Apple diagnostics first; fix causes, not assertions or
-   blind retries. Then continue actual root/state/owner/native services/iOS host integration.
-   No native destructive UI, reset/restart, early version bump, merge or public publication.
+1. Checkpoint108 is latest recovery boundary;1077d79b25 is fully green/byte-verified: actual new
+   HealthKit SDK compilation, Android544, JVM25health/620storage, Native27health/620storage and197
+   matching IO/SQL/HealthKit cases. Local108 full25/620 +700189domain/48suites +common metadata /
+   Android test compilation PASS4m48s/82tasks; formatter917/source3/schema19 PASS. Inspect upstream,
+   push ONCE if ahead, update DRAFT24; verify real Native common-state/runner compilation and
+   Android549 incl new exact reminder conversion and original command-runner tests. No pending
+   runtime pass claimed. Next operational CoachingRepository, actual common snapshot/root/services
+   and iOS app host. No reset, early version bump, destructive native UI, merge or publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

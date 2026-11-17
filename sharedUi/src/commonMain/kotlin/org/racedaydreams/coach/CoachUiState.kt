@@ -1,9 +1,7 @@
 package org.racedaydreams.coach
 
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
 import org.racedaydreams.domain.PlannedWorkout
 import org.racedaydreams.domain.UserProfile
 import org.racedaydreams.domain.activity.ActivityRecord
@@ -19,11 +17,13 @@ import org.racedaydreams.domain.coaching.PlanVersion
 import org.racedaydreams.domain.coaching.RunExecution
 import org.racedaydreams.domain.coaching.WeeklyCoaching
 import org.racedaydreams.domain.coaching.WorkoutDecision
-import org.racedaydreams.domain.reminders.ReminderPreferences
+import org.racedaydreams.domain.reminders.ReminderSettings
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.HistoricalStrengthRecord
 import org.racedaydreams.domain.strength.StrengthExercise
 import org.racedaydreams.domain.strength.StrengthSession
+import org.racedaydreams.domain.time.Instants
+import org.racedaydreams.domain.time.LocalDate
 import org.racedaydreams.health.HealthAvailability
 
 /** Presentation state contains actual local observations; unknown metrics stay nullable. */
@@ -50,8 +50,11 @@ data class CoachUiState(
     val historicalStrength: List<HistoricalStrengthRecord> = emptyList(),
     val massUnit: MassUnit = MassUnit.KG,
     val calendarView: String = "List",
-    val gymLinks: Map<String, org.racedaydreams.data.DevelopmentStore.GymLink> = emptyMap(),
-    val gymProgressionDecisions: List<org.racedaydreams.data.GymProgrammeStore.Decision> =
+    val gymLinks:
+        Map<String, org.racedaydreams.domain.presentation.StrengthTodaySummary.Association> =
+        emptyMap(),
+    val gymProgressionDecisions:
+        List<org.racedaydreams.storage.LegacyGymProgrammePayloadJson.Decision> =
         emptyList(),
     val gymProgramme: org.racedaydreams.domain.strength.GymProgramme? = null,
     val authoredGymProgramme: org.racedaydreams.domain.strength.StrengthProgramme? = null,
@@ -60,16 +63,15 @@ data class CoachUiState(
     val exerciseExclusions:
         List<org.racedaydreams.domain.strength.ExerciseExclusionRepository.Exclusion> =
         emptyList(),
-    val exerciseChoices: List<org.racedaydreams.data.StrengthUserStore.Choice> = emptyList(),
+    val exerciseChoices: List<org.racedaydreams.storage.SqliteStrengthChoices.Choice> = emptyList(),
     val acknowledgedPbs: Set<String> = emptySet(),
     val workoutDecisions: List<WorkoutDecision> = emptyList(),
     val weeklyReview: WeeklyCoaching.Review? = null,
     val weeklyDecision: String? = null,
     val milestonesEnabled: Boolean = false,
-    val reminderPreferences: ReminderPreferences =
-        ReminderPreferences.defaults(ZoneId.systemDefault()),
-    val baseline: RunnerBaseline =
-        RunnerBaseline.empty(Instant.now().minus(Duration.ofDays(84)), Instant.now()),
+    val reminderPreferences: ReminderSettings =
+        ReminderSettings.defaults(TimeZone.currentSystemDefault().id),
+    val baseline: RunnerBaseline = emptyPresentationBaseline(),
     val manualBaseline: ManualBaselineInput = ManualBaselineInput.empty(),
     val performanceEligible: Boolean = false,
     val eligibilityReasons: List<String> = emptyList(),
@@ -81,3 +83,13 @@ data class CoachUiState(
     val error: String? = null,
     val savedProfileRevision: Int = 0,
 )
+
+// Preserve the original empty 84-day presentation window. This is not recorded health evidence.
+private fun emptyPresentationBaseline(): RunnerBaseline {
+    val from = Clock.System.now()
+    val until = Clock.System.now()
+    return RunnerBaseline.empty(
+        Instants.ofEpochSecond(from.epochSeconds - 84 * 86400L, from.nanosecondsOfSecond.toLong()),
+        Instants.ofEpochSecond(until.epochSeconds, until.nanosecondsOfSecond.toLong()),
+    )
+}
