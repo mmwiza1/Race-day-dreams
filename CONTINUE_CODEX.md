@@ -62,7 +62,34 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November,137–138 locally verified
+### Latest recovery pointer — 17 November, Gym UI through140 locally verified
+
+Continue experiment/android-ios-kmp-compose / DRAFT PR24.137–138committed locally0e01af2,
+recovering ALL surviving edits and safely fast-forwarding5235f2f.139–140now applied/locally verified:
+actual live workout, one-off builder/slot editor and authored-programme overview/workout UI
+are common and USED by Android. Android keeps original lifecycle START/STOP+back observer,
+notification permission/alerts, UK dates and exact numeric/target/actual labels. Existing shared
+association/substitution/warm-up/rest/preview controls reused; no second execution engine,
+redesign, changed targets, data/schema/version/permission or automatic activation.
+
+139metadata/debugAPK/testAPK/lint PASS6m48s/176tasks (scratch/kmp139-gym-ui-gate.log).
+FINAL140metadata/debugAPK/testAPK/lint PASS6m18s/176tasks (scratch/kmp140-authored-final.log).
+Formatting985files(890Kotlin95Java) applied; diffcheck/schema19/source3/release10 PASS.
+All126prior focused test classes/assertions retained; only new SharedGymNowCoordinatorTest added
+(2realSQL cases). Expected638Android/655Native still PENDING for137–140, not accepted by136CI.
+Source136archives independently verified as below. Recovery5235experiment44157873531 BOTH jobs
+SUCCESS. No running useful old Native job to cancel; next push should be coherent new source.
+
+Next141PREPARED ONLY in scratch/body141/{apply.py,SqliteBodyMeasurements.kt,
+BodyMeasurementsRepositoryContract.kt}: missing typed body adapter over EXISTING heights/context
+and explicit body-only Apple refresh. Reuses existing visible-only import; no new storage kernel.
+Inspect actual files before applying ONCE. Run new3JDBC contracts, metadata/APKs/lint and actual
+Native verification, add body-only runtime privacy case (next expected639Android/658storage).
+Then one combined push to PR24 and inspect exact-head Android/Apple results; no premature merge.
+Remaining full native host/SDK/navigation/UI/lifecycle guard/final app+matrix/visual gates remain
+as recorded below. All physical acceptance UNPERFORMED. Version/formats remain19/19/13/3/1.
+
+### Latest recovery pointer — 17 November,137–138 locally verified (historical)
 
 Continue original experiment/android-ios-kmp-compose / DRAFT PR24. Workspace recovered; ALL six
 local137–138 files survived. Safely fetched/fast-forwarded recovery-only5235f2f with source edits
