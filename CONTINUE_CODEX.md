@@ -62,7 +62,7 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November, pushed130 / local131–132
+### Latest recovery pointer — 17 November, pushed130 / committed131–132
 
 Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote HEAD is now
 cc18011715bf240ef230e392f8d6e40423ee9c2a:126root,127Apple gateway/body,128Home/first-run,
@@ -79,20 +79,20 @@ fetch got Maven HTTP429, all14tool unit tests passed. Local pinned formatting pa
 blindly rerun it or describe this as a source-formatting mismatch.132below fixes actual download
 handling; no green current-head formatting CI claim. Useful Apple CI must finish before new push.
 
-LOCAL131 is APPLIED (do NOT rerun scratch scripts): actual original WorkoutCard, workout detail,
+LOCAL131 is COMMITTED as530060861716ef031253c30cc64466f75ed6c6ea (do NOT rerun scratch scripts): actual original WorkoutCard, workout detail,
 move/skip/link and manual completion UI now common in SharedPlannedWorkoutScreen. Android
 PlanScreens is thin original bindings; SAME RunningPlanCoordinator/RunningEvidenceCoordinator,
 real date/time/input/recovery/routine callbacks, existing metric/imperial actual-entry assertions.
 No calculation, target, actual/history or activation changes.131metadata/APKs/lint PASS6m30s/176tasks at
 `/workspace/scratch/kmp131-workout-final.log`. No local build failure remains. Format970(875Kotlin/
 95Java) PASS. Existing real CoachingInteractionTest completion/imperial/history cases remain.
-LOCAL132 formatter correction APPLIED in scripts/format-code.py +test-format-code.py: up to3
+LOCAL132 formatter correction is committed in this checkpoint in scripts/format-code.py +test-format-code.py: up to3
 transient429/502/503/504 attempts, honours numeric/date Retry-After within SAME60s total budget;
 keeps proxy/CA/pins/size/integrity validation and fails closed on permanent/excessive responses.
 18offline contracts PASS, scratch/kmp131-format-tests.log. No blind CI rerun or weakened check.
 
-Next preserve committed131UI and commit132formatter+handoff, preserve while
-130Apple runs (do not cancel useful Native CI). Push to ORIGINAL PR24 only once current useful
+131+132local gates PASS. Protect these SAME local commits on temporary recovery ref
+checkpoint/android-ios-kmp-compose-132 if130Apple still runs (do not cancel useful Native CI). Push to ORIGINAL PR24 only once current useful
 run completes; if interrupted earlier back up same commits on a temporary checkpoint ref without
 replacement PR/tag. Consult PR body for live run status. Actual iOS APP host/full SDK effects,
 remaining feature-owned services/UI/navigation and final full Android28/35/36/iOS/visual gates
@@ -5771,7 +5771,8 @@ HealthKit/Health Connect/GPS/BLE/audio/TalkBack/VoiceOver acceptance remains unp
 
 ### Exact next safe actions and remaining full scope
 
-1.131local gate PASS6m30s/176tasks. Preserve committed131UI and commit132tooling+handoff.
+1.131UI and132tooling are locally committed/verified. Inspect status/log and recovery ref
+   checkpoint/android-ios-kmp-compose-132 before any mutation; do not reapply scratch scripts.
    Inspect130experiment44128266830 jobs134197939370/134197938719 and actual completed logs/XML;
    formatting44128267170 HTTP429 is diagnosed and fixed LOCALLY132, not CI-passed. No blind reruns.
    Keep useful Native/framework run until complete, then normal push131/132ONCE to ORIGINAL PR24.
