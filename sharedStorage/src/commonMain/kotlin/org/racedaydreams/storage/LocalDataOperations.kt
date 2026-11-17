@@ -19,6 +19,9 @@ internal class LocalDataOperations : RecordingDetailOperation {
 
     fun <T> replace(block: () -> T): T = run(Kind.REPLACEMENT, block)
 
+    /** Exclusive non-replacing review; the domain approval recheck must see its own scope idle. */
+    fun <T> review(block: () -> T): T = run(Kind.CLEANUP, block)
+
     override fun exclusive(block: () -> Boolean): Boolean = run(Kind.CLEANUP, block)
 
     override fun replacementInProgress(): Boolean {

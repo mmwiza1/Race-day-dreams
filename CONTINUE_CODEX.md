@@ -4678,14 +4678,52 @@ incomplete migration merely because a focused checkpoint passes.
 - Schema19/root13/raw3/package1/version/code/dependencies/permissions unchanged. All physical-device
   HealthKit/Health Connect/GPS/BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
 
+### Checkpoint104 — shared application data-lifecycle owner
+
+- Continue the SAME experiment branch / DRAFT PR24, no reset or release/version change.
+- Checkpoint103 `e502e74a51821a071dced968a701a7df706f9b99` is now actually green:
+  [44034693799](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44034693799), Android
+  133874631520 / Apple133874631883 SUCCESS; formatting44034693749 SUCCESS. Downloaded/digest-
+  verified JVM14307542675 has490domain/16health/602storage; Native14306633637 has449/18/602,
+  all0failure/error/skip. All170 IO/SQL/guard names match across platforms, INCLUDING real Darwin
+  concurrent-worker test. Actual Android logs have536 unique matching START/END,700189checks /
+  48suites,3successful builds. Proofs scratch/cleanup-e502-{jvm,native}/verification.json,
+  native/all-case-proof.json, cleanup-e502-android-proof.json. PrivateAPK14308030308 ZIP30711670 /
+  SHA b4256c0bdde258d3b54bc3b399819661e0568f7f3a361670a73774d52fa3c260; APK58303755 /
+  SHA c0974c90ff032750e9dac1a6847f256940b85cdffcc1d8d35772c9dc810d0632,code19/min28/noINTERNET.
+  Framework14306693488 remains NOT an actual app. No public experimental publication.
+- New SqliteDataLifecycle composes the existing inspected JSON/raw/complete export+restore and
+  informed retention workflow using ONE private LocalDataOperations guard. Review scopes see
+  themselves as non-replacement while excluding concurrent/nested operations. Read inventory /
+  preferences also share that gate. Host must create ONE owner per DB and route ALL relevant
+  operations through it, on its IO executor; actual platform/root bindings remain unfinished.
+- Scoped raw/complete backup consumers finish copying before return; staged sources close on
+  normal return or failure. Same guard covers inspection AND transactional restore. Constructor
+  never accesses database; corrupt imports validate before ANY DB access. Existing format/source/
+  identity/rollback protections reused, no alternate DB or training engine. cleanOne stays INTERNAL;
+  approval never deletes. Native destructive UI remains OFF pending host wiring and UI acceptance.
+- EIGHT real SQLite contract cases on JVM/Apple wrappers: choice/preview/approval do not delete;
+  backup scope rejects nested review/read/mutation/restore; complete/raw callbacks close escaped
+  sources; consumer failure releases guard; actual complete roundtrip preserves data/fresh epoch;
+  malformed imports leave state intact; cleanup cannot overlap backup; restore invalidates old
+  approval; construction/invalid import never touches SQL. Existing nonempty source activity and
+  point are retained. Existing kernels' detailed transaction suites remain intact.
+- Local focused10 tests PASS1m11s (7initial lifecycle+3guard); final610storage JVM,0failure/error/
+  skip +common metadata +Android instrumentation compilation PASS4m23s/64tasks,
+  scratch/kmp-lifecycle-final.log. Initial test import compilation error corrected to existing
+  storage StoredInstant (not a weakened assertion). Format905sources (810Kotlin/95Java) and exact
+  schema1..19 PASS. Fresh Native610/runtime validation is PENDING next coherent push.
+- Next batch already being implemented locally: move existing app chrome/navigation icons to common
+  Compose, preserving actual Android routes/lifecycle/graphs. Inspect git status/diff; finish its
+  focused compilation/UI tests before claiming it verified. Do not overwrite those local files.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint103 above is latest recovery boundary;102616b1fb is fully green/byte-verified.
-   Current103 source/handoff committed together; local602/meta/Android compilation PASS3m3s /
-   64tasks +format901/schema75/source3 PASS. Push ONCE if needed (inspect upstream), update DRAFT24
-   and verify actual Native602 (including Darwin concurrency helper),170IO/SQL/guard names and
-   Android536 before claiming runtime success. Fix actual Native compile/runtime errors, no blind
-   reruns. Native destructive UI OFF until ONE real application guard owns all operation paths.
+1. Checkpoint104 above is current storage recovery boundary;103e502e74 is fully green/byte-verified.
+   Inspect local shell extraction and its compile log before editing; preserve that ongoing batch.
+   Finish shell compilation/interaction tests, formatter/schema/source checks; commit coherent
+   source+handoff and push ONCE. Verify real Native610 plus new Android shell/route tests on actual
+   final head. Native destructive UI OFF until ONE real application owner wraps all operation paths.
    Continue common app/navigation/state/native services/real iOS host and final full gates.
    No reset/restart, early version bump, merge or public publication.
 
