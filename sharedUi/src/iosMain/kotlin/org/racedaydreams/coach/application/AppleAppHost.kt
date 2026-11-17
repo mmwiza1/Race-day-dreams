@@ -89,7 +89,7 @@ fun raceDayViewController(databasePath: String, bundleIdentifier: String): UIVie
             val active = session
             Surface(Modifier.fillMaxSize()) {
                 if (active != null) {
-                    AppleAppContent(active, controller) {
+                    AppleAppContent(active, controller) { bodyOnly ->
                         AppleHealthControls(
                             active,
                             preferences,
@@ -97,6 +97,7 @@ fun raceDayViewController(databasePath: String, bundleIdentifier: String): UIVie
                             weightKey,
                             heightKey,
                             metrics,
+                            bodyOnly,
                         )
                     }
                 } else {
@@ -123,6 +124,7 @@ private enum class ApplePage {
     PLAN,
     WEEKLY,
     BASELINE,
+    BODY,
     GYM,
     PROGRAMMES,
     EXERCISES,
@@ -137,7 +139,7 @@ private enum class ApplePage {
 private fun AppleAppContent(
     session: AppleCoachSession<Unit>,
     controller: UIViewController,
-    health: @Composable () -> Unit,
+    health: @Composable (Boolean) -> Unit,
 ) {
     val state by session.services.operations.state.collectAsState()
     var page by remember { mutableStateOf(ApplePage.START) }
@@ -163,7 +165,20 @@ private fun AppleAppContent(
         }
         Box(Modifier.weight(1f)) {
             when (page) {
-                ApplePage.SETTINGS -> AppleSettingsScreen(session, controller, health)
+                ApplePage.SETTINGS ->
+                    AppleSettingsScreen(session, controller) {
+                        CoachButton("Body measurements and protein") { page = ApplePage.BODY }
+                        health(false)
+                    }
+                ApplePage.BODY ->
+                    AppleBodyMeasurements(
+                        session,
+                        back = {
+                            session.services.operations.refresh()
+                            page = ApplePage.START
+                        },
+                        healthControls = { health(true) },
+                    )
                 ApplePage.RECORD ->
                     AppleRecordingScreen(session) {
                         activityId = it
@@ -322,19 +337,14 @@ private fun AppleAppContent(
                                         calendarStrength = date?.toString()
                                         page = ApplePage.HISTORY
                                     }
+                                    route == "progress/weight" -> page = ApplePage.BODY
                                     route == "gym-now" || route.startsWith("strength") ->
                                         page = ApplePage.GYM
                                 }
                             },
                             race = { page = ApplePage.PLAN },
                             hasRoute = {
-                                it !in
-                                    setOf(
-                                        "execute",
-                                        "progress/trends",
-                                        "achievements",
-                                        "progress/weight",
-                                    )
+                                it !in setOf("execute", "progress/trends", "achievements")
                             },
                         )
                     }
@@ -351,6 +361,7 @@ private fun AppleHealthControls(
     weightKey: String,
     heightKey: String,
     metrics: () -> Set<BodyMetric>,
+    bodyOnly: Boolean,
 ) {
     val scope = rememberCoroutineScope()
     var workouts by remember { mutableStateOf(preferences.boolForKey(workoutKey)) }
@@ -361,15 +372,17 @@ private fun AppleHealthControls(
     CoachCard {
         Text("Apple Health", style = MaterialTheme.typography.titleLarge)
         Text("Choose what to read. Training and manual entry work without Apple Health.")
-        Row {
-            Checkbox(
-                workouts,
-                {
-                    workouts = it
-                    preferences.setBool(it, workoutKey)
-                },
-            )
-            Text("Running workouts")
+        if (!bodyOnly) {
+            Row {
+                Checkbox(
+                    workouts,
+                    {
+                        workouts = it
+                        preferences.setBool(it, workoutKey)
+                    },
+                )
+                Text("Running workouts")
+            }
         }
         Row {
             Checkbox(
@@ -392,15 +405,15 @@ private fun AppleHealthControls(
             Text("Height")
         }
         Button(
-            enabled = !pending && (workouts || weight || height),
+            enabled = !pending && ((!bodyOnly && workouts) || weight || height),
             onClick = {
                 pending = true
                 scope.launch {
                     try {
-                        if (workouts) session.health.requestWorkoutReadAccess()
+                        if (!bodyOnly && workouts) session.health.requestWorkoutReadAccess()
                         val selected = metrics()
                         if (selected.isNotEmpty()) session.health.requestBodyReadAccess(selected)
-                        session.services.health.syncHealth()
+                        if (bodyOnly) session.body.sync() else session.services.health.syncHealth()
                         message =
                             "Apple Health shares only records you allow. A finished permission request does not confirm access."
                     } catch (cancelled: CancellationException) {

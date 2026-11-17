@@ -2,11 +2,15 @@ package org.racedaydreams.coach.application
 
 import kotlinx.coroutines.*
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.offsetAt
+import org.racedaydreams.coach.body.SharedBodyMeasurementsCoordinator
 import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.coach.health.AppleHealthGateway
 import org.racedaydreams.coach.reminders.AppleCoachReminders
 import org.racedaydreams.coach.strength.*
 import org.racedaydreams.domain.time.LocalDate
+import org.racedaydreams.domain.time.Offsets
+import org.racedaydreams.health.HealthAvailability
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
@@ -25,6 +29,7 @@ private constructor(
     private val owner: CompletableJob,
     val services: SharedCoachApplicationServices<File>,
     val health: AppleHealthGateway,
+    val body: SharedBodyMeasurementsCoordinator,
     val activities: SqliteActivities,
     val recording: AppleRunRecorder,
     val gym: SharedGymNowCoordinator,
@@ -81,6 +86,27 @@ private constructor(
                         selectedWorkouts,
                         selectedBodyMetrics,
                         now,
+                        newId,
+                    )
+                val body =
+                    SharedBodyMeasurementsCoordinator(
+                        SqliteBodyMeasurements(database, now, newId),
+                        SqlitePrimaryFocus(SqliteSettings(database))::load,
+                        { health.availability() == HealthAvailability.AVAILABLE },
+                        health::grantedPermissions,
+                        { health.syncBodyMeasurements().message },
+                        scope,
+                        now,
+                        { at ->
+                            val instant =
+                                kotlinx.datetime.Instant.fromEpochSeconds(
+                                    at.getEpochSecond(),
+                                    at.getNano(),
+                                )
+                            Offsets.ofTotalSeconds(
+                                TimeZone.currentSystemDefault().offsetAt(instant).totalSeconds
+                            )
+                        },
                         newId,
                     )
                 val recording =
@@ -170,6 +196,7 @@ private constructor(
                     owner,
                     services,
                     health,
+                    body,
                     activities,
                     recording,
                     gym,

@@ -134,8 +134,36 @@ jobs:
             RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework" build
           test -x iosApp/build/RaceDayDreams.app/RaceDayDreams
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
+      - name: Launch the iOS app and verify local database startup
+        shell: bash
+        run: |
+          set -euo pipefail
+          device="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(device["udid"] for runtime in reversed(list(devices.values()))
+                     for device in runtime if device["name"].startswith("iPhone")))
+          ')"
+          if ! xcrun simctl boot "$device"; then
+            xcrun simctl list devices booted | grep -F "$device"
+          fi
+          xcrun simctl bootstatus "$device" -b
+          xcrun simctl install "$device" iosApp/build/RaceDayDreams.app
+          xcrun simctl launch "$device" org.racedaydreams.ios
+          app_data="$(xcrun simctl get_app_container "$device" org.racedaydreams.ios data)"
+          database="$app_data/Library/Application Support/racedaydreams.sqlite"
+          for attempt in {1..30}; do
+            if [ -f "$database" ] && [ "$(sqlite3 -readonly "$database" 'PRAGMA user_version;' 2>/dev/null)" = "19" ]; then
+              break
+            fi
+            sleep 1
+          done
+          test "$(sqlite3 -readonly "$database" 'PRAGMA user_version;')" = "19"
+          xcrun simctl io "$device" screenshot iosApp/build/startup.png
       - uses: actions/upload-artifact@v4
         with:
           name: experimental-ios-simulator-app
-          path: iosApp/build/RaceDayDreams-simulator.zip
+          path: |
+            iosApp/build/RaceDayDreams-simulator.zip
+            iosApp/build/startup.png
           if-no-files-found: error

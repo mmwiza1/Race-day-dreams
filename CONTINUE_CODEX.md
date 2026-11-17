@@ -62,6 +62,30 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 164 body guidance and simulator startup gate
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 passed Android and
+Native tests. Apple framework linking was still running at the last check,
+with the first Xcode build following. Preserve that run. Local checkpoints
+157–164 are queued.
+
+164 mounts the original shared body measurements and protein screen on iOS
+with manual editing, retained sources and explicit usable-weight selection.
+The body-only Apple Health action checks selected height/weight categories
+and reads through the existing visible-only import pipeline without reading
+workouts. It does not infer HealthKit grants. Add weight opens this screen.
+
+The next Apple CI run now builds and installs the simulator application,
+launches it, checks that the actual local SQLite database opens at schema
+19, and captures a startup screenshot. Pinned Kotlin formatting, workflow
+YAML/Bash syntax, diff and shared-schema checks passed locally. No simulator
+launch or SDK runtime pass has been observed for this change.
+
+Next inspect 44189952813 for actual SDK/Xcode compiler output, then batch
+the local commits after that useful run completes. Fix demonstrated issues
+and verify the new launch gate. Finish remaining iOS features and release
+gates before merge. Physical Apple and Android acceptance remains unperformed.
+
 ### Latest recovery pointer — checkpoint 163 Running and Hybrid Today
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 Android passed;
