@@ -108,7 +108,19 @@ abstract class RecordingInventoryRepositoryContract {
         val points =
             listOf(0L, 10_000L).map { millis ->
                 RunMetricsEngine.Point(
-                    RunMetricsEngine.Fix(at, millis, 51.5, -0.1, null, null, null, null),
+                    RunMetricsEngine.Fix(
+                        Instants.ofEpochSecond(
+                            at.getEpochSecond() + millis / 1000,
+                            at.getNano().toLong(),
+                        ),
+                        millis,
+                        51.5,
+                        -0.1,
+                        null,
+                        null,
+                        null,
+                        null,
+                    ),
                     millis / 1000.0,
                     millis,
                     0,
@@ -136,6 +148,22 @@ abstract class RecordingInventoryRepositoryContract {
         val retained = SqliteActivities(db) { at }.recordedRoute(id)
         assertEquals(points, retained.points)
         assertFalse(retained.detailRemoved)
+        val exported =
+            retained.points.map { point ->
+                val fix = point.fix()
+                TrackPoint(
+                    fix.timestamp(),
+                    fix.latitude(),
+                    fix.longitude(),
+                    fix.altitude(),
+                    null,
+                    null,
+                    null,
+                )
+            }
+        val imported = LocalBackupOperations(db, { at }) { error("Existing run should be reused") }
+        assertEquals(id, imported.importGpx(listOf(exported)))
+        assertEquals(1, SqliteActivities(db) { at }.activitySummaries().size)
         assertTrue(SqliteActivities(db) { at }.recordedRoute("missing").points.isEmpty())
     }
 

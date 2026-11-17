@@ -119,6 +119,20 @@ jobs:
           path: sharedUi/build/bin/ios*/debugFramework/
           if-no-files-found: error
 
+      - name: Test shared UI and the native document decoder
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            ./gradlew --max-workers=2 --no-parallel :sharedUi:iosSimulatorArm64Test
+          else
+            ./gradlew --max-workers=2 --no-parallel :sharedUi:iosX64Test
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-apple-ui-test-results
+          path: sharedUi/build/test-results/
       - name: Build the iOS simulator application
         shell: bash
         run: |

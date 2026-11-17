@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 184 GPX re-import and native test gate
+
+Shared GPX import now finds exact retained coordinates and timestamps of
+a previously recorded run within the existing ten-minute dedup window.
+The original activity is reused. The lookup reads only finished native or
+GPX runs with matching point counts. The focused JDBC suite passed 12 tests
+after correcting the test fixture to use distinct GPX wall timestamps.
+Pinned formatting, schema parity, diff and workflow YAML parsing passed.
+
+The next macOS experiment runs the shared UI tests, including the Apple GPX
+decoder tests, after linking the framework and before building the iOS app.
+Native build, decoder and picker results are pending. Preserve experiment
+44201909878 on remote head 9bc0737. Both jobs were still running at last
+check. After inspecting their results, push checkpoints 182–184 together,
+inspect the new Apple test and simulator artifacts, and continue platform
+parity and full release gates. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 183 iOS GPX file import
 
 iOS Settings opens the existing system document picker for GPX. The native

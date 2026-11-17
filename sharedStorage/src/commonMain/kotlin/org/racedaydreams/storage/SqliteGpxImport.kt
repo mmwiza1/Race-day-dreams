@@ -7,6 +7,7 @@ import org.racedaydreams.domain.time.Instant
 
 /** Imports validated track points through the existing recording evidence and finalisation path. */
 class SqliteGpxImport(private val database: SqlDatabase, now: () -> Instant, newId: () -> String) {
+    private val activities = SqliteActivities(database, now)
     private val staging = SqliteRecordingStaging(database)
     private val finalisation = SqliteRecordingFinalisation(database, now, newId)
 
@@ -58,9 +59,6 @@ class SqliteGpxImport(private val database: SqlDatabase, now: () -> Instant, new
             } finally {
                 hash.close()
             }
-        require(engine.points().size >= 2 && engine.status(elapsed).metres() > 0) {
-            "Insufficient reliable continuous GPX evidence."
-        }
         return database.transaction {
             val existing =
                 database
@@ -73,6 +71,12 @@ class SqliteGpxImport(private val database: SqlDatabase, now: () -> Instant, new
                     ?.sqlText()
             if (existing != null) return@transaction existing
 
+            val matching = matchingRecordedActivity(segments.flatten(), start)
+            if (matching != null) return@transaction matching
+
+            require(engine.points().size >= 2 && engine.status(elapsed).metres() > 0) {
+                "Insufficient reliable continuous GPX evidence."
+            }
             require(staging.unfinished() == null) {
                 "Finish or recover the open run before importing GPX."
             }
@@ -84,5 +88,32 @@ class SqliteGpxImport(private val database: SqlDatabase, now: () -> Instant, new
                 recovered = false,
             )
         }
+    }
+
+    private fun matchingRecordedActivity(points: List<TrackPoint>, start: Instant): String? {
+        val millis = storedEpochMillis(start)
+        val identities =
+            database.query(
+                "SELECT a.id FROM activities a JOIN recording_sessions s ON s.activity_id=a.id WHERE a.provider IN ('rdd','gpx') AND s.state='FINISHED' AND a.start_millis BETWEEN ? AND ? AND (SELECT COUNT(*) FROM recording_points p WHERE p.session_id=s.id)=? ORDER BY a.start_millis DESC,a.id",
+                listOf(
+                    SqlValue.Integer(millis.coerceAtLeast(Long.MIN_VALUE + 600_000) - 600_000),
+                    SqlValue.Integer(millis.coerceAtMost(Long.MAX_VALUE - 600_000) + 600_000),
+                    SqlValue.Integer(points.size.toLong()),
+                ),
+            )
+        return identities
+            .asSequence()
+            .map { it.single().sqlText() }
+            .firstOrNull { candidate ->
+                val retained = activities.recordedRoute(candidate).points
+                retained.size == points.size &&
+                    points.indices.all { index ->
+                        val source = points[index]
+                        val saved = retained[index].fix()
+                        source.time() == saved.timestamp() &&
+                            source.latitude() == saved.latitude() &&
+                            source.longitude() == saved.longitude()
+                    }
+            }
     }
 }
