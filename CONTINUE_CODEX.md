@@ -62,7 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November,144 pushed /145 locally verified
+### Latest recovery pointer — checkpoint 145 delivery
+
+The workspace recovered with clean local commit `640c633`. Checkpoint 144
+(`3e95c70`) passed both jobs in [experiment 44171902763](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44171902763).
+Completed logs confirm 640 unique Android API 35 cases and 700,189 domain checks
+across 48 suites. ZIP and XML verification confirms JVM 490 domain, 25 health,
+658 storage and Apple 449 domain, 27 health, 658 storage tests, all with zero
+failures, errors or skips. The Apple simulator framework linked. APK artifact
+14370465169 contains version 0.12.3-test1, code 19, min API 28, with no Internet
+permission and SHA-256 `44814221de8798391091ccd677c537f1901eca61dfa192703774734ee8064166`.
+Proof: `/workspace/scratch/kmp144-verified/verification.json`.
+
+Push this documentation and checkpoint 145 together on the existing draft PR #24.
+Checkpoint 145 passed local metadata compilation, app and test APK builds and lint.
+Check the actual PR head and CI before repeating a push. The new wire regression
+makes the expected focused Android total 641. These runtime results are pending.
+Continue with typed recording staging and finalisation on shared SQLite, then
+real iOS SDK and application integration. See the implementation boundary below.
+The full Android matrix and actual iOS application verification remain required.
+
+### Checkpoint 145 implementation details
 
 Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24. Through144 is NOW pushed
 at3e95c70d4065f71c6166264d86b930a390d4351f;143349ddcd precedes it. Current experiment44171902763:
