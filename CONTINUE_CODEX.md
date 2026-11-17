@@ -64,17 +64,16 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Current pushed HEAD is
-`9cd4adf2c54a10bddb42ebca039ea4705b2d86f5` (116). Experiment44074597919 and formatting44074597892
-are SUCCESS: Android576 unique tests; byte-verified JVM490domain/25health/639storage and
-Native449domain/27health/639storage, zero failures/errors/skips; real shared framework linked.
-11752f511c,118889452c and119bec8ea0 are committed LOCALLY with metadata/Android compile/lint
-and formatting PASS.120body-weight commands/shared ProgressCoordinator work passes local JVM641 and metadata/Android
-build/lint; preserve its new common coordinator, original Android deletion and typed writer tests.
-Planned ONE combined push expects Android592 and Native/JVM641storage (639+2new contracts).
-116 success does NOT verify117–120. See latest120 recovery below. No version/formats changes,
-merge/publication/native destructive UI or fake bindings. Remaining services/UI/root/navigation/
-actual iOS app and complete final gates are unfinished.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Pushed HEAD is
+`6d72b94042b7f4401c903e174bd709e7011bdc0c` (117–120 batch). Experiment44083171900 is RUNNING;
+format44083171002 SUCCESS. Native449domain/27health/641storage is now byte-verified PASS; Android592/framework are pending. Prior1169cd4adf
+is fully green/byte-verified (Android576, Native449domain/27health/639storage, JVM490/25/639).
+120local JVM641 +metadata/debugAPK/testAPK/lint9m21s/180tasks, format942/source3/schema19 PASS.
+121shared baseline service +3new SQL/runner tests passes local metadata/APKs/lint6m29s,
+final corrected-input testAPK/lint45s and format944. Detail-test oracle correction is local
+commit992bcba; baseline service is ready to commit. Neither is pushed yet. Preserve all files/commits. See latest121.
+No version/formats changes, merge/publication/native destructive UI or fake bindings. Remaining
+services/UI/root/navigation/actual iOS app and complete final gates remain unfinished.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5335,13 +5334,52 @@ actual iOS app and complete final gates are unfinished.
   remaining application services/active UI/root/navigation/full native permissions and real iOS
   app host. Destructive native UI remains OFF; no premature version bump/merge/publication.
 
+### Checkpoint121 local — baseline assessment application service; exact120CI pending
+
+-11752f511c,118889452c,119bec8ea0 and1206d72b94042b7f4401c903e174bd709e7011bdc0c were pushed
+  together normally. PR24 remains DRAFT, description updated. No running gate cancelled.
+  Experiment44083171900 currently RUNNING (Android134038690212 /Apple134038689805);
+  formatting44083171002 SUCCESS. No592/Native641/framework pass claimed before actual results.
+-120final local641storage JVM (0fail/error/skip), metadata/debugAPK/testAPK/lint9m21s/180tasks,
+  format942/schema19/source3 passed. Local APKcode19/min28/noINTERNET; unpublished. Previous
+  full116runtime and byte-verified artifacts remain documented; do not treat them as new-head proof.
+-121 extracts original assessment/manual-baseline/review orchestration to SharedBaselineCoordinator.
+  Android API is a thin real timezone/UUID/wall-clock binding. Same 1–5K/future-start/end guards,
+  explicit manual provenance, unknown effort, callback messages and atomic activity+assessment
+  save. Required timing projection keeps end conversion lazy until original future-start check;
+  mismatched host duration is rejected rather than persisting contradictory actuals. No new formula.
+- THREE new direct common-service/real-runner/SQLite tests cover Europe/London DST start/end offsets,
+  manual evidence and unknown effort/no automatic plan/review, future check before end/ID allocation,
+  host timing mismatch, late assessment insertion rollback retaining prior manual baseline. Existing
+  baseline/onboarding cases retained. Next expected Android595 (592+3), storage641 unchanged.
+- Source review also CONFIRMED117new test used wrong oracle: actual StrengthAnalytics emits
+  category `Load × 6`, displayed as "Best weight for 6 repetitions", not literal"6RM". Same logged
+  set legitimately appears in TWO actual categories (Load and Load×6), so its number is not unique.
+  Corrected new test to assert exact natural label and exactly2actual values, preserving estimated
+  separation/source navigation. NO production/PB calculation change or weakened assertion.120CI
+  may report this old assertion failure; inspect actual completed log, do not blindly rerun it.
+-121metadata/debugAPK/testAPK/lint PASS6m29s/176tasks, scratch/kmp-baseline-service-final.log.
+  FINAL corrected-input testAPK/lint PASS45s/140tasks, kmp-baseline-service-exact-final.log;
+  formatting944(849Kotlin/95Java), exact schema19/source3 PASS. Test-only oracle fix is committed
+  LOCALLY as992bcba, not pushed. No121runtime/Native/screenshot acceptance claim.
+-120Native artifact14328303292 is independently downloaded/digest-verified:176312bytes,
+  SHA3a5e9f850bc9aec6bb7d4f1977721859e1dab02060f4c55900e0e0c3dc2d0d95,
+  449domain/27health/641storage with0fail/error/skip. Proof scratch/kmp120-native/verification.json.
+  Actual new weight SQL cases passed on Apple. Framework linkage/Android runtime remain pending.
+- Exact next: finish121current build, fix real compile failures; inspect120actual CI (including new
+  detail/calendar/preview cases and Native641XML). If assertion failure matches proven oracle bug,
+  retain correction and verify new candidate once prior useful CI completes. Run final current
+  testAPK/lint/format, commit121+handoff and push ONCE, expected595Android/Native641/framework.
+  Then remaining services/root/active UI and real iOS host; never merge incomplete migration.
+
 ### Exact next safe actions and remaining full scope
 
-1. Inspect120 JVM storage/common metadata/debugAPK/testAPK/lint and XML, fix genuine failures.
-  11752f511c/118889452c/119bec8ea0 are locally committed/compile-lint-format green. Commit120
-   with recovery; push117–120 ONCE to DRAFT24 and inspect exact Android592/Native641/framework.
-   Latest pushed1169cd4adf is green/byte-verified. Continue remaining original application services,
-   active UI/root/native app and platform bindings; a framework alone is not app acceptance.
+1.121local metadata/APKs/lint6m29s +FINAL corrected-input testAPK/lint45s/format944 PASS.
+   Commit baseline service+handoff; local test-oracle fix992bcba is already committed. Inspect
+   pushed120experiment44083171900 actual Android592/framework (format and byte-verified Native641
+   passed). Diagnose real failures, preserving stronger correct label/value count assertion.
+   Push121 ONCE when prior useful gate completes; then verify595Android/Native641/framework.
+   Continue remaining original application/root/native app scope; never merge framework-only work.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
