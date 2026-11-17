@@ -19,7 +19,7 @@ import org.racedaydreams.domain.strength.StrengthMeasurementPolicy
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
-import org.racedaydreams.storage.LocalBackupOperations.ReviewedAppBackup
+import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
 import platform.Foundation.NSUserDefaults
 import platform.UIKit.UIViewController
 
@@ -104,7 +104,7 @@ fun raceDayViewController(databasePath: String, bundleIdentifier: String): UIVie
                             hostScope.launch {
                                 try {
                                     active.services.operations.serialiseDraftWrite {
-                                        active.backupDocuments.restoreApp(reviewed)
+                                        active.backupDocuments.restoreReviewed(reviewed)
                                     }
                                     session = null
                                     active.close()
@@ -116,6 +116,7 @@ fun raceDayViewController(databasePath: String, bundleIdentifier: String): UIVie
                                     if (session == null) startupError = message
                                     else restoreError = message
                                 } finally {
+                                    runCatching { reviewed.close() }
                                     restoring = false
                                 }
                             }
@@ -174,7 +175,7 @@ private enum class ApplePage {
 private fun AppleAppContent(
     session: AppleCoachSession<Unit>,
     controller: UIViewController,
-    onRestore: (ReviewedAppBackup) -> Unit,
+    onRestore: (ReviewedBackup) -> Unit,
     restoreError: String?,
     health: @Composable (Boolean) -> Unit,
 ) {

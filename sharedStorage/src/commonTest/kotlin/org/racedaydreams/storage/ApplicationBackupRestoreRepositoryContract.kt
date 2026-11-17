@@ -277,10 +277,12 @@ abstract class ApplicationBackupRestoreRepositoryContract {
         SqliteSettings(target).putSetting("old", "retain until confirmation")
         assertEquals(13, reviewed.version)
         assertEquals("retain until confirmation", SqliteSettings(target).getSetting("old"))
-        assertFailsWith<IllegalArgumentException> { other.restoreApp(reviewed) }
-        owner.writeApp { assertFailsWith<IllegalStateException> { owner.restoreApp(reviewed) } }
+        assertFailsWith<IllegalArgumentException> { other.restoreReviewed(reviewed) }
+        owner.writeApp {
+            assertFailsWith<IllegalStateException> { owner.restoreReviewed(reviewed) }
+        }
         assertEquals("retain until confirmation", SqliteSettings(target).getSetting("old"))
-        owner.restoreApp(reviewed)
+        owner.restoreReviewed(reviewed)
         assertEquals(snapshot(source), snapshot(target))
     }
 

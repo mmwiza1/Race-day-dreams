@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 176 iOS complete backup import
+
+PR #24 is at 7558809. The Android and Apple jobs on experiment run
+44198176072 were still running. Check both before pushing the local batch.
+
+The iOS document picker accepts JSON app backups and complete ZIP packages.
+ZIP inspection validates and stages recording detail privately before the
+explicit replacement confirmation. The existing full-package transaction
+runs under the same owner as app restore and export. Staging closes on
+cancellation and after restore. The JDBC app and complete-backup contracts
+passed in 1m 21s. All 19 schema statements/boundaries match Android and the
+touched-file formatting and diff checks passed. Linux cannot compile iOS.
+
+Next check Apple compilation and simulator launch, then exercise invalid,
+cancelled and confirmed JSON and ZIP imports in the native picker. Wire the
+existing read-only storage inventory under the same operation owner before
+enabling any retention changes. Cleanup and reset remain unexposed.
+
 ### Latest recovery pointer — checkpoint 175 iOS app backup import
 
 PR #24 remains at 7558809. Experiment 44198176072 was still running Android

@@ -15,7 +15,7 @@ import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.SharedBackupSettings
 import org.racedaydreams.coach.SharedPrimaryFocusSettings
 import org.racedaydreams.coach.documents.AppleBackupDocuments
-import org.racedaydreams.storage.LocalBackupOperations.ReviewedAppBackup
+import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
 import platform.UIKit.UIViewController
 
 /** iOS settings content wired to the real session and system document picker. */
@@ -23,7 +23,7 @@ import platform.UIKit.UIViewController
 fun AppleSettingsScreen(
     session: AppleCoachSession<*>,
     presenter: UIViewController,
-    onRestore: (ReviewedAppBackup) -> Unit,
+    onRestore: (ReviewedBackup) -> Unit,
     health: @Composable () -> Unit = {},
 ) {
     val state by session.services.operations.state.collectAsState()
@@ -58,18 +58,25 @@ fun AppleSettingsScreen(
     }
 
     var importing by remember { mutableStateOf(false) }
-    var reviewed by remember { mutableStateOf<ReviewedAppBackup?>(null) }
+    var reviewed by remember { mutableStateOf<ReviewedBackup?>(null) }
+
+    fun dismissReview() {
+        val previous = reviewed
+        reviewed = null
+        previous?.close()
+    }
+    DisposableEffect(Unit) { onDispose { dismissReview() } }
 
     fun importApp() {
         importing = true
         message = null
         try {
-            session.backupDocuments.chooseAppBackup(presenter) { url ->
+            session.backupDocuments.chooseBackup(presenter) { url ->
                 if (url == null) importing = false
                 else
                     scope.launch {
                         try {
-                            reviewed = session.backupDocuments.reviewApp(url)
+                            reviewed = session.backupDocuments.review(url)
                         } catch (cancelled: CancellationException) {
                             throw cancelled
                         } catch (failure: Exception) {
@@ -87,11 +94,14 @@ fun AppleSettingsScreen(
 
     reviewed?.let { backup ->
         AlertDialog(
-            onDismissRequest = { reviewed = null },
+            onDismissRequest = ::dismissReview,
             title = { Text("Replace app data?") },
             text = {
                 Text(
-                    "Backup created ${backup.createdAt}. Restoring replaces your current app data with this backup. Finish any open run or gym workout first."
+                    "Backup created ${backup.createdAt}. Restoring replaces your current app data with this backup. " +
+                        (if (backup.includesRecordings) "This backup includes detailed recordings. "
+                        else "") +
+                        "Finish any open run or gym workout first."
                 )
             },
             confirmButton = {
@@ -104,7 +114,7 @@ fun AppleSettingsScreen(
                     Text("Replace app data")
                 }
             },
-            dismissButton = { TextButton(onClick = { reviewed = null }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = ::dismissReview) { Text("Cancel") } },
         )
     }
 

@@ -11,29 +11,50 @@ class LocalBackupOperations(
     private val now: () -> Instant,
     private val freshEpoch: () -> String,
 ) {
-    class ReviewedAppBackup
-    internal constructor(
-        internal val owner: LocalBackupOperations,
-        internal val inspected: BackupEnvelopeJson.Checked<UserBackupDataJson.Snapshot>,
-    ) {
-        val version: Int
-            get() = inspected.version
+    sealed class ReviewedBackup(val version: Int, val createdAt: Instant) {
+        abstract val includesRecordings: Boolean
+        internal abstract val owner: LocalBackupOperations
 
-        val createdAt: Instant
-            get() = inspected.createdAt
+        abstract fun close()
     }
 
-    fun reviewApp(bytes: ByteArray): ReviewedAppBackup =
+    private class ReviewedAppBackup(
+        override val owner: LocalBackupOperations,
+        val inspected: BackupEnvelopeJson.Checked<UserBackupDataJson.Snapshot>,
+    ) : ReviewedBackup(inspected.version, inspected.createdAt) {
+        override val includesRecordings = false
+
+        override fun close() = Unit
+    }
+
+    private class ReviewedCompleteBackup(
+        override val owner: LocalBackupOperations,
+        val inspected: InspectedBackupPackage,
+    ) : ReviewedBackup(inspected.application.version, inspected.application.createdAt) {
+        override val includesRecordings = true
+
+        override fun close() = inspected.close()
+    }
+
+    fun reviewApp(bytes: ByteArray): ReviewedBackup =
         ReviewedAppBackup(this, UserBackupDataJson.inspect(bytes))
 
+    fun reviewComplete(source: BackupArchiveSource, privateDirectory: String): ReviewedBackup =
+        ReviewedCompleteBackup(this, InspectedBackupPackage.inspect(source, privateDirectory))
+
     /** The host must first obtain explicit confirmation for this reviewed document. */
-    fun restoreApp(reviewed: ReviewedAppBackup) {
+    fun restoreReviewed(reviewed: ReviewedBackup) {
         require(reviewed.owner === this) {
             "Review the backup in this app session before restoring."
         }
         operations.replace {
-            SqliteApplicationBackupRestore(database, freshEpoch)
-                .replaceValidated(reviewed.inspected.snapshot)
+            when (reviewed) {
+                is ReviewedAppBackup ->
+                    SqliteApplicationBackupRestore(database, freshEpoch)
+                        .replaceValidated(reviewed.inspected.snapshot)
+                is ReviewedCompleteBackup ->
+                    SqliteCompleteBackupRestore(database, freshEpoch).replace(reviewed.inspected)
+            }
         }
     }
 

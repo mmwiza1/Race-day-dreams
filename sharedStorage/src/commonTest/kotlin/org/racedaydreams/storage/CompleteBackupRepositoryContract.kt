@@ -62,17 +62,25 @@ abstract class CompleteBackupRepositoryContract {
         storage { source ->
             seed(source)
             SqliteSettings(source).putSetting("retained-setting", "original")
-            val file = complete(source)
+            val file = SqliteCompleteBackup(source).export(directory(), at)
             try {
                 target { target ->
                     SqliteSettings(target).putSetting("old-setting", "replace")
                     val old = epoch(target)
                     var issued = 0
-                    SqliteCompleteBackupRestore(target) {
+                    val owner =
+                        LocalBackupOperations(target, { at }) {
                             issued++
                             "complete-final-epoch"
                         }
-                        .replace(file)
+                    val reviewed = owner.reviewComplete(file, directory())
+                    try {
+                        assertTrue(reviewed.includesRecordings)
+                        assertEquals("replace", SqliteSettings(target).getSetting("old-setting"))
+                        owner.restoreReviewed(reviewed)
+                    } finally {
+                        reviewed.close()
+                    }
                     assertEquals(1, issued)
                     assertNotEquals(old, epoch(target))
                     assertEquals("original", SqliteSettings(target).getSetting("retained-setting"))

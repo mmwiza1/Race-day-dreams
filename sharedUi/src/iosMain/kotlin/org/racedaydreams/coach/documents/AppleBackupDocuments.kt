@@ -6,9 +6,11 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import org.racedaydreams.storage.BackupArchiveSource
 import org.racedaydreams.storage.BackupEnvelopeJson
+import org.racedaydreams.storage.BackupStagingFile
 import org.racedaydreams.storage.LocalBackupOperations
-import org.racedaydreams.storage.LocalBackupOperations.ReviewedAppBackup
+import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSThread
 import platform.Foundation.NSURL
@@ -80,7 +82,7 @@ class AppleBackupDocuments(
         }
     }
 
-    fun chooseAppBackup(presenter: UIViewController, selected: (NSURL?) -> Unit) {
+    fun chooseBackup(presenter: UIViewController, selected: (NSURL?) -> Unit) {
         check(NSThread.isMainThread)
         check(
             !staging &&
@@ -101,35 +103,77 @@ class AppleBackupDocuments(
         }
     }
 
-    suspend fun reviewApp(url: NSURL): ReviewedAppBackup =
-        withContext(io) {
-            val path = requireNotNull(url.path) { "This backup has no readable local file." }
-            val file = checkNotNull(fopen(path, "rb")) { "Could not read the backup." }
-            try {
-                check(fseeko(file, 0, SEEK_END) == 0) { "Could not size the backup." }
-                val size = ftello(file)
-                require(size in 1..BackupEnvelopeJson.MAX_BYTES.toLong()) {
-                    "Choose an app backup no larger than 32 MiB."
-                }
-                check(fseeko(file, 0, SEEK_SET) == 0) { "Could not read the backup." }
-                val bytes = ByteArray(size.toInt())
-                val count = bytes.usePinned { fread(it.addressOf(0), 1u, size.toULong(), file) }
-                check(count == size.toULong() && fgetc(file) == EOF && ferror(file) == 0) {
-                    "The backup changed while it was being read."
-                }
-                exports.reviewApp(bytes)
-            } finally {
-                fclose(file)
-            }
-        }
+    suspend fun review(url: NSURL): ReviewedBackup {
+        var reviewed: ReviewedBackup? = null
+        try {
+            withContext(io) {
+                val path = requireNotNull(url.path) { "This backup has no readable local file." }
+                val file = checkNotNull(fopen(path, "rb")) { "Could not read the backup." }
+                try {
+                    check(fseeko(file, 0, SEEK_END) == 0) { "Could not size the backup." }
+                    val fileSize = ftello(file)
+                    require(fileSize in 1..BackupStagingFile.MAX_BYTES) {
+                        "This backup exceeds the supported size."
+                    }
+                    val source =
+                        object : BackupArchiveSource {
+                            override val size = fileSize
 
-    fun restoreApp(reviewed: ReviewedAppBackup) = exports.restoreApp(reviewed)
+                            override fun read(offset: Long, maximum: Int): ByteArray {
+                                require(offset in 0..size && maximum >= 0)
+                                val count = minOf(maximum.toLong(), size - offset).toInt()
+                                if (count == 0) return ByteArray(0)
+                                check(fseeko(file, offset, SEEK_SET) == 0) {
+                                    "Could not read the backup."
+                                }
+                                return ByteArray(count).also { bytes ->
+                                    val copied =
+                                        bytes.usePinned {
+                                            fread(it.addressOf(0), 1u, count.toULong(), file)
+                                        }
+                                    check(copied == count.toULong()) {
+                                        "The backup changed while it was being read."
+                                    }
+                                }
+                            }
+                        }
+                    val signature = source.read(0, 4)
+                    val zip = signature.contentEquals(byteArrayOf(0x50, 0x4b, 3, 4))
+                    reviewed =
+                        if (zip) {
+                            exports.reviewComplete(source, NSTemporaryDirectory())
+                        } else {
+                            require(fileSize <= BackupEnvelopeJson.MAX_BYTES) {
+                                "Choose an app backup no larger than 32 MiB."
+                            }
+                            val bytes = source.read(0, fileSize.toInt())
+                            check(fgetc(file) == EOF && ferror(file) == 0) {
+                                "The backup changed while it was being read."
+                            }
+                            exports.reviewApp(bytes)
+                        }
+                } finally {
+                    fclose(file)
+                }
+            }
+            return checkNotNull(reviewed)
+        } catch (failure: Throwable) {
+            try {
+                reviewed?.close()
+            } catch (close: Throwable) {
+                failure.addSuppressed(close)
+            }
+            throw failure
+        }
+    }
+
+    fun restoreReviewed(reviewed: ReviewedBackup) = exports.restoreReviewed(reviewed)
 
     private inner class ImportPicker(private val selected: (NSURL?) -> Unit) :
         NSObject(), UIDocumentPickerDelegateProtocol {
         val controller =
             UIDocumentPickerViewController(
-                    documentTypes = listOf("public.json"),
+                    documentTypes = listOf("public.json", "public.zip-archive"),
                     inMode = UIDocumentPickerModeImport,
                 )
                 .apply { delegate = this@ImportPicker }
