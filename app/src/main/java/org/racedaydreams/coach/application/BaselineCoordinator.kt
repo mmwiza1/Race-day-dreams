@@ -12,12 +12,12 @@ import org.racedaydreams.domain.baseline.ManualBaselineInput
 import org.racedaydreams.domain.settings.SettingsRepository
 
 /** Original Android timezone/identity binding; baseline application rules are common. */
-class BaselineCoordinator(
-    operations: CoachOperationRunner,
-    baseline: BaselineRepository,
-    settings: SettingsRepository,
-) {
-    private val shared =
+class BaselineCoordinator internal constructor(private val shared: SharedBaselineCoordinator) {
+    constructor(
+        operations: CoachOperationRunner,
+        baseline: BaselineRepository,
+        settings: SettingsRepository,
+    ) : this(
         SharedBaselineCoordinator(
             operations,
             baseline,
@@ -25,6 +25,7 @@ class BaselineCoordinator(
             Instant::now,
             { UUID.randomUUID().toString() },
         )
+    )
 
     fun reviewBaseline(onSuccess: () -> Unit = {}) = shared.reviewBaseline(onSuccess)
 

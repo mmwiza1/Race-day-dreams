@@ -64,22 +64,19 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Remote checkpoint123 +fixture fix
-is `02efa0cbe2e8156e52017b66be4e90812dc4d634`: experiment44100154646 SUCCESS on BOTH Android
-and Apple. Completed Android log confirms601unique tests/0failures/skips,700189domain checks;
-Native449domain/27health/646storage XML independently digest-verified, framework linked.
-Formatting44100154566 SUCCESS. Main85e1c39 and separate owner PR23 unchanged.
-LOCAL124 running-evidence +health orchestration is complete and locally verified. Health25 /
-storage648 JVM0fail/error/skip, common metadata/debug+test APK/lint PASS8m24s/182tasks,
-scratch/kmp-running-health-final.log. Format949(854Kotlin/95Java), schema19/source3 PASS.
-Checkpoint124 is COMMITTED locally as9d4554f, not yet pushed. Checkpoint125 settings extraction
-is COMPLETE/locally verified; preserve shared SettingsCoordinator, AndroidSettingsPlatform,
-new test and root/reminder bindings. DO NOT rerun scratch preparation scripts. FINAL settings
-metadata/debug+testAPK/lint PASS7m35s/176tasks, scratch/kmp-settings-final.log; format951 PASS
-plus final changed test pinned ktfmt PASS. Push124+125once; expected610Android/648Native,
-NOT yet runtime/Native verified. Do not infer acceptance from prior123601/646 proof.
-No schema/backup/version/permission change, early merge/publication or native destructive UI.
-Actual iOS APP/root/platform/final gates remain incomplete; framework is not app acceptance.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24.1249d4554f +12561e038d are
+COMMITTED/PUSHED; remote HEAD61e038d7daa8fec5e2a1fb4e4bd51c4f5d68817a. Experiment44106763790
+is running610Android/648Native/framework; formatting44106763460 SUCCESS. Prior12302efa0c passed
+601Android/700189domain and Native449/27/646/framework, independently verified below.
+LOCAL126 shared application composition is COMPLETE/locally verified. Preserve common
+SharedCoachApplicationServices, Android root/baseline wrapper, actual SQL/root tests and workflow/
+format targets. FINAL metadata/debug+testAPK/lint PASS7m14s/176tasks,
+scratch/kmp-application-root-final.log. Format953+final changed test, schema19/source3 PASS.
+Commit126+handoff locally, but do not push/cancel useful125 CI. Next613Android/648Native pending.
+125local gate PASS7m35s/176tasks;124health25/storage648 JVM +APKs/lint PASS8m24s. No schema/
+backup/version/permission change. Main85e1c39 and owner PR23 preserved. Actual iOS APP/full active
+UI/navigation/platform/final gates remain incomplete; framework is not app acceptance. Native
+restore/prune controls remain OFF until EVERY operation uses one real application lifecycle owner.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5602,16 +5599,44 @@ Actual iOS APP/root/platform/final gates remain incomplete; framework is not app
   minAPI28/noINTERNET. Expected610Android/Native648 pending; do not claim runtime/Native acceptance.
   Commit125+handoff and push124+125once. DO NOT rerun already-applied scratch scripts.
 
+### Checkpoint126 — ONE actual shared application composition
+
+- SharedCoachApplicationServices composes the existing snapshot reader, ONE CoachOperationRunner,
+  typed profiles/context and ALL existing feature coordinators. Required CoachRepositories borrow
+  the original same-database interfaces; required CoachPlatformBindings provide actual health,
+  document/reminder, current clock/IDs, per-action gym clock, date formatting and timezone effects.
+  No fake defaults, new engine, background service, automatic IO or second data owner.
+- Actual Android CoachApplicationServices now uses that common root, passing the SAME original
+  FeatureStore/CoachingStore/programming repositories and Android SDK callbacks. Existing ViewModel
+  and screen properties remain. Original BaselineCoordinator constructor/API/timezone adapter
+  remains; an internal binding wraps common root's actual SharedBaselineCoordinator instead of
+  making a second coordinator. Native app still needs REAL host/effects, not an empty scaffold.
+- THREE new actual SQLite/root tests verify no database opening/reads during Main construction,
+  real coherent first snapshot without invented training/health grants, serial cross-feature
+  Strength-only weight/focus state BEFORE success callback, and failed-setting state retention /
+  subsequent strength/weight operation. Tests use actual common repositories and original snapshot;
+  test SDK/document boundaries throw on unexpected effects, never pretend unimplemented actions
+  were performed. Final expected613Android, storage648 unchanged.
+- FINAL126 local common metadata/debugAPK/testAPK/lint PASS7m14s/176tasks,
+  scratch/kmp-application-root-final.log. Format953(858Kotlin/95Java), final changed root test
+  individually pinned ktfmt, exact schema19/source3 PASS. Existing unchanged health25/storage648
+  JVM were verified124; no repeated domain/storage implementation or test reduction. New root
+  runtime/Native verification is still pending, expected613Android/648Native/framework.
+- Preserve/commit common root +Android bindings +actual tests. DO NOT rerun old preparation scripts.
+ 12561e038d is safely remote and useful610/648 CI44106763790 must finish before126push. Current
+  formatting44106763460 SUCCESS. No schema/backup/version/permission/publication changes; Native
+  destructive UI remains disabled. Actual app/platform/navigation/SDK integration remains next.
+
 ### Exact next safe actions and remaining full scope
 
-1. Local1249d4554f and125source are verified: final settings metadata/debug+testAPK/lint PASS
-   7m35s/176tasks; format951+final changed test PASS, schema19/source3. Commit125+this handoff and
-   push124+125once to existing DRAFT24 (prior601/646 CI finished successfully). Verify new expected
-   610Android/648Native/framework; inspect actual failures without weakened assertions or blind
-   reruns. Then prioritize REAL shared application composition/root/active UI/navigation and iOS
-   host/platform wiring. Main feature coordinators are now common; do not restart completed domain
-   or storage kernels. Native destructive UI stays OFF until EVERY host operation uses ONE actual
-   SqliteDataLifecycle owner. Final API28/35/36 +actual iOS APP gates remain pending.
+1.126local root build is PASS7m14s/176tasks (metadata/debug+testAPK/lint), format953+final
+   root test/schema19/source3 PASS. Commit126+current recovery locally. Inspect125 experiment
+   44106763790 actual610Android/648Native/framework without cancellation; format44106763460PASS.
+   Only once useful125 CI finishes, push126 once and verify613Android/648Native/framework. Fix
+   actual failures; never infer Native/runtime from local compilation. Then prioritize REAL iOS
+   app host +active shared UI/navigation and platform SDK effects USING the actual shared root.
+   Do not restart domain/storage kernels or create an empty host/prototype. One real lifecycle
+   owner across every host data operation remains required before destructive Native UI.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
