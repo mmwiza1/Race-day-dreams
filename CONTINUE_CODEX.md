@@ -62,6 +62,29 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 147 recording finalisation
+
+The existing draft PR #24 still has checkpoint 145 at d00370e. Experiment
+44178248333 was running on Android and Apple at the last check. Checkpoint
+146 (ffa363b) and 147 are local. Push them together once the previous useful
+run completes.
+
+145 shared the recording coordinator. 146 added shared SQLite staging.
+147 connects that coordinator contract to shared SQLite and finalises retained
+points into the canonical activity, PBs, Dream Route assignment and structured
+execution response in one transaction. A successful retry returns the same
+activity. A late failure leaves staged evidence available for recovery.
+The Android service and storage path still use their existing adapters.
+
+Shared UI metadata compilation and all 10 targeted JDBC tests passed in 2m 7s. Log:
+/workspace/scratch/kmp147-gate.log
+Schema check confirms all 19 migration boundaries match Android.
+
+Next: finish native recovery controls, bind the real Core Location and
+monotonic clock effects, and wire the application host and remaining SDK
+services. Verify real Apple SQLite finalisation and the full app gates before
+merge. No new permissions or changes to the schema or backup formats.
+
 ### Latest recovery pointer — checkpoint 146 staging
 
 Draft PR #24 on `experiment/android-ios-kmp-compose` has checkpoint 145 at

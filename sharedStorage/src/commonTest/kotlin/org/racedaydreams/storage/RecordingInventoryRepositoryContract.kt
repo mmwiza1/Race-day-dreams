@@ -59,6 +59,41 @@ abstract class RecordingInventoryRepositoryContract {
         assertEquals("RECOVERABLE", staging.unfinished()?.state)
     }
 
+    @Test
+    fun finishingIsIdempotentAndRetainsNormalizedSamples() = storage { db ->
+        val staging = SqliteRecordingStaging(db)
+        val finish = SqliteRecordingFinalisation(db, { at }, { error("Unexpected ID request") })
+        staging.start("native", at, 0, null, null)
+        val points =
+            listOf(0L, 10_000L).map { millis ->
+                RunMetricsEngine.Point(
+                    RunMetricsEngine.Fix(at, millis, 51.5, -0.1, null, null, null, null),
+                    millis / 1000.0,
+                    millis,
+                    0,
+                    false,
+                    null,
+                    null,
+                )
+            }
+        staging.append("native", points, emptyList(), 0, 0, 10_000, "ACTIVE", null)
+        val session = assertNotNull(staging.unfinished())
+        db.execute(
+            "CREATE TRIGGER block_finish BEFORE UPDATE ON recording_sessions WHEN NEW.state='FINISHED' BEGIN SELECT RAISE(ABORT,'test'); END"
+        )
+        assertFails { finish.finish(session, null, false) }
+        assertTrue(SqliteActivities(db) { at }.activitySummaries().isEmpty())
+        assertEquals(session, staging.unfinished())
+        db.execute("DROP TRIGGER block_finish")
+        val id = finish.finish(session, null, false)
+        assertEquals("rdd:native", id)
+        assertEquals(id, finish.finish(session, 1, true))
+        assertNull(staging.unfinished())
+        val activity = assertNotNull(SqliteActivities(db) { at }.activityDetail(id))
+        assertEquals(10.0, activity.distanceMetres())
+        assertEquals(2, activity.samples().size)
+    }
+
     private fun seed(
         db: SqlDatabase,
         id: String = "run",
