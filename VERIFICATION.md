@@ -1,3 +1,21 @@
+# Experimental Android/iOS migration — through144 locally verified
+
+Original draft PR24 / `experiment/android-ios-kmp-compose`. Source142ced0982 passed BOTH jobs in
+[44166903090](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44166903090):640unique Android
+runtime cases,700189domain checks/48suites, independent SHA/ZIP/XML proofs JVM490/25/658 and
+Native449/27/658 all0fail/errors/skips; real framework linked. Actual APK58615110bytes/SHA256
+`f76c33bb5aadd852f2ec2ffbeaaae7cb3ee3a64501c5e8667a26e9054b2a748a`,0.12.3-test1/code19/min28/noINTERNET.
+Formatting991files/18contracts passed. Framework is NOT an iOS app; this was focused API35,
+not the full API28/35/36 release matrix. No public artifact publication.
+
+New143–144manual/custom/template/revision programme UI and real review dialogs are shared and
+used by Android. Same coordinator, strict UK input/date/identity/back bindings, slot parser and
+review/activation safeguards; approved progression CONTENT untouched. Local final metadata/
+debugAPK/testAPK/lint passed1436m39/176tasks and1446m57/176tasks. Pinned997formatting targets applied;
+new-head Android/Apple runtime remains PENDING and cannot inherit142acceptance. No data-format,
+version or permission change. Remaining actual iOS host/native services/active UI/navigation/
+operation-owner/full app/visual acceptance remain unfinished. See CONTINUE_CODEX.md for recovery.
+
 # Experimental Android/iOS migration — checkpoint142 (not release acceptance)
 
 Branch `experiment/android-ios-kmp-compose`, draft PR24. Original Gym Now operations and entry,

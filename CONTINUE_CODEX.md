@@ -62,7 +62,67 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — 17 November,142 pushed /143 locally verified
+### Latest recovery pointer — 17 November, through144 locally verified
+
+Continue ORIGINAL experiment/android-ios-kmp-compose / DRAFT PR24.142ced0982 is pushed and BOTH
+experiment44166903090 jobs SUCCESS.143manual/custom programme UI committed locally349ddcd;
+144template/revision/review UI NOW applied and locally VERIFIED in this coherent checkpoint.
+Ready for ONE combined143–144normal push; inspect actual PR head/CI before repeating it. No useful
+142Native job remains running, so no cancellation needed. Main85e1c39/ownerPR23 untouched.
+
+143shares original manual programme builder and custom-exercise editor, using SAME existing
+shared coordinator. Strict UK date/weekday/number/exercise/target/back bindings stay real Android
+platform effects. Same user fields, immutable drafts/blocks/duplicates/moves/supersets, explicit
+preview/activation and modest custom metadata, no fake technique. Programme label mapping is
+common.143initial compile55s ONLY SlotEditor mixed argument binding, fixed explicit fields;
+FINAL metadata/debugAPK/testAPK/lint PASS6m39/176tasks, scratch/kmp143-programme-ui-corrected.log.
+
+144shares ORIGINAL template/library/configuration/dated revision UI and actual swap/history/
+progression DIALOGS. Approved SharedProgrammeProgressionSheet.kt CONTENT IS UNCHANGED. Common
+SlotEditor/preview/configuration/history/progression widgets reused; original strict input dates,
+actual today/UUID/back and exact labels supplied explicitly. Native date comparisons/sorts use
+identical epochDays; no new generator/executor/state store/automatic activation. Android keeps
+same public APIs, lifecycle, initial draft and source/evidence/freshness guards. New files are
+SharedStrengthGenerationScreen.kt, SharedProgrammeSwapDialog.kt, SharedProgrammeReviewDialogs.kt;
+Android wrappers +internal coordinator access only. DO NOT rerun applied scratch scripts
+port_programme_ui143.py/port_generation_ui144.py/body141/apply.py/port_body_ui142.py.
+FINAL144metadata/debugAPK/testAPK/lint PASS6m57/176tasks: scratch/kmp144-generation-ui.log.
+Pinned997files(902Kotlin95Java) applied; final check/schema/source validation recorded at commit.
+Runtime/Native for143–144 still PENDING, expected same640Android and Native449/27/658/framework.
+Do NOT accept these new files using source142CI or mistake a framework for an iOS application.
+
+ACTUALLY VERIFIED source142ced0982b64313f10277947315e126bd4c8245aa3:
+experiment44166903090 BOTH jobs SUCCESS. Android134335277396 logs prove640UNIQUE matching
+START/END cases,0fail/skips, including all3Gym cases and new body-only privacy case.48actual domain
+suite outputs sum700189checks. JVM14367082101 ZIP187518bytes/SHA2fa258ad80f8a00ffcb9a03ca54a24110215842ab7217645369651b550667260
+independently verified490domain25health658storage ALL0fail/errors/skips. Native14366587100 ZIP
+178977bytes/SHA0768cd80964773ad8500e3d599fab9fc17fdfd19c736f3a570f894f1b80e84a0 independently
+verified449domain27health658storage ALL0fail/errors/skips. Proofs scratch/kmp142-verified/
+{verification.json,runtime-checks.json} and scratch/kmp142-native-verified/verification.json.
+AndroidAPK14367716219 ZIP30828265bytes/SHAafc48f7183f973ad5c856b9cbe993423a80dc1635d460bc7d85c3989f1fa304c
+verified APK58615110bytes/SHAf76c33bb5aadd852f2ec2ffbeaaae7cb3ee3a64501c5e8667a26e9054b2a748a,
+0.12.3-test1/code19/min28/noINTERNET. Apple134335277843 actual framework linked;14367057053
+metadata62683596bytes/SHA937bfd6cbe063c7b86b432ee34deafb3d2fd3c4f3616cd01101f892da1323469;
+framework ZIP not downloaded, not an APP. Format44166903228 SUCCESS18contracts/991files logs
+verified. Other public release/canonical jobs SKIPPED by experimental draft, not full matrix.
+
+Next exact tasks: if143–144not yet pushed, one normal push to ORIGINAL PR24 and inspect new-head
+Android/Apple results; fix ACTUAL failures without weakened tests or blind reruns. Consult PR body
+for actual head/run after push. Then remaining ACTIVE Progress/history/settings/storage/running UI,
+platform inputs/assets/navigation and REAL native SDK/application composition: recording/location,
+BLE, notifications/audio/document IO, retained state and clocks, actual iOS host/entitlements/usage
+strings. All Gym execution/body/manual/generation/custom/review UI and feature coordinators now
+exist in common and ARE used by Android; do not port them or Java-domain/storage kernels again.
+Native body typed repo and actual SDK body-only operation already exist; finish host wiring.
+ONE real app-owned operation guard must cover EVERY native backup/restore/cleanup path before
+destructive controls become available; they stay OFF. Existing storage/backup/retention kernels
+are complete. Final full API28/35/36 + ACTUAL iOS APP/runtime, migration/backup, authentic source-
+bound light/dark/200% visual gates remain mandatory once complete. All physical checks remain
+UNPERFORMED. No version bump, merge or public publication until complete cross-platform readiness.
+Version0.12.3-test1/code19/schema19/rootJSON13/raw3/package1 unchanged. No new permissions/backend/
+account/analytics/Internet or unrelated feature work. Preserve all earlier checkpoints below.
+
+### Latest recovery pointer — 17 November,142 pushed /143 locally verified (historical)
 
 Original experiment/android-ios-kmp-compose / DRAFT PR24. Through142 NOW committed/pushed:
 ced0982b64313f10277947315e126bd4c8245aa3, preceding532f64e/0e01af2. Remote experiment44166903090

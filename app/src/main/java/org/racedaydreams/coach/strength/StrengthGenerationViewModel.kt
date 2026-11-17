@@ -16,7 +16,7 @@ import org.racedaydreams.domain.strength.*
 class StrengthGenerationViewModel(app: Application, private val retained: SavedStateHandle) :
     AndroidViewModel(app) {
     private val executions = SqliteGymExecutionRepository(app)
-    private val shared =
+    internal val shared =
         SharedStrengthGenerationCoordinator(
             AndroidSqlConnection.forApplication(app),
             SqliteConcreteStrengthProgrammeDraftRepository(app),
