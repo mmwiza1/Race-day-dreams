@@ -118,6 +118,7 @@ private enum class ApplePage {
     RECORD,
     HISTORY,
     PLAN,
+    GYM,
     ACTIVITY,
     SETTINGS,
 }
@@ -139,6 +140,7 @@ private fun AppleAppContent(
             TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
             TextButton(onClick = { page = ApplePage.RECORD }) { Text("Record") }
             TextButton(onClick = { page = ApplePage.PLAN }) { Text("Plan") }
+            TextButton(onClick = { page = ApplePage.GYM }) { Text("Gym") }
             TextButton(
                 onClick = {
                     calendarWorkout = null
@@ -177,6 +179,7 @@ private fun AppleAppContent(
                             page = ApplePage.HISTORY
                         },
                     )
+                ApplePage.GYM -> AppleGymScreen(session) { page = ApplePage.START }
                 ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it) }
                 ApplePage.START ->
                     if (state.loading) {
@@ -194,7 +197,9 @@ private fun AppleAppContent(
                                 }
                             },
                             strength = {
-                                session.services.settings.primaryFocus(PrimaryFocus.STRENGTH)
+                                session.services.settings.primaryFocus(PrimaryFocus.STRENGTH) {
+                                    page = ApplePage.GYM
+                                }
                             },
                             hybrid = {
                                 session.services.settings.startingPath("hybrid") {

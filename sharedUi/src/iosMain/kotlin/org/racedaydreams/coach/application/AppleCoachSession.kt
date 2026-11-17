@@ -5,6 +5,7 @@ import kotlinx.datetime.TimeZone
 import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.coach.health.AppleHealthGateway
 import org.racedaydreams.coach.reminders.AppleCoachReminders
+import org.racedaydreams.coach.strength.SharedGymNowCoordinator
 import org.racedaydreams.domain.time.LocalDate
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
@@ -25,6 +26,7 @@ private constructor(
     val health: AppleHealthGateway,
     val activities: SqliteActivities,
     val recording: AppleRunRecorder,
+    val gym: SharedGymNowCoordinator,
     val reminders: AppleCoachReminders,
     val platform: AppleCoachPlatform<File>,
     val backupDocuments: AppleBackupDocuments,
@@ -97,6 +99,15 @@ private constructor(
                         documents(exports),
                         shortDate,
                     )
+                val programming = SqliteStrengthProgramming(database, now, today)
+                val coaching =
+                    SqliteCoachingRepository(
+                        database,
+                        now,
+                        newId,
+                        PortableLegacyStrengthFingerprint,
+                    )
+                val gym = appleGymCoordinator(database, scope, programming, coaching, newId)
                 val services =
                     SharedCoachApplicationServices(
                         database,
@@ -109,13 +120,8 @@ private constructor(
                             SqliteBaselines(database, now),
                             SqliteSettings(database),
                             SqlitePlannedWorkouts(database),
-                            SqliteCoachingRepository(
-                                database,
-                                now,
-                                newId,
-                                PortableLegacyStrengthFingerprint,
-                            ),
-                            SqliteStrengthProgramming(database, now, today),
+                            coaching,
+                            programming,
                         ),
                         platform.bindings(),
                         now,
@@ -131,6 +137,7 @@ private constructor(
                     health,
                     activities,
                     recording,
+                    gym,
                     reminders,
                     platform,
                     backupDocuments,

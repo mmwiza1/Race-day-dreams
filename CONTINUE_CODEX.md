@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 160 Gym Now on iOS
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 was still running
+Android instrumentation and Apple Native tests at the last check.
+Local checkpoints 157–160 are queued. Preserve the live run.
+
+160 opens production shared Gym Now, workout builder and live workout screens
+from the iOS host. It uses the same application SQLite, verified legacy
+fingerprints, existing execution and association repositories, native monotonic
+clock, and retains unsaved inputs separately in private preferences. The
+rest timer and optional warm-up form are wired. Local rest notification
+permission is explicit; iOS delivery, background timer and vibration behavior
+are not verified. Programme authoring/generation, Strength Today and remaining
+strength routes are still open. Android source is unchanged in this checkpoint.
+
+Pinned touched-file formatting, diff check and exact 19-boundary schema check
+passed. Apple-only source awaits the macOS gate. Next inspect 44189952813,
+fix demonstrated compiler/build failures, and push the coherent batch when
+the live run completes. Verify actual simulator build/launch and continue
+shared navigation, remaining native services and final acceptance.
+
 ### Latest recovery pointer — checkpoint 159 running plan on iOS
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 was running
