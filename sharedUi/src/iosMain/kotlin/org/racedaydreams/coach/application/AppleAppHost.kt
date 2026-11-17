@@ -116,6 +116,8 @@ fun raceDayViewController(databasePath: String, bundleIdentifier: String): UIVie
 private enum class ApplePage {
     START,
     RECORD,
+    HISTORY,
+    ACTIVITY,
     SETTINGS,
 }
 
@@ -127,11 +129,12 @@ private fun AppleAppContent(
 ) {
     val state by session.services.operations.state.collectAsState()
     var page by remember { mutableStateOf(ApplePage.START) }
-    var saved by remember { mutableStateOf(false) }
+    var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
             TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
             TextButton(onClick = { page = ApplePage.RECORD }) { Text("Record") }
+            TextButton(onClick = { page = ApplePage.HISTORY }) { Text("History") }
             TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
         }
         Box(Modifier.weight(1f)) {
@@ -139,11 +142,19 @@ private fun AppleAppContent(
                 ApplePage.SETTINGS -> AppleSettingsScreen(session, controller, health)
                 ApplePage.RECORD ->
                     AppleRecordingScreen(session) {
-                        saved = true
-                        page = ApplePage.START
+                        activityId = it
+                        page = ApplePage.ACTIVITY
                     }
+                ApplePage.HISTORY ->
+                    AppleHistoryScreen(session) {
+                        activityId = it
+                        page = ApplePage.ACTIVITY
+                    }
+                ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it) }
                 ApplePage.START ->
-                    if (!state.busy && state.primaryFocus == null) {
+                    if (state.loading) {
+                        CoachPage { Text("Loading local training…") }
+                    } else if (!state.busy && state.primaryFocus == null) {
                         SharedStartingPath(
                             record = {
                                 session.services.settings.startingPath("record") {
@@ -159,7 +170,6 @@ private fun AppleAppContent(
                     } else {
                         CoachPage {
                             CoachHeading("Today")
-                            if (saved) Text("Run saved.")
                             state.error?.let { Text(it) }
                             CoachButton("Record a run") { page = ApplePage.RECORD }
                             CoachButton("Settings") { page = ApplePage.SETTINGS }

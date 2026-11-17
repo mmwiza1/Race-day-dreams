@@ -62,6 +62,29 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 157 shared activity history
+
+Draft PR #24 remote head 2172096 has experiment 44189952813 running both
+Android and Apple jobs at the last check. Preserve that run. It contains
+the first Xcode app build gate. The latest changes below are local.
+
+157 extracts the original bounded, paginated Android history list into
+shared Compose. Android retains its date, distance, pace, controls and
+instrumentation injection. The iOS host mounts the same list with actual
+SQLite paging and viewport-independent activity detail reads. A saved run
+opens its own retained summary. The first-run selector waits for the initial
+snapshot. The Apple run detail is currently a summary, with remaining
+route/split/detail actions still to be shared.
+
+Common metadata and Android debug Kotlin compiled in 2m 1s (62 tasks).
+Touched-file formatting, diff check and all 19 schema boundaries passed.
+Log: /workspace/scratch/kmp157-history.log. Apple verification is pending.
+
+Next inspect 44189952813 before pushing. Fix demonstrated Apple compile/build
+errors, then launch the simulator app. Continue wiring running plan, Calendar,
+strength, health and the remaining activity detail flows through existing
+shared services. Full parity, native SDK coverage and release gates remain open.
+
 ### Latest recovery pointer — checkpoint 156 iOS application target
 
 Experiment 44186678584 at a85fcf0 finished Android successfully. Apple Native
