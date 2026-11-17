@@ -247,7 +247,7 @@ internal class SqliteRecordingArchiveRestore(
                     }
             }
             for ((id, proof) in restoring) {
-                requireReceiptMetadata(proof)
+                SqliteRecordingReceiptIdentity(database).requireMatches(proof)
                 SqliteRecordingEvidence(database).requireMatches(proof)
                 database.execute(
                     "DELETE FROM recording_detail_removals WHERE session_id=?",
@@ -260,7 +260,7 @@ internal class SqliteRecordingArchiveRestore(
                     count("recording_points", receipt.sessionId()) > 0 ||
                         count("recording_events", receipt.sessionId()) > 0
                 ) {
-                    requireReceiptMetadata(receipt)
+                    SqliteRecordingReceiptIdentity(database).requireMatches(receipt)
                     SqliteRecordingEvidence(database).requireMatches(receipt)
                     database.execute(
                         "DELETE FROM recording_detail_removals WHERE session_id=?",
@@ -281,46 +281,6 @@ internal class SqliteRecordingArchiveRestore(
                 }
             }
         }
-
-    private fun requireReceiptMetadata(receipt: RemovedRecordingDetail) {
-        require(
-            database
-                .query(
-                    "SELECT state,started_at,started_mono,last_mono,activity_id FROM recording_sessions WHERE id=?",
-                    listOf(SqlValue.Text(receipt.sessionId())),
-                )
-                .singleOrNull() ==
-                listOf(
-                    SqlValue.Text("FINISHED"),
-                    SqlValue.Text(receipt.startedAt().toString()),
-                    SqlValue.Integer(receipt.startedMono()),
-                    SqlValue.Integer(receipt.lastMono()),
-                    SqlValue.Text(receipt.activityId()),
-                )
-        ) {
-            "Removed-detail provenance disagrees with its retained recording."
-        }
-        val actual =
-            ActivityJson.decode(
-                requireNotNull(singlePayload("activities", "id=?", receipt.activityId())) {
-                    "Removed detail has no retained activity."
-                }
-            )
-        require(
-            actual.source().provider() == receipt.provider() &&
-                actual.source().recordId() == receipt.recordId() &&
-                removedDetailMatchesActivityEnd(receipt.endedAt(), actual.end()) &&
-                database
-                    .query(
-                        "SELECT provider,record_id FROM activities WHERE id=?",
-                        listOf(SqlValue.Text(receipt.activityId())),
-                    )
-                    .single() ==
-                    listOf(SqlValue.Text(receipt.provider()), SqlValue.Text(receipt.recordId()))
-        ) {
-            "Removed-detail provenance disagrees with its retained activity."
-        }
-    }
 
     private fun singlePayload(table: String, where: String, id: String): String? {
         val arguments = listOf(SqlValue.Text(id))

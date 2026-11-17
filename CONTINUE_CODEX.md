@@ -4627,15 +4627,67 @@ incomplete migration merely because a focused checkpoint passes.
   UI OFF. Full operation/pruning safeguards and actual common app/root/native services/iOS APP
   remain required. No merge, public publication or actual-device acceptance claim.
 
+### Checkpoint103 — internal bounded raw cleanup and exclusive data-operation guard
+
+- 102616b1fb17496653f678c3954f8c490619524b8ff is COMMITTED/PUSHED. Experiment44025235154 and
+  format44025235229 BOTH SUCCESS. Android133843845599 has536matched unique START/END tests,
+  including actual original-inventory comparison;700,189checks/48suites, build/lint/schema75 PASS.
+  Digest-verified JVM14303222660:490domain+16health+580storage; Apple14303113250:449domain /
+  18health+580storage; ALL0failure/error/skip. ALL148 IO/SQL/restore case names match. Proofs
+  scratch/inventory-616-{jvm,native}/verification.json, native/all-case-proof.json and
+  scratch/inventory-616-android-job.log. These results do NOT verify103.
+- 102 private APK14303019484 ZIP30713805bytes SHA256
+  1abd5957f43e91d4394cc6226de018eb0d8f27dac956aac9d475c8fc43c54ee4; APK58287371bytes SHA256
+  a6d1aa60c2ac6ae95fcca8826b0eb9a4780df51c54a93588ad58e175175bdff0. Code19/version0.12.3-test1 /
+  min28/noINTERNET, scratch/inventory-616-apk/verification.json. Framework14302934103 is NOT APP.
+- New INTERNAL SqliteRecordingDetailCleanup ports original one-session raw-only cleanup. Required
+  application-exclusive operation boundary, no idle default. Fresh consent/choice/epoch/clock /
+  recovery/replacement checks run inside the transaction, including before an idempotent no-op.
+  Current indexed row must match approved ownership/end/counts. Original sequence:payload:newline
+  SHA/count proofs are retained; only recording_points/events for that session are deleted.
+  Unexpected delete counts, late SQL failure and rejected caller scopes roll back rows AND receipt.
+- Existing receipts cannot be silently overwritten or treated as successful retries with changed
+  source/policy/counts. Source identity/header/actual end checks reuse extracted internal
+  SqliteRecordingReceiptIdentity in both cleanup and raw restoration, including original indexed
+  upper-bound compatibility. Actual payload ID must match its indexed activity too. Bounded
+  source-payload metadata checks precede allocation. No summary/PB/actual/history recalculation.
+- Nineteen common real SQLite cleanup cases +Apple/JDBC wrappers cover all-table preservation /
+  exact hashes/PBs, stale and expired decisions, all recovery states, source/index/payload conflicts,
+  unapproved sessions, existing receipts, late failure/retry, count mismatch, outer rollback,
+  oversized-payload rejection before read, preserved legacy inline samples, truthful JSON/package
+  backups and exact compatible raw rehydration with old-approval invalidation. SQL spy permits ONLY
+  raw-session deletes and removal-receipt inserts. Other tables remain byte-for-byte unchanged.
+- LocalDataOperations provides the real non-queuing exclusive guard: JVM ReentrantLock /Apple
+  NSRecursiveLock, with synchronized state inspection and rejection of nested or cross-thread
+  backup/replacement/cleanup overlaps. Failure releases state/lock; rejected actions never replay.
+  THREE common guard tests include actual concurrent workers (JVM latch/thread /Apple GCD semaphore,
+  bounded failure timeouts, no sleeps). Cleanup integration also uses this production guard.
+- Actual application composition MUST own ONE guard and wrap ALL backup/export/restore paths with
+  it; those host bindings are not implemented/claimed. Guard/kernel are internal, Native destructive
+  UI remains OFF. Do not confuse existence of the kernel with complete platform operation wiring.
+- Focused36cleanup/restore +metadata PASS1m28s/13tasks; intermediate598storage/meta/Android compile
+  PASS3m/64tasks. Guard/integration22focused +metadata PASS1m24s/13tasks. FINAL602storage JVM /
+  0failure/error/skip +metadata +Android test compilation PASS3m3s/64tasks, scratch/kmp-cleanup-
+  operations-final.log. Pinned901sources(806Kotlin95Java), exact schema19, schema75 and source3
+  PASS in scratch/kmp-cleanup-operations-{format,schema}.log. Source/handoff committed together;
+  resolve actual HEAD and push ONCE if needed. Fresh Native602 /cross-thread Darwin test and
+  Android536 runtime gates are PENDING. Expected IO/SQL/guard name proof170 (148+19cleanup+3guard).
+- Next bind the same guard into actual app data composition and all mutation/backup paths, preserve
+  remaining original archive-byte safeguards, then real common application root/navigation/state /
+  platform services and REAL iOS app host. No premature Native destructive UI, merge or publication.
+- Schema19/root13/raw3/package1/version/code/dependencies/permissions unchanged. All physical-device
+  HealthKit/Health Connect/GPS/BLE/audio/locked-screen/OEM/TalkBack acceptance remains unperformed.
+
 ### Exact next safe actions and remaining full scope
 
-1. Checkpoint102 above is latest recovery boundary;10139a58c8 is fully green/byte-verified.
-   Current102 source and this handoff are committed together; local580/meta/Android compilation
-   PASS4m36s/64tasks +format890/schema75/source3 PASS. Push ONCE if needed (inspect upstream),
-   update DRAFT24 and verify actual Native/JVM580,148IO/SQL names, new536Android before claiming
-   runtime success. Native destructive UI OFF until full operation and bounded pruning safeguards.
-   Continue actual common app/navigation/state/native services/real iOS host and final gates.
-   No reset/restart, premature version bump, merge or public publication.
+1. Checkpoint103 above is latest recovery boundary;102616b1fb is fully green/byte-verified.
+   Current103 source/handoff committed together; local602/meta/Android compilation PASS3m3s /
+   64tasks +format901/schema75/source3 PASS. Push ONCE if needed (inspect upstream), update DRAFT24
+   and verify actual Native602 (including Darwin concurrency helper),170IO/SQL/guard names and
+   Android536 before claiming runtime success. Fix actual Native compile/runtime errors, no blind
+   reruns. Native destructive UI OFF until ONE real application guard owns all operation paths.
+   Continue common app/navigation/state/native services/real iOS host and final full gates.
+   No reset/restart, early version bump, merge or public publication.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
