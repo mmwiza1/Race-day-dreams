@@ -41,6 +41,7 @@ fun SharedHomeScreen(
     record: () -> Unit,
     quick: (String) -> Unit,
     race: () -> Unit,
+    hasRoute: (String) -> Boolean = { true },
 ) {
     if (state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH) {
         strengthContent()
@@ -58,6 +59,7 @@ fun SharedHomeScreen(
         record,
         quick,
         race,
+        hasRoute,
     )
 }
 
@@ -74,6 +76,7 @@ private fun RunningTodayScreen(
     record: () -> Unit,
     quick: (String) -> Unit,
     race: () -> Unit,
+    hasRoute: (String) -> Boolean,
 ) = CoachPage {
     CoachHeading("Today")
     Text(presentation.dateLabel())
@@ -120,7 +123,7 @@ private fun RunningTodayScreen(
                             "${presentation.paceSeconds(minimumPace)}–${presentation.paceSeconds(maximumPace)}/km"
                         )
                 }
-            if (!completed)
+            if (!completed && hasRoute("execute"))
                 CoachButton("Start with Live Coach") {
                     quick(
                         "execute/${presentation.encodeRouteComponent(state.currentPlan!!.id())}/${presentation.encodeRouteComponent(today.id())}"
@@ -313,18 +316,21 @@ private fun RunningTodayScreen(
                         Text("View recorded run")
                     }
                 }
-            TextButton(onClick = { quick("progress/trends") }) { Text("Training trends") }
-            TextButton(onClick = { quick("achievements") }) { Text("Recorded milestones") }
+            if (hasRoute("progress/trends"))
+                TextButton(onClick = { quick("progress/trends") }) { Text("Training trends") }
+            if (hasRoute("achievements"))
+                TextButton(onClick = { quick("achievements") }) { Text("Recorded milestones") }
         }
     }
     CoachHeading("Quick actions")
     CoachButton("Log strength") { quick("strength/log") }
-    OutlinedButton(
-        onClick = { quick("progress/weight") },
-        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-    ) {
-        Text("Add weight")
-    }
+    if (hasRoute("progress/weight"))
+        OutlinedButton(
+            onClick = { quick("progress/weight") },
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        ) {
+            Text("Add weight")
+        }
     OutlinedButton(onClick = plan, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
         Text("View plan")
     }

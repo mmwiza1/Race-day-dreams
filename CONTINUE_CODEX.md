@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 163 Running and Hybrid Today
+
+Draft PR #24 remains at 2172096. Experiment 44189952813 Android passed;
+Apple Native tests passed and framework linking was underway at the last
+check. The Xcode app build follows. Preserve that useful run. Checkpoints
+157–163 are local and should be batched after observing the real CI result.
+
+163 mounts the shared Running/Hybrid Today dashboard using actual date, unit,
+activity and programme bindings. Weekly review choices and baseline summary
+use existing shared content and application actions. Apple defers routes for
+structured Live Coach, running trends, achievements and add-weight until
+their screens are connected. Android keeps all original actions by default.
+
+Shared metadata and Android debug Kotlin compilation passed in 2m 2s (62
+tasks). Pinned touched Kotlin formatting, diff check and all 19 schema
+boundaries passed. Log: /workspace/scratch/kmp163-home.log. Native build for
+the local batch remains pending. Next inspect 44189952813 for demonstrated
+compile/build failures, batch the push, and verify actual simulator launch.
+Continue remaining app routes and native services before full verification.
+
 ### Latest recovery pointer — checkpoint 162 strength overview and library
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 Android passed and

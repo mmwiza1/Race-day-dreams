@@ -121,6 +121,8 @@ private enum class ApplePage {
     RECORD,
     HISTORY,
     PLAN,
+    WEEKLY,
+    BASELINE,
     GYM,
     PROGRAMMES,
     EXERCISES,
@@ -186,6 +188,8 @@ private fun AppleAppContent(
                             page = ApplePage.HISTORY
                         },
                     )
+                ApplePage.WEEKLY -> AppleWeeklyReview(session, state) { page = ApplePage.PLAN }
+                ApplePage.BASELINE -> AppleBaselineSummary(state)
                 ApplePage.GYM ->
                     Column {
                         TextButton(onClick = { page = ApplePage.PROGRAMMES }) {
@@ -275,13 +279,64 @@ private fun AppleAppContent(
                             },
                             gymNow = { page = ApplePage.GYM },
                         )
+                    } else if (state.primaryFocus == PrimaryFocus.STRENGTH) {
+                        CoachPage { Text(state.error ?: "Loading strength training…") }
                     } else {
-                        CoachPage {
-                            CoachHeading("Today")
-                            state.error?.let { Text(it) }
-                            CoachButton("Record a run") { page = ApplePage.RECORD }
-                            CoachButton("Settings") { page = ApplePage.SETTINGS }
-                        }
+                        SharedHomeScreen(
+                            state = state,
+                            presentation = appleHomePresentation(state),
+                            strengthContent = { Text("Loading strength training…") },
+                            weekly = { page = ApplePage.WEEKLY },
+                            baseline = { page = ApplePage.BASELINE },
+                            assessment = { page = ApplePage.BASELINE },
+                            history = {
+                                calendarWorkout = null
+                                calendarStrength = null
+                                page = ApplePage.HISTORY
+                            },
+                            plan = { page = ApplePage.PLAN },
+                            workout = {
+                                calendarWorkout = it
+                                calendarStrength = null
+                                page = ApplePage.HISTORY
+                            },
+                            record = { page = ApplePage.RECORD },
+                            quick = { route ->
+                                when {
+                                    route.startsWith("activity/") -> {
+                                        activityId = route.removePrefix("activity/")
+                                        page = ApplePage.ACTIVITY
+                                    }
+                                    route.startsWith("gym/session/") -> {
+                                        val id = route.removePrefix("gym/session/")
+                                        val date =
+                                            state.authoredGymProgramme
+                                                ?.workouts()
+                                                ?.firstOrNull { it.id() == id }
+                                                ?.date()
+                                                ?: state.gymProgramme
+                                                    ?.sessions()
+                                                    ?.firstOrNull { it.id() == id }
+                                                    ?.date()
+                                        calendarWorkout = null
+                                        calendarStrength = date?.toString()
+                                        page = ApplePage.HISTORY
+                                    }
+                                    route == "gym-now" || route.startsWith("strength") ->
+                                        page = ApplePage.GYM
+                                }
+                            },
+                            race = { page = ApplePage.PLAN },
+                            hasRoute = {
+                                it !in
+                                    setOf(
+                                        "execute",
+                                        "progress/trends",
+                                        "achievements",
+                                        "progress/weight",
+                                    )
+                            },
+                        )
                     }
             }
         }
