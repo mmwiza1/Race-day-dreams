@@ -1,6 +1,8 @@
 package org.racedaydreams.coach.application
 
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -13,6 +15,7 @@ import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.SharedBackupSettings
 import org.racedaydreams.coach.SharedPrimaryFocusSettings
 import org.racedaydreams.coach.documents.AppleBackupDocuments
+import org.racedaydreams.storage.LocalBackupOperations.ReviewedAppBackup
 import platform.UIKit.UIViewController
 
 /** iOS settings content wired to the real session and system document picker. */
@@ -20,6 +23,7 @@ import platform.UIKit.UIViewController
 fun AppleSettingsScreen(
     session: AppleCoachSession<*>,
     presenter: UIViewController,
+    onRestore: (ReviewedAppBackup) -> Unit,
     health: @Composable () -> Unit = {},
 ) {
     val state by session.services.operations.state.collectAsState()
@@ -53,12 +57,64 @@ fun AppleSettingsScreen(
         }
     }
 
+    var importing by remember { mutableStateOf(false) }
+    var reviewed by remember { mutableStateOf<ReviewedAppBackup?>(null) }
+
+    fun importApp() {
+        importing = true
+        message = null
+        try {
+            session.backupDocuments.chooseAppBackup(presenter) { url ->
+                if (url == null) importing = false
+                else
+                    scope.launch {
+                        try {
+                            reviewed = session.backupDocuments.reviewApp(url)
+                        } catch (cancelled: CancellationException) {
+                            throw cancelled
+                        } catch (failure: Exception) {
+                            message = failure.message ?: "Could not read the backup."
+                        } finally {
+                            importing = false
+                        }
+                    }
+            }
+        } catch (failure: Exception) {
+            importing = false
+            message = failure.message ?: "Could not open the backup picker."
+        }
+    }
+
+    reviewed?.let { backup ->
+        AlertDialog(
+            onDismissRequest = { reviewed = null },
+            title = { Text("Replace app data?") },
+            text = {
+                Text(
+                    "Backup created ${backup.createdAt}. Restoring replaces your current app data with this backup. Finish any open run or gym workout first."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        reviewed = null
+                        onRestore(backup)
+                    }
+                ) {
+                    Text("Replace app data")
+                }
+            },
+            dismissButton = { TextButton(onClick = { reviewed = null }) { Text("Cancel") } },
+        )
+    }
+
     CoachPage {
         CoachHeading("Settings")
         health()
         SharedPrimaryFocusSettings(state) { session.services.settings.primaryFocus(it) }
         SharedBackupSettings(
-            busy = state.busy || exporting,
+            busy = state.busy || exporting || importing,
+            restore = ::importApp,
             export = { export(AppleBackupDocuments.Kind.APP) },
             completeExport = { export(AppleBackupDocuments.Kind.COMPLETE) },
             description =

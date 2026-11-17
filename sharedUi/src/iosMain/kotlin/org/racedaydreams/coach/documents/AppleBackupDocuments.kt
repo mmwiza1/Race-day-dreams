@@ -6,12 +6,15 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import org.racedaydreams.storage.BackupEnvelopeJson
 import org.racedaydreams.storage.LocalBackupOperations
+import org.racedaydreams.storage.LocalBackupOperations.ReviewedAppBackup
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSThread
 import platform.Foundation.NSURL
 import platform.Foundation.NSUUID
 import platform.UIKit.UIDocumentPickerDelegateProtocol
+import platform.UIKit.UIDocumentPickerModeImport
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIViewController
 import platform.darwin.NSObject
@@ -34,10 +37,16 @@ class AppleBackupDocuments(
 
     private var activePicker: Picker? = null
     private var staging = false
+    private var importPicker: ImportPicker? = null
 
     suspend fun export(kind: Kind, presenter: UIViewController, complete: (Outcome) -> Unit) {
         check(NSThread.isMainThread)
-        check(!staging && activePicker == null && presenter.presentedViewController == null) {
+        check(
+            !staging &&
+                activePicker == null &&
+                importPicker == null &&
+                presenter.presentedViewController == null
+        ) {
             "Finish the open document export first."
         }
         check(presenter.viewIfLoaded?.window != null) { "Open the app before exporting a backup." }
@@ -68,6 +77,78 @@ class AppleBackupDocuments(
             throw failure
         } finally {
             staging = false
+        }
+    }
+
+    fun chooseAppBackup(presenter: UIViewController, selected: (NSURL?) -> Unit) {
+        check(NSThread.isMainThread)
+        check(
+            !staging &&
+                activePicker == null &&
+                importPicker == null &&
+                presenter.viewIfLoaded?.window != null &&
+                presenter.presentedViewController == null
+        ) {
+            "Finish the open document action first."
+        }
+        val picker = ImportPicker(selected)
+        importPicker = picker
+        try {
+            presenter.presentViewController(picker.controller, animated = true, completion = null)
+        } catch (failure: Throwable) {
+            importPicker = null
+            throw failure
+        }
+    }
+
+    suspend fun reviewApp(url: NSURL): ReviewedAppBackup =
+        withContext(io) {
+            val path = requireNotNull(url.path) { "This backup has no readable local file." }
+            val file = checkNotNull(fopen(path, "rb")) { "Could not read the backup." }
+            try {
+                check(fseeko(file, 0, SEEK_END) == 0) { "Could not size the backup." }
+                val size = ftello(file)
+                require(size in 1..BackupEnvelopeJson.MAX_BYTES.toLong()) {
+                    "Choose an app backup no larger than 32 MiB."
+                }
+                check(fseeko(file, 0, SEEK_SET) == 0) { "Could not read the backup." }
+                val bytes = ByteArray(size.toInt())
+                val count = bytes.usePinned { fread(it.addressOf(0), 1u, size.toULong(), file) }
+                check(count == size.toULong() && fgetc(file) == EOF && ferror(file) == 0) {
+                    "The backup changed while it was being read."
+                }
+                exports.reviewApp(bytes)
+            } finally {
+                fclose(file)
+            }
+        }
+
+    fun restoreApp(reviewed: ReviewedAppBackup) = exports.restoreApp(reviewed)
+
+    private inner class ImportPicker(private val selected: (NSURL?) -> Unit) :
+        NSObject(), UIDocumentPickerDelegateProtocol {
+        val controller =
+            UIDocumentPickerViewController(
+                    documentTypes = listOf("public.json"),
+                    inMode = UIDocumentPickerModeImport,
+                )
+                .apply { delegate = this@ImportPicker }
+
+        override fun documentPicker(
+            controller: UIDocumentPickerViewController,
+            didPickDocumentsAtURLs: List<*>,
+        ) {
+            finish(didPickDocumentsAtURLs.singleOrNull() as? NSURL)
+        }
+
+        override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+            finish(null)
+        }
+
+        private fun finish(url: NSURL?) {
+            if (importPicker !== this) return
+            importPicker = null
+            selected(url)
         }
     }
 

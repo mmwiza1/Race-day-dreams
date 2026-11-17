@@ -62,6 +62,25 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 175 iOS app backup import
+
+PR #24 remains at 7558809. Experiment 44198176072 was still running Android
+APK compilation and Apple Native tests. Preserve both useful jobs.
+Local checkpoints 174–175 are queued.
+
+175 adds the native JSON import picker and bounded 32 MiB read. The file
+is validated before the app presents explicit replacement confirmation.
+A confirmed restore uses the shared transaction and backup owner. On success
+the iOS host reopens its session so the previous programme and workout
+controllers cannot retain old state. No raw detail is deleted by JSON
+replacement. Complete ZIP restore, retention controls and destructive reset
+remain unavailable. Native picker and restart behavior require macOS testing.
+
+Pinned touched-file formatting, diff and all 19 schema checks passed.
+Next inspect 44198176072, fix actual build/launch failures and push the
+queued batch after the live jobs finish. Verify cancel, invalid file, active
+recording guards and successful restore on iOS, then continue remaining scope.
+
 ### Latest recovery pointer — checkpoint 174 guarded backup review
 
 PR #24 is at 7558809. Experiment 44198176072 was running Android and Apple.

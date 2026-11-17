@@ -19,6 +19,7 @@ import org.racedaydreams.domain.strength.StrengthMeasurementPolicy
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
+import org.racedaydreams.storage.LocalBackupOperations.ReviewedAppBackup
 import platform.Foundation.NSUserDefaults
 import platform.UIKit.UIViewController
 
@@ -40,6 +41,9 @@ fun raceDayViewController(databasePath: String, bundleIdentifier: String): UIVie
             var session by remember { mutableStateOf<AppleCoachSession<Unit>?>(null) }
             var startupError by remember { mutableStateOf<String?>(null) }
             var attempt by remember { mutableIntStateOf(0) }
+            var restoring by remember { mutableStateOf(false) }
+            var restoreError by remember { mutableStateOf<String?>(null) }
+            val hostScope = rememberCoroutineScope()
             LaunchedEffect(attempt) {
                 try {
                     session =
@@ -88,8 +92,36 @@ fun raceDayViewController(databasePath: String, bundleIdentifier: String): UIVie
             }
             val active = session
             Surface(Modifier.fillMaxSize()) {
-                if (active != null) {
-                    AppleAppContent(active, controller) { bodyOnly ->
+                if (restoring) {
+                    CoachPage { Text("Restoring app data…") }
+                } else if (active != null) {
+                    AppleAppContent(
+                        active,
+                        controller,
+                        onRestore = { reviewed ->
+                            restoring = true
+                            restoreError = null
+                            hostScope.launch {
+                                try {
+                                    active.services.operations.serialiseDraftWrite {
+                                        active.backupDocuments.restoreApp(reviewed)
+                                    }
+                                    session = null
+                                    active.close()
+                                    attempt++
+                                } catch (cancelled: CancellationException) {
+                                    throw cancelled
+                                } catch (failure: Exception) {
+                                    val message = failure.message ?: "Could not restore the backup."
+                                    if (session == null) startupError = message
+                                    else restoreError = message
+                                } finally {
+                                    restoring = false
+                                }
+                            }
+                        },
+                        restoreError = restoreError,
+                    ) { bodyOnly ->
                         AppleHealthControls(
                             active,
                             preferences,
@@ -142,6 +174,8 @@ private enum class ApplePage {
 private fun AppleAppContent(
     session: AppleCoachSession<Unit>,
     controller: UIViewController,
+    onRestore: (ReviewedAppBackup) -> Unit,
+    restoreError: String?,
     health: @Composable (Boolean) -> Unit,
 ) {
     val state by session.services.operations.state.collectAsState()
@@ -151,6 +185,7 @@ private fun AppleAppContent(
     var recordingWorkout by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+        restoreError?.let { Text(it, Modifier.padding(horizontal = 12.dp)) }
         FlowRow(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
             TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
             TextButton(
@@ -177,7 +212,7 @@ private fun AppleAppContent(
         Box(Modifier.weight(1f)) {
             when (page) {
                 ApplePage.SETTINGS ->
-                    AppleSettingsScreen(session, controller) {
+                    AppleSettingsScreen(session, controller, onRestore) {
                         CoachButton("Body measurements and protein") { page = ApplePage.BODY }
                         health(false)
                     }
