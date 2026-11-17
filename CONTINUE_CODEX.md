@@ -64,17 +64,16 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24. Latest implementation113`a8849cd`
-shares actual snapshot sources/Android binding;111`7212d4a`context and112`16e8c65`original-Android-
-fixture correction are committed too. Local639storage JVM/common metadata/Android compile/lint /
-format932/schema/source checks PASS.114separates Native tests/framework stages without reducing
-coverage.110workflow44061576597 was cancelled for diagnosis after40minutes: Native449domain /
-27health PASS; storage/UI/test compilation succeeded, storage execution/framework unfinished.
-Android560old cases passed;6new pre-assertion fixture failures corrected locally, guard unchanged.
-Commit114and push111–114ONCE, inspect new exact-head Native639/Android571 and fix actual failures.
-See checkpoints110–114/END exact-next for evidence. No early merge/publication: actual iOS APP,
-remaining services/root/navigation/operation owner and full final gates still unfinished.
-Version0.12.3/code19/formats19/13/3/1 unchanged. Preserve all prior work; no fake native defaults.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24.111–114are pushed at`378d135` and FULLY
+GREEN: experiment44068485578/format44068485539, Android571, Native449domain/27health/639storage /
+real shared framework, JVM490/25/639,213matching IOcases; byte-verified artifacts below. Old Android
+fixture and Native-test compile issues are corrected; do not revive/restart them. Local115shared
+Exercise Library/browser/search/icons is finished with common metadata/Android prod+test compile /
+lint5m8s/133tasks, format935/formatter14/source3 PASS; commit coherently. New direct2UI cases /
+Native browser build remain pending next candidate (expected573Android). No need to rerun unchanged
+storage/domain during UI-only development. Continue remaining application services/active screens /
+root/navigation/actual iOS app and full final gates. No premature merge/publication or native
+cleanup UI.0.12.3/code19/formats19/13/3/1 unchanged. See latest115/END exact-next; preserve all work.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5159,19 +5158,68 @@ Version0.12.3/code19/formats19/13/3/1 unchanged. Preserve all prior work; no fak
   Android compile/lint, format932/exact-schema/source3 remain green from113. Next actual migration
   work is remaining application services/root/navigation/native host, not repeated kernel ports.
 
+### Checkpoint114 verified — actual shared snapshot/backend/source gate GREEN
+
+- Experiment44068485578 and format44068485539 completed SUCCESS at378d1354d6575cef041e8bd8be8d95bdd116f6ed.
+  Android133988290735 passed571unique START/END cases, including ALL corrected schema fixtures /
+  shared SQL snapshot sources/weekly context/IO factory and existing coaching/browser/recording
+  tests.700,189domain/48suites, schema75, all3builds/lint pass. Completed log and exact-count proof:
+  scratch/snapshot-378-android-{job.log,proof.json}. No new-head Browser115runtime result implied.
+- Apple133988291172 passed actual Native suites and linked real Compose framework in SEPARATE
+  stages: tests BUILD SUCCESS12m35s; framework BUILD SUCCESS5m27s. New workflow preserves all
+  tests and makes each stage observable; no confirmed native application defect was found in
+  the previous diagnostic cancellation. Whole new workflow is GREEN, not merely a compile claim.
+- Byte/digest/commit-verified artifacts: JVM14321339653 ZIP185,244bytes/SHA256
+  96bdb61220c3528d63fabea8865b9c3ae7785671a73e3ef9c512fa7f6fddd546:
+  490domain/25health/639storage. Native14323285200 ZIP176,015/SHA
+  6aea817c07ec7d9c62b1d25220e2abfecb3e4635c87b2d9c83c3bbaf0c871564:
+  449domain/27health/639storage. ALL0failure/error/skip.213matching IO/SQL/health/coaching/context
+  names plus3new exact matching draft/shoe preference cases independently compared. Proofs in
+  scratch/snapshot-378-{jvm,native}/verification.json and native/{all-case-proof,snapshot-preference-case-proof}.json.
+- PrivateAPK14321204971 ZIP30,747,897bytes/SHA78b7ffe26235feb7826a6de94a33cb4238918e3180f4b851c115fc688c2c10d4;
+  APK58,369,350bytes/SHA279fd441907f65831ebab0c958a6363b4db617e09f4ecfb0e8cb50ac5735942a,
+  aapt0.12.3/code19/min28/noINTERNET, scratch/snapshot-378-apk/verification.json.
+  Framework14322084328 linked successfully; it is NOT an iOS app. No public experimental release.
+
+### Checkpoint115 — actual shared Exercise Library UI
+
+- Latest local115work moves the ACTUAL850line ExerciseBrowseScreen into common
+  SharedExerciseBrowseScreen, retaining all search/alias/ranking, personal/category/equipment /
+  movement filters, exclusions/restoration, cards, disclosures, custom metadata, dialog, semantics
+  and200% layout. Existing Android API delegates with real native thumbnails and UUID source.
+  No duplicated screen, UI redesign, storage/domain/recording calculation or new feature.
+- Library search field and EXACT existing Canvas search/chevron/movement icons now common in
+  ExerciseLibraryControls. Android ExerciseLibraryComponents retains its actual BitmapFactory /
+  resource/bounded thumbnail cache. Common browser REQUIRES composable thumbnail and ID providers;
+  no fake native images/identities. Controlled ASCII equipment enum labels retain their English
+  casing; special programme GOAL labels remain untouched. Existing custom metadata detail helper
+  is public across modules; no duplicate formula/classification implementation.
+- TWO direct shared-browser Android tests verify real custom controls in dark200% mode: host ID
+  requested ONLY after explicit save; measurement preserved/no unsupported estimated1RM enabled;
+  classified custom action remains with host and never creates an unclassified exercise. Seven
+  original browser and existing custom-exercise cases remain unchanged. Next focused count573
+  (571+2); storage639 unchanged. No runtime/screenshot claim for these new cases before CI.
+- Initial common metadata/Android prod+test compile PASS2m41s/73tasks. FINAL formatted common
+  metadata/Android production+test compile/lint PASS5m8s/133tasks,
+  scratch/kmp-exercise-browser-final.log. Formatting935sources(840Kotlin/95Java), formatter14 /
+  source3tests PASS; diff checks clean. Storage/domain/backup behavior unchanged;114actual639
+  Native/JVM result remains valid for those unchanged sources. New browser Native compilation /
+  Android runtime must be checked on next candidate. Full final screenshots/readiness still pending.
+- Exact next: commit115coherently; continue remaining common application services/root/active UI
+  and actual native host. Coherent batches/targeted tests, then one push/new Native639/framework /
+  Android573gate.114CI is complete, so there is no running old gate to cancel now. No early
+  version bump, merge, public artifact or destructive native UI. Keep24DRAFT/full scope intact.
+
 ### Exact next safe actions and remaining full scope
 
-1. Latest implementation is113a8849cd, plus114targeted Native-stage diagnostics/recovery.
-   Local1117212d4a/context and11216e8c65/fixture fix are preserved. FINAL639storage JVM/common
-   metadata/Android production+test compile/lint PASS3m39s/137tasks; format932/exact-schema/source3
-   PASS.110run44061576597 is CANCELLED after diagnostic40minute wait: Native449domain/27health
-   actually passed; storage/UI/test code compiled, but storage execution/framework did NOT finish.
-   Android560old cases passed;6new fixture initialisation failures are corrected through original
-   Android schema owner with NO weaker guard/assertion. Native tests and framework now separate,
-   same targets with bounded parallelism and early XMLartifact. Commit114/push111–114ONCE, inspect
-   actual new head Native639/Android571before further mutation; do not blindly retry/claim pending
-   results. Then remaining services/root/navigation/actual iOS app. No native destructive UI,
-   reset/restart/early bump/merge/publication. PR24 stays DRAFT.
+1. Latest local115shared Exercise Library is complete and verified for common metadata/Android
+   compilation/lint/format935, not yet committed/runtime-verified.114378d135experiment44068485578 /
+   format44068485539are FULLY GREEN: Android571, Native449domain/27health/639storage plus actual
+   shared framework, JVM490/25/639,213matching IOcases, all0fail/error/skip; artifacts byte-verified
+   as above. Original Android schema fixture issue fixed with NO weaker guard/assertion. Commit115
+   coherently; continue remaining application services/active UI/root/native app. Push coherent
+   next batch ONCE and inspect its actual Native639/framework /Android573results. No native
+   destructive UI/reset/restart/early bump/merge/publication.24staysDRAFT; full agreed scope intact.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.
