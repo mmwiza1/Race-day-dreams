@@ -1,6 +1,7 @@
 package org.racedaydreams.coach.application
 
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import kotlin.math.roundToLong
 import kotlinx.coroutines.CancellationException
@@ -10,6 +11,8 @@ import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.ActivitySources
+import org.racedaydreams.domain.activity.SplitAnalysis
+import org.racedaydreams.domain.activity.SplitCalculator
 import org.racedaydreams.domain.time.*
 
 @Composable
@@ -74,18 +77,55 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String) {
     val state by session.services.operations.state.collectAsState()
     val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
     var activity by remember(id) { mutableStateOf<ActivityRecord?>(null) }
+    var splits by remember(id, imperial) { mutableStateOf<SplitAnalysis?>(null) }
+    var route by remember(id) { mutableStateOf<PreparedLiveRoute?>(null) }
+    var detailRemoved by remember(id) { mutableStateOf(false) }
+    var showRoute by remember(id) { mutableStateOf(false) }
+    var showSplits by remember(id) { mutableStateOf(false) }
     var loading by remember(id) { mutableStateOf(true) }
     var failed by remember(id) { mutableStateOf(false) }
-    LaunchedEffect(id) {
+    LaunchedEffect(id, imperial) {
         try {
-            activity =
-                withContext(applicationIoDispatcher()) { session.activities.activityDetail(id) }
+            val (run, analysis) =
+                withContext(applicationIoDispatcher()) {
+                    val run = session.activities.activityDetail(id)
+                    run to
+                        run?.let {
+                            SplitCalculator.calculate(it, if (imperial) 1609.344 else 1000.0)
+                        }
+                }
+            activity = run
+            splits = analysis
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {
             failed = true
         } finally {
             loading = false
+        }
+    }
+    var routeFailed by remember(id) { mutableStateOf(false) }
+    var routeLoading by remember(id) { mutableStateOf(false) }
+    LaunchedEffect(id, showRoute) {
+        if (!showRoute) return@LaunchedEffect
+        routeLoading = true
+        try {
+            val (prepared, removed) =
+                withContext(applicationIoDispatcher()) {
+                    val saved = session.activities.recordedRoute(id)
+                    saved.points
+                        .takeIf { it.isNotEmpty() }
+                        ?.let { PreparedLiveRoute.fromPoints(it) } to saved.detailRemoved
+                }
+            route = prepared
+            detailRemoved = removed
+            routeFailed = false
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            routeFailed = true
+        } finally {
+            routeLoading = false
         }
     }
     CoachPage {
@@ -106,6 +146,34 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String) {
                     run.movingTime()?.let { Text("Active: ${PaceCalculator.formatTime(it)}") }
                     Text("Source: ${ActivitySources.friendly(run.source())}")
                     run.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
+                    TextButton(onClick = { showRoute = !showRoute }) {
+                        Text(if (showRoute) "Hide route" else "View recorded route")
+                    }
+                    if (showRoute) {
+                        when {
+                            routeLoading -> Text("Loading recorded route…")
+                            detailRemoved ->
+                                Text(
+                                    "Detailed route data was removed. The run summary is retained."
+                                )
+                            routeFailed -> Text("The recorded route could not be loaded.")
+                            else -> SharedLiveRecordedRoute(route, unavailable = route == null)
+                        }
+                    }
+                    TextButton(onClick = { showSplits = !showSplits }) {
+                        Text(if (showSplits) "Hide splits" else "View splits")
+                    }
+                    if (showSplits) {
+                        val analysis = splits
+                        if (analysis?.splits().isNullOrEmpty())
+                            Text("Qualified split data is unavailable.")
+                        analysis?.reasons()?.forEach { Text(it) }
+                        analysis?.splits()?.forEach { split ->
+                            Text(
+                                "${split.number()} · ${distanceLabel(split.distanceMetres(), imperial)} · ${PaceCalculator.formatTime(split.duration())}"
+                            )
+                        }
+                    }
                 }
         }
     }

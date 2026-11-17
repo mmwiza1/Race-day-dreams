@@ -1,6 +1,7 @@
 package org.racedaydreams.storage
 
 import org.racedaydreams.domain.activity.*
+import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.domain.time.*
 
 /**
@@ -119,6 +120,41 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
         val key = session[0].sqlText()
         val mono = session[1].sqlLong()
         val samples = mutableListOf<DistanceSample>()
+        readRecordingPoints(key) { point ->
+            samples.add(
+                DistanceSample(
+                    Durations.ofMillis(point.fix().monotonicMillis() - mono),
+                    point.cumulativeMetres(),
+                    point.heartRate(),
+                    point.cadence(),
+                    point.fix().altitude(),
+                    point.discontinuity(),
+                )
+            )
+        }
+        return activity.copy(samples = samples)
+    }
+
+    data class RecordedRoute(val points: List<RunMetricsEngine.Point>, val detailRemoved: Boolean)
+
+    /** Reads only retained normalized coordinates. Missing coordinates are never reconstructed. */
+    fun recordedRoute(activityId: String): RecordedRoute =
+        database.transaction {
+            val key =
+                database
+                    .query(
+                        "SELECT id FROM recording_sessions WHERE activity_id=? AND state='FINISHED'",
+                        listOf(SqlValue.Text(activityId)),
+                    )
+                    .firstOrNull()
+                    ?.single()
+                    ?.sqlText() ?: return@transaction RecordedRoute(emptyList(), false)
+            val removed = SqliteRecordingDetailReceipts(database).removal(key) != null
+            val points = buildList { if (!removed) readRecordingPoints(key) { add(it) } }
+            RecordedRoute(points, removed)
+        }
+
+    private fun readRecordingPoints(key: String, consume: (RunMetricsEngine.Point) -> Unit) {
         var last: Long? = null
         while (true) {
             val rows =
@@ -132,23 +168,10 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
                         "SELECT sequence,payload FROM recording_points WHERE session_id=? AND sequence>? ORDER BY sequence LIMIT 500",
                         listOf(SqlValue.Text(key), SqlValue.Integer(last)),
                     )
-            for (row in rows) {
-                val point = RecordingPointJson.decode(row[1].sqlText())
-                samples.add(
-                    DistanceSample(
-                        Durations.ofMillis(point.fix().monotonicMillis() - mono),
-                        point.cumulativeMetres(),
-                        point.heartRate(),
-                        point.cadence(),
-                        point.fix().altitude(),
-                        point.discontinuity(),
-                    )
-                )
-            }
+            for (row in rows) consume(RecordingPointJson.decode(row[1].sqlText()))
             if (rows.size < 500) break
             last = rows.last()[0].sqlLong()
         }
-        return activity.copy(samples = samples)
     }
 
     override fun upsertManualActivity(activity: ActivityRecord) {

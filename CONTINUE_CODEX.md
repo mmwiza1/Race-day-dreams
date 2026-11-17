@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 165 retained routes and splits
+
+Draft PR #24 remains at 2172096. In experiment 44189952813 Android and
+Apple Native tests passed. The Apple framework link was still running at
+last check. Preserve it. Local checkpoints 157–165 are queued.
+
+165 adds saved-route and split disclosures to iOS run details. The shared
+repository uses the existing paged point reader and original coordinates.
+It distinguishes explicit removal receipts from unavailable coordinates.
+Split calculations use the existing evidence-qualified calculator and chosen
+units. JVM SQLite contract asserts the retained coordinates round-trip
+and unknown activities return no route. All 11 focused JDBC tests passed in
+1m 18s. Formatting, diff and 19 schema boundaries passed. Log:
+/workspace/scratch/kmp165-route.log. Apple runtime is still pending.
+
+Next inspect the preceding Apple link and Xcode build results. Fix actual
+errors, push the local batch and verify simulator startup. Continue the
+structured running integration and remaining native features and acceptance.
+Do not merge or publish yet.
+
 ### Latest recovery pointer — checkpoint 164 body guidance and simulator startup gate
 
 Draft PR #24 remains at 2172096. Experiment 44189952813 passed Android and

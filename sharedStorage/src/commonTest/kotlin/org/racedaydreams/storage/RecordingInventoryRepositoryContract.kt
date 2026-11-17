@@ -92,6 +92,10 @@ abstract class RecordingInventoryRepositoryContract {
         val activity = assertNotNull(SqliteActivities(db) { at }.activityDetail(id))
         assertEquals(10.0, activity.distanceMetres())
         assertEquals(2, activity.samples().size)
+        val retained = SqliteActivities(db) { at }.recordedRoute(id)
+        assertEquals(points, retained.points)
+        assertFalse(retained.detailRemoved)
+        assertTrue(SqliteActivities(db) { at }.recordedRoute("missing").points.isEmpty())
     }
 
     @Test
