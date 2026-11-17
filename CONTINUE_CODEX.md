@@ -64,16 +64,15 @@ incomplete migration merely because a focused checkpoint passes.
 
 ### Latest recovery pointer — 17 November
 
-Continue `experiment/android-ios-kmp-compose` / DRAFT PR24.111–114are pushed at`378d135` and FULLY
-GREEN: experiment44068485578/format44068485539, Android571, Native449domain/27health/639storage /
-real shared framework, JVM490/25/639,213matching IOcases; byte-verified artifacts below. Old Android
-fixture and Native-test compile issues are corrected; do not revive/restart them. Local115shared
-Exercise Library/browser/search/icons is finished with common metadata/Android prod+test compile /
-lint5m8s/133tasks, format935/formatter14/source3 PASS; commit coherently. New direct2UI cases /
-Native browser build remain pending next candidate (expected573Android). No need to rerun unchanged
-storage/domain during UI-only development. Continue remaining application services/active screens /
-root/navigation/actual iOS app and full final gates. No premature merge/publication or native
-cleanup UI.0.12.3/code19/formats19/13/3/1 unchanged. See latest115/END exact-next; preserve all work.
+Continue `experiment/android-ios-kmp-compose` / DRAFT PR24.114`378d135` is pushed/FULLY GREEN:
+Android571, Native449domain/27health/639storage +real shared framework, JVM490/25/639; byte-verified
+artifacts/results below.115`7ae6d68` complete shared Exercise Library is locally committed,
+compile/lint5m8s/133tasks +format935/tools PASS.116shared ProfileOperations/Android binding and
+3SQL tests are complete locally: metadata/debug+testAPK/lint6m20s/176tasks, format936/schema/source3
+PASS. Commit116and push115+116ONCE; next expectedAndroid576/Native639/framework results are NOT
+claimed before actual CI. See latest116/END exact-next. Preserve all work/deleted superseded Android
+classes; remaining services/UI/root/navigation/actual iOS app/full final gates unfinished.0.12.3 /
+code19/formats19/13/3/1 unchanged; no premature merge/publication/native cleanup UI/fake bindings.
 
 ### Branch, baseline and completed checkpoints
 
@@ -5210,16 +5209,41 @@ cleanup UI.0.12.3/code19/formats19/13/3/1 unchanged. See latest115/END exact-nex
   Android573gate.114CI is complete, so there is no running old gate to cancel now. No early
   version bump, merge, public artifact or destructive native UI. Keep24DRAFT/full scope intact.
 
+### Checkpoint116 — shared profile application service
+
+-1157ae6d68(shared full Exercise Library) is locally committed, not pushed; remote114378d135
+  remains FULLY GREEN as byte-verified above (Android571/Native639/framework). Preserve all code.
+- Surviving116local work MOVES actual ProfileOperations into sharedUi/commonMain, changing only
+  its concrete repository binding from JVM Optional/Android to existing SqliteAthleteProfile.
+  SAME explicit Performance eligibility/retained-strategy rules, same saved eligibility/goal,
+  draft lifecycle and baseline.reviewed effect. No training calculation change. Old Android class
+  is deleted, not duplicated. Android CoachApplicationServices uses the common service and SAME
+  lazy, IO-checked borrowed database view as common snapshot sources; legacy profile adapter
+  remains for other unmigrated Android operations/reset compatibility.
+- THREE real Android SQL tests cover new unsupported Performance choice retaining goal/draft;
+  supported choice and explicit retention without fabricated eligibility/history/automatic plan;
+  injected profile replacement failure rolling back prior profile/draft without false review flag.
+  Existing profile/onboarding/interaction cases retained. Next combined focused count576:
+  last verified571 +115's2browser +116's3profile. Domain/storage639 sources are unchanged.
+- FINAL common metadata/debugAPK/instrumentationAPK/lint PASS6m20s/176tasks,
+  scratch/kmp-profile-service-final.log. Formatting936sources(841Kotlin/95Java), exact schema19 /
+  source3 checks PASS; diff checks clean. No new profile/browser runtime/Native compilation pass
+  claimed before exact-head CI. Unchanged storage639/domain sources retain114actual verification.
+- Exact next: commit116and push115+116ONCE (114CI already finished), update24DRAFT with actual
+  next-head CI. Verify new Native
+ 639/framework and Android576 including all five new UI/policy cases; never blindly rerun/fakepass.
+  Then remaining application services/active UI/root/navigation/actual native host/services. Native
+  destructive UI OFF, no early bump/merge/publication. This is still the FULL agreed migration.
+
 ### Exact next safe actions and remaining full scope
 
-1. Latest local115shared Exercise Library is complete and verified for common metadata/Android
-   compilation/lint/format935, not yet committed/runtime-verified.114378d135experiment44068485578 /
-   format44068485539are FULLY GREEN: Android571, Native449domain/27health/639storage plus actual
-   shared framework, JVM490/25/639,213matching IOcases, all0fail/error/skip; artifacts byte-verified
-   as above. Original Android schema fixture issue fixed with NO weaker guard/assertion. Commit115
-   coherently; continue remaining application services/active UI/root/native app. Push coherent
-   next batch ONCE and inspect its actual Native639/framework /Android573results. No native
-   destructive UI/reset/restart/early bump/merge/publication.24staysDRAFT; full agreed scope intact.
+1. Latest116shared ProfileOperations implementation passes common metadata/debug+testAPK /
+   lint6m20s/176tasks, format936/schema/source3.1157ae6d68shared Exercise Library is locally
+   committed with compile/lint5m8s/133tasks, format935/formatter14/source3. Commit116and push115+116
+   ONCE; new expectedAndroid576/Native639/framework results must be inspected, not assumed. Remote
+   114378d135is fully green/byte-verified(Android571/Native639/framework). Keep all work; next
+   remaining application services/active screens/root/navigation/actual iOS host/services. No
+   duplicate kernel ports/native destructive UI/reset/restart/early bump/merge/publication.24DRAFT.
 
 2. Java domain conversion is COMPLETE (0Java sources). Preserve narrow JVM Kotlin SDK/IO adapters
    and actual shared UI. Do not restart domain ports or mistake framework linkage for an iOS app.

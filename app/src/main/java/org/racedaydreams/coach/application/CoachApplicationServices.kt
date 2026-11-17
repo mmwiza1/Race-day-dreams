@@ -20,6 +20,7 @@ import org.racedaydreams.reminders.EveningReminders
 
 /** Composition root only: features share a helper/command boundary, not business ownership. */
 class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDraft: () -> String?) {
+    private val database = AndroidSqlConnection.forApplication(app)
     private val store = FeatureStore(app)
     private val coaching = CoachingStore(app)
     private val development = DevelopmentStore(app)
@@ -39,7 +40,7 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             store.settingsRepository(),
             store.plannedWorkoutRepository(),
             SqliteCoachSnapshotSources(
-                AndroidSqlConnection.forApplication(app),
+                database,
                 Instant::now,
                 { UUID.randomUUID().toString() },
                 object : CoachSnapshotPlatform {
@@ -65,7 +66,11 @@ class CoachApplicationServices(app: Application, scope: CoroutineScope, savedDra
             LocalDate::now,
         )
     val operations = CoachOperationRunner(scope, snapshot::read)
-    val profile = ProfileOperations(profiles, store.settingsRepository())
+    val profile =
+        ProfileOperations(
+            org.racedaydreams.storage.SqliteAthleteProfile(database),
+            store.settingsRepository(),
+        )
     val baseline =
         BaselineCoordinator(operations, store.baselineRepository(), store.settingsRepository())
     val runningPlan =

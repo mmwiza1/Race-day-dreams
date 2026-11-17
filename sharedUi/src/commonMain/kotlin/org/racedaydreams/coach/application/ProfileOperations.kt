@@ -1,18 +1,18 @@
 package org.racedaydreams.coach.application
 
-import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.TrainingStrategy
 import org.racedaydreams.domain.UserProfile
 import org.racedaydreams.domain.settings.SettingsRepository
+import org.racedaydreams.storage.SqliteAthleteProfile
 
 /** Profile persistence/eligibility rules, separate from lifecycle-owned draft debouncing. */
 class ProfileOperations(
-    private val profiles: SqliteUserPreferencesRepository,
+    private val profiles: SqliteAthleteProfile,
     private val settings: SettingsRepository,
 ) {
     fun save(profile: UserProfile, eligible: Boolean) {
         val retainingPerformance =
-            profiles.load().orElse(null)?.preferences()?.strategy() == TrainingStrategy.PERFORMANCE
+            profiles.load()?.preferences()?.strategy() == TrainingStrategy.PERFORMANCE
         require(
             profile.preferences().strategy() != TrainingStrategy.PERFORMANCE ||
                 eligible ||
