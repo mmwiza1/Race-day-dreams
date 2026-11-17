@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 185 GPX decoder fidelity
+
+The Apple decoder preserves empty segments for consistent track identity
+and rejects structural elements in unrelated XML namespaces, nested
+measurement markup and partial results after a parser rejection. Added
+native cases for those conditions. Touched-file formatting and diff
+checks passed. Native tests require the macOS workflow.
+
+PR #24 remains draft at 9bc0737. Experiment 44201909878 was still running
+both Android and Apple jobs. Preserve it, inspect its conclusions and
+push local checkpoints 182–185 as one batch. Check the new Apple decoder
+test XML and simulator startup artifact, then exercise the document
+picker and continue the remaining native parity and full release gates.
+
 ### Latest recovery pointer — checkpoint 184 GPX re-import and native test gate
 
 Shared GPX import now finds exact retained coordinates and timestamps of

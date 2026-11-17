@@ -23,12 +23,23 @@ class AppleGpxDecoderTest {
     }
 
     @Test
+    fun keepsEmptySegmentPositionsForStableTrackIdentity() {
+        val withEmpty = payload.replace("<trk>", "<trk><trkseg/>")
+        assertEquals(
+            listOf(0, 1, 1),
+            AppleGpxDecoder.decode(withEmpty.encodeToByteArray()).map { it.size },
+        )
+    }
+
+    @Test
     fun rejectsDoctypeMissingTimeAndInvalidCoordinates() {
         for (invalid in
             listOf(
                 "<!DOCTYPE gpx [<!ENTITY test 'data'>]>$payload",
                 payload.replace("<time>2026-11-17T12:00:10Z</time>", ""),
                 payload.replace("51.6", "91.0"),
+                payload.replace("http://www.topografix.com/GPX/1/1", "urn:unrelated"),
+                payload.replace("<ele>10.5</ele>", "<ele>10<extension/>.5</ele>"),
             )) {
             assertFailsWith<IllegalArgumentException> {
                 AppleGpxDecoder.decode(invalid.encodeToByteArray())
