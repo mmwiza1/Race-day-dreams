@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 174 guarded backup review
+
+PR #24 is at 7558809. Experiment 44198176072 was running Android and Apple.
+Formatting run 44198176127 failed downloading its pinned formatter with
+HTTP 429. The same full check passed locally (936 Kotlin and 95 Java files).
+
+174 unifies app-backup review, export and confirmed replacement under the
+same application backup owner. JSON review is read-only and returns an
+owner-bound validated snapshot. Replacement uses the existing transaction,
+including the live recording and unfinished gym checks. A focused JDBC
+contract verifies review leaves data intact, rejects a different owner and
+overlapping export, and restores successfully after confirmation. The
+JDBC suite passed in 1m 46s. All 19 schema checks passed.
+Log: /workspace/scratch/kmp174-backup.log.
+
+Next connect the iOS import picker and explicit confirmation to the reviewed
+backup API. Replacement remains unavailable in the UI at this checkpoint.
+Complete-package restore and cleanup still need application guard wiring.
+Check live CI before pushing, verify macOS compile and actual simulator
+startup, and continue the remaining routes and release gates.
+
 ### Latest recovery pointer — checkpoint 173 shared heart-rate trends
 
 The draft PR remains at 25adcc6. Experiment 44195464653 has a completed

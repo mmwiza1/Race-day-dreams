@@ -61,7 +61,7 @@ private constructor(
             selectedWorkouts: () -> Boolean,
             selectedBodyMetrics: () -> Set<BodyMetric>,
             savedDraft: () -> String?,
-            documents: (LocalBackupExports) -> SettingsPlatform<File>,
+            documents: (LocalBackupOperations) -> SettingsPlatform<File>,
             shortDate: (LocalDate) -> String,
         ): AppleCoachSession<File> {
             check(NSThread.isMainThread)
@@ -118,7 +118,7 @@ private constructor(
                         newId,
                     )
                 val reminders = AppleCoachReminders(database, io)
-                val exports = LocalBackupExports(database, now)
+                val exports = LocalBackupOperations(database, now, newId)
                 val backupDocuments = AppleBackupDocuments(exports, io)
                 val platform =
                     AppleCoachPlatform(

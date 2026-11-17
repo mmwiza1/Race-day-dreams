@@ -270,6 +270,21 @@ abstract class ApplicationBackupRestoreRepositoryContract {
         }
 
     @Test
+    fun reviewedReplacementCannotCrossOwnersOrOverlapAnExport() = storage { source, target ->
+        val owner = LocalBackupOperations(target, { at }, { "restored-dataset-${++sequence}" })
+        val other = LocalBackupOperations(target, { at }, { error("Unexpected replacement") })
+        val reviewed = owner.reviewApp(bytes(source))
+        SqliteSettings(target).putSetting("old", "retain until confirmation")
+        assertEquals(13, reviewed.version)
+        assertEquals("retain until confirmation", SqliteSettings(target).getSetting("old"))
+        assertFailsWith<IllegalArgumentException> { other.restoreApp(reviewed) }
+        owner.writeApp { assertFailsWith<IllegalStateException> { owner.restoreApp(reviewed) } }
+        assertEquals("retain until confirmation", SqliteSettings(target).getSetting("old"))
+        owner.restoreApp(reviewed)
+        assertEquals(snapshot(source), snapshot(target))
+    }
+
+    @Test
     fun allSupportedOldRootsRestoreTheirGenuineMissingSectionsAndUnknownConsentSafely() {
         for (version in 1..13) storage { source, target ->
             val current = snapshot(source)

@@ -6,7 +6,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import org.racedaydreams.storage.LocalBackupExports
+import org.racedaydreams.storage.LocalBackupOperations
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSThread
 import platform.Foundation.NSURL
@@ -19,7 +19,7 @@ import platform.posix.*
 
 /** Stages only a private copy. The system picker lets the athlete choose the destination. */
 class AppleBackupDocuments(
-    private val exports: LocalBackupExports,
+    private val exports: LocalBackupOperations,
     private val io: CoroutineDispatcher,
 ) {
     enum class Kind(val filename: String) {
