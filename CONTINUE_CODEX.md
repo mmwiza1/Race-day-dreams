@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 229 independent XCTest execution
+
+- [Run 44282849055](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44282849055)
+  passed focused Android, Apple shared tests, framework linking and the
+  simulator app build. The standalone startup step reached the schema
+  wait then hit its 15-minute limit. The diagnostic archive 14420655147
+  contained empty app output files. This does not establish another app
+  crash. XCTest was skipped under the old step dependency.
+- XCTest now runs whenever the app builds, even after a standalone
+  startup failure. If the startup step did not verify a simulator,
+  XCTest gets an isolated simulator of the available runtime and model.
+  The standalone startup failure remains a failing gate. Local YAML,
+  shell, diff and both stubbed simulator selection checks passed.
+- Verify the two separate Apple gates on the next run. Collect XCTest
+  results and fix proven harness/app issues. Release acceptance and
+  physical checks remain open. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 228 simulator shell recovery
 
 - [Run 44276798053](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44276798053)

@@ -134,6 +134,7 @@ jobs:
           name: shared-apple-ui-test-results
           path: sharedUi/build/test-results/
       - name: Build the iOS simulator application
+        id: ios_app_build
         shell: bash
         run: |
           set -euo pipefail
@@ -293,6 +294,7 @@ jobs:
           if-no-files-found: error
 
       - name: Exercise workout persistence through the iOS app
+        if: ${{ !cancelled() && steps.ios_app_build.outcome == 'success' }}
         timeout-minutes: 12
         shell: bash
         run: |
@@ -302,8 +304,22 @@ jobs:
           else
             target=iosX64
           fi
+          device="${RDD_IOS_SIMULATOR:-}"
+          if [ -z "$device" ]; then
+            # A failed standalone launch must not prevent XCTest from owning a clean simulator.
+            selection="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          runtime, phone = next((runtime, phone)
+                                for runtime, phones in reversed(list(devices.items()))
+                                for phone in phones if phone["name"].startswith("iPhone"))
+          print(runtime, phone["deviceTypeIdentifier"], sep="\t")
+            ')"
+            IFS=$'\t' read -r runtime model <<< "$selection"
+            device="$(xcrun simctl create 'Race Day Dreams UI tests' "$model" "$runtime")"
+          fi
           xcodebuild test -project iosApp/RaceDayDreams.xcodeproj -scheme RaceDayDreams \
-            -destination "platform=iOS Simulator,id=$RDD_IOS_SIMULATOR" \
+            -destination "platform=iOS Simulator,id=$device" \
             -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui" \
             -resultBundlePath "$RUNNER_TEMP/rdd-ios-workout.xcresult" \
             ARCHS="$(uname -m)" CODE_SIGNING_ALLOWED=NO \
