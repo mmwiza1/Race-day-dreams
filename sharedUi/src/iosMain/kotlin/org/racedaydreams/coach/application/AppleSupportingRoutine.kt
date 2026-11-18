@@ -85,33 +85,52 @@ internal fun AppleGuidanceImage(
     decorative: Boolean = false,
     fallback: @Composable () -> Unit,
 ) {
-    var image by remember(art) { mutableStateOf<ImageBitmap?>(null) }
-    var loading by remember(art) { mutableStateOf(art != null) }
-    LaunchedEffect(art) {
-        if (art != null) {
+    AppleBundledIllustration(
+        directory = "drawable-nodpi",
+        asset = art?.asset(),
+        description = if (decorative) null else art?.description(),
+        modifier = modifier,
+        showFallbackWhileLoading = decorative,
+        fallback = fallback,
+    )
+}
+
+@Composable
+internal fun AppleBundledIllustration(
+    directory: String,
+    asset: String?,
+    description: String?,
+    modifier: Modifier,
+    showFallbackWhileLoading: Boolean = false,
+    fallback: @Composable () -> Unit,
+) {
+    var image by remember(directory, asset) { mutableStateOf<ImageBitmap?>(null) }
+    var loading by remember(directory, asset) { mutableStateOf(asset != null) }
+    LaunchedEffect(directory, asset) {
+        if (asset != null) {
             image =
                 withContext(applicationIoDispatcher()) {
-                    runCatching { loadGuidanceBitmap(art.asset()) }.getOrNull()
+                    runCatching { loadBundledIllustration(directory, asset) }.getOrNull()
                 }
         }
         loading = false
     }
     val bitmap = image
-    if (bitmap != null && art != null) {
+    if (bitmap != null) {
         Image(
             bitmap,
-            contentDescription = if (decorative) null else art.description(),
+            contentDescription = description,
             modifier = modifier,
             contentScale = ContentScale.Fit,
         )
-    } else if (!loading || decorative) {
+    } else if (!loading || showFallbackWhileLoading) {
         fallback()
     }
 }
 
-private fun loadGuidanceBitmap(asset: String): ImageBitmap? {
+private fun loadBundledIllustration(directory: String, asset: String): ImageBitmap? {
     val path =
-        NSBundle.mainBundle.pathForResource(asset, ofType = "webp", inDirectory = "drawable-nodpi")
+        NSBundle.mainBundle.pathForResource(asset, ofType = "webp", inDirectory = directory)
             ?: return null
     val file = fopen(path, "rb") ?: return null
     try {

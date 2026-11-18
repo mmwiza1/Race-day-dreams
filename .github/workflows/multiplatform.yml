@@ -148,6 +148,7 @@ jobs:
             RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework" build
           test -x iosApp/build/RaceDayDreams.app/RaceDayDreams
           test -s iosApp/build/RaceDayDreams.app/drawable-nodpi/guide_leg_swings.webp
+          test -s iosApp/build/RaceDayDreams.app/dream-art/paris-hero.webp
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
       - name: Launch the iOS app and verify local database startup
         shell: bash

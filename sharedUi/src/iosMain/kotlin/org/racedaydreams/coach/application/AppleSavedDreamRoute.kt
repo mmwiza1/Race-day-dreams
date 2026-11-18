@@ -1,13 +1,16 @@
 package org.racedaydreams.coach.application
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -19,6 +22,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.CoachCard
 import org.racedaydreams.coach.WhyDetails
+import org.racedaydreams.coach.dreamCityPresentation
 import org.racedaydreams.domain.presentation.DreamRouteProgress
 import org.racedaydreams.domain.support.DreamRoutes
 
@@ -41,6 +45,7 @@ internal fun AppleSavedDreamRoute(session: AppleCoachSession<*>, activityId: Str
     if (failed) Text("The saved Dream Route could not be loaded.")
     val saved = assignment ?: return
     val route = remember(saved.routeId()) { DreamRoutes.forId(saved.routeId()) }
+    val city = remember(route.id()) { dreamCityPresentation(route) }
     val progress = remember(saved) { DreamRouteProgress.of(saved) }
     val highlighted =
         remember(route, saved) {
@@ -54,6 +59,16 @@ internal fun AppleSavedDreamRoute(session: AppleCoachSession<*>, activityId: Str
     val accent = MaterialTheme.colorScheme.primary
     CoachCard {
         Text("Dream Route · ${route.name()}", style = MaterialTheme.typography.titleMedium)
+        Text(city.course)
+        Text(city.edition, style = MaterialTheme.typography.labelMedium)
+        AppleBundledIllustration(
+            "dream-art",
+            city.hero,
+            "Illustrated ${city.city} skyline.",
+            Modifier.fillMaxWidth().aspectRatio(1.8f).clip(MaterialTheme.shapes.large),
+        ) {
+            Text("City illustration unavailable. Your saved course is shown below.")
+        }
         Canvas(
             Modifier.fillMaxWidth().height(160.dp).semantics {
                 contentDescription =
@@ -85,13 +100,36 @@ internal fun AppleSavedDreamRoute(session: AppleCoachSession<*>, activityId: Str
                 style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round),
             )
         }
-        Text(progress.equivalenceStatement(route.name()))
+        Text(progress.equivalenceStatement(city.course))
         LinearProgressIndicator(
             progress = { progress.fraction().toFloat() },
             modifier = Modifier.fillMaxWidth(),
         )
         Text(progress.completionLabel())
         Text("Remaining equivalent distance: ${progress.remainingDistanceLabel()}")
+        if (city.landmarks.isNotEmpty()) {
+            var showLandmarks by remember(route.id()) { mutableStateOf(false) }
+            TextButton(onClick = { showLandmarks = !showLandmarks }) {
+                Text(if (showLandmarks) "Hide city landmarks" else "Explore city landmarks")
+            }
+            if (showLandmarks) {
+                Text(
+                    if (city.geographic) "Landmarks from the saved course edition."
+                    else "Artwork inspired by the city."
+                )
+                city.landmarks.forEach { landmark ->
+                    Text(landmark.label, style = MaterialTheme.typography.titleSmall)
+                    AppleBundledIllustration(
+                        "dream-art",
+                        landmark.asset,
+                        null,
+                        Modifier.fillMaxWidth().aspectRatio(1.8f).clip(MaterialTheme.shapes.large),
+                    ) {
+                        Text("Illustration unavailable.")
+                    }
+                }
+            }
+        }
         val attribution = DreamRoutes.attribution(route)
         if (attribution.isNotEmpty()) Text(attribution, style = MaterialTheme.typography.labelSmall)
         WhyDetails(

@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 198 Dream Route city artwork
+
+The retained course artwork metadata is now shared by the Android and iOS
+presentations. iOS bundles the original five city skylines and landmark
+posters, and selects labels from the saved course edition. The Apple
+artifact gate checks that original artwork is packaged. Artwork provenance
+verified all 20 assets and all 14 artwork tests passed. Android debug
+Kotlin compilation, touched formatting, workflow YAML and diff checks
+passed. Visual proof and basemap parity remain pending.
+
+PR #24 is draft at c3f0ec4. Experiment 44208542517 was still running both
+jobs. Preserve it and inspect the actual framework, decoder and simulator
+results. Push checkpoints 195–198 together once the live run finishes,
+then verify bundled artwork rendering, continue remaining feature parity
+and complete release gates. No premature merge or publication.
+
 ### Latest recovery pointer — checkpoint 197 Dream Routes for new iOS runs
 
 iOS Settings lets athletes opt in and choose eligible cities. Fresh iOS
