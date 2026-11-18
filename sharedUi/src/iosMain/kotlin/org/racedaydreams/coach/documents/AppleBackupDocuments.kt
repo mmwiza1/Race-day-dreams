@@ -319,7 +319,10 @@ class AppleBackupDocuments(
     private inner class Picker(
         private val staged: StagedDocument,
         private val complete: (Outcome) -> Unit,
-    ) : NSObject(), UIDocumentPickerDelegateProtocol, UIAdaptivePresentationControllerDelegateProtocol {
+    ) :
+        NSObject(),
+        UIDocumentPickerDelegateProtocol,
+        UIAdaptivePresentationControllerDelegateProtocol {
         val controller =
             UIDocumentPickerViewController(
                     forExportingURLs = listOf(NSURL.fileURLWithPath(staged.path)),
@@ -338,7 +341,9 @@ class AppleBackupDocuments(
             finish(Outcome.CANCELLED)
         }
 
-        override fun presentationControllerDidDismiss(presentationController: UIPresentationController) {
+        override fun presentationControllerDidDismiss(
+            presentationController: UIPresentationController
+        ) {
             finish(Outcome.CANCELLED)
         }
 
