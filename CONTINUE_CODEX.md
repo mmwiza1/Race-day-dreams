@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 216 foreground failure evidence
+
+- Apple job 134631096266 on `2ea5c08` built the simulator app, booted the
+  simulator and received PID 45419 from simctl. The run then failed opening
+  the expected database before the screenshot check. The old shell exited
+  before diagnostics, so the iOS launch failure's root cause remains open.
+  Android focused CI passed on the same revision.
+- The next smoke checks process liveness during database startup and
+  preserves app stdout/stderr, simulator logs and a diagnostic screenshot
+  on failure. The schema and onboarding screenshot assertions remain
+  required. Workflow YAML, shell syntax and diff checks passed locally.
+- Checkpoints 212–216 are batched for PR #24. Inspect the new Apple build
+  and smoke. If it fails, download experimental-ios-startup-diagnostics
+  and fix the demonstrated platform/app issue. If it passes, verify the
+  screenshot source and exercise the new production workout flows. The
+  full release gates remain pending, and the PR remains draft.
+
 ### Latest recovery pointer — checkpoint 215 location-independent authoring
 
 - The iOS custom workout editor can open and save a favourite before the

@@ -166,6 +166,24 @@ jobs:
           print(next(device["udid"] for runtime in reversed(list(devices.values()))
                      for device in runtime if device["name"].startswith("iPhone")))
           ')"
+          diagnostics="$PWD/iosApp/build/startup-diagnostics"
+          mkdir -p "$diagnostics"
+          capture_failure() {
+            local result=$?
+            if [ "$result" -ne 0 ]; then
+              set +e
+              echo "Startup failed with exit code $result"
+              xcrun simctl io "$device" screenshot "$diagnostics/failure.png"
+              xcrun simctl spawn "$device" log show --last 5m --style compact \
+                --predicate 'process == "RaceDayDreams" OR eventMessage CONTAINS "org.racedaydreams.ios"' \
+                > "$diagnostics/simulator.log" 2>&1
+              for output in "$diagnostics/app.stderr" "$diagnostics/simulator.log"; do
+                if [ -f "$output" ]; then tail -80 "$output"; fi
+              done
+            fi
+            exit "$result"
+          }
+          trap capture_failure EXIT
           echo "Booting iPhone simulator $device"
           if ! xcrun simctl boot "$device"; then
             xcrun simctl list devices booted | grep -F "$device"
@@ -173,14 +191,19 @@ jobs:
           xcrun simctl bootstatus "$device" -b
           echo "Installing and launching Race Day Dreams"
           xcrun simctl install "$device" iosApp/build/RaceDayDreams.app
-          launch="$(xcrun simctl launch "$device" org.racedaydreams.ios)"
+          launch="$(xcrun simctl launch --stdout="$diagnostics/app.stdout" \
+            --stderr="$diagnostics/app.stderr" "$device" org.racedaydreams.ios)"
           echo "$launch"
           app_pid="${launch##*: }"
           [[ "$app_pid" =~ ^[0-9]+$ ]]
           app_data="$(xcrun simctl get_app_container "$device" org.racedaydreams.ios data)"
           database="$app_data/Library/Application Support/racedaydreams.sqlite"
           echo "Waiting for the first-run SQLite schema"
-          for attempt in {1..30}; do
+          for attempt in {1..45}; do
+            if ! kill -0 "$app_pid" 2>/dev/null; then
+              echo "Race Day Dreams exited before database readiness"
+              exit 1
+            fi
             if [ -f "$database" ] && [ "$(sqlite3 -readonly "$database" 'PRAGMA user_version;' 2>/dev/null)" = "19" ]; then
               break
             fi
@@ -201,17 +224,19 @@ jobs:
             fi
             sleep 1
           done
-          if ! test -s iosApp/build/startup.png; then
-            xcrun simctl spawn "$device" log show --last 2m --style compact \
-              --predicate 'process == "RaceDayDreams" OR (process == "SpringBoard" AND eventMessage CONTAINS "org.racedaydreams.ios")' || true
-            exit 1
-          fi
+          test -s iosApp/build/startup.png
           (
             cd iosApp/build
             git rev-parse HEAD > source-commit.txt
             shasum -a 256 RaceDayDreams-simulator.zip > simulator-app.sha256
             shasum -a 256 startup.png > startup.sha256
           )
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: experimental-ios-startup-diagnostics
+          path: iosApp/build/startup-diagnostics/
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         with:
           name: experimental-ios-simulator-app
