@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 199 offline Dream Route basemaps on iOS
+
+iOS reads the original, bounded offline basemaps for saved course editions.
+It renders roads, water and green areas in the same course frame, and
+retains the course and equivalent section if the map is unavailable.
+The target bundles the original notice and ODbL text. The Apple packaging
+gate checks the map, notice and licence. The six maps reproduced exactly,
+all 11 map-source tests passed, and formatting, YAML and diff checks passed.
+Native compile, packaging and rendering are pending.
+
+PR #24 is draft at c3f0ec4. Experiment 44208542517 passed Android and was
+still running on Apple at last check. Preserve that job, inspect its
+framework, native test and simulator results, then push checkpoints
+195–199 together. Continue feature parity and full release verification.
+
 ### Latest recovery pointer — checkpoint 198 Dream Route city artwork
 
 The retained course artwork metadata is now shared by the Android and iOS

@@ -149,6 +149,9 @@ jobs:
           test -x iosApp/build/RaceDayDreams.app/RaceDayDreams
           test -s iosApp/build/RaceDayDreams.app/drawable-nodpi/guide_leg_swings.webp
           test -s iosApp/build/RaceDayDreams.app/dream-art/paris-hero.webp
+          test -s iosApp/build/RaceDayDreams.app/dream-basemaps/paris-2026-geo-v1.rddmap
+          test -s iosApp/build/RaceDayDreams.app/dream-basemaps-NOTICE.txt
+          test -s iosApp/build/RaceDayDreams.app/ODbL-1.0.txt
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
       - name: Launch the iOS app and verify local database startup
         shell: bash

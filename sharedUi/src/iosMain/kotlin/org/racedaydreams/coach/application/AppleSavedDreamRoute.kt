@@ -15,6 +15,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -24,24 +27,26 @@ import org.racedaydreams.coach.CoachCard
 import org.racedaydreams.coach.WhyDetails
 import org.racedaydreams.coach.dreamCityPresentation
 import org.racedaydreams.domain.presentation.DreamRouteProgress
+import org.racedaydreams.domain.support.DreamBasemap
 import org.racedaydreams.domain.support.DreamRoutes
 
 @Composable
 internal fun AppleSavedDreamRoute(session: AppleCoachSession<*>, activityId: String) {
     var failed by remember(session, activityId) { mutableStateOf(false) }
-    val assignment by
-        produceState<DreamRoutes.Assignment?>(null, session, activityId) {
-            try {
-                value =
-                    withContext(applicationIoDispatcher()) {
-                        session.runningSupport.dreamAssignment(activityId)
-                    }
-            } catch (cancelled: CancellationException) {
-                throw cancelled
-            } catch (_: Exception) {
-                failed = true
-            }
+    var assignment by
+        remember(session, activityId) { mutableStateOf<DreamRoutes.Assignment?>(null) }
+    LaunchedEffect(session, activityId) {
+        try {
+            assignment =
+                withContext(applicationIoDispatcher()) {
+                    session.runningSupport.dreamAssignment(activityId)
+                }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            failed = true
         }
+    }
     if (failed) Text("The saved Dream Route could not be loaded.")
     val saved = assignment ?: return
     val route = remember(saved.routeId()) { DreamRoutes.forId(saved.routeId()) }
@@ -55,6 +60,31 @@ internal fun AppleSavedDreamRoute(session: AppleCoachSession<*>, activityId: Str
                 saved.startMetres() + progress.highlightedMetres(),
             )
         }
+    val course = remember(route) { Path().apply { appendDreamVertices(route.vertices()) } }
+    val covered = remember(highlighted) { Path().apply { appendDreamVertices(highlighted) } }
+    val frame =
+        remember(route) {
+            val vertices =
+                route.vertices() +
+                    DreamRoutes.landmarks(route).map { DreamRoutes.Vertex(it.x(), it.y()) }
+            val left = vertices.minOf { it.x() }.toFloat() - 0.75f
+            val top = vertices.minOf { it.y() }.toFloat() - 0.75f
+            val right = vertices.maxOf { it.x() }.toFloat() + 0.75f
+            val bottom = vertices.maxOf { it.y() }.toFloat() + 0.75f
+            androidx.compose.ui.geometry.Rect(left, top, right, bottom)
+        }
+    var basemapLoaded by remember(route.id()) { mutableStateOf(false) }
+    var basemap by remember(route.id()) { mutableStateOf<Map<DreamBasemap.Kind, Path>?>(null) }
+    LaunchedEffect(route.id()) {
+        basemap =
+            withContext(applicationIoDispatcher()) {
+                runCatching { loadAppleDreamBasemap(route.id()) }.getOrNull()
+            }
+        basemapLoaded = true
+    }
+    val water = MaterialTheme.colorScheme.secondaryContainer
+    val green = MaterialTheme.colorScheme.tertiaryContainer
+    val roads = MaterialTheme.colorScheme.outlineVariant
     val outline = MaterialTheme.colorScheme.outline
     val accent = MaterialTheme.colorScheme.primary
     CoachCard {
@@ -75,29 +105,35 @@ internal fun AppleSavedDreamRoute(session: AppleCoachSession<*>, activityId: Str
                     "Illustrated marathon route with your equivalent section highlighted."
             }
         ) {
-            val scale = minOf(size.width, size.height) * 0.9f / 10f
-            val left = (size.width - 10 * scale) / 2
-            val top = (size.height - 10 * scale) / 2
-            fun path(vertices: List<DreamRoutes.Vertex>) =
-                Path().apply {
-                    vertices.forEachIndexed { index, vertex ->
-                        val point =
-                            Offset(
-                                left + vertex.x().toFloat() * scale,
-                                top + vertex.y().toFloat() * scale,
+            val scale = minOf(size.width / frame.width, size.height / frame.height)
+            val left = (size.width - frame.width * scale) / 2 - frame.left * scale
+            val top = (size.height - frame.height * scale) / 2 - frame.top * scale
+            if (scale > 0f)
+                clipRect {
+                    translate(left, top) {
+                        scale(scale, scale, pivot = Offset.Zero) {
+                            basemap?.get(DreamBasemap.Kind.GREEN)?.let { drawPath(it, green) }
+                            basemap?.get(DreamBasemap.Kind.WATER)?.let { drawPath(it, water) }
+                            basemap?.get(DreamBasemap.Kind.ROAD)?.let {
+                                drawPath(it, roads, style = Stroke(width = 0.6.dp.toPx() / scale))
+                            }
+                            drawPath(
+                                course,
+                                outline,
+                                style = Stroke(width = 2.dp.toPx() / scale, cap = StrokeCap.Round),
                             )
-                        if (index == 0) moveTo(point.x, point.y) else lineTo(point.x, point.y)
+                            drawPath(
+                                covered,
+                                accent,
+                                style = Stroke(width = 4.dp.toPx() / scale, cap = StrokeCap.Round),
+                            )
+                        }
                     }
                 }
-            drawPath(
-                path(route.vertices()),
-                outline,
-                style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round),
-            )
-            drawPath(
-                path(highlighted),
-                accent,
-                style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round),
+        }
+        if (city.geographic && basemapLoaded && basemap == null) {
+            Text(
+                "Offline city context is unavailable. Your saved course and progress are still shown."
             )
         }
         Text(progress.equivalenceStatement(city.course))
