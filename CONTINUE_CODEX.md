@@ -62,6 +62,44 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 227 production iOS workout persistence test
+
+- Run 44272542319 finished green on Android and Apple. The verified
+  foreground startup evidence below is unchanged.
+- Added a native XCUITest scheme/target and simulator gate. The test
+  selects the real recording onboarding path, creates and saves a
+  favourite without location permission, terminates and relaunches the
+  app, then reopens the retained step through the actual workout library.
+  The gate uploads the XCTest result bundle and retains the separate
+  verified app and startup artifacts.
+- Project object/reference checks, scheme XML, workflow YAML/shell syntax,
+  and diff checks passed locally. This Linux workspace cannot compile
+  Xcode test targets. Inspect the first Apple run for build and runtime
+  results; fix real failures without replacing the production flow.
+  Recording/replay, HealthKit, remaining parity and full release gates
+  are still pending. PR #24 stays draft.
+
+### Latest recovery pointer — checkpoint 226 verified iOS foreground startup
+
+- [Run 44272542319](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44272542319)
+  on `a561f09` passed its focused Android job and the Apple simulator
+  build, required packaged plist setting, SQLite schema-19 readiness
+  and foreground onboarding OCR. Apple job finalization was pending.
+- Artifact 14414508045 was downloaded and visually inspected. It shows
+  the real "Make today yours" onboarding and its Running and Strength
+  controls. PNG checksum
+  `be645e60b7a667d984f34c540fe2c0a39ac534f2e9e811974e0d6c2326ffe17f`
+  matches. The capture's synthetic merge `b640e2d` has PR parent
+  `a561f09` and the identical tree `7cd9a43c7afc702340b6a01999179210c5a45107`.
+  Local evidence: `/workspace/scratch/kmp225-startup/`.
+- Treat launch as verified on this exact simulator revision. Continue
+  native app interactions using a production UI harness, starting with
+  choosing Record my runs, opening the custom workout editor without
+  location permission, saving a favourite and confirming it survives
+  relaunch. Then verify recording, replay, HealthKit and the remaining
+  parity and full release gates. Keep PR #24 draft until those pass.
+  This handoff is local and does not start redundant CI.
+
 ### Latest recovery pointer — checkpoint 225 verify the plist correction
 
 - [Run 44267864437](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44267864437)
@@ -76,6 +114,12 @@ incomplete migration merely because a focused checkpoint passes.
   fails, use the new evidence to distinguish the remaining crash and
   improve native stack capture if needed. No merge or publication.
   PR #24 remains draft.
+- The earlier Android log confirms 642 API 35 instrumentation tests
+  passed, including the new dark/200% shared editor test. The plist fix
+  is now pushed on `a561f09`. Track
+  [run 44272542319](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44272542319)
+  and Apple job 134692728408. Leave the run intact while it tests the
+  corrected app. The 642 count applies to the earlier head.
 
 ### Latest recovery pointer — checkpoint 224 required Compose plist setting
 

@@ -247,6 +247,7 @@ jobs:
             sleep 1
           done
           test -s iosApp/build/startup.png
+          echo "RDD_IOS_SIMULATOR=$device" >> "$GITHUB_ENV"
           (
             cd iosApp/build
             git rev-parse HEAD > source-commit.txt
@@ -275,3 +276,26 @@ jobs:
             iosApp/build/startup.sha256
             iosApp/build/source-commit.txt
           if-no-files-found: error
+
+      - name: Exercise workout persistence through the iOS app
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            target=iosSimulatorArm64
+          else
+            target=iosX64
+          fi
+          xcodebuild test -project iosApp/RaceDayDreams.xcodeproj -scheme RaceDayDreams \
+            -destination "platform=iOS Simulator,id=$RDD_IOS_SIMULATOR" \
+            -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui" \
+            -resultBundlePath "$RUNNER_TEMP/rdd-ios-workout.xcresult" \
+            ARCHS="$(uname -m)" CODE_SIGNING_ALLOWED=NO \
+            RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: experimental-ios-workout-ui-results
+          path: ${{ runner.temp }}/rdd-ios-workout.xcresult
+          if-no-files-found: ignore
