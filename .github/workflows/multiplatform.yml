@@ -213,10 +213,25 @@ jobs:
           xcrun simctl bootstatus "$device" -b
           echo "Installing and launching Race Day Dreams"
           xcrun simctl install "$device" iosApp/build/RaceDayDreams.app
-          launch="$(xcrun simctl launch --stdout="$diagnostics/app.stdout" \
-            --stderr="$diagnostics/app.stderr" "$device" org.racedaydreams.ios)"
+          launch_app() {
+            xcrun simctl launch --stdout="$diagnostics/app.stdout" \
+              --stderr="$diagnostics/app.stderr" "$device" org.racedaydreams.ios
+          }
+          if ! launch="$(launch_app 2>&1)"; then
+            echo "$launch"
+            # A restarted simulator shell can reject an open request before allocating a PID.
+            # Only this infrastructure error warrants a retry; app crashes remain failures.
+            if [[ "$launch" != *FBSOpenApplicationServiceErrorDomain* ||
+                  "$launch" != *"probably crashed"* ||
+                  "$launch" != *SpringBoard* ]]; then
+              exit 1
+            fi
+            echo "Waiting for SpringBoard recovery before one launch retry"
+            xcrun simctl bootstatus "$device" -b
+            launch="$(launch_app 2>&1)"
+          fi
           echo "$launch"
-          app_pid="${launch##*: }"
+          app_pid="$(printf '%s\n' "$launch" | sed -n 's/^org[.]racedaydreams[.]ios: \([0-9][0-9]*\)$/\1/p')"
           [[ "$app_pid" =~ ^[0-9]+$ ]]
           app_data="$(xcrun simctl get_app_container "$device" org.racedaydreams.ios data)"
           database="$app_data/Library/Application Support/racedaydreams.sqlite"

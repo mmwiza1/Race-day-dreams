@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 228 simulator shell recovery
+
+- [Run 44276798053](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44276798053)
+  passed focused Android, Apple shared tests, framework linking and the
+  corrected app build. Startup was blocked by a simulator SpringBoard
+  invalid response, before an app PID was allocated. Artifact 14416518898
+  contains the black frame and CoreSimulatorBridge error
+  `FBSOpenApplicationServiceErrorDomain Code=5`. No app crash is shown.
+  The production XCUITest was skipped.
+- The smoke now waits for simulator readiness and retries exactly once
+  for the observed SpringBoard rejection. All other launch errors,
+  app exits, missing database or failed OCR still fail. Local YAML,
+  shell, diff and stubbed retry/rejection checks passed.
+- Verify the next Apple run through SQLite, onboarding and the production
+  workout persistence XCUITest. Collect the actual XCTest result before
+  adding native recording, replay and HealthKit coverage. No merge or
+  publication. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 227 production iOS workout persistence test
 
 - Run 44272542319 finished green on Android and Apple. The verified
