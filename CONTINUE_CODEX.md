@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 209 training recovery review on iOS
+
+Gym and Today now open the shared recovery and training-balance review.
+The existing coordinator uses retained training evidence, leaves missing
+health context unknown, and saves lighter-week/move options as drafts.
+iOS only exposes the exact requested draft for review and activation.
+Focused JVM recovery and concrete-preview suites passed. Touched
+formatting and diff checks passed. Native runtime remains unverified.
+
+PR #24 remains draft at fb2b85e. Experiment 44213596116 was still running
+on Apple and Android. Preserve it and inspect the framework, decoder and
+simulator results before pushing checkpoints 205–209. Continue remaining
+platform parity and production flow/release verification.
+
 ### Latest recovery pointer — checkpoint 208 privacy-limited iOS diagnostics
 
 iOS Settings can export a diagnostic JSON through the existing private

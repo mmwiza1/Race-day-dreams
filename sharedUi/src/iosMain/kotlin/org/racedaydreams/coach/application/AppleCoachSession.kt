@@ -36,6 +36,7 @@ private constructor(
     val programming: SqliteStrengthProgramming,
     val authoring: SharedStrengthProgrammeCoordinator,
     val generation: SharedStrengthGenerationCoordinator,
+    val trainingRecovery: SharedTrainingRecoveryCoordinator,
     val achievements: SharedAchievementsCoordinator,
     val reminders: AppleCoachReminders,
     val platform: AppleCoachPlatform<File>,
@@ -159,10 +160,11 @@ private constructor(
                         today,
                         newId,
                     )
+                val concrete = SqliteConcreteStrengthProgrammes(database, now, today)
                 val generation =
                     SharedStrengthGenerationCoordinator(
                         database,
-                        SqliteConcreteStrengthProgrammes(database, now, today),
+                        concrete,
                         programming,
                         coaching,
                         executions,
@@ -172,6 +174,29 @@ private constructor(
                         { defaults.setObject(it, "strength.concrete.draft") },
                         now,
                         today,
+                        newId,
+                    )
+                val trainingRecovery =
+                    SharedTrainingRecoveryCoordinator(
+                        programming,
+                        concrete,
+                        executions,
+                        coaching,
+                        activities,
+                        { emptyList() },
+                        SqlitePrimaryFocus(SqliteSettings(database))::load,
+                        scope,
+                        now,
+                        { at ->
+                            val instant =
+                                kotlinx.datetime.Instant.fromEpochSeconds(
+                                    at.getEpochSecond(),
+                                    at.getNano(),
+                                )
+                            Offsets.ofTotalSeconds(
+                                TimeZone.currentSystemDefault().offsetAt(instant).totalSeconds
+                            )
+                        },
                         newId,
                     )
                 val services =
@@ -208,6 +233,7 @@ private constructor(
                     programming,
                     authoring,
                     generation,
+                    trainingRecovery,
                     SharedAchievementsCoordinator(database, scope, coaching, activities, now, io),
                     reminders,
                     platform,

@@ -15,6 +15,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.racedaydreams.coach.*
 import org.racedaydreams.coach.activity.SharedShoesScreen
 import org.racedaydreams.coach.strength.SharedStrengthAnalyticsScreen
+import org.racedaydreams.coach.strength.SharedTrainingRecoveryContent
 import org.racedaydreams.coach.theme.SharedRaceDayTheme
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.presentation.AthleteLanguage
@@ -24,6 +25,7 @@ import org.racedaydreams.domain.strength.StrengthMeasurementPolicy
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
+import org.racedaydreams.reminders.KotlinxReminderCalendar
 import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
 import platform.Foundation.NSUUID
 import platform.Foundation.NSUserDefaults
@@ -167,6 +169,8 @@ private enum class ApplePage {
     ASSESSMENT,
     BODY,
     GYM,
+    TRAINING_RECOVERY,
+    RECOVERY_PREVIEW,
     PROGRAMMES,
     EXERCISES,
     STRENGTH_HISTORY,
@@ -201,6 +205,7 @@ private fun AppleAppContent(
     var selectedRoutine by remember { mutableStateOf<String?>(null) }
     var returnFromRoutine by remember { mutableStateOf(ApplePage.ROUTINES) }
     var recordingWorkout by remember { mutableStateOf<String?>(null) }
+    var recoveryDraftId by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
         restoreError?.let { Text(it, Modifier.padding(horizontal = 12.dp)) }
@@ -345,10 +350,42 @@ private fun AppleAppContent(
                             TextButton(onClick = { page = ApplePage.ACHIEVEMENTS }) {
                                 Text("Recorded milestones")
                             }
+                            TextButton(onClick = { page = ApplePage.TRAINING_RECOVERY }) {
+                                Text("Recovery & training balance")
+                            }
                         }
                         Box(Modifier.weight(1f)) {
                             AppleGymScreen(session) { page = ApplePage.START }
                         }
+                    }
+                ApplePage.TRAINING_RECOVERY -> {
+                    val recovery = session.trainingRecovery
+                    val review by recovery.state.collectAsState()
+                    LaunchedEffect(recovery) { recovery.refresh() }
+                    val openDraft: (String) -> Unit = {
+                        recoveryDraftId = it
+                        page = ApplePage.RECOVERY_PREVIEW
+                    }
+                    SharedTrainingRecoveryContent(
+                        review,
+                        onBack = { page = ApplePage.GYM },
+                        onRefresh = recovery::refresh,
+                        onKeep = recovery::keep,
+                        onLighterWeek = { recovery.prepareLighterWeek(openDraft) },
+                        onMove = { id, date -> recovery.prepareMove(id, date, openDraft) },
+                        dateLabel = AppleCalendarDates::label,
+                        instantLabel = {
+                            AppleCalendarDates.label(
+                                KotlinxReminderCalendar.at(it, TimeZone.currentSystemDefault().id)
+                                    .date
+                            )
+                        },
+                    )
+                }
+                ApplePage.RECOVERY_PREVIEW ->
+                    AppleStrengthProgrammes(session, recoveryDraftId) {
+                        recoveryDraftId = null
+                        page = ApplePage.TRAINING_RECOVERY
                     }
                 ApplePage.PROGRAMMES -> AppleStrengthProgrammes(session) { page = ApplePage.GYM }
                 ApplePage.EXERCISES -> AppleExerciseLibrary(session) { page = ApplePage.GYM }
@@ -487,6 +524,7 @@ private fun AppleAppContent(
                                         route == "exercises" || route == "strength/pbs" ->
                                             ApplePage.EXERCISES
                                         route.startsWith("history") -> ApplePage.STRENGTH_HISTORY
+                                        route == "strength/recovery" -> ApplePage.TRAINING_RECOVERY
                                         else -> ApplePage.GYM
                                     }
                             },
@@ -558,6 +596,8 @@ private fun AppleAppContent(
                                     route == "progress/trends" -> page = ApplePage.RUNNING_TRENDS
                                     route == "achievements" -> page = ApplePage.ACHIEVEMENTS
                                     route == "progress/weight" -> page = ApplePage.BODY
+                                    route == "strength/recovery" ->
+                                        page = ApplePage.TRAINING_RECOVERY
                                     route == "gym-now" || route.startsWith("strength") ->
                                         page = ApplePage.GYM
                                 }
