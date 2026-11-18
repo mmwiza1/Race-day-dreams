@@ -62,6 +62,19 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 201 extra-run review on iOS
+
+Android and iOS now share the actual-run association and easier-workout
+preview. iOS reads the retained recording mode and delegates confirmed
+links and plan revisions to the existing coordinators. Android debug
+Kotlin compilation and touched-file formatting/diff passed. Native
+presentation and persistence testing remain pending.
+
+PR #24 remains draft at c3f0ec4. Experiment 44208542517 passed Android
+and the Apple shared tests. Apple framework linking was still active.
+Inspect that step, decoder tests and simulator results before pushing
+the queued checkpoints 195–201. Continue native parity and final gates.
+
 ### Latest recovery pointer — checkpoint 200 Dream Route finalisation regression
 
 The shared recording contract now exercises an opted-in Dream Route from

@@ -93,6 +93,18 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             },
         )
 
+    fun recordingMode(recordId: String): String? =
+        database
+            .query(
+                "SELECT payload FROM release08 WHERE kind='origin' AND id=?",
+                listOf(SqlValue.Text(recordId)),
+            )
+            .singleOrNull()
+            ?.single()
+            ?.sqlText()
+            ?.let { StoredJson.objectValue(it)["mode"]?.jsonPrimitive?.content }
+            ?.takeIf { it in setOf("free", "quick", "custom", "repeat", "workout", "race") }
+
     fun recordingOrigin(mode: String, at: Instant): String {
         require(mode in setOf("free", "workout", "race"))
         val preferences = dreamPreferences()

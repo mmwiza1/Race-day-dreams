@@ -15,6 +15,7 @@ import kotlin.math.roundToLong
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.TimeZone
 import org.racedaydreams.coach.*
 import org.racedaydreams.coach.activity.SharedRunNotes
 import org.racedaydreams.coach.documents.AppleBackupDocuments
@@ -25,6 +26,7 @@ import org.racedaydreams.domain.activity.ActivitySources
 import org.racedaydreams.domain.activity.SplitAnalysis
 import org.racedaydreams.domain.activity.SplitCalculator
 import org.racedaydreams.domain.time.*
+import org.racedaydreams.reminders.KotlinxReminderCalendar
 import platform.UIKit.UIViewController
 
 @Composable
@@ -172,6 +174,42 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                     )
                     SharedRecordedHeartRateSummary(run) { it.toString().removeSuffix(".0") }
                     AppleSavedDreamRoute(session, id)
+                    if (run.source().provider() == "rdd") {
+                        val mode by
+                            produceState<String?>(null, id) {
+                                value =
+                                    withContext(applicationIoDispatcher()) {
+                                        runCatching {
+                                                session.runningSupport.recordingMode(
+                                                    run.source().recordId()
+                                                )
+                                            }
+                                            .getOrNull()
+                                    }
+                            }
+                        mode?.let {
+                            SharedSpontaneousAssociation(
+                                state,
+                                run,
+                                it,
+                                KotlinxReminderCalendar.at(
+                                        run.start(),
+                                        TimeZone.currentSystemDefault().id,
+                                    )
+                                    .date,
+                                AppleCalendarDates.today(),
+                                AppleCalendarDates::label,
+                                session.services.runningPlan::chooseEasy,
+                                { activity, version, workout ->
+                                    session.services.runningEvidence.linkRun(
+                                        activity,
+                                        version,
+                                        workout,
+                                    )
+                                },
+                            )
+                        }
+                    }
                     Text("Source: ${ActivitySources.friendly(run.source())}")
                     val current = state.activities.firstOrNull { it.id() == id } ?: run
                     val shoeId = current.shoeId()
