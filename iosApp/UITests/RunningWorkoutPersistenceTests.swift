@@ -89,10 +89,17 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("View recorded route", in: app)
         XCTAssertTrue(control("Your recorded route", in: app).waitForExistence(timeout: 20))
         tap("Export recorded route (GPX)", in: app)
-        let cancelExport = app.buttons["Cancel"].firstMatch
+        // The native file picker exposes Cancel as an accessibility element, not always a button.
+        let cancelExport = control("Cancel", in: app)
         XCTAssertTrue(cancelExport.waitForExistence(timeout: 20))
         cancelExport.tap()
         XCTAssertTrue(control("GPX export cancelled.", in: app).waitForExistence(timeout: 20))
+
+        tap("Export recorded route (GPX)", in: app)
+        let saveExport = app.buttons["Save"].firstMatch
+        XCTAssertTrue(saveExport.waitForExistence(timeout: 20))
+        saveExport.tap()
+        XCTAssertTrue(control("GPX file saved.", in: app).waitForExistence(timeout: 20))
     }
 
     private func setSimulatedLocation(latitude: CLLocationDegrees) {

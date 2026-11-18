@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 236 native export test selector
+
+- [Run 44313049480](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44313049480)
+  on `c79232e` passed focused Android, iOS startup, Apple Health choice
+  and all four Apple GPX decoder cases, including production-byte
+  round-trip (artifact 14433495606). XCTest reached the GPX picker, then
+  failed looking for Cancel as a button.
+- Decoded the XCTest accessibility snapshot from artifact 14433558673.
+  It shows the real Files picker, enabled Save, and Cancel exposed as
+  an Other element. This establishes a test selector failure. Updated
+  the test to find Cancel by label independently of element type, and
+  added actual native Save and app confirmation after reopening the
+  picker. Diff checks passed. Both new assertions need Xcode execution.
+- Batch with the local iPhone hardware guide. Verify exact-head Apple
+  picker/cancel/save and available full release gates. No physical
+  HealthKit or device results are claimed. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 235 iPhone acceptance instructions
 
 - Added the experimental iPhone build instructions and outstanding
