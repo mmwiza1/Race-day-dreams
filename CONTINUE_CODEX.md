@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 204 simulator startup verified
+
+Experiment 44208542517 on c3f0ec4 passed Android and every substantive
+Apple step, including shared Native tests, Compose framework, decoder
+tests, Xcode app build, simulator launch and local SQLite schema 19.
+The app and startup screenshot were uploaded as artifact 14387815249.
+Only runner teardown was pending at the last check. The test XML archive
+is 14385434888; the local artifact download returned HTTP 403, so no
+independent visual review or per-test count is claimed.
+
+Push the queued 195–203 feature checkpoints with this record and verify
+the new exact head. Native artwork, Dream Routes, baseline/assessment and
+other newly queued changes were not part of c3f0ec4. Confirm their compile
+and startup, verify core iOS user flows and finish platform parity/full
+release gates before merging draft PR #24. The earlier formatter HTTP
+429 remains to verify on the new head.
+
 ### Latest recovery pointer — checkpoint 203 shared completed assessment
 
 Android and iOS now share the optional completed baseline assessment form.
