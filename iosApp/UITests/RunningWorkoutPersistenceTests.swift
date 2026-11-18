@@ -31,12 +31,6 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Start open workout", in: app)
         tap("Add exercise", in: app)
 
-        let dialog = app.alerts.firstMatch
-        let search = dialog.textFields.firstMatch
-        let exerciseSearch = search.exists ? search : app.textFields.firstMatch
-        XCTAssertTrue(exerciseSearch.waitForExistence(timeout: 15))
-        exerciseSearch.tap()
-        exerciseSearch.typeText("bench press")
         tap("Bench Press", in: app)
 
         tap("Timer settings ▾", in: app)

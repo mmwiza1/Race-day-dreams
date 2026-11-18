@@ -78,7 +78,7 @@ jobs:
     if: github.head_ref == 'experiment/android-ios-kmp-compose' || github.event_name == 'workflow_dispatch'
     # macos-latest arm64 has sustained capacity queues; keep real Apple tests on the Intel pool.
     runs-on: macos-26-intel
-    timeout-minutes: 65
+    timeout-minutes: 72
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -165,8 +165,10 @@ jobs:
           test -s iosApp/build/RaceDayDreams.app/LICENSE
           test -s iosApp/build/RaceDayDreams.app/apache-2.0.txt
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
+      - name: Compile the iOS startup screenshot verifier
+        run: swiftc scripts/check-ios-startup.swift -o "$RUNNER_TEMP/check-ios-startup"
       - name: Launch the iOS app and verify local database startup
-        timeout-minutes: 15
+        timeout-minutes: 19
         shell: bash
         run: |
           set -euo pipefail
@@ -254,8 +256,6 @@ jobs:
             sleep 1
           done
           test "$(sqlite3 -readonly "$database" 'PRAGMA user_version;')" = "19"
-          echo "Preparing the foreground screenshot check"
-          swiftc scripts/check-ios-startup.swift -o "$RUNNER_TEMP/check-ios-startup"
           for attempt in {1..15}; do
             if ! kill -0 "$app_pid" 2>/dev/null; then
               break

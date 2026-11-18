@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 252 native gym selector and startup budget
+
+- On `9beae45`, [44374630360](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44374630360)
+  successfully built the Apple simulator app and the separate XCTest target.
+  Apple Health choice, saved run/GPX and shared navigation passed. New Gym
+  Now test stopped before rest assertions: XCTest queried TextField, while
+  result artifact 14465106389 shows the Compose search is a TextView and
+  the Bench Press suggestion is an enabled button. Select that button;
+  keep rest, warm-up and discard assertions.
+- The standalone step reached SQLite readiness and wrote its screenshot
+  but hit the wall deadline while finalising. Its local Swift verifier
+  compilation had taken roughly four minutes. Compile the verifier in
+  its own step and use a bounded 19-minute startup / 72-minute job.
+- Push together, verify exact new native results, and check Android's
+  new accelerated job. Full gates remain pending. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 251 separate XCTest build and launch
 
 - Exact `1c6812e` run [44363683776](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44363683776)
@@ -73,6 +89,25 @@ incomplete migration merely because a focused checkpoint passes.
   same simulator, result evidence and assertions. YAML, shell syntax
   and diff checks passed. Verify the new head on Apple. The Android BOM
   failure gets a fresh job with this push instead of a separate retry.
+- On `9beae45`, [44374630360](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44374630360)
+  has passed the Android Gradle configuration and shared JVM stage. Pinned
+  formatting passed in workflow 44374630412. A local stub check confirmed
+  both XCTest commands use the same simulator and derived-data path, and
+  only execution writes the result bundle. Await real native execution.
+- Android job 135050352154 passed shared tests, schema and APK/lint
+  build. The emulator binary downloaded successfully, but SDK Manager
+  could not read the API 35 system-image ZIP from a SeekableByteChannel.
+  No emulator boot or instrumentation ran. Preserve Apple job
+  135050352500. After it finishes, retry only Android if no source
+  fix is needed. If the ZIP failure recurs, check SDK package delivery
+  and runner disk logs before changing the emulator or test settings.
+- Independently downloaded Google's API 35 default x86_64 revision 2
+  image. Its 782,404,023 bytes, official SHA-1 and full ZIP validation
+  matched. The image booted locally in software mode and accepted both
+  APKs, but the app hit a process-start ANR before any targeted tests
+  ran. The guest also logged Bluetooth stack crashes. No local API 35
+  pass. Logs: `/tmp/rdd251-api35-{emulator,tests,crash,main}.log`.
+  Use the accelerated CI runner for the Android-only retry.
 - Keep PR #24 draft. Full software gates and unsigned device build
   remain pending.
 
