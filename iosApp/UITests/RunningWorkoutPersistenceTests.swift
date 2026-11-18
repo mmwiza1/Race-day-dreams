@@ -1,3 +1,4 @@
+import CoreLocation
 import XCTest
 
 final class RunningWorkoutPersistenceTests: XCTestCase {
@@ -46,6 +47,42 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Discard interrupted recording", in: app)
         tap("Discard", in: app)
         XCTAssertTrue(control("Create custom workout", in: app).waitForExistence(timeout: 15))
+
+        verifySavedRoute(in: app)
+    }
+
+    private func verifySavedRoute(in app: XCUIApplication) {
+        tap("Start recording", in: app)
+        XCTAssertTrue(control("Pause", in: app).waitForExistence(timeout: 20))
+        app.swipeDown()
+        app.swipeDown()
+
+        addTeardownBlock { XCUIDevice.shared.location = nil }
+        setSimulatedLocation(latitude: 51.5000)
+        XCTAssertTrue(control("GPS ready", in: app).waitForExistence(timeout: 20))
+        for index in 1...7 {
+            // The fixture moves approximately 11 metres every two seconds.
+            Thread.sleep(forTimeInterval: 2)
+            setSimulatedLocation(latitude: 51.5000 + Double(index) * 0.0001)
+        }
+        let measuredDistance = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "0.1 km")).firstMatch
+        XCTAssertTrue(measuredDistance.waitForExistence(timeout: 20))
+        tap("Finish & save", in: app)
+        tap("Save recorded run", in: app)
+        tap("View recorded route", in: app)
+        XCTAssertTrue(control("Your recorded route", in: app).waitForExistence(timeout: 20))
+        XCTAssertTrue(control("Export recorded route (GPX)", in: app).waitForExistence(timeout: 20))
+    }
+
+    private func setSimulatedLocation(latitude: CLLocationDegrees) {
+        XCUIDevice.shared.location = XCUILocation(location: CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: -0.1246),
+            altitude: 12,
+            horizontalAccuracy: 3,
+            verticalAccuracy: 5,
+            timestamp: Date()
+        ))
     }
 
     private func control(_ label: String, in app: XCUIApplication) -> XCUIElement {

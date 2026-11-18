@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 231 verified iOS replay and recovery
+
+- [Run 44293098860](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44293098860)
+  passed on `f3d39f6`: 642 focused Android API 35 tests, Apple shared
+  and UI-module tests, app build, startup and the extended production
+  XCUITest. One XCTest passed in 115.970 s with zero failures. Result
+  artifact 14425187336, startup capture 14424068304. Production app
+  verified saving a favourite without location access, reopening it,
+  granting location, replaying, pause/resume, and interrupted recovery
+  and discard after relaunch.
+- The next test extension uses documented XCUITest simulator location
+  samples in a fresh recorded run. It checks GPS readiness and positive
+  recorded distance, finishes via the production UI, opens the retained
+  route and checks the GPX export action is available. API declarations
+  and diff checked locally. Live simulator result is pending. This does
+  not verify a physical GPS receiver or an actual exported GPX file.
+- Collect the new native result and diagnose any genuine failure. Then
+  verify HealthKit UI/native effects, remaining parity, and the full
+  release gates before any merge or publication. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 230 verified workout persistence
 
 - [Run 44288009528](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44288009528)
