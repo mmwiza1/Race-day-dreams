@@ -50,6 +50,8 @@ fun AppleRecordingScreen(
     val scope = rememberCoroutineScope()
     var spokenCues by remember { mutableStateOf(false) }
     var showQuickTargets by remember { mutableStateOf(false) }
+    var favouriteRuns by remember { mutableStateOf<List<CustomWorkout>?>(null) }
+    var moreFavourites by remember { mutableStateOf(false) }
     var previousRuns by remember { mutableStateOf<List<CustomWorkout>?>(null) }
     var quickDistance by remember { mutableStateOf("5") }
     var quickMinutes by remember { mutableStateOf("30") }
@@ -233,6 +235,63 @@ fun AppleRecordingScreen(
                             }
                         ) {
                             Text("Repeat ${previous.title()} · ${previous.flattened().size} steps")
+                        }
+                    }
+                }
+                TextButton(
+                    onClick = {
+                        if (favouriteRuns != null) favouriteRuns = null
+                        else
+                            command {
+                                val workouts =
+                                    withContext(applicationIoDispatcher()) {
+                                        session.runningSupport.favouriteRuns(limit = 21)
+                                    }
+                                favouriteRuns = workouts.take(20)
+                                moreFavourites = workouts.size > 20
+                            }
+                    }
+                ) {
+                    Text(
+                        if (favouriteRuns == null) "Favourite workouts"
+                        else "Hide favourite workouts"
+                    )
+                }
+                favouriteRuns?.let { workouts ->
+                    if (workouts.isEmpty()) Text("No favourite running workouts saved.")
+                    workouts.forEach { favourite ->
+                        TextButton(
+                            onClick = {
+                                command {
+                                    recorder.start(
+                                        RepeatRecordingExecution(favourite),
+                                        imperial,
+                                        spokenCues,
+                                        monitorId,
+                                    )
+                                }
+                            }
+                        ) {
+                            Text("Start ${favourite.title()} · ${favourite.flattened().size} steps")
+                        }
+                    }
+                    if (moreFavourites) {
+                        TextButton(
+                            onClick = {
+                                command {
+                                    val next =
+                                        withContext(applicationIoDispatcher()) {
+                                            session.runningSupport.favouriteRuns(
+                                                offset = workouts.size,
+                                                limit = 21,
+                                            )
+                                        }
+                                    favouriteRuns = workouts + next.take(20)
+                                    moreFavourites = next.size > 20
+                                }
+                            }
+                        ) {
+                            Text("Load more favourite workouts")
                         }
                     }
                 }

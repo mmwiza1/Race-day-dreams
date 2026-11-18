@@ -855,6 +855,33 @@ abstract class StorageContract {
     }
 
     @Test
+    fun favouriteRunsPageRetainedDefinitionsAndKeepRepeatGroups() {
+        val db = opened()
+        try {
+            for (id in listOf("second", "first", "third")) {
+                db.execute(
+                    "INSERT INTO release08(kind,id,payload) VALUES('custom',?,?)",
+                    listOf(
+                        SqlValue.Text(id),
+                        SqlValue.Text(
+                            """{"version":1,"id":"$id","title":"Intervals","groups":[{"repeats":3,"steps":[{"label":"Run","kind":"RUN","metres":200}]}]}"""
+                        ),
+                    ),
+                )
+            }
+            val support = SqliteRunningSupportArchives(db)
+            assertEquals("first", support.favouriteRuns(limit = 1).single().id())
+            val next = support.favouriteRuns(offset = 1, limit = 2)
+            assertEquals(listOf("second", "third"), next.map { it.id() })
+            assertEquals(3, next.first().groups().single().repeats())
+            assertEquals(List(3) { 200.0 }, next.first().flattened().map { it.metres() })
+            assertTrue(support.favouriteRuns(offset = 3).isEmpty())
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
     fun previousStructuredRunsSkipRacesAndUnfinishedSessionsWithoutChangingHistory() {
         val db = opened()
         try {

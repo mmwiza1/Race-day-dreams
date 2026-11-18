@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 213 restored running favourites
+
+- iOS Record a run can page through saved favourite running workouts
+  restored from an existing backup, then start the exact grouped steps
+  using the replay recorder. The shared typed reader decodes the original
+  archives in stable, bounded pages. No schema or backup version changed.
+- Focused JDBC test for stable pagination and repeat-group preservation
+  passed. Pinned formatting and diff checks passed. Local logs:
+  `/workspace/scratch/kmp213-storage.log` and `/workspace/scratch/kmp213-format.log`.
+  iOS compile/runtime verification of checkpoints 212–213 remains pending.
+- Push checkpoints 212–213 with the next Apple startup correction or
+  coherent authoring batch, after collecting the in-flight foreground
+  startup result on pushed head `2ea5c08`, run 44253971258. Finish the
+  Android-equivalent custom step editor and favourite save/remove using
+  the existing legacy definition shape. Preserve prior runs and actuals.
+  Then run native production-flow and full release gates as in checkpoint
+  212. PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 212 replay retained runs
 
 - iOS Record a run now offers the last ten saved structured runs using the

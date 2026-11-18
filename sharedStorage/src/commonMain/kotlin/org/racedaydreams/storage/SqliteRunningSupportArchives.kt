@@ -114,6 +114,37 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             },
         )
 
+    /** Read the existing user-saved workout definitions in stable, bounded pages. */
+    fun favouriteRuns(offset: Int = 0, limit: Int = 20): List<CustomWorkout> {
+        require(offset >= 0 && limit in 1..100)
+        val rows =
+            database.query(
+                "SELECT id,payload FROM release08 WHERE kind='custom' ORDER BY id LIMIT ? OFFSET ?",
+                listOf(SqlValue.Integer(limit.toLong()), SqlValue.Integer(offset.toLong())),
+            )
+        val archive =
+            Release08ArchiveJson.decode(
+                buildJsonObject {
+                    put("version", 1)
+                    put(
+                        "rows",
+                        buildJsonArray {
+                            rows.forEach { row ->
+                                add(
+                                    buildJsonObject {
+                                        put("kind", "custom")
+                                        put("id", row[0].sqlText())
+                                        put("payload", StoredJson.objectValue(row[1].sqlText()))
+                                    }
+                                )
+                            }
+                        },
+                    )
+                }
+            )
+        return archive.records.map { checkNotNull(it.custom) }
+    }
+
     /** Same retained execution source as Android's Repeat previous workout screen. */
     fun previousStructuredRuns(): List<CustomWorkout> =
         database
