@@ -67,8 +67,9 @@ incomplete migration merely because a focused checkpoint passes.
 - iOS calendar strength detail now offers a logging action when a
   programme has a session on that date. It opens the same date-filtered
   Gym Now picker as the shared Today action. No execution begins until
-  the athlete selects a session. Existing calendar review remains
-  accessible. Pinned formatting of both affected files and diff checks
+  the athlete selects a session. Back from dated Gym Now returns to the
+  originating Today or the same dated Calendar detail. Existing calendar
+  review remains accessible. Pinned formatting of both affected files and diff checks
   passed locally. Native execution of this route remains pending.
 - [Run 44342650745](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44342650745)
   on `9f29d20` passed all 642 targeted Android API 35 tests. Its Apple

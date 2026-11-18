@@ -207,6 +207,7 @@ private fun AppleAppContent(
     var calendarWorkout by remember { mutableStateOf<String?>(null) }
     var calendarStrength by remember { mutableStateOf<String?>(null) }
     var gymDate by remember { mutableStateOf<LocalDate?>(null) }
+    var returnFromDatedGym by remember { mutableStateOf(ApplePage.START) }
     var raceVersion by remember { mutableStateOf<String?>(null) }
     var raceHilly by remember { mutableStateOf(false) }
     var selectedRoutine by remember { mutableStateOf<String?>(null) }
@@ -215,6 +216,11 @@ private fun AppleAppContent(
     var recoveryDraftId by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     val openDatedGym: (LocalDate) -> Unit = { date ->
+        returnFromDatedGym = page
+        if (page == ApplePage.HISTORY) {
+            calendarWorkout = null
+            calendarStrength = date.toString()
+        }
         gymDate = date
         page = ApplePage.DATED_GYM
     }
@@ -361,7 +367,11 @@ private fun AppleAppContent(
                         Box(Modifier.weight(1f)) {
                             val plannedDate = gymDate.takeIf { page == ApplePage.DATED_GYM }
                             key(plannedDate) {
-                                AppleGymScreen(session, plannedDate) { page = ApplePage.START }
+                                AppleGymScreen(session, plannedDate) {
+                                    page =
+                                        if (plannedDate == null) ApplePage.START
+                                        else returnFromDatedGym
+                                }
                             }
                         }
                     }
