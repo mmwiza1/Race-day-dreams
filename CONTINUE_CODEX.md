@@ -62,6 +62,19 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 235 iPhone acceptance instructions
+
+- Added the experimental iPhone build instructions and outstanding
+  HealthKit, GPS/background, BLE/audio, accessibility and Files/backup
+  hardware checks in TEST_BUILD.md. Confirmed the documented arm64
+  framework and Xcode settings exist. This Linux workspace cannot sign
+  or run a physical iPhone build. No device acceptance is claimed.
+- GPX run [44313049480](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44313049480)
+  for `c79232e` is active. Preserve it. Retrieve Apple job 134831874165's
+  Kotlin/Native GPX and XCTest picker results when available. Batch
+  this local documentation with the next necessary changes. PR #24
+  remains draft and full release gates remain pending.
+
 ### Latest recovery pointer — checkpoint 234 verified saved route and Apple Health choices
 
 - [Run 44305594496](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44305594496)
