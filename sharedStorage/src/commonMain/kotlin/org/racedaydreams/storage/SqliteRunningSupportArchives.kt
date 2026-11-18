@@ -126,7 +126,7 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             ?.takeIf { it in setOf("free", "quick", "custom", "repeat", "workout", "race") }
 
     fun recordingOrigin(mode: String, at: Instant): String {
-        require(mode in setOf("free", "workout", "race"))
+        require(mode in setOf("free", "quick", "workout", "race"))
         val preferences = dreamPreferences()
         val route =
             if (preferences.enabled) {

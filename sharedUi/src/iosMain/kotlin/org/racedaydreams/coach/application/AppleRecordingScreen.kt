@@ -20,6 +20,7 @@ import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.time.Durations
 import org.racedaydreams.recording.PlannedRecordingExecution
+import org.racedaydreams.recording.QuickRecordingExecution
 
 /** Native command bindings for the existing active run panel and retained run recovery. */
 @Composable
@@ -46,6 +47,9 @@ fun AppleRecordingScreen(
     val storageError by recorder.error.collectAsState()
     val scope = rememberCoroutineScope()
     var spokenCues by remember { mutableStateOf(false) }
+    var showQuickTargets by remember { mutableStateOf(false) }
+    var quickDistance by remember { mutableStateOf("5") }
+    var quickMinutes by remember { mutableStateOf("30") }
     var working by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var confirmDiscard by remember { mutableStateOf(false) }
@@ -190,6 +194,61 @@ fun AppleRecordingScreen(
                     }
                 ) {
                     Text(if (monitorId == id) "$name · selected" else name)
+                }
+            }
+            if (plannedId == null) {
+                TextButton(onClick = { showQuickTargets = !showQuickTargets }) {
+                    Text(if (showQuickTargets) "Hide quick targets" else "Quick run targets")
+                }
+                if (showQuickTargets) {
+                    CoachTextInput(
+                        "Distance target (km)",
+                        quickDistance,
+                        { quickDistance = it },
+                        decimal = true,
+                    )
+                    TextButton(
+                        onClick = {
+                            command {
+                                val distance =
+                                    requireNotNull(quickDistance.trim().toDoubleOrNull()) {
+                                        "Enter 0.1–100 km."
+                                    }
+                                recorder.start(
+                                    QuickRecordingExecution(distance * 1000, null),
+                                    imperial,
+                                    spokenCues,
+                                    monitorId,
+                                )
+                            }
+                        }
+                    ) {
+                        Text("Start distance target")
+                    }
+                    CoachTextInput(
+                        "Duration target (minutes)",
+                        quickMinutes,
+                        { quickMinutes = it },
+                        decimal = true,
+                    )
+                    TextButton(
+                        onClick = {
+                            command {
+                                val minutes = quickMinutes.trim().toDoubleOrNull()
+                                require(minutes != null && minutes in 1.0..360.0) {
+                                    "Enter 1–360 minutes."
+                                }
+                                recorder.start(
+                                    QuickRecordingExecution(null, (minutes * 60_000).toLong()),
+                                    imperial,
+                                    spokenCues,
+                                    monitorId,
+                                )
+                            }
+                        }
+                    ) {
+                        Text("Start duration target")
+                    }
                 }
             }
             CoachButton(if (plannedId == null) "Start recording" else "Start planned workout") {

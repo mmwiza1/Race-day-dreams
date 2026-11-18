@@ -73,7 +73,7 @@ class AppleRunRecorder(
     val cue = mutableCue.asStateFlow()
     private val mutableRaceContext = MutableStateFlow<String?>(null)
     val raceContext = mutableRaceContext.asStateFlow()
-    private var execution: PlannedRecordingExecution? = null
+    private var execution: RecordingExecution? = null
     private val mutableWorkout = MutableStateFlow<WorkoutExecutionEngine.State?>(null)
     val workout = mutableWorkout.asStateFlow()
     private var session: SharedRecordingSessionCoordinator? = null
@@ -121,7 +121,7 @@ class AppleRunRecorder(
     private var hillyCourse = false
 
     suspend fun start(
-        planned: PlannedRecordingExecution? = null,
+        planned: RecordingExecution? = null,
         imperial: Boolean = false,
         spokenCues: Boolean = false,
         monitorId: String? = null,
@@ -134,12 +134,7 @@ class AppleRunRecorder(
         val mono = AppleRecordingClock.monotonicMillis()
         val context = planned?.snapshot()
         withContext(io) {
-            val mode =
-                when {
-                    planned == null -> "free"
-                    planned.raceTarget != null -> "race"
-                    else -> "workout"
-                }
+            val mode = planned?.mode ?: "free"
             val origin = runCatching { recordingOrigin(mode, wall) }.getOrNull()
             repository.start(id, wall, mono, context, origin)
         }

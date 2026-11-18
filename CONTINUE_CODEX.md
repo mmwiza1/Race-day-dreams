@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 210 quick runs and CI repairs
+
+iOS can start a distance- or duration-target quick run using the shared
+execution engine and the existing quick recording archive. It remains
+separate from a planned run. Shared Android Kotlin and Android
+instrumentation Kotlin compilation and touched formatting passed.
+Native quick-run runtime verification is pending.
+
+Experiment 44213596116 ended red. Android crashed in the 200% text
+StrengthRecordsScreenTest due to concurrent Compose layout/draw. The test
+now uses the established ActivityScenario/main-thread window recomposer
+as in StrengthAnalyticsScreenTest, with every assertion preserved.
+The Apple shared tests passed; framework compilation failed because the
+exercise artwork callback already supplies a String ID. The lookup now
+uses that ID directly. Both jobs finished, so push checkpoints 205–210
+and verify both fixes, source-bound Apple startup and the remaining full
+release gates. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 209 training recovery review on iOS
 
 Gym and Today now open the shared recovery and training-balance review.
