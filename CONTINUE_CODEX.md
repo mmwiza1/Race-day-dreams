@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 244 calendar to dated Gym Now
+
+- iOS calendar strength detail now offers a logging action when a
+  programme has a session on that date. It opens the same date-filtered
+  Gym Now picker as the shared Today action. No execution begins until
+  the athlete selects a session. Existing calendar review remains
+  accessible. Pinned formatting of both affected files and diff checks
+  passed locally. Native execution of this route remains pending.
+- [Run 44342650745](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44342650745)
+  on `9f29d20` passed all 642 targeted Android API 35 tests. Its Apple
+  job passed the shared Native tests and is linking the framework.
+  Preserve this run. Keep the dated strength commits local until the
+  native compile and Files results can be inspected. Then batch any
+  demonstrated fix with them and verify the resulting head.
+- PR #24 remains draft. Native export cancel/save, shared iOS navigation,
+  the new dated logging path and full release gates remain pending.
+
 ### Latest recovery pointer — checkpoint 243 dated strength logging
 
 - The iOS Today action “Log today's strength workout” used to open

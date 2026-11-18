@@ -69,6 +69,7 @@ internal fun AppleCalendar(
     initialWorkout: String?,
     initialStrength: String?,
     startPlanned: (String) -> Unit,
+    logPlannedStrength: (LocalDate) -> Unit,
     activity: (String) -> Unit,
 ) {
     val state by session.services.operations.state.collectAsState()
@@ -122,6 +123,12 @@ internal fun AppleCalendar(
                 CoachHeading("Planned strength")
                 Text(AppleCalendarDates.label(date))
                 val authored = state.authoredGymProgramme
+                val hasSession =
+                    authored?.workouts()?.any { it.date() == date }
+                        ?: (state.gymProgramme?.sessions()?.any { it.date() == date } == true)
+                if (hasSession) {
+                    CoachButton("Log strength workout") { logPlannedStrength(date) }
+                }
                 if (authored != null) {
                     authored
                         .workouts()

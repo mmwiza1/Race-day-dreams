@@ -214,6 +214,10 @@ private fun AppleAppContent(
     var recordingWorkout by remember { mutableStateOf<String?>(null) }
     var recoveryDraftId by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
+    val openDatedGym: (LocalDate) -> Unit = { date ->
+        gymDate = date
+        page = ApplePage.DATED_GYM
+    }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
         restoreError?.let { Text(it, Modifier.padding(horizontal = 12.dp)) }
         Row(
@@ -291,6 +295,7 @@ private fun AppleAppContent(
                             recordingWorkout = it
                             page = ApplePage.RECORD
                         },
+                        logPlannedStrength = openDatedGym,
                     ) {
                         activityId = it
                         page = ApplePage.ACTIVITY
@@ -604,13 +609,12 @@ private fun AppleAppContent(
                                         calendarStrength = date?.toString()
                                         page = ApplePage.HISTORY
                                     }
-                                    route.startsWith("strength?date=") -> {
-                                        gymDate =
+                                    route.startsWith("strength?date=") ->
+                                        openDatedGym(
                                             AppleCalendarDates.parse(
                                                 route.removePrefix("strength?date=")
                                             )
-                                        page = ApplePage.DATED_GYM
-                                    }
+                                        )
                                     route == "progress/trends" -> page = ApplePage.RUNNING_TRENDS
                                     route == "achievements" -> page = ApplePage.ACHIEVEMENTS
                                     route == "progress/weight" -> page = ApplePage.BODY
