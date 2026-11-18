@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 189 race results and Apple picker compile
+
+The existing Android race-result editor is now shared. iOS Training trends
+opens recorded results, with official/manual source labels, date, notes,
+and optional run links. Both platforms persist through the existing
+evidence coordinator. Android debug Kotlin compilation, formatting and
+diff checks passed. Native race-result workflows remain unverified.
+
+Experiment 44201909878 passed Android and the Apple shared tests, then
+failed compiling the Compose framework because UIDocumentPickerModeImport
+was used as a top-level UIKit constant. The picker now uses the enum member.
+Push checkpoints 182–189 as one batch and verify the next exact-head native
+compile, shared UI decoder tests, simulator launch and production document
+flows. Continue remaining platform parity and full gates before merge.
+
 ### Latest recovery pointer — checkpoint 188 shared recorded-run summary
 
 Android and iOS now use the same run summary and recorded heart-rate cards.

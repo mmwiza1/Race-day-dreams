@@ -20,7 +20,7 @@ import platform.Foundation.NSThread
 import platform.Foundation.NSURL
 import platform.Foundation.NSUUID
 import platform.UIKit.UIDocumentPickerDelegateProtocol
-import platform.UIKit.UIDocumentPickerModeImport
+import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIViewController
 import platform.darwin.NSObject
@@ -267,7 +267,7 @@ class AppleBackupDocuments(
         val controller =
             UIDocumentPickerViewController(
                     documentTypes = types,
-                    inMode = UIDocumentPickerModeImport,
+                    inMode = UIDocumentPickerMode.UIDocumentPickerModeImport,
                 )
                 .apply { delegate = this@ImportPicker }
 

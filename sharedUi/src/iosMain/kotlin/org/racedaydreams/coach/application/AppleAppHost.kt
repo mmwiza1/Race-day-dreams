@@ -170,6 +170,7 @@ private enum class ApplePage {
     STRENGTH_ANALYTICS,
     ACHIEVEMENTS,
     RUNNING_TRENDS,
+    RESULTS,
     STRENGTH_RECORD,
     ACTIVITY,
     SETTINGS,
@@ -331,7 +332,15 @@ private fun AppleAppContent(
                         StrengthMeasurementPolicy::duration,
                         AthleteLanguage.WORKING_SETS,
                     )
-                ApplePage.RUNNING_TRENDS -> AppleRunningTrends(state) { page = ApplePage.START }
+                ApplePage.RUNNING_TRENDS ->
+                    AppleRunningTrends(state, { page = ApplePage.RESULTS }) {
+                        page = ApplePage.START
+                    }
+                ApplePage.RESULTS ->
+                    AppleRecordedResults(session, { page = ApplePage.RUNNING_TRENDS }) {
+                        activityId = it
+                        page = ApplePage.ACTIVITY
+                    }
                 ApplePage.ACHIEVEMENTS ->
                     AppleAchievements(
                         session,

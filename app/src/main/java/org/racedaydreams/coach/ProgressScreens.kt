@@ -406,109 +406,18 @@ private fun resultSource(result: RecordedResult): String =
 
 @Composable
 private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () -> Unit) {
-    var code by rememberSaveable { mutableStateOf(PerformanceDistance.FIVE_K.code()) }
-    var time by rememberSaveable { mutableStateOf("") }
-    var date by rememberSaveable { mutableStateOf(LocalDate.now().toString()) }
-    var event by rememberSaveable { mutableStateOf("") }
-    var note by rememberSaveable { mutableStateOf("") }
-    var official by rememberSaveable { mutableStateOf(false) }
-    var activityId by rememberSaveable { mutableStateOf<String?>(null) }
-    var chooseActivity by rememberSaveable { mutableStateOf(false) }
-    var activitySearch by rememberSaveable { mutableStateOf("") }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
-    CoachCard {
-        Text("Record a result", style = MaterialTheme.typography.titleLarge)
-        PerformanceDistance.CORE.forEach { distance ->
-            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                RadioButton(code == distance.code(), { code = distance.code() })
-                TextButton(onClick = { code = distance.code() }) { Text(distance.label()) }
-            }
-        }
-        CoachField("Finishing time (MM:SS or H:MM:SS)", time, { time = it })
-        CoachField("Result date (YYYY-MM-DD)", date, { date = it })
-        CoachField("Race or event name (optional)", event, { event = it })
-        CheckRow("This is my official chip time", official) { official = it }
-        Text(
-            "Otherwise this is a manually entered result. Both are kept independently of GPS-recorded totals."
-        )
-        Text(
-            activityId?.let {
-                "Linked activity: ${state.activities.firstOrNull { a -> a.id() == it }?.let(::displayActivityDate) ?: it}"
-            } ?: "No linked activity"
-        )
-        TextButton(onClick = { chooseActivity = !chooseActivity }) {
-            Text(if (chooseActivity) "Hide activity choices" else "Choose optional linked activity")
-        }
-        if (chooseActivity) {
-            CoachField(
-                "Find activity date (e.g. 19 October, optional)",
-                activitySearch,
-                { activitySearch = it },
-            )
-            TextButton(
-                onClick = {
-                    activityId = null
-                    chooseActivity = false
-                }
-            ) {
-                Text("No linked activity")
-            }
-            val matches =
-                state.activities.filter {
-                    activitySearch.isBlank() ||
-                        displayActivityDate(it).contains(activitySearch.trim())
-                }
-            matches.take(100).forEach { activity ->
-                TextButton(
-                    onClick = {
-                        activityId = activity.id()
-                        chooseActivity = false
-                    }
-                ) {
-                    Text(
-                        "${displayActivityDate(activity)} · ${activity.distanceMetres()?.let { formatDistance(it, state) } ?: "distance unavailable"}"
-                    )
-                }
-            }
-            if (matches.size > 100)
-                Text(
-                    "Only the most recent 100 matches are shown. Enter a date to find older activities. Linking an activity is optional."
-                )
-            if (matches.isEmpty()) Text("No retained activities match that date.")
-        }
-        CoachField("Result notes (optional)", note, { note = it }, singleLine = false)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(
-            onClick = {
-                try {
-                    val day = LocalDate.parse(date.trim())
-                    require(!day.isAfter(LocalDate.now())) {
-                        "A completed race result cannot be in the future."
-                    }
-                    val distance = PerformanceDistance.CORE.first { it.code() == code }
-                    val result =
-                        RecordedResult(
-                            UUID.randomUUID().toString(),
-                            distance,
-                            PaceCalculator.parseTime(time),
-                            day,
-                            event.trim().takeIf { it.isNotEmpty() },
-                            if (official) ResultSource.OFFICIAL_CHIP else ResultSource.MANUAL,
-                            activityId,
-                            note.trim().takeIf { it.isNotEmpty() },
-                        )
-                    error = null
-                    model.runningEvidence.saveResult(result, onDone)
-                } catch (failure: Exception) {
-                    error = failure.message ?: "Check the result date and finishing time."
-                }
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Save result")
-        }
-    }
+    org.racedaydreams.coach.activity.SharedResultEditor(
+        state = state,
+        today = LocalDate.now(),
+        parseDate = LocalDate::parse,
+        resultDateField = { value, change ->
+            CoachField("Result date (YYYY-MM-DD)", value, change)
+        },
+        describeActivity = ::displayActivityDate,
+        formatDistance = { formatDistance(it, state) },
+        newId = { UUID.randomUUID().toString() },
+        saveResult = { model.runningEvidence.saveResult(it, onDone) },
+    )
 }
 
 @Composable
