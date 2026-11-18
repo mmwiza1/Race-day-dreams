@@ -89,17 +89,29 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("View recorded route", in: app)
         XCTAssertTrue(control("Your recorded route", in: app).waitForExistence(timeout: 20))
         tap("Export recorded route (GPX)", in: app)
-        // The native file picker exposes Cancel as an accessibility element, not always a button.
-        let cancelExport = control("Cancel", in: app)
-        XCTAssertTrue(cancelExport.waitForExistence(timeout: 20))
-        cancelExport.tap()
+        guard tapFilesAction("Cancel", in: app) else { return }
         XCTAssertTrue(control("GPX export cancelled.", in: app).waitForExistence(timeout: 20))
 
         tap("Export recorded route (GPX)", in: app)
-        let saveExport = app.buttons["Save"].firstMatch
-        XCTAssertTrue(saveExport.waitForExistence(timeout: 20))
-        saveExport.tap()
+        guard tapFilesAction("Save", in: app) else { return }
         XCTAssertTrue(control("GPX file saved.", in: app).waitForExistence(timeout: 20))
+    }
+
+    private func tapFilesAction(_ label: String, in app: XCUIApplication) -> Bool {
+        // Files can briefly expose a placeholder before its provider and controls load.
+        let action = control(label, in: app)
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                action.exists && action.frame.width > 1 && action.isHittable
+            },
+            object: nil
+        )
+        guard XCTWaiter.wait(for: [ready], timeout: 60) == .completed else {
+            XCTFail("The native Files picker did not expose an actionable \(label) control.")
+            return false
+        }
+        action.tap()
+        return true
     }
 
     private func setSimulatedLocation(latitude: CLLocationDegrees) {

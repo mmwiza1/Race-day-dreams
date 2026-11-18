@@ -70,11 +70,23 @@ incomplete migration merely because a focused checkpoint passes.
   the workspace transfer limit, so this makes evidence easier to inspect.
   YAML, shell, diff and stubbed attachment/source capture passed.
   The Xcode exporter itself remains unverified.
-- Keep this checkpoint local while the exact pushed `ee3637d` run
-  [44321030042](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44321030042)
-  is active. Inspect Apple job 134859696157, then batch the attachment
-  work with any genuine picker fix or next integration checkpoint.
-  Full Apple/Android release gates remain pending. Keep PR #24 draft.
+- On `ee3637d`, [run 44321030042](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44321030042)
+  passed Apple Native tests, framework/package, standalone startup and Apple Health consent.
+  The GPX UI test failed at the Cancel wait. The full XCTest bundle
+  (14437219570) shows that the picker was presented, but the last video
+  frame shows an empty On My iPhone pane with only Back visible. Its
+  accessibility hierarchy exposes a one-point-wide Cancel placeholder.
+  Wait for visible, hittable native controls with a bounded cold-start
+  allowance. Preserve both Cancel and Save outcome assertions.
+- Next, inspect the exact next Apple workflow result for Files cancel
+  and save. If Files still fails to initialise, inspect the new video
+  and hierarchy for destination/provider readiness before modifying
+  production export or retrying. Full release gates remain pending.
+  Keep PR #24 draft.
+- Android job 134859697961 passed its build and failed before running
+  instrumentation: the pinned emulator download from Google terminated
+  with cURL HTTP/2 error 92. Do not treat it as an app regression.
+  Check the next workflow for actual Android instrumentation results.
 
 ### Latest recovery pointer — checkpoint 236 native export test selector
 
