@@ -8,6 +8,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.*
+import org.racedaydreams.coach.activity.SharedRunNotes
 import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
@@ -160,8 +161,8 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                     Text("Elapsed: ${PaceCalculator.formatTime(run.elapsedTime())}")
                     run.movingTime()?.let { Text("Active: ${PaceCalculator.formatTime(it)}") }
                     Text("Source: ${ActivitySources.friendly(run.source())}")
-                    run.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
-                    val shoeId = state.activities.firstOrNull { it.id() == id }?.shoeId()
+                    val current = state.activities.firstOrNull { it.id() == id } ?: run
+                    val shoeId = current.shoeId()
                     val shoe = state.shoes.firstOrNull { it.id() == shoeId }
                     Text(
                         shoe?.let { "Shoes: ${"${it.brand()} ${it.model()}".trim()}" }
@@ -200,6 +201,10 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                             }
                         }
                     }
+                    SharedRunNotes(current, state.busy) { notes, effort ->
+                        session.services.runningEvidence.saveNotes(id, notes, effort)
+                    }
+                    (state.error ?: state.message)?.let { Text(it) }
                     TextButton(onClick = { showRoute = !showRoute }) {
                         Text(if (showRoute) "Hide route" else "View recorded route")
                     }

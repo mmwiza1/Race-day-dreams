@@ -81,13 +81,6 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             value =
                 withContext(Dispatchers.Default) { SplitCalculator.calculate(activity, splitUnits) }
         }
-    var notes by
-        rememberSaveable(activity.id(), activity.notes()) { mutableStateOf(activity.notes() ?: "") }
-    var rpe by
-        rememberSaveable(activity.id(), activity.rpe()) {
-            mutableStateOf(activity.rpe()?.let(::decimal) ?: "")
-        }
-    var error by rememberSaveable(activity.id()) { mutableStateOf<String?>(null) }
     var chooseShoe by rememberSaveable { mutableStateOf(false) }
     val assessment = state.assessments.firstOrNull { it.activityId() == activity.id() }
     val assessmentSummary =
@@ -319,26 +312,8 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
         OutlinedButton(onClick = { chooseShoe = true }, enabled = !state.busy) {
             Text("Change shoe assignment")
         }
-        CoachField("Your effort / RPE, 0–10 (optional)", rpe, { rpe = it })
-        CoachField("Your notes", notes, { notes = it }, singleLine = false)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(
-            onClick = {
-                try {
-                    val effort = optionalNumber(rpe)
-                    require(effort == null || effort in 0.0..10.0) {
-                        "RPE must be between 0 and 10."
-                    }
-                    error = null
-                    model.runningEvidence.saveNotes(activity.id(), notes, effort)
-                } catch (failure: IllegalArgumentException) {
-                    error = failure.message
-                }
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Save notes and effort")
+        org.racedaydreams.coach.activity.SharedRunNotes(activity, state.busy) { notes, effort ->
+            model.runningEvidence.saveNotes(activity.id(), notes, effort)
         }
     }
     if (chooseShoe)

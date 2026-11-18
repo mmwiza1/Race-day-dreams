@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 187 shared run notes and effort
+
+Android and iOS now use the same run notes and optional 0–10 effort form.
+iOS saves via the existing running-evidence coordinator, showing refreshed
+notes and operation feedback. Recorded GPS/timing data is untouched.
+Android debug Kotlin compilation, pinned formatting and diff checks passed.
+iOS runtime verification is pending.
+
+Experiment 44201909878 on PR #24 head 9bc0737 passed the Android job.
+Apple was still running at last check. Preserve that job; inspect its
+result and push local checkpoints 182–187 together. Verify the next
+native decoder tests and simulator launch, then check the GPX picker,
+shoe assignment and notes in the running app. Resume remaining native
+parity and final gates. Do not merge the draft prematurely.
+
 ### Latest recovery pointer — checkpoint 186 shared shoe management
 
 Android and iOS now use the same shoe list, mileage cards and editor.
