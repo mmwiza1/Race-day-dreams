@@ -1,6 +1,8 @@
 package org.racedaydreams.storage
 
 import kotlinx.serialization.json.*
+import org.racedaydreams.domain.support.DreamRoutes
+import org.racedaydreams.domain.time.Instant
 
 /** Original running-support records over the existing database. No independent restore owner. */
 class SqliteRunningSupportArchives(private val database: SqlDatabase) {
@@ -68,6 +70,47 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
                 put("at", at.toString())
             },
         )
+
+    data class DreamPreferences(val enabled: Boolean, val cities: Set<String>)
+
+    fun dreamPreferences(): DreamPreferences =
+        configuration("dream")?.let {
+            DreamPreferences(
+                it.getValue("enabled").jsonPrimitive.boolean,
+                it.getValue("cities").jsonArray.map { city -> city.jsonPrimitive.content }.toSet(),
+            )
+        } ?: DreamPreferences(false, DreamRoutes.routes().map { it.id() }.toSet())
+
+    fun saveDreamPreferences(preferences: DreamPreferences) =
+        saveOriginal(
+            "config",
+            "dream",
+            buildJsonObject {
+                put("version", 1)
+                put("type", "dream")
+                put("enabled", preferences.enabled)
+                put("cities", JsonArray(preferences.cities.sorted().map(::JsonPrimitive)))
+            },
+        )
+
+    fun recordingOrigin(mode: String, at: Instant): String {
+        require(mode in setOf("free", "workout", "race"))
+        val preferences = dreamPreferences()
+        val route =
+            if (preferences.enabled) {
+                DreamRoutes.routes()
+                    .filter { it.id() in preferences.cities }
+                    .randomOrNull()
+                    ?.let(DreamRoutes::currentGeometry)
+            } else null
+        return buildJsonObject {
+                put("version", 1)
+                put("mode", mode)
+                put("at", at.toString())
+                route?.let { put("dreamRoute", it.id()) }
+            }
+            .toString()
+    }
 
     fun dreamAssignment(
         activityId: String

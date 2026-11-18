@@ -62,6 +62,24 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 197 Dream Routes for new iOS runs
+
+iOS Settings lets athletes opt in and choose eligible cities. Fresh iOS
+settings default off; saved/restored settings retain the original backup
+format. Recording freezes the chosen course geometry in the start origin;
+existing finalisation saves the equivalent distance. The selected hilly
+race strategy is now included in the frozen execution prescription as
+well as live cues, correcting a mismatch found while tracing run start.
+
+Ten focused JDBC core backup tests, shared UI Android Kotlin compilation,
+pinned touched formatting and all 19 schema checks passed. Native
+recording, Dream Route rendering and city artwork parity remain open.
+
+PR #24 is draft at c3f0ec4. Experiment 44208542517 still had both jobs
+running at last check. Preserve and inspect that run before pushing
+checkpoints 195–197. Continue native compiler/test/simulator verification
+and parity before full release gates. No merge or publication.
+
 ### Latest recovery pointer — checkpoint 196 saved Dream Routes on iOS
 
 iOS run details read and display existing Dream Route assignments, including

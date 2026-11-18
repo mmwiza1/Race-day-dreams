@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 import org.racedaydreams.domain.execution.RecordingCueCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.RunMetricsEngine
+import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.storage.SqliteRecordingStaging
 import platform.Foundation.NSThread
 
@@ -26,6 +27,7 @@ class AppleRunRecorder(
     private val scope: CoroutineScope,
     private val io: CoroutineDispatcher,
     private val nextId: () -> String,
+    private val recordingOrigin: (String, Instant) -> String,
 ) {
     private val commands = Mutex()
     private var cues = RecordingCueCoordinator()
@@ -131,7 +133,16 @@ class AppleRunRecorder(
         val wall = AppleRecordingClock.now()
         val mono = AppleRecordingClock.monotonicMillis()
         val context = planned?.snapshot()
-        withContext(io) { repository.start(id, wall, mono, context, null) }
+        withContext(io) {
+            val mode =
+                when {
+                    planned == null -> "free"
+                    planned.raceTarget != null -> "race"
+                    else -> "workout"
+                }
+            val origin = runCatching { recordingOrigin(mode, wall) }.getOrNull()
+            repository.start(id, wall, mono, context, origin)
+        }
         val active =
             SharedRecordingSessionCoordinator(
                 RecordingStageSession(id, "ACTIVE", wall, mono, mono),

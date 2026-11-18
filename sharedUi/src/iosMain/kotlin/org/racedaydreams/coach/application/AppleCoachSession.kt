@@ -112,12 +112,14 @@ private constructor(
                         },
                         newId,
                     )
+                val runningSupport = SqliteRunningSupportArchives(database)
                 val recording =
                     AppleRunRecorder(
                         SqliteRecordingStageRepository(database, now, newId),
                         scope,
                         io,
                         newId,
+                        runningSupport::recordingOrigin,
                     )
                 val reminders = AppleCoachReminders(database, io)
                 val exports = LocalBackupOperations(database, now, newId)
@@ -211,7 +213,7 @@ private constructor(
                     platform,
                     backupDocuments,
                     SqliteRaceChecklist(database),
-                    SqliteRunningSupportArchives(database),
+                    runningSupport,
                 )
             } catch (failure: Throwable) {
                 withContext(NonCancellable) {

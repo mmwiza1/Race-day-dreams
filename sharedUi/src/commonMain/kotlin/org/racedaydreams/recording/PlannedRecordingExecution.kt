@@ -11,7 +11,7 @@ import org.racedaydreams.domain.race.RaceStrategyEngine
 import org.racedaydreams.storage.PlannedWorkoutJson
 
 /** Existing support payload and step engine for an explicitly selected retained prescription. */
-class PlannedRecordingExecution(version: PlanVersion, workoutId: String) {
+class PlannedRecordingExecution(version: PlanVersion, workoutId: String, hilly: Boolean = false) {
     private val workout =
         version.plan().workouts().firstOrNull { it.id() == workoutId }
             ?: throw IllegalArgumentException("This workout is no longer in the selected plan.")
@@ -22,7 +22,7 @@ class PlannedRecordingExecution(version: PlanVersion, workoutId: String) {
             RaceStrategyEngine.create(
                     goal.distance().kilometres() * 1_000,
                     goal.targetTime()?.getSeconds(),
-                    false,
+                    hilly,
                 )
                 .map { stage ->
                     WorkoutExecutionEngine.Step(
@@ -56,7 +56,7 @@ class PlannedRecordingExecution(version: PlanVersion, workoutId: String) {
         put("goalMetres", goal.distance().kilometres() * 1_000)
         put("raceName", goal.raceName())
         goal.targetTime()?.let { put("targetSeconds", it.getSeconds()) }
-        put("hilly", false)
+        put("hilly", race && hilly)
         put(
             "steps",
             buildJsonArray {

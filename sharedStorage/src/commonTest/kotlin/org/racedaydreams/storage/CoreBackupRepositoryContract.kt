@@ -50,6 +50,22 @@ abstract class CoreBackupRepositoryContract {
         )
 
     @Test
+    fun dreamRoutePreferencesDefaultOffAndFreezeSelectedGeometryInNewRunOrigin() = storage { db ->
+        val support = SqliteRunningSupportArchives(db)
+        assertFalse(support.dreamPreferences().enabled)
+        assertNull(StoredJson.objectValue(support.recordingOrigin("free", at))["dreamRoute"])
+        val choices = SqliteRunningSupportArchives.DreamPreferences(true, setOf("paris-v2"))
+        support.saveDreamPreferences(choices)
+        assertEquals(choices, support.dreamPreferences())
+        val origin = StoredJson.objectValue(support.recordingOrigin("race", at))
+        assertEquals("race", origin.getValue("mode").jsonPrimitive.content)
+        assertEquals("paris-2026-geo-v1", origin.getValue("dreamRoute").jsonPrimitive.content)
+        support.saveDreamPreferences(choices.copy(enabled = false))
+        assertNull(StoredJson.objectValue(support.recordingOrigin("free", at))["dreamRoute"])
+        assertEquals("paris-2026-geo-v1", origin.getValue("dreamRoute").jsonPrimitive.content)
+    }
+
+    @Test
     fun savedDreamAssignmentReadIsScopedAndPreservesVersionedGeometry() = storage { db ->
         val support = SqliteRunningSupportArchives(db)
         assertNull(support.dreamAssignment("retained-run"))

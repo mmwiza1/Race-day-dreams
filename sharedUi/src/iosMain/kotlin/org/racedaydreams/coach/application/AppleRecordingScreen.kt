@@ -200,7 +200,7 @@ fun AppleRecordingScreen(
                             require(raceVersion == null || raceVersion == version.id()) {
                                 "The plan changed. Open Race Day again."
                             }
-                            PlannedRecordingExecution(version, it)
+                            PlannedRecordingExecution(version, it, hilly)
                         }
                     recorder.start(planned, imperial, spokenCues, monitorId, hilly)
                 }
