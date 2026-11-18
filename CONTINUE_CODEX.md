@@ -88,6 +88,13 @@ incomplete migration merely because a focused checkpoint passes.
   migration made `scripts/test-domain.sh` use Gradle, but this ready-only job never ran on
   the draft branch and lacked the SDK + setup-gradle cache steps the build jobs have. Fixed
   by adding the same setup steps; no test or audit content changed.
+- Gate on 42ac840: android.yml 44400715723 guidance-completeness, formatting and build
+  API 35/36 SUCCESS, API 28 tests passed (artifact upload in progress when superseded).
+  multiplatform.yml 44400715164: android-shared SUCCESS; apple-shared Native tests passed but
+  framework link and apple-device failed compiling `AppleCoachSpeech.kt`: "Unresolved
+  reference 'setActive'" (lines 64, 71). In Kotlin/Native `AVAudioSession.setActive` is a
+  category extension and needs `import platform.AVFAudio.setActive`; restored. All other new
+  AVAudioSession/CallKit/AudioToolbox references compiled.
 - Local: pinned formatting applied (only AppleCoachSpeech comment rewrapped), release-note,
   showcase and screenshot-source tests pass. iOS Kotlin/Native compilation cannot run on
   Linux: the CallKit/AudioToolbox/AVAudioSession calls are verified only by the Apple CI job.
