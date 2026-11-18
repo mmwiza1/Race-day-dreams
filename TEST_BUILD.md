@@ -681,9 +681,13 @@ iPhone model and iOS version with the results.
 - [ ] Record an outdoor run with locked-screen and background intervals.
   Pause and resume. Verify that interruption, distance, splits and route
   evidence agree. Export to Files, inspect the GPX and open it again.
-- [ ] Pair a heart-rate monitor, check speech alongside music and verify a rest
-  alert with the device locked. Check VoiceOver, Dynamic Type and dark mode
-  through onboarding, running, Gym Now and Apple Health selection.
+- [ ] Pair a heart-rate monitor and lock the screen for several minutes; heart rate
+  must keep updating. With spoken cues on and the screen locked: music must lower
+  (not stop) during a cue and return afterwards; a podcast must pause and resume;
+  during a phone call no cue may speak (important cues vibrate instead); with the
+  silent switch on, cues must still play. Verify a rest alert with the device locked.
+  Check VoiceOver, Dynamic Type and dark mode through onboarding, running, Gym Now,
+  Apple Health selection and the Settings licence list.
 - [ ] Export and restore a complete backup using the Files picker on a disposable
   test installation. Compare workout history, actual sets and recording detail
   before and after restore. Cancel once before replacement and verify data survives.

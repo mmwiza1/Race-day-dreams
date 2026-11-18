@@ -16,9 +16,20 @@ import platform.Foundation.NSBundle
 private val bundledNotices =
     listOf(
         "App licence (MIT)" to "LICENSE",
+        "Third-party inventory and source notices" to "third_party.md",
         "Apache License 2.0" to "apache-2.0.txt",
-        "Dream Route sources and attributions" to "dream-basemaps-NOTICE.txt",
+        "Kotlin licence" to "kotlin-LICENSE.txt",
+        "Coroutines licence" to "coroutines-LICENSE.txt",
+        "Serialization licence" to "serialization-LICENSE.txt",
+        "Skia graphics licence" to "skia-LICENSE.txt",
+        "Berlin route source licence" to "berlin-2014-MIT.txt",
+        "Tokyo route source licence" to "tokyo-2026-CC0.txt",
+        "London route source licence" to "london-historical-MIT.txt",
+        "New York route source attribution" to "new-york-2026-NOTICE.txt",
+        "Paris 2026 annual route source attribution" to "paris-2026-NOTICE.txt",
         "Open Database Licence 1.0" to "ODbL-1.0.txt",
+        "Dream Route sources and attributions" to "dream-basemaps-NOTICE.txt",
+        "Dependency notices" to "transitive-NOTICES.txt",
     )
 
 @Composable

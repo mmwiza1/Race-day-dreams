@@ -164,6 +164,13 @@ jobs:
           test -s iosApp/build/RaceDayDreams.app/ODbL-1.0.txt
           test -s iosApp/build/RaceDayDreams.app/LICENSE
           test -s iosApp/build/RaceDayDreams.app/apache-2.0.txt
+          for notice in third_party.md kotlin-LICENSE.txt coroutines-LICENSE.txt \
+            serialization-LICENSE.txt transitive-NOTICES.txt skia-LICENSE.txt \
+            berlin-2014-MIT.txt tokyo-2026-CC0.txt london-historical-MIT.txt \
+            new-york-2026-NOTICE.txt paris-2026-NOTICE.txt; do
+            test -s "iosApp/build/RaceDayDreams.app/$notice"
+          done
+          cmp THIRD_PARTY.md iosApp/build/RaceDayDreams.app/third_party.md
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
       - name: Compile the iOS startup screenshot verifier
         run: swiftc scripts/check-ios-startup.swift -o "$RUNNER_TEMP/check-ios-startup"

@@ -167,6 +167,7 @@ class AppleRunRecorder(
                             val time = AppleRecordingClock.monotonicMillis()
                             active.engine.missingFix(time, AppleRecordingClock.now())
                             publish()
+                            speech?.settle()
                             try {
                                 active.flush()
                                 mutableError.value = null
@@ -315,7 +316,7 @@ class AppleRunRecorder(
         mutableRaceContext.value = result.raceContext()
         result.selected()?.let {
             mutableCue.value = it.text()
-            if (!status.paused()) speech?.deliver(it.text())
+            if (!status.paused()) speech?.deliver(it.text(), it.haptic())
         }
         result.paceEvent()?.let { engine.event(it, time, AppleRecordingClock.now()) }
     }

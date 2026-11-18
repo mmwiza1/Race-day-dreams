@@ -126,4 +126,6 @@ backup views. Design references are kept separate from actual-build captures.
 - [Earlier project overview, release history, gallery and developer details](docs/README_0_12_2_ARCHIVE.md)
 - [How the verified rolling download stays current](docs/GITHUB_SHOWCASE.md)
 
-No iOS port, cloud sync, mandatory login or Internet permission is introduced by this release.
+An experimental, unsigned iPhone app now builds from the same shared code; it is not yet
+distributed (see [Build and device testing](TEST_BUILD.md)). No cloud sync, mandatory login or
+Internet permission is introduced.
