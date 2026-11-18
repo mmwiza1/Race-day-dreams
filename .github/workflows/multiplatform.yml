@@ -147,6 +147,8 @@ jobs:
             CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="$PWD/iosApp/build" \
             RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework" build
           test -x iosApp/build/RaceDayDreams.app/RaceDayDreams
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CADisableMinimumFrameDurationOnPhone' \
+            iosApp/build/RaceDayDreams.app/Info.plist)" = true
           test -s iosApp/build/RaceDayDreams.app/Assets.car
           test -s iosApp/build/RaceDayDreams.app/drawable-nodpi/guide_leg_swings.webp
           test -s iosApp/build/RaceDayDreams.app/dream-art/paris-hero.webp

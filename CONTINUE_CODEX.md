@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 224 required Compose plist setting
+
+- The source published for pinned Compose UI 1.8.2 confirms
+  `enforceStrictPlistSanityCheck = true` by default and that its UIKit
+  controller asynchronously throws unless
+  `CADisableMinimumFrameDurationOnPhone` is true. The app plist omitted
+  it. Added the required setting and asserted it on the compiled iOS
+  app plist in CI. This corrects a demonstrated configuration error.
+  Whether it accounts for the observed SIGSEGV remains unverified.
+- Source plist parsing, workflow YAML/shell syntax and diff checks passed.
+  This is a local checkpoint because
+  [44267864437](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44267864437)
+  on `56045e6` is running. Inspect Apple job 134676768769 and its LLDB
+  capture, then batch this fix with any stack-driven correction.
+  Verify fresh startup, SQLite and the foreground screen on the new head.
+  PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 223 native debugger capture
 
 - [Run 44264043283](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44264043283)
