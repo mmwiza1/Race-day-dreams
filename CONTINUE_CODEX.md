@@ -62,6 +62,17 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 254 owner-approved ready stage (Claude)
+
+- Owner explicitly approved marking PR #24 ready for review on 18 November 2026 to run the
+  full release gates; merge and publication still require separate explicit owner approval.
+- Marking ready on `5e6398f` started NO workflow: GitHub skips `pull_request` workflows,
+  including `ready_for_review`, when the head commit message contains `[skip ci]`. Never
+  leave a `[skip ci]` commit as head before a ready transition or final gate. This commit
+  (no skip marker) is the exact head for the full API 28/35/36, canonical screenshot,
+  release/licence/format and unsigned iosArm64 gates. Record their run IDs and results here.
+- A read-only independent audit runs in parallel and makes no source changes.
+
 ### Latest recovery pointer — checkpoint 253 green focused gate including Gym Now (Claude)
 
 - Exact `13b5e75` run [44385737143](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44385737143)
@@ -88,7 +99,7 @@ incomplete migration merely because a focused checkpoint passes.
 - Next: owner approval to mark PR #24 ready, which triggers the full Android API 28/35/36
   matrix, canonical screenshots and the unsigned iosArm64 device build on the exact head.
   Do NOT mark ready, merge or publish without explicit owner approval. Documentation-only
-  checkpoint commits use `[skip ci]` to avoid re-running unchanged 70-minute Apple jobs.
+  checkpoint commits may use `[skip ci]` mid-development only (see checkpoint 254).
 
 ### Latest recovery pointer — checkpoint 252 native gym selector and startup budget
 
