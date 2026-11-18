@@ -71,11 +71,12 @@ incomplete migration merely because a focused checkpoint passes.
   Pinned touched formatting and diff checks passed.
 - The local branch is ahead of PR #24 by checkpoints 212–215. Android
   focused CI passed on pushed head `2ea5c08`. Apple shared tests, framework
-  linking and simulator build passed. The foreground startup step is
-  still running in [44253971258](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44253971258).
-  Collect that result before pushing the local batch. Inspect and bind
-  any successful screenshot to its source, or diagnose the failure from
-  the boot/launch logs. Next verify the exact new iOS build and
+  linking and simulator build passed. The foreground startup step failed
+  in [44253971258](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44253971258),
+  so no screenshot was published. GitHub was still finalizing the job and
+  did not serve its log. When available, inspect job 134631096266 logs and
+  diagnose the failing boot/launch/screenshot command before pushing the
+  local batch. Next verify the exact new iOS build and
   permission, authoring and replay flows. Keep PR #24 draft.
 - The next workflow checkpoint bounds the foreground step at 15 minutes
   and logs each boot, install, database, and screenshot phase. YAML, shell
