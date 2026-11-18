@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 225 verify the plist correction
+
+- [Run 44267864437](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44267864437)
+  on `56045e6` passed focused Android, Apple tests, framework link and
+  the native app build with the launcher catalog. Normal foreground
+  startup failed. Artifact 14412692296 confirms LLDB attached at
+  `_dyld_start` but timed out during continue, with no faulting
+  frame. OS crash-report and app output capture supplied no stack.
+- The required Compose plist setting is fixed in `58e3d41`. The next
+  Apple run must verify it in the built app and then pass SQLite readiness
+  and foreground OCR. Inspect its exact-head capture. If startup still
+  fails, use the new evidence to distinguish the remaining crash and
+  improve native stack capture if needed. No merge or publication.
+  PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 224 required Compose plist setting
 
 - The source published for pinned Compose UI 1.8.2 confirms
