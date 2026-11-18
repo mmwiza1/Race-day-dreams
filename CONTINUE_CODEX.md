@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 208 privacy-limited iOS diagnostics
+
+iOS Settings can export a diagnostic JSON through the existing private
+staging and system document picker. Its fixed allow-list contains app and
+iOS versions, schema/backup versions, Health availability and location
+access, with no athlete records. Added a native test for the exact key set.
+Pinned touched formatting and diff checks passed. Native compilation, test
+execution and picker verification remain pending.
+
+PR #24 remains draft at fb2b85e. Experiment 44213596116 was still running
+on both platforms. Preserve the jobs and inspect their conclusions before
+pushing checkpoints 205–208. Verify the next source-bound simulator
+capture and the genuine iOS settings/export flows before final gates.
+
 ### Latest recovery pointer — checkpoint 207 iOS privacy and bundled licences
 
 iOS Settings now explains local storage, optional Apple Health access

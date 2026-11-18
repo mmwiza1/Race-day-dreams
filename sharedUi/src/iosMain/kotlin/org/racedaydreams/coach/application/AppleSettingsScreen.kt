@@ -172,6 +172,41 @@ fun AppleSettingsScreen(
         AppleScheduleSettings(session.runningSupport)
         AppleDreamSettings(session.runningSupport)
         AppleRecordingStorage(session.backupDocuments)
+        Text(
+            "Diagnostic reports contain app and iOS versions and access status. They exclude workouts, routes, health measurements and notes."
+        )
+        TextButton(
+            enabled = !state.busy && !importing && !exporting,
+            onClick = {
+                exporting = true
+                message = null
+                scope.launch {
+                    try {
+                        session.backupDocuments.exportDiagnostics(
+                            state.healthAvailability,
+                            session.recording.permission.value,
+                            presenter,
+                        ) { outcome ->
+                            exporting = false
+                            message =
+                                when (outcome) {
+                                    AppleBackupDocuments.Outcome.SAVED -> "Diagnostic report saved."
+                                    AppleBackupDocuments.Outcome.CANCELLED ->
+                                        "Diagnostic export cancelled."
+                                }
+                        }
+                    } catch (cancelled: CancellationException) {
+                        exporting = false
+                        throw cancelled
+                    } catch (failure: Exception) {
+                        exporting = false
+                        message = failure.message ?: "Could not export the diagnostic report."
+                    }
+                }
+            },
+        ) {
+            Text("Export diagnostic report")
+        }
         ApplePrivacyAndLicences()
         val feedback = message ?: state.error ?: state.message ?: reminderFailure
         if (feedback != null) {

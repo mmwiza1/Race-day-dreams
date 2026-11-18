@@ -9,16 +9,19 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import org.racedaydreams.domain.portability.RecordedGpxWriter
 import org.racedaydreams.domain.storage.DetailRetention
+import org.racedaydreams.health.HealthAvailability
 import org.racedaydreams.storage.BackupArchiveSource
 import org.racedaydreams.storage.BackupEnvelopeJson
 import org.racedaydreams.storage.BackupStagingFile
 import org.racedaydreams.storage.LocalBackupOperations
 import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
 import org.racedaydreams.storage.SqliteActivities
+import platform.Foundation.NSBundle
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSThread
 import platform.Foundation.NSURL
 import platform.Foundation.NSUUID
+import platform.UIKit.UIDevice
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
@@ -53,6 +56,27 @@ class AppleBackupDocuments(
                     Kind.COMPLETE -> exports.writeComplete(directory, write)
                 }
             }
+        }
+    }
+
+    suspend fun exportDiagnostics(
+        availability: HealthAvailability,
+        locationGranted: Boolean,
+        presenter: UIViewController,
+        complete: (Outcome) -> Unit,
+    ) {
+        check(NSThread.isMainThread)
+        val bundle = NSBundle.mainBundle
+        val report =
+            appleDiagnosticReport(
+                bundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String,
+                bundle.objectForInfoDictionaryKey("CFBundleVersion") as? String,
+                UIDevice.currentDevice.systemVersion,
+                availability,
+                locationGranted,
+            )
+        exportDocument(presenter, complete) {
+            stage("Race-Day-Dreams-diagnostic.json") { _, write -> write(report) }
         }
     }
 
