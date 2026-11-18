@@ -1,5 +1,7 @@
 package org.racedaydreams.coach.application
 
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
@@ -8,6 +10,8 @@ import org.racedaydreams.coach.*
 import org.racedaydreams.coach.activity.SharedResultEditor
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
+import org.racedaydreams.domain.activity.PerformanceDistance
+import org.racedaydreams.domain.activity.PersonalBestCalculator
 import org.racedaydreams.domain.activity.ResultSource
 import org.racedaydreams.domain.time.CalendarDates
 import org.racedaydreams.domain.time.Offsets
@@ -21,7 +25,9 @@ internal fun AppleRecordedResults(
 ) {
     val state by session.services.operations.state.collectAsState()
     var editing by rememberSaveable { mutableStateOf(false) }
-    val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
+    val units = state.profile?.preferences()?.units() ?: UnitSystem.METRIC
+    val imperial = units == UnitSystem.IMPERIAL
+    val history = remember(state.results) { PersonalBestCalculator.history(state.results) }
     CoachPage {
         CoachButton("Back", back)
         CoachHeading("Recorded race results")
@@ -50,8 +56,58 @@ internal fun AppleRecordedResults(
             )
         }
         (state.error ?: state.message)?.let { Text(it) }
-        if (state.results.isEmpty()) Text("No race results have been saved.")
+        CoachHeading("Running personal bests")
+        if (history.isEmpty()) Text("No supported running personal bests yet.")
+        PerformanceDistance.CORE.forEach { distance ->
+            val ranked =
+                remember(state.results, distance) {
+                    sharedRankedRunningResults(state.results, distance.code())
+                }
+            if (ranked.isNotEmpty()) {
+                var expanded by rememberSaveable(distance.code()) { mutableStateOf(false) }
+                CoachCard {
+                    Text(distance.label(), style = MaterialTheme.typography.titleLarge)
+                    ranked.forEachIndexed { index, result ->
+                        if (index > 0) HorizontalDivider()
+                        SharedRankedRunningResult(
+                            result,
+                            index + 1,
+                            units,
+                            AppleCalendarDates::label,
+                        ) {
+                            result.activityId()?.let { id ->
+                                if (state.activities.any { it.id() == id }) {
+                                    TextButton(onClick = { openActivity(id) }) {
+                                        Text("View linked run")
+                                    }
+                                } else Text("Linked run is unavailable on this device.")
+                            }
+                        }
+                    }
+                    TextButton(onClick = { expanded = !expanded }) {
+                        Text(if (expanded) "Hide PB progression" else "Show PB progression")
+                    }
+                    if (expanded) {
+                        history
+                            .filter { it.result().distance().code() == distance.code() }
+                            .forEach { entry ->
+                                val result = entry.result()
+                                Text(
+                                    "${AppleCalendarDates.label(result.date())} · ${PaceCalculator.formatTime(result.duration())} · ${sharedResultSource(result)}"
+                                )
+                                entry.improvement()?.let {
+                                    Text("Improvement: ${PaceCalculator.formatTime(it)}")
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        CoachHeading("Entered race results")
+        if (state.results.none { it.source() != ResultSource.ROLLING })
+            Text("No race results have been entered.")
         state.results
+            .filter { it.source() != ResultSource.ROLLING }
             .sortedByDescending { it.date().toEpochDay() }
             .forEach { result ->
                 CoachCard {
@@ -61,13 +117,7 @@ internal fun AppleRecordedResults(
                     Text(AppleCalendarDates.label(result.date()))
                     result.eventName()?.let { Text(it) }
                     result.note()?.let { Text(it) }
-                    Text(
-                        when (result.source()) {
-                            ResultSource.OFFICIAL_CHIP -> "Official chip time (entered)"
-                            ResultSource.MANUAL -> "Manually entered result"
-                            ResultSource.ROLLING -> "Calculated rolling effort"
-                        }
-                    )
+                    Text(sharedResultSource(result))
                     result.activityId()?.let { id ->
                         TextButton(onClick = { openActivity(id) }) { Text("View linked run") }
                     }

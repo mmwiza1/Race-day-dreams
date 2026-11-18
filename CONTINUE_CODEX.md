@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 190 running personal bests on iOS
+
+iOS recorded results now show the existing source-precedence rankings and
+recorded personal-best progression by distance. Android and iOS share the
+ranked row, source labels and ranking helper. Android app and instrumentation
+Kotlin compilation passed; pinned formatting and diff checks passed.
+Emulator and simulator runtime tests for this checkpoint remain pending.
+
+PR #24 is draft at 73026cc. Experiment 44205729778 is running on Android
+and Apple. The separate Android workflow 44205729789 passed on that head.
+Preserve the ongoing experiment and inspect its actual results before
+pushing this checkpoint. Next verify native framework compilation, GPX
+decoder Native results and simulator startup, then continue
+remaining feature parity and full release gates. No merge/publication.
+
 ### Latest recovery pointer — checkpoint 189 race results and Apple picker compile
 
 The existing Android race-result editor is now shared. iOS Training trends

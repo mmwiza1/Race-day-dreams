@@ -5,9 +5,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.ZoneId
@@ -346,42 +343,13 @@ private fun RankedRunningResult(
     state: CoachUiState,
     onActivity: (String) -> Unit,
 ) {
-    val units = state.profile?.preferences()?.units() ?: UnitSystem.METRIC
-    Row(
-        Modifier.fillMaxWidth().testTag("running-record-${result.distance().code()}-$rank"),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    SharedRankedRunningResult(
+        result,
+        rank,
+        state.profile?.preferences()?.units() ?: UnitSystem.METRIC,
+        ::friendlyDate,
     ) {
-        Surface(
-            color =
-                if (rank == 1) MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.surfaceContainerHighest,
-            shape = MaterialTheme.shapes.large,
-        ) {
-            Text(
-                "$rank",
-                modifier =
-                    Modifier.padding(horizontal = 14.dp, vertical = 10.dp).semantics {
-                        contentDescription = "Rank $rank"
-                    },
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                PaceCalculator.formatTime(result.duration()),
-                style =
-                    if (rank == 1) MaterialTheme.typography.headlineLarge
-                    else MaterialTheme.typography.titleLarge,
-            )
-            Text(
-                "${org.racedaydreams.domain.activity.PerformancePace.format(result.duration(), result.distance(), units)} average pace",
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(friendlyDate(result.date()), style = MaterialTheme.typography.bodyMedium)
-            Text(resultSource(result), style = MaterialTheme.typography.labelMedium)
-            result.eventName()?.takeIf { it.isNotBlank() }?.let { Text(it) }
-            LinkedActivity(result, state, onActivity)
-        }
+        LinkedActivity(result, state, onActivity)
     }
 }
 
@@ -397,12 +365,7 @@ private fun LinkedActivity(result: RecordedResult, state: CoachUiState, open: (S
         )
 }
 
-private fun resultSource(result: RecordedResult): String =
-    when (result.source()) {
-        ResultSource.OFFICIAL_CHIP -> "Official chip time (entered)"
-        ResultSource.MANUAL -> "Manually entered result"
-        ResultSource.ROLLING -> "Calculated rolling effort"
-    }
+private fun resultSource(result: RecordedResult): String = sharedResultSource(result)
 
 @Composable
 private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () -> Unit) {
