@@ -62,6 +62,26 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 211 iOS startup evidence
+
+- PR #24 is draft. [Experiment 44216267843](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44216267843)
+  on head `71c2ba6` passed the Android API 35 focused job, Apple build and database
+  smoke, and shared tests (1,187 JVM, 1,148 Apple, four native UI-module tests).
+  [Formatting 44216267884](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44216267884) passed.
+  The simulator artifact and experimental Android APK were produced. The APK SHA-256 is
+  `1bc83c63665351a75ddee2b2cc9e815d8db35cc345cd236833e67951789e33af`.
+- The inspected, checksum-verified iOS screenshot was SpringBoard, not the app.
+  Its synthetic PR merge `97716cc` has the same tree as `71c2ba6`. Database schema
+  creation and simulator build are verified, but foreground rendering and quick-run
+  runtime remain unverified. Local evidence: `/workspace/scratch/kmp211-evidence/`.
+- The smoke now checks process liveness, requires two real first-run coaching labels
+  in the screenshot using macOS Vision, and logs app/SpringBoard diagnostics on a
+  failed capture. Workflow YAML, shell syntax, and diff checks passed locally. Verify
+  the Apple run on this checkpoint. If it fails, inspect the diagnostics for the actual
+  launch failure before changing app code. If it passes, inspect the source-bound
+  screenshot, exercise real iOS flows including quick runs, and continue remaining
+  parity and the full Android API 28/35/36 and iOS release gates before merge.
+
 ### Latest recovery pointer — checkpoint 210 quick runs and CI repairs
 
 iOS can start a distance- or duration-target quick run using the shared

@@ -170,7 +170,10 @@ jobs:
           fi
           xcrun simctl bootstatus "$device" -b
           xcrun simctl install "$device" iosApp/build/RaceDayDreams.app
-          xcrun simctl launch "$device" org.racedaydreams.ios
+          launch="$(xcrun simctl launch "$device" org.racedaydreams.ios)"
+          echo "$launch"
+          app_pid="${launch##*: }"
+          [[ "$app_pid" =~ ^[0-9]+$ ]]
           app_data="$(xcrun simctl get_app_container "$device" org.racedaydreams.ios data)"
           database="$app_data/Library/Application Support/racedaydreams.sqlite"
           for attempt in {1..30}; do
@@ -180,8 +183,23 @@ jobs:
             sleep 1
           done
           test "$(sqlite3 -readonly "$database" 'PRAGMA user_version;')" = "19"
-          xcrun simctl io "$device" screenshot iosApp/build/startup.png
-          test -s iosApp/build/startup.png
+          swiftc scripts/check-ios-startup.swift -o "$RUNNER_TEMP/check-ios-startup"
+          for attempt in {1..15}; do
+            if ! kill -0 "$app_pid" 2>/dev/null; then
+              break
+            fi
+            xcrun simctl io "$device" screenshot iosApp/build/startup-candidate.png
+            if "$RUNNER_TEMP/check-ios-startup" iosApp/build/startup-candidate.png; then
+              mv iosApp/build/startup-candidate.png iosApp/build/startup.png
+              break
+            fi
+            sleep 1
+          done
+          if ! test -s iosApp/build/startup.png; then
+            xcrun simctl spawn "$device" log show --last 2m --style compact \
+              --predicate 'process == "RaceDayDreams" OR (process == "SpringBoard" AND eventMessage CONTAINS "org.racedaydreams.ios")' || true
+            exit 1
+          fi
           (
             cd iosApp/build
             git rev-parse HEAD > source-commit.txt
