@@ -69,6 +69,39 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             },
         )
 
+    fun dreamAssignment(
+        activityId: String
+    ): org.racedaydreams.domain.support.DreamRoutes.Assignment? {
+        val payload =
+            database
+                .query(
+                    "SELECT payload FROM coach_support WHERE kind='dream' AND id=?",
+                    listOf(SqlValue.Text(sqlRequired(activityId, "activity ID"))),
+                )
+                .singleOrNull()
+                ?.single()
+                ?.sqlText() ?: return null
+        val archive =
+            SupportArchiveJson.decode(
+                buildJsonObject {
+                    put("version", 1)
+                    put(
+                        "rows",
+                        buildJsonArray {
+                            add(
+                                buildJsonObject {
+                                    put("kind", "dream")
+                                    put("id", activityId)
+                                    put("payload", StoredJson.objectValue(payload))
+                                }
+                            )
+                        },
+                    )
+                }
+            )
+        return (archive.records.single().evidence as SupportArchiveJson.Evidence.Dream).assignment
+    }
+
     fun completeRoutine(id: String, routine: String, at: org.racedaydreams.domain.time.Instant) {
         val payload = buildJsonObject {
             put("version", 1)

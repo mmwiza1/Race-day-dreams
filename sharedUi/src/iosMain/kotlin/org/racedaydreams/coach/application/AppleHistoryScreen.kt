@@ -171,6 +171,7 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                         },
                     )
                     SharedRecordedHeartRateSummary(run) { it.toString().removeSuffix(".0") }
+                    AppleSavedDreamRoute(session, id)
                     Text("Source: ${ActivitySources.friendly(run.source())}")
                     val current = state.activities.firstOrNull { it.id() == id } ?: run
                     val shoeId = current.shoeId()

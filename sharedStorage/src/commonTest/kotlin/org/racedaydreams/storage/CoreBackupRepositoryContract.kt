@@ -50,6 +50,27 @@ abstract class CoreBackupRepositoryContract {
         )
 
     @Test
+    fun savedDreamAssignmentReadIsScopedAndPreservesVersionedGeometry() = storage { db ->
+        val support = SqliteRunningSupportArchives(db)
+        assertNull(support.dreamAssignment("retained-run"))
+        db.execute(
+            "INSERT INTO coach_support(kind,id,payload) VALUES('dream','retained-run',?)",
+            listOf(
+                SqlValue.Text(
+                    """{"version":1,"route":"paris-2026-geo-v1","start":1200,"distance":5000}"""
+                )
+            ),
+        )
+        val before = db.query("SELECT total_changes()")
+        val saved = assertNotNull(support.dreamAssignment("retained-run"))
+        assertEquals("paris-2026-geo-v1", saved.routeId())
+        assertEquals(1200.0, saved.startMetres())
+        assertEquals(5000.0, saved.coveredMetres())
+        assertNull(support.dreamAssignment("unrelated-run"))
+        assertEquals(before, db.query("SELECT total_changes()"))
+    }
+
+    @Test
     fun completedRaceWarmupSurvivesAppBackupAndRejectsUnknownRoutines() = storage { db ->
         val support = SqliteRunningSupportArchives(db)
         support.completeRoutine("completed", "warm-race-short", at)

@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 196 saved Dream Routes on iOS
+
+iOS run details read and display existing Dream Route assignments, including
+restored assignments, with their versioned course geometry and equivalent
+distance. They leave the assignment and actual GPS evidence untouched.
+Nine focused JDBC core backup tests passed, including scoped read-only
+assignment lookup. Pinned formatting, diff and 19 schema checks passed.
+Native rendering, new Dream Route opt-in/assignment, and city artwork
+parity remain open.
+
+PR #24 remains draft at c3f0ec4. Experiment 44208542517 still had both jobs
+running. Preserve it, inspect framework, decoder and simulator results,
+then push local checkpoints 195–196 with any concrete fixes. Continue
+remaining native feature parity and release gates before merge.
+
 ### Latest recovery pointer — checkpoint 195 iOS exercise artwork and routines
 
 iOS exercise details and browse thumbnails use the same reviewed bundled
