@@ -62,6 +62,18 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 246 iOS rest controls
+
+- iOS Gym Now now exposes the shared coordinator's subtract-30-seconds
+  and reset actions in the existing active/paused rest panel. It uses
+  the same persistence and notification rescheduling path as the other
+  timer controls. Paused timers show the remaining time. Targeted JVM
+  timer tests and pinned formatting passed. Native UI verification remains pending.
+- Keep this iOS-only change local while [44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
+  verifies `28d4e8f`. Then inspect its exact Apple and Android results
+  and batch any necessary follow-up. PR #24 stays draft until the
+  focused implementation can move into all final verification gates.
+
 ### Latest recovery pointer — checkpoint 245 completed iOS tests, timed-out CI
 
 - [Run 44342650745](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44342650745)
@@ -74,9 +86,9 @@ incomplete migration merely because a focused checkpoint passes.
   executed. The runner then hit the step's 12-minute wall deadline
   during result finalisation, before completing the job. Expanded the
   step to 16 minutes and job to 65. Test assertions are unchanged.
-- Batch the timeout adjustment with dated Gym Now, calendar and return
-  navigation commits. Verify the exact new head's completed native
-  workflow and dated iOS path. Full platform gates remain pending.
+- Pushed `28d4e8f` with the timeout adjustment, dated Gym Now, calendar
+  and return navigation. [Exact-head workflow 44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
+  is active. Verify native workflow completion and the dated iOS path. Full platform gates remain pending.
   Keep PR #24 draft while scope or focused checks remain pending.
 
 ### Latest recovery pointer — checkpoint 244 calendar to dated Gym Now

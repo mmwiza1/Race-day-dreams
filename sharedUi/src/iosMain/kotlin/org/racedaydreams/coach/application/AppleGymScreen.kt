@@ -137,13 +137,15 @@ internal fun AppleGymScreen(
                                     Text("Pause rest")
                                 }
                             }
-                            GymRestTimer.Phase.PAUSED ->
+                            GymRestTimer.Phase.PAUSED -> {
+                                Text("Paused · ${timer.secondsRemaining()} seconds remaining")
                                 TextButton(
                                     onClick = { model.restAction("resume") },
                                     enabled = enabled,
                                 ) {
                                     Text("Resume rest")
                                 }
+                            }
                             else ->
                                 TextButton(
                                     onClick = { model.restAction("start") },
@@ -158,6 +160,12 @@ internal fun AppleGymScreen(
                         ) {
                             TextButton(onClick = { model.restAction("+30") }, enabled = enabled) {
                                 Text("Add 30 seconds")
+                            }
+                            TextButton(onClick = { model.restAction("-30") }, enabled = enabled) {
+                                Text("Remove 30 seconds")
+                            }
+                            TextButton(onClick = { model.restAction("reset") }, enabled = enabled) {
+                                Text("Reset rest")
                             }
                             TextButton(onClick = { model.restAction("skip") }, enabled = enabled) {
                                 Text("Skip rest")
