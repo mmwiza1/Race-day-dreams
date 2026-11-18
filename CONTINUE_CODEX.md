@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 218 workout editor UI guard
+
+- Added an Android instrumentation test of the production shared editor,
+  dark theme and 200% text. With recording unavailable it duplicates a
+  retained warm-up group, commits only on explicit save, and preserves
+  the original in-memory prescription. The test compiles locally
+  (`/workspace/scratch/kmp218-editor.log`), and is included in the next
+  focused gate. Runtime remains unverified.
+- Keep local checkpoints 217–218 unpushed while [44258765847](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44258765847)
+  on `476583a` finishes. Latest Android stage was API 35 instrumentation;
+  Apple shared tests were running before framework linking. Formatting
+  CI passed on the pushed head. Inspect the foreground capture or failure
+  diagnostic and then batch any needed fix with these commits. PR #24
+  remains draft.
+
 ### Latest recovery pointer — checkpoint 217 structured workout parity
 
 - iOS quick run offers 3/5/10 km and 20/30/45/60 minute presets that

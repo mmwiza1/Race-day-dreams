@@ -303,6 +303,7 @@
     "app/src/androidTest/java/org/racedaydreams/coach/SharedAppleHealthGatewayTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedHomeScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedStartingPathTest.kt",
+    "app/src/androidTest/java/org/racedaydreams/coach/SharedRunningWorkoutEditorTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedTrainingPlanScreenTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedAchievementsCoordinatorTest.kt",
     "app/src/androidTest/java/org/racedaydreams/coach/SharedStrengthProgrammeCoordinatorTest.kt",
