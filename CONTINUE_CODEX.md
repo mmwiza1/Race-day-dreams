@@ -62,6 +62,25 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 230 verified workout persistence
+
+- [Run 44288009528](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44288009528)
+  passed on `9ce9ba9` (642 focused API 35 Android tests, Apple shared
+  tests, app build, standalone startup and production XCUITest).
+  Test `testFavouriteSurvivesRelaunchWithoutLocationPermission`
+  passed in 113.748 s, one test and zero failures. XCTest result
+  artifact 14422625562. Screenshot 14422011392 showed genuine onboarding;
+  SHA-256 `2025240e9328c01558462a740db047dd55c24a7a3ede5470747839a8458b7a8a`
+  matched and source `9450234` had the exact PR tree `adc5e07`.
+- Extended that real app flow to grant location through the system
+  alert, start the saved prescription, pause/resume, relaunch while
+  interrupted and explicitly discard through UI. No route is fabricated.
+  Diff check passed locally. Swift/XCTest runs only on macOS CI here.
+- Verify the new Apple test. If it passes, add evidence-backed saved-route
+  and HealthKit checks without treating them as physical acceptance,
+  confirm remaining parity and run the required release matrix.
+  Keep PR #24 draft while the migration is incomplete.
+
 ### Latest recovery pointer — checkpoint 229 independent XCTest execution
 
 - [Run 44282849055](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44282849055)

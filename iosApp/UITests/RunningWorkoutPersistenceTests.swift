@@ -24,6 +24,28 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Edit My workout", in: app)
         XCTAssertTrue(control("Edit step 1 · run", in: app).waitForExistence(timeout: 15))
         XCTAssertFalse(control("Start custom workout", in: app).exists)
+
+        tap("Close editor", in: app)
+        app.swipeDown()
+        app.swipeDown()
+        tap("Allow location access", in: app)
+        let permission = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+            .buttons["Allow While Using App"]
+        XCTAssertTrue(permission.waitForExistence(timeout: 20))
+        permission.tap()
+        tap("Start My workout · 1 steps", in: app)
+        tap("Pause", in: app)
+        tap("Resume", in: app)
+        XCTAssertTrue(control("Pause", in: app).waitForExistence(timeout: 15))
+
+        // Do not fabricate a route just to make an interrupted run saveable.
+        app.terminate()
+        app.launch()
+        tap("Record", in: app)
+        XCTAssertTrue(control("Interrupted recording", in: app).waitForExistence(timeout: 20))
+        tap("Discard interrupted recording", in: app)
+        tap("Discard", in: app)
+        XCTAssertTrue(control("Create custom workout", in: app).waitForExistence(timeout: 15))
     }
 
     private func control(_ label: String, in app: XCUIApplication) -> XCUIElement {
