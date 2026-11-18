@@ -28,6 +28,26 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             )
         }
 
+    fun saveSchedule(preferences: SchedulePreferences) =
+        saveOriginal(
+            "config",
+            "schedule",
+            buildJsonObject {
+                put("version", 1)
+                put("type", "schedule")
+                put("maximumMinutes", preferences.maximumMinutes)
+                put("distribution", preferences.distribution)
+                put(
+                    "unavailable",
+                    JsonArray(
+                        preferences.unavailable
+                            .sortedBy { it.toEpochDay() }
+                            .map { JsonPrimitive(it.toString()) }
+                    ),
+                )
+            },
+        )
+
     /** Read only the original shoe-feedback preference; never hydrate unrelated route payloads. */
     fun shoeDiscomfort(): Set<String> =
         configuration("shoe-feedback")?.let { payload ->

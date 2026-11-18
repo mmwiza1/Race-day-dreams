@@ -50,6 +50,28 @@ abstract class CoreBackupRepositoryContract {
         )
 
     @Test
+    fun scheduleCanBeSavedAndInvalidReplacementLeavesExistingChoiceIntact() = storage { db ->
+        val support = SqliteRunningSupportArchives(db)
+        val schedule =
+            SqliteRunningSupportArchives.SchedulePreferences(
+                75,
+                "FEWER_LONGER",
+                setOf(CalendarDates.of(2026, 12, 5)),
+            )
+        support.saveSchedule(schedule)
+        assertEquals(schedule, support.schedule())
+        assertFailsWith<IllegalArgumentException> {
+            support.saveSchedule(schedule.copy(maximumMinutes = 10))
+        }
+        assertEquals(schedule, support.schedule())
+
+        val snapshot = SqliteApplicationBackup(db).encode(at)
+        db.execute("DELETE FROM release08 WHERE kind='config' AND id='schedule'")
+        SqliteApplicationBackupRestore(db) { "schedule-restored" }.replace(snapshot)
+        assertEquals(schedule, support.schedule())
+    }
+
+    @Test
     fun dreamRoutePreferencesDefaultOffAndFreezeSelectedGeometryInNewRunOrigin() = storage { db ->
         val support = SqliteRunningSupportArchives(db)
         assertFalse(support.dreamPreferences().enabled)

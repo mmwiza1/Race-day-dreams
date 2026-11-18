@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 206 session planning preferences on iOS
+
+iOS Settings now edits the existing session budget, session distribution and
+one-off unavailable dates. It saves in the validated legacy backup format,
+read by the existing explicit plan generator. Saving preferences does not
+rebuild the plan. Eleven JDBC core backup tests passed, including invalid
+replacement and round-trip restoration. Pinned formatting, diff checks
+and 19 schema boundaries passed. Native UI verification is pending.
+
+PR #24 remains draft at fb2b85e. Experiment 44213596116 was still running
+Android and Apple. Preserve it, review the exact-head results and push
+checkpoints 205–206 with any concrete fixes. Verify simulator startup,
+source-bound screenshot and production settings, then continue parity
+and full release gates.
+
 ### Latest recovery pointer — checkpoint 205 independently reviewable iOS startup capture
 
 The Apple experiment now publishes the startup screenshot in its own

@@ -169,6 +169,7 @@ fun AppleSettingsScreen(
         ) {
             Text("Import recorded route (GPX)")
         }
+        AppleScheduleSettings(session.runningSupport)
         AppleDreamSettings(session.runningSupport)
         AppleRecordingStorage(session.backupDocuments)
         val feedback = message ?: state.error ?: state.message ?: reminderFailure
