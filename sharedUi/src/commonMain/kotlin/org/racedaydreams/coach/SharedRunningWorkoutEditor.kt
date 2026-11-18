@@ -16,7 +16,7 @@ import org.racedaydreams.domain.polish.CustomWorkout
 fun SharedRunningWorkoutEditor(
     draftId: String,
     initial: CustomWorkout?,
-    start: (CustomWorkout) -> Unit,
+    start: ((CustomWorkout) -> Unit)?,
     save: (CustomWorkout) -> Unit,
     close: () -> Unit,
 ) {
@@ -141,7 +141,7 @@ fun SharedRunningWorkoutEditor(
         }
         if (editing == null && repeatsFor == null) {
             TextButton(onClick = { editing = -1 to -1 }) { Text("Add new group") }
-            CoachButton("Start custom workout") { commit(start) }
+            if (start != null) CoachButton("Start custom workout") { commit(start) }
             TextButton(onClick = { commit(save) }) { Text("Save favourite workout") }
             TextButton(onClick = close) { Text("Close editor") }
         }

@@ -132,22 +132,43 @@ fun AppleRecordingScreen(
     CoachPage {
         CoachHeading("Record a run")
         val draft = editorId
-        if (draft != null && recovery == null && authorized) {
+        if (draft == null && recovery == null && plannedId == null && !working) {
+            TextButton(
+                onClick = {
+                    editorSource = null
+                    editorId = NSUUID().UUIDString
+                }
+            ) {
+                Text("Create custom workout")
+            }
+        }
+        if (draft != null && recovery == null) {
+            if (!authorized) {
+                Text(
+                    "You can edit and save this workout now. Allow location access when you want to record it."
+                )
+                TextButton(onClick = { recorder.requestLocationPermission() }) {
+                    Text("Allow location access")
+                }
+            }
             key(draft) {
                 SharedRunningWorkoutEditor(
                     draft,
                     editorSource,
-                    start = { workout ->
-                        command {
-                            recorder.start(
-                                CustomRecordingExecution(workout, "custom"),
-                                imperial,
-                                spokenCues,
-                                monitorId,
-                            )
-                            editorId = null
-                        }
-                    },
+                    start =
+                        if (authorized)
+                            { workout ->
+                                command {
+                                    recorder.start(
+                                        CustomRecordingExecution(workout, "custom"),
+                                        imperial,
+                                        spokenCues,
+                                        monitorId,
+                                    )
+                                    editorId = null
+                                }
+                            }
+                        else null,
                     save = { workout ->
                         command {
                             withContext(applicationIoDispatcher()) {
@@ -234,14 +255,6 @@ fun AppleRecordingScreen(
                 }
             }
             if (plannedId == null) {
-                TextButton(
-                    onClick = {
-                        editorSource = null
-                        editorId = NSUUID().UUIDString
-                    }
-                ) {
-                    Text("Create custom workout")
-                }
                 TextButton(
                     onClick = {
                         if (previousRuns != null) previousRuns = null

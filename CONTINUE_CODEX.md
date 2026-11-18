@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 215 location-independent authoring
+
+- The iOS custom workout editor can open and save a favourite before the
+  athlete grants location access. Starting the recorder remains gated by
+  the existing location permission. Local shared Android compilation and
+  all three recording archive tests passed (`/workspace/scratch/kmp215-archive.log`).
+  Pinned touched formatting and diff checks passed.
+- The local branch is ahead of PR #24 by checkpoints 212–215. Android
+  focused CI passed on pushed head `2ea5c08`. Apple shared tests, framework
+  linking and simulator build passed. The foreground startup step is
+  still running in [44253971258](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44253971258).
+  Collect that result before pushing the local batch. Inspect and bind
+  any successful screenshot to its source, or diagnose the failure from
+  the boot/launch logs. Next verify the exact new iOS build and
+  permission, authoring and replay flows. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 214 iOS workout authoring
 
 - iOS can create and edit a structured running workout and start it through
