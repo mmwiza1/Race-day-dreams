@@ -229,33 +229,35 @@ fun AppleRecordingScreen(
                     },
                 )
             }
-        } else if (!authorized) {
-            Text("Allow location access to record your outdoor route.")
-            CoachButton("Allow location access") { recorder.requestLocationPermission() }
         } else if (!working) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = spokenCues, onCheckedChange = { spokenCues = it })
-                Text("Speak coaching cues")
-            }
-            TextButton(
-                onClick = {
-                    monitorId = null
-                    recorder.scanHeartRateMonitors()
+            if (!authorized) {
+                Text("Allow location access to record your outdoor route.")
+                CoachButton("Allow location access") { recorder.requestLocationPermission() }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = spokenCues, onCheckedChange = { spokenCues = it })
+                    Text("Speak coaching cues")
                 }
-            ) {
-                Text("Find a Bluetooth heart-rate monitor")
-            }
-            if (monitorId != null) {
-                TextButton(onClick = { monitorId = null }) { Text("Record without a monitor") }
-            }
-            monitors.forEach { (id, name) ->
                 TextButton(
                     onClick = {
-                        monitorId = id
-                        recorder.stopHeartRateScan()
+                        monitorId = null
+                        recorder.scanHeartRateMonitors()
                     }
                 ) {
-                    Text(if (monitorId == id) "$name · selected" else name)
+                    Text("Find a Bluetooth heart-rate monitor")
+                }
+                if (monitorId != null) {
+                    TextButton(onClick = { monitorId = null }) { Text("Record without a monitor") }
+                }
+                monitors.forEach { (id, name) ->
+                    TextButton(
+                        onClick = {
+                            monitorId = id
+                            recorder.stopHeartRateScan()
+                        }
+                    ) {
+                        Text(if (monitorId == id) "$name · selected" else name)
+                    }
                 }
             }
             if (plannedId == null) {
@@ -280,6 +282,7 @@ fun AppleRecordingScreen(
                     if (workouts.isEmpty()) Text("No saved structured runs to repeat yet.")
                     workouts.forEach { previous ->
                         TextButton(
+                            enabled = authorized,
                             onClick = {
                                 command {
                                     recorder.start(
@@ -289,7 +292,7 @@ fun AppleRecordingScreen(
                                         monitorId,
                                     )
                                 }
-                            }
+                            },
                         ) {
                             Text("Repeat ${previous.title()} · ${previous.flattened().size} steps")
                         }
@@ -318,6 +321,7 @@ fun AppleRecordingScreen(
                     if (workouts.isEmpty()) Text("No favourite running workouts saved.")
                     workouts.forEach { favourite ->
                         TextButton(
+                            enabled = authorized,
                             onClick = {
                                 command {
                                     recorder.start(
@@ -327,7 +331,7 @@ fun AppleRecordingScreen(
                                         monitorId,
                                     )
                                 }
-                            }
+                            },
                         ) {
                             Text("Start ${favourite.title()} · ${favourite.flattened().size} steps")
                         }
@@ -377,87 +381,91 @@ fun AppleRecordingScreen(
                         }
                     }
                 }
-                TextButton(onClick = { showQuickTargets = !showQuickTargets }) {
-                    Text(if (showQuickTargets) "Hide quick targets" else "Quick run targets")
-                }
-                if (showQuickTargets) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
-                        listOf(3, 5, 10).forEach { kilometres ->
-                            TextButton(onClick = { quickDistance = kilometres.toString() }) {
-                                Text("$kilometres km")
-                            }
-                        }
+                if (authorized) {
+                    TextButton(onClick = { showQuickTargets = !showQuickTargets }) {
+                        Text(if (showQuickTargets) "Hide quick targets" else "Quick run targets")
                     }
-                    CoachTextInput(
-                        "Distance target (km)",
-                        quickDistance,
-                        { quickDistance = it },
-                        decimal = true,
-                    )
-                    TextButton(
-                        onClick = {
-                            command {
-                                val distance =
-                                    requireNotNull(quickDistance.trim().toDoubleOrNull()) {
-                                        "Enter 0.1–100 km."
-                                    }
-                                recorder.start(
-                                    QuickRecordingExecution(distance * 1000, null),
-                                    imperial,
-                                    spokenCues,
-                                    monitorId,
-                                )
-                            }
-                        }
-                    ) {
-                        Text("Start distance target")
-                    }
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
-                        listOf(20, 30, 45, 60).forEach { minutes ->
-                            TextButton(onClick = { quickMinutes = minutes.toString() }) {
-                                Text("$minutes min")
-                            }
-                        }
-                    }
-                    CoachTextInput(
-                        "Duration target (minutes)",
-                        quickMinutes,
-                        { quickMinutes = it },
-                        decimal = true,
-                    )
-                    TextButton(
-                        onClick = {
-                            command {
-                                val minutes = quickMinutes.trim().toDoubleOrNull()
-                                require(minutes != null && minutes in 1.0..360.0) {
-                                    "Enter 1–360 minutes."
+                    if (showQuickTargets) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
+                            listOf(3, 5, 10).forEach { kilometres ->
+                                TextButton(onClick = { quickDistance = kilometres.toString() }) {
+                                    Text("$kilometres km")
                                 }
-                                recorder.start(
-                                    QuickRecordingExecution(null, (minutes * 60_000).toLong()),
-                                    imperial,
-                                    spokenCues,
-                                    monitorId,
-                                )
                             }
                         }
-                    ) {
-                        Text("Start duration target")
+                        CoachTextInput(
+                            "Distance target (km)",
+                            quickDistance,
+                            { quickDistance = it },
+                            decimal = true,
+                        )
+                        TextButton(
+                            onClick = {
+                                command {
+                                    val distance =
+                                        requireNotNull(quickDistance.trim().toDoubleOrNull()) {
+                                            "Enter 0.1–100 km."
+                                        }
+                                    recorder.start(
+                                        QuickRecordingExecution(distance * 1000, null),
+                                        imperial,
+                                        spokenCues,
+                                        monitorId,
+                                    )
+                                }
+                            }
+                        ) {
+                            Text("Start distance target")
+                        }
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
+                            listOf(20, 30, 45, 60).forEach { minutes ->
+                                TextButton(onClick = { quickMinutes = minutes.toString() }) {
+                                    Text("$minutes min")
+                                }
+                            }
+                        }
+                        CoachTextInput(
+                            "Duration target (minutes)",
+                            quickMinutes,
+                            { quickMinutes = it },
+                            decimal = true,
+                        )
+                        TextButton(
+                            onClick = {
+                                command {
+                                    val minutes = quickMinutes.trim().toDoubleOrNull()
+                                    require(minutes != null && minutes in 1.0..360.0) {
+                                        "Enter 1–360 minutes."
+                                    }
+                                    recorder.start(
+                                        QuickRecordingExecution(null, (minutes * 60_000).toLong()),
+                                        imperial,
+                                        spokenCues,
+                                        monitorId,
+                                    )
+                                }
+                            }
+                        ) {
+                            Text("Start duration target")
+                        }
                     }
                 }
             }
-            CoachButton(if (plannedId == null) "Start recording" else "Start planned workout") {
-                command {
-                    val planned =
-                        plannedId?.let {
-                            val version = requireNotNull(state.currentPlan) { "No current plan." }
-                            require(raceVersion == null || raceVersion == version.id()) {
-                                "The plan changed. Open Race Day again."
+            if (authorized)
+                CoachButton(if (plannedId == null) "Start recording" else "Start planned workout") {
+                    command {
+                        val planned =
+                            plannedId?.let {
+                                val version =
+                                    requireNotNull(state.currentPlan) { "No current plan." }
+                                require(raceVersion == null || raceVersion == version.id()) {
+                                    "The plan changed. Open Race Day again."
+                                }
+                                PlannedRecordingExecution(version, it, hilly)
                             }
-                            PlannedRecordingExecution(version, it, hilly)
-                        }
-                    recorder.start(planned, imperial, spokenCues, monitorId, hilly)
+                        recorder.start(planned, imperial, spokenCues, monitorId, hilly)
+                    }
                 }
-            }
         }
         error?.let { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
     }

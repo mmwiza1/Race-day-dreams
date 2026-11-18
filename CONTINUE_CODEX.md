@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 220 workout library permissions
+
+- iOS workout favourites can be browsed, edited and removed before
+  granting location permission. Retained structured runs remain visible.
+  Recording starts stay permission-gated, and interrupted run recovery
+  still takes precedence. Touched ktfmt and diff checks passed. Native
+  compilation and runtime verification remain pending.
+- [Run 44258765847](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44258765847)
+  on pushed head `476583a` passed the focused Android job. The Apple job
+  was still compiling/testing shared code. Keep checkpoints 217–220
+  local until the Apple startup evidence is available. Verify the new
+  permission flow alongside the existing authoring/replay flows. PR #24
+  remains draft.
+
 ### Latest recovery pointer — checkpoint 219 shared workout library
 
 - Android's existing running workout library now delegates favourite
