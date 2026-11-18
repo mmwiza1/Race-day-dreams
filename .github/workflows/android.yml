@@ -165,6 +165,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      # test-domain.sh now builds the shared Kotlin classpath with Gradle, which configures the
+      # Android plugin; use the same SDK and cached dependency setup as the build jobs.
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install compile SDK
+        run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
       - name: Compile and verify Android-independent guidance
         run: sh scripts/test-domain.sh
       - name: Require every canonical exercise and routine illustration

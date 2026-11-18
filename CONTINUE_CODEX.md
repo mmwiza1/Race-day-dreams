@@ -83,6 +83,11 @@ incomplete migration merely because a focused checkpoint passes.
   - A6/A7 documented as known limitations (HealthKit scope; no iOS in-app data deletion).
   - A8 README iOS statement; A9 checkpoints 239 and earlier moved verbatim to
     `docs/CONTINUE_CODEX_ARCHIVE.md`. A10/A11 (CI cost, Node 20 actions) left to PR #23.
+- Full gate c29f370 (android.yml 44398563175): `guidance-completeness` job 135135023977 failed
+  in 14 s resolving AGP dependencies ("Could not find" jsr305, gson, asm...). Root cause: the
+  migration made `scripts/test-domain.sh` use Gradle, but this ready-only job never ran on
+  the draft branch and lacked the SDK + setup-gradle cache steps the build jobs have. Fixed
+  by adding the same setup steps; no test or audit content changed.
 - Local: pinned formatting applied (only AppleCoachSpeech comment rewrapped), release-note,
   showcase and screenshot-source tests pass. iOS Kotlin/Native compilation cannot run on
   Linux: the CallKit/AudioToolbox/AVAudioSession calls are verified only by the Apple CI job.
