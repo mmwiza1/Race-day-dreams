@@ -1,8 +1,16 @@
 package org.racedaydreams.coach.application
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import kotlin.math.roundToLong
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -154,12 +162,15 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
             else ->
                 CoachCard {
                     Text(dateLabel(run.start(), run.startOffset()))
-                    Text(
-                        run.distanceMetres()?.let { distanceLabel(it, imperial) }
-                            ?: "Distance unavailable"
+                    SharedRecordedRunSummary(
+                        run,
+                        { distanceLabel(it, imperial) },
+                        sharedRecordedElapsedPace(run, imperial) { seconds ->
+                            val rounded = kotlin.math.round(seconds).toLong()
+                            "${rounded / 60}:${(rounded % 60).toString().padStart(2, '0')}"
+                        },
                     )
-                    Text("Elapsed: ${PaceCalculator.formatTime(run.elapsedTime())}")
-                    run.movingTime()?.let { Text("Active: ${PaceCalculator.formatTime(it)}") }
+                    SharedRecordedHeartRateSummary(run) { it.toString().removeSuffix(".0") }
                     Text("Source: ${ActivitySources.friendly(run.source())}")
                     val current = state.activities.firstOrNull { it.id() == id } ?: run
                     val shoeId = current.shoeId()
@@ -199,6 +210,24 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                                     )
                                 }
                             }
+                        }
+                    }
+                    if (shoe != null) {
+                        val noted = id in state.shoeDiscomfort
+                        Row(
+                            Modifier.heightIn(min = 48.dp)
+                                .toggleable(
+                                    value = noted,
+                                    enabled = !state.busy,
+                                    role = Role.Checkbox,
+                                    onValueChange = {
+                                        session.services.runningEvidence.shoeDiscomfort(id, it)
+                                    },
+                                ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(checked = noted, onCheckedChange = null, enabled = !state.busy)
+                            Text("I noted discomfort while wearing this shoe (no cause inferred)")
                         }
                     }
                     SharedRunNotes(current, state.busy) { notes, effort ->

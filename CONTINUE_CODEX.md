@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 188 shared recorded-run summary
+
+Android and iOS now use the same run summary and recorded heart-rate cards.
+iOS shows elapsed average pace and separately retained moving time, and can
+record shoe observations through the existing coordinator. Android keeps
+its current page, formatters and instrumentation entry points. Android
+app and instrumentation Kotlin compilation, touched formatting and diff
+checks passed. Runtime UI tests for this commit are pending.
+
+PR #24 is at 9bc0737. Experiment 44201909878 passed Android and Apple was
+still running at last check. Preserve that job; inspect its result, then
+push local checkpoints 182–188 together. Continue with the new Apple
+compile, decoder and simulator gates, and verify the native GPX, shoes,
+notes and summary flows. Keep the PR draft until full acceptance.
+
 ### Latest recovery pointer — checkpoint 187 shared run notes and effort
 
 Android and iOS now use the same run notes and optional 0–10 effort form.
