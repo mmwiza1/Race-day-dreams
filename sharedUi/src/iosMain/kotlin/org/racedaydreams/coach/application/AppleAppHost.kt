@@ -9,9 +9,13 @@ import androidx.compose.ui.window.ComposeUIViewController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.racedaydreams.coach.*
+import org.racedaydreams.coach.activity.SharedShoesScreen
 import org.racedaydreams.coach.strength.SharedStrengthAnalyticsScreen
 import org.racedaydreams.coach.theme.SharedRaceDayTheme
+import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.presentation.AthleteLanguage
 import org.racedaydreams.domain.reminders.ReminderSettings
 import org.racedaydreams.domain.settings.PrimaryFocus
@@ -20,6 +24,7 @@ import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
 import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
+import platform.Foundation.NSUUID
 import platform.Foundation.NSUserDefaults
 import platform.UIKit.UIViewController
 
@@ -168,6 +173,7 @@ private enum class ApplePage {
     STRENGTH_RECORD,
     ACTIVITY,
     SETTINGS,
+    SHOES,
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -215,8 +221,35 @@ private fun AppleAppContent(
                 ApplePage.SETTINGS ->
                     AppleSettingsScreen(session, controller, onRestore) {
                         CoachButton("Body measurements and protein") { page = ApplePage.BODY }
+                        CoachButton("Your shoes") { page = ApplePage.SHOES }
                         health(false)
                     }
+                ApplePage.SHOES ->
+                    SharedShoesScreen(
+                        state = state,
+                        today = AppleCalendarDates.today(),
+                        now = AppleRecordingClock::now,
+                        newId = { NSUUID().UUIDString },
+                        parseDate = AppleCalendarDates::parse,
+                        formatDecimal = { it.toString().removeSuffix(".0") },
+                        formatDistance = {
+                            distanceLabel(
+                                it,
+                                state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
+                            )
+                        },
+                        firstRunDate = {
+                            val date =
+                                Instant.fromEpochSeconds(it.getEpochSecond(), it.getNano())
+                                    .toLocalDateTime(TimeZone.currentSystemDefault())
+                                    .date
+                            AppleCalendarDates.label(AppleCalendarDates.parse(date.toString()))
+                        },
+                        purchaseDateField = { value, change ->
+                            CoachTextInput("Purchase date (YYYY-MM-DD, optional)", value, change)
+                        },
+                        saveShoe = session.services.runningEvidence::saveShoe,
+                    )
                 ApplePage.BODY ->
                     AppleBodyMeasurements(
                         session,

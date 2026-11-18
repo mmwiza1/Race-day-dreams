@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 186 shared shoe management
+
+Android and iOS now use the same shoe list, mileage cards and editor.
+Android retains its existing purchase-date picker. iOS opens shoes from
+Settings and can assign or clear shoes from recorded run details. Both
+use the existing shared evidence coordinator and SQLite repositories.
+Touched-file formatting, diff checks and Android debug Kotlin compilation
+passed. iOS compilation, layout and runtime assignment remain pending.
+
+PR #24 is still at 9bc0737. Experiment 44201909878 remained in progress
+on both platforms at last check. Inspect the final results and then push
+the queued checkpoints 182–186. Verify native GPX and shoe flows with the
+next simulator build, then continue the remaining native parity and full
+release gates. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 185 GPX decoder fidelity
 
 The Apple decoder preserves empty segments for consistent track identity

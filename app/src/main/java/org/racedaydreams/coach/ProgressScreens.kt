@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.UUID
@@ -22,8 +21,6 @@ import org.racedaydreams.domain.activity.PersonalBestCalculator
 import org.racedaydreams.domain.activity.PersonalBestEntry
 import org.racedaydreams.domain.activity.RecordedResult
 import org.racedaydreams.domain.activity.ResultSource
-import org.racedaydreams.domain.activity.Shoe
-import org.racedaydreams.domain.activity.ShoeMetricsCalculator
 
 /** Presentation of retained evidence. Blank metrics are not substituted with predicted values. */
 @Composable
@@ -516,143 +513,18 @@ private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () 
 
 @Composable
 fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
-    var showEditor by rememberSaveable { mutableStateOf(false) }
-    var editingId by rememberSaveable { mutableStateOf<String?>(null) }
-    val metrics =
-        remember(state.shoes, state.activities) {
-            state.shoes.associate { shoe ->
-                shoe.id() to
-                    ShoeMetricsCalculator.calculate(
-                        shoe,
-                        state.activities,
-                        Clock.systemDefaultZone(),
-                    )
-            }
-        }
-    CoachPage {
-        CoachHeading("Your shoes")
-        Text(
-            "Mileage is recalculated from the current run assignments. Import updates and later corrections therefore change the recorded total."
-        )
-        Button(
-            onClick = {
-                editingId = null
-                showEditor = true
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Add shoes")
-        }
-        if (showEditor)
-            ShoeEditor(state.shoes.firstOrNull { it.id() == editingId }, state, model) {
-                showEditor = false
-            }
-        if (state.shoes.isEmpty())
-            Text("No shoes have been added. You can assign shoes to runs after adding them here.")
-        state.shoes.forEach { shoe ->
-            val summary = metrics.getValue(shoe.id())
-            org.racedaydreams.coach.activity.ShoeHistoryCard(
-                shoe = shoe,
-                summary = summary,
-                busy = state.busy,
-                formatDistance = { formatDistance(it, state) },
-                formatFirstRunDate = {
-                    friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate())
-                },
-                insights = {
-                    org.racedaydreams.domain.polish.TrainingInsights.shoes(
-                        shoe,
-                        state.activities,
-                        java.time.Instant.now(),
-                        state.shoeDiscomfort,
-                    )
-                },
-                onEdit = {
-                    editingId = shoe.id()
-                    showEditor = true
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun ShoeEditor(
-    shoe: Shoe?,
-    state: CoachUiState,
-    model: CoachViewModel,
-    onDone: () -> Unit,
-) {
-    val id = shoe?.id() ?: "new"
-    val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
-    val metresPerUnit = if (imperial) 1609.344 else 1000.0
-    var brand by rememberSaveable(id) { mutableStateOf(shoe?.brand() ?: "") }
-    var name by rememberSaveable(id) { mutableStateOf(shoe?.model() ?: "") }
-    var date by rememberSaveable(id) { mutableStateOf(shoe?.purchaseDate()?.toString() ?: "") }
-    var starting by
-        rememberSaveable(id) {
-            mutableStateOf(
-                shoe?.startingDistanceMetres()?.let { decimal(it / metresPerUnit) } ?: ""
-            )
-        }
-    var retired by rememberSaveable(id) { mutableStateOf(shoe?.retired() ?: false) }
-    var default by rememberSaveable(id) { mutableStateOf(shoe?.defaultShoe() ?: false) }
-    var notes by rememberSaveable(id) { mutableStateOf(shoe?.notes() ?: "") }
-    var error by rememberSaveable(id) { mutableStateOf<String?>(null) }
-    CoachCard {
-        Text(
-            if (shoe == null) "Add shoes" else "Edit shoes",
-            style = MaterialTheme.typography.titleLarge,
-        )
-        CoachField("Brand (optional)", brand, { brand = it })
-        CoachField("Model", name, { name = it })
-        CoachField("Purchase date (YYYY-MM-DD, optional)", date, { date = it })
-        CoachField(
-            "Starting mileage (${if (imperial) "mi" else "km"}, optional)",
-            starting,
-            { starting = it },
-        )
-        Text(
-            "Leave starting mileage blank if it is unknown. Enter 0 only if no earlier running mileage needs to be included."
-        )
-        CheckRow("Retired", retired) {
-            retired = it
-            if (it) default = false
-        }
-        if (!retired) CheckRow("Use as default for new runs", default) { default = it }
-        CoachField("Shoe notes (optional)", notes, { notes = it }, singleLine = false)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(
-            onClick = {
-                try {
-                    val purchase = date.trim().takeIf { it.isNotEmpty() }?.let(LocalDate::parse)
-                    require(purchase == null || !purchase.isAfter(LocalDate.now())) {
-                        "Purchase date cannot be in the future."
-                    }
-                    val mileage = optionalNumber(starting)?.times(metresPerUnit)
-                    val result =
-                        Shoe(
-                            shoe?.id() ?: UUID.randomUUID().toString(),
-                            brand.trim(),
-                            name.trim(),
-                            purchase,
-                            mileage,
-                            retired,
-                            notes.trim().takeIf { it.isNotEmpty() },
-                            default && !retired,
-                        )
-                    error = null
-                    model.runningEvidence.saveShoe(result, onDone)
-                } catch (failure: Exception) {
-                    error = failure.message ?: "Check the shoe details."
-                }
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Save shoes")
-        }
-        TextButton(onClick = onDone) { Text("Cancel shoe changes") }
-    }
+    org.racedaydreams.coach.activity.SharedShoesScreen(
+        state = state,
+        today = LocalDate.now(),
+        now = java.time.Instant::now,
+        newId = { UUID.randomUUID().toString() },
+        parseDate = LocalDate::parse,
+        formatDecimal = ::decimal,
+        formatDistance = { formatDistance(it, state) },
+        firstRunDate = { friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate()) },
+        purchaseDateField = { value, change ->
+            CoachField("Purchase date (YYYY-MM-DD, optional)", value, change)
+        },
+        saveShoe = model.runningEvidence::saveShoe,
+    )
 }

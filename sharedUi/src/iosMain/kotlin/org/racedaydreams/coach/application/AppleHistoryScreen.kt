@@ -87,6 +87,7 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
     var route by remember(id) { mutableStateOf<PreparedLiveRoute?>(null) }
     var splitDetailRemoved by remember(id) { mutableStateOf(false) }
     var detailRemoved by remember(id) { mutableStateOf(false) }
+    var editingShoes by remember(id) { mutableStateOf(false) }
     var showRoute by remember(id) { mutableStateOf(false) }
     var showSplits by remember(id) { mutableStateOf(false) }
     var loading by remember(id) { mutableStateOf(true) }
@@ -160,6 +161,45 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                     run.movingTime()?.let { Text("Active: ${PaceCalculator.formatTime(it)}") }
                     Text("Source: ${ActivitySources.friendly(run.source())}")
                     run.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
+                    val shoeId = state.activities.firstOrNull { it.id() == id }?.shoeId()
+                    val shoe = state.shoes.firstOrNull { it.id() == shoeId }
+                    Text(
+                        shoe?.let { "Shoes: ${"${it.brand()} ${it.model()}".trim()}" }
+                            ?: "No shoes assigned"
+                    )
+                    if (state.shoes.isNotEmpty()) {
+                        TextButton(
+                            onClick = { editingShoes = !editingShoes },
+                            enabled = !state.busy,
+                        ) {
+                            Text(if (editingShoes) "Close shoe choices" else "Assign shoes")
+                        }
+                        if (editingShoes) {
+                            TextButton(
+                                onClick = {
+                                    session.services.runningEvidence.assignShoe(id, null)
+                                    editingShoes = false
+                                },
+                                enabled = !state.busy,
+                            ) {
+                                Text("No shoes")
+                            }
+                            state.shoes.forEach { choice ->
+                                TextButton(
+                                    onClick = {
+                                        session.services.runningEvidence.assignShoe(id, choice.id())
+                                        editingShoes = false
+                                    },
+                                    enabled = !state.busy,
+                                ) {
+                                    Text(
+                                        "${choice.brand()} ${choice.model()}".trim() +
+                                            if (choice.retired()) " (retired)" else ""
+                                    )
+                                }
+                            }
+                        }
+                    }
                     TextButton(onClick = { showRoute = !showRoute }) {
                         Text(if (showRoute) "Hide route" else "View recorded route")
                     }
