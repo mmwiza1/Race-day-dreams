@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -365,6 +366,21 @@ private fun AppleAppContent(
                         routine = {
                             raceRoutine = it
                             page = ApplePage.RACE_WARMUP
+                        },
+                        checklist = { goal ->
+                            SharedRaceChecklist(
+                                goal,
+                                load = {
+                                    withContext(applicationIoDispatcher()) {
+                                        session.raceChecklist.checked(it)
+                                    }
+                                },
+                                save = { id, label, checked ->
+                                    withContext(applicationIoDispatcher()) {
+                                        session.raceChecklist.save(id, label, checked)
+                                    }
+                                },
+                            )
                         },
                     )
                 ApplePage.RACE_WARMUP ->

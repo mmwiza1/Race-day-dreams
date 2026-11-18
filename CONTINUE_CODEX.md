@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 193 persistent race-week checklist
+
+Race Day uses a shared checklist on both platforms. iOS persists choices
+under the existing race/date/item identity and release08 backup format.
+The checklist waits for saved state, reports failures, and keeps the
+previous choice if saving fails. The seven focused JDBC core backup tests
+passed, including legacy checklist reads and app-backup replacement.
+Android debug Kotlin compilation, formatting of changed shared files,
+diff checks and all 19 schema boundaries passed. Native testing is pending.
+
+PR #24 remains draft at 73026cc. Experiment 44205729778 was still running
+both jobs. Preserve it, inspect native compile, decoder and simulator
+results and then push checkpoints 190–193. Next complete routine
+illustrations/completion parity and the rest of the platform and release
+gates. Do not merge or publish before acceptance.
+
 ### Latest recovery pointer — checkpoint 192 shared Race Day
 
 Android and iOS now share the existing race prediction, pacing strategy,

@@ -40,6 +40,7 @@ private constructor(
     val reminders: AppleCoachReminders,
     val platform: AppleCoachPlatform<File>,
     val backupDocuments: AppleBackupDocuments,
+    val raceChecklist: SqliteRaceChecklist,
 ) {
     private var closed = false
 
@@ -208,6 +209,7 @@ private constructor(
                     reminders,
                     platform,
                     backupDocuments,
+                    SqliteRaceChecklist(database),
                 )
             } catch (failure: Throwable) {
                 withContext(NonCancellable) {

@@ -50,6 +50,30 @@ abstract class CoreBackupRepositoryContract {
         )
 
     @Test
+    fun raceChecklistReadsLegacyRowsAndSurvivesAppBackupReplacement() = storage { db ->
+        val id = "2026-11-20:Park 5K:Shoes & socks"
+        val other = "2026-11-21:Park 5K:Shoes & socks"
+        db.execute(
+            "INSERT INTO release08(kind,id,payload) VALUES('checklist',?,?)",
+            listOf(
+                SqlValue.Text(id),
+                SqlValue.Text("""{"version":1,"label":"Shoes & socks","checked":true}"""),
+            ),
+        )
+        val checklist = SqliteRaceChecklist(db)
+        assertTrue(checklist.checked(id))
+        assertFalse(checklist.checked(other))
+        checklist.save(other, "Shoes & socks", true)
+        val snapshot = SqliteApplicationBackup(db).encode(at)
+        checklist.save(id, "Shoes & socks", false)
+        assertFalse(checklist.checked(id))
+
+        SqliteApplicationBackupRestore(db) { "race-checklist-restored" }.replace(snapshot)
+        assertTrue(checklist.checked(id))
+        assertTrue(checklist.checked(other))
+    }
+
+    @Test
     fun strengthOnlySnapshotUsesOneReadOnlyTransactionAndDoesNotInventRaceProfileOrConsent() =
         storage { db ->
             SqlitePrimaryFocus(SqliteSettings(db)).save(PrimaryFocus.STRENGTH)

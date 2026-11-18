@@ -51,11 +51,19 @@ import java.time.*
     {model.settings.startingPath("hybrid"){choose("baseline")}},
 )
 
-@Composable fun RaceWeekChecklist(goal:org.racedaydreams.domain.RaceGoal){
-    val context=LocalContext.current;val scope=rememberCoroutineScope();val key="${goal.raceDate()}:${goal.raceName()}";var values by remember(key){mutableStateOf<Map<String,Boolean>>(emptyMap())}
-    val labels=listOf("Shoes & socks","Race number / timing chip","Phone charged","Familiar fuel / hydration plan","Kit & travel arrangements")
-    LaunchedEffect(key){values=withContext(Dispatchers.IO){labels.associateWith{Release08Store(context).get("checklist","$key:$it")?.optBoolean("checked")?:false}}}
-    SemanticCard(Tile.Race){Text("Race morning checklist",style=MaterialTheme.typography.titleLarge);labels.forEach{label->CheckRow(label,values[label]==true){checked->scope.launch{withContext(Dispatchers.IO){Release08Store(context).save("checklist","$key:$label",JSONObject().put("version",1).put("label",label).put("checked",checked))};values=values+(label to checked)}}};Text("Use the items relevant to your race. No extra training is required.")}
+@Composable
+fun RaceWeekChecklist(goal: org.racedaydreams.domain.RaceGoal) {
+    val context = LocalContext.current
+    val store = remember(context) { Release08Store(context) }
+    SharedRaceChecklist(
+        goal,
+        load = { id -> withContext(Dispatchers.IO) { store.get("checklist", id)?.optBoolean("checked") ?: false } },
+        save = { id, label, checked ->
+            withContext(Dispatchers.IO) {
+                store.save("checklist", id, JSONObject().put("version", 1).put("label", label).put("checked", checked))
+            }
+        },
+    )
 }
 
 @Composable fun SchedulePreferences(){
