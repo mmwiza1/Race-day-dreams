@@ -89,17 +89,27 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("View recorded route", in: app)
         XCTAssertTrue(control("Your recorded route", in: app).waitForExistence(timeout: 20))
         tap("Export recorded route (GPX)", in: app)
-        guard tapFilesAction("Cancel", in: app) else { return }
+        guard waitForFilesSave(in: app) != nil else { return }
+        let cancel = control("Cancel", in: app)
+        if cancel.exists && cancel.frame.width > 1 && cancel.isHittable {
+            cancel.tap()
+        } else {
+            // Files can open directly in On My iPhone, with Save but no Cancel.
+            let sheetHeader = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.09))
+            let belowSheet = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.84))
+            sheetHeader.press(forDuration: 0.05, thenDragTo: belowSheet)
+        }
         XCTAssertTrue(control("GPX export cancelled.", in: app).waitForExistence(timeout: 20))
 
         tap("Export recorded route (GPX)", in: app)
-        guard tapFilesAction("Save", in: app) else { return }
+        guard let save = waitForFilesSave(in: app) else { return }
+        save.tap()
         XCTAssertTrue(control("GPX file saved.", in: app).waitForExistence(timeout: 20))
     }
 
-    private func tapFilesAction(_ label: String, in app: XCUIApplication) -> Bool {
-        // Files can briefly expose a placeholder before its provider and controls load.
-        let action = control(label, in: app)
+    private func waitForFilesSave(in app: XCUIApplication) -> XCUIElement? {
+        // Wait for a real Files control after the provider has populated the picker.
+        let action = control("Save", in: app)
         let ready = XCTNSPredicateExpectation(
             predicate: NSPredicate { _, _ in
                 action.exists && action.frame.width > 1 && action.isHittable
@@ -107,11 +117,10 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
             object: nil
         )
         guard XCTWaiter.wait(for: [ready], timeout: 60) == .completed else {
-            XCTFail("The native Files picker did not expose an actionable \(label) control.")
-            return false
+            XCTFail("The native Files picker did not expose an actionable Save control.")
+            return nil
         }
-        action.tap()
-        return true
+        return action
     }
 
     private func setSimulatedLocation(latitude: CLLocationDegrees) {

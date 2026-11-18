@@ -62,7 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
-### Latest recovery pointer — checkpoint 237 lightweight XCTest failure evidence
+### Latest recovery pointer — checkpoint 239 export sheet dismissal
+
+- Exact `abd2000` Apple run [44329937298](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44329937298)
+  passed shared Native and GPX tests, framework, simulator build, startup
+  and Health choice. XCTest failed waiting for actionable Cancel.
+  Full result 14443470057 video shows Files finishes loading in
+  On My iPhone with Save and Back visible but no Cancel action.
+  The lightweight export ran but contained no failure attachments.
+- The XCTest now waits for Save as picker readiness, uses native Cancel
+  when usable, otherwise drags down the presented sheet. It still
+  requires the cancellation message, then reopens Files, saves and
+  requires the saved message. The export picker now handles interactive
+  UIKit dismissal through the same idempotent cancellation and staging
+  cleanup used by its document picker delegate.
+- Next verify the exact new Apple workflow's native build, gesture,
+  cancellation and Save results. Android-only retry of the prior rate
+  limit becomes redundant when a new source check is queued. Do not
+  advance PR #24 past draft while platform parity and the full gates
+  remain pending.
+
+### Latest recovery pointer — checkpoint 238 native Files readiness
 
 - The iOS workflow now keeps the original XCTest result bundle and
   exports a separate source-bound failure-attachment artifact when
@@ -78,15 +98,49 @@ incomplete migration merely because a focused checkpoint passes.
   accessibility hierarchy exposes a one-point-wide Cancel placeholder.
   Wait for visible, hittable native controls with a bounded cold-start
   allowance. Preserve both Cancel and Save outcome assertions.
-- Next, inspect the exact next Apple workflow result for Files cancel
+- Pushed `abd2000` with the Files readiness test and failure-attachment
+  export. [Run 44329937298](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44329937298)
+  is in progress. Git diff checks passed locally. This Linux workspace
+  has no Swift/Xcode toolchain for local native execution.
+- Next, inspect that exact Apple workflow result for Files cancel
   and save. If Files still fails to initialise, inspect the new video
   and hierarchy for destination/provider readiness before modifying
   production export or retrying. Full release gates remain pending.
   Keep PR #24 draft.
-- Android job 134859697961 passed its build and failed before running
-  instrumentation: the pinned emulator download from Google terminated
-  with cURL HTTP/2 error 92. Do not treat it as an app regression.
-  Check the next workflow for actual Android instrumentation results.
+- On `abd2000`, Android job 134891290778 stopped before tests: Maven
+  Central returned HTTP 429 for Kotlin Gradle plugin/BOM and Compose
+  compiler metadata. This is distinct from the earlier `ee3637d` emulator
+  download failure (cURL HTTP/2 error 92). Preserve the ongoing Apple
+  job 134891290089. GitHub declined an Android-only retry while the
+  Apple job was active. Once the workflow completes, retry only Android
+  if its repository rate limit has cleared and no Apple fix needs a push.
+- Local offline verification on `abd2000` passed the same Gradle targets:
+  48 retained suites / 700,189 checks, plus 491 shared-domain, 25
+  shared-health and 673 shared-storage JVM tests, and shared storage
+  common metadata compilation. Schema verification passed all 75 tests
+  and shared schema generation matched all 19 Android migration
+  boundaries. All three screenshot-source helper tests passed. The
+  offline Android debug APK, instrumentation APK and lint built
+  successfully. The local debug APK signature verified and the manifest
+  has no Internet permission. It reports 0.12.3-test1, code 19, min API 28
+  and SHA-256 `d7625582951fd974f17863cc7f6def5c6d7c6697d1fcee17bb9f0df26c96cf7e`.
+  This is a local experimental APK. On local API 28 (software-only,
+  read-only AVD), 39 targeted instrumentation tests passed: 9 for
+  shared navigation/Apple Health gateway, 19 for backup/retention,
+  and 11 for recording coordination. Logs are in
+  `/tmp/rdd238-api28-{instrumentation,storage,recording}.log`. This
+  supplements the release matrix. The Apple job passed its shared Native
+  tests, shared framework link, UI/GPX decoder tests and simulator app
+  build. Standalone startup passed. Startup screenshot 14441367360
+  was visually inspected and its checksum verified. The synthetic commit
+  `2efd01c` has the same tree as `abd2000`. The capture also confirms a
+  navigation parity gap: iOS still uses a top text row in AppleAppHost,
+  while Android uses the shared CoachShell icon bar. Preserve the
+  current Files run before changing the host or its XCTest selectors.
+  The local
+  offline Gradle cache is `/workspace/gradle-cache` with
+  `JAVA_HOME=/workspace/jdk17` and `ANDROID_HOME=/workspace/android-sdk`.
+  The default workspace cache lacks the Android Gradle plugin metadata.
 
 ### Latest recovery pointer — checkpoint 236 native export test selector
 

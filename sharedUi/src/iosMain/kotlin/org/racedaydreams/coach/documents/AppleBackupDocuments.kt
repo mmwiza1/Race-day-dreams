@@ -21,10 +21,12 @@ import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSThread
 import platform.Foundation.NSURL
 import platform.Foundation.NSUUID
+import platform.UIKit.UIAdaptivePresentationControllerDelegateProtocol
 import platform.UIKit.UIDevice
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
+import platform.UIKit.UIPresentationController
 import platform.UIKit.UIViewController
 import platform.darwin.NSObject
 import platform.posix.*
@@ -129,6 +131,7 @@ class AppleBackupDocuments(
                     animated = true,
                     completion = null,
                 )
+                picker.controller.presentationController?.delegate = picker
             } catch (failure: Throwable) {
                 activePicker = null
                 throw failure
@@ -316,7 +319,7 @@ class AppleBackupDocuments(
     private inner class Picker(
         private val staged: StagedDocument,
         private val complete: (Outcome) -> Unit,
-    ) : NSObject(), UIDocumentPickerDelegateProtocol {
+    ) : NSObject(), UIDocumentPickerDelegateProtocol, UIAdaptivePresentationControllerDelegateProtocol {
         val controller =
             UIDocumentPickerViewController(
                     forExportingURLs = listOf(NSURL.fileURLWithPath(staged.path)),
@@ -332,6 +335,10 @@ class AppleBackupDocuments(
         }
 
         override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+            finish(Outcome.CANCELLED)
+        }
+
+        override fun presentationControllerDidDismiss(presentationController: UIPresentationController) {
             finish(Outcome.CANCELLED)
         }
 
