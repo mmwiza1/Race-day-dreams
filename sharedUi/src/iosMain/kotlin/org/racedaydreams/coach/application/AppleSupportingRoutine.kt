@@ -132,15 +132,20 @@ private fun loadBundledIllustration(directory: String, asset: String): ImageBitm
     val path =
         NSBundle.mainBundle.pathForResource(asset, ofType = "webp", inDirectory = directory)
             ?: return null
+    val bytes = readAppleBundleFile(path, 4_194_304L) ?: return null
+    return SkiaImage.makeFromEncoded(bytes).toComposeImageBitmap()
+}
+
+internal fun readAppleBundleFile(path: String, maximumBytes: Long): ByteArray? {
     val file = fopen(path, "rb") ?: return null
     try {
         if (fseeko(file, 0, SEEK_END) != 0) return null
         val size = ftello(file)
-        if (size !in 1..4_194_304L || fseeko(file, 0, SEEK_SET) != 0) return null
+        if (size !in 1..maximumBytes || fseeko(file, 0, SEEK_SET) != 0) return null
         val bytes = ByteArray(size.toInt())
         val read = bytes.usePinned { fread(it.addressOf(0), 1u, size.toULong(), file) }
         if (read != size.toULong()) return null
-        return SkiaImage.makeFromEncoded(bytes).toComposeImageBitmap()
+        return bytes
     } finally {
         fclose(file)
     }

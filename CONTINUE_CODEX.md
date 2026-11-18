@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 207 iOS privacy and bundled licences
+
+iOS Settings now explains local storage, optional Apple Health access
+and backup encryption, and makes the bundled MIT, Apache 2.0 and Dream
+Route/ODbL notices readable offline. The Xcode target and artifact gate
+include the original licence files. Pinned formatting, diff, workflow
+YAML and resource-path checks passed. Native packaging and UI remain
+unverified.
+
+PR #24 remains draft at fb2b85e. Experiment 44213596116 still had both
+jobs running. Preserve it and inspect actual results before pushing
+checkpoints 205–207. Verify the next simulator package, independently
+review the separate source-bound startup screenshot, and continue the
+remaining native parity and full release gates.
+
 ### Latest recovery pointer — checkpoint 206 session planning preferences on iOS
 
 iOS Settings now edits the existing session budget, session distribution and

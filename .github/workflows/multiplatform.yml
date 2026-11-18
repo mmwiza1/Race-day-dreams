@@ -152,6 +152,8 @@ jobs:
           test -s iosApp/build/RaceDayDreams.app/dream-basemaps/paris-2026-geo-v1.rddmap
           test -s iosApp/build/RaceDayDreams.app/dream-basemaps-NOTICE.txt
           test -s iosApp/build/RaceDayDreams.app/ODbL-1.0.txt
+          test -s iosApp/build/RaceDayDreams.app/LICENSE
+          test -s iosApp/build/RaceDayDreams.app/apache-2.0.txt
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
       - name: Launch the iOS app and verify local database startup
         shell: bash

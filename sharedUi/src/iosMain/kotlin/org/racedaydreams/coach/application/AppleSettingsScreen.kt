@@ -172,6 +172,7 @@ fun AppleSettingsScreen(
         AppleScheduleSettings(session.runningSupport)
         AppleDreamSettings(session.runningSupport)
         AppleRecordingStorage(session.backupDocuments)
+        ApplePrivacyAndLicences()
         val feedback = message ?: state.error ?: state.message ?: reminderFailure
         if (feedback != null) {
             Text(feedback, Modifier.semantics { liveRegion = LiveRegionMode.Polite })
