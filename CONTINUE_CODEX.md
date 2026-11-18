@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 232 Apple Health choice semantics
+
+- The iOS Apple Health selectors now expose their labels and checked
+  state as a single accessible control with a 48 dp minimum row height.
+  Tapping the text or checkbox changes the selected category. The
+  separate explicit import action still controls the native request.
+- Added a production XCTest for the weight choice enabling and disabling
+  the import action. This exercises UI intent without asserting any
+  native permission grant or actual HealthKit import. Pinned source
+  formatting and diff checks passed. Native compilation/runtime pending.
+- Local checkpoint only. Leave the existing saved-route run
+  [44300142251](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44300142251)
+  on `12a9447` intact. Inspect its Apple job 134787427891 and batch this
+  with any demonstrated route fix. Then verify Apple Health on simulator
+  and applicable hardware, remaining parity, and full release gates.
+  PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 231 verified iOS replay and recovery
 
 - [Run 44293098860](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44293098860)

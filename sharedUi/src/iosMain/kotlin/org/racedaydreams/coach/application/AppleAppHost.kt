@@ -1,9 +1,12 @@
 package org.racedaydreams.coach.application
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import kotlinx.coroutines.CancellationException
@@ -630,36 +633,18 @@ private fun AppleHealthControls(
         Text("Apple Health", style = MaterialTheme.typography.titleLarge)
         Text("Choose what to read. Training and manual entry work without Apple Health.")
         if (!bodyOnly) {
-            Row {
-                Checkbox(
-                    workouts,
-                    {
-                        workouts = it
-                        preferences.setBool(it, workoutKey)
-                    },
-                )
-                Text("Running workouts")
+            AppleHealthChoice("Running workouts", workouts) {
+                workouts = it
+                preferences.setBool(it, workoutKey)
             }
         }
-        Row {
-            Checkbox(
-                weight,
-                {
-                    weight = it
-                    preferences.setBool(it, weightKey)
-                },
-            )
-            Text("Weight")
+        AppleHealthChoice("Weight", weight) {
+            weight = it
+            preferences.setBool(it, weightKey)
         }
-        Row {
-            Checkbox(
-                height,
-                {
-                    height = it
-                    preferences.setBool(it, heightKey)
-                },
-            )
-            Text("Height")
+        AppleHealthChoice("Height", height) {
+            height = it
+            preferences.setBool(it, heightKey)
         }
         Button(
             enabled = !pending && ((!bodyOnly && workouts) || weight || height),
@@ -686,5 +671,19 @@ private fun AppleHealthControls(
             Text("Request access and import")
         }
         message?.let { Text(it) }
+    }
+}
+
+@Composable
+private fun AppleHealthChoice(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .toggleable(value = checked, role = Role.Checkbox, onValueChange = onChange),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(checked = checked, onCheckedChange = null)
+        Text(label)
     }
 }

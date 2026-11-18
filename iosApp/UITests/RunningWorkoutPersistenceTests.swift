@@ -6,6 +6,22 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testAppleHealthRequiresAnExplicitReadChoice() {
+        let app = XCUIApplication()
+        app.launch()
+        tap("Settings", in: app)
+        tap("Weight", in: app)
+
+        let request = control("Request access and import", in: app)
+        XCTAssertTrue(request.waitForExistence(timeout: 15))
+        XCTAssertTrue(request.isEnabled)
+
+        app.swipeDown()
+        tap("Weight", in: app)
+        XCTAssertTrue(request.exists)
+        XCTAssertFalse(request.isEnabled)
+    }
+
     func testFavouriteSurvivesRelaunchWithoutLocationPermission() {
         let app = XCUIApplication()
         app.launch()
