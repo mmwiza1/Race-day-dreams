@@ -62,6 +62,18 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 249 green focused cross-platform CI
+
+- [Run 44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
+  on `28d4e8f` completed green. Android passed 644 focused API 35 tests.
+  iOS passed Native/GPX, framework, build, startup, and all 3 XCUITests.
+  XCTest explicitly reported TEST SUCCEEDED, 0 failures, 387.550 seconds.
+  Startup screenshot 14454640518, simulator package 14454595540.
+- Push the queued shared Gym Now rest/warm-up and native smoke test
+  together. Verify the new exact head, including the additional XCTest.
+  Full Android API 28/35/36 and unsigned iPhone build gates remain pending.
+  Keep PR #24 draft until ready for the full release stage.
+
 ### Latest recovery pointer — checkpoint 248 native gym preparation smoke test
 
 - Added an iOS XCTest that opens Gym Now from Strength, adds Bench Press,
@@ -73,7 +85,9 @@ incomplete migration merely because a focused checkpoint passes.
   labels and diff checks passed. Native compilation and execution
   remain pending.
 - Preserve exact-head [44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
-  for `28d4e8f`. After both jobs report, batch this test with the local
+  for `28d4e8f`. The Android job passed all 644 focused API 35 tests.
+  Apple passed shared Native tests and is linking the framework.
+  After Apple reports, batch this test with the local
   rest-control and shared-preparation commits and fix any demonstrated
   failure before the full platform gates. Keep PR #24 draft.
 
