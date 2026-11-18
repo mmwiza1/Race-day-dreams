@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 222 iOS launcher artwork
+
+- iOS now registers a universal 1024 px opaque launcher asset made from
+  the existing approved illustration and blue background. The app icon
+  generator writes the same asset; Android outputs are untouched.
+  Local catalog structure, pixel dimensions/opacity, visual preview,
+  shell syntax, YAML and diff checks passed. Native actool and simulator
+  display are pending. Next Apple packaging gate requires Assets.car.
+- This commit is local to avoid cancelling
+  [44264043283](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44264043283)
+  on pushed head `a987f5b`. Both jobs were still running. Inspect the
+  Apple crash report or foreground screenshot before pushing the next
+  batch. The launcher change is independent of the startup crash.
+  PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 221 confirmed native startup crash
 
 - [Run 44258765847](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44258765847)
