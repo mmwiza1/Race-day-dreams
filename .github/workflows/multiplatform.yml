@@ -190,7 +190,14 @@ jobs:
               done
               xcrun dwarfdump --uuid iosApp/build/RaceDayDreams.app/RaceDayDreams \
                 > "$diagnostics/app-image-uuid.txt" 2>&1
-              for output in "$diagnostics/app.stderr" "$diagnostics/simulator.log"; do
+              if [[ "${app_pid:-}" =~ ^[0-9]+$ ]] && ! kill -0 "$app_pid" 2>/dev/null &&
+                ! compgen -G "$diagnostics/RaceDayDreams*.ips" >/dev/null &&
+                ! compgen -G "$diagnostics/RaceDayDreams*.crash" >/dev/null; then
+                echo "Reproducing the exited launch under LLDB for a native backtrace"
+                python3 scripts/capture-ios-startup-stack.py "$device" \
+                  > "$diagnostics/startup-backtrace.log" 2>&1
+              fi
+              for output in "$diagnostics/app.stderr" "$diagnostics/startup-backtrace.log" "$diagnostics/simulator.log"; do
                 if [ -f "$output" ]; then tail -80 "$output"; fi
               done
             fi

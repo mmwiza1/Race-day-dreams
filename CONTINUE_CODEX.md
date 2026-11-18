@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 223 native debugger capture
+
+- [Run 44264043283](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44264043283)
+  passed focused Android and Apple compilation/tests/build. Apple foreground
+  launch failed again in scene creation with SIGSEGV. Artifact 14410608084
+  has the failure frame, simulator log and image UUID but no crash report
+  or app stdout/stderr. The faulting frame remains unknown.
+- When the original launch process exits and no OS crash report is
+  available, the gate now attempts one bounded reproduction under LLDB
+  and uploads its stack/image list. The original failure status is
+  preserved. YAML, shell and Python syntax, diff checks and stubbed
+  debugger command/PID handoff passed. Live LLDB remains unverified.
+- Push this and the launcher catalog checkpoint together on PR #24.
+  Inspect the native capture and resolve the actual startup defect.
+  Existing onboarding/schema assertions and final feature/release gates
+  remain required. Keep the PR draft.
+
 ### Latest recovery pointer — checkpoint 222 iOS launcher artwork
 
 - iOS now registers a universal 1024 px opaque launcher asset made from
