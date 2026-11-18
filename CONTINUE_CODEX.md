@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 191 iOS entered-result management
+
+The iOS results page shows the 20 most recent entered results by default,
+with access to the full list. An explicit confirmation removes only an
+entered result, never its linked run. Missing run links are explained.
+The focused JDBC activity repository suite passed, including the new
+linked-run and derived-evidence preservation case. Pinned touched-file
+formatting and diff checks passed. Native UI testing is pending.
+
+PR #24 remains draft at 73026cc. Experiment 44205729778 is still running
+on Android and Apple. Preserve both jobs. Inspect the actual native compile,
+decoder test and simulator outputs before pushing checkpoints 190–191.
+Continue native feature parity and full gates before merge or publication.
+
 ### Latest recovery pointer — checkpoint 190 running personal bests on iOS
 
 iOS recorded results now show the existing source-precedence rankings and

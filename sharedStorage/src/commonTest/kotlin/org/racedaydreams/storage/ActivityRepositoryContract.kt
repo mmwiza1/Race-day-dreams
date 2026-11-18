@@ -486,6 +486,22 @@ abstract class ActivityRepositoryContract {
         }
 
     @Test
+    fun removingEnteredResultKeepsLinkedRunAndItsDerivedEvidence() =
+        storage { _, activities, results ->
+            val run = activity()
+            activities.upsertManualActivity(run)
+            val derived = results.results()
+            assertTrue(derived.isNotEmpty())
+            val entered = manualResult().copy(activityId = run.id())
+            results.saveResult(entered)
+            assertTrue(results.results().any { it.id() == entered.id() })
+
+            results.deleteResult(entered.id())
+            assertEquals(derived, results.results())
+            assertEquals(run.id(), activities.activitySummaries().single().id())
+        }
+
+    @Test
     fun manualResultRulesProtectDerivedIdentityAndDistanceCatalog(): Unit =
         storage { _, activities, results ->
             activities.upsertManualActivity(activity())
