@@ -78,7 +78,7 @@ jobs:
     if: github.head_ref == 'experiment/android-ios-kmp-compose' || github.event_name == 'workflow_dispatch'
     # macos-latest arm64 has sustained capacity queues; keep real Apple tests on the Intel pool.
     runs-on: macos-26-intel
-    timeout-minutes: 60
+    timeout-minutes: 65
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -302,7 +302,8 @@ jobs:
       - name: Exercise workout persistence through the iOS app
         id: ios_workout_ui
         if: ${{ !cancelled() && steps.ios_app_build.outcome == 'success' }}
-        timeout-minutes: 12
+        # Leave time to finalise the result bundle after cold simulator tests complete.
+        timeout-minutes: 16
         shell: bash
         run: |
           set -euo pipefail

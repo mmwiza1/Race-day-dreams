@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 245 completed iOS tests, timed-out CI
+
+- [Run 44342650745](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44342650745)
+  on `9f29d20` passed 642 focused Android API 35 tests, Apple Native/GPX,
+  framework, simulator build and startup. Startup screenshot artifact
+  14447897062 was visually reviewed and checksum verified. Synthetic
+  source `3a48491` has the same tree as `9f29d20`.
+- Apple log records all three XCUITests passing (Health choice, saved
+  run with Files cancel/save, shared navigation), zero failures, 393.7 s
+  executed. The runner then hit the step's 12-minute wall deadline
+  during result finalisation, before completing the job. Expanded the
+  step to 16 minutes and job to 65. Test assertions are unchanged.
+- Batch the timeout adjustment with dated Gym Now, calendar and return
+  navigation commits. Verify the exact new head's completed native
+  workflow and dated iOS path. Full platform gates remain pending.
+  Keep PR #24 draft while scope or focused checks remain pending.
+
 ### Latest recovery pointer — checkpoint 244 calendar to dated Gym Now
 
 - iOS calendar strength detail now offers a logging action when a
