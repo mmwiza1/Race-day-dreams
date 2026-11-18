@@ -658,6 +658,11 @@ Record observations and build commit for each check; nothing below is a claimed 
 
 The PR workflow publishes an unsigned **simulator** app and source-bound evidence. Use
 the matching run in `CONTINUE_CODEX.md`. Physical iPhone acceptance is still pending.
+The experimental workflow also compiles an unsigned arm64 iPhone app for the
+non-draft migration PR. Once the workflow exists on the default branch, it can
+also run on demand using the `verify_ios_device_build` dispatch input. A successful
+job archives the app, its source commit and checksum. Installation requires signing
+with an Apple development team.
 
 For a device build, use macOS with Xcode and JDK 17. From the repository root, run
 `./gradlew :sharedUi:linkDebugFrameworkIosArm64`, then open

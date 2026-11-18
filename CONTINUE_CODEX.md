@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 241 iPhone device build gate
+
+- Added an unsigned arm64 iPhone build job for the non-draft migration
+  PR. It links the iosArm64 framework, compiles the app for iphoneos,
+  checks the binary's architecture and platform, and uploads an archive
+  with its source SHA and SHA-256 checksum. The normal draft workflow
+  keeps its focused simulator and Android jobs. Manual dispatch can
+  opt in once the workflow is available on the default branch.
+- YAML and Bash syntax checks passed. A stubbed run checked the device
+  target arguments, artifact naming, source stamp and checksum. Actual
+  Xcode execution remains pending. Physical install and HealthKit
+  verification still require the signing and device steps in TEST_BUILD.md.
+- Keep this commit and `b2f78d7` local while exact Files run
+  [44339045211](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44339045211)
+  is active. Then batch with any Files fix. Do not mark PR #24 ready
+  before the retained implementation is ready for full-stage verification.
+
 ### Latest recovery pointer — checkpoint 240 shared navigation parity
 
 - iOS now uses the same Compose bottom navigation, icon paths,
