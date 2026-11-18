@@ -294,6 +294,7 @@ jobs:
           if-no-files-found: error
 
       - name: Exercise workout persistence through the iOS app
+        id: ios_workout_ui
         if: ${{ !cancelled() && steps.ios_app_build.outcome == 'success' }}
         timeout-minutes: 12
         shell: bash
@@ -329,4 +330,25 @@ jobs:
         with:
           name: experimental-ios-workout-ui-results
           path: ${{ runner.temp }}/rdd-ios-workout.xcresult
+          if-no-files-found: ignore
+
+      - name: Export iOS workout UI failure evidence
+        if: ${{ !cancelled() && steps.ios_workout_ui.outcome == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$RUNNER_TEMP/rdd-ios-workout.xcresult"
+          evidence="$RUNNER_TEMP/rdd-ios-workout-failures"
+          if [ -d "$result" ]; then
+            mkdir -p "$evidence"
+            git rev-parse HEAD > "$evidence/source-commit.txt"
+            xcrun xcresulttool export attachments --only-failures \
+              --path "$result" --output-path "$evidence" ||
+              echo "XCTest attachments unavailable; inspect the full result bundle."
+          fi
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && steps.ios_workout_ui.outcome == 'failure' }}
+        with:
+          name: experimental-ios-workout-ui-failures
+          path: ${{ runner.temp }}/rdd-ios-workout-failures/
           if-no-files-found: ignore

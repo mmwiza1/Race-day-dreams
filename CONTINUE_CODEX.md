@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 237 lightweight XCTest failure evidence
+
+- The iOS workflow now keeps the original XCTest result bundle and
+  exports a separate source-bound failure-attachment artifact when
+  available. The full bundle from the previous picker failure exceeded
+  the workspace transfer limit, so this makes evidence easier to inspect.
+  YAML, shell, diff and stubbed attachment/source capture passed.
+  The Xcode exporter itself remains unverified.
+- Keep this checkpoint local while the exact pushed `ee3637d` run
+  [44321030042](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44321030042)
+  is active. Inspect Apple job 134859696157, then batch the attachment
+  work with any genuine picker fix or next integration checkpoint.
+  Full Apple/Android release gates remain pending. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 236 native export test selector
 
 - [Run 44313049480](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44313049480)
