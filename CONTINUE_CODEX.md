@@ -68,7 +68,9 @@ incomplete migration merely because a focused checkpoint passes.
   PR. It links the iosArm64 framework, compiles the app for iphoneos,
   checks the binary's architecture and platform, and uploads an archive
   with its source SHA and SHA-256 checksum. The normal draft workflow
-  keeps its focused simulator and Android jobs. Manual dispatch can
+  keeps its focused simulator and Android jobs. Marking the migration
+  PR ready now also starts the established full Android matrix for that
+  same commit. Manual dispatch can
   opt in once the workflow is available on the default branch.
 - YAML and Bash syntax checks passed. A stubbed run checked the device
   target arguments, artifact naming, source stamp and checksum. Actual
