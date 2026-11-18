@@ -62,6 +62,22 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 192 shared Race Day
+
+Android and iOS now share the existing race prediction, pacing strategy,
+taper and preparation screen. iOS can open the warm-up instructions and
+results, and pass the hilly-course choice into live race cues. The selected
+plan version is checked before iOS starts the linked race. Android still
+uses its existing race-week checklist and routine navigation. iOS checklist
+persistence and full routine completion/illustration parity remain open.
+
+Android app and instrumentation Kotlin compilation, pinned formatting and
+diff checks passed. Native compilation and runtime remain unverified.
+PR #24 is draft at 73026cc and experiment 44205729778 still has both jobs
+running. Preserve it, inspect native compile, decoder and simulator
+results, then push checkpoints 190–192 together. Continue race checklist
+and routine parity alongside the remaining release gates.
+
 ### Latest recovery pointer — checkpoint 191 iOS entered-result management
 
 The iOS results page shows the 20 most recent entered results by default,

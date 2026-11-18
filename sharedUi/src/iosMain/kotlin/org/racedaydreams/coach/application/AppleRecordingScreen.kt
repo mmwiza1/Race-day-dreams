@@ -26,6 +26,8 @@ import org.racedaydreams.recording.PlannedRecordingExecution
 fun AppleRecordingScreen(
     session: AppleCoachSession<*>,
     plannedId: String? = null,
+    raceVersion: String? = null,
+    hilly: Boolean = false,
     openSaved: (String) -> Unit,
 ) {
     val recorder = session.recording
@@ -194,12 +196,13 @@ fun AppleRecordingScreen(
                 command {
                     val planned =
                         plannedId?.let {
-                            PlannedRecordingExecution(
-                                requireNotNull(state.currentPlan) { "No current plan." },
-                                it,
-                            )
+                            val version = requireNotNull(state.currentPlan) { "No current plan." }
+                            require(raceVersion == null || raceVersion == version.id()) {
+                                "The plan changed. Open Race Day again."
+                            }
+                            PlannedRecordingExecution(version, it)
                         }
-                    recorder.start(planned, imperial, spokenCues, monitorId)
+                    recorder.start(planned, imperial, spokenCues, monitorId, hilly)
                 }
             }
         }

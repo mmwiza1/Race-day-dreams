@@ -170,6 +170,8 @@ private enum class ApplePage {
     STRENGTH_ANALYTICS,
     ACHIEVEMENTS,
     RUNNING_TRENDS,
+    RACE,
+    RACE_WARMUP,
     RESULTS,
     STRENGTH_RECORD,
     ACTIVITY,
@@ -190,6 +192,9 @@ private fun AppleAppContent(
     var page by remember { mutableStateOf(ApplePage.START) }
     var calendarWorkout by remember { mutableStateOf<String?>(null) }
     var calendarStrength by remember { mutableStateOf<String?>(null) }
+    var raceVersion by remember { mutableStateOf<String?>(null) }
+    var raceHilly by remember { mutableStateOf(false) }
+    var raceRoutine by remember { mutableStateOf<String?>(null) }
     var recordingWorkout by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
@@ -198,6 +203,8 @@ private fun AppleAppContent(
             TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
             TextButton(
                 onClick = {
+                    raceVersion = null
+                    raceHilly = false
                     recordingWorkout = null
                     page = ApplePage.RECORD
                 }
@@ -261,7 +268,7 @@ private fun AppleAppContent(
                         healthControls = { health(true) },
                     )
                 ApplePage.RECORD ->
-                    AppleRecordingScreen(session, recordingWorkout) {
+                    AppleRecordingScreen(session, recordingWorkout, raceVersion, raceHilly) {
                         activityId = it
                         page = ApplePage.ACTIVITY
                     }
@@ -271,6 +278,8 @@ private fun AppleAppContent(
                         calendarWorkout,
                         calendarStrength,
                         startPlanned = {
+                            raceVersion = null
+                            raceHilly = false
                             recordingWorkout = it
                             page = ApplePage.RECORD
                         },
@@ -336,6 +345,39 @@ private fun AppleAppContent(
                     AppleRunningTrends(state, { page = ApplePage.RESULTS }) {
                         page = ApplePage.START
                     }
+                ApplePage.RACE ->
+                    SharedRaceDay(
+                        state,
+                        AppleCalendarDates.today(),
+                        AppleCalendarDates::label,
+                        { it.toString().removeSuffix(".0") },
+                        { seconds ->
+                            val rounded = kotlin.math.round(seconds).toLong()
+                            "${rounded / 60}:${(rounded % 60).toString().padStart(2, '0')}"
+                        },
+                        start = { version, workout, hilly ->
+                            raceVersion = version
+                            raceHilly = hilly
+                            recordingWorkout = workout
+                            page = ApplePage.RECORD
+                        },
+                        results = { page = ApplePage.RESULTS },
+                        routine = {
+                            raceRoutine = it
+                            page = ApplePage.RACE_WARMUP
+                        },
+                    )
+                ApplePage.RACE_WARMUP ->
+                    SharedRoutineContent(
+                        raceRoutine,
+                        raceRoutine?.let {
+                            org.racedaydreams.domain.support.RunningRoutines.get(it)
+                        },
+                        false,
+                        null,
+                        illustration = {},
+                        finish = { page = ApplePage.RACE },
+                    )
                 ApplePage.RESULTS ->
                     AppleRecordedResults(session, { page = ApplePage.RUNNING_TRENDS }) {
                         activityId = it
@@ -434,6 +476,8 @@ private fun AppleAppContent(
                                 page = ApplePage.HISTORY
                             },
                             record = {
+                                raceVersion = null
+                                raceHilly = false
                                 recordingWorkout = null
                                 page = ApplePage.RECORD
                             },
@@ -443,6 +487,8 @@ private fun AppleAppContent(
                                         val version = state.currentPlan
                                         val prefix = "execute/${version?.id()}/"
                                         if (version != null && route.startsWith(prefix)) {
+                                            raceVersion = null
+                                            raceHilly = false
                                             recordingWorkout = route.removePrefix(prefix)
                                             page = ApplePage.RECORD
                                         }
@@ -473,7 +519,7 @@ private fun AppleAppContent(
                                         page = ApplePage.GYM
                                 }
                             },
-                            race = { page = ApplePage.PLAN },
+                            race = { page = ApplePage.RACE },
                         )
                     }
             }

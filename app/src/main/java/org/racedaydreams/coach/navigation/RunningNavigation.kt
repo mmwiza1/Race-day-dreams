@@ -54,7 +54,6 @@ fun NavGraphBuilder.runningGraph(
     composable("race") {
         RaceScreen(
             readState(),
-            model,
             { v, w, h -> nav.navigate("race-run/${Uri.encode(v)}/${Uri.encode(w)}/$h") },
             { nav.navigate("progress/pbs") },
             { r -> nav.navigate("routine/$r") },

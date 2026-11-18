@@ -116,11 +116,14 @@ class AppleRunRecorder(
 
     fun requestLocationPermission() = location.requestPermission()
 
+    private var hillyCourse = false
+
     suspend fun start(
         planned: PlannedRecordingExecution? = null,
         imperial: Boolean = false,
         spokenCues: Boolean = false,
         monitorId: String? = null,
+        hilly: Boolean = false,
     ) = command {
         check(session == null) { "A run is already recording." }
         check(location.canStart()) { "Location permission is required to record a run." }
@@ -139,6 +142,7 @@ class AppleRunRecorder(
             )
         cues = RecordingCueCoordinator()
         miles = imperial
+        hillyCourse = hilly
         speech = if (spokenCues) AppleCoachSpeech() else null
         execution = planned
         session = active
@@ -297,7 +301,7 @@ class AppleRunRecorder(
                 workoutUpdate,
                 planned?.coordinator?.steps().orEmpty(),
                 planned?.raceTarget,
-                hilly = false,
+                hilly = hillyCourse,
                 sustainedMillis = 45_000L,
                 miles = miles,
                 announceSplits = true,
