@@ -179,6 +179,7 @@ private enum class ApplePage {
     STRENGTH_HISTORY,
     STRENGTH_ANALYTICS,
     ACHIEVEMENTS,
+    PROGRESS,
     RUNNING_TRENDS,
     RACE,
     ROUTINE,
@@ -212,8 +213,10 @@ private fun AppleAppContent(
     var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
         restoreError?.let { Text(it, Modifier.padding(horizontal = 12.dp)) }
-        FlowRow(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-            TextButton(onClick = { page = ApplePage.START }) { Text("Today") }
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
             TextButton(
                 onClick = {
                     raceVersion = null
@@ -223,17 +226,6 @@ private fun AppleAppContent(
                 }
             ) {
                 Text("Record")
-            }
-            TextButton(onClick = { page = ApplePage.PLAN }) { Text("Plan") }
-            TextButton(onClick = { page = ApplePage.GYM }) { Text("Gym") }
-            TextButton(
-                onClick = {
-                    calendarWorkout = null
-                    calendarStrength = null
-                    page = ApplePage.HISTORY
-                }
-            ) {
-                Text("Calendar")
             }
             TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
         }
@@ -408,6 +400,15 @@ private fun AppleAppContent(
                         StrengthMeasurementPolicy::duration,
                         AthleteLanguage.WORKING_SETS,
                     )
+                ApplePage.PROGRESS ->
+                    CoachPage {
+                        CoachHeading("Training progress")
+                        CoachButton("Running trends") { page = ApplePage.RUNNING_TRENDS }
+                        CoachButton("Recorded race results") { page = ApplePage.RESULTS }
+                        CoachButton("Strength analytics") { page = ApplePage.STRENGTH_ANALYTICS }
+                        CoachButton("Achievements") { page = ApplePage.ACHIEVEMENTS }
+                        CoachButton("Body measurements and protein") { page = ApplePage.BODY }
+                    }
                 ApplePage.RUNNING_TRENDS ->
                     AppleRunningTrends(
                         state,
@@ -610,6 +611,30 @@ private fun AppleAppContent(
                     }
             }
         }
+        CoachNavigationBar(
+            route =
+                when (page) {
+                    ApplePage.START -> "home"
+                    ApplePage.PLAN -> "plan"
+                    ApplePage.HISTORY -> "calendar"
+                    ApplePage.PROGRESS -> "progress"
+                    ApplePage.GYM -> "strength"
+                    else -> null
+                },
+            selectTab = { route ->
+                when (route) {
+                    "home" -> page = ApplePage.START
+                    "plan" -> page = ApplePage.PLAN
+                    "calendar" -> {
+                        calendarWorkout = null
+                        calendarStrength = null
+                        page = ApplePage.HISTORY
+                    }
+                    "progress" -> page = ApplePage.PROGRESS
+                    "strength" -> page = ApplePage.GYM
+                }
+            },
+        )
     }
 }
 

@@ -23,15 +23,7 @@ fun CoachShell(
     onSettings: () -> Unit,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val tabs =
-        listOf(
-            "home" to "Home",
-            "plan" to "Plan",
-            "calendar" to "Calendar",
-            "progress" to "Progress",
-            "strength" to "Strength",
-        )
-    val showNavigation = route in (tabs.map { it.first } + "strength?date={date}")
+    val showNavigation = route in (coachTabs.map { it.first } + "strength?date={date}")
     Row(Modifier.fillMaxSize()) {
         if (useRail && showNavigation) {
             NavigationRail(
@@ -41,7 +33,7 @@ fun CoachShell(
                     .verticalScroll(rememberScrollState()),
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
-                tabs.forEach { (destination, label) ->
+                coachTabs.forEach { (destination, label) ->
                     NavigationRailItem(
                         modifier = Modifier.fillMaxWidth(),
                         selected =
@@ -69,7 +61,7 @@ fun CoachShell(
                     navigationIcon = {
                         if (
                             route != null &&
-                                route !in tabs.map { it.first } &&
+                                route !in coachTabs.map { it.first } &&
                                 route != "strength?date={date}" &&
                                 route != "goals"
                         ) {
@@ -81,29 +73,39 @@ fun CoachShell(
             },
             bottomBar = {
                 if (!useRail && showNavigation) {
-                    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainerLow) {
-                        tabs.forEach { (destination, label) ->
-                            val largeFont = LocalDensity.current.fontScale >= 1.5f
-                            NavigationBarItem(
-                                modifier =
-                                    if (largeFont) Modifier.semantics { contentDescription = label }
-                                    else Modifier,
-                                selected =
-                                    route == destination ||
-                                        destination == "strength" &&
-                                            route?.startsWith("strength") == true,
-                                icon = { CoachDestinationIcon(destination) },
-                                label =
-                                    if (largeFont) null
-                                    else ({ Text(label, maxLines = 1, softWrap = false) }),
-                                onClick = { selectTab(destination) },
-                            )
-                        }
-                    }
+                    CoachNavigationBar(route, selectTab)
                 }
             },
             snackbarHost = { SnackbarHost(snackbars) },
             content = content,
         )
+    }
+}
+
+private val coachTabs =
+    listOf(
+        "home" to "Home",
+        "plan" to "Plan",
+        "calendar" to "Calendar",
+        "progress" to "Progress",
+        "strength" to "Strength",
+    )
+
+@Composable
+fun CoachNavigationBar(route: String?, selectTab: (String) -> Unit) {
+    val largeFont = LocalDensity.current.fontScale >= 1.5f
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainerLow) {
+        coachTabs.forEach { (destination, label) ->
+            NavigationBarItem(
+                modifier =
+                    if (largeFont) Modifier.semantics { contentDescription = label } else Modifier,
+                selected =
+                    route == destination ||
+                        destination == "strength" && route?.startsWith("strength") == true,
+                icon = { CoachDestinationIcon(destination) },
+                label = if (largeFont) null else ({ Text(label, maxLines = 1, softWrap = false) }),
+                onClick = { selectTab(destination) },
+            )
+        }
     }
 }

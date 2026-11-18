@@ -22,6 +22,21 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         XCTAssertFalse(request.isEnabled)
     }
 
+    func testSharedNavigationOpensTrainingProgress() {
+        let app = XCUIApplication()
+        app.launch()
+        tap("Progress", in: app)
+
+        XCTAssertTrue(control("Training progress", in: app).waitForExistence(timeout: 15))
+        tap("Recorded race results", in: app)
+        XCTAssertTrue(control("Record a result", in: app).waitForExistence(timeout: 15))
+
+        tap("Progress", in: app)
+        XCTAssertTrue(control("Training progress", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(control("Record", in: app).isHittable)
+        XCTAssertTrue(control("Settings", in: app).isHittable)
+    }
+
     func testFavouriteSurvivesRelaunchWithoutLocationPermission() {
         let app = XCUIApplication()
         app.launch()

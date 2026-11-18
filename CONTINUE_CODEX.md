@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 240 shared navigation parity
+
+- iOS now uses the same Compose bottom navigation, icon paths,
+  destination ordering and large-text semantics as Android. The native
+  host still owns routing. It keeps Record and Settings as top actions
+  and keeps bottom tabs reachable from iOS detail pages. Progress links
+  to existing trends, recorded results, strength analytics, achievements
+  and body measurements.
+- Added a native XCTest that opens Progress and recorded results, returns
+  via the Progress tab, and checks the Record and Settings actions.
+  Local Android app and instrumentation APK assembly passed. Pinned
+  formatting passed for 966 Kotlin and 95 Java files. All 5 shared
+  navigation instrumentation tests passed on local API 28, including
+  the original icon comparison and large-text checks. Native execution
+  and iOS visual/accessibility verification are pending.
+- Keep this batch local until the exact `946c7ca` Files verification
+  in [44339045211](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44339045211)
+  reports. If Files still fails, inspect actual logs/video before pushing
+  a coherent batch. Then verify the new navigation XCTest and capture
+  the revised iOS home screen. Full platform gates remain pending.
+
 ### Latest recovery pointer — checkpoint 239 export sheet dismissal
 
 - Exact `abd2000` Apple run [44329937298](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44329937298)
@@ -76,6 +97,10 @@ incomplete migration merely because a focused checkpoint passes.
   requires the saved message. The export picker now handles interactive
   UIKit dismissal through the same idempotent cancellation and staging
   cleanup used by its document picker delegate.
+- Final pushed checkpoint is `946c7ca`. Pinned formatting passed for
+  966 Kotlin and 95 Java files. [Focused workflow 44339045211](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44339045211)
+  is active. The intermediate `98e517b` formatting failure was fixed in
+  the final commit. Do not rerun that intermediate SHA.
 - Next verify the exact new Apple workflow's native build, gesture,
   cancellation and Save results. Android-only retry of the prior rate
   limit becomes redundant when a new source check is queued. Do not
