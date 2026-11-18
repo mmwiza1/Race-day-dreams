@@ -78,7 +78,7 @@ internal fun AppleExerciseLibrary(session: AppleCoachSession<*>, back: () -> Uni
                             ::number,
                             ::displaySet,
                             technique = { exercise ->
-                                val art = TechniqueIllustrations.forExercise(exercise.id())
+                                val art = TechniqueIllustrations.forExercise(exercise)
                                 SharedTechniqueContent(
                                     TechniqueGuide.forExercise(exercise),
                                     art?.phases(),
