@@ -88,7 +88,11 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Save recorded run", in: app)
         tap("View recorded route", in: app)
         XCTAssertTrue(control("Your recorded route", in: app).waitForExistence(timeout: 20))
-        XCTAssertTrue(control("Export recorded route (GPX)", in: app).waitForExistence(timeout: 20))
+        tap("Export recorded route (GPX)", in: app)
+        let cancelExport = app.buttons["Cancel"].firstMatch
+        XCTAssertTrue(cancelExport.waitForExistence(timeout: 20))
+        cancelExport.tap()
+        XCTAssertTrue(control("GPX export cancelled.", in: app).waitForExistence(timeout: 20))
     }
 
     private func setSimulatedLocation(latitude: CLLocationDegrees) {

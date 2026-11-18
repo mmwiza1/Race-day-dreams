@@ -62,6 +62,25 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 234 verified saved route and Apple Health choices
+
+- [Run 44305594496](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44305594496)
+  passed on `f4b3410`: 642 focused API 35 tests, Apple tests, build,
+  standalone launch and both production XCUITests. Apple Health choice
+  passed in 50.824 s. Full favourite/replay/recovery/simulated-route
+  flow passed in 177.521 s. Result artifact 14431141319.
+- Startup artifact 14430960274 was visually inspected and checksum
+  validated. Synthetic source `5b0e300` has the exact PR tree `eb111d5`.
+  The simulator test verifies a retained route and available GPX action.
+  It does not verify physical GPS or a native HealthKit import.
+- Extended the native flow to open the real GPX document picker and
+  cancel it, and added a Kotlin/Native test round-tripping production
+  GPX output through the Apple decoder. Asserted two segments, original
+  times and coordinates, and missing/present elevations. Pinned
+  formatting and diff passed locally. Native execution pending.
+- Verify both new GPX checks on the next run. Then verify any remaining
+  integration and full release gates. Keep PR #24 draft while incomplete.
+
 ### Latest recovery pointer — checkpoint 233 simulator location API minimum
 
 - [Run 44300142251](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44300142251)
