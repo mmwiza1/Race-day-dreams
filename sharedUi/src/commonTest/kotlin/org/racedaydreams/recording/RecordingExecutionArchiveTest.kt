@@ -67,6 +67,57 @@ class RecordingExecutionArchiveTest {
         assertFalse("planVersion" in snapshot.payload)
     }
 
+    @Test
+    fun authoredManualStepAdvancesOnlyAfterExplicitAction() {
+        val open =
+            WorkoutExecutionEngine.Step(
+                "Warm up",
+                WorkoutSegment.Kind.WARM_UP,
+                null,
+                null,
+                null,
+                null,
+                null,
+            )
+        val timed =
+            WorkoutExecutionEngine.Step(
+                "Run",
+                WorkoutSegment.Kind.RUN,
+                null,
+                60_000,
+                null,
+                null,
+                null,
+            )
+        val workout =
+            CustomWorkout(
+                "custom-run",
+                "Warm up and run",
+                listOf(CustomWorkout.Group(1, listOf(open, timed))),
+            )
+        val execution = CustomRecordingExecution(workout, "custom")
+        execution.coordinator.update(status(0.0, 0, 0))
+        execution.coordinator.update(status(300.0, 180_000, 180_000))
+        assertFalse(execution.coordinator.events().any { it.type() == "STEP_COMPLETED" })
+
+        execution.coordinator.completeOpen()
+        execution.coordinator.update(status(500.0, 240_000, 240_000))
+        val snapshot = archived(execution)
+        val evidence = assertIs<SupportArchiveJson.Evidence.Execution>(snapshot.evidence)
+        assertEquals("custom", evidence.mode)
+        assertEquals(listOf(open, timed), evidence.steps)
+        val completions =
+            snapshot.payload
+                .getValue("events")
+                .jsonArray
+                .map { it.jsonObject }
+                .filter { it.getValue("type").jsonPrimitive.content == "STEP_COMPLETED" }
+        assertEquals(
+            listOf(180_000L, 240_000L),
+            completions.map { it.getValue("active").jsonPrimitive.long },
+        )
+    }
+
     private fun status(metres: Double, elapsed: Long, moving: Long, paused: Boolean = false) =
         RunMetricsEngine.Status(metres, elapsed, moving, null, null, paused)
 

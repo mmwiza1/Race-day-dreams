@@ -1,5 +1,8 @@
 package org.racedaydreams.coach.application
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
@@ -26,6 +29,7 @@ import org.racedaydreams.recording.QuickRecordingExecution
 import platform.Foundation.NSUUID
 
 /** Native command bindings for the existing active run panel and retained run recovery. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AppleRecordingScreen(
     session: AppleCoachSession<*>,
@@ -377,6 +381,13 @@ fun AppleRecordingScreen(
                     Text(if (showQuickTargets) "Hide quick targets" else "Quick run targets")
                 }
                 if (showQuickTargets) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
+                        listOf(3, 5, 10).forEach { kilometres ->
+                            TextButton(onClick = { quickDistance = kilometres.toString() }) {
+                                Text("$kilometres km")
+                            }
+                        }
+                    }
                     CoachTextInput(
                         "Distance target (km)",
                         quickDistance,
@@ -400,6 +411,13 @@ fun AppleRecordingScreen(
                         }
                     ) {
                         Text("Start distance target")
+                    }
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
+                        listOf(20, 30, 45, 60).forEach { minutes ->
+                            TextButton(onClick = { quickMinutes = minutes.toString() }) {
+                                Text("$minutes min")
+                            }
+                        }
                     }
                     CoachTextInput(
                         "Duration target (minutes)",

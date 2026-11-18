@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 217 structured workout parity
+
+- iOS quick run offers 3/5/10 km and 20/30/45/60 minute presets that
+  populate the normal target fields. The explicit Start controls still
+  own recording initiation. Touched pinned formatting and diff checks passed.
+- Four shared recording archive tests passed (`/workspace/scratch/kmp217-archive.log`).
+  The new test proves an authored manual warm-up advances only by explicit
+  action and preserves both completion times and the custom origin.
+- This checkpoint is local. [Run 44258765847](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44258765847)
+  for pushed head `476583a` was still running on Android and Apple. Do not
+  cancel it with another push. Inspect Apple job 134646719566 and the
+  source-bound screenshot or failure artifact before batching this commit.
+  Actual iOS quick/custom workout flows, foreground startup and full
+  release gates remain pending. PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 216 foreground failure evidence
 
 - Apple job 134631096266 on `2ea5c08` built the simulator app, booted the
