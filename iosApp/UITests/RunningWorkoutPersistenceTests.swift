@@ -25,7 +25,9 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
     func testGymNowExposesSharedRestAndWarmupControls() {
         let app = XCUIApplication()
         app.launch()
-        tap("Strength", in: app)
+        let strengthTab = app.buttons["Strength"].firstMatch
+        XCTAssertTrue(strengthTab.waitForExistence(timeout: 15))
+        strengthTab.tap()
         tap("Start open workout", in: app)
         tap("Add exercise", in: app)
 

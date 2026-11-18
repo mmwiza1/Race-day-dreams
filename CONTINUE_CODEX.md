@@ -66,7 +66,10 @@ incomplete migration merely because a focused checkpoint passes.
 
 - Added an iOS XCTest that opens Gym Now from Strength, adds Bench Press,
   checks the shared timer settings and warm-up disclosure, then
-  deliberately discards the disposable unfinished workout. Source
+  deliberately discards the disposable unfinished workout. The Strength
+  selector is restricted to buttons so the onboarding heading cannot
+  intercept the tap. The prior iOS Progress-tab log confirms the shared
+  bar exposes its tabs as buttons. Source
   labels and diff checks passed. Native compilation and execution
   remain pending.
 - Preserve exact-head [44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
