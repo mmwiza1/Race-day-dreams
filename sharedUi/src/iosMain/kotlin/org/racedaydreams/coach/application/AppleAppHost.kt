@@ -163,6 +163,7 @@ private enum class ApplePage {
     PLAN,
     WEEKLY,
     BASELINE,
+    MANUAL_BASELINE,
     BODY,
     GYM,
     PROGRAMMES,
@@ -305,7 +306,23 @@ private fun AppleAppContent(
                         },
                     )
                 ApplePage.WEEKLY -> AppleWeeklyReview(session, state) { page = ApplePage.PLAN }
-                ApplePage.BASELINE -> AppleBaselineSummary(state)
+                ApplePage.BASELINE ->
+                    AppleBaselineSummary(state) { page = ApplePage.MANUAL_BASELINE }
+                ApplePage.MANUAL_BASELINE ->
+                    SharedManualBaselineScreen(
+                        state,
+                        appleHomePresentation(state).decimal,
+                        { seconds ->
+                            val rounded = kotlin.math.round(seconds).toLong()
+                            "${rounded / 60}:${(rounded % 60).toString().padStart(2, '0')}"
+                        },
+                        save = {
+                            session.services.baseline.saveManualBaseline(it) {
+                                page = ApplePage.BASELINE
+                            }
+                        },
+                        onDone = { page = ApplePage.BASELINE },
+                    )
                 ApplePage.GYM ->
                     Column {
                         TextButton(onClick = { page = ApplePage.PROGRAMMES }) {

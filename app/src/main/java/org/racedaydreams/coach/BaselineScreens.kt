@@ -77,56 +77,8 @@ fun HealthConnectionCard(state: CoachUiState, model: CoachViewModel, historyAvai
 }
 
 @Composable
-fun ManualBaselineScreen(state: CoachUiState, model: CoachViewModel, onDone: () -> Unit) {
-    val baseline = state.baseline
-    val saved = state.manualBaseline
-    val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
-    val kmPerUnit = if (imperial) 1.609344 else 1.0
-    val unit = if (imperial) "mi" else "km"
-    var correct by rememberSaveable { mutableStateOf(false) }
-    var weekly by rememberSaveable { mutableStateOf(saved.weeklyDistanceKm()?.let { decimal(it / kmPerUnit) } ?: "") }
-    var frequency by rememberSaveable { mutableStateOf(saved.runsPerWeek()?.let(::decimal) ?: "") }
-    var longest by rememberSaveable { mutableStateOf(saved.longestRunKm()?.let { decimal(it / kmPerUnit) } ?: "") }
-    var five by rememberSaveable { mutableStateOf(saved.recent5k()?.let(PaceCalculator::formatTime) ?: "") }
-    var ten by rememberSaveable { mutableStateOf(saved.recent10k()?.let(PaceCalculator::formatTime) ?: "") }
-    var half by rememberSaveable { mutableStateOf(saved.recentHalf()?.let(PaceCalculator::formatTime) ?: "") }
-    var easy by rememberSaveable { mutableStateOf(saved.easyPaceSecondsPerKm()?.let { formatPaceSeconds(it * kmPerUnit) } ?: "") }
-    var weeks by rememberSaveable { mutableStateOf(saved.consistentWeeks()?.toString() ?: "") }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
-    CoachPage {
-        CoachHeading("Optional current-running details")
-        Text("We only ask for gaps by default. You can correct recorded values if they do not represent your current running. These entries are marked manual, rather than measured.")
-        CheckRow("Correct values already available", correct) { correct = it }
-        if (correct || baseline.weeklyDistanceKm() == null || saved.weeklyDistanceKm() != null)
-            CoachField("Current weekly distance ($unit)", weekly, { weekly = it }, baseline.weeklyDistanceKm()?.let { "Recorded: ${decimal(it / kmPerUnit)} $unit" })
-        if (correct || baseline.runsPerWeek() == null || saved.runsPerWeek() != null)
-            CoachField("Current usual runs/week", frequency, { frequency = it }, baseline.runsPerWeek()?.let { "Recorded: ${decimal(it)}" })
-        if (correct || baseline.longestRunKm() == null || saved.longestRunKm() != null)
-            CoachField("Longest recent run ($unit)", longest, { longest = it }, baseline.longestRunKm()?.let { "Recorded: ${decimal(it / kmPerUnit)} $unit" })
-        if (correct || baseline.recent5k() == null || saved.recent5k() != null) CoachField("Recent 5K result (MM:SS or H:MM:SS)", five, { five = it })
-        if (correct || baseline.recent10k() == null || saved.recent10k() != null) CoachField("Recent 10K result", ten, { ten = it })
-        if (correct || baseline.recentHalf() == null || saved.recentHalf() != null) CoachField("Recent half-marathon result", half, { half = it })
-        if (correct || baseline.easyPaceSecondsPerKm() == null || saved.easyPaceSecondsPerKm() != null) CoachField("Approximate easy pace (MM:SS/$unit)", easy, { easy = it })
-        if (correct || baseline.consistentWeeks() == null || saved.consistentWeeks() != null) CoachField("Weeks running consistently", weeks, { weeks = it })
-        Text("Every field is optional. Blank fields leave recorded evidence in place; use Reset manual corrections to remove previous manual entries.")
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(onClick = {
-            try {
-                val input = ManualBaselineInput(
-                    optionalNumber(weekly)?.times(kmPerUnit), optionalNumber(frequency), optionalNumber(longest)?.times(kmPerUnit),
-                    optionalDuration(five), optionalDuration(ten), optionalDuration(half),
-                    optionalDuration(easy)?.seconds?.toDouble()?.div(kmPerUnit),
-                    weeks.trim().takeIf { it.isNotEmpty() }?.toIntOrNull()
-                        ?: if (weeks.isBlank()) null else throw IllegalArgumentException("Enter whole weeks, or leave this field blank.")
-                )
-                error = null
-                model.baseline.saveManualBaseline(input, onDone)
-            } catch (failure: IllegalArgumentException) { error = failure.message }
-        }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save optional baseline") }
-        OutlinedButton(onClick = { model.baseline.saveManualBaseline(ManualBaselineInput.empty(), onDone) }, enabled = !state.busy) { Text("Reset manual corrections") }
-        TextButton(onDone) { Text("Continue without changes") }
-    }
-}
+fun ManualBaselineScreen(state: CoachUiState, model: CoachViewModel, onDone: () -> Unit) =
+    SharedManualBaselineScreen(state, ::decimal, ::formatPaceSeconds, { model.baseline.saveManualBaseline(it, onDone) }, onDone)
 
 @Composable
 fun AssessmentScreen(state: CoachUiState, model: CoachViewModel, onDone: () -> Unit) {

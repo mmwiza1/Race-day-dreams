@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 202 shared manual running baseline
+
+iOS Running baseline now opens the existing optional corrections form.
+Android and iOS share presentation and input validation, and both save
+through the existing baseline coordinator. Android debug compilation,
+pinned formatting for changed scoped files, and diff checks passed.
+
+PR #24 is draft at c3f0ec4. Experiment 44208542517 passed Android and the
+Apple shared, framework, decoder and application build steps. Simulator
+startup was still active at last check. Inspect the final launch and
+artifact results, then push the queued checkpoints 195–202 with any
+concrete fixes. Native manual baseline and optional assessment parity
+remain open.
+
 ### Latest recovery pointer — checkpoint 201 extra-run review on iOS
 
 Android and iOS now share the actual-run association and easier-workout

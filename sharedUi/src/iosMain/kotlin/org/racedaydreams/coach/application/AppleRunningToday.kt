@@ -67,7 +67,7 @@ internal fun AppleWeeklyReview(
 }
 
 @Composable
-internal fun AppleBaselineSummary(state: CoachUiState) = CoachPage {
+internal fun AppleBaselineSummary(state: CoachUiState, manual: () -> Unit) = CoachPage {
     CoachHeading("Running baseline")
     val presentation = appleHomePresentation(state)
     SharedBaselineSummaryCard(
@@ -77,6 +77,7 @@ internal fun AppleBaselineSummary(state: CoachUiState) = CoachPage {
         PaceCalculator::formatTime,
         { AppleCalendarDates.label(KotlinxReminderCalendar.at(it, "UTC").date) },
     )
+    CoachButton("Fill gaps or correct this baseline", manual)
 }
 
 private fun homeNumber(value: Double): String {
