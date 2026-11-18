@@ -77,6 +77,10 @@ incomplete migration merely because a focused checkpoint passes.
   any successful screenshot to its source, or diagnose the failure from
   the boot/launch logs. Next verify the exact new iOS build and
   permission, authoring and replay flows. Keep PR #24 draft.
+- The next workflow checkpoint bounds the foreground step at 15 minutes
+  and logs each boot, install, database, and screenshot phase. YAML, shell
+  syntax and diff checks passed. The in-flight run still uses the earlier
+  workflow and is unaffected by this local change.
 
 ### Latest recovery pointer — checkpoint 214 iOS workout authoring
 

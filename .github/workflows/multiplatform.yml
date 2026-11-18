@@ -156,6 +156,7 @@ jobs:
           test -s iosApp/build/RaceDayDreams.app/apache-2.0.txt
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
       - name: Launch the iOS app and verify local database startup
+        timeout-minutes: 15
         shell: bash
         run: |
           set -euo pipefail
@@ -165,10 +166,12 @@ jobs:
           print(next(device["udid"] for runtime in reversed(list(devices.values()))
                      for device in runtime if device["name"].startswith("iPhone")))
           ')"
+          echo "Booting iPhone simulator $device"
           if ! xcrun simctl boot "$device"; then
             xcrun simctl list devices booted | grep -F "$device"
           fi
           xcrun simctl bootstatus "$device" -b
+          echo "Installing and launching Race Day Dreams"
           xcrun simctl install "$device" iosApp/build/RaceDayDreams.app
           launch="$(xcrun simctl launch "$device" org.racedaydreams.ios)"
           echo "$launch"
@@ -176,6 +179,7 @@ jobs:
           [[ "$app_pid" =~ ^[0-9]+$ ]]
           app_data="$(xcrun simctl get_app_container "$device" org.racedaydreams.ios data)"
           database="$app_data/Library/Application Support/racedaydreams.sqlite"
+          echo "Waiting for the first-run SQLite schema"
           for attempt in {1..30}; do
             if [ -f "$database" ] && [ "$(sqlite3 -readonly "$database" 'PRAGMA user_version;' 2>/dev/null)" = "19" ]; then
               break
@@ -183,11 +187,13 @@ jobs:
             sleep 1
           done
           test "$(sqlite3 -readonly "$database" 'PRAGMA user_version;')" = "19"
+          echo "Preparing the foreground screenshot check"
           swiftc scripts/check-ios-startup.swift -o "$RUNNER_TEMP/check-ios-startup"
           for attempt in {1..15}; do
             if ! kill -0 "$app_pid" 2>/dev/null; then
               break
             fi
+            echo "Checking foreground frame $attempt"
             xcrun simctl io "$device" screenshot iosApp/build/startup-candidate.png
             if "$RUNNER_TEMP/check-ios-startup" iosApp/build/startup-candidate.png; then
               mv iosApp/build/startup-candidate.png iosApp/build/startup.png
