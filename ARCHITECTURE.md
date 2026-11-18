@@ -66,9 +66,11 @@ The experimental Android/iOS migration uses `SharedCoachApplicationServices` in 
 for the actual coordinator composition, one runner and `SharedCoachSnapshotReader`. Android
 supplies its existing repositories and SDK effects through required `CoachRepositories` and
 `CoachPlatformBindings`, retaining its lifecycle/timezone adapters. Construction performs no
-storage IO. Native app/SDK bindings and final application verification remain unfinished;
-compiling the shared framework alone is not iOS application acceptance. Native destructive
-restore/cleanup stays disabled until one actual lifecycle owner protects every operation.
+storage IO. On iOS, `AppleCoachSession` composes the real Apple SQLite repositories and SDK
+effects and one `LocalBackupOperations` instance per session; backup, GPX import, reviewed
+restore and retention cleanup all pass through its single operation guard, and restore/cleanup
+reject unfinished runs or gym workouts. Compiling the shared framework alone is not iOS
+application acceptance; final full-matrix and physical-device verification remain separate.
 
 ```text
 CoachActivity + feature destination registrations + presentation screens

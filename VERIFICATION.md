@@ -1,3 +1,13 @@
+# Experimental Android/iOS migration — checkpoint 253 focused gate (not release acceptance)
+
+Draft PR24 head `13b5e75` passed [44385737143](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44385737143):
+Android shared JVM/domain, schema/backup, APK/lint and 644/644 focused API 35 instrumentation
+tests (0 skipped, 0 failed); Apple Native tests, framework link, UI/GPX decoder tests, simulator
+app build, standalone startup at SQLite schema 19, and 4/4 production XCUITests (Apple Health
+choice, saved run/GPX, Gym Now rest and warm-up, shared navigation). This is the focused draft
+gate, NOT the full API 28/35/36 matrix, canonical screenshots or the unsigned iosArm64 build.
+No version, schema, backup-format or permission change. Physical-device checks remain unperformed.
+
 # Experimental Android/iOS migration — through144 locally verified
 
 Original draft PR24 / `experiment/android-ios-kmp-compose`. Source142ced0982 passed BOTH jobs in

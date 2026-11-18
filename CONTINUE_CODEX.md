@@ -62,6 +62,34 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 253 green focused gate including Gym Now (Claude)
+
+- Exact `13b5e75` run [44385737143](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44385737143)
+  completed SUCCESS on both focused jobs. Android job 135089668569: shared JVM/domain,
+  schema/backup, APK/lint, then API 35 emulator `644/644 completed (0 skipped) (0 failed)`;
+  APK artifact 14465549126. Apple job 135089669145: Native tests, framework link, UI/GPX
+  decoder tests, simulator app build, standalone startup with schema 19, XCTest build, then
+  `Executed 4 tests, with 0 failures` and `** TEST EXECUTE SUCCEEDED **` (566 s). The new
+  `testGymNowExposesSharedRestAndWarmupControls` passed (125 s): Strength → Gym Now → Bench
+  Press suggestion → Timer settings → Optional warm-up → discard. Result bundle 14470552127.
+  Earlier 9beae45 Android failure was an SDK system-image ZIP read error (infrastructure;
+  no tests ran) and did not recur.
+- Read-only data-safety review (no code change needed): iOS composes ONE
+  `LocalBackupOperations` per session for backup, GPX import, restore and retention cleanup.
+  Restore rejects ACTIVE/PAUSED/RECOVERABLE runs and ACTIVE/PAUSED/RECOVERY_REQUIRED gym
+  executions inside its transaction; complete restore reuses that check; GPX import rejects
+  an unfinished recording; cleanup rechecks consent, epoch, clock, open runs and replacement
+  state per batch. AppleAppHost runs restore on the IO dispatcher via
+  `serialiseDraftWrite`, then closes and reopens the session. Existing JDBC + Apple SQLite
+  contracts cover overlap, rollback, stale approval and unfinished-state rejection.
+  Old "destructive controls disabled" wording in ARCHITECTURE.md corrected.
+- Known iOS parity gap for audit (not a blocker, owner decision): no in-app
+  "Delete local app data"; `reset()` is not exposed on iOS.
+- Next: owner approval to mark PR #24 ready, which triggers the full Android API 28/35/36
+  matrix, canonical screenshots and the unsigned iosArm64 device build on the exact head.
+  Do NOT mark ready, merge or publish without explicit owner approval. Documentation-only
+  checkpoint commits use `[skip ci]` to avoid re-running unchanged 70-minute Apple jobs.
+
 ### Latest recovery pointer — checkpoint 252 native gym selector and startup budget
 
 - On `9beae45`, [44374630360](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44374630360)
