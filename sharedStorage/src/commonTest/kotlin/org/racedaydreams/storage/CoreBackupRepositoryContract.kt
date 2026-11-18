@@ -50,6 +50,22 @@ abstract class CoreBackupRepositoryContract {
         )
 
     @Test
+    fun completedRaceWarmupSurvivesAppBackupAndRejectsUnknownRoutines() = storage { db ->
+        val support = SqliteRunningSupportArchives(db)
+        support.completeRoutine("completed", "warm-race-short", at)
+        assertFailsWith<IllegalArgumentException> {
+            support.completeRoutine("invalid", "unknown-routine", at)
+        }
+        val snapshot = SqliteApplicationBackup(db).encode(at)
+        db.execute("DELETE FROM coach_support WHERE kind='routine'")
+        SqliteApplicationBackupRestore(db) { "routine-restored" }.replace(snapshot)
+
+        val restored = support.snapshot().support.records.single()
+        assertEquals("completed", restored.id)
+        assertEquals(SupportArchiveJson.Evidence.Routine("warm-race-short", at), restored.evidence)
+    }
+
+    @Test
     fun raceChecklistReadsLegacyRowsAndSurvivesAppBackupReplacement() = storage { db ->
         val id = "2026-11-20:Park 5K:Shoes & socks"
         val other = "2026-11-21:Park 5K:Shoes & socks"

@@ -13,6 +13,17 @@ import platform.darwin.NSObject
 internal object AppleGpxDecoder {
     const val MAX_BYTES = 24 * 1024 * 1024
 
+    private val rootPath = listOf("gpx")
+    private val trackPath = rootPath + "trk"
+    private val segmentPath = trackPath + "trkseg"
+    private val pointPath = segmentPath + "trkpt"
+    private val timePath = pointPath + "time"
+    private val heightPath = pointPath + "ele"
+    private val structuralPaths =
+        setOf(rootPath, trackPath, segmentPath, pointPath, timePath, heightPath)
+    private val gpxNamespaces =
+        setOf("http://www.topografix.com/GPX/1/0", "http://www.topografix.com/GPX/1/1")
+
     fun decode(bytes: ByteArray): List<List<TrackPoint>> {
         require(bytes.size in 1..MAX_BYTES) { "Choose a GPX file no larger than 24 MiB." }
         val text = bytes.decodeToString(throwOnInvalidSequence = true)
@@ -139,19 +150,6 @@ internal object AppleGpxDecoder {
                 rejected = true
                 parser.abortParsing()
             }
-        }
-
-        companion object {
-            private val rootPath = listOf("gpx")
-            private val trackPath = rootPath + "trk"
-            private val segmentPath = trackPath + "trkseg"
-            private val pointPath = segmentPath + "trkpt"
-            private val timePath = pointPath + "time"
-            private val heightPath = pointPath + "ele"
-            private val structuralPaths =
-                setOf(rootPath, trackPath, segmentPath, pointPath, timePath, heightPath)
-            private val gpxNamespaces =
-                setOf("http://www.topografix.com/GPX/1/0", "http://www.topografix.com/GPX/1/1")
         }
     }
 }

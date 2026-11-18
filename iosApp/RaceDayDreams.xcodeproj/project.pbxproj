@@ -5,9 +5,9 @@
  objectVersion = 56;
  objects = {
   A00000000000000000000001 = {isa = PBXProject; buildConfigurationList = A0000000000000000000000B; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; mainGroup = A00000000000000000000002; productRefGroup = A00000000000000000000003; targets = (A00000000000000000000004,); };
-  A00000000000000000000002 = {isa = PBXGroup; children = (A00000000000000000000005,A00000000000000000000003,); sourceTree = "<group>"; };
+  A00000000000000000000002 = {isa = PBXGroup; children = (A00000000000000000000005,A0000000000000000000000D,A00000000000000000000003,); sourceTree = "<group>"; };
   A00000000000000000000003 = {isa = PBXGroup; children = (A00000000000000000000006,); name = Products; sourceTree = "<group>"; };
-  A00000000000000000000004 = {isa = PBXNativeTarget; buildConfigurationList = A0000000000000000000000C; buildPhases = (A00000000000000000000007,); buildRules = (); dependencies = (); name = RaceDayDreams; productName = RaceDayDreams; productReference = A00000000000000000000006; productType = "com.apple.product-type.application"; };
+  A00000000000000000000004 = {isa = PBXNativeTarget; buildConfigurationList = A0000000000000000000000C; buildPhases = (A00000000000000000000007,A0000000000000000000000F,); buildRules = (); dependencies = (); name = RaceDayDreams; productName = RaceDayDreams; productReference = A00000000000000000000006; productType = "com.apple.product-type.application"; };
   A00000000000000000000005 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceDayDreams.swift; sourceTree = "<group>"; };
   A00000000000000000000006 = {isa = PBXFileReference; explicitFileType = wrapper.application; path = RaceDayDreams.app; sourceTree = BUILT_PRODUCTS_DIR; };
   A00000000000000000000007 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A00000000000000000000008,); runOnlyForDeploymentPostprocessing = 0; };
@@ -25,6 +25,10 @@
   }; };
   A0000000000000000000000B = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000009,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
   A0000000000000000000000C = {isa = XCConfigurationList; buildConfigurations = (A0000000000000000000000A,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+  A0000000000000000000000D = {isa = PBXFileReference; lastKnownFileType = folder; name = "Guidance artwork"; path = "../app/src/main/res/drawable-nodpi"; sourceTree = SOURCE_ROOT; };
+  A0000000000000000000000E = {isa = PBXBuildFile; fileRef = A0000000000000000000000D; };
+  A0000000000000000000000F = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A0000000000000000000000E,); runOnlyForDeploymentPostprocessing = 0; };
+
  };
  rootObject = A00000000000000000000001;
 }

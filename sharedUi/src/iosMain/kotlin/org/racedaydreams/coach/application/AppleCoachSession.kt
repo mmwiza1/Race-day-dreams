@@ -41,6 +41,7 @@ private constructor(
     val platform: AppleCoachPlatform<File>,
     val backupDocuments: AppleBackupDocuments,
     val raceChecklist: SqliteRaceChecklist,
+    val runningSupport: SqliteRunningSupportArchives,
 ) {
     private var closed = false
 
@@ -210,6 +211,7 @@ private constructor(
                     platform,
                     backupDocuments,
                     SqliteRaceChecklist(database),
+                    SqliteRunningSupportArchives(database),
                 )
             } catch (failure: Throwable) {
                 withContext(NonCancellable) {

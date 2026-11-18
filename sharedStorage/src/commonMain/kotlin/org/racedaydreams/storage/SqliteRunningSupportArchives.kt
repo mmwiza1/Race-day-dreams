@@ -69,6 +69,35 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             },
         )
 
+    fun completeRoutine(id: String, routine: String, at: org.racedaydreams.domain.time.Instant) {
+        val payload = buildJsonObject {
+            put("version", 1)
+            put("routine", routine)
+            put("at", at.toString())
+        }
+        SupportArchiveJson.decode(
+            buildJsonObject {
+                put("version", 1)
+                put(
+                    "rows",
+                    buildJsonArray {
+                        add(
+                            buildJsonObject {
+                                put("kind", "routine")
+                                put("id", id)
+                                put("payload", payload)
+                            }
+                        )
+                    },
+                )
+            }
+        )
+        database.execute(
+            "INSERT INTO coach_support(kind,id,payload) VALUES('routine',?,?)",
+            listOf(SqlValue.Text(id), SqlValue.Text(payload.toString())),
+        )
+    }
+
     private fun saveOriginal(kind: String, id: String, payload: JsonObject) {
         // Validate through the exact existing archive contract before modifying retained bytes.
         Release08ArchiveJson.decode(

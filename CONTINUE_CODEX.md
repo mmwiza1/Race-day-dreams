@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 194 iOS routine completion and guidance artwork
+
+iOS race warm-ups now save explicitly completed routines in the existing
+backup-compatible coach_support table. The iOS target references the
+existing WebP guidance directory and the routine uses its original artwork
+and descriptions, with written guidance if artwork is missing. The eight
+focused JDBC core backup tests passed, including completed routine restore
+and rejection of unknown routine IDs. Formatting, workflow YAML, diff and
+all 19 schema boundaries passed. Native UI and Xcode packaging are pending.
+
+Experiment 44205729778 passed Android and Apple Native tests, then failed
+while compiling the Apple framework because a Kotlin Objective-C subclass
+cannot own companion fields. Those GPX parser constants now live on the
+decoder object. Push checkpoints 190–194 and inspect the next framework,
+decoder test, bundled artwork and simulator gates. Continue full native
+feature parity and release gates. PR #24 must remain draft.
+
 ### Latest recovery pointer — checkpoint 193 persistent race-week checklist
 
 Race Day uses a shared checklist on both platforms. iOS persists choices

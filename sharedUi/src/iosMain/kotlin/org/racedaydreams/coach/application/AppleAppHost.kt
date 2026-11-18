@@ -384,16 +384,7 @@ private fun AppleAppContent(
                         },
                     )
                 ApplePage.RACE_WARMUP ->
-                    SharedRoutineContent(
-                        raceRoutine,
-                        raceRoutine?.let {
-                            org.racedaydreams.domain.support.RunningRoutines.get(it)
-                        },
-                        false,
-                        null,
-                        illustration = {},
-                        finish = { page = ApplePage.RACE },
-                    )
+                    AppleSupportingRoutine(session, raceRoutine) { page = ApplePage.RACE }
                 ApplePage.RESULTS ->
                     AppleRecordedResults(session, { page = ApplePage.RUNNING_TRENDS }) {
                         activityId = it
