@@ -1,6 +1,7 @@
 package org.racedaydreams.storage
 
 import kotlinx.serialization.json.*
+import org.racedaydreams.domain.polish.CustomWorkout
 import org.racedaydreams.domain.support.DreamRoutes
 import org.racedaydreams.domain.time.Instant
 
@@ -113,6 +114,27 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             },
         )
 
+    /** Same retained execution source as Android's Repeat previous workout screen. */
+    fun previousStructuredRuns(): List<CustomWorkout> =
+        database
+            .query(
+                "SELECT id,payload FROM coach_support WHERE kind='execution' ORDER BY rowid DESC LIMIT 50"
+            )
+            .mapNotNull { row ->
+                val payload = StoredJson.objectValue(row[1].sqlText())
+                if (
+                    payload["activityId"]?.jsonPrimitive?.contentOrNull.isNullOrBlank() ||
+                        payload["mode"]?.jsonPrimitive?.contentOrNull == "race"
+                )
+                    return@mapNotNull null
+                CustomWorkout(
+                    row[0].sqlText(),
+                    payload["title"]?.jsonPrimitive?.contentOrNull ?: "Previous structured run",
+                    listOf(CustomWorkout.Group(1, SupportPayloadJson.steps(payload))),
+                )
+            }
+            .take(10)
+
     fun recordingMode(recordId: String): String? =
         database
             .query(
@@ -126,7 +148,7 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             ?.takeIf { it in setOf("free", "quick", "custom", "repeat", "workout", "race") }
 
     fun recordingOrigin(mode: String, at: Instant): String {
-        require(mode in setOf("free", "quick", "workout", "race"))
+        require(mode in setOf("free", "quick", "repeat", "workout", "race"))
         val preferences = dreamPreferences()
         val route =
             if (preferences.enabled) {

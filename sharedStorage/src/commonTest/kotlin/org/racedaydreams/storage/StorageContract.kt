@@ -855,6 +855,37 @@ abstract class StorageContract {
     }
 
     @Test
+    fun previousStructuredRunsSkipRacesAndUnfinishedSessionsWithoutChangingHistory() {
+        val db = opened()
+        try {
+            fun insert(id: String, mode: String, result: String) {
+                db.execute(
+                    "INSERT INTO coach_support(kind,id,payload) VALUES('execution',?,?)",
+                    listOf(
+                        SqlValue.Text(id),
+                        SqlValue.Text(
+                            """{"version":1,"mode":"$mode","title":"Intervals","steps":[{"label":"Run","kind":"RUN","metres":1000}]$result}"""
+                        ),
+                    ),
+                )
+            }
+            insert("older", "quick", ""","activityId":"actual-one" """)
+            insert("unsaved", "custom", "")
+            insert("race", "race", ""","activityId":"actual-two" """)
+            insert("newer", "repeat", ""","activityId":"actual-three" """)
+            val before = db.query("SELECT total_changes()")
+            val previous = SqliteRunningSupportArchives(db).previousStructuredRuns()
+
+            assertEquals(listOf("newer", "older"), previous.map { it.id() })
+            assertEquals("Intervals", previous.first().title())
+            assertEquals(1_000.0, previous.first().flattened().single().metres())
+            assertEquals(before, db.query("SELECT total_changes()"))
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
     fun shoeFeedbackProjectionReadsOnlyThatPreferenceAndNeverLoadsOrRewritesUnrelatedData() {
         val db = opened()
         try {

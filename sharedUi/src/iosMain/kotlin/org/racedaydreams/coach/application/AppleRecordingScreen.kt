@@ -18,9 +18,11 @@ import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
+import org.racedaydreams.domain.polish.CustomWorkout
 import org.racedaydreams.domain.time.Durations
 import org.racedaydreams.recording.PlannedRecordingExecution
 import org.racedaydreams.recording.QuickRecordingExecution
+import org.racedaydreams.recording.RepeatRecordingExecution
 
 /** Native command bindings for the existing active run panel and retained run recovery. */
 @Composable
@@ -48,6 +50,7 @@ fun AppleRecordingScreen(
     val scope = rememberCoroutineScope()
     var spokenCues by remember { mutableStateOf(false) }
     var showQuickTargets by remember { mutableStateOf(false) }
+    var previousRuns by remember { mutableStateOf<List<CustomWorkout>?>(null) }
     var quickDistance by remember { mutableStateOf("5") }
     var quickMinutes by remember { mutableStateOf("30") }
     var working by remember { mutableStateOf(false) }
@@ -197,6 +200,42 @@ fun AppleRecordingScreen(
                 }
             }
             if (plannedId == null) {
+                TextButton(
+                    onClick = {
+                        if (previousRuns != null) previousRuns = null
+                        else
+                            command {
+                                previousRuns =
+                                    withContext(applicationIoDispatcher()) {
+                                        session.runningSupport.previousStructuredRuns()
+                                    }
+                            }
+                    }
+                ) {
+                    Text(
+                        if (previousRuns == null) "Repeat previous workout"
+                        else "Hide previous workouts"
+                    )
+                }
+                previousRuns?.let { workouts ->
+                    if (workouts.isEmpty()) Text("No saved structured runs to repeat yet.")
+                    workouts.forEach { previous ->
+                        TextButton(
+                            onClick = {
+                                command {
+                                    recorder.start(
+                                        RepeatRecordingExecution(previous),
+                                        imperial,
+                                        spokenCues,
+                                        monitorId,
+                                    )
+                                }
+                            }
+                        ) {
+                            Text("Repeat ${previous.title()} · ${previous.flattened().size} steps")
+                        }
+                    }
+                }
                 TextButton(onClick = { showQuickTargets = !showQuickTargets }) {
                     Text(if (showQuickTargets) "Hide quick targets" else "Quick run targets")
                 }

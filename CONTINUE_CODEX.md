@@ -62,6 +62,25 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 212 replay retained runs
+
+- iOS Record a run now offers the last ten saved structured runs using the
+  same archive as Android. Race and unsaved sessions are excluded. Replay
+  keeps the exact steps and origin, with fresh events and no automatic plan
+  association or copied actuals. The existing recorder remains the owner.
+- Three shared archive tests passed on the Android JVM target (distance
+  crossing, duration/pause, and exact replay). One real JDBC SQLite test
+  passed (filter, ordering, and unchanged history). Pinned formatting and
+  diff checks passed. Logs: `/workspace/scratch/kmp212-{replay,storage,format-final}.log`.
+- [Experiment 44253971258](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44253971258)
+  for pushed head `2ea5c08` was still running on both platforms. Keep that run
+  for the first foreground startup evidence. Replay is a local checkpoint
+  until the Apple smoke result is available to batch the next push.
+- Next: review the foreground startup result and any failure diagnostics,
+  then finish iOS custom/favourite run authoring and production-flow
+  verification, remaining platform parity, and final release gates.
+  PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 211 iOS startup evidence
 
 - PR #24 is draft. [Experiment 44216267843](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44216267843)

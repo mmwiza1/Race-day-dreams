@@ -7,6 +7,7 @@ import org.racedaydreams.domain.coaching.PlanVersion
 import org.racedaydreams.domain.execution.RecordingCueCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
+import org.racedaydreams.domain.polish.CustomWorkout
 import org.racedaydreams.domain.race.RaceStrategyEngine
 import org.racedaydreams.storage.PlannedWorkoutJson
 
@@ -68,24 +69,7 @@ class PlannedRecordingExecution(version: PlanVersion, workoutId: String, hilly: 
         put("raceName", goal.raceName())
         goal.targetTime()?.let { put("targetSeconds", it.getSeconds()) }
         put("hilly", race && hilly)
-        put(
-            "steps",
-            buildJsonArray {
-                steps.forEach { step ->
-                    add(
-                        buildJsonObject {
-                            put("label", step.label())
-                            put("kind", step.kind().name)
-                            step.metres()?.let { put("metres", it) }
-                            step.millis()?.let { put("millis", it) }
-                            step.fastPace()?.let { put("fast", it) }
-                            step.slowPace()?.let { put("slow", it) }
-                            step.rpe()?.let { put("rpe", it) }
-                        }
-                    )
-                }
-            },
-        )
+        put("steps", executionSteps(steps))
     }
 
     override fun snapshot(): String = recordingSnapshot(prescription, coordinator)
@@ -134,6 +118,39 @@ class QuickRecordingExecution(metres: Double?, millis: Long?) : RecordingExecuti
     }
 
     override fun snapshot(): String = recordingSnapshot(prescription, coordinator)
+}
+
+/** Replays a retained prescription, without copying its actual results or plan association. */
+class RepeatRecordingExecution(workout: CustomWorkout) : RecordingExecution {
+    override val mode = "repeat"
+    override val raceTarget = null
+    private val steps = workout.flattened()
+    override val coordinator = WorkoutExecutionCoordinator(steps)
+    private val prescription = buildJsonObject {
+        put("version", 1)
+        put("mode", mode)
+        put("title", workout.title())
+        put("customId", workout.id())
+        put("steps", executionSteps(steps))
+    }
+
+    override fun snapshot(): String = recordingSnapshot(prescription, coordinator)
+}
+
+private fun executionSteps(steps: List<WorkoutExecutionEngine.Step>): JsonArray = buildJsonArray {
+    steps.forEach { step ->
+        add(
+            buildJsonObject {
+                put("label", step.label())
+                put("kind", step.kind().name)
+                step.metres()?.let { put("metres", it) }
+                step.millis()?.let { put("millis", it) }
+                step.fastPace()?.let { put("fast", it) }
+                step.slowPace()?.let { put("slow", it) }
+                step.rpe()?.let { put("rpe", it) }
+            }
+        )
+    }
 }
 
 private fun recordingSnapshot(
