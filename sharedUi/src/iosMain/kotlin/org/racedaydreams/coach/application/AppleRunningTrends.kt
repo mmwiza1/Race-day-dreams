@@ -15,7 +15,12 @@ import org.racedaydreams.reminders.KotlinxReminderCalendar
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun AppleRunningTrends(state: CoachUiState, results: () -> Unit, back: () -> Unit) {
+internal fun AppleRunningTrends(
+    state: CoachUiState,
+    results: () -> Unit,
+    routines: () -> Unit,
+    back: () -> Unit,
+) {
     var window by rememberSaveable { mutableIntStateOf(8) }
     var selection by rememberSaveable { mutableStateOf(RunningTrendMetric.DISTANCE.name) }
     val metric = RunningTrendMetric.entries.firstOrNull { it.name == selection }
@@ -41,6 +46,7 @@ internal fun AppleRunningTrends(state: CoachUiState, results: () -> Unit, back: 
         CoachButton("Back", back)
         CoachHeading("Training trends")
         CoachButton("Recorded race results", results)
+        CoachButton("Warm-ups and mobility", routines)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf(4, 8, 12).forEach { count ->
                 CoachFilterChip(

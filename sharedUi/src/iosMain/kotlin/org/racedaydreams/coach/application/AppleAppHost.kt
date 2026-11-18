@@ -172,7 +172,8 @@ private enum class ApplePage {
     ACHIEVEMENTS,
     RUNNING_TRENDS,
     RACE,
-    RACE_WARMUP,
+    ROUTINE,
+    ROUTINES,
     RESULTS,
     STRENGTH_RECORD,
     ACTIVITY,
@@ -195,7 +196,8 @@ private fun AppleAppContent(
     var calendarStrength by remember { mutableStateOf<String?>(null) }
     var raceVersion by remember { mutableStateOf<String?>(null) }
     var raceHilly by remember { mutableStateOf(false) }
-    var raceRoutine by remember { mutableStateOf<String?>(null) }
+    var selectedRoutine by remember { mutableStateOf<String?>(null) }
+    var returnFromRoutine by remember { mutableStateOf(ApplePage.ROUTINES) }
     var recordingWorkout by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().safeDrawingPadding()) {
@@ -343,9 +345,12 @@ private fun AppleAppContent(
                         AthleteLanguage.WORKING_SETS,
                     )
                 ApplePage.RUNNING_TRENDS ->
-                    AppleRunningTrends(state, { page = ApplePage.RESULTS }) {
-                        page = ApplePage.START
-                    }
+                    AppleRunningTrends(
+                        state,
+                        results = { page = ApplePage.RESULTS },
+                        routines = { page = ApplePage.ROUTINES },
+                        back = { page = ApplePage.START },
+                    )
                 ApplePage.RACE ->
                     SharedRaceDay(
                         state,
@@ -364,8 +369,9 @@ private fun AppleAppContent(
                         },
                         results = { page = ApplePage.RESULTS },
                         routine = {
-                            raceRoutine = it
-                            page = ApplePage.RACE_WARMUP
+                            selectedRoutine = it
+                            returnFromRoutine = ApplePage.RACE
+                            page = ApplePage.ROUTINE
                         },
                         checklist = { goal ->
                             SharedRaceChecklist(
@@ -383,8 +389,14 @@ private fun AppleAppContent(
                             )
                         },
                     )
-                ApplePage.RACE_WARMUP ->
-                    AppleSupportingRoutine(session, raceRoutine) { page = ApplePage.RACE }
+                ApplePage.ROUTINES ->
+                    SharedRoutineLibrary {
+                        selectedRoutine = it
+                        returnFromRoutine = ApplePage.ROUTINES
+                        page = ApplePage.ROUTINE
+                    }
+                ApplePage.ROUTINE ->
+                    AppleSupportingRoutine(session, selectedRoutine) { page = returnFromRoutine }
                 ApplePage.RESULTS ->
                     AppleRecordedResults(session, { page = ApplePage.RUNNING_TRENDS }) {
                         activityId = it

@@ -78,11 +78,14 @@ internal fun AppleExerciseLibrary(session: AppleCoachSession<*>, back: () -> Uni
                             ::number,
                             ::displaySet,
                             technique = { exercise ->
+                                val art = TechniqueIllustrations.forExercise(exercise.id())
                                 SharedTechniqueContent(
                                     TechniqueGuide.forExercise(exercise),
-                                    null,
+                                    art?.phases(),
                                     false,
-                                ) {}
+                                ) {
+                                    AppleGuidanceArtwork(art)
+                                }
                             },
                             customMetadata = metadata?.get(id),
                         )
@@ -103,13 +106,19 @@ internal fun AppleExerciseLibrary(session: AppleCoachSession<*>, back: () -> Uni
                                 color = MaterialTheme.colorScheme.secondaryContainer,
                             ) {
                                 Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
-                                    Text(
-                                        state.exercises
-                                            .firstOrNull { it.id() == exercise }
-                                            ?.name()
-                                            ?.take(1)
-                                            .orEmpty()
-                                    )
+                                    AppleGuidanceImage(
+                                        TechniqueIllustrations.forExercise(exercise),
+                                        Modifier.size(44.dp),
+                                        decorative = true,
+                                    ) {
+                                        Text(
+                                            state.exercises
+                                                .firstOrNull { it.id() == exercise }
+                                                ?.name()
+                                                ?.take(1)
+                                                .orEmpty()
+                                        )
+                                    }
                                 }
                             }
                         },

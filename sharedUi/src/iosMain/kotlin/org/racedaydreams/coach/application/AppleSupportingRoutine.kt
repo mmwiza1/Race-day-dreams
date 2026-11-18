@@ -70,6 +70,21 @@ internal fun AppleSupportingRoutine(session: AppleCoachSession<*>, id: String?, 
 
 @Composable
 internal fun AppleGuidanceArtwork(art: TechniqueIllustrations.Artwork?) {
+    AppleGuidanceImage(
+        art,
+        Modifier.fillMaxWidth().aspectRatio(1.5f).clip(MaterialTheme.shapes.large),
+    ) {
+        Text("Visual guide unavailable. Follow the written guidance or choose a familiar movement.")
+    }
+}
+
+@Composable
+internal fun AppleGuidanceImage(
+    art: TechniqueIllustrations.Artwork?,
+    modifier: Modifier,
+    decorative: Boolean = false,
+    fallback: @Composable () -> Unit,
+) {
     var image by remember(art) { mutableStateOf<ImageBitmap?>(null) }
     var loading by remember(art) { mutableStateOf(art != null) }
     LaunchedEffect(art) {
@@ -82,19 +97,15 @@ internal fun AppleGuidanceArtwork(art: TechniqueIllustrations.Artwork?) {
         loading = false
     }
     val bitmap = image
-    when {
-        bitmap != null && art != null ->
-            Image(
-                bitmap,
-                contentDescription = art.description(),
-                modifier =
-                    Modifier.fillMaxWidth().aspectRatio(1.5f).clip(MaterialTheme.shapes.large),
-                contentScale = ContentScale.Fit,
-            )
-        !loading ->
-            Text(
-                "Visual guide unavailable. Follow the written guidance or choose a familiar movement."
-            )
+    if (bitmap != null && art != null) {
+        Image(
+            bitmap,
+            contentDescription = if (decorative) null else art.description(),
+            modifier = modifier,
+            contentScale = ContentScale.Fit,
+        )
+    } else if (!loading || decorative) {
+        fallback()
     }
 }
 

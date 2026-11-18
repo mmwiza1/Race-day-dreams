@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 195 iOS exercise artwork and routines
+
+iOS exercise details and browse thumbnails use the same reviewed bundled
+artwork and technique phase labels as Android, with text or initials when
+the image is unavailable. Training trends opens the shared warm-up and
+mobility library, reusing the completed routine storage path. All 223
+original artwork files passed the provenance audit, and pinned formatting
+and diff checks passed. Native build, rendering and runtime are pending.
+
+PR #24 is draft at c3f0ec4. Experiment 44208542517 was running on Android
+and Apple. Separate formatting workflow 44208542541 failed on Maven
+Central HTTP 429 after the formatter tests passed. The installed pinned
+formatter passed locally over 951 Kotlin and 95 Java files. Preserve the
+running experiment, inspect native compiler/test/simulator results, then
+push this checkpoint with any concrete fixes. Confirm iOS artwork renders
+and routine completion persists, then continue remaining parity and gates.
+
 ### Latest recovery pointer — checkpoint 194 iOS routine completion and guidance artwork
 
 iOS race warm-ups now save explicitly completed routines in the existing
