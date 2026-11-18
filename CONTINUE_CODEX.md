@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 205 independently reviewable iOS startup capture
+
+The Apple experiment now publishes the startup screenshot in its own
+small artifact. Both that artifact and the simulator app archive include
+the checked-out commit and their own SHA-256. Workflow YAML, the Apple
+shell command syntax, artifact paths and diff checks passed locally.
+No new runtime verification is claimed for this workflow change.
+
+PR #24 remains draft at fb2b85e. The Android formatting workflow
+44213596107 passed and experiment 44213596116 is still running. Preserve
+it and inspect both conclusions before pushing this checkpoint. The
+earlier experiment 44208542517 was cancelled in teardown after successful
+Apple application build, simulator launch, schema 19 and artifact upload.
+Its native UI XML was retrieved via the GitHub connector and shows all
+three GPX decoder tests passed; no independent startup screenshot review
+was performed. Continue exact-head production UI and release gates.
+
 ### Latest recovery pointer — checkpoint 204 simulator startup verified
 
 Experiment 44208542517 on c3f0ec4 passed Android and every substantive

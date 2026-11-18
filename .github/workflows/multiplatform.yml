@@ -179,10 +179,26 @@ jobs:
           done
           test "$(sqlite3 -readonly "$database" 'PRAGMA user_version;')" = "19"
           xcrun simctl io "$device" screenshot iosApp/build/startup.png
+          test -s iosApp/build/startup.png
+          (
+            cd iosApp/build
+            git rev-parse HEAD > source-commit.txt
+            shasum -a 256 RaceDayDreams-simulator.zip > simulator-app.sha256
+            shasum -a 256 startup.png > startup.sha256
+          )
       - uses: actions/upload-artifact@v4
         with:
           name: experimental-ios-simulator-app
           path: |
             iosApp/build/RaceDayDreams-simulator.zip
+            iosApp/build/simulator-app.sha256
+            iosApp/build/source-commit.txt
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: experimental-ios-startup-screenshot
+          path: |
             iosApp/build/startup.png
+            iosApp/build/startup.sha256
+            iosApp/build/source-commit.txt
           if-no-files-found: error
