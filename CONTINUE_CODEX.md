@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 256 full software gate GREEN on 6186f59 (Claude)
+
+- Exact source `6186f59` (0.13.0-test1 / code 20) passed EVERY job:
+  - android.yml [44407108219](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44407108219):
+    guidance-completeness, formatting, build API 28/35/36 (full unfiltered instrumentation,
+    lint, domain/schema/release/showcase/geometry checks; 451 captures uploaded per API,
+    API 28 APK 58,943,010 bytes), canonical-screenshots (verified 451 and committed them as
+    bot commit `2c8561a`, `docs/screenshots/source-commit.txt` = 6186f59).
+  - multiplatform.yml [44407108265](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44407108265):
+    android-shared; apple-shared (Native tests, framework link incl. new AppleCoachSpeech,
+    UI/GPX decoder, simulator build, startup at schema 19, XCTest `Executed 4 tests, with 0
+    failures`, `** TEST EXECUTE SUCCEEDED **`, result 14478168044); apple-device unsigned
+    iosArm64 build SUCCESS (first ever run).
+- Heads after 6186f59 (`2c8561a` screenshots, this checkpoint `[skip ci]`) change only
+  `docs/` and recovery/verification text; `git diff 6186f59 HEAD` contains no app, test,
+  build or workflow change. Owner may still require a fresh run on the exact merge head.
+- PR #24 is READY, NOT merged, NOT published. Merge needs explicit owner approval; after merge,
+  verify main CI and the 0.13.0-test1 development APK/version/commit/checksum per AGENTS.md.
+- Physical device acceptance (Android + iPhone, TEST_BUILD.md) remains UNPERFORMED. No
+  signed iOS distribution exists.
+
 ### Latest recovery pointer — checkpoint 255 audit fixes and 0.13.0-test1 (Claude)
 
 - Owner approved implementing the independent audit's recommendations (18 November).

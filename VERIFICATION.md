@@ -1,3 +1,17 @@
+# 0.13.0-test1 shared Android/iOS migration — full software gate passed (not yet merged)
+
+Exact source `6186f59` on ready PR24 passed every required job.
+[Android 44407108219](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44407108219): full
+unfiltered instrumentation on API 28, 35 and 36 with 451 source-bound captures each, lint,
+domain/schema/backup/release/showcase/geometry checks, formatting and exercise-guidance
+completeness; canonical API 35 captures committed as `2c8561a` with source commit 6186f59.
+[Shared/Apple 44407108265](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44407108265):
+shared Android emulator flows; Apple Native tests, framework link, UI/GPX decoder tests,
+simulator app build, startup at SQLite schema 19, 4/4 production XCUITests; and the first
+unsigned iosArm64 iPhone build. SQLite 19, root JSON 13, raw 3 and package 1 unchanged; no
+Android permission change. Not merged or published. Physical Android/iPhone checks in
+TEST_BUILD.md remain unperformed; there is no signed iOS distribution.
+
 # Experimental Android/iOS migration — checkpoint 253 focused gate (not release acceptance)
 
 Draft PR24 head `13b5e75` passed [44385737143](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44385737143):
