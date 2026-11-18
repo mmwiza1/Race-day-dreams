@@ -338,5 +338,12 @@ class PresentationProjectionContractTest {
                 "does not include detailed GPS routes or sensor samples"
             )
         )
+        // The original Java constant was concatenated across lines; keep its full ending.
+        assertTrue(
+            AthleteLanguage.BACKUP.contains(
+                "Imported Health Connect records are not copied; reading them again depends on the provider and your permissions."
+            )
+        )
+        assertTrue(AthleteLanguage.BACKUP.endsWith("Keep your backup somewhere you trust."))
     }
 }

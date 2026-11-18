@@ -73,5 +73,5 @@ object AthleteLanguage {
     const val GYM_TERMS =
         "One repetition is one complete movement. A set is a group of repetitions, or one timed hold or distance-based effort. Warm-up sets are practice before the main work. Record only what you actually complete."
     const val BACKUP =
-        "This JSON file saves your app history, goals, programmes, gym sets, results, shoes and settings. It does not include detailed GPS routes or sensor samples. Use Complete backup in Record a run to save app history together with the detailed recordings still on this device. Imported Health Connect records are not"
+        "This JSON file saves your app history, goals, programmes, gym sets, results, shoes and settings. It does not include detailed GPS routes or sensor samples. Use Complete backup in Record a run to save app history together with the detailed recordings still on this device. Imported Health Connect records are not copied; reading them again depends on the provider and your permissions. Keep your backup somewhere you trust."
 }

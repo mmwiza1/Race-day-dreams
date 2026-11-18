@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 257 merge authorisation and backup-text regression (Claude)
+
+- Owner explicitly authorised merging PR #24 then PR #23 once mandatory checks pass, then a
+  new DRAFT analytics PR that must NOT merge without owner approval. Order chosen: PR #24
+  first (verified; PR #23 predates its workflow and must be rebuilt on the merged main,
+  and must also run the Apple workflow for all PRs and main, which today only targets
+  the experiment branch).
+- Pre-merge visual review: pixel-diffed all 451 canonical captures against main. 389 are
+  effectively identical; date-relative fixture changes explain the rest except ONE genuine
+  migration regression: `AthleteLanguage.BACKUP` lost its last concatenated Java lines
+  ("copied; reading them again depends on the provider and your permissions. Keep your
+  backup somewhere you trust."). A scan of 1,342 long Java string literals found no other
+  truncation. Restored text; `PresentationProjectionContractTest` now asserts the full ending
+  (fails on the truncated text, 14/14 pass fixed; local JDK 17 sharedDomain:jvmTest).
+- Session environment `Race-day-dreams` allows dl.google.com for local Gradle; install
+  `openjdk-17-jdk-headless` and pass `-Porg.gradle.java.installations.paths=<jdk17>`.
+
 ### Latest recovery pointer — checkpoint 256 full software gate GREEN on 6186f59 (Claude)
 
 - Exact source `6186f59` (0.13.0-test1 / code 20) passed EVERY job:
