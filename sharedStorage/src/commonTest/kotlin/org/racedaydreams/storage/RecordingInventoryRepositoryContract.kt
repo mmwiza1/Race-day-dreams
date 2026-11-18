@@ -104,7 +104,12 @@ abstract class RecordingInventoryRepositoryContract {
     fun finishingIsIdempotentAndRetainsNormalizedSamples() = storage { db ->
         val staging = SqliteRecordingStaging(db)
         val finish = SqliteRecordingFinalisation(db, { at }, { error("Unexpected ID request") })
-        staging.start("native", at, 0, null, null)
+        val support = SqliteRunningSupportArchives(db)
+        val chosen = SqliteRunningSupportArchives.DreamPreferences(true, setOf("paris-v2"))
+        support.saveDreamPreferences(chosen)
+        staging.start("native", at, 0, null, support.recordingOrigin("free", at))
+        // Preference edits while a run is open affect future recordings only.
+        support.saveDreamPreferences(chosen.copy(enabled = false))
         val points =
             listOf(0L, 10_000L).map { millis ->
                 RunMetricsEngine.Point(
@@ -137,6 +142,7 @@ abstract class RecordingInventoryRepositoryContract {
         assertFails { finish.finish(session, null, false) }
         assertTrue(SqliteActivities(db) { at }.activitySummaries().isEmpty())
         assertEquals(session, staging.unfinished())
+        assertNull(support.dreamAssignment("rdd:native"))
         db.execute("DROP TRIGGER block_finish")
         val id = finish.finish(session, null, false)
         assertEquals("rdd:native", id)
@@ -144,6 +150,10 @@ abstract class RecordingInventoryRepositoryContract {
         assertNull(staging.unfinished())
         val activity = assertNotNull(SqliteActivities(db) { at }.activityDetail(id))
         assertEquals(10.0, activity.distanceMetres())
+        val dream = assertNotNull(support.dreamAssignment(id))
+        assertEquals("paris-2026-geo-v1", dream.routeId())
+        assertEquals(0.0, dream.startMetres())
+        assertEquals(activity.distanceMetres(), dream.coveredMetres())
         assertEquals(2, activity.samples().size)
         val retained = SqliteActivities(db) { at }.recordedRoute(id)
         assertEquals(points, retained.points)

@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 200 Dream Route finalisation regression
+
+The shared recording contract now exercises an opted-in Dream Route from
+run start through atomic finalisation. It verifies a later settings change
+does not replace the frozen route, failed finalisation leaves no assignment,
+and retry preserves the original route and recorded distance. All 12
+focused JDBC recording inventory tests and pinned formatting passed.
+
+PR #24 remains draft at c3f0ec4. Experiment 44208542517 passed Android and
+the Apple shared tests, then entered Apple framework compilation.
+Preserve the job and inspect framework, decoder, packaged assets and
+simulator startup results. Push checkpoints 195–200 after that run
+finishes, with any concrete compile fixes.
+
 ### Latest recovery pointer — checkpoint 199 offline Dream Route basemaps on iOS
 
 iOS reads the original, bounded offline basemaps for saved course editions.
