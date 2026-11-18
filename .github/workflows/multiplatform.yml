@@ -168,6 +168,8 @@ jobs:
           ')"
           diagnostics="$PWD/iosApp/build/startup-diagnostics"
           mkdir -p "$diagnostics"
+          crash_marker="$RUNNER_TEMP/rdd-launch-started"
+          touch "$crash_marker"
           capture_failure() {
             local result=$?
             if [ "$result" -ne 0 ]; then
@@ -177,6 +179,16 @@ jobs:
               xcrun simctl spawn "$device" log show --last 5m --style compact \
                 --predicate 'process == "RaceDayDreams" OR eventMessage CONTAINS "org.racedaydreams.ios"' \
                 > "$diagnostics/simulator.log" 2>&1
+              for reports in "$HOME/Library/Logs/DiagnosticReports" \
+                "$HOME/Library/Developer/CoreSimulator/Devices/$device/data/Library/Logs/CrashReporter"; do
+                if [ -d "$reports" ]; then
+                  find "$reports" -type f -newer "$crash_marker" \
+                    \( -name 'RaceDayDreams*.ips' -o -name 'RaceDayDreams*.crash' \) \
+                    -exec cp {} "$diagnostics/" \;
+                fi
+              done
+              xcrun dwarfdump --uuid iosApp/build/RaceDayDreams.app/RaceDayDreams \
+                > "$diagnostics/app-image-uuid.txt" 2>&1
               for output in "$diagnostics/app.stderr" "$diagnostics/simulator.log"; do
                 if [ -f "$output" ]; then tail -80 "$output"; fi
               done

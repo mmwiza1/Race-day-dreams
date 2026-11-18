@@ -62,6 +62,25 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 221 confirmed native startup crash
+
+- [Run 44258765847](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44258765847)
+  on `476583a` passed Android, Apple shared tests, framework linking,
+  Apple UI-module tests and the simulator build. Foreground startup failed.
+  Artifact 14408389327 (`/workspace/scratch/kmp220-apple/`) confirms that
+  PID 40775 entered UIKit/Compose scene creation and exited with SIGSEGV
+  before database readiness. App stdout/stderr were empty and the system
+  log did not contain a native stack. No verified foreground screenshot.
+- The next smoke additionally captures fresh RaceDayDreams crash reports
+  from host and simulator crash logs and records the app binary UUID.
+  Existing schema and onboarding checks remain required. Workflow YAML,
+  shell syntax and diff checks passed locally.
+- Push checkpoints 217–221 together once run 44258765847 has completed.
+  Retrieve the new crash report and use the faulting stack to diagnose
+  the actual native startup failure. Continue the new Android editor
+  guard, iOS production workflow verification and full release gates.
+  PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 220 workout library permissions
 
 - iOS workout favourites can be browsed, edited and removed before
