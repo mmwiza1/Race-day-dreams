@@ -67,18 +67,20 @@ internal fun AppleWeeklyReview(
 }
 
 @Composable
-internal fun AppleBaselineSummary(state: CoachUiState, manual: () -> Unit) = CoachPage {
-    CoachHeading("Running baseline")
-    val presentation = appleHomePresentation(state)
-    SharedBaselineSummaryCard(
-        state.baseline,
-        presentation.distance,
-        presentation.decimal,
-        PaceCalculator::formatTime,
-        { AppleCalendarDates.label(KotlinxReminderCalendar.at(it, "UTC").date) },
-    )
-    CoachButton("Fill gaps or correct this baseline", manual)
-}
+internal fun AppleBaselineSummary(state: CoachUiState, manual: () -> Unit, assessment: () -> Unit) =
+    CoachPage {
+        CoachHeading("Running baseline")
+        val presentation = appleHomePresentation(state)
+        SharedBaselineSummaryCard(
+            state.baseline,
+            presentation.distance,
+            presentation.decimal,
+            PaceCalculator::formatTime,
+            { AppleCalendarDates.label(KotlinxReminderCalendar.at(it, "UTC").date) },
+        )
+        CoachButton("Fill gaps or correct this baseline", manual)
+        CoachButton("Optional baseline assessment", assessment)
+    }
 
 private fun homeNumber(value: Double): String {
     val tenths = (value * 10).roundToLong()

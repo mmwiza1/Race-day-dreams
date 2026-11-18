@@ -82,51 +82,21 @@ fun ManualBaselineScreen(state: CoachUiState, model: CoachViewModel, onDone: () 
 
 @Composable
 fun AssessmentScreen(state: CoachUiState, model: CoachViewModel, onDone: () -> Unit) {
-    val recommendation = remember(state.baseline) { AssessmentAnalyzer.recommend(state.baseline) }
-    var distance by rememberSaveable { mutableIntStateOf(recommendation.distanceKm()) }
-    var bestEffort by rememberSaveable { mutableStateOf(false) }
     val defaultStart = remember { LocalDateTime.now().minusHours(1) }
-    var date by rememberSaveable { mutableStateOf(defaultStart.toLocalDate().toString()) }
-    var startTime by rememberSaveable { mutableStateOf(defaultStart.toLocalTime().withSecond(0).withNano(0).toString()) }
-    var time by rememberSaveable { mutableStateOf("") }
-    var rpe by rememberSaveable { mutableStateOf("") }
-    var notes by rememberSaveable { mutableStateOf("") }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
-    CoachPage {
-        CoachHeading("Optional baseline assessment")
-        recommendation.reasons().forEach { Text(it) }
-        Text("Choose a distance and effort that fit your experience. You may stop, shorten it, or skip it. This screen records an assessment you have already completed; it does not record GPS.")
-        Text("Assessment distance", style = MaterialTheme.typography.titleMedium)
-        (1..5).forEach { value ->
-            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                RadioButton(selected = distance == value, onClick = { distance = value })
-                TextButton(onClick = { distance = value }) { Text("${value}K") }
-            }
-        }
-        CheckRow("Best effort (optional; controlled effort is the default)", bestEffort) { bestEffort = it }
-        Text(if (bestEffort) "Avoid an unnecessary maximal effort when new or returning to running. One result is not proof of longer-distance endurance."
-            else "Controlled assessment: use a sustainable effort. The entered pace will not automatically become your easy-running pace.")
-        CoachField("Completed run date (YYYY-MM-DD)", date, { date = it })
-        CoachField("Start time (HH:MM, device local time)", startTime, { startTime = it })
-        CoachField("Total elapsed time (MM:SS or H:MM:SS)", time, { time = it })
-        CoachField("Effort / RPE, 0–10 (optional)", rpe, { rpe = it })
-        CoachField("Context or notes (optional)", notes, { notes = it }, singleLine = false)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(onClick = {
-            try {
-                val duration = PaceCalculator.parseTime(time)
-                val parsedDate = LocalDate.parse(date.trim())
-                val parsedTime = LocalTime.parse(startTime.trim())
-                val effort = optionalNumber(rpe)
-                require(effort == null || effort in 0.0..10.0) { "RPE must be between 0 and 10." }
-                error = null
-                model.baseline.saveAssessment(distance, duration, parsedDate, parsedTime, bestEffort, effort, notes, onDone)
-            } catch (failure: Exception) { error = failure.message ?: "Check the assessment values." }
-        }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("Save completed assessment") }
-        Text("No splits, HR, cadence or elevation are invented. When reliable imported samples exist, they can provide additional analysis.")
-        Text("If you experience chest pain, fainting, severe difficulty breathing or serious injury symptoms, stop exercise and seek appropriate medical advice.")
-        TextButton(onDone) { Text("Skip assessment") }
-    }
+    SharedAssessmentScreen(
+        state,
+        defaultStart.toLocalDate().toString(),
+        defaultStart.toLocalTime().withSecond(0).withNano(0).toString(),
+        dateField = { value, change -> CoachField("Completed run date (YYYY-MM-DD)", value, change) },
+        save = { input ->
+            model.baseline.saveAssessment(
+                input.distance, input.duration, LocalDate.parse(input.date), LocalTime.parse(input.time),
+                input.bestEffort, input.rpe, input.notes, onDone,
+            )
+        },
+        onDone = onDone,
+        saveError = state.error,
+    )
 }
 
 @Composable

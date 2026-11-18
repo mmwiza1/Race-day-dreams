@@ -164,6 +164,7 @@ private enum class ApplePage {
     WEEKLY,
     BASELINE,
     MANUAL_BASELINE,
+    ASSESSMENT,
     BODY,
     GYM,
     PROGRAMMES,
@@ -307,7 +308,13 @@ private fun AppleAppContent(
                     )
                 ApplePage.WEEKLY -> AppleWeeklyReview(session, state) { page = ApplePage.PLAN }
                 ApplePage.BASELINE ->
-                    AppleBaselineSummary(state) { page = ApplePage.MANUAL_BASELINE }
+                    AppleBaselineSummary(
+                        state,
+                        manual = { page = ApplePage.MANUAL_BASELINE },
+                        assessment = { page = ApplePage.ASSESSMENT },
+                    )
+                ApplePage.ASSESSMENT ->
+                    AppleAssessmentScreen(session, state) { page = ApplePage.BASELINE }
                 ApplePage.MANUAL_BASELINE ->
                     SharedManualBaselineScreen(
                         state,
@@ -499,7 +506,7 @@ private fun AppleAppContent(
                             strengthContent = { Text("Loading strength training…") },
                             weekly = { page = ApplePage.WEEKLY },
                             baseline = { page = ApplePage.BASELINE },
-                            assessment = { page = ApplePage.BASELINE },
+                            assessment = { page = ApplePage.ASSESSMENT },
                             history = {
                                 calendarWorkout = null
                                 calendarStrength = null

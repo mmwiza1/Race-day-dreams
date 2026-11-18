@@ -62,6 +62,20 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 203 shared completed assessment
+
+Android and iOS now share the optional completed baseline assessment form.
+iOS validates the local date/time, retains start and finish offsets, and
+saves manually entered evidence through the existing baseline coordinator.
+The app and shared Compose Android Kotlin compilation passed, along with
+pinned formatting and diff checks. Native runtime remains unverified.
+
+PR #24 remains draft at c3f0ec4. Experiment 44208542517 passed Android,
+Apple shared tests, framework, native UI/decoder tests and the simulator
+application build. Its simulator launch/database gate was still active.
+Preserve the runner; inspect its result before pushing checkpoints
+195–203. Continue native verification and remaining feature parity.
+
 ### Latest recovery pointer — checkpoint 202 shared manual running baseline
 
 iOS Running baseline now opens the existing optional corrections form.
