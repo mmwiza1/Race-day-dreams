@@ -28,6 +28,7 @@ import platform.UIKit.UIDocumentPickerMode
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIPresentationController
 import platform.UIKit.UIViewController
+import platform.UIKit.presentationController
 import platform.darwin.NSObject
 import platform.posix.*
 

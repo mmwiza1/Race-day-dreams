@@ -62,6 +62,19 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 242 UIKit category import
+
+- Apple job 134923933698 on `946c7ca` passed shared Native tests but
+  failed linking the framework at the export delegate registration:
+  Kotlin could not resolve `presentationController`. Added the explicit
+  Kotlin/Native UIKit category-extension import. This needs Apple
+  compilation, followed by the unchanged Files cancellation and save
+  assertions. There was no XCTest result for this head.
+- Preserve the independent Android job 134923932908 until it finishes.
+  Then push this fix with the local navigation and release-gate batch
+  to PR #24. Verify the new exact Apple head; the iPhone device job
+  belongs to the full release stage. Keep the PR draft for focused work.
+
 ### Latest recovery pointer — checkpoint 241 iPhone device build gate
 
 - Added an unsigned arm64 iPhone build job for the non-draft migration
@@ -72,7 +85,7 @@ incomplete migration merely because a focused checkpoint passes.
   PR ready now also starts the established full Android matrix for that
   same commit. Manual dispatch can
   opt in once the workflow is available on the default branch.
-- YAML and Bash syntax checks passed. A stubbed run checked the device
+- All 15 Android gate script tests, YAML and Bash syntax checks passed. A stubbed run checked the device
   target arguments, artifact naming, source stamp and checksum. Actual
   Xcode execution remains pending. Physical install and HealthKit
   verification still require the signing and device steps in TEST_BUILD.md.
