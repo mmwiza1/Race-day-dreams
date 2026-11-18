@@ -62,6 +62,21 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 233 simulator location API minimum
+
+- [Run 44300142251](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44300142251)
+  on `12a9447` passed focused Android, Apple shared tests, framework link,
+  app build and standalone startup. The saved-route XCTest could not
+  compile: XCUIDevice.location requires iOS 16.4, and the test target
+  inherited the app's iOS 16.0 minimum. No saved-route result.
+- Set iOS 16.4 on the UI-test target alone. The production app's iOS 16.0
+  minimum remains in force. Parsed the project locally and checked
+  both deployment targets and diff. Native runtime remains pending.
+- Batch this fix with the Apple Health controls from checkpoint 232.
+  Verify both XCTest cases and startup on the exact pushed head. Fix
+  any demonstrated failure. HealthKit import, physical checks and
+  full release gates remain pending. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 232 Apple Health choice semantics
 
 - The iOS Apple Health selectors now expose their labels and checked
