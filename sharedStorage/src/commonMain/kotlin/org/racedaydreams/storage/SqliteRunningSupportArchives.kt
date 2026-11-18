@@ -177,8 +177,9 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
     }
 
     /** Same retained execution source as Android's Repeat previous workout screen. */
-    fun previousStructuredRuns(): List<CustomWorkout> =
-        database
+    fun previousStructuredRuns(limit: Int = 10): List<CustomWorkout> {
+        require(limit in 1..50)
+        return database
             .query(
                 "SELECT id,payload FROM coach_support WHERE kind='execution' ORDER BY rowid DESC LIMIT 50"
             )
@@ -195,7 +196,8 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
                     listOf(CustomWorkout.Group(1, SupportPayloadJson.steps(payload))),
                 )
             }
-            .take(10)
+            .take(limit)
+    }
 
     fun recordingMode(recordId: String): String? =
         database

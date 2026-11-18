@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 219 shared workout library
+
+- Android's existing running workout library now delegates favourite
+  paging/save/removal and structured replay reads to the same typed
+  SQLite repository as iOS. Android still scans up to 50 retained
+  executions, and the Android screen still shows up to ten. Existing
+  archive schema, screen and import validation remain in place.
+- Both focused SQLite tests and Android instrumentation compilation
+  passed (`/workspace/scratch/kmp219-shared-run-library.log`). Touched
+  shared formatting and diff checks passed. Stubbed success and failure
+  paths of the Apple startup shell verified artifact handling locally.
+- Checkpoints 217–219 are local while [44258765847](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44258765847)
+  is still running. Collect Apple job 134646719566's foreground result
+  or diagnostics before pushing. Then verify Android's existing
+  Release08 tests, the new shared editor UI guard and iOS production
+  flows on the new head. PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 218 workout editor UI guard
 
 - Added an Android instrumentation test of the production shared editor,
