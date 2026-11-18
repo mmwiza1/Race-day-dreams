@@ -85,6 +85,22 @@ object SupportArchiveJson {
             }
             .also { decode(it) }
 
+    fun executionSteps(steps: List<Step>): JsonArray = buildJsonArray {
+        steps.forEach { step ->
+            add(
+                buildJsonObject {
+                    put("label", step.label())
+                    put("kind", step.kind().name)
+                    step.metres()?.let { put("metres", it) }
+                    step.millis()?.let { put("millis", it) }
+                    step.fastPace()?.let { put("fast", it) }
+                    step.slowPace()?.let { put("slow", it) }
+                    step.rpe()?.let { put("rpe", it) }
+                }
+            )
+        }
+    }
+
     private fun evidence(kind: Kind, p: JsonObject): Evidence {
         version(p)
         return when (kind) {

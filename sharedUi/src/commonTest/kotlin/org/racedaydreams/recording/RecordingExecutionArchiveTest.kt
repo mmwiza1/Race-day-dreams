@@ -57,7 +57,7 @@ class RecordingExecutionArchiveTest {
             )
         val original =
             CustomWorkout("prior", "Intervals", listOf(CustomWorkout.Group(2, listOf(step))))
-        val snapshot = archived(RepeatRecordingExecution(original))
+        val snapshot = archived(CustomRecordingExecution(original))
         val evidence = assertIs<SupportArchiveJson.Evidence.Execution>(snapshot.evidence)
         assertEquals("repeat", evidence.mode)
         assertEquals(listOf(step, step), evidence.steps)

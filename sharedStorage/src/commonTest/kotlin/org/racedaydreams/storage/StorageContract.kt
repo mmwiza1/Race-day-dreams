@@ -876,6 +876,19 @@ abstract class StorageContract {
             assertEquals(3, next.first().groups().single().repeats())
             assertEquals(List(3) { 200.0 }, next.first().flattened().map { it.metres() })
             assertTrue(support.favouriteRuns(offset = 3).isEmpty())
+            val retained = next.first()
+            val renamed =
+                org.racedaydreams.domain.polish.CustomWorkout(
+                    retained.id(),
+                    "Edited instructions",
+                    retained.groups(),
+                )
+            support.saveFavouriteRun(renamed)
+            assertEquals(renamed, support.favouriteRuns(offset = 1, limit = 1).single())
+            val runsBefore = db.query("SELECT kind,id,payload FROM coach_support")
+            support.removeFavouriteRun(renamed.id())
+            assertEquals(listOf("first", "third"), support.favouriteRuns().map { it.id() })
+            assertEquals(runsBefore, db.query("SELECT kind,id,payload FROM coach_support"))
         } finally {
             db.close()
         }

@@ -62,6 +62,25 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 214 iOS workout authoring
+
+- iOS can create and edit a structured running workout and start it through
+  the existing recorder. The Compose editor supports distance, time and
+  manual steps, pace/effort targets, grouped rounds, editing, reordering,
+  duplicating and deleting groups. Favourites save and remove the existing
+  version-1 definitions. Archived executions keep independent snapshots.
+- The shared Android compilation, three recording archive tests and focused
+  JDBC favourite save/remove/page test passed. Pinned touched formatting
+  and diff checks passed. Log: `/workspace/scratch/kmp214-tests.log`.
+- On pushed head `2ea5c08`, Android focused CI passed. Apple shared tests
+  and framework link passed and the simulator build was running in
+  [44253971258](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44253971258).
+  Inspect the actual foreground smoke result before the next push. If
+  green, inspect the source-bound screenshot. If red, diagnose the failing
+  step. Then push checkpoints 212–214 together with any correction and
+  verify the new iOS compile, custom/replay/favourite flows and broader
+  release gates. PR #24 remains draft.
+
 ### Latest recovery pointer — checkpoint 213 restored running favourites
 
 - iOS Record a run can page through saved favourite running workouts

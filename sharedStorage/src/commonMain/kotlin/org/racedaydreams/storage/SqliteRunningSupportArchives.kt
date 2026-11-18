@@ -145,6 +145,37 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
         return archive.records.map { checkNotNull(it.custom) }
     }
 
+    fun saveFavouriteRun(workout: CustomWorkout) =
+        saveOriginal(
+            "custom",
+            workout.id(),
+            buildJsonObject {
+                put("version", 1)
+                put("id", workout.id())
+                put("title", workout.title())
+                put(
+                    "groups",
+                    buildJsonArray {
+                        workout.groups().forEach { group ->
+                            add(
+                                buildJsonObject {
+                                    put("repeats", group.repeats())
+                                    put("steps", SupportArchiveJson.executionSteps(group.steps()))
+                                }
+                            )
+                        }
+                    },
+                )
+            },
+        )
+
+    fun removeFavouriteRun(id: String) {
+        database.execute(
+            "DELETE FROM release08 WHERE kind='custom' AND id=?",
+            listOf(SqlValue.Text(sqlRequired(id, "workout ID"))),
+        )
+    }
+
     /** Same retained execution source as Android's Repeat previous workout screen. */
     fun previousStructuredRuns(): List<CustomWorkout> =
         database
@@ -179,7 +210,7 @@ class SqliteRunningSupportArchives(private val database: SqlDatabase) {
             ?.takeIf { it in setOf("free", "quick", "custom", "repeat", "workout", "race") }
 
     fun recordingOrigin(mode: String, at: Instant): String {
-        require(mode in setOf("free", "quick", "repeat", "workout", "race"))
+        require(mode in setOf("free", "quick", "custom", "repeat", "workout", "race"))
         val preferences = dreamPreferences()
         val route =
             if (preferences.enabled) {

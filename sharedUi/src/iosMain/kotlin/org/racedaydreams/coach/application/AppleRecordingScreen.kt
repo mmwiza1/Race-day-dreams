@@ -20,9 +20,10 @@ import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.polish.CustomWorkout
 import org.racedaydreams.domain.time.Durations
+import org.racedaydreams.recording.CustomRecordingExecution
 import org.racedaydreams.recording.PlannedRecordingExecution
 import org.racedaydreams.recording.QuickRecordingExecution
-import org.racedaydreams.recording.RepeatRecordingExecution
+import platform.Foundation.NSUUID
 
 /** Native command bindings for the existing active run panel and retained run recovery. */
 @Composable
@@ -50,6 +51,8 @@ fun AppleRecordingScreen(
     val scope = rememberCoroutineScope()
     var spokenCues by remember { mutableStateOf(false) }
     var showQuickTargets by remember { mutableStateOf(false) }
+    var editorId by remember { mutableStateOf<String?>(null) }
+    var editorSource by remember { mutableStateOf<CustomWorkout?>(null) }
     var favouriteRuns by remember { mutableStateOf<List<CustomWorkout>?>(null) }
     var moreFavourites by remember { mutableStateOf(false) }
     var previousRuns by remember { mutableStateOf<List<CustomWorkout>?>(null) }
@@ -128,7 +131,36 @@ fun AppleRecordingScreen(
 
     CoachPage {
         CoachHeading("Record a run")
-        if (recovery != null) {
+        val draft = editorId
+        if (draft != null && recovery == null && authorized) {
+            key(draft) {
+                SharedRunningWorkoutEditor(
+                    draft,
+                    editorSource,
+                    start = { workout ->
+                        command {
+                            recorder.start(
+                                CustomRecordingExecution(workout, "custom"),
+                                imperial,
+                                spokenCues,
+                                monitorId,
+                            )
+                            editorId = null
+                        }
+                    },
+                    save = { workout ->
+                        command {
+                            withContext(applicationIoDispatcher()) {
+                                session.runningSupport.saveFavouriteRun(workout)
+                            }
+                            favouriteRuns = null
+                            editorId = null
+                        }
+                    },
+                    close = { if (!working) editorId = null },
+                )
+            }
+        } else if (recovery != null) {
             CoachCard {
                 Text("Interrupted recording")
                 Text("Retained elapsed time: ${recordingTime(recovery.elapsedMillis)}")
@@ -204,6 +236,14 @@ fun AppleRecordingScreen(
             if (plannedId == null) {
                 TextButton(
                     onClick = {
+                        editorSource = null
+                        editorId = NSUUID().UUIDString
+                    }
+                ) {
+                    Text("Create custom workout")
+                }
+                TextButton(
+                    onClick = {
                         if (previousRuns != null) previousRuns = null
                         else
                             command {
@@ -226,7 +266,7 @@ fun AppleRecordingScreen(
                             onClick = {
                                 command {
                                     recorder.start(
-                                        RepeatRecordingExecution(previous),
+                                        CustomRecordingExecution(previous),
                                         imperial,
                                         spokenCues,
                                         monitorId,
@@ -264,7 +304,7 @@ fun AppleRecordingScreen(
                             onClick = {
                                 command {
                                     recorder.start(
-                                        RepeatRecordingExecution(favourite),
+                                        CustomRecordingExecution(favourite),
                                         imperial,
                                         spokenCues,
                                         monitorId,
@@ -273,6 +313,31 @@ fun AppleRecordingScreen(
                             }
                         ) {
                             Text("Start ${favourite.title()} · ${favourite.flattened().size} steps")
+                        }
+                        TextButton(
+                            onClick = {
+                                editorSource = favourite
+                                editorId = favourite.id()
+                            }
+                        ) {
+                            Text("Edit ${favourite.title()}")
+                        }
+                        TextButton(
+                            onClick = {
+                                command {
+                                    val refreshed =
+                                        withContext(applicationIoDispatcher()) {
+                                            session.runningSupport.removeFavouriteRun(
+                                                favourite.id()
+                                            )
+                                            session.runningSupport.favouriteRuns(limit = 21)
+                                        }
+                                    favouriteRuns = refreshed.take(20)
+                                    moreFavourites = refreshed.size > 20
+                                }
+                            }
+                        ) {
+                            Text("Remove favourite ${favourite.title()}")
                         }
                     }
                     if (moreFavourites) {
