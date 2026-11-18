@@ -18,6 +18,7 @@ import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.StrengthExercise
 import org.racedaydreams.domain.strength.StrengthSession
 import org.racedaydreams.domain.time.Durations
+import org.racedaydreams.domain.time.LocalDate
 import org.racedaydreams.reminders.KotlinxReminderCalendar
 
 private enum class GymPage {
@@ -27,7 +28,11 @@ private enum class GymPage {
 }
 
 @Composable
-internal fun AppleGymScreen(session: AppleCoachSession<*>, back: () -> Unit) {
+internal fun AppleGymScreen(
+    session: AppleCoachSession<*>,
+    plannedDate: LocalDate? = null,
+    back: () -> Unit,
+) {
     val model = session.gym
     val state by model.state.collectAsState()
     val scope = rememberCoroutineScope()
@@ -55,7 +60,8 @@ internal fun AppleGymScreen(session: AppleCoachSession<*>, back: () -> Unit) {
                 },
                 ::appleGymTarget,
                 // The shared entry screen provides explicit Back controls on iOS.
-                { _, _ -> },
+                plannedDate = plannedDate,
+                backHandler = { _, _ -> },
             )
         GymPage.BUILDER ->
             SharedGymWorkoutBuilderScreen(

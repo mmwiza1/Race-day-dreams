@@ -25,6 +25,7 @@ import org.racedaydreams.domain.presentation.AthleteLanguage
 import org.racedaydreams.domain.reminders.ReminderSettings
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.StrengthMeasurementPolicy
+import org.racedaydreams.domain.time.LocalDate
 import org.racedaydreams.health.body.BodyMetric
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.recording.AppleRecordingClock
@@ -172,6 +173,7 @@ private enum class ApplePage {
     ASSESSMENT,
     BODY,
     GYM,
+    DATED_GYM,
     TRAINING_RECOVERY,
     RECOVERY_PREVIEW,
     PROGRAMMES,
@@ -204,6 +206,7 @@ private fun AppleAppContent(
     var page by remember { mutableStateOf(ApplePage.START) }
     var calendarWorkout by remember { mutableStateOf<String?>(null) }
     var calendarStrength by remember { mutableStateOf<String?>(null) }
+    var gymDate by remember { mutableStateOf<LocalDate?>(null) }
     var raceVersion by remember { mutableStateOf<String?>(null) }
     var raceHilly by remember { mutableStateOf(false) }
     var selectedRoutine by remember { mutableStateOf<String?>(null) }
@@ -330,7 +333,8 @@ private fun AppleAppContent(
                         },
                         onDone = { page = ApplePage.BASELINE },
                     )
-                ApplePage.GYM ->
+                ApplePage.GYM,
+                ApplePage.DATED_GYM ->
                     Column {
                         TextButton(onClick = { page = ApplePage.PROGRAMMES }) {
                             Text("Strength programmes")
@@ -350,7 +354,10 @@ private fun AppleAppContent(
                             }
                         }
                         Box(Modifier.weight(1f)) {
-                            AppleGymScreen(session) { page = ApplePage.START }
+                            val plannedDate = gymDate.takeIf { page == ApplePage.DATED_GYM }
+                            key(plannedDate) {
+                                AppleGymScreen(session, plannedDate) { page = ApplePage.START }
+                            }
                         }
                     }
                 ApplePage.TRAINING_RECOVERY -> {
@@ -597,6 +604,13 @@ private fun AppleAppContent(
                                         calendarStrength = date?.toString()
                                         page = ApplePage.HISTORY
                                     }
+                                    route.startsWith("strength?date=") -> {
+                                        gymDate =
+                                            AppleCalendarDates.parse(
+                                                route.removePrefix("strength?date=")
+                                            )
+                                        page = ApplePage.DATED_GYM
+                                    }
                                     route == "progress/trends" -> page = ApplePage.RUNNING_TRENDS
                                     route == "achievements" -> page = ApplePage.ACHIEVEMENTS
                                     route == "progress/weight" -> page = ApplePage.BODY
@@ -618,7 +632,8 @@ private fun AppleAppContent(
                     ApplePage.PLAN -> "plan"
                     ApplePage.HISTORY -> "calendar"
                     ApplePage.PROGRESS -> "progress"
-                    ApplePage.GYM -> "strength"
+                    ApplePage.GYM,
+                    ApplePage.DATED_GYM -> "strength"
                     else -> null
                 },
             selectTab = { route ->

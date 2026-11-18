@@ -15,6 +15,7 @@ fun GymNowScreen(
     onWorkout: () -> Unit,
     onBuild: () -> Unit,
     onBack: () -> Unit,
+    plannedDate: LocalDate? = null,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
     SharedGymNowScreen(
@@ -27,7 +28,8 @@ fun GymNowScreen(
         { it.format(GYM_DAY) },
         { it.atZone(ZoneId.systemDefault()).format(GYM_DAY) },
         ::gymTargetDescription,
-        { enabled, action -> BackHandler(enabled = enabled, onBack = action) },
+        plannedDate = plannedDate,
+        backHandler = { enabled, action -> BackHandler(enabled = enabled, onBack = action) },
     )
 }
 

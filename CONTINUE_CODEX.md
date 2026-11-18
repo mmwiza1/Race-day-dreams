@@ -62,6 +62,23 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 243 dated strength logging
+
+- The iOS Today action “Log today's strength workout” used to open
+  generic Gym Now and ignore the date. It now opens the shared planned
+  workout picker for the specific date. Starting remains an explicit
+  action, and another day's prescription cannot be selected from that
+  view. A normal Gym Now entry still opens its overview.
+- Both Android APKs built locally and formatting passed. All eight
+  AuthoredGymNowScreenTest cases passed on API 28. The two new cases cover
+  exact-date execution with empty actuals and the no-session case.
+  iOS host execution remains pending. Keep this checkpoint local while
+  [run 44342650745](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44342650745)
+  verifies the UIKit import, Files and shared navigation.
+- Next, inspect that exact Apple result, batch any demonstrated fix
+  with this dated-entry work, then verify the resulting head. PR #24
+  stays draft while scope or release checks remain pending.
+
 ### Latest recovery pointer — checkpoint 242 UIKit category import
 
 - Apple job 134923933698 on `946c7ca` passed shared Native tests but
@@ -70,10 +87,12 @@ incomplete migration merely because a focused checkpoint passes.
   Kotlin/Native UIKit category-extension import. This needs Apple
   compilation, followed by the unchanged Files cancellation and save
   assertions. There was no XCTest result for this head.
-- Preserve the independent Android job 134923932908 until it finishes.
-  Then push this fix with the local navigation and release-gate batch
-  to PR #24. Verify the new exact Apple head; the iPhone device job
-  belongs to the full release stage. Keep the PR draft for focused work.
+- The independent Android API 35 job 134923932908 finished green.
+  Pushed `9f29d20` with the import fix, shared navigation and release
+  gates. Exact-head [run 44342650745](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44342650745)
+  is in progress. Verify native compilation, export and navigation.
+  The iPhone device job belongs to the full release stage. Keep the
+  PR draft for focused work.
 
 ### Latest recovery pointer — checkpoint 241 iPhone device build gate
 

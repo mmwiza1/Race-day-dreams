@@ -47,10 +47,14 @@ fun SharedGymNowScreen(
     formatDate: (LocalDate) -> String,
     formatRecordedDate: (Instant) -> String,
     formatTarget: (org.racedaydreams.domain.strength.GymWorkoutDefinition.Slot) -> String,
+    plannedDate: LocalDate? = null,
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
 ) {
     LaunchedEffect(model) { model.refresh() }
-    var section by rememberSaveable { mutableStateOf("Overview") }
+    var section by
+        rememberSaveable(plannedDate?.toString()) {
+            mutableStateOf(if (plannedDate == null) "Overview" else "Planned workouts")
+        }
     var discardId by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmReload by rememberSaveable { mutableStateOf(false) }
     var plannedLimit by rememberSaveable { mutableStateOf(7) }
@@ -224,19 +228,24 @@ fun SharedGymNowScreen(
                                 }
                         }
                     val ordered =
-                        remember(sessions, today) {
-                            sessions
-                                .sortedBy { it.date.toEpochDay() }
-                                .let { rows ->
-                                    rows.filter { it.date.toEpochDay() >= today.toEpochDay() } +
-                                        rows
-                                            .filter { it.date.toEpochDay() < today.toEpochDay() }
-                                            .asReversed()
-                                }
+                        remember(sessions, today, plannedDate) {
+                            if (plannedDate != null) sessions.filter { it.date == plannedDate }
+                            else {
+                                val rows = sessions.sortedBy { it.date.toEpochDay() }
+                                rows.filter { it.date.toEpochDay() >= today.toEpochDay() } +
+                                    rows
+                                        .filter { it.date.toEpochDay() < today.toEpochDay() }
+                                        .asReversed()
+                            }
                         }
-                    Text(
-                        "Today and upcoming sessions first. Earlier prescriptions remain available; there is no catch-up requirement."
-                    )
+                    if (plannedDate != null) {
+                        Text("Programme sessions for ${formatDate(plannedDate)}")
+                        if (ordered.isEmpty()) Text("No strength session is planned for this date.")
+                    } else {
+                        Text(
+                            "Today and upcoming sessions first. Earlier prescriptions remain available; there is no catch-up requirement."
+                        )
+                    }
                     ordered.take(plannedLimit).forEach { session ->
                         SemanticCard(Tile.Planned) {
                             Text(

@@ -94,6 +94,28 @@ class AuthoredGymNowScreenTest {
     }
 
     @Test
+    fun datedEntryShowsTheExactPrescriptionWithoutStartingIt() {
+        install(plannedDate = day)
+        compose.onNodeWithText("Authored session").performScrollTo().assertIsDisplayed()
+        assertNull(execution())
+        click("Start this session")
+        await { execution() != null }
+        assertEquals("session", execution()!!.source()!!.sessionId())
+        assertTrue(execution()!!.actualSets().isEmpty())
+    }
+
+    @Test
+    fun datedEntryDoesNotOfferADifferentDaysSession() {
+        install(plannedDate = day.plusDays(1))
+        compose
+            .onNodeWithText("No strength session is planned for this date.")
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose.onNodeWithText("Start this session").assertDoesNotExist()
+        assertNull(execution())
+    }
+
+    @Test
     fun staleDisplayedRevisionCannotStartAndRefreshesWithoutCreatingActuals() {
         install()
         io { programmes.activate(programme(2), programmes.currentReference(), "next", emptyList()) }
@@ -237,7 +259,7 @@ class AuthoredGymNowScreenTest {
         await { execution() != null }
     }
 
-    private fun install(largeDark: Boolean = false) {
+    private fun install(largeDark: Boolean = false, plannedDate: LocalDate? = null) {
         compose.runOnIdle {
             model = createModel()
             shown.value = model
@@ -252,7 +274,7 @@ class AuthoredGymNowScreenTest {
                 ) {
                     shown.value?.let { feature ->
                         if (page.value == "hub")
-                            GymNowScreen(feature, { page.value = "workout" }, {}, {})
+                            GymNowScreen(feature, { page.value = "workout" }, {}, {}, plannedDate)
                         else GymWorkoutScreen(feature) { page.value = "hub" }
                     }
                 }
