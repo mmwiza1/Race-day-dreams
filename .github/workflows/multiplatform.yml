@@ -269,6 +269,8 @@ jobs:
             sleep 1
           done
           test -s iosApp/build/startup.png
+          # Release the standalone instance before XCTest launches its own build.
+          xcrun simctl terminate "$device" org.racedaydreams.ios
           echo "RDD_IOS_SIMULATOR=$device" >> "$GITHUB_ENV"
           (
             cd iosApp/build
@@ -299,11 +301,10 @@ jobs:
             iosApp/build/source-commit.txt
           if-no-files-found: error
 
-      - name: Exercise workout persistence through the iOS app
-        id: ios_workout_ui
+      - name: Build the iOS UI tests
+        id: ios_workout_build
         if: ${{ !cancelled() && steps.ios_app_build.outcome == 'success' }}
-        # Leave time to finalise the result bundle after cold simulator tests complete.
-        timeout-minutes: 16
+        timeout-minutes: 10
         shell: bash
         run: |
           set -euo pipefail
@@ -326,12 +327,26 @@ jobs:
             IFS=$'\t' read -r runtime model <<< "$selection"
             device="$(xcrun simctl create 'Race Day Dreams UI tests' "$model" "$runtime")"
           fi
-          xcodebuild test -project iosApp/RaceDayDreams.xcodeproj -scheme RaceDayDreams \
-            -destination "platform=iOS Simulator,id=$device" \
-            -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui" \
-            -resultBundlePath "$RUNNER_TEMP/rdd-ios-workout.xcresult" \
-            ARCHS="$(uname -m)" CODE_SIGNING_ALLOWED=NO \
+          build_settings=(
+            -project iosApp/RaceDayDreams.xcodeproj -scheme RaceDayDreams
+            -destination "platform=iOS Simulator,id=$device"
+            -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui"
+            ARCHS="$(uname -m)" CODE_SIGNING_ALLOWED=NO
             RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework"
+          )
+          xcodebuild build-for-testing "${build_settings[@]}"
+          echo "RDD_IOS_UI_SIMULATOR=$device" >> "$GITHUB_ENV"
+      - name: Exercise workout persistence through the iOS app
+        id: ios_workout_ui
+        if: ${{ !cancelled() && steps.ios_workout_build.outcome == 'success' }}
+        timeout-minutes: 16
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild test-without-building -project iosApp/RaceDayDreams.xcodeproj \
+            -scheme RaceDayDreams -destination "platform=iOS Simulator,id=$RDD_IOS_UI_SIMULATOR" \
+            -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui" \
+            -resultBundlePath "$RUNNER_TEMP/rdd-ios-workout.xcresult"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

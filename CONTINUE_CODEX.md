@@ -62,6 +62,36 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 251 separate XCTest build and launch
+
+- Exact `1c6812e` run [44363683776](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44363683776)
+  passed Apple framework, simulator build and standalone startup. XCTest
+  then timed out launching the app and hit the 16-minute deadline with
+  an incomplete result bundle. The Gym Now test did not run.
+- The workflow now explicitly terminates the standalone instance and
+  separates build-for-testing from test-without-building, retaining the
+  same simulator, result evidence and assertions. YAML, shell syntax
+  and diff checks passed. Verify the new head on Apple. The Android BOM
+  failure gets a fresh job with this push instead of a separate retry.
+- Keep PR #24 draft. Full software gates and unsigned device build
+  remain pending.
+
+### Latest recovery pointer — checkpoint 250 exact-head local verification
+
+- Android job 135011582342 on `1c6812e` stopped during Gradle configuration
+  because it could not resolve Kotlin Gradle plugins BOM 2.1.21. No CI
+  instrumentation ran. Maven Central returned HTTP 200 for the same POM
+  from the workspace. After Apple job 135011581845 completes, retry only
+  Android once unless an Apple fix needs a new push.
+- Exact-head offline Gradle passed 700,189 retained checks across 48
+  suites, all shared JVM tasks, storage metadata compilation, both
+  Android APK builds and lint. All 75 schema tests, 19 migration-boundary
+  comparisons and 3 screenshot-source tests passed. Logs:
+  `/tmp/rdd249-local.log` and `/tmp/rdd249-schema.log`.
+- Preserve the [active run 44363683776](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44363683776).
+  The new Gym Now XCTest and final full matrix/device build remain
+  pending. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 249 green focused cross-platform CI
 
 - [Run 44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
@@ -69,8 +99,9 @@ incomplete migration merely because a focused checkpoint passes.
   iOS passed Native/GPX, framework, build, startup, and all 3 XCUITests.
   XCTest explicitly reported TEST SUCCEEDED, 0 failures, 387.550 seconds.
   Startup screenshot 14454640518, simulator package 14454595540.
-- Push the queued shared Gym Now rest/warm-up and native smoke test
-  together. Verify the new exact head, including the additional XCTest.
+- Pushed the shared Gym Now rest/warm-up changes and native smoke test as
+  `1c6812e`. [Exact-head run 44363683776](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44363683776)
+  is active. Verify the new exact head, including the additional XCTest.
   Full Android API 28/35/36 and unsigned iPhone build gates remain pending.
   Keep PR #24 draft until ready for the full release stage.
 
