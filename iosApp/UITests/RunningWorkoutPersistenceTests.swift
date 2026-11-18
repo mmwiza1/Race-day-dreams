@@ -22,6 +22,32 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         XCTAssertFalse(request.isEnabled)
     }
 
+    func testGymNowExposesSharedRestAndWarmupControls() {
+        let app = XCUIApplication()
+        app.launch()
+        tap("Strength", in: app)
+        tap("Start open workout", in: app)
+        tap("Add exercise", in: app)
+
+        let dialog = app.alerts.firstMatch
+        let search = dialog.textFields.firstMatch
+        let exerciseSearch = search.exists ? search : app.textFields.firstMatch
+        XCTAssertTrue(exerciseSearch.waitForExistence(timeout: 15))
+        exerciseSearch.tap()
+        exerciseSearch.typeText("bench press")
+        tap("Bench Press", in: app)
+
+        tap("Timer settings ▾", in: app)
+        XCTAssertTrue(control("Default rest when no target is prescribed", in: app)
+            .waitForExistence(timeout: 15))
+        tap("Optional warm-up ▾", in: app)
+        XCTAssertTrue(control("Enter my own warm-up", in: app).waitForExistence(timeout: 15))
+
+        tap("Discard unfinished workout", in: app)
+        tap("Discard workout", in: app)
+        XCTAssertTrue(control("Workout discarded", in: app).waitForExistence(timeout: 15))
+    }
+
     func testSharedNavigationOpensTrainingProgress() {
         let app = XCUIApplication()
         app.launch()

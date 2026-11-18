@@ -62,6 +62,18 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 248 native gym preparation smoke test
+
+- Added an iOS XCTest that opens Gym Now from Strength, adds Bench Press,
+  checks the shared timer settings and warm-up disclosure, then
+  deliberately discards the disposable unfinished workout. Source
+  labels and diff checks passed. Native compilation and execution
+  remain pending.
+- Preserve exact-head [44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
+  for `28d4e8f`. After both jobs report, batch this test with the local
+  rest-control and shared-preparation commits and fix any demonstrated
+  failure before the full platform gates. Keep PR #24 draft.
+
 ### Latest recovery pointer — checkpoint 247 shared gym preparation
 
 - iOS Gym Now now uses the same Compose rest settings and warm-up
