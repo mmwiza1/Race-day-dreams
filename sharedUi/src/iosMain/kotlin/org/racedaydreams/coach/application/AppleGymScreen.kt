@@ -1,7 +1,6 @@
 package org.racedaydreams.coach.application
 
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.CancellationException
@@ -9,7 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
-import org.racedaydreams.coach.CoachCard
 import org.racedaydreams.coach.strength.*
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.presentation.StrengthPrescriptionText
@@ -89,110 +87,56 @@ internal fun AppleGymScreen(
                 { it.name() },
                 ::appleGymTarget,
                 AppleCalendarDates::label,
-                restControls = { _, enabled ->
-                    CoachCard {
-                        Text("Rest timer")
-                        val preferences = state.restPreferences
-                        TextButton(
-                            enabled = enabled,
-                            onClick = {
-                                scope.launch {
-                                    try {
-                                        alertError = null
-                                        val notify = !preferences.notifications()
-                                        if (!notify || session.reminders.requestPermission()) {
-                                            model.restPreferences(
-                                                GymRestTimer.Preferences(
-                                                    preferences.defaultSeconds(),
-                                                    preferences.suggestAfterSet(),
-                                                    notify,
-                                                    preferences.vibration(),
-                                                    preferences.audio(),
-                                                )
+                restControls = { slot, enabled ->
+                    GymRestControls(
+                        prefs = state.restPreferences,
+                        timer = state.restTimer,
+                        prescribedRestSeconds = slot.target()?.restSeconds(),
+                        enabled = enabled,
+                        notificationExplanation =
+                            "Rest never blocks your next set. Completion alerts follow your iPhone notification settings.",
+                        onAction = model::restAction,
+                        onPreferencesChange = model::restPreferences,
+                        onNotificationsChange = { notify ->
+                            scope.launch {
+                                try {
+                                    alertError = null
+                                    if (!notify || session.reminders.requestPermission()) {
+                                        val prefs = model.state.value.restPreferences
+                                        model.restPreferences(
+                                            GymRestTimer.Preferences(
+                                                prefs.defaultSeconds(),
+                                                prefs.suggestAfterSet(),
+                                                notify,
+                                                prefs.vibration(),
+                                                prefs.audio(),
                                             )
-                                        } else alertError = "Notification access is off."
-                                    } catch (cancelled: CancellationException) {
-                                        throw cancelled
-                                    } catch (_: Exception) {
-                                        alertError = "Could not change rest alerts."
-                                    }
-                                }
-                            },
-                        ) {
-                            Text(
-                                if (preferences.notifications()) "Turn off rest alerts"
-                                else "Allow rest alerts"
-                            )
-                        }
-                        alertError?.let { Text(it) }
-
-                        val timer = state.restTimer
-                        when (timer?.phase()) {
-                            GymRestTimer.Phase.RUNNING -> {
-                                Text("${timer.secondsRemaining()} seconds remaining")
-                                TextButton(
-                                    onClick = { model.restAction("pause") },
-                                    enabled = enabled,
-                                ) {
-                                    Text("Pause rest")
+                                        )
+                                    } else alertError = "Notification access is off."
+                                } catch (cancelled: CancellationException) {
+                                    throw cancelled
+                                } catch (_: Exception) {
+                                    alertError = "Could not change rest alerts."
                                 }
                             }
-                            GymRestTimer.Phase.PAUSED -> {
-                                Text("Paused · ${timer.secondsRemaining()} seconds remaining")
-                                TextButton(
-                                    onClick = { model.restAction("resume") },
-                                    enabled = enabled,
-                                ) {
-                                    Text("Resume rest")
-                                }
-                            }
-                            else ->
-                                TextButton(
-                                    onClick = { model.restAction("start") },
-                                    enabled = enabled,
-                                ) {
-                                    Text("Start rest")
-                                }
-                        }
-                        if (
-                            timer?.phase() in
-                                listOf(GymRestTimer.Phase.RUNNING, GymRestTimer.Phase.PAUSED)
-                        ) {
-                            TextButton(onClick = { model.restAction("+30") }, enabled = enabled) {
-                                Text("Add 30 seconds")
-                            }
-                            TextButton(onClick = { model.restAction("-30") }, enabled = enabled) {
-                                Text("Remove 30 seconds")
-                            }
-                            TextButton(onClick = { model.restAction("reset") }, enabled = enabled) {
-                                Text("Reset rest")
-                            }
-                            TextButton(onClick = { model.restAction("skip") }, enabled = enabled) {
-                                Text("Skip rest")
-                            }
-                        }
-                    }
+                        },
+                        showVibrationPreference = false,
+                    )
+                    alertError?.let { Text(it) }
                 },
-                warmupGuidance = { _, enabled ->
-                    model.warmupSuggestion()?.let { suggestion ->
-                        CoachCard {
-                            Text("Optional warm-up")
-                            suggestion.instruction()?.let { Text(it) }
-                            TextButton(onClick = { model.prepareWarmup(null) }, enabled = enabled) {
-                                Text("Log a warm-up set")
-                            }
-                            suggestion.ramps().forEach { ramp ->
-                                TextButton(
-                                    onClick = { model.prepareWarmup(ramp) },
-                                    enabled = enabled,
-                                ) {
-                                    Text(
-                                        "${number(ramp.kilograms())} kg · ${ramp.repetitions()} repetitions"
-                                    )
-                                }
-                            }
+                warmupGuidance = { slot, enabled ->
+                    val suggestion =
+                        remember(slot, state.recent, state.view?.observed()?.actualSets()) {
+                            model.warmupSuggestion()
                         }
-                    }
+                    GymWarmupGuidanceCard(
+                        slotId = slot.id(),
+                        exerciseId = slot.exercise().id(),
+                        suggestion = suggestion,
+                        enabled = enabled,
+                        formatKilograms = ::number,
+                        onPrepare = model::prepareWarmup,
+                    )
                 },
             )
         }

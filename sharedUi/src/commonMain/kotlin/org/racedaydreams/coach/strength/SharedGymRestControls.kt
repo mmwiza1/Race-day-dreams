@@ -23,6 +23,7 @@ fun GymRestControls(
     onAction: (String) -> Unit,
     onPreferencesChange: (GymRestTimer.Preferences) -> Unit,
     onNotificationsChange: (Boolean) -> Unit,
+    showVibrationPreference: Boolean = true,
 ) {
     var details by rememberSaveable { mutableStateOf(false) }
     SemanticCard(Tile.Progress) {
@@ -133,20 +134,22 @@ fun GymRestControls(
                 ->
                 onNotificationsChange(value)
             }
-            RestToggle(
-                "Vibrate at rest completion",
-                prefs.vibration(),
-                enabled && prefs.notifications(),
-            ) {
-                onPreferencesChange(
-                    GymRestTimer.Preferences(
-                        prefs.defaultSeconds(),
-                        prefs.suggestAfterSet(),
-                        prefs.notifications(),
-                        it,
-                        prefs.audio(),
+            if (showVibrationPreference) {
+                RestToggle(
+                    "Vibrate at rest completion",
+                    prefs.vibration(),
+                    enabled && prefs.notifications(),
+                ) {
+                    onPreferencesChange(
+                        GymRestTimer.Preferences(
+                            prefs.defaultSeconds(),
+                            prefs.suggestAfterSet(),
+                            prefs.notifications(),
+                            it,
+                            prefs.audio(),
+                        )
                     )
-                )
+                }
             }
             RestToggle("Play a completion sound", prefs.audio(), enabled && prefs.notifications()) {
                 onPreferencesChange(

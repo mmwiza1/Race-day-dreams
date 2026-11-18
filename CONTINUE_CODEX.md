@@ -62,6 +62,19 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 247 shared gym preparation
+
+- iOS Gym Now now uses the same Compose rest settings and warm-up
+  guidance as Android. It includes default duration, suggestion toggle,
+  interrupted-timer recovery, timer controls and warm-up review.
+  iOS still owns its notification permission and suppresses the separate
+  vibration preference, which its notification adapter cannot control.
+- Both Android APKs compiled locally. Both targeted API 28 gym preparation
+  tests passed, including dark mode at 200% text. Native UI verification remains
+  pending. Keep this checkpoint and `ba1dc38` local until the Apple and
+  Android jobs on [44352975227](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44352975227)
+  have reported, then verify the batched head. PR #24 stays draft.
+
 ### Latest recovery pointer — checkpoint 246 iOS rest controls
 
 - iOS Gym Now now exposes the shared coordinator's subtract-30-seconds
