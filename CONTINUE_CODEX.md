@@ -76,6 +76,22 @@ documentation PR):
 
 Progress checkpoints for this work are recorded under "Latest recovery pointer — checkpoint 262+".
 
+### Latest recovery pointer — checkpoint 262 battery audit COMPLETE; bouldering next (Claude)
+
+- Phase 0 handover committed (`29b1e3d`). Phase 1 audit committed as `9412a4c`:
+  [docs/BATTERY_EFFICIENCY_AUDIT.md](docs/BATTERY_EFFICIENCY_AUDIT.md), pinned copy
+  https://github.com/mmwiza1/Race-day-dreams/blob/9412a4ce1ffcb22178b0c5892af15ce907b70156/docs/BATTERY_EFFICIENCY_AUDIT.md
+- Static code audit only; no physical-device or profiler measurements were possible here and no
+  figures are claimed. No P0. P1: A-1 Android run notification re-posted ~2x/s (post only on
+  change); S-1 live route reloads every point every 5 s while visible (load incrementally).
+  P2: S-2 dashboards recompute over full history on the main thread; A-8 full snapshot reload on
+  every resume; I-1 iOS flushes SQLite every 1 s vs Android 5 s (integrity trade-off, owner
+  decision); A-2 wake lock + 1 Hz GNSS during manual pause (measure first). P3 reliability notes:
+  iOS never reconnects a dropped HR strap; iOS gym screen does not checkpoint on backgrounding.
+- **Do NOT implement any of these until the owner/senior engineer approve specific items.** Keep
+  low-risk (A-1, S-1, S-2) PRs separate from recording-pipeline changes (I-1, A-2).
+- Next: Phase 2 bouldering on this branch (draft PR; no merge without explicit approval).
+
 ## Earlier baseline (12 November 2026 — superseded by the section above; kept for history)
 
 - Repository: `mmwiza1/Race-day-dreams`; default branch `main`. **0.12.2-test1 / versionCode 18 is complete, merged and published**, not an unfinished feature branch.
