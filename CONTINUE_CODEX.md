@@ -103,7 +103,9 @@ incomplete migration merely because a focused checkpoint passes.
     segment; recent runs show source (ActivitySources.friendly) and open run details; recent
     workouts open the recorded session (Android strength/source/{id}, iOS STRENGTH_RECORD with
     return page); compact grouped "More detail"; 2-up KPI grid (1-up at 200% text, 4-up >=600dp);
-    explanations behind toggles. New records count once per record type per workout.
+    explanations behind toggles. New records = distinct (record type, workout) improvements;
+    tile text says "Recorded bests improved · each record counted once per workout" (owner asked
+    that the wording not imply a count of workouts).
     12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
     captures progress-/strength-dashboard-empty (459 required).
 

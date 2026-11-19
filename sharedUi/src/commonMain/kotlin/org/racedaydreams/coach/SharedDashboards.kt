@@ -351,7 +351,7 @@ fun SharedStrengthDashboard(
             Kpi(
                 "New records",
                 overview.recordImprovements.toString(),
-                "Workouts that beat a recorded best",
+                "Recorded bests improved · each record counted once per workout",
                 if (StrengthLink.PBS in links) ({ open(StrengthLink.PBS) }) else null,
             ),
         )

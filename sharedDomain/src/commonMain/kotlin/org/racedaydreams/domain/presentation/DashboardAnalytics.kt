@@ -353,8 +353,9 @@ object DashboardAnalytics {
         /** Working sets in the equivalent earlier period; null when history does not cover it. */
         val previousWorkingSets: Int?,
         /**
-         * Workout-level new recorded bests (not estimates) in the period that improve an earlier
-         * best.
+         * Improvements to recorded bests (not estimates) in the period: distinct (record type,
+         * workout) pairs that beat an earlier best. One workout can contribute several (e.g. a
+         * heavier load on two lifts); successive better sets of one record in a workout count once.
          */
         val recordImprovements: Int,
         /** Exercises with at least one working set the existing estimate applies to. */
