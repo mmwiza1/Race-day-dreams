@@ -110,6 +110,9 @@ incomplete migration merely because a focused checkpoint passes.
     failed in the ios_scope step because `gh pr diff` refuses PRs with >300 files (the canonical
     screenshot bot commit makes PR #25 475 files) -> now uses the paginated pulls/files API and
     runs the UI suite if the list cannot be read.
+    Run on 170fc1d: iOS compile/framework/app/launch GREEN; XCUITests timed out (16 min): the
+    frame-polling settle in tap() costs ~1 s per frame read on the Intel runner and disturbed the
+    unrelated favourite/GPX test -> replaced by a fixed 1 s pause only after swipes.
     12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
     captures progress-/strength-dashboard-empty (459 required).
 
