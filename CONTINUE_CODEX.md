@@ -118,6 +118,9 @@ incomplete migration merely because a focused checkpoint passes.
     0.13.1/21, android.yml artifact names) with docs/RELEASE_0_13_1.md. Merge only after the full
     ready gate is green on the exact final head (incl. the canonical-screenshot bot commit), then
     verify main, post-merge CI and the rolling Latest Development Build (APK + iOS assets).
+    Full gate on 8b15fa3: iOS all green; Android 28/35/36 failed only CoachingScreenshotTest
+    click("Strength") (2 nodes) because More detail group headings "Strength"/"Progress" equalled
+    tab names -> renamed "Strength training" / "Records & trends" (keep group names != tab names).
     12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
     captures progress-/strength-dashboard-empty (459 required).
 

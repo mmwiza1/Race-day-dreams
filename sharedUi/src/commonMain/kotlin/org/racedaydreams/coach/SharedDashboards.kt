@@ -245,7 +245,7 @@ fun SharedProgressDashboard(
                         ProgressLink.BODY_WEIGHT,
                         ProgressLink.BODY_GUIDANCE,
                     ),
-                "Strength" to listOf(ProgressLink.STRENGTH_ANALYTICS),
+                "Strength training" to listOf(ProgressLink.STRENGTH_ANALYTICS),
             )
             .map { (name, group) -> name to group.filter { it in links } },
         { it.title },
@@ -424,7 +424,7 @@ fun SharedStrengthDashboard(
     MoreDetail(
         listOf(
                 "Train" to listOf(StrengthLink.LOG, StrengthLink.PROGRAMME, StrengthLink.EXERCISES),
-                "Progress" to
+                "Records & trends" to
                     listOf(StrengthLink.ANALYTICS, StrengthLink.PBS, StrengthLink.MILESTONES),
                 "Recovery" to listOf(StrengthLink.RECOVERY),
             )
@@ -571,7 +571,10 @@ private fun DashboardRow(
     else content()
 }
 
-/** One compact card of grouped links instead of a stack of large cards. */
+/**
+ * One compact card of grouped links instead of a stack of large cards. Group names must differ from
+ * the bottom tab names so a tab label is never duplicated on screen.
+ */
 @Composable
 private fun <T> MoreDetail(
     groups: List<Pair<String, List<T>>>,
