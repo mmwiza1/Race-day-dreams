@@ -399,6 +399,25 @@ jobs:
           name: experimental-ios-workout-ui-results
           path: ${{ runner.temp }}/rdd-ios-workout.xcresult
           if-no-files-found: ignore
+      - name: Export named iOS review screenshots
+        # Evidence for visual review (e.g. the shared dashboards); not a pass/fail gate.
+        id: ios_review_screenshots
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && !cancelled() && steps.ios_workout_ui.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/rdd-ios-review-screenshots"
+          rm -rf "$out"; mkdir -p "$out"
+          xcrun xcresulttool export attachments --path "$RUNNER_TEMP/rdd-ios-workout.xcresult" --output-path "$out"
+          ls -la "$out"
+          test -s "$out/manifest.json"
+      - uses: actions/upload-artifact@v4
+        if: ${{ steps.ios_review_screenshots.outcome == 'success' }}
+        with:
+          name: ios-review-screenshots
+          path: ${{ runner.temp }}/rdd-ios-review-screenshots/
+          if-no-files-found: ignore
 
       - name: Export iOS workout UI failure evidence
         if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_workout_ui.outcome == 'failure') }}

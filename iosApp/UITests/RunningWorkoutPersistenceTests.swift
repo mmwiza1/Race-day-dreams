@@ -28,6 +28,14 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         let strengthTab = app.buttons["Strength"].firstMatch
         XCTAssertTrue(strengthTab.waitForExistence(timeout: 15))
         strengthTab.tap()
+        // The Strength tab opens the shared dashboard; Gym Now is its primary action.
+        XCTAssertTrue(control("Muscle-group workload", in: app).waitForExistence(timeout: 15))
+        attachScreenshot("ios-strength-dashboard", app)
+        app.swipeUp()
+        attachScreenshot("ios-strength-dashboard-scrolled", app)
+        app.swipeDown()
+        app.swipeDown()
+        tap("Gym now", in: app)
         tap("Start open workout", in: app)
         tap("Add exercise", in: app)
 
@@ -49,12 +57,16 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         app.launch()
         tap("Progress", in: app)
 
-        XCTAssertTrue(control("Training progress", in: app).waitForExistence(timeout: 15))
-        tap("Recorded race results", in: app)
+        XCTAssertTrue(control("Distance this week", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(control("Weekly distance", in: app).exists)
+        attachScreenshot("ios-progress-dashboard", app)
+        app.swipeUp()
+        attachScreenshot("ios-progress-dashboard-scrolled", app)
+        tap("Running PBs", in: app)
         XCTAssertTrue(control("Record a result", in: app).waitForExistence(timeout: 15))
 
         tap("Progress", in: app)
-        XCTAssertTrue(control("Training progress", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(control("Distance this week", in: app).waitForExistence(timeout: 15))
         XCTAssertTrue(control("Record", in: app).isHittable)
         XCTAssertTrue(control("Settings", in: app).isHittable)
     }
@@ -168,6 +180,14 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
             verticalAccuracy: 5,
             timestamp: Date()
         ))
+    }
+
+    /// Review evidence for the shared dashboards; synthetic simulator data only.
+    private func attachScreenshot(_ name: String, _ app: XCUIApplication) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     private func control(_ label: String, in app: XCUIApplication) -> XCUIElement {

@@ -62,6 +62,29 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 259 iOS publication verified; analytics dashboards DRAFT (Claude)
+
+- PR #23 squash-merged as `146cde4` (tree == verified head 367200b). main run 44439687824
+  attempt 2 (re-ran formatting after a transient Maven 404 and apple-shared after a lost Mac
+  runner) published, from ONE commit: 0.13.0-test1 APK (SHA-256 02d3b128…), universal unsigned
+  iOS Simulator ZIP (37aeff0d…, x86_64+arm64, iPhoneSimulator), unsigned iPhone ZIP (637b54d4…,
+  arm64, iPhoneOS), latest-* aliases, .sha256 files and build-info. All downloaded and checked:
+  checksums, commit 146cde4, Info.plist 0.13.0/20, no code signature, all licence notices;
+  APK 0.13.0-test1/20/min 28/no INTERNET; 0.12.2/0.12.3 assets preserved.
+- Owner-authorised analytics work on `feature/analytics-dashboards` (DRAFT; must NOT merge
+  without explicit owner approval; owner reviews visuals). Reference designs: owner's Progress,
+  overview and Strength images. Implemented:
+  - `sharedDomain/.../presentation/DashboardAnalytics.kt` reusing RecordedWeekAggregation,
+    StrengthVolume, StrengthRecords and StrengthRecordPolicy (Epley); plan completion uses the
+    calendar's plannedWorkoutId link; nulls for missing evidence; 6 commonTest contracts.
+  - `sharedUi/.../SharedDashboards.kt`: SharedProgressDashboard (week hero, KPI tiles, existing
+    SharedWeeklyRunningChart, recent runs, all drill-downs) and SharedStrengthDashboard (Gym now,
+    KPI tiles, estimated-1RM trend, muscle-group donut, recent workouts, all drill-downs).
+  - Android Progress/Strength tabs and iOS PROGRESS + new STRENGTH_HOME page use them; five-tab
+    navigation unchanged. Tests scroll to links on the longer screens; 6 new required captures
+    (457 total); iOS XCUITests attach dashboard screenshots exported as `ios-review-screenshots`.
+  - Today is unchanged (asked before touching it). Bouldering excluded.
+
 ### Latest recovery pointer — checkpoint 258 PR #24 merged; PR #23 staged CI + unsigned iOS releases (Claude)
 
 - PR #24 squash-merged as `f7be1ab` (tree == verified head 529d310 / source 039044a); main run

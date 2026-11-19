@@ -199,7 +199,7 @@ class CoachOnboardingTest {
         launchSavedProfile()
         compose.onNodeWithText("Progress").performClick()
         waitForText("Running PBs")
-        compose.onNodeWithText("Running PBs").performClick()
+        compose.onNodeWithText("Running PBs").performScrollTo().performClick()
         compose.onNodeWithText("Add a race or manual result").performScrollTo().performClick()
         field("Finishing time (MM:SS or H:MM:SS)").performScrollTo().performTextInput("26:00")
         compose
@@ -238,7 +238,7 @@ class CoachOnboardingTest {
         launchSavedProfile()
         compose.onNodeWithText("Progress").performClick()
         waitForText("Training trends")
-        compose.onNodeWithText("Training trends").performClick()
+        compose.onNodeWithText("Training trends").performScrollTo().performClick()
         waitForText("Progress from your recorded running")
         compose.onNodeWithText("View and manage shoes").performScrollTo().performClick()
         waitForText("Your shoes")
