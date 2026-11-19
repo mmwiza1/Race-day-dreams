@@ -22,6 +22,7 @@ private val bundledNotices =
         "Coroutines licence" to "coroutines-LICENSE.txt",
         "Serialization licence" to "serialization-LICENSE.txt",
         "Skia graphics licence" to "skia-LICENSE.txt",
+        "Graphics engine component notices" to "ios-native-NOTICES.txt",
         "Berlin route source licence" to "berlin-2014-MIT.txt",
         "Tokyo route source licence" to "tokyo-2026-CC0.txt",
         "London route source licence" to "london-historical-MIT.txt",

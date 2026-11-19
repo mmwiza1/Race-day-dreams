@@ -77,6 +77,26 @@ def render(root, commit, run_url, development=False, tag=None):
 Open **Assets** at the bottom of this GitHub release to download the APK and its
 checksum. The checksum file can be used to verify download integrity.
 '''
+    if development:
+        download += f'''
+### Unsigned iOS developer/test builds
+
+These are **unsigned engineering builds, not installable consumer apps**. There is no App Store
+or TestFlight version. Both come from the same verified commit as the Android APK.
+
+- **[iOS Simulator app]({assets_url}/Race-Day-Dreams-{name}-ios-simulator.zip)** — universal
+  arm64 + x86_64, for Xcode's iOS Simulator on a Mac
+  ([SHA-256]({assets_url}/Race-Day-Dreams-{name}-ios-simulator.zip.sha256))
+- **[Unsigned iPhone arm64 app]({assets_url}/Race-Day-Dreams-{name}-iphoneos-unsigned.zip)** — for
+  developers who can sign and provision it with their own Apple developer account
+  ([SHA-256]({assets_url}/Race-Day-Dreams-{name}-iphoneos-unsigned.zip.sha256))
+- **[Build information]({assets_url}/Race-Day-Dreams-{name}-build-info.txt)** — version, source
+  commit, CI run and SHA-256 of every binary
+
+Simulator: unzip, boot a simulator in Xcode, then run
+`xcrun simctl install booted RaceDayDreams.app`. The iPhone build cannot be installed on a phone
+until you re-sign it; see TEST_BUILD.md.
+'''
 
     installation = f'''## Installation and first launch
 
@@ -101,6 +121,10 @@ may require the backup/reinstall/restore path above.
   API 28/35/36 instrumentation and authentic screenshot capture completed before publication.
 - Physical Galaxy S24 acceptance remains a separate human checklist in TEST_BUILD.md;
   emulator success does not establish outdoor GNSS, BLE, audio or battery behaviour.
+'''
+    if development:
+        build_info += '''- iOS: Native tests, framework link, simulator build/startup, XCUITests and the unsigned
+  iPhone build passed in the same run. iOS builds are unsigned and untested on physical iPhones.
 '''
 
     return (

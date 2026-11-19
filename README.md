@@ -22,6 +22,20 @@ Development/test build for **Android 9 (API 28) or newer**, not a Play Store or 
 The download always points to the last verified development build. It may lag behind work in
 progress. No account or Internet connection is required to use the app.
 
+## iOS developer/test builds (unsigned)
+
+For iOS developers and technically capable testers. These are **unsigned engineering builds, not
+installable consumer apps** — there is no App Store or TestFlight version.
+
+- **[iOS Simulator app (universal, unsigned)](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-ios-simulator.zip)** ·
+  [Checksum](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-ios-simulator.zip.sha256) — run in Xcode's iOS Simulator on a Mac
+- **[Unsigned iPhone arm64 app](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-iphoneos-unsigned.zip)** ·
+  [Checksum](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-iphoneos-unsigned.zip.sha256) — needs your own Apple signing and provisioning
+- [Build information](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-build-info.txt) — version, source commit and SHA-256 of
+  every binary. Android and iOS downloads always come from the same verified commit.
+
+See [Build and device testing](TEST_BUILD.md) for simulator installation and re-signing notes.
+
 ## Features
 
 Screenshots below are genuine production screens using **synthetic demonstration records**,

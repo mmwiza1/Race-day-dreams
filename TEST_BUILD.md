@@ -664,6 +664,24 @@ also run on demand using the `verify_ios_device_build` dispatch input. A success
 job archives the app, its source commit and checksum. Installation requires signing
 with an Apple development team.
 
+### Published unsigned iOS builds
+
+Every verified `main` build publishes two **unsigned developer/test** iOS downloads on the
+[Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+release, from the same commit and CI run as the Android APK. They are not App Store, TestFlight or
+consumer-installable builds. Verify each ZIP against its `.sha256` file and
+`Race-Day-Dreams-latest-build-info.txt` (version, source commit, run, SHA-256 of every binary).
+
+- **iOS Simulator (`Race-Day-Dreams-latest-ios-simulator.zip`)** — universal arm64 + x86_64. On a
+  Mac with Xcode: unzip, boot any iPhone simulator (`xcrun simctl boot "iPhone 16"` or open
+  Simulator), then `xcrun simctl install booted RaceDayDreams.app` and
+  `xcrun simctl launch booted org.racedaydreams.ios`. HealthKit, Bluetooth and real GPS are not
+  available in the simulator.
+- **Unsigned iPhone (`Race-Day-Dreams-latest-iphoneos-unsigned.zip`)** — arm64 `RaceDayDreams.app`
+  built with code signing disabled. It cannot be installed until you re-sign it with your own
+  Apple development certificate and a provisioning profile that includes the HealthKit
+  entitlement for a bundle ID you control. Building from source in Xcode (below) is usually easier.
+
 For a device build, use macOS with Xcode and JDK 17. From the repository root, run
 `./gradlew :sharedUi:linkDebugFrameworkIosArm64`, then open
 `iosApp/RaceDayDreams.xcodeproj`. Select the RaceDayDreams scheme and a connected

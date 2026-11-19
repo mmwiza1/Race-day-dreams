@@ -41,6 +41,8 @@ class ReleaseNotesTest(unittest.TestCase):
         ):
             self.assertIn(text, result)
         self.assertNotIn('Latest Development Build', result)
+        # Permanent tag releases stay Android-only; iOS builds are rolling development assets.
+        self.assertNotIn('iphoneos-unsigned', result)
 
     def test_rolling_release_is_clearly_development(self):
         self.assertIn(
@@ -62,6 +64,16 @@ class ReleaseNotesTest(unittest.TestCase):
         )
         positions = [result.index(section) for section in ordered]
         self.assertEqual(positions, sorted(positions))
+
+    def test_development_notes_offer_labelled_unsigned_ios_builds_from_same_commit(self):
+        result = notes.render(self.root, self.sha, self.url, development=True)
+        base = '/releases/download/development/Race-Day-Dreams-0.8.1-test1'
+        for suffix in ('-ios-simulator.zip', '-ios-simulator.zip.sha256', '-iphoneos-unsigned.zip',
+                       '-iphoneos-unsigned.zip.sha256', '-build-info.txt'):
+            self.assertIn(base + suffix, result)
+        self.assertIn('unsigned engineering builds, not installable consumer apps', result)
+        self.assertIn('same verified commit as the Android APK', result)
+        self.assertLess(result.index('### Unsigned iOS'), result.index('## Installation and first launch'))
 
     def test_previews_use_existing_commit_pinned_images_and_direct_download(self):
         folder = self.root / 'docs/screenshots'

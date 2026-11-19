@@ -1,5 +1,8 @@
-name: Experimental shared Android and iOS migration
+name: Shared Android and iOS checks
 on:
+  # main and v* tags call this from android.yml, so release publication can require the Android
+  # matrix and these Apple jobs from ONE run of ONE commit.
+  workflow_call:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -19,7 +22,8 @@ concurrency:
 
 jobs:
   android-shared:
-    if: github.head_ref == 'experiment/android-ios-kmp-compose' || github.event_name == 'workflow_dispatch'
+    # Focused draft gate. Ready PRs and main run the unfiltered superset in android.yml instead.
+    if: (github.event_name == 'pull_request' && github.event.pull_request.draft == true) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -38,6 +42,11 @@ jobs:
         run: |
           python3 scripts/test-schema.py
           python3 scripts/shared-schema.py --check
+          # Cheap draft-time release/guidance checks from PR #23; ready PRs rerun them in android.yml.
+          python3 scripts/test-release-notes.py
+          python3 scripts/test-android-gate.py
+          cmp THIRD_PARTY.md app/src/main/assets/third_party.md
+          java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java
           python3 scripts/test-screenshot-source.py
       - name: Compile the existing Android app and instrumentation APK
         run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug
@@ -75,8 +84,11 @@ jobs:
             sharedStorage/build/test-results/
 
   apple-shared:
-    if: github.head_ref == 'experiment/android-ios-kmp-compose' || github.event_name == 'workflow_dispatch'
+    # The iOS app shares this code: verify it on every PR to main, on main itself and on demand.
     # macos-latest arm64 has sustained capacity queues; keep real Apple tests on the Intel pool.
+    permissions:
+      contents: read
+      pull-requests: read
     runs-on: macos-26-intel
     timeout-minutes: 72
     steps:
@@ -86,6 +98,29 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+      - name: Decide whether this run needs the iOS launch and UI suite
+        id: ios_scope
+        # Ready PRs, main and manual runs: always. Drafts: only when native iOS code changes or the
+        # PR carries the ios-ui-tests label. Shared Native tests, framework and app build always run.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          DRAFT: ${{ github.event.pull_request.draft }}
+          PR: ${{ github.event.pull_request.number }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ' ') }}
+        run: |
+          set -euo pipefail
+          ui=true
+          if [ "$EVENT" = pull_request ] && [ "$DRAFT" = true ]; then
+            ui=false
+            case " $LABELS " in *" ios-ui-tests "*) ui=true ;; esac
+            changed=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only)
+            if printf '%s\n' "$changed" | grep -Eq '^(iosApp/|scripts/check-ios-startup|\.github/workflows/multiplatform\.yml$|[^/]+/src/(ios|apple|native)[A-Za-z]*/)'; then
+              ui=true
+            fi
+          fi
+          echo "ui=$ui" >> "$GITHUB_OUTPUT"
+          echo "iOS launch and UI suite: $ui"
       - name: Inspect actual Apple toolchain and simulator availability
         run: |
           xcodebuild -version
@@ -165,7 +200,7 @@ jobs:
           test -s iosApp/build/RaceDayDreams.app/LICENSE
           test -s iosApp/build/RaceDayDreams.app/apache-2.0.txt
           for notice in third_party.md kotlin-LICENSE.txt coroutines-LICENSE.txt \
-            serialization-LICENSE.txt transitive-NOTICES.txt skia-LICENSE.txt \
+            serialization-LICENSE.txt transitive-NOTICES.txt skia-LICENSE.txt ios-native-NOTICES.txt \
             berlin-2014-MIT.txt tokyo-2026-CC0.txt london-historical-MIT.txt \
             new-york-2026-NOTICE.txt paris-2026-NOTICE.txt; do
             test -s "iosApp/build/RaceDayDreams.app/$notice"
@@ -173,8 +208,10 @@ jobs:
           cmp THIRD_PARTY.md iosApp/build/RaceDayDreams.app/third_party.md
           ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
       - name: Compile the iOS startup screenshot verifier
+        if: steps.ios_scope.outputs.ui == 'true'
         run: swiftc scripts/check-ios-startup.swift -o "$RUNNER_TEMP/check-ios-startup"
       - name: Launch the iOS app and verify local database startup
+        if: steps.ios_scope.outputs.ui == 'true'
         timeout-minutes: 19
         shell: bash
         run: |
@@ -286,12 +323,13 @@ jobs:
             shasum -a 256 startup.png > startup.sha256
           )
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (failure()) }}
         with:
           name: experimental-ios-startup-diagnostics
           path: iosApp/build/startup-diagnostics/
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
+        if: steps.ios_scope.outputs.ui == 'true'
         with:
           name: experimental-ios-simulator-app
           path: |
@@ -300,6 +338,7 @@ jobs:
             iosApp/build/source-commit.txt
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
+        if: steps.ios_scope.outputs.ui == 'true'
         with:
           name: experimental-ios-startup-screenshot
           path: |
@@ -310,7 +349,7 @@ jobs:
 
       - name: Build the iOS UI tests
         id: ios_workout_build
-        if: ${{ !cancelled() && steps.ios_app_build.outcome == 'success' }}
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_app_build.outcome == 'success') }}
         timeout-minutes: 10
         shell: bash
         run: |
@@ -345,7 +384,7 @@ jobs:
           echo "RDD_IOS_UI_SIMULATOR=$device" >> "$GITHUB_ENV"
       - name: Exercise workout persistence through the iOS app
         id: ios_workout_ui
-        if: ${{ !cancelled() && steps.ios_workout_build.outcome == 'success' }}
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_workout_build.outcome == 'success') }}
         timeout-minutes: 16
         shell: bash
         run: |
@@ -355,14 +394,14 @@ jobs:
             -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui" \
             -resultBundlePath "$RUNNER_TEMP/rdd-ios-workout.xcresult"
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (always()) }}
         with:
           name: experimental-ios-workout-ui-results
           path: ${{ runner.temp }}/rdd-ios-workout.xcresult
           if-no-files-found: ignore
 
       - name: Export iOS workout UI failure evidence
-        if: ${{ !cancelled() && steps.ios_workout_ui.outcome == 'failure' }}
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_workout_ui.outcome == 'failure') }}
         shell: bash
         run: |
           set -euo pipefail
@@ -376,7 +415,7 @@ jobs:
               echo "XCTest attachments unavailable; inspect the full result bundle."
           fi
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && steps.ios_workout_ui.outcome == 'failure' }}
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_workout_ui.outcome == 'failure') }}
         with:
           name: experimental-ios-workout-ui-failures
           path: ${{ runner.temp }}/rdd-ios-workout-failures/
@@ -385,9 +424,10 @@ jobs:
   apple-device:
     if: >-
       (github.event_name == 'workflow_dispatch' && inputs.verify_ios_device_build) ||
-      (github.head_ref == 'experiment/android-ios-kmp-compose' && github.event.pull_request.draft == false)
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     runs-on: macos-26-intel
-    timeout-minutes: 55
+    timeout-minutes: 85
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -414,8 +454,47 @@ jobs:
             END { exit !found }'
           git rev-parse HEAD > "$output/source-commit.txt"
           ditto -c -k --keepParent "$app" "$output/RaceDayDreams-iphoneos-unsigned.zip"
+          plutil -extract CFBundleShortVersionString raw "$app/Info.plist" > "$output/bundle-version.txt"
+          plutil -extract CFBundleVersion raw "$app/Info.plist" > "$output/bundle-build.txt"
           cd "$output"
           shasum -a 256 RaceDayDreams-iphoneos-unsigned.zip > RaceDayDreams-iphoneos-unsigned.zip.sha256
+      - name: Build a universal unsigned iOS Simulator app for publication
+        # Apple silicon (arm64) and Intel (x86_64) slices from the same commit. The x86_64 slice is
+        # the configuration launched and UI-tested by apple-shared on this Intel runner.
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --max-workers=2 --no-parallel :sharedUi:linkDebugFrameworkIosSimulatorArm64 :sharedUi:linkDebugFrameworkIosX64
+          universal="$PWD/sharedUi/build/bin/iosSimulatorUniversal/debugFramework"
+          rm -rf "$universal"; mkdir -p "$universal"
+          cp -R sharedUi/build/bin/iosSimulatorArm64/debugFramework/RaceDayShared.framework "$universal/"
+          xcrun lipo -create \
+            sharedUi/build/bin/iosSimulatorArm64/debugFramework/RaceDayShared.framework/RaceDayShared \
+            sharedUi/build/bin/iosX64/debugFramework/RaceDayShared.framework/RaceDayShared \
+            -output "$universal/RaceDayShared.framework/RaceDayShared"
+          output="$PWD/iosApp/build/simulator-release"
+          xcodebuild -project iosApp/RaceDayDreams.xcodeproj -target RaceDayDreams \
+            -configuration Debug -sdk iphonesimulator ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="$output" \
+            RDD_FRAMEWORK_DIRECTORY="$universal" build
+          app="$output/RaceDayDreams.app"
+          test -x "$app/RaceDayDreams"
+          archs=" $(xcrun lipo -archs "$app/RaceDayDreams") "
+          case "$archs" in *" arm64 "*) ;; *) echo "missing arm64 slice: $archs" >&2; exit 1 ;; esac
+          case "$archs" in *" x86_64 "*) ;; *) echo "missing x86_64 slice: $archs" >&2; exit 1 ;; esac
+          xcrun vtool -show-build "$app/RaceDayDreams" | awk '
+            $1 == "platform" && $2 == "IOSSIMULATOR" { found = 1 }
+            END { exit !found }'
+          for notice in LICENSE apache-2.0.txt third_party.md skia-LICENSE.txt ios-native-NOTICES.txt; do
+            test -s "$app/$notice"
+            test -s "iosApp/build/device/RaceDayDreams.app/$notice"
+          done
+          git rev-parse HEAD > "$output/source-commit.txt"
+          plutil -extract CFBundleShortVersionString raw "$app/Info.plist" > "$output/bundle-version.txt"
+          plutil -extract CFBundleVersion raw "$app/Info.plist" > "$output/bundle-build.txt"
+          ditto -c -k --keepParent "$app" "$output/RaceDayDreams-simulator-universal.zip"
+          cd "$output"
+          shasum -a 256 RaceDayDreams-simulator-universal.zip > RaceDayDreams-simulator-universal.zip.sha256
       - uses: actions/upload-artifact@v4
         with:
           name: experimental-ios-device-unsigned
@@ -423,4 +502,16 @@ jobs:
             iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip
             iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip.sha256
             iosApp/build/device/source-commit.txt
+            iosApp/build/device/bundle-version.txt
+            iosApp/build/device/bundle-build.txt
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-universal-unsigned
+          path: |
+            iosApp/build/simulator-release/RaceDayDreams-simulator-universal.zip
+            iosApp/build/simulator-release/RaceDayDreams-simulator-universal.zip.sha256
+            iosApp/build/simulator-release/source-commit.txt
+            iosApp/build/simulator-release/bundle-version.txt
+            iosApp/build/simulator-release/bundle-build.txt
           if-no-files-found: error

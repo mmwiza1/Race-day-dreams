@@ -22,16 +22,33 @@ Choose the lowest safe tier based on actual impact, **not prompt length**. Escal
 6. **Finish:** owner-authorised release → green exact-head checks → merge PR → green post-merge `main` checks → verify version-matched published APK and SHA-256. Ordinary documentation/wording work does **not** require a release unless explicitly requested.
 7. **Resume efficiently:** if interrupted, record changed files, the smallest next action, pending targeted tests, and *which* completed results are still valid. The one-line resume prompt stays `Read CONTINUE_CODEX.md and continue from the current repo state`.
 
-## CI architecture target
+## CI architecture
 
-The current `.github/workflows/android.yml` launches three full emulator suites even for draft PR updates. **A future dedicated CI PR** should safely provide:
+Implemented in PR #23 after the shared Android/iOS migration (PR #24) merged:
 
-- **Draft PR:** fast compile, formatting, relevant domain/release/schema/source validation; expensive emulator matrix omitted unless explicitly requested for diagnosis.
-- **Ready PR / final candidate:** full API 28/35/36 unfiltered instrumentation, source-verified screenshots and all mandatory checks. Any new commit to a ready PR must be verified again at its exact head.
-- **`main` / stable tags:** full release gate, source/provenance checks and APK publication only from verified source. Document-only shortcuts must not silently publish stale or unverified binaries.
-- **Fail closed:** never treat skipped fast jobs as full approval. Preserve artifact identity, safety checks, snapshot integrity and branch policies. Do not modify an active feature PR just to optimise the workflow, and do not downgrade current merge prerequisites prematurely.
-
-**Status as of 12 November 2026:** these rules are effective guidance; the CI workflow still needs its own isolated, tested modification. The active 0.12.3 PR #22 must be allowed to finish safely before that workflow change is merged.
+- **Draft PR:** formatting, the focused shared gate in `multiplatform.yml` (shared JVM/domain
+  suites, schema/backup checks, Android compile/lint, focused API 35 emulator classes) and iOS
+  compilation (shared Native tests, framework link, simulator app build). The iOS launch and
+  XCUITest suite runs on a draft only when it changes native iOS code (`iosApp/`, `*/src/ios*`,
+  `*/src/apple*`, `*/src/native*`, the startup verifier or this workflow) or carries the
+  `ios-ui-tests` label. Changes to native iOS behaviour should run those simulator tests during
+  development; a shared label or spacing tweak does not need the whole iOS UI suite. No full
+  emulator matrix and no canonical screenshot commit. A green draft is never merge approval.
+- **Ready PR (every new commit):** the unfiltered API 28/35/36 matrix with source-bound
+  screenshots, exercise-guidance completeness, formatting, the Apple simulator job, the unsigned
+  iosArm64 device build and, for same-repository PRs, the canonical screenshot commit.
+- **Merged `main` and `v*` tags:** `android.yml` runs the full Android matrix (which must match the
+  committed canonical screenshot fingerprint) and calls `multiplatform.yml` in the SAME run for the
+  Apple simulator/UI suite, the unsigned iPhone build and a universal unsigned simulator app. Only
+  when every job passes does the existing gated publisher release, from that one commit: the APK,
+  `Race-Day-Dreams-<version>-ios-simulator.zip`, `-iphoneos-unsigned.zip`, their `latest-*`
+  aliases, `.sha256` files and a build-info file. Each iOS ZIP must carry the run's commit, bundle
+  version and build number. Versioned files upload first and `latest-*` aliases last; superseded or
+  failed runs never publish. iOS builds are unsigned developer/test artifacts; `v*` tag releases
+  stay Android-only and no signed, TestFlight or App Store distribution exists.
+- **Fail closed:** skipped draft jobs are not approval; exact-head checks, artifact identity and
+  publication safeguards are unchanged. A head commit containing `[skip ci]` suppresses even the
+  `ready_for_review` run, so never leave one as the head before a ready transition or final gate.
 
 ## Prompts
 

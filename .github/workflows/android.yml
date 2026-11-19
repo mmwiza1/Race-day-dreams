@@ -15,8 +15,9 @@ concurrency:
 
 jobs:
   build:
-    # Experimental drafts use focused KMP checks; ready PRs/main retain the complete gate.
-    if: github.head_ref != 'experiment/android-ios-kmp-compose' || github.event.pull_request.draft == false
+    # Draft PRs use the focused shared Android/iOS checks in multiplatform.yml. Ready PRs (every
+    # new commit), merged main and version tags always run this complete unfiltered matrix.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -35,8 +36,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Install compile SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
-      - name: Require current canonical screenshots on other branches
-        if: github.head_ref != 'feature/0.12.3-plain-language-github-showcase' && github.head_ref != 'experiment/android-ios-kmp-compose'
+      - name: Require current canonical screenshots on main and release tags
+        # Ready same-repository PRs capture and commit canonical screenshots below; main must match.
+        if: github.event_name != 'pull_request'
         run: test "$(python3 scripts/screenshot-source.py)" = "$(cat docs/screenshots/source.sha256)"
       - name: Offline-compatible domain tests
         run: |
@@ -157,7 +159,7 @@ jobs:
           PYFORMAT
 
   guidance-completeness:
-    if: github.head_ref != 'experiment/android-ios-kmp-compose' || github.event.pull_request.draft == false
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -182,7 +184,7 @@ jobs:
   canonical-screenshots:
     needs: [build, formatting]
     # Capture publication is confined to this same-repository feature branch, never main.
-    if: github.event_name == 'pull_request' && (github.head_ref == 'feature/0.12.3-plain-language-github-showcase' || github.head_ref == 'experiment/android-ios-kmp-compose') && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -251,8 +253,18 @@ jobs:
           path: build/alias-bootstrap/verification.json
           if-no-files-found: error
 
+  apple:
+    # main/tags: run the shared iOS simulator, UI and device jobs inside THIS run so publication can
+    # require Android and iOS verification of the same commit. Pull requests run multiplatform.yml
+    # directly instead.
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/multiplatform.yml
+    permissions:
+      contents: read
+      pull-requests: read
+
   publish-test-release:
-    needs: [build, guidance-completeness, formatting]
+    needs: [build, guidance-completeness, formatting, apple]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-latest
     permissions:
@@ -276,6 +288,14 @@ jobs:
         with:
           name: Race-Day-Dreams-0.13.0-test1-debug-api-35
           path: build/verified-apk
+      - uses: actions/download-artifact@v4
+        with:
+          name: experimental-ios-device-unsigned
+          path: build/verified-ios/iphoneos-unsigned
+      - uses: actions/download-artifact@v4
+        with:
+          name: ios-simulator-universal-unsigned
+          path: build/verified-ios/ios-simulator
       - name: Publish verified APK and maintained release notes
         env:
           GH_TOKEN: ${{ github.token }}
@@ -298,12 +318,38 @@ jobs:
             python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --development --output build/release-notes.md
             alias='Race-Day-Dreams-latest-test.apk'
             python3 scripts/development-assets.py --prepare "$apk" --version "$version" --directory build/public-assets
+            # Unsigned iOS developer/test builds from the same run: each must carry this exact commit,
+            # bundle version and build number before it can replace the rolling iOS downloads.
+            code=$(python3 -c "import re;print(re.search(r'versionCode\s+(\d+)',open('app/build.gradle').read()).group(1))")
+            for kind in ios-simulator iphoneos-unsigned; do
+              python3 scripts/development-assets.py --prepare-ios "build/verified-ios/$kind" --kind "$kind" \
+                --version "$version" --version-code "$code" --commit "$BUILD_SHA" --directory build/public-assets
+            done
+            python3 - "$version" "$code" "$BUILD_SHA" "$BUILD_URL" <<'PYINFO'
+          import importlib.util, sys
+          from pathlib import Path
+          spec = importlib.util.spec_from_file_location('assets', 'scripts/development-assets.py')
+          assets = importlib.util.module_from_spec(spec); spec.loader.exec_module(assets)
+          version, code, commit, run = sys.argv[1:]
+          out = Path('build/public-assets')
+          digests = {'android-apk': assets.digest(out / f'Race-Day-Dreams-{version}.apk')}
+          for kind in assets.IOS_KINDS:
+              digests[kind] = assets.digest(out / assets.ios_names(version, kind)[0])
+          text = assets.build_info(version, code, commit, run, digests)
+          (out / f'Race-Day-Dreams-{version}-build-info.txt').write_text(text)
+          (out / assets.BUILD_INFO_ALIAS).write_text(text)
+          PYINFO
             # Preserve the last verified version and any owner-managed release assets.
             # Both aliases and versioned files come from this same gated API35 APK.
             live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
             if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
             if gh release view development >/dev/null 2>&1; then
-              gh release upload development build/public-assets/* --clobber
+              # Versioned files first; the stable latest-* aliases switch last, so an interrupted upload
+              # leaves the previous verified latest-* downloads in place.
+              find build/public-assets -maxdepth 1 -type f ! -name 'Race-Day-Dreams-latest-*' -print0 |
+                xargs -0 gh release upload development --clobber
+              find build/public-assets -maxdepth 1 -type f -name 'Race-Day-Dreams-latest-*' -print0 |
+                xargs -0 gh release upload development --clobber
             else
               if ! gh api "repos/$GH_REPO/git/ref/tags/development" >/dev/null 2>&1; then
                 gh api --method POST "repos/$GH_REPO/git/refs" -f ref='refs/tags/development' -f sha="$BUILD_SHA"
@@ -313,6 +359,15 @@ jobs:
             gh release download development --pattern "$apk" --pattern "$apk.sha256" --pattern "$alias" --pattern "$alias.sha256" --dir build/published-check --clobber
             expected=$(sha256sum "$apk" | cut -d ' ' -f1)
             python3 scripts/development-assets.py --verify --version "$version" --directory build/published-check --expected-sha "$expected"
+            for kind in ios-simulator iphoneos-unsigned; do
+              gh release download development --pattern "Race-Day-Dreams-$version-$kind.zip*" \
+                --pattern "Race-Day-Dreams-latest-$kind.zip*" --dir build/published-check --clobber
+              expected_ios=$(sha256sum "build/public-assets/Race-Day-Dreams-$version-$kind.zip" | cut -d ' ' -f1)
+              python3 scripts/development-assets.py --verify-ios --kind "$kind" --version "$version" \
+                --directory build/published-check --expected-sha "$expected_ios"
+            done
+            gh release download development --pattern Race-Day-Dreams-latest-build-info.txt --dir build/published-check --clobber
+            cmp build/public-assets/Race-Day-Dreams-latest-build-info.txt build/published-check/Race-Day-Dreams-latest-build-info.txt
             live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
             if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
             gh api --method PATCH "repos/$GH_REPO/git/refs/tags/development" -f sha="$BUILD_SHA" -F force=true
