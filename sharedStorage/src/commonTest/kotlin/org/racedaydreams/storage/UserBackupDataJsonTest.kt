@@ -44,6 +44,7 @@ class UserBackupDataJsonTest {
             "achievements" to 11,
             "bodyMeasurements" to 12,
             "detailRetention" to 13,
+            "climbing" to 14,
         )
 
     @Test
@@ -164,7 +165,7 @@ class UserBackupDataJsonTest {
 
     @Test
     fun everyOriginalEnvelopeVersionUsesCompleteParentValidationAndCanExportCurrentEmptyDefaults() {
-        for (version in 1..13) {
+        for (version in 1..14) {
             val root = JsonObject(full().filterKeys { (introduced[it] ?: 0) <= version })
             val bytes =
                 buildJsonObject {
@@ -182,7 +183,7 @@ class UserBackupDataJsonTest {
                 UserBackupDataJson.inspect(
                     UserBackupDataJson.encodeCurrent(s.snapshot, CoachingArchiveFixtures.at)
                 )
-            assertEquals(13, current.version)
+            assertEquals(14, current.version)
             assertTrue(current.snapshot.core.activities.isEmpty())
             assertTrue(current.snapshot.coaching!!.sessions.isEmpty())
             assertEquals(
@@ -294,7 +295,7 @@ class UserBackupDataJsonTest {
         val p = Json.parseToJsonElement(valid.decodeToString()).jsonObject
         for (bad in
             listOf(
-                change(p, "version", JsonPrimitive(14)),
+                change(p, "version", JsonPrimitive(15)),
                 change(p, "data", JsonObject(full() - "strengthEngine")),
             )) assertFails { UserBackupDataJson.inspect(bad.toString().encodeToByteArray()) }
         assertFails { UserBackupDataJson.inspect(valid.copyOf(valid.size - 1)) }

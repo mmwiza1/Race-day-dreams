@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** Owns the local schema. Future versions must supply explicit, non-destructive migrations. */
 final class ProfileDatabase extends SQLiteOpenHelper {
     static final String NAME = "racedaydreams.db";
-    static final int VERSION = 19;
+    static final int VERSION = 20;
     private static ProfileDatabase shared;
 
     /** A shared helper ensures confirmed reset closes every repository's connection pool. */
@@ -60,6 +60,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         migrateSixteenToSeventeen(db);
         migrateSeventeenToEighteen(db);
         migrateEighteenToNineteen(db);
+        migrateNineteenToTwenty(db);
         // Only truly new databases receive the new-install default. Upgrades stay protected.
         db.execSQL(
                 "UPDATE detail_retention_preferences SET policy='LAST_24_MONTHS',"
@@ -575,10 +576,29 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         // V19_SCHEMA_END
     }
 
+    private static void migrateNineteenToTwenty(SQLiteDatabase db) {
+        // V20_SCHEMA_BEGIN - bouldering is separate from weightlifting sets, records and workload.
+        db.execSQL(
+                "CREATE TABLE climbing_sessions (id TEXT PRIMARY KEY NOT NULL, started_seconds"
+                    + " INTEGER NOT NULL, payload TEXT NOT NULL CHECK(length(CAST(payload AS BLOB))"
+                    + " <= 262144))");
+        db.execSQL(
+                "CREATE INDEX climbing_sessions_by_start ON climbing_sessions(started_seconds"
+                        + " DESC,id)");
+        db.execSQL(
+                "CREATE TABLE climbing_session_draft (id INTEGER PRIMARY KEY CHECK(id=1), payload"
+                        + " TEXT NOT NULL CHECK(length(CAST(payload AS BLOB)) <= 262144))");
+        db.execSQL(
+                "CREATE TABLE climbing_preferences (id INTEGER PRIMARY KEY CHECK(id=1),"
+                        + " grade_system TEXT NOT NULL CHECK(grade_system IN"
+                        + " ('V_SCALE','FONTAINEBLEAU')))");
+        // V20_SCHEMA_END
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Reject unsupported paths before executing any DDL or touching existing rows.
-        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 18)) {
+        if (newVersion != VERSION || (oldVersion < 1 || oldVersion > 19)) {
             throw new SQLiteException(
                     "An explicit migration is required from schema "
                             + oldVersion
@@ -603,6 +623,7 @@ final class ProfileDatabase extends SQLiteOpenHelper {
         if (oldVersion <= 15) migrateFifteenToSixteen(db);
         if (oldVersion <= 16) migrateSixteenToSeventeen(db);
         if (oldVersion <= 17) migrateSeventeenToEighteen(db);
-        migrateEighteenToNineteen(db);
+        if (oldVersion <= 18) migrateEighteenToNineteen(db);
+        migrateNineteenToTwenty(db);
     }
 }

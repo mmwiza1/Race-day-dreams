@@ -588,7 +588,7 @@ abstract class CompleteBackupRepositoryContract {
             try {
                 val inspected = InspectedBackupPackage.inspect(file, directory())
                 try {
-                    assertEquals(13, inspected.application.version)
+                    assertEquals(14, inspected.application.version)
                     val summary = inspected.application.snapshot.core.activities.single()
                     assertEquals(100.0, summary.distanceMetres())
                     assertTrue(summary.samples().isEmpty())

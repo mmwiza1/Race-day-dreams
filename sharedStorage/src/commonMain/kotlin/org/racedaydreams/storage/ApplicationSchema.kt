@@ -2,7 +2,7 @@ package org.racedaydreams.storage
 
 /** The existing Android schema, without destructive fallback or guessed recovery. */
 object ApplicationSchema {
-    const val VERSION = 19
+    const val VERSION = 20
     const val FILE_NAME = "racedaydreams.db"
 
     data class NewInstallation(val chosenAt: String, val choiceId: String) {

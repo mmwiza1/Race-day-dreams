@@ -145,7 +145,7 @@ class SharedBackupEnvelopeTest {
         manifest.verify(receipts)
         val parent =
             org.racedaydreams.storage.UserBackupDataJson.inspect(entries.getValue("app.json"))
-        assertEquals(13, parent.version)
+        assertEquals(14, parent.version)
         assertTrue(parent.snapshot.engine!!.executions.isEmpty())
         val inspectedPackage =
             org.racedaydreams.storage.InspectedBackupPackage.inspect(
@@ -989,6 +989,7 @@ class SharedBackupEnvelopeTest {
             "achievements" to 11,
             "bodyMeasurements" to 12,
             "detailRetention" to 13,
+            "climbing" to 14,
         )
 
     @Before
@@ -1025,7 +1026,7 @@ class SharedBackupEnvelopeTest {
     fun originalOldCurrentAndSharedExportsPassTheSameCompleteSnapshotValidator() {
         val source = repository.exportUserData()
         assertCoreCaptureMatchesOriginal(source)
-        for (version in 1..13) {
+        for (version in 1..14) {
             val data = JSONObject(source.toString())
             for ((section, minimum) in introduced) if (version < minimum) data.remove(section)
             val bytes = envelope(data, version)
@@ -1057,14 +1058,68 @@ class SharedBackupEnvelopeTest {
     }
 
     @Test
+    fun climbingSectionIsIdenticalOnAndroidAndSharedAndRestoresOriginalGrades() {
+        val connection = AndroidSqlTestConnection(ProfileDatabase.get(context).writableDatabase)
+        val climbs = org.racedaydreams.storage.SqliteClimbing(connection)
+        val utc = org.racedaydreams.domain.time.Offsets.ofTotalSeconds(0)
+        climbs.gradeSystem(org.racedaydreams.domain.climbing.GradeSystem.FONTAINEBLEAU)
+        val session =
+            org.racedaydreams.domain.climbing.ClimbingSession(
+                "climb",
+                at,
+                utc,
+                3600,
+                "Local wall",
+                "",
+                listOf(
+                    org.racedaydreams.domain.climbing.ClimbingProblem(
+                        "p",
+                        org.racedaydreams.domain.climbing.ClimbingGrade(
+                            org.racedaydreams.domain.climbing.GradeSystem.FONTAINEBLEAU,
+                            "7A",
+                        ),
+                        3,
+                        org.racedaydreams.domain.climbing.ClimbOutcome.SEND,
+                    )
+                ),
+            )
+        climbs.saveNew(session)
+        val source = repository.exportUserData()
+        assertApplicationCaptureMatchesOriginal(source)
+        // An unsaved session blocks replacement on Android exactly as on the shared path.
+        climbs.saveDraft(
+            org.racedaydreams.domain.climbing.ClimbingDraft(
+                "live",
+                at,
+                utc,
+                null,
+                "",
+                "",
+                emptyList(),
+            )
+        )
+        assertTrue(runCatching { repository.restoreUserData(source, false) }.isFailure)
+        climbs.clearDraft()
+        climbs.delete("climb")
+        climbs.gradeSystem(org.racedaydreams.domain.climbing.GradeSystem.V_SCALE)
+        repository.restoreUserData(source, false)
+        assertEquals(listOf(session), climbs.sessions())
+        assertEquals(
+            org.racedaydreams.domain.climbing.GradeSystem.FONTAINEBLEAU,
+            climbs.gradeSystem(),
+        )
+    }
+
+    @Test
     fun fullRowValidatorAndEnvelopeFailuresNeverReplaceExistingData() {
         val before = repository.exportUserData().toString()
         val badRows = JSONObject(before).put("settings", JSONObject().put("invalid", 42))
         val bad =
             listOf(
-                envelope(JSONObject(before), 14),
-                envelope(badRows, 13),
-                envelope(JSONObject(before).apply { remove("detailRetention") }, 13),
+                envelope(JSONObject(before), 15),
+                envelope(badRows, 14),
+                envelope(JSONObject(before).apply { remove("detailRetention") }, 14),
+                envelope(JSONObject(before).apply { remove("climbing") }, 14),
             )
         for (bytes in bad) {
             assertTrue(runCatching { original.inspect(ByteArrayInputStream(bytes)) }.isFailure)

@@ -654,6 +654,21 @@ Record observations and build commit for each check; nothing below is a claimed 
   pause/resume/interruption/long-run/GPX and Watch comparison checks. Emulator/synthetic passes
   cannot establish outdoor S24 accuracy, and neither comparison device is automatically ground truth.
 
+## Bouldering — physical acceptance UNPERFORMED
+
+Software checks (shared domain/storage tests, Android emulator UI and screenshots, iOS simulator)
+do not replace these phone checks on a Galaxy S24/Pixel and a signed iPhone:
+
+- Start a session from Strength → Bouldering, add several problems with grades in both systems,
+  lock the phone for 10 minutes, then resume: the elapsed time and problems must be intact.
+- Force-close the app mid-session (and once by restarting the phone): the unsaved session must be
+  offered for resume; discarding it must remove it.
+- Review, correct the time and location, save; edit and delete a saved session.
+- Export a backup, reinstall or reset, restore: sessions, grades as entered and the preferred
+  grading system must return; restore must be refused while a bouldering session is unsaved.
+- TalkBack/VoiceOver: grade chips, attempts buttons, outcome chips and charts are announced
+  meaningfully; check 200% text and dark mode.
+
 ## Experimental iOS device acceptance — PR #24
 
 The PR workflow publishes an unsigned **simulator** app and source-bound evidence. Use

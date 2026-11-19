@@ -22,6 +22,7 @@ fun NavGraphBuilder.strengthGraph(
     programmeModel: () -> StrengthProgrammeViewModel = {
         error("A programme authoring owner is required.")
     },
+    boulderingModel: (() -> org.racedaydreams.coach.climbing.BoulderingViewModel)? = null,
 ) {
     composable("gym-programme-builder") {
         StrengthProgrammeBuilderScreen(
@@ -114,8 +115,10 @@ fun NavGraphBuilder.strengthGraph(
     ) { destination ->
         val date = destination.arguments?.getString("date")
         if (date != null) StrengthScreen(readState(), model, date)
-        else StrengthDashboard(readState()) { nav.navigate(it) }
+        else StrengthDashboard(readState(), boulderingModel?.invoke()) { nav.navigate(it) }
     }
+
+    boulderingModel?.let { owner -> boulderingGraph(nav) { owner().coordinator } }
 
     composable("strength/log") { StrengthScreen(readState(), model) }
 

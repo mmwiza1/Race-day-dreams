@@ -183,6 +183,11 @@ private enum class ApplePage {
     ACHIEVEMENTS,
     PROGRESS,
     STRENGTH_HOME,
+    BOULDERING,
+    BOULDERING_SESSION,
+    BOULDERING_REVIEW,
+    BOULDERING_DETAIL,
+    BOULDERING_HISTORY,
     RUNNING_TRENDS,
     RACE,
     ROUTINE,
@@ -217,6 +222,9 @@ private fun AppleAppContent(
     var recoveryDraftId by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
     var strengthRecordReturn by remember { mutableStateOf(ApplePage.ACHIEVEMENTS) }
+    var climbingSessionId by remember { mutableStateOf<String?>(null) }
+    val climbingState by session.bouldering.state.collectAsState()
+    LaunchedEffect(session.bouldering) { session.bouldering.refresh() }
     val openDatedGym: (LocalDate) -> Unit = { date ->
         returnFromDatedGym = page
         if (page == ApplePage.HISTORY) {
@@ -472,6 +480,7 @@ private fun AppleAppContent(
                             StrengthLink.HISTORY,
                             StrengthLink.EXERCISES,
                             StrengthLink.RECOVERY,
+                            StrengthLink.BOULDERING,
                         ),
                         open = { link ->
                             page =
@@ -482,6 +491,7 @@ private fun AppleAppContent(
                                     StrengthLink.HISTORY -> ApplePage.STRENGTH_HISTORY
                                     StrengthLink.EXERCISES -> ApplePage.EXERCISES
                                     StrengthLink.RECOVERY -> ApplePage.TRAINING_RECOVERY
+                                    StrengthLink.BOULDERING -> ApplePage.BOULDERING
                                     StrengthLink.GYM_NOW,
                                     StrengthLink.LOG,
                                     StrengthLink.PBS -> ApplePage.GYM
@@ -491,6 +501,59 @@ private fun AppleAppContent(
                             activityId = it
                             strengthRecordReturn = ApplePage.STRENGTH_HOME
                             page = ApplePage.STRENGTH_RECORD
+                        },
+                        climbing = climbingState.sessions,
+                        climbingDraft = climbingState.draft != null,
+                        gradeSystem = climbingState.gradeSystem,
+                    )
+                ApplePage.BOULDERING ->
+                    org.racedaydreams.coach.climbing.SharedBoulderingHome(
+                        session.bouldering,
+                        AppleCalendarDates.today(),
+                        AppleCalendarDates::label,
+                        onBack = { page = ApplePage.STRENGTH_HOME },
+                        openSession = { page = ApplePage.BOULDERING_SESSION },
+                        openDetail = {
+                            climbingSessionId = it
+                            page = ApplePage.BOULDERING_DETAIL
+                        },
+                        openHistory = { page = ApplePage.BOULDERING_HISTORY },
+                    )
+                ApplePage.BOULDERING_SESSION ->
+                    org.racedaydreams.coach.climbing.SharedBoulderingSession(
+                        session.bouldering,
+                        AppleRecordingClock::now,
+                        AppleCalendarDates::label,
+                        onBack = { page = ApplePage.BOULDERING },
+                        openReview = { page = ApplePage.BOULDERING_REVIEW },
+                    )
+                ApplePage.BOULDERING_REVIEW ->
+                    org.racedaydreams.coach.climbing.SharedBoulderingReview(
+                        session.bouldering,
+                        AppleRecordingClock::now,
+                        AppleCalendarDates::label,
+                        onBack = { page = ApplePage.BOULDERING_SESSION },
+                        onSaved = {
+                            climbingSessionId = it
+                            page = ApplePage.BOULDERING_DETAIL
+                        },
+                    )
+                ApplePage.BOULDERING_DETAIL ->
+                    org.racedaydreams.coach.climbing.SharedBoulderingDetail(
+                        session.bouldering,
+                        climbingSessionId.orEmpty(),
+                        AppleCalendarDates::label,
+                        onBack = { page = ApplePage.BOULDERING },
+                        openCorrection = { page = ApplePage.BOULDERING_SESSION },
+                    )
+                ApplePage.BOULDERING_HISTORY ->
+                    org.racedaydreams.coach.climbing.SharedBoulderingHistory(
+                        session.bouldering,
+                        AppleCalendarDates::label,
+                        onBack = { page = ApplePage.BOULDERING },
+                        openDetail = {
+                            climbingSessionId = it
+                            page = ApplePage.BOULDERING_DETAIL
                         },
                     )
                 ApplePage.RUNNING_TRENDS ->
@@ -711,7 +774,12 @@ private fun AppleAppContent(
                     ApplePage.PROGRESS -> "progress"
                     ApplePage.GYM,
                     ApplePage.DATED_GYM,
-                    ApplePage.STRENGTH_HOME -> "strength"
+                    ApplePage.STRENGTH_HOME,
+                    ApplePage.BOULDERING,
+                    ApplePage.BOULDERING_SESSION,
+                    ApplePage.BOULDERING_REVIEW,
+                    ApplePage.BOULDERING_DETAIL,
+                    ApplePage.BOULDERING_HISTORY -> "strength"
                     else -> null
                 },
             selectTab = { route ->

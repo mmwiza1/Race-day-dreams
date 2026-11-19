@@ -6,13 +6,13 @@ import org.racedaydreams.storage.StoredJson.exactLong
 import org.racedaydreams.storage.StoredJson.string
 
 /**
- * Supported root1–13 file envelope. A COMPLETE snapshot validator is mandatory: this boundary does
+ * Supported root1–14 file envelope. A COMPLETE snapshot validator is mandatory: this boundary does
  * not implement replacement, raw archive restoration, consent or section-level graph validation.
  * Platform file adapters must bound their reads before constructing this byte array.
  */
 object BackupEnvelopeJson {
     const val FORMAT = "race-day-dreams-backup"
-    const val VERSION = 13
+    const val VERSION = 14
     const val MAX_BYTES = 32 * 1024 * 1024
     private const val MAX_STRING_CHARACTERS = 1024 * 1024
 
@@ -78,6 +78,7 @@ object BackupEnvelopeJson {
             11 to listOf("achievements"),
             12 to listOf("bodyMeasurements"),
             13 to listOf("detailRetention"),
+            14 to listOf("climbing"),
         )
 
     /** Same original root budgets; standalone gym limits must not narrow whole-backup support. */

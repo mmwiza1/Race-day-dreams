@@ -36,6 +36,9 @@ internal class SqliteApplicationBackupRestore(
             ) {
                 "Finish or discard the unfinished gym workout before replacing app data."
             }
+            require(!SqliteClimbing(database).hasDraft()) {
+                "Save or discard the unsaved bouldering session before replacing app data."
+            }
             SqliteOwnedActivityRestore(database).requirePreserved(parent.core)
             val contextRestore = SqliteRecordedContextRestore(database)
             val contexts = contextRestore.preserve(parent.support)
@@ -82,6 +85,7 @@ internal class SqliteApplicationBackupRestore(
                 )
                 .populateArchive(parent)
             SqliteBodyAwardsBackupRestore(database).populate(parent)
+            SqliteClimbing(database).replaceFromBackup(parent.climbing)
             // Invalidate old approvals BEFORE loading a legitimately unfinished imported gym
             // session.
             SqliteRetentionRestore(database, freshEpoch).replace(retention)

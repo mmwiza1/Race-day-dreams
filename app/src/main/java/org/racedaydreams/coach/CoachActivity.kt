@@ -31,6 +31,9 @@ class CoachActivity : ComponentActivity() {
     private lateinit var model: CoachViewModel
     // All gym destinations share one session coordinator, created only when Strength needs it.
     private val gymModel by lazy { ViewModelProvider(this)[GymNowViewModel::class.java] }
+    private val boulderingModel by lazy {
+        ViewModelProvider(this)[org.racedaydreams.coach.climbing.BoulderingViewModel::class.java]
+    }
     private val programmeModel by lazy {
         ViewModelProvider(this)[StrengthProgrammeViewModel::class.java]
     }
@@ -43,7 +46,7 @@ class CoachActivity : ComponentActivity() {
         setContent {
             org.racedaydreams.coach.theme.RaceDayTheme {
                 Surface(Modifier.fillMaxSize()) {
-                    CoachApp(model, { gymModel }, { programmeModel })
+                    CoachApp(model, { gymModel }, { programmeModel }, { boulderingModel })
                 }
             }
         }
@@ -68,6 +71,7 @@ private fun CoachApp(
     model: CoachViewModel,
     gymModel: () -> GymNowViewModel,
     programmeModel: () -> StrengthProgrammeViewModel,
+    boulderingModel: () -> org.racedaydreams.coach.climbing.BoulderingViewModel,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
     val nav = rememberNavController()
@@ -209,7 +213,7 @@ private fun CoachApp(
                     connect = connect,
                     providerUpdate = providerUpdate,
                 )
-                strengthGraph({ state }, model, nav, gymModel, programmeModel)
+                strengthGraph({ state }, model, nav, gymModel, programmeModel, boulderingModel)
                 progressGraph(
                     { state },
                     model,

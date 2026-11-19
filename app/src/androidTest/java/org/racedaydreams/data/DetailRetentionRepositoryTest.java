@@ -63,7 +63,7 @@ public final class DetailRetentionRepositoryTest extends AndroidTestCase {
         db.setVersion(18);
         ProfileDatabase.get(getContext()).close();
         db = ProfileDatabase.get(getContext()).getWritableDatabase();
-        assertEquals(19, db.getVersion());
+        assertEquals(20, db.getVersion());
         assertEquals(DetailRetention.Preferences.existing(), repo.preferences());
         var preview = repo.preview(DetailRetention.Policy.LAST_24_MONTHS, NOW);
         rejects(() -> repo.approve(preview, NOW));
@@ -243,7 +243,7 @@ public final class DetailRetentionRepositoryTest extends AndroidTestCase {
         assertTrue(count("preserved_best_efforts") > 0);
         assertEquals(DetailRetention.Policy.LAST_24_MONTHS, repo.preferences().policy());
         var json = new JSONObject(new String(appBackup(), StandardCharsets.UTF_8));
-        assertEquals(13, json.getInt("version"));
+        assertEquals(14, json.getInt("version"));
         json.put("version", 12);
         json.getJSONObject("data").remove("detailRetention");
         manager()

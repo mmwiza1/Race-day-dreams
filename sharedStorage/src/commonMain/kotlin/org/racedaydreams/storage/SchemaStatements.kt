@@ -130,5 +130,11 @@ internal object SchemaStatements {
                 "INSERT INTO detail_retention_state VALUES(1,lower(hex(randomblob(16))))",
                 "CREATE TABLE recording_detail_removals (session_id TEXT PRIMARY KEY NOT NULL, activity_id TEXT NOT NULL UNIQUE REFERENCES activities(id) ON DELETE CASCADE, provider TEXT NOT NULL CHECK(provider IN ('rdd','gpx')),record_id TEXT NOT NULL, ended_at TEXT NOT NULL,removed_at TEXT NOT NULL,policy TEXT NOT NULL CHECK(policy IN ('LAST_24_MONTHS','LAST_5_YEARS')), started_at TEXT NOT NULL,started_mono INTEGER NOT NULL CHECK(started_mono>=0),last_mono INTEGER NOT NULL CHECK(last_mono>=started_mono), point_count INTEGER NOT NULL CHECK(point_count>=0),event_count INTEGER NOT NULL CHECK(event_count>=0), points_hash TEXT NOT NULL,events_hash TEXT NOT NULL,CHECK(session_id=record_id),CHECK(point_count>0 OR event_count>0))",
             ),
+            listOf(
+                "CREATE TABLE climbing_sessions (id TEXT PRIMARY KEY NOT NULL, started_seconds INTEGER NOT NULL, payload TEXT NOT NULL CHECK(length(CAST(payload AS BLOB)) <= 262144))",
+                "CREATE INDEX climbing_sessions_by_start ON climbing_sessions(started_seconds DESC,id)",
+                "CREATE TABLE climbing_session_draft (id INTEGER PRIMARY KEY CHECK(id=1), payload TEXT NOT NULL CHECK(length(CAST(payload AS BLOB)) <= 262144))",
+                "CREATE TABLE climbing_preferences (id INTEGER PRIMARY KEY CHECK(id=1), grade_system TEXT NOT NULL CHECK(grade_system IN ('V_SCALE','FONTAINEBLEAU')))",
+            ),
         )
 }

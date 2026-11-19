@@ -15,7 +15,121 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Current verified baseline (12 November 2026)
+## Current verified baseline (19 November 2026)
+
+- Repository `mmwiza1/Race-day-dreams`, default branch `main`. **`main` = `2196212f0315da0cad5c9e6f1ed93c8da499d463`
+  (0.13.1-test1 / versionCode 21; iOS 0.13.1 / build 21).** Verified live on 19 November 2026
+  (git log, GitHub PR list, Actions and the `development` release), not copied from a summary.
+- Merged and verified, in merge order (all squash-merged; each merged tree equals its verified PR head):
+
+  | PR | Scope | Merge commit | Verified PR head / source | Post-merge `main` CI |
+  | --- | --- | --- | --- | --- |
+  | [#24](https://github.com/mmwiza1/Race-day-dreams/pull/24) | 0.13.0-test1 shared Kotlin Multiplatform / Compose Multiplatform Android + experimental unsigned iPhone app | `f7be1ab` (00:13 UTC) | head `529d310` (canonical screenshots) / source `039044a` | [44427299471](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44427299471) SUCCESS |
+  | [#23](https://github.com/mmwiza1/Race-day-dreams/pull/23) | Staged draft/ready/main CI; unsigned iOS Simulator + iPhone ZIPs published with the APK from one commit; Skia/Skiko licence inventory | `146cde4` (01:48 UTC) | head `367200b` / source `a392ff9` | [44439687824](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44439687824) attempt 2 SUCCESS (re-ran only jobs lost to a Maven 404 and a lost Mac runner) |
+  | [#25](https://github.com/mmwiza1/Race-day-dreams/pull/25) | 0.13.1-test1 Progress and Strength analytics dashboards | `2196212` (12:55 UTC) | head `456af32` (canonical screenshots only) / source `cfcd163` | [44528431552](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44528431552) SUCCESS first attempt |
+
+- **Latest verified development build:** the rolling [Latest Development Build](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+  was published by run 44528431552 from commit `2196212` and checked by downloading every asset:
+  `Race-Day-Dreams-0.13.1-test1.apk` 59,172,526 bytes, SHA-256
+  `01703354747640b5081f9746fb4e7d97ea8f94360e7ab52bf32a05cd4788619d` (aapt: org.racedaydreams,
+  code 21, 0.13.1-test1, no INTERNET permission); `-ios-simulator.zip` 67,003,022 bytes, SHA-256
+  `8037b8451695b5437a001937261e815f97aa05df06c480a981ecf2a833b408f5` (Info.plist 0.13.1/21,
+  iPhoneSimulator, unsigned); `-iphoneos-unsigned.zip` 41,620,321 bytes, SHA-256
+  `5fd7d9ecd3c1b3991598c78aec0c02289708cb928f3f0d4ac93e87f53bc86519` (0.13.1/21, iPhoneOS,
+  unsigned). `latest-*` aliases are byte-identical; `.sha256` files and build-info match; older
+  0.12.2, 0.12.3 and 0.13.0 assets remain. Debug-signed / unsigned test builds only: no stable
+  tag, Play Store, TestFlight or App Store distribution exists.
+- Data formats unchanged since 0.12.1: SQLite schema **19**, root JSON backup **13**, raw recording
+  archive **3**, complete backup package **1**. Android permissions unchanged; no networking.
+- Last full software gate (PR #25 source `cfcd163`, PR-head runs
+  [44520369536](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44520369536) and
+  [44520369623](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44520369623), repeated on
+  `main`): Android API 28/35/36 full instrumentation with 459 source-bound captures, lint,
+  formatting, guidance, domain/schema/backup/release checks; iOS Native tests, framework link,
+  simulator build and SQLite-19 startup, 4/4 XCUITests and unsigned iPhone build.
+- **Outstanding physical acceptance (UNPERFORMED; software/emulator/simulator success is not
+  hardware acceptance):** Galaxy S24/Pixel/Xiaomi and a real iPhone; outdoor GPS accuracy;
+  locked-screen/background recording; real Health Connect, HealthKit and BLE heart-rate monitors;
+  audio cues, battery and OEM background behaviour; rotation; human TalkBack and VoiceOver. The
+  iPhone app needs the user's own Apple signing. Checklists live in `TEST_BUILD.md`.
+
+## Active work — battery audit and bouldering (owner request, 19 November 2026)
+
+Branch `feature/bouldering-and-battery-audit` (from `main` 2196212). One branch, three ordered,
+logically separate deliverables; the continuation update is part of this branch (no standalone
+documentation PR):
+
+1. **Phase 0 — handover (this update).** Done when committed on the branch.
+2. **Phase 1 — battery efficiency audit (ASSESSMENT ONLY).** Report: `docs/BATTERY_EFFICIENCY_AUDIT.md`.
+   Do **not** implement any battery optimisation until the owner and their senior engineer approve
+   specific recommendations. Never trade GPS accuracy, background recording reliability, BLE heart
+   rate or workout data integrity for battery. Do not invent measured figures; no physical-device
+   profiling has been performed.
+3. **Phase 2 — bouldering as a first-class Strength activity** (separate from weightlifting): sessions
+   independent of programmes, problems/attempts/sends/flashes/incomplete climbs, V-scale and
+   Fontainebleau with the original grade retained and conversions labelled approximate, preferred
+   grading system, analytics using the PR #25 reporting periods, history/edit/delete, safe handling
+   of unsaved/interrupted sessions, versioned backup/restore compatible with older formats. Must not
+   create working sets, e1RM, lifting PBs or muscle-group workload. Five-tab navigation unchanged.
+   Draft PR; **must NOT merge without the owner's explicit approval.** Full Android/iOS gate and
+   actual-build screenshots before proposing merge.
+
+Progress checkpoints for this work are recorded under "Latest recovery pointer — checkpoint 262+".
+
+### Latest recovery pointer — checkpoint 262 battery audit COMPLETE; bouldering next (Claude)
+
+- Phase 0 handover committed (`29b1e3d`). Phase 1 audit committed as `9412a4c`:
+  [docs/BATTERY_EFFICIENCY_AUDIT.md](docs/BATTERY_EFFICIENCY_AUDIT.md), pinned copy
+  https://github.com/mmwiza1/Race-day-dreams/blob/9412a4ce1ffcb22178b0c5892af15ce907b70156/docs/BATTERY_EFFICIENCY_AUDIT.md
+- Static code audit only; no physical-device or profiler measurements were possible here and no
+  figures are claimed. No P0. P1: A-1 Android run notification re-posted ~2x/s (post only on
+  change); S-1 live route reloads every point every 5 s while visible (load incrementally).
+  P2: S-2 dashboards recompute over full history on the main thread; A-8 full snapshot reload on
+  every resume; I-1 iOS flushes SQLite every 1 s vs Android 5 s (integrity trade-off, owner
+  decision); A-2 wake lock + 1 Hz GNSS during manual pause (measure first). P3 reliability notes:
+  iOS never reconnects a dropped HR strap; iOS gym screen does not checkpoint on backgrounding.
+- **Do NOT implement any of these until the owner/senior engineer approve specific items.** Keep
+  low-risk (A-1, S-1, S-2) PRs separate from recording-pipeline changes (I-1, A-2).
+- Next: Phase 2 bouldering on this branch (draft PR; no merge without explicit approval).
+
+### Latest recovery pointer — checkpoint 263 bouldering 0.14.0-test1 approved for merge; final gate on PR #26 (Claude)
+
+- `e02043e` domain + storage: `domain/climbing/Climbing.kt` (V-scale 19 / Font 24 grades, original
+  grade kept, `approximately()` display-only; FLASH requires 1 attempt; sessions 1 min–24 h, ≤300
+  problems; resumable `ClimbingDraft`), `ClimbingAnalytics` (PR #25 periods; distribution and
+  weekly progression in the chosen system only; other-system/ungraded counted, never converted).
+  Schema 20 (`ProfileDatabase` V20 markers → regenerated `SchemaStatements`; API-28-safe SQL, no
+  UPSERT/json_extract): `climbing_sessions`, `climbing_session_draft` (id=1), `climbing_preferences`.
+  Root JSON 14 `climbing` v1 on shared (`ClimbingArchiveJson`, `SqliteApplicationBackup*`) and
+  Android (`AndroidClimbingBackup`, `SqliteBackupRepository`, `BackupManager.VERSION=14`). Roots
+  1–13 restore empty climbing; unsaved draft never exported and blocks restore. Tests: 8 domain,
+  6 repository (JVM + iOS), backup contract round-trip/blocks, schema 3 new (81 pass), Android
+  fixtures drop v20 tables, `SharedBackupEnvelopeTest` Android==shared climbing equality.
+- UI: `SharedBoulderingCoordinator` + `SharedBouldering{Home,Session,Review,Detail,History}`;
+  Strength "More detail › Train › Bouldering" for everyone and a compact card only for climbers;
+  Android routes `bouldering…` (activity-scoped `BoulderingViewModel`); iOS pages BOULDERING_* with
+  Strength tab highlighted. `SharedBoulderingScreenTest` (flow incl. interruption/resume, review,
+  correction, delete; dashboard separation) in draft focused classes; 6 new canonical captures
+  `bouldering-*` (465 required). Docs: ARCHITECTURE, PRIVACY, TEST_BUILD physical checklist.
+- PR #26 CI lessons (19 Nov): `94fb7ac` fixed 10 stale Android "backup root 13" asserts and the
+  card's nested merged semantics. `468b408` made the iOS first-run launch check read
+  `ApplicationSchema.VERSION` instead of a hard-coded 19; draft CI then went fully green (Android
+  focused, iOS compile/native/launch/XCUITests). The first ready gate found a real race: the home
+  screen's async `refresh()` could overwrite a just-started session, and "Start" before the first
+  read could `INSERT OR REPLACE` over an interrupted draft. The coordinator now refuses to start
+  while loading, joins pending draft writes before reading and re-reads if a local change happened
+  meanwhile (regression test `startingBeforeTheDeviceIsReadNeverReplacesAnInterruptedSession`).
+  The large-font capture now waits for "How am I doing?" (navigation labels hide at 2.0×).
+- `6fb6fb0` full gate green (782 instrumentation tests on each API 28/35/36, shared Android/iOS,
+  apple-device); the API 28 flow failure was an unscrolled tap on Start. Bot commit `35aadb7`
+  added the 6 `bouldering-*` captures.
+- 19 Nov: the owner approved the merge ("please merge"). Prepared as **0.14.0-test1 /
+  versionCode 22** (`app/build.gradle`, `iosApp/Info.plist` 0.14.0/22, APK names in
+  `android.yml`) with `docs/RELEASE_0_14_0.md`; the analytics capture now scrolls to "Hardest send
+  by week" (it previously duplicated `bouldering-home`). Merge only after the full gate is green on
+  the exact final head; then verify main, post-merge CI and the rolling development APK.
+
+## Earlier baseline (12 November 2026 — superseded by the section above; kept for history)
 
 - Repository: `mmwiza1/Race-day-dreams`; default branch `main`. **0.12.2-test1 / versionCode 18 is complete, merged and published**, not an unfinished feature branch.
 - [PR #21](https://github.com/mmwiza1/Race-day-dreams/pull/21) — Material 3 spacing and exercise-library refinement — was squash-merged as **e4d5753513ef69c5c4c17560238be23e59caf923**. [Final PR-head CI 43256007882](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43256007882) and [post-merge main CI 43262272308](https://github.com/mmwiza1/Race-day-dreams/actions/runs/43262272308) succeeded.
@@ -54,13 +168,36 @@ Existing official Material 3 APIs were reused without upgrading runtime dependen
 - **Proofs/tools:** `/workspace/scratch/plain-language/main0f-api35-apk/verification.json`, `main0f-public/verification.json`, `main0f-release/release-identity.json`, `showcase-main-browser/verification.json`, `release0f-browser/verification.json`, `476-api{28,35,36}-captures/verification.json`, `476-review/`. Helpers`verify_artifact.py`, `verify_public_pair.py`, `verify_release_identity.py` and GitHubbrowserreviewers validate actualsource/digests/safeZIP/public4files/aapt/pinnedpreviews/rendering. Refresh expired artifactURLs from connectedGitHubtools; never expose SAS or screenshotbase64logs. No localKVM; runtimeverification is GitHubActions.
 - **Physical checks UNPERFORMED:** GalaxyS24/Pixel/Xiaomi, humanTalkBack, outdoorGPS, realHealthConnect/BLE, OEM audio/background/battery/rotation. Known forced-narrow platformnavigationstrip remains a physical/rotation limitation. TEST_BUILD.md retains all hardwarechecklists. Software/emulator/browser success is not hardware acceptance.
 
-## Active work — experimental shared Android/iOS application
+## Completed work — shared Android/iOS application, CI staging and analytics (PRs #23–#25)
+
+**Status: COMPLETE, merged and published (see "Current verified baseline").** The checkpoints below
+are the historical record of how it was built and verified; they are not an active task list.
+Original scope note, kept for context:
 
 The owner's 13 November request authorises Kotlin Multiplatform / Compose Multiplatform,
 replacement of the Java domain implementation, shared existing UI, Health Connect / HealthKit,
 platform storage/services and functioning Android AND iOS builds. This supersedes the earlier
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
+
+### Latest recovery pointer — checkpoint 261 PR #25 merged; 0.13.1-test1 published (Claude)
+
+- Owner authorised "merge once you feel it is ready". PR #25 final source `cfcd163` passed the full
+  ready gate (both workflows SUCCESS); the bot's canonical-screenshot commit `456af32` changes only
+  `docs/screenshots/` (GitHub does not run workflows for GITHUB_TOKEN commits, so its runs show
+  `action_required`; identical to the PR #24 convention) and the real captures were reviewed
+  visually before merge. Squash-merged with an expected-head pin as `2196212`; merged tree ==
+  `456af32`.
+- Post-merge `main` run 44528431552 SUCCESS (all jobs incl. "Require current canonical screenshots
+  on main", Apple shared/device and publish-test-release). Release assets downloaded and verified as
+  recorded in "Current verified baseline".
+- Lessons kept for future work: keep "More detail" group names different from tab names (tests and
+  TalkBack see duplicates); iOS XCUITest sees only on-screen Compose nodes, so scroll/reveal before
+  asserting and pause ~1 s after swipes (a tap during a fling only stops it); avoid per-tap frame
+  polling (slow on the Intel Mac runner); the draft iOS scope step uses the paginated
+  `pulls/{n}/files` API because `gh pr diff` refuses PRs with >300 files.
+- Physical-device checks for the dashboards remain unperformed (TalkBack/VoiceOver by a person,
+  real phones).
 
 ### Latest recovery pointer — checkpoint 259 iOS publication verified; analytics dashboards DRAFT (Claude)
 
@@ -498,7 +635,7 @@ Checkpoints 239 and earlier (including the original domain, storage, UI and iOS 
 history) were moved verbatim to [docs/CONTINUE_CODEX_ARCHIVE.md](docs/CONTINUE_CODEX_ARCHIVE.md).
 Consult it only when an older decision or SHA is needed; it is not an active task list.
 
-### Exact next safe actions and remaining full scope
+### Historical migration next actions (completed by PR #24; context only, not an active task list)
 
 1.135aeac08a and136source are locally verified. Normal-push combined135/136ONCE to ORIGINAL PR24
    if not already there; inspect actual head/CI first and preserve useful running Native work.
