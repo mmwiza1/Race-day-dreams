@@ -62,6 +62,15 @@ class ShowcaseTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate(bad, ROOT)
 
+    def test_stable_unsigned_ios_downloads_follow_android_link(self):
+        base = DOWNLOAD.rsplit('/', 1)[0] + '/Race-Day-Dreams-latest-'
+        for name in ('ios-simulator.zip', 'ios-simulator.zip.sha256', 'iphoneos-unsigned.zip',
+                     'iphoneos-unsigned.zip.sha256', 'build-info.txt'):
+            self.assertIn(base + name, self.text)
+        self.assertLess(self.text.index(DOWNLOAD), self.text.index(base + 'ios-simulator.zip'))
+        self.assertIn('unsigned engineering builds, not', self.text)
+        self.assertNotRegex(self.text, r'Race-Day-Dreams-\d+\.\d+\.\d+-test\d+-(ios|iphoneos)')
+
     def test_minimum_android_matches_app_and_no_unsupported_web_features(self):
         self.assertRegex((ROOT / 'app/build.gradle').read_text(), r'minSdk\s+28')
         self.assertIn('Android 9 (API 28)', self.text)

@@ -1,7 +1,8 @@
 name: Shared Android and iOS checks
 on:
-  push:
-    branches: [main]
+  # main and v* tags call this from android.yml, so release publication can require the Android
+  # matrix and these Apple jobs from ONE run of ONE commit.
+  workflow_call:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -199,7 +200,7 @@ jobs:
           test -s iosApp/build/RaceDayDreams.app/LICENSE
           test -s iosApp/build/RaceDayDreams.app/apache-2.0.txt
           for notice in third_party.md kotlin-LICENSE.txt coroutines-LICENSE.txt \
-            serialization-LICENSE.txt transitive-NOTICES.txt skia-LICENSE.txt \
+            serialization-LICENSE.txt transitive-NOTICES.txt skia-LICENSE.txt ios-native-NOTICES.txt \
             berlin-2014-MIT.txt tokyo-2026-CC0.txt london-historical-MIT.txt \
             new-york-2026-NOTICE.txt paris-2026-NOTICE.txt; do
             test -s "iosApp/build/RaceDayDreams.app/$notice"
@@ -426,7 +427,7 @@ jobs:
       github.event_name == 'push' ||
       (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     runs-on: macos-26-intel
-    timeout-minutes: 55
+    timeout-minutes: 85
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -453,8 +454,47 @@ jobs:
             END { exit !found }'
           git rev-parse HEAD > "$output/source-commit.txt"
           ditto -c -k --keepParent "$app" "$output/RaceDayDreams-iphoneos-unsigned.zip"
+          plutil -extract CFBundleShortVersionString raw "$app/Info.plist" > "$output/bundle-version.txt"
+          plutil -extract CFBundleVersion raw "$app/Info.plist" > "$output/bundle-build.txt"
           cd "$output"
           shasum -a 256 RaceDayDreams-iphoneos-unsigned.zip > RaceDayDreams-iphoneos-unsigned.zip.sha256
+      - name: Build a universal unsigned iOS Simulator app for publication
+        # Apple silicon (arm64) and Intel (x86_64) slices from the same commit. The x86_64 slice is
+        # the configuration launched and UI-tested by apple-shared on this Intel runner.
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --max-workers=2 --no-parallel :sharedUi:linkDebugFrameworkIosSimulatorArm64 :sharedUi:linkDebugFrameworkIosX64
+          universal="$PWD/sharedUi/build/bin/iosSimulatorUniversal/debugFramework"
+          rm -rf "$universal"; mkdir -p "$universal"
+          cp -R sharedUi/build/bin/iosSimulatorArm64/debugFramework/RaceDayShared.framework "$universal/"
+          xcrun lipo -create \
+            sharedUi/build/bin/iosSimulatorArm64/debugFramework/RaceDayShared.framework/RaceDayShared \
+            sharedUi/build/bin/iosX64/debugFramework/RaceDayShared.framework/RaceDayShared \
+            -output "$universal/RaceDayShared.framework/RaceDayShared"
+          output="$PWD/iosApp/build/simulator-release"
+          xcodebuild -project iosApp/RaceDayDreams.xcodeproj -target RaceDayDreams \
+            -configuration Debug -sdk iphonesimulator ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="$output" \
+            RDD_FRAMEWORK_DIRECTORY="$universal" build
+          app="$output/RaceDayDreams.app"
+          test -x "$app/RaceDayDreams"
+          archs=" $(xcrun lipo -archs "$app/RaceDayDreams") "
+          case "$archs" in *" arm64 "*) ;; *) echo "missing arm64 slice: $archs" >&2; exit 1 ;; esac
+          case "$archs" in *" x86_64 "*) ;; *) echo "missing x86_64 slice: $archs" >&2; exit 1 ;; esac
+          xcrun vtool -show-build "$app/RaceDayDreams" | awk '
+            $1 == "platform" && $2 == "IOSSIMULATOR" { found = 1 }
+            END { exit !found }'
+          for notice in LICENSE apache-2.0.txt third_party.md skia-LICENSE.txt ios-native-NOTICES.txt; do
+            test -s "$app/$notice"
+            test -s "iosApp/build/device/RaceDayDreams.app/$notice"
+          done
+          git rev-parse HEAD > "$output/source-commit.txt"
+          plutil -extract CFBundleShortVersionString raw "$app/Info.plist" > "$output/bundle-version.txt"
+          plutil -extract CFBundleVersion raw "$app/Info.plist" > "$output/bundle-build.txt"
+          ditto -c -k --keepParent "$app" "$output/RaceDayDreams-simulator-universal.zip"
+          cd "$output"
+          shasum -a 256 RaceDayDreams-simulator-universal.zip > RaceDayDreams-simulator-universal.zip.sha256
       - uses: actions/upload-artifact@v4
         with:
           name: experimental-ios-device-unsigned
@@ -462,4 +502,16 @@ jobs:
             iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip
             iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip.sha256
             iosApp/build/device/source-commit.txt
+            iosApp/build/device/bundle-version.txt
+            iosApp/build/device/bundle-build.txt
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-universal-unsigned
+          path: |
+            iosApp/build/simulator-release/RaceDayDreams-simulator-universal.zip
+            iosApp/build/simulator-release/RaceDayDreams-simulator-universal.zip.sha256
+            iosApp/build/simulator-release/source-commit.txt
+            iosApp/build/simulator-release/bundle-version.txt
+            iosApp/build/simulator-release/bundle-build.txt
           if-no-files-found: error

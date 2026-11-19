@@ -37,9 +37,15 @@ Implemented in PR #23 after the shared Android/iOS migration (PR #24) merged:
 - **Ready PR (every new commit):** the unfiltered API 28/35/36 matrix with source-bound
   screenshots, exercise-guidance completeness, formatting, the Apple simulator job, the unsigned
   iosArm64 device build and, for same-repository PRs, the canonical screenshot commit.
-- **Merged `main` and `v*` tags:** the full Android matrix (which must match the committed
-  canonical screenshot fingerprint), Apple simulator and device builds, then the existing gated
-  development APK publication. No iOS app is distributed.
+- **Merged `main` and `v*` tags:** `android.yml` runs the full Android matrix (which must match the
+  committed canonical screenshot fingerprint) and calls `multiplatform.yml` in the SAME run for the
+  Apple simulator/UI suite, the unsigned iPhone build and a universal unsigned simulator app. Only
+  when every job passes does the existing gated publisher release, from that one commit: the APK,
+  `Race-Day-Dreams-<version>-ios-simulator.zip`, `-iphoneos-unsigned.zip`, their `latest-*`
+  aliases, `.sha256` files and a build-info file. Each iOS ZIP must carry the run's commit, bundle
+  version and build number. Versioned files upload first and `latest-*` aliases last; superseded or
+  failed runs never publish. iOS builds are unsigned developer/test artifacts; `v*` tag releases
+  stay Android-only and no signed, TestFlight or App Store distribution exists.
 - **Fail closed:** skipped draft jobs are not approval; exact-head checks, artifact identity and
   publication safeguards are unchanged. A head commit containing `[skip ci]` suppresses even the
   `ready_for_review` run, so never leave one as the head before a ready transition or final gate.

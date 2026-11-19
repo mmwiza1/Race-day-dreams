@@ -62,6 +62,27 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 258 PR #24 merged; PR #23 staged CI + unsigned iOS releases (Claude)
+
+- PR #24 squash-merged as `f7be1ab` (tree == verified head 529d310 / source 039044a); main run
+  44427299471 then verifies and publishes the 0.13.0-test1 APK.
+- PR #23 (`ci/staged-pr-verification`, owner-authorised to merge after checks): main merged in
+  (no force-push). Draft/ready/main staging per owner table; iOS UI suite on drafts only for native
+  iOS paths or the `ios-ui-tests` label. Owner then asked to publish unsigned iOS builds:
+  - `android.yml` `apple` job calls `multiplatform.yml` (now `workflow_call`) on push, and
+    `publish-test-release` needs [build, guidance-completeness, formatting, apple]: one run, one
+    commit for APK + `-ios-simulator.zip` (universal arm64+x86_64, built in apple-device) +
+    `-iphoneos-unsigned.zip`, `latest-*` aliases, `.sha256` files and `-build-info.txt`.
+  - `development-assets.py --prepare-ios/--verify-ios` refuse wrong commit, bundle version,
+    build number or checksum; versioned assets upload before `latest-*` aliases; tag releases
+    stay Android-only. Release notes, README (stable links + unsigned labels) and TEST_BUILD.md.
+  - Skia/Skiko licence inventory COMPLETE: 19 static libs in Maven-verified
+    skiko-iosarm64-0.9.4.2.klib; exact pinned texts (Skia m132 a00c390e98 DEPS) in
+    `iosApp/licences/ios-native-NOTICES.txt`, bundled, listed in-app and asserted in CI.
+- After merge: verify main run (Android + Apple jobs + publisher), the Releases page, README links,
+  download every asset and check SHA-256, commit and versions. Then start the analytics DRAFT PR
+  (owner must approve its merge).
+
 ### Latest recovery pointer — checkpoint 257 merge authorisation and backup-text regression (Claude)
 
 - Owner explicitly authorised merging PR #24 then PR #23 once mandatory checks pass, then a

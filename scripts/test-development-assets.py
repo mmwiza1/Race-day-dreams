@@ -79,7 +79,7 @@ class DevelopmentAssetsTest(unittest.TestCase):
     def test_publisher_keeps_gate_serialisation_and_verifies_downloaded_pairs(self):
         workflow = (ROOT / '.github/workflows/android.yml').read_text()
         publisher = workflow.split('  publish-test-release:', 1)[1]
-        self.assertIn('needs: [build, guidance-completeness, formatting]', publisher)
+        self.assertIn('needs: [build, guidance-completeness, formatting, apple]', publisher)
         self.assertIn('group: release-publication', publisher)
         self.assertIn('cancel-in-progress: false', publisher)
         self.assertIn('live', publisher)
@@ -87,8 +87,67 @@ class DevelopmentAssetsTest(unittest.TestCase):
         self.assertIn('development-assets.py --verify', publisher)
         self.assertIn('gh release download development', publisher)
         self.assertNotIn('--method DELETE', publisher)
+        for flag in ('--prepare-ios', '--verify-ios', 'experimental-ios-device-unsigned',
+                     'ios-simulator-universal-unsigned', 'latest-build-info'):
+            self.assertIn(flag, publisher)
+        apple = workflow.split('\n  apple:', 1)[1].split('\n  publish-test-release:', 1)[0]
+        self.assertIn('uses: ./.github/workflows/multiplatform.yml', apple)
         self.assertIn('Permanent tags/releases are never overwritten', publisher)
 
+
+    def ios_source(self, kind, commit='a' * 40, version='0.13.0', build='20', payload=b'ios-zip\x00' * 64):
+        directory = self.root / ('ci-' + kind)
+        directory.mkdir(exist_ok=True)
+        name = {'ios-simulator': 'RaceDayDreams-simulator-universal.zip',
+                'iphoneos-unsigned': 'RaceDayDreams-iphoneos-unsigned.zip'}[kind]
+        (directory / name).write_bytes(payload)
+        (directory / (name + '.sha256')).write_text(f'{assets.digest(directory / name)}  {name}\n')
+        (directory / 'source-commit.txt').write_text(commit + '\n')
+        (directory / 'bundle-version.txt').write_text(version + '\n')
+        (directory / 'bundle-build.txt').write_text(build + '\n')
+        return directory
+
+    def test_ios_pairs_are_versioned_aliased_and_byte_identical(self):
+        for kind in assets.IOS_KINDS:
+            with self.subTest(kind=kind):
+                expected = assets.prepare_ios(self.ios_source(kind), '0.13.0-test1', 20, 'a' * 40, kind, self.output)
+                versioned, _, alias, _ = assets.ios_names('0.13.0-test1', kind)
+                self.assertEqual(versioned, f'Race-Day-Dreams-0.13.0-test1-{kind}.zip')
+                self.assertEqual(alias, f'Race-Day-Dreams-latest-{kind}.zip')
+                self.assertEqual(assets.verify_ios(self.output, '0.13.0-test1', kind, expected)[2], alias)
+
+    def test_ios_source_rejects_wrong_commit_version_build_or_checksum(self):
+        cases = {
+            'commit': dict(commit='b' * 40),
+            'version': dict(version='0.12.3'),
+            'build': dict(build='19'),
+        }
+        for label, override in cases.items():
+            with self.subTest(label=label), self.assertRaises(ValueError):
+                assets.prepare_ios(self.ios_source('iphoneos-unsigned', **override), '0.13.0-test1', 20,
+                                   'a' * 40, 'iphoneos-unsigned', self.output)
+        source = self.ios_source('ios-simulator')
+        (source / 'RaceDayDreams-simulator-universal.zip').write_bytes(b'tampered')
+        with self.assertRaises(ValueError):
+            assets.prepare_ios(source, '0.13.0-test1', 20, 'a' * 40, 'ios-simulator', self.output)
+
+    def test_corrupt_published_ios_alias_is_rejected(self):
+        expected = assets.prepare_ios(self.ios_source('ios-simulator'), '0.13.0-test1', 20, 'a' * 40,
+                                      'ios-simulator', self.output)
+        (self.output / 'Race-Day-Dreams-latest-ios-simulator.zip').write_bytes(b'older build')
+        with self.assertRaises(ValueError):
+            assets.verify_ios(self.output, '0.13.0-test1', 'ios-simulator', expected)
+
+    def test_build_info_ties_every_binary_to_one_commit_and_labels_unsigned(self):
+        text = assets.build_info('0.13.0-test1', 20, 'c' * 40,
+                                 'https://github.com/mmwiza1/Race-day-dreams/actions/runs/7',
+                                 {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64})
+        self.assertIn('Source commit: ' + 'c' * 40, text)
+        self.assertIn('iOS 0.13.0 / build 20', text)
+        self.assertEqual(text.count('UNSIGNED'), 2)
+        with self.assertRaises(ValueError):
+            assets.build_info('0.13.0-test1', 20, 'c' * 40, 'https://example.com/run',
+                              {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64})
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
