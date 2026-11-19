@@ -2,8 +2,8 @@
 
 ## Local, account-free operation
 
-Race Day Dreams has no Internet permission, server, account, analytics, advertising
-or LLM service. Goals, preferences, drafts, manual baseline, activities, results,
+Race Day Dreams has no Internet permission (Android), networking code (both apps), server,
+account, analytics, advertising or LLM service. Goals, preferences, drafts, manual baseline, activities, results,
 shoes, annotations, generated plans/version history, evidence summaries, coaching proposals/decisions, strength sets, run responses/feedback and reminder preferences are stored in the app's private SQLite
 database. Android cloud backup and device transfer are excluded. The database
 uses Android application/device protection, not a separate encryption scheme.
@@ -16,12 +16,36 @@ where supported and chosen, allows up to 84 days; standard access uses an explic
 29-day window. Source identities, timestamps and reported offsets are retained.
 Separate optional health-context and native-recording flows are described below.
 Explicit native run totals can be written after separate consent; the app never
-deletes Health Connect records. No background health/location access is requested.
+deletes Health Connect records. On Android, no background health/location permission is
+requested; recording uses a visible foreground service.
 
 Declining, partially granting or revoking access leaves manual setup and local
 features usable. Revocation stops future reads; previously imported data remains
 locally until confirmed local-data deletion. See [HEALTH_CONNECT.md](HEALTH_CONNECT.md).
 No Health Connect credentials or records are uploaded by the app.
+
+## Experimental iPhone app
+
+The iPhone app (unsigned engineering build, PR #24) keeps the same local-first rules. Data is
+stored in an app-private SQLite database protected by iOS data protection, not a separate
+encryption scheme.
+
+- **Apple Health (optional):** only the categories you choose are read: running workouts,
+  weight and height. Apple does not tell apps whether read access was denied, so the app treats
+  missing data as unknown, never as a full grant. Nothing is written to Apple Health. Turning
+  access off stops future reads; previously imported local records stay until you delete them.
+- **Location:** requested "while using the app" only when you start an outdoor run. During a
+  run you started, recording continues with the screen locked using iOS background location;
+  iOS shows its location indicator while this happens. Location is not used at any other time.
+- **Bluetooth:** used only to connect a heart-rate monitor you choose for a run, including with
+  the screen locked during that run.
+- **Audio:** spoken run cues briefly lower other audio and can play with the screen locked
+  during a run. They are skipped during phone calls.
+- **Notifications:** evening reminders and gym rest alerts are local, opt-in notifications.
+- **Files:** backups and GPX files are read or written only through the system Files picker you
+  open. As on Android, exported backups are not encrypted by the app and a cloud-backed
+  destination you choose may sync them.
+- There is no in-app "Delete local app data" on iPhone yet; deleting the app removes its data.
 
 ## Backup/export and restore
 

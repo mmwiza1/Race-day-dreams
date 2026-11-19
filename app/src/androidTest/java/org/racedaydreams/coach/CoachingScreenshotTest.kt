@@ -892,7 +892,7 @@ class CoachingScreenshotTest {
                     emptyList(),
                 )
         GymProgrammeStore(context).save(programme)
-        val exercise = ExerciseCatalog.definition("bench-press").exercise()
+        val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         val now = Instant.now()
         for (daysAgo in listOf(3L, 6L)) {
             val id = "strength-home-$daysAgo"
@@ -955,7 +955,7 @@ class CoachingScreenshotTest {
     @Test
     fun capturesRecordedStrengthTrendsAndMeasuredVersusEstimatedRecords() {
         val today = LocalDate.now()
-        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        val bench = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         for (week in 0..11) {
             if (week == 3) continue // An explicitly missing week, never interpolated training.
             CoachingStore(context)
@@ -1197,7 +1197,7 @@ class CoachingScreenshotTest {
                 compose.onNodeWithText("Exercises").performScrollTo().performClick()
                 awaitExerciseSearch()
                 for (id in ExpandedExerciseGuides.identities().sorted()) {
-                    val exercise = ExerciseCatalog.definition(id).exercise()
+                    val exercise = requireNotNull(ExerciseCatalog.definition(id)).exercise()
                     compose
                         .onNodeWithTag("exercise-search")
                         .performScrollTo()
@@ -1217,9 +1217,8 @@ class CoachingScreenshotTest {
                                 )
                     ) {
                         val mistakes =
-                            TechniqueGuide.forExercise(id)!!.mistakes().joinToString("\n") {
-                                "• $it"
-                            }
+                            requireNotNull(TechniqueGuide.forExercise(id)!!.mistakes())
+                                .joinToString("\n") { "• $it" }
                         val body = compose.onNodeWithText(mistakes)
                         // This is near the page end: max scroll may prevent an arbitrary
                         // upper heading position. Require the complete actual content instead.
@@ -1239,7 +1238,7 @@ class CoachingScreenshotTest {
                         capture("exercise-$id-howto-details$suffix", "Common mistakes")
                         compose
                             .onNodeWithText(
-                                "Alternatives: ${org.racedaydreams.domain.strength.TechniqueGuide.forExercise(id)!!.alternatives().joinToString()}"
+                                "Alternatives: ${requireNotNull(org.racedaydreams.domain.strength.TechniqueGuide.forExercise(id)!!.alternatives()).joinToString()}"
                             )
                             .performScrollTo()
                             .assertIsDisplayed()
@@ -1328,7 +1327,7 @@ class CoachingScreenshotTest {
                 alignHeading("Record a measurement")
                 capture("body-measurements$suffix")
                 Assert.assertEquals(weight, body.weights().first { it.id() == weight.id() })
-                Assert.assertTrue(body.preferences().basis().matches(weight))
+                Assert.assertTrue(requireNotNull(body.preferences().basis()).matches(weight))
                 closeScenario()
                 scenario = null
             }
@@ -1381,7 +1380,7 @@ class CoachingScreenshotTest {
             "recovery-capture-accept",
             emptyList(),
         )
-        val bench = ExerciseCatalog.definition("bench-press").exercise()
+        val bench = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         for (days in listOf(1L, 5L, 8L)) CoachingStore(context)
             .saveStrength(
                 StrengthSession(
@@ -1483,7 +1482,7 @@ class CoachingScreenshotTest {
                         Assert.assertTrue(
                             model.builderPutSlot(
                                 null,
-                                ExerciseCatalog.definition("push-up").exercise(),
+                                requireNotNull(ExerciseCatalog.definition("push-up")).exercise(),
                                 GymSlotInput(
                                     sets = "2",
                                     minimumReps = "6",
@@ -1495,7 +1494,7 @@ class CoachingScreenshotTest {
                         Assert.assertTrue(
                             model.builderPutSlot(
                                 null,
-                                ExerciseCatalog.definition("plank").exercise(),
+                                requireNotNull(ExerciseCatalog.definition("plank")).exercise(),
                                 GymSlotInput(sets = "2", seconds = "30", restSeconds = "60"),
                             )
                         )
@@ -1587,7 +1586,7 @@ class CoachingScreenshotTest {
                 Assert.assertTrue(
                     model.builderPutSlot(
                         null,
-                        ExerciseCatalog.definition("bench-press").exercise(),
+                        requireNotNull(ExerciseCatalog.definition("bench-press")).exercise(),
                         GymSlotInput(
                             sets = "2",
                             minimumReps = "6",
@@ -1602,7 +1601,7 @@ class CoachingScreenshotTest {
                 Assert.assertTrue(
                     model.builderPutSlot(
                         null,
-                        ExerciseCatalog.definition("seated-cable-row").exercise(),
+                        requireNotNull(ExerciseCatalog.definition("seated-cable-row")).exercise(),
                         GymSlotInput(
                             sets = "2",
                             minimumReps = "10",
@@ -1683,7 +1682,7 @@ class CoachingScreenshotTest {
             await("Workout saved")
             alignHeading("Workout saved")
             capture("gym-workout-saved")
-            val retained = SqliteGymExecutionRepository(context).load(executionId).execution()
+            val retained = SqliteGymExecutionRepository(context).load(executionId)!!.execution()
             Assert.assertFalse(retained.partial())
             Assert.assertEquals(4, retained.actualSets().size)
             Assert.assertNull(retained.plannedAssociation())
@@ -1770,7 +1769,7 @@ class CoachingScreenshotTest {
             capture("gym-association-saved")
             Assert.assertEquals(
                 retained,
-                SqliteGymExecutionRepository(context).load(executionId).execution(),
+                SqliteGymExecutionRepository(context).load(executionId)!!.execution(),
             )
             Assert.assertEquals(actual, CoachingStore(context).strength().single())
         } finally {
@@ -1816,10 +1815,12 @@ class CoachingScreenshotTest {
             )
             Assert.assertTrue(
                 "Native capture fixture must retain durability evidence",
-                org.racedaydreams.domain.presentation.DurabilityData.of(
-                        FeatureStore(context).activityDetail(recorded.id())
+                requireNotNull(
+                        org.racedaydreams.domain.presentation.DurabilityData.of(
+                                requireNotNull(FeatureStore(context).activityDetail(recorded.id()))
+                            )
+                            .evidence()
                     )
-                    .evidence()
                     .sufficient(),
             )
             SupportStore(context)
@@ -1938,7 +1939,7 @@ class CoachingScreenshotTest {
         fun slot(id: String, exercise: String, low: Int, high: Int) =
             GymWorkoutDefinition.Slot(
                 id,
-                ExerciseCatalog.definition(exercise).exercise(),
+                requireNotNull(ExerciseCatalog.definition(exercise)).exercise(),
                 GymWorkoutDefinition.Target(
                     3,
                     low,
@@ -2362,10 +2363,10 @@ class CoachingScreenshotTest {
                             listOf(
                                 StrengthSession.ExerciseSets(
                                     slot.exercise(),
-                                    (1..slot.target().sets()).map { index ->
+                                    (1..slot.target()!!.sets()).map { index ->
                                         StrengthSession.SetEntry(
                                             "capture-set-$day-$index",
-                                            slot.target().maximumReps(),
+                                            slot.target()!!.maximumReps()!!,
                                             80.0,
                                             7.0,
                                             false,
@@ -2465,10 +2466,16 @@ class CoachingScreenshotTest {
                             )
                         compose.onNodeWithText("Here's what to do").assertIsDisplayed()
                         compose
-                            .onNodeWithText("Complete 2 sets of 4–6 repetitions.")
+                            .onNode(
+                                hasText("Complete 2 sets of 4–6 repetitions.") and
+                                    hasAnyAncestor(hasTestTag("progression-review"))
+                            )
                             .assertIsDisplayed()
                         compose
-                            .onNodeWithText("Rest for 3 minutes between sets.")
+                            .onNode(
+                                hasText("Rest for 3 minutes between sets.") and
+                                    hasAnyAncestor(hasTestTag("progression-review"))
+                            )
                             .assertIsDisplayed()
                         capture("strength-programme-progression-instructions$suffix")
                         compose
@@ -3199,6 +3206,64 @@ class CoachingScreenshotTest {
         }
     }
 
+    @Test
+    fun capturesPlainBackupExplanationInAllModes() {
+        withRefinementCaptureModes { suffix ->
+            click("Settings")
+            await("Local backup and restore")
+            alignHeading("Local backup and restore")
+            capture("settings-backup-plain$suffix")
+            compose.onNodeWithText("Choose backup to restore").performScrollTo().assertIsDisplayed()
+            compose
+                .onNodeWithText(
+                    "Restore validates the file before replacing local app data. Merge restore is not currently supported."
+                )
+                .performScrollTo()
+                .assertIsDisplayed()
+            capture("settings-backup-actions-plain$suffix")
+        }
+    }
+
+    @Test
+    fun capturesPlainHealthAndRunningInstructionsInAllModes() {
+        withRefinementCaptureModes { suffix ->
+            click("Settings")
+            compose.onNodeWithText("Personal health context").performScrollTo().performClick()
+            await("Heart-rate variability")
+            alignHeading("Heart-rate variability")
+            capture("health-context-plain$suffix")
+            compose
+                .onNodeWithText("About this measurement")
+                .performScrollTo()
+                .assert(
+                    SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed")
+                )
+                .performClick()
+            compose
+                .onNode(hasText("HRV means heart-rate variability.", substring = true))
+                .performScrollTo()
+                .assertIsDisplayed()
+            capture("health-measurement-plain$suffix")
+            back()
+            back()
+            awaitHomeReady(false)
+            clickOriginalNavigationTab("Plan")
+            await("This week")
+            compose
+                .onAllNodesWithContentDescription("View workout and purpose")[0]
+                .performScrollTo()
+                .performClick()
+            await("Workout structure")
+            capture("running-task-plain$suffix")
+            compose.onAllNodesWithText("Exact effort target")[0].performScrollTo().performClick()
+            compose
+                .onNode(hasText("This is the effort target saved in this plan.", substring = true))
+                .performScrollTo()
+                .assertIsDisplayed()
+            capture("running-target-plain$suffix")
+        }
+    }
+
     private fun awaitExerciseSearch() {
         compose.waitUntil(20000) {
             compose.onAllNodesWithTag("exercise-search").fetchSemanticsNodes().isNotEmpty()
@@ -3456,6 +3521,7 @@ class CoachingScreenshotTest {
                                 androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
                             )
                         )
+                    var nativeSurface = 0
                     native.onActivity { activity ->
                         val root =
                             activity
@@ -3463,6 +3529,7 @@ class CoachingScreenshotTest {
                                 .getChildAt(0)
                         val surface =
                             (root.background as android.graphics.drawable.ColorDrawable).color
+                        nativeSurface = surface
                         if (android.os.Build.VERSION.SDK_INT < 35) {
                             Assert.assertEquals(
                                 "Native navigation background must match its page",
@@ -3476,7 +3543,7 @@ class CoachingScreenshotTest {
                             )
                         }
                     }
-                    captureNativePermission("permission-rationale-${mode.suffix}")
+                    captureNativePermission("permission-rationale-${mode.suffix}", nativeSurface)
                     val close =
                         androidx.test.espresso.Espresso.onView(
                             androidx.test.espresso.matcher.ViewMatchers.withText("Close")
@@ -3501,7 +3568,10 @@ class CoachingScreenshotTest {
                             )
                         }
                     if (mode.scale == 2f)
-                        captureNativePermission("permission-rationale-actions-large-font")
+                        captureNativePermission(
+                            "permission-rationale-actions-large-font",
+                            nativeSurface,
+                        )
                     close.perform(androidx.test.espresso.action.ViewActions.click())
                     compose.waitUntil(20000) { native.state == Lifecycle.State.DESTROYED }
                 } finally {
@@ -3515,13 +3585,68 @@ class CoachingScreenshotTest {
         }
     }
 
-    private fun captureNativePermission(name: String) {
+    private fun captureNativePermission(name: String, expectedSurface: Int) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         automation.waitForIdle(200, 20000)
-        val bitmap = automation.takeScreenshot()
-        Assert.assertNotNull(bitmap)
-        saveCapture(name, bitmap)
+        if (android.os.Build.VERSION.SDK_INT == 28) {
+            // Window flags settle before Android9 SystemUI necessarily renders new icons.
+            // Await the real contrast condition, not a fixed delay or an edited screenshot.
+            compose.waitUntil(20000) {
+                saveCurrentScreen(name)
+                nativeStatusBarReady(name, expectedSurface)
+            }
+        } else saveCurrentScreen(name)
+    }
+
+    private fun nativeStatusBarReady(name: String, expectedSurface: Int): Boolean {
+        val frame =
+            checkNotNull(
+                android.graphics.BitmapFactory.decodeFile(
+                    File(context.getExternalFilesDir(null), "screenshots/$name.png").absolutePath
+                )
+            )
+        try {
+            val logical = android.graphics.Point()
+            (context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager)
+                .defaultDisplay
+                .getRealSize(logical)
+            val scale = minOf(frame.width.toFloat() / logical.x, frame.height.toFloat() / logical.y)
+            val left = ((frame.width - logical.x * scale) / 2).toInt()
+            val top = ((frame.height - logical.y * scale) / 2).toInt()
+            val right = frame.width - left
+            val statusId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+            Assert.assertTrue("A real status-bar band is required", statusId != 0)
+            val bottom = top + (context.resources.getDimensionPixelSize(statusId) * scale).toInt()
+            val background = frame.getPixel(frame.width / 2, top + 2)
+            for (channel in
+                listOf<(Int) -> Int>(
+                    android.graphics.Color::red,
+                    android.graphics.Color::green,
+                    android.graphics.Color::blue,
+                )) {
+                if (kotlin.math.abs(channel(background) - channel(expectedSurface)) > 18)
+                    return false
+            }
+            var legiblePixels = 0
+            for (y in top + 2 until bottom - 2) for (x in left + 2 until right - 2) {
+                if (
+                    androidx.core.graphics.ColorUtils.calculateContrast(
+                        frame.getPixel(x, y),
+                        expectedSurface,
+                    ) >= 3.0
+                )
+                    legiblePixels++
+            }
+            if (legiblePixels < 20)
+                android.util.Log.i(
+                    "RddGate",
+                    "NATIVE_STATUS_NOT_READY $name foreground=$legiblePixels",
+                )
+            return legiblePixels >= 20
+        } finally {
+            frame.recycle()
+        }
     }
 
     @Test
@@ -4017,18 +4142,48 @@ class CoachingScreenshotTest {
         // The app looper is only one window. Await the real system-window event stream too,
         // rather than assuming a fixed delay means SystemUI finished a configuration update.
         automation.waitForIdle(200, 20000)
-        val bitmap = automation.takeScreenshot()
-        Assert.assertNotNull(bitmap)
-        saveCapture(name, bitmap)
+        saveCurrentScreen(name)
     }
 
-    private fun saveCapture(name: String, bitmap: Bitmap) {
+    private fun saveCurrentScreen(name: String) {
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         val dir = File(context.getExternalFilesDir(null), "screenshots")
         dir.mkdirs()
-        File(dir, "$name.png").outputStream().use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+        val image = File(dir, "$name.png")
+        if (android.os.Build.VERSION.SDK_INT == 28) {
+            // Android9 UiAutomation crops to getRealSize(), which is the overridden logical
+            // size. On a letterboxed emulator this clips the physical compositor frame.
+            // Native screencap requests the entire physical frame. Preserve it unchanged,
+            // including real letterboxing; never rescale, crop or repaint the captured UI.
+            automation.executeShellCommand("screencap -p").use { descriptor ->
+                java.io.FileInputStream(descriptor.fileDescriptor).use { input ->
+                    image.outputStream().use { output -> input.copyTo(output) }
+                }
+            }
+            val bounds =
+                android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            android.graphics.BitmapFactory.decodeFile(image.absolutePath, bounds)
+            val physical =
+                checkNotNull(Regex("Physical size: ([0-9]+)x([0-9]+)").find(shell("wm size")))
+            val width = physical.groupValues[1].toInt()
+            val height = physical.groupValues[2].toInt()
+            Assert.assertTrue(
+                "API28 capture must contain the whole physical display, not an overridden crop: ${bounds.outWidth}x${bounds.outHeight}, physical ${width}x$height",
+                (bounds.outWidth == width && bounds.outHeight == height) ||
+                    (bounds.outWidth == height && bounds.outHeight == width),
+            )
+            android.util.Log.i(
+                "RddGate",
+                "CAPTURE_PHYSICAL_FRAME $name ${bounds.outWidth}x${bounds.outHeight}",
+            )
+        } else {
+            val bitmap = checkNotNull(automation.takeScreenshot())
+            try {
+                image.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            } finally {
+                bitmap.recycle()
+            }
         }
-        bitmap.recycle()
         // AGP uninstalls the APK after connected tests, removing app-specific files.
         // Copy with instrumentation's shell identity before teardown; production has no such path.
         val shell = InstrumentationRegistry.getInstrumentation().uiAutomation
@@ -4038,7 +4193,7 @@ class CoachingScreenshotTest {
         }
         shell
             .executeShellCommand(
-                "cp ${File(dir,"$name.png").absolutePath} /data/local/tmp/racedaydreams-screenshots/$name.png"
+                "cp ${image.absolutePath} /data/local/tmp/racedaydreams-screenshots/$name.png"
             )
             .use { descriptor ->
                 java.io.FileInputStream(descriptor.fileDescriptor).use { it.readBytes() }

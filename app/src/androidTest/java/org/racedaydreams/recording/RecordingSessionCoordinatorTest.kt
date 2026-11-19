@@ -45,6 +45,27 @@ class RecordingSessionCoordinatorTest : AndroidTestCase() {
         }
     }
 
+    fun testSharedCoordinatorKeepsLegacyContextBytesAndDoesNotMutateItsSource() = runBlocking {
+        val repository = Repository()
+        val source =
+            JSONObject(
+                """{"label":"structured","payload":{"whole":1,"fraction":0.125,"quote":"a\"b","line":"one\ntwo"},"events":[{"type":"STALE"}]}"""
+            )
+        val recording =
+            RecordingSessionCoordinator(session, repository, Dispatchers.IO, { 2000 }, { source })
+        withContext(Dispatchers.Main) { recording.flush() }
+        val captured = repository.attempts.single().executionContext!!
+        assertEquals(
+            """{"label":"structured","payload":{"whole":1,"fraction":0.125,"quote":"a\"b","line":"one\ntwo"},"events":[]}""",
+            captured.toString(),
+        )
+        assertEquals(1, source.getJSONArray("events").length())
+        source.getJSONObject("payload").put("whole", 99)
+        assertEquals(1, captured.getJSONObject("payload").getInt("whole"))
+        assertEquals(0, repository.attempts.single().fromPoint)
+        assertEquals(0, repository.attempts.single().fromEvent)
+    }
+
     fun testFailedStagingLeavesBothCursorsAtLastCommittedBatch() = runBlocking {
         val repository = Repository()
         val clock = AtomicLong(2000)

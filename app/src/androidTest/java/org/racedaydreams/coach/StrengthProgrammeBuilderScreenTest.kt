@@ -61,10 +61,10 @@ class StrengthProgrammeBuilderScreenTest {
         val candidate = model.state.value.preview!!.programme
         assertEquals(4, candidate.workouts().size)
         candidate.workouts().forEach {
-            val target = it.definition().slots().single().target()
+            val target = requireNotNull(it.definition().slots().single().target())
             assertEquals(6, target.minimumReps())
             assertEquals(10, target.maximumReps())
-            assertEquals(2.5, target.effort().minimum(), 0.0)
+            assertEquals(2.5, target.effort()!!.minimum(), 0.0)
             assertNull(target.restSeconds())
             assertNull(target.referenceLoadKg())
         }
@@ -109,7 +109,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 day.id(),
                 null,
-                ExerciseCatalog.definition("plank").exercise(),
+                requireNotNull(ExerciseCatalog.definition("plank")).exercise(),
                 GymSlotInput(seconds = "30"),
                 {},
             )
@@ -283,7 +283,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 block.days()[0].id(),
                 null,
-                ExerciseCatalog.definition("push-up").exercise(),
+                requireNotNull(ExerciseCatalog.definition("push-up")).exercise(),
                 GymSlotInput(minimumReps = "6", maximumReps = "10"),
                 {},
             )
@@ -294,7 +294,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 block.days()[1].id(),
                 null,
-                ExerciseCatalog.definition("plank").exercise(),
+                requireNotNull(ExerciseCatalog.definition("plank")).exercise(),
                 GymSlotInput(seconds = "30"),
                 {},
             )
@@ -326,7 +326,7 @@ class StrengthProgrammeBuilderScreenTest {
 
     @Test
     fun sharedTargetParserPreservesUnknownsAndRejectsInvalidNumericEvidence() {
-        val push = ExerciseCatalog.definition("push-up").exercise()
+        val push = requireNotNull(ExerciseCatalog.definition("push-up")).exercise()
         val input =
             GymSlotInput(
                 minimumReps = "6",
@@ -335,8 +335,8 @@ class StrengthProgrammeBuilderScreenTest {
                 maximumEffort = "4",
                 rir = true,
             )
-        val target = gymSlotFromInput("push", push, input).target()
-        assertEquals(2.5, target.effort().minimum(), 0.0)
+        val target = requireNotNull(gymSlotFromInput("push", push, input).target())
+        assertEquals(2.5, target.effort()!!.minimum(), 0.0)
         assertNull(target.restSeconds())
         assertNull(target.referenceLoadKg())
         val timed =
@@ -351,7 +351,7 @@ class StrengthProgrammeBuilderScreenTest {
         assertEquals(
             30L,
             gymSlotFromInput("hold", timed, GymSlotInput(seconds = "30"))
-                .target()
+                .target()!!
                 .seconds()!!
                 .toLong(),
         )
@@ -371,8 +371,8 @@ class StrengthProgrammeBuilderScreenTest {
                     GymSlotInput(metres = "25.5", referenceKilograms = "20"),
                 )
                 .target()
-        assertEquals(25.5, distance.metres(), 0.0)
-        assertEquals(20.0, distance.referenceLoadKg(), 0.0)
+        assertEquals(25.5, distance!!.metres()!!, 0.0)
+        assertEquals(20.0, distance!!.referenceLoadKg()!!, 0.0)
         assertThrows(IllegalArgumentException::class.java) {
             gymSlotFromInput("bad", push, input.copy(maximumEffort = ""))
         }
@@ -409,7 +409,7 @@ class StrengthProgrammeBuilderScreenTest {
                 block.id(),
                 day.id(),
                 null,
-                ExerciseCatalog.definition("push-up").exercise(),
+                requireNotNull(ExerciseCatalog.definition("push-up")).exercise(),
                 GymSlotInput(
                     minimumReps = "6",
                     maximumReps = "10",

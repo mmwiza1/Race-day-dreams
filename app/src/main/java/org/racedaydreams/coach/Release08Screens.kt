@@ -15,20 +15,26 @@ import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.support.DreamRoutes
 import java.time.*
 
-@Composable fun SpontaneousAssociation(state:CoachUiState,model:CoachViewModel,activity:ActivityRecord){
-    if(activity.source().provider()!="rdd")return
-    val context=LocalContext.current
-    val origin by produceState<JSONObject?>(null,activity.id()){value=withContext(Dispatchers.IO){Release08Store(context).get("origin",activity.source().recordId())}}
-    val mode=origin?.optString("mode")?:return
-    Text("Recording origin: ${when(mode){"free"->"Spontaneous free run";"quick"->"Quick target run";"custom"->"Custom structured workout";"repeat"->"Repeated workout";"race"->"Race";else->"Planned programme run"}}")
-    if(mode in listOf("workout","race")||state.runResponses.any{it.activityId()==activity.id()})return
-    var selected by remember{mutableStateOf<org.racedaydreams.domain.PlannedWorkout?>(null)}
-    val date=activity.start().atZone(ZoneId.systemDefault()).toLocalDate();val version=state.currentPlan
-    val candidates=version?.plan()?.workouts()?.filter{it.date()<=LocalDate.now()&&kotlin.math.abs(java.time.temporal.ChronoUnit.DAYS.between(date,it.date()))<=2&&state.runResponses.none{r->r.plannedWorkoutId()==it.id()}&&state.activities.none{a->a.plannedWorkoutId()==it.id()}}?:emptyList()
-    val tomorrow=version?.plan()?.workouts()?.firstOrNull{it.date()==date.plusDays(1)&&it.date()>=LocalDate.now()&&org.racedaydreams.domain.strength.GymProgrammeGenerator.demanding(it.category())}
-    if(tomorrow!=null&&org.racedaydreams.domain.polish.TrainingInsights.extraRunDemand(activity))SemanticCard(Tile.Insight){Text("Review tomorrow's demand",style=MaterialTheme.typography.titleMedium);Text("You recorded an extra run before ${workoutName(tomorrow.category())}. It may feel more demanding. Your plan is unchanged.");var preview by remember{mutableStateOf(false)};TextButton(onClick={preview=true}){Text("Preview easy alternative")};if(preview)AlertDialog(onDismissRequest={preview=false},title={Text("Choose easy instead?")},text={Text("Only tomorrow's session changes to conversational effort. Its current distance/time ceiling is retained; no extra mileage is added. The original plan version is preserved.")},confirmButton={TextButton(onClick={model.runningPlan.chooseEasy(tomorrow.id(),"Runner chose an easy alternative after an extra recorded run");preview=false}){Text("Choose easy")}},dismissButton={TextButton(onClick={preview=false}){Text("Keep original")}})}
-    if(candidates.isNotEmpty())SemanticCard(Tile.Insight){Text("Extra run or planned training?",style=MaterialTheme.typography.titleMedium);Text("Kept as an extra run unless you explicitly link it. The original prescription and actual GPS remain unchanged.");candidates.forEach{w->TextButton(onClick={selected=w}){Text("Count toward ${workoutName(w.category())} · ${friendlyDate(w.date())}")}}}
-    selected?.let{w->AlertDialog(onDismissRequest={selected=null},title={Text("Link this actual run?")},text={Text("This will compare your run with the preserved ${friendlyDate(w.date())} prescription. It does not rewrite GPS or change the programme.")},confirmButton={TextButton(onClick={model.runningEvidence.linkRun(activity.id(),version!!.id(),w.id());selected=null}){Text("Confirm link")}},dismissButton={TextButton(onClick={selected=null}){Text("Keep as extra run")}})}
+@Composable
+fun SpontaneousAssociation(state: CoachUiState, model: CoachViewModel, activity: ActivityRecord) {
+    if (activity.source().provider() != "rdd") return
+    val context = LocalContext.current
+    val origin by produceState<JSONObject?>(null, activity.id()) {
+        value = withContext(Dispatchers.IO) {
+            Release08Store(context).get("origin", activity.source().recordId())
+        }
+    }
+    val mode = origin?.optString("mode") ?: return
+    SharedSpontaneousAssociation(
+        state,
+        activity,
+        mode,
+        activity.start().atZone(ZoneId.systemDefault()).toLocalDate(),
+        LocalDate.now(),
+        ::friendlyDate,
+        model.runningPlan::chooseEasy,
+        { id, version, workout -> model.runningEvidence.linkRun(id, version, workout) },
+    )
 }
 
 @Composable fun DreamPreferences(){
@@ -44,19 +50,26 @@ import java.time.*
     SemanticCard(Tile.Neutral){Text("Diagnostic report",style=MaterialTheme.typography.titleLarge);Text("App/schema versions, Android/device model and permission states only. Excludes GPS, health measurements, weight, notes and workout history. Inspect the file before sharing.");CoachButton("Export diagnostic report"){export.launch("race-day-dreams-diagnostic.json")};message?.let{Text(it)}}
 }
 
-@Composable fun StartingPath(model:CoachViewModel,choose:(String)->Unit)=CoachPage {
-    CoachHeading("Make today yours")
-    Text("Choose your primary focus. You can change it in Settings, and every feature remains available.")
-    SemanticCard(Tile.Planned){Text("Running",style=MaterialTheme.typography.titleLarge);Text("Run independently or work towards a race. No gym programme or health access required.");CoachButton("Record my runs"){model.settings.startingPath("record"){choose("home")}};CoachButton("Train for a race"){model.settings.startingPath("race"){choose("baseline")}}}
-    SemanticCard(Tile.Strength){Text("Strength",style=MaterialTheme.typography.titleLarge);Text("Set up optional strength programming or log your own workouts. No race goal or running profile required.");CoachButton("Focus on strength"){model.settings.primaryFocus(PrimaryFocus.STRENGTH){choose("gym")}}}
-    SemanticCard(Tile.Race){Text("Hybrid",style=MaterialTheme.typography.titleLarge);Text("Begin with your running goal; add strength when you choose.");CoachButton("Running + strength"){model.settings.startingPath("hybrid"){choose("baseline")}}}
-}
+@Composable fun StartingPath(model:CoachViewModel,choose:(String)->Unit)=SharedStartingPath(
+    {model.settings.startingPath("record"){choose("home")}},
+    {model.settings.startingPath("race"){choose("baseline")}},
+    {model.settings.primaryFocus(PrimaryFocus.STRENGTH){choose("gym")}},
+    {model.settings.startingPath("hybrid"){choose("baseline")}},
+)
 
-@Composable fun RaceWeekChecklist(goal:org.racedaydreams.domain.RaceGoal){
-    val context=LocalContext.current;val scope=rememberCoroutineScope();val key="${goal.raceDate()}:${goal.raceName()}";var values by remember(key){mutableStateOf<Map<String,Boolean>>(emptyMap())}
-    val labels=listOf("Shoes & socks","Race number / timing chip","Phone charged","Familiar fuel / hydration plan","Kit & travel arrangements")
-    LaunchedEffect(key){values=withContext(Dispatchers.IO){labels.associateWith{Release08Store(context).get("checklist","$key:$it")?.optBoolean("checked")?:false}}}
-    SemanticCard(Tile.Race){Text("Race morning checklist",style=MaterialTheme.typography.titleLarge);labels.forEach{label->CheckRow(label,values[label]==true){checked->scope.launch{withContext(Dispatchers.IO){Release08Store(context).save("checklist","$key:$label",JSONObject().put("version",1).put("label",label).put("checked",checked))};values=values+(label to checked)}}};Text("Use the items relevant to your race. No extra training is required.")}
+@Composable
+fun RaceWeekChecklist(goal: org.racedaydreams.domain.RaceGoal) {
+    val context = LocalContext.current
+    val store = remember(context) { Release08Store(context) }
+    SharedRaceChecklist(
+        goal,
+        load = { id -> withContext(Dispatchers.IO) { store.get("checklist", id)?.optBoolean("checked") ?: false } },
+        save = { id, label, checked ->
+            withContext(Dispatchers.IO) {
+                store.save("checklist", id, JSONObject().put("version", 1).put("label", label).put("checked", checked))
+            }
+        },
+    )
 }
 
 @Composable fun SchedulePreferences(){

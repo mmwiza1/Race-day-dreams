@@ -218,7 +218,7 @@ class CoachCompletionStateTest {
                 5.0,
                 Duration.ofMinutes(32),
                 LocalDate.now().minusDays(1),
-                LocalTime.of(0, 1),
+                LocalTime.of(0, 1).toString(),
                 3.0,
                 "Actual running evidence",
             ) {

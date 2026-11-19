@@ -13,7 +13,7 @@ def render(root, commit, run_url, development=False, tag=None):
         raise ValueError('Unsafe version name')
     if not re.fullmatch(r'[0-9a-f]{40}', commit):
         raise ValueError('Full commit SHA required')
-    if not re.fullmatch(r'https://github.com/[^/]+/[^/]+/actions/runs/\d+', run_url):
+    if not re.fullmatch(r'https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/actions/runs/\d+', run_url):
         raise ValueError('Actions evidence link required')
     if not development and tag != 'v' + name:
         raise ValueError('Tag must match the built app version')
@@ -44,10 +44,34 @@ def render(root, commit, run_url, development=False, tag=None):
         '> **Test pre-release.** This is not a Play Store/production package.'
     )
 
+    repository_url = run_url.split('/actions/runs/')[0]
+    repository = repository_url.removeprefix('https://github.com/')
+    release_tag = 'development' if development else tag
+    assets_url = f'{repository_url}/releases/download/{release_tag}'
+    preview_files = (
+        ('home-material-brand-light.png', 'Today’s running session'),
+        ('exercise-library-refined-dark.png', 'Illustrated exercise library'),
+        ('running-trends-distance.png', 'Recorded running progress'),
+        ('training-recovery.png', 'Optional recovery guidance'),
+    )
+    preview = ''
+    screenshots = root / 'docs/screenshots'
+    if screenshots.exists():
+        if any(not (screenshots / name).is_file() for name, _ in preview_files):
+            raise ValueError('Release preview screenshot is missing')
+        rows = []
+        for offset in (0, 2):
+            images = []
+            for filename, label in preview_files[offset:offset + 2]:
+                image_url = f'https://raw.githubusercontent.com/{repository}/{commit}/docs/screenshots/{filename}'
+                images.append(f'<a href="{image_url}"><img src="{image_url}" width="240" alt="{label}"></a>')
+            rows.append(' '.join(images))
+        preview = '\n### See the app\n\nGenuine production screens with synthetic demonstration records, not real athlete results.\n\n' + '\n\n'.join(rows) + '\n'
+
     download = f'''## Download
 
-- **APK:** `Race-Day-Dreams-{name}.apk`
-- **SHA-256:** `Race-Day-Dreams-{name}.apk.sha256`
+- **[Download for Android]({assets_url}/Race-Day-Dreams-{name}.apk)** — `Race-Day-Dreams-{name}.apk`
+- **[SHA-256 checksum]({assets_url}/Race-Day-Dreams-{name}.apk.sha256)** — `Race-Day-Dreams-{name}.apk.sha256`
 - **Build:** debug-signed Android test build
 
 Open **Assets** at the bottom of this GitHub release to download the APK and its
@@ -82,7 +106,7 @@ may require the backup/reinstall/restore path above.
     return (
         intro.rstrip() + '\n\n' + status + '\n\n' +
         download.rstrip() + '\n\n' +
-        installation.rstrip() + '\n\n' +
+        installation.rstrip() + '\n\n' + preview + '\n' +
         sections.lstrip().rstrip() + '\n\n' +
         build_info.rstrip() + '\n'
     )

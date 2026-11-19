@@ -18,24 +18,9 @@ scale = 9/max(max(xs)-min(xs),max(ys)-min(ys))
 xoff = (10-(max(xs)-min(xs))*scale)/2
 yoff = (10-(max(ys)-min(ys))*scale)/2
 vertices = [((x-min(xs))*scale+xoff,(y-min(ys))*scale+yoff) for x,y in zip(xs,ys)]
-source = '''package org.racedaydreams.domain.support;
-import java.util.*;
-
-/** Geometry DATA: ODbL-1.0, Thomas Krakow / Running-tomy, via Wikimedia Commons.
- * Original application wrapper code: MIT; coordinate database remains ODbL.
- * Source revision931916019, retained positions, licence and transformation:
- * docs/dream-route-data/paris-2024-olympic.json, PARIS_SOURCE_NOTICE.txt, ODbL-1.0.txt.
- * All328 source vertices retained, uniform north-up projection.
- * Paris2024 Olympic course, NOT the annual Paris Marathon. Approximate community
- * geometry, not official/certified or navigation. No Olympic marks or artwork.
- */
-final class Paris2024Geometry {
-    private Paris2024Geometry() {}
-    static DreamRoutes.Route route() {return new DreamRoutes.Route("paris-2024-olympic-geo-v1","Paris · 2024 Olympic course",Arrays.asList(
-'''
-source += ',\n'.join('        new DreamRoutes.Vertex(%.8f,%.8f)' % p for p in vertices)
-source += '\n    ));}\n}\n'
-target = Path('domain/src/main/java/org/racedaydreams/domain/support/Paris2024Geometry.java')
+from dream_kotlin import geometry_source, SHARED
+source = geometry_source('Paris2024Geometry', "paris-2024-olympic-geo-v1", "Paris · 2024 Olympic course", vertices, '/** Geometry DATA: ODbL-1.0, Thomas Krakow / Running-tomy, via Wikimedia Commons.\n * Original application wrapper code: MIT; coordinate database remains ODbL.\n * Source revision931916019, retained positions, licence and transformation:\n * docs/dream-route-data/paris-2024-olympic.json, PARIS_SOURCE_NOTICE.txt, ODbL-1.0.txt.\n * All328 source vertices retained, uniform north-up projection.\n * Paris2024 Olympic course, NOT the annual Paris Marathon. Approximate community\n * geometry, not official/certified or navigation. No Olympic marks or artwork.\n */')
+target = SHARED / 'Paris2024Geometry.kt'
 if '--check' in sys.argv:
     if target.read_text() != source:
         raise SystemExit('Paris projection differs from retained geographic source positions')

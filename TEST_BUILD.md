@@ -1,3 +1,30 @@
+# 0.12.3-test1 — verified development download available
+
+PR22merged as0f866185; finalPR43402640853 and post-main43408133512 passed543unique tests/451captures
+EACH API28/35/36 and published matching versioned/latest-testAPK+ownSHA pairs. At that verified
+merge checkpoint bothAPKs were55,659,946bytes/SHA256a8c0a335839e63aceb831f80ac1a2b4f3db1515bf6090202ea3cc0a5d13a4e68,
+version0.12.3-test1/code19/min28/noINTERNET. Later verifieddocumentation builds may change debug
+signatures: use the CURRENT releasebodycommit/CIURL/checksum. Do not uninstall without a usable
+complete backup. Software/visual acceptance is complete; all physicalchecklists remain UNPERFORMED.
+See VERIFICATION.md/CONTINUE_CODEX.md for exact delivery evidence.
+
+# Plain-English and GitHub showcase — 0.12.3-test1
+
+Source47604dd/workflow43397017353 passed25guards/543unique fulltests/451authentic captures on
+EACH API28/35/36. Canonicala2b20ca matches all451verifiedAPI35artifact images. Actual light/dark/
+200% screenshots were reviewed, including full nativeAPI28geometry and readable statusglyphs.
+Current exact-head/main/publication evidence is in VERIFICATION.md/CONTINUE_CODEX.md; a PR APK
+is not a published-main build. See docs/VISUAL_REVIEW_0_12_3.md for scope and limitations.
+
+Owner physical checks remain UNPERFORMED: read exercise tasks and exact target disclosures;
+log actual sets with RPE or repetitions-left inputs; compare reference versus actual weights;
+review planned running effort versus recorded pace/timing; open health measurement explanations;
+read complete-backup/JSON distinctions and permanent-loss cleanup warnings. Check light/dark,
+device/branded colours,200%/narrow windows, TalkBack/focus/keyboard/scrolling. Verify stable APK and
+versioned APK/checksums agree before installing; make a complete backup before a signing-conflict
+reinstall. All existing outdoorGPS, realHealthConnect/BLE, audio/background/battery/OEM checks below
+remain separate physical tasks. No emulator run establishes those results.
+
 # Material 3 layout and library refinement — 0.12.2-test1
 
 Source f33fbfc passed538full tests/433 captures each API 28/35/36 and direct light/dark/real 320dp at 200%
@@ -626,3 +653,41 @@ Record observations and build commit for each check; nothing below is a claimed 
 - Repeat the outstanding 0.10.1 outdoor/urban/known-distance GPS, locked-screen/background,
   pause/resume/interruption/long-run/GPX and Watch comparison checks. Emulator/synthetic passes
   cannot establish outdoor S24 accuracy, and neither comparison device is automatically ground truth.
+
+## Experimental iOS device acceptance — PR #24
+
+The PR workflow publishes an unsigned **simulator** app and source-bound evidence. Use
+the matching run in `CONTINUE_CODEX.md`. Physical iPhone acceptance is still pending.
+The experimental workflow also compiles an unsigned arm64 iPhone app for the
+non-draft migration PR. Once the workflow exists on the default branch, it can
+also run on demand using the `verify_ios_device_build` dispatch input. A successful
+job archives the app, its source commit and checksum. Installation requires signing
+with an Apple development team.
+
+For a device build, use macOS with Xcode and JDK 17. From the repository root, run
+`./gradlew :sharedUi:linkDebugFrameworkIosArm64`, then open
+`iosApp/RaceDayDreams.xcodeproj`. Select the RaceDayDreams scheme and a connected
+iPhone. Set `RDD_FRAMEWORK_DIRECTORY` to the absolute path of
+`sharedUi/build/bin/iosArm64/debugFramework` in the target's build settings.
+Select a development team with a provisioning profile for the target bundle ID
+and HealthKit entitlement. Build and run from Xcode. Record the checkout SHA,
+iPhone model and iOS version with the results.
+
+- [ ] Test the real Apple Health prompt with running workouts, height and weight.
+  Grant only one requested type first. Import known test records and verify
+  timestamps and provider identity. Revoke access and verify that manual entry
+  still works and existing records are preserved. Confirm that an empty read
+  does not present permission as granted.
+- [ ] Record an outdoor run with locked-screen and background intervals.
+  Pause and resume. Verify that interruption, distance, splits and route
+  evidence agree. Export to Files, inspect the GPX and open it again.
+- [ ] Pair a heart-rate monitor and lock the screen for several minutes; heart rate
+  must keep updating. With spoken cues on and the screen locked: music must lower
+  (not stop) during a cue and return afterwards; a podcast must pause and resume;
+  during a phone call no cue may speak (important cues vibrate instead); with the
+  silent switch on, cues must still play. Verify a rest alert with the device locked.
+  Check VoiceOver, Dynamic Type and dark mode through onboarding, running, Gym Now,
+  Apple Health selection and the Settings licence list.
+- [ ] Export and restore a complete backup using the Files picker on a disposable
+  test installation. Compare workout history, actual sets and recording detail
+  before and after restore. Cancel once before replacement and verify data survives.

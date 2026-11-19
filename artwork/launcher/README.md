@@ -21,3 +21,6 @@ colour illustration. Notifications retain their existing small symbol as `ic_not
 foreground/background resources, using circle, rounded-square and squircle masks.
 It is an icon mask preview, not a screenshot of a physical launcher. Check Samsung One UI
 at normal size and with themed icons/light/dark mode; OEM masks and motion effects vary.
+
+The iOS asset catalog uses the same cropped illustration on an opaque 1024 px square.
+iOS applies the launcher mask. The generation script also writes this catalog image.

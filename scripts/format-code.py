@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import difflib
+from datetime import timezone
+from email.utils import parsedate_to_datetime
 import hashlib
 import json
 import os
@@ -20,6 +22,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.request
 import zipfile
 
@@ -53,17 +56,45 @@ def targets(root: Path, patterns: list[str]) -> list[Path]:
 def fetch(url: str, maximum: int) -> bytes:
     if not url.startswith("https://repo.maven.apache.org/maven2/"):
         raise ValueError("Formatter download must use the pinned Maven Central host")
-    # Honour the environment's proxy and normal CA validation. Never bypass either.
-    started = time.monotonic()
-    with urllib.request.urlopen(url, timeout=30) as response:
-        result = bytearray()
-        while True:
-            block = response.read(min(32768, maximum + 1 - len(result)))
-            if not block:
-                return bytes(result)
-            result.extend(block)
-            if len(result) > maximum or time.monotonic() - started > 60:
-                raise ValueError("Formatter download exceeded its size/time limit")
+    # Honour proxy/CA validation, server backoff and the SAME total 60-second budget.
+    # Only transient HTTP responses qualify; certificate/authentication/integrity failures do not.
+    deadline = time.monotonic() + 60
+    for attempt in range(3):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise ValueError("Formatter download exceeded its size/time limit")
+        try:
+            with urllib.request.urlopen(url, timeout=min(30, remaining)) as response:
+                result = bytearray()
+                while True:
+                    block = response.read(min(32768, maximum + 1 - len(result)))
+                    if len(result) + len(block) > maximum or time.monotonic() > deadline:
+                        raise ValueError("Formatter download exceeded its size/time limit")
+                    if not block:
+                        return bytes(result)
+                    result.extend(block)
+        except urllib.error.HTTPError as error:
+            error.close()
+            if error.code not in (429, 502, 503, 504) or attempt == 2:
+                raise
+            delay = float(2 ** attempt)
+            retry_after = error.headers.get("Retry-After") if error.headers else None
+            if retry_after:
+                try:
+                    if retry_after.strip().isdigit():
+                        delay = float(retry_after)
+                    else:
+                        at = parsedate_to_datetime(retry_after)
+                        if at.tzinfo is None:
+                            at = at.replace(tzinfo=timezone.utc)
+                        delay = max(0.0, at.timestamp() - time.time())
+                except (ValueError, TypeError, OverflowError):
+                    pass
+            if delay >= deadline - time.monotonic():
+                raise
+            print(f"Formatter repository returned HTTP {error.code}; retrying in {delay:g}s "
+                  f"(attempt {attempt + 2}/3).", file=sys.stderr)
+            time.sleep(delay)
 
 
 def validate_jar(path: Path, expected: str) -> None:

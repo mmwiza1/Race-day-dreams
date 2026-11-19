@@ -1,0 +1,465 @@
+name: Shared Android and iOS checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      verify_ios_device_build:
+        description: Also compile an unsigned arm64 iPhone app
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kmp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android-shared:
+    # Focused draft gate. Ready PRs and main run the unfiltered superset in android.yml instead.
+    if: (github.event_name == 'pull_request' && github.event.pull_request.draft == true) || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - name: Shared JVM and retained domain regression suites
+        run: ./gradlew :sharedDomain:jvmTest :sharedHealth:jvmTest :sharedStorage:compileCommonMainKotlinMetadata :sharedStorage:jvmTest :domain:domainTest :domain:prepareOfflineTests
+      - name: Existing schema and backup-format protections
+        run: |
+          python3 scripts/test-schema.py
+          python3 scripts/shared-schema.py --check
+          # Cheap draft-time release/guidance checks from PR #23; ready PRs rerun them in android.yml.
+          python3 scripts/test-release-notes.py
+          python3 scripts/test-android-gate.py
+          cmp THIRD_PARTY.md app/src/main/assets/third_party.md
+          java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java
+          python3 scripts/test-screenshot-source.py
+      - name: Compile the existing Android app and instrumentation APK
+        run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Exercise migrated UI, health and durable workout flows
+        timeout-minutes: 15
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          RDD_FOCUSED_CLASSES: org.racedaydreams.data.SharedBackupEnvelopeTest,org.racedaydreams.data.SharedDetailRetentionArchiveTest,org.racedaydreams.data.SharedLegacyFingerprintTest,org.racedaydreams.data.SharedGymExecutionCommandsTest,org.racedaydreams.data.SharedGymAssociationCommandsTest,org.racedaydreams.data.SharedGymExecutionRecordsTest,org.racedaydreams.data.SharedStrengthProgrammingCommandsTest,org.racedaydreams.data.SharedFrozenWorkoutRecordTest,org.racedaydreams.data.SharedStrengthDraftCommandsTest,org.racedaydreams.data.SharedProgrammingArchiveTest,org.racedaydreams.data.SharedGymToolsTest,org.racedaydreams.data.SharedConcreteDraftCodecTest,org.racedaydreams.data.SharedLegacyGymProgrammeTest,org.racedaydreams.data.SharedGymAssociationCodecTest,org.racedaydreams.data.SharedStrengthProgrammingCodecTest,org.racedaydreams.data.SharedGymExecutionCodecTest,org.racedaydreams.data.SharedFrozenGymWorkoutCodecTest,org.racedaydreams.data.SharedStrengthChoicesTest,org.racedaydreams.data.SharedStrengthEvidenceCodecTest,org.racedaydreams.data.SharedRunningCoachingTest,org.racedaydreams.data.SharedActivityRepositoryTest,org.racedaydreams.data.SharedActivityCodecTest,org.racedaydreams.data.SharedShoeCodecTest,org.racedaydreams.coach.DreamBasemapAssetTest,org.racedaydreams.coach.DreamArtworkReadinessTest,org.racedaydreams.coach.DreamArtworkPublicationTest,org.racedaydreams.coach.DreamRoutePresentationTest,org.racedaydreams.reminders.EveningRemindersTest,org.racedaydreams.coach.TrainingRecoveryScreenTest,org.racedaydreams.coach.StorageManagementScreenTest,org.racedaydreams.data.DetailRetentionRepositoryTest,org.racedaydreams.coach.SharedMilestoneContentTest,org.racedaydreams.coach.AchievementsScreenTest,org.racedaydreams.data.AchievementsRepositoryTest,org.racedaydreams.coach.Release08UiTest,org.racedaydreams.data.Release08StoreTest,org.racedaydreams.coach.MaterialThemeTest,org.racedaydreams.coach.PlainEnglishUiTest,org.racedaydreams.coach.StrengthAnalyticsScreenTest,org.racedaydreams.health.HealthConnectGatewayTest,org.racedaydreams.data.BodyMeasurementsRepositoryTest,org.racedaydreams.coach.BodyMeasurementsScreenTest,org.racedaydreams.coach.GymNowScreenTest,org.racedaydreams.data.GymToolsRepositoryTest,org.racedaydreams.coach.CoachOnboardingTest,org.racedaydreams.coach.CoachingInteractionTest,org.racedaydreams.coach.CoachCompletionStateTest,org.racedaydreams.data.SqliteUserPreferencesRepositoryTest,org.racedaydreams.data.CoachingStoreTest,org.racedaydreams.data.AndroidSqlConnectionTest,org.racedaydreams.data.SharedCoachingContextTest,org.racedaydreams.data.FeatureStoreTest,org.racedaydreams.data.ScopedRepositoriesTest,org.racedaydreams.coach.RunSummaryPresentationTest,org.racedaydreams.coach.ActivityHistoryReadinessTest,org.racedaydreams.coach.SharedShoeHistoryCardTest,org.racedaydreams.coach.ProgrammeProgressionClarityTest,org.racedaydreams.coach.StrengthProgrammeBuilderScreenTest,org.racedaydreams.coach.CustomStrengthExerciseScreenTest,org.racedaydreams.data.StrengthProgrammingRepositoryTest,org.racedaydreams.data.StrengthProgrammingJsonTest,org.racedaydreams.data.ExerciseExclusionRepositoryTest,org.racedaydreams.coach.StrengthRecordsScreenTest,org.racedaydreams.coach.WeeklyUxTest,org.racedaydreams.data.GymExecutionRepositoryTest,org.racedaydreams.data.GymExecutionJsonTest,org.racedaydreams.data.GymExecutionBackupTest,org.racedaydreams.data.GymWorkoutCoordinatorAndroidTest,org.racedaydreams.data.GymExecutionAndroidTest,org.racedaydreams.data.GymWorkoutSourceAndroidTest,org.racedaydreams.coach.GymSubstitutionScreenTest,org.racedaydreams.coach.AuthoredGymNowScreenTest,org.racedaydreams.data.GymAssociationRepositoryTest,org.racedaydreams.data.AuthoredGymAssociationRepositoryTest,org.racedaydreams.data.GymAssociationJsonTest,org.racedaydreams.coach.GymAssociationScreenTest,org.racedaydreams.coach.AuthoredGymAssociationScreenTest,org.racedaydreams.coach.StrengthGenerationScreenTest,org.racedaydreams.data.ConcreteStrengthProgrammeDraftRepositoryTest,org.racedaydreams.coach.GuidanceArtworkTest,org.racedaydreams.coach.SharedTechniqueContentTest,org.racedaydreams.coach.SharedRunningRoutineScreenTest,org.racedaydreams.coach.ActiveRunPanelTest,org.racedaydreams.coach.LiveRunningRefinementTest,org.racedaydreams.coach.SharedActiveRunPanelTest,org.racedaydreams.coach.SharedRunComparisonTest,org.racedaydreams.coach.SharedRunDurabilityCardTest,org.racedaydreams.coach.SharedBaselineSummaryCardTest,org.racedaydreams.coach.SharedRunFeedbackCardTest,org.racedaydreams.coach.SharedWeeklyReviewContentTest,org.racedaydreams.coach.SharedHomeAndStrengthTodayTest,org.racedaydreams.coach.SharedHealthContextTest,org.racedaydreams.coach.SharedCoachShellTest,org.racedaydreams.coach.SharedCoachStateBindingsTest,org.racedaydreams.coach.CoachSnapshotReaderTest,org.racedaydreams.coach.SharedProfileOperationsTest,org.racedaydreams.coach.SharedBaselineCoordinatorTest,org.racedaydreams.coach.SharedRunningPlanCoordinatorTest,org.racedaydreams.coach.SharedStrengthCoordinatorTest,org.racedaydreams.coach.SharedRunningEvidenceCoordinatorTest,org.racedaydreams.coach.SharedHealthCoordinatorTest,org.racedaydreams.coach.SharedSettingsCoordinatorTest,org.racedaydreams.coach.SharedCoachApplicationServicesTest,org.racedaydreams.coach.SharedAppleHealthGatewayTest,org.racedaydreams.coach.SharedHomeScreenTest,org.racedaydreams.coach.SharedStartingPathTest,org.racedaydreams.coach.SharedRunningWorkoutEditorTest,org.racedaydreams.coach.SharedTrainingPlanScreenTest,org.racedaydreams.coach.SharedAchievementsCoordinatorTest,org.racedaydreams.coach.SharedStrengthProgrammeCoordinatorTest,org.racedaydreams.coach.SharedStrengthGenerationCoordinatorTest,org.racedaydreams.coach.SharedTrainingRecoveryCoordinatorTest,org.racedaydreams.coach.SharedBodyMeasurementsCoordinatorTest,org.racedaydreams.coach.SharedGymNowCoordinatorTest,org.racedaydreams.coach.ExerciseBrowseScreenTest,org.racedaydreams.coach.SharedExerciseBrowseScreenTest,org.racedaydreams.coach.SharedExerciseDetailTest,org.racedaydreams.coach.CalendarAccessibilityTest,org.racedaydreams.coach.SharedCalendarScreenTest,org.racedaydreams.coach.GymProgrammeOperationsTest,org.racedaydreams.coach.ExerciseExclusionControlTest,org.racedaydreams.coach.CoachOperationRunnerTest,org.racedaydreams.coach.FeatureNavigationTest,org.racedaydreams.recording.RecordingSessionCoordinatorTest,org.racedaydreams.recording.RecordingSensorCoordinatorTest,org.racedaydreams.data.RunRecordingStoreTest,org.racedaydreams.data.RecordingCoordinationStoreTest,org.racedaydreams.data.LiveCoachStoreTest
+        with:
+          emulator-build: 16740729
+          emulator-options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim
+          profile: pixel_2
+          api-level: 35
+          arch: x86_64
+          target: default
+          disable-animations: true
+          script: sh scripts/run-android-gate.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: experimental-kmp-android-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-jvm-test-results
+          path: |
+            sharedDomain/build/test-results/
+            sharedHealth/build/test-results/
+            sharedStorage/build/test-results/
+
+  apple-shared:
+    # The iOS app shares this code: verify it on every PR to main, on main itself and on demand.
+    # macos-latest arm64 has sustained capacity queues; keep real Apple tests on the Intel pool.
+    permissions:
+      contents: read
+      pull-requests: read
+    runs-on: macos-26-intel
+    timeout-minutes: 72
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Decide whether this run needs the iOS launch and UI suite
+        id: ios_scope
+        # Ready PRs, main and manual runs: always. Drafts: only when native iOS code changes or the
+        # PR carries the ios-ui-tests label. Shared Native tests, framework and app build always run.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          DRAFT: ${{ github.event.pull_request.draft }}
+          PR: ${{ github.event.pull_request.number }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ' ') }}
+        run: |
+          set -euo pipefail
+          ui=true
+          if [ "$EVENT" = pull_request ] && [ "$DRAFT" = true ]; then
+            ui=false
+            case " $LABELS " in *" ios-ui-tests "*) ui=true ;; esac
+            changed=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only)
+            if printf '%s\n' "$changed" | grep -Eq '^(iosApp/|scripts/check-ios-startup|\.github/workflows/multiplatform\.yml$|[^/]+/src/(ios|apple|native)[A-Za-z]*/)'; then
+              ui=true
+            fi
+          fi
+          echo "ui=$ui" >> "$GITHUB_OUTPUT"
+          echo "iOS launch and UI suite: $ui"
+      - name: Inspect actual Apple toolchain and simulator availability
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available
+      # Keep Native tests and Compose framework code generation separately observable and
+      # avoid overlapping heavy Native work on cold runners; no test is omitted.
+      - name: Compile and test the real shared code for this simulator architecture
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            ./gradlew --max-workers=2 --no-parallel --info :sharedDomain:iosSimulatorArm64Test :sharedHealth:iosSimulatorArm64Test :sharedStorage:iosSimulatorArm64Test
+          else
+            ./gradlew --max-workers=2 --no-parallel --info :sharedDomain:iosX64Test :sharedHealth:iosX64Test :sharedStorage:iosX64Test
+          fi
+      # Preserve completed XML evidence before starting the separately observable framework stage.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-apple-test-results
+          path: |
+            sharedDomain/build/test-results/
+            sharedHealth/build/test-results/
+            sharedStorage/build/test-results/
+      - name: Link the real shared Compose framework after Native tests pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            ./gradlew --max-workers=2 --no-parallel --info :sharedUi:linkDebugFrameworkIosSimulatorArm64
+          else
+            ./gradlew --max-workers=2 --no-parallel --info :sharedUi:linkDebugFrameworkIosX64
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: experimental-shared-ios-framework
+          path: sharedUi/build/bin/ios*/debugFramework/
+          if-no-files-found: error
+
+      - name: Test shared UI and the native document decoder
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            ./gradlew --max-workers=2 --no-parallel :sharedUi:iosSimulatorArm64Test
+          else
+            ./gradlew --max-workers=2 --no-parallel :sharedUi:iosX64Test
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-apple-ui-test-results
+          path: sharedUi/build/test-results/
+      - name: Build the iOS simulator application
+        id: ios_app_build
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            target=iosSimulatorArm64
+          else
+            target=iosX64
+          fi
+          xcodebuild -project iosApp/RaceDayDreams.xcodeproj -target RaceDayDreams \
+            -configuration Debug -sdk iphonesimulator ARCHS="$(uname -m)" \
+            CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="$PWD/iosApp/build" \
+            RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework" build
+          test -x iosApp/build/RaceDayDreams.app/RaceDayDreams
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CADisableMinimumFrameDurationOnPhone' \
+            iosApp/build/RaceDayDreams.app/Info.plist)" = true
+          test -s iosApp/build/RaceDayDreams.app/Assets.car
+          test -s iosApp/build/RaceDayDreams.app/drawable-nodpi/guide_leg_swings.webp
+          test -s iosApp/build/RaceDayDreams.app/dream-art/paris-hero.webp
+          test -s iosApp/build/RaceDayDreams.app/dream-basemaps/paris-2026-geo-v1.rddmap
+          test -s iosApp/build/RaceDayDreams.app/dream-basemaps-NOTICE.txt
+          test -s iosApp/build/RaceDayDreams.app/ODbL-1.0.txt
+          test -s iosApp/build/RaceDayDreams.app/LICENSE
+          test -s iosApp/build/RaceDayDreams.app/apache-2.0.txt
+          for notice in third_party.md kotlin-LICENSE.txt coroutines-LICENSE.txt \
+            serialization-LICENSE.txt transitive-NOTICES.txt skia-LICENSE.txt \
+            berlin-2014-MIT.txt tokyo-2026-CC0.txt london-historical-MIT.txt \
+            new-york-2026-NOTICE.txt paris-2026-NOTICE.txt; do
+            test -s "iosApp/build/RaceDayDreams.app/$notice"
+          done
+          cmp THIRD_PARTY.md iosApp/build/RaceDayDreams.app/third_party.md
+          ditto -c -k --keepParent iosApp/build/RaceDayDreams.app iosApp/build/RaceDayDreams-simulator.zip
+      - name: Compile the iOS startup screenshot verifier
+        if: steps.ios_scope.outputs.ui == 'true'
+        run: swiftc scripts/check-ios-startup.swift -o "$RUNNER_TEMP/check-ios-startup"
+      - name: Launch the iOS app and verify local database startup
+        if: steps.ios_scope.outputs.ui == 'true'
+        timeout-minutes: 19
+        shell: bash
+        run: |
+          set -euo pipefail
+          device="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(device["udid"] for runtime in reversed(list(devices.values()))
+                     for device in runtime if device["name"].startswith("iPhone")))
+          ')"
+          diagnostics="$PWD/iosApp/build/startup-diagnostics"
+          mkdir -p "$diagnostics"
+          crash_marker="$RUNNER_TEMP/rdd-launch-started"
+          touch "$crash_marker"
+          capture_failure() {
+            local result=$?
+            if [ "$result" -ne 0 ]; then
+              set +e
+              echo "Startup failed with exit code $result"
+              xcrun simctl io "$device" screenshot "$diagnostics/failure.png"
+              xcrun simctl spawn "$device" log show --last 5m --style compact \
+                --predicate 'process == "RaceDayDreams" OR eventMessage CONTAINS "org.racedaydreams.ios"' \
+                > "$diagnostics/simulator.log" 2>&1
+              for reports in "$HOME/Library/Logs/DiagnosticReports" \
+                "$HOME/Library/Developer/CoreSimulator/Devices/$device/data/Library/Logs/CrashReporter"; do
+                if [ -d "$reports" ]; then
+                  find "$reports" -type f -newer "$crash_marker" \
+                    \( -name 'RaceDayDreams*.ips' -o -name 'RaceDayDreams*.crash' \) \
+                    -exec cp {} "$diagnostics/" \;
+                fi
+              done
+              xcrun dwarfdump --uuid iosApp/build/RaceDayDreams.app/RaceDayDreams \
+                > "$diagnostics/app-image-uuid.txt" 2>&1
+              if [[ "${app_pid:-}" =~ ^[0-9]+$ ]] && ! kill -0 "$app_pid" 2>/dev/null &&
+                ! compgen -G "$diagnostics/RaceDayDreams*.ips" >/dev/null &&
+                ! compgen -G "$diagnostics/RaceDayDreams*.crash" >/dev/null; then
+                echo "Reproducing the exited launch under LLDB for a native backtrace"
+                python3 scripts/capture-ios-startup-stack.py "$device" \
+                  > "$diagnostics/startup-backtrace.log" 2>&1
+              fi
+              for output in "$diagnostics/app.stderr" "$diagnostics/startup-backtrace.log" "$diagnostics/simulator.log"; do
+                if [ -f "$output" ]; then tail -80 "$output"; fi
+              done
+            fi
+            exit "$result"
+          }
+          trap capture_failure EXIT
+          echo "Booting iPhone simulator $device"
+          if ! xcrun simctl boot "$device"; then
+            xcrun simctl list devices booted | grep -F "$device"
+          fi
+          xcrun simctl bootstatus "$device" -b
+          echo "Installing and launching Race Day Dreams"
+          xcrun simctl install "$device" iosApp/build/RaceDayDreams.app
+          launch_app() {
+            xcrun simctl launch --stdout="$diagnostics/app.stdout" \
+              --stderr="$diagnostics/app.stderr" "$device" org.racedaydreams.ios
+          }
+          if ! launch="$(launch_app 2>&1)"; then
+            echo "$launch"
+            # A restarted simulator shell can reject an open request before allocating a PID.
+            # Only this infrastructure error warrants a retry; app crashes remain failures.
+            if [[ "$launch" != *FBSOpenApplicationServiceErrorDomain* ||
+                  "$launch" != *"probably crashed"* ||
+                  "$launch" != *SpringBoard* ]]; then
+              exit 1
+            fi
+            echo "Waiting for SpringBoard recovery before one launch retry"
+            xcrun simctl bootstatus "$device" -b
+            launch="$(launch_app 2>&1)"
+          fi
+          echo "$launch"
+          app_pid="$(printf '%s\n' "$launch" | sed -n 's/^org[.]racedaydreams[.]ios: \([0-9][0-9]*\)$/\1/p')"
+          [[ "$app_pid" =~ ^[0-9]+$ ]]
+          app_data="$(xcrun simctl get_app_container "$device" org.racedaydreams.ios data)"
+          database="$app_data/Library/Application Support/racedaydreams.sqlite"
+          echo "Waiting for the first-run SQLite schema"
+          for attempt in {1..45}; do
+            if ! kill -0 "$app_pid" 2>/dev/null; then
+              echo "Race Day Dreams exited before database readiness"
+              exit 1
+            fi
+            if [ -f "$database" ] && [ "$(sqlite3 -readonly "$database" 'PRAGMA user_version;' 2>/dev/null)" = "19" ]; then
+              break
+            fi
+            sleep 1
+          done
+          test "$(sqlite3 -readonly "$database" 'PRAGMA user_version;')" = "19"
+          for attempt in {1..15}; do
+            if ! kill -0 "$app_pid" 2>/dev/null; then
+              break
+            fi
+            echo "Checking foreground frame $attempt"
+            xcrun simctl io "$device" screenshot iosApp/build/startup-candidate.png
+            if "$RUNNER_TEMP/check-ios-startup" iosApp/build/startup-candidate.png; then
+              mv iosApp/build/startup-candidate.png iosApp/build/startup.png
+              break
+            fi
+            sleep 1
+          done
+          test -s iosApp/build/startup.png
+          # Release the standalone instance before XCTest launches its own build.
+          xcrun simctl terminate "$device" org.racedaydreams.ios
+          echo "RDD_IOS_SIMULATOR=$device" >> "$GITHUB_ENV"
+          (
+            cd iosApp/build
+            git rev-parse HEAD > source-commit.txt
+            shasum -a 256 RaceDayDreams-simulator.zip > simulator-app.sha256
+            shasum -a 256 startup.png > startup.sha256
+          )
+      - uses: actions/upload-artifact@v4
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (failure()) }}
+        with:
+          name: experimental-ios-startup-diagnostics
+          path: iosApp/build/startup-diagnostics/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: steps.ios_scope.outputs.ui == 'true'
+        with:
+          name: experimental-ios-simulator-app
+          path: |
+            iosApp/build/RaceDayDreams-simulator.zip
+            iosApp/build/simulator-app.sha256
+            iosApp/build/source-commit.txt
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: steps.ios_scope.outputs.ui == 'true'
+        with:
+          name: experimental-ios-startup-screenshot
+          path: |
+            iosApp/build/startup.png
+            iosApp/build/startup.sha256
+            iosApp/build/source-commit.txt
+          if-no-files-found: error
+
+      - name: Build the iOS UI tests
+        id: ios_workout_build
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_app_build.outcome == 'success') }}
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(uname -m)" = arm64 ]; then
+            target=iosSimulatorArm64
+          else
+            target=iosX64
+          fi
+          device="${RDD_IOS_SIMULATOR:-}"
+          if [ -z "$device" ]; then
+            # A failed standalone launch must not prevent XCTest from owning a clean simulator.
+            selection="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          runtime, phone = next((runtime, phone)
+                                for runtime, phones in reversed(list(devices.items()))
+                                for phone in phones if phone["name"].startswith("iPhone"))
+          print(runtime, phone["deviceTypeIdentifier"], sep="\t")
+            ')"
+            IFS=$'\t' read -r runtime model <<< "$selection"
+            device="$(xcrun simctl create 'Race Day Dreams UI tests' "$model" "$runtime")"
+          fi
+          build_settings=(
+            -project iosApp/RaceDayDreams.xcodeproj -scheme RaceDayDreams
+            -destination "platform=iOS Simulator,id=$device"
+            -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui"
+            ARCHS="$(uname -m)" CODE_SIGNING_ALLOWED=NO
+            RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/$target/debugFramework"
+          )
+          xcodebuild build-for-testing "${build_settings[@]}"
+          echo "RDD_IOS_UI_SIMULATOR=$device" >> "$GITHUB_ENV"
+      - name: Exercise workout persistence through the iOS app
+        id: ios_workout_ui
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_workout_build.outcome == 'success') }}
+        timeout-minutes: 16
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild test-without-building -project iosApp/RaceDayDreams.xcodeproj \
+            -scheme RaceDayDreams -destination "platform=iOS Simulator,id=$RDD_IOS_UI_SIMULATOR" \
+            -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/rdd-ios-ui" \
+            -resultBundlePath "$RUNNER_TEMP/rdd-ios-workout.xcresult"
+      - uses: actions/upload-artifact@v4
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (always()) }}
+        with:
+          name: experimental-ios-workout-ui-results
+          path: ${{ runner.temp }}/rdd-ios-workout.xcresult
+          if-no-files-found: ignore
+
+      - name: Export iOS workout UI failure evidence
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_workout_ui.outcome == 'failure') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$RUNNER_TEMP/rdd-ios-workout.xcresult"
+          evidence="$RUNNER_TEMP/rdd-ios-workout-failures"
+          if [ -d "$result" ]; then
+            mkdir -p "$evidence"
+            git rev-parse HEAD > "$evidence/source-commit.txt"
+            xcrun xcresulttool export attachments --only-failures \
+              --path "$result" --output-path "$evidence" ||
+              echo "XCTest attachments unavailable; inspect the full result bundle."
+          fi
+      - uses: actions/upload-artifact@v4
+        if: ${{ steps.ios_scope.outputs.ui == 'true' && (!cancelled() && steps.ios_workout_ui.outcome == 'failure') }}
+        with:
+          name: experimental-ios-workout-ui-failures
+          path: ${{ runner.temp }}/rdd-ios-workout-failures/
+          if-no-files-found: ignore
+
+  apple-device:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.verify_ios_device_build) ||
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+    runs-on: macos-26-intel
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build for a physical iPhone without signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --max-workers=2 --no-parallel :sharedUi:linkDebugFrameworkIosArm64
+          output="$PWD/iosApp/build/device"
+          xcodebuild -project iosApp/RaceDayDreams.xcodeproj -target RaceDayDreams \
+            -configuration Debug -sdk iphoneos ARCHS=arm64 \
+            CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="$output" \
+            RDD_FRAMEWORK_DIRECTORY="$PWD/sharedUi/build/bin/iosArm64/debugFramework" build
+          app="$output/RaceDayDreams.app"
+          test -x "$app/RaceDayDreams"
+          test -s "$app/Assets.car"
+          test "$(xcrun lipo -archs "$app/RaceDayDreams")" = arm64
+          xcrun vtool -show-build "$app/RaceDayDreams" | awk '
+            $1 == "platform" && $2 == "IOS" { found = 1 }
+            END { exit !found }'
+          git rev-parse HEAD > "$output/source-commit.txt"
+          ditto -c -k --keepParent "$app" "$output/RaceDayDreams-iphoneos-unsigned.zip"
+          cd "$output"
+          shasum -a 256 RaceDayDreams-iphoneos-unsigned.zip > RaceDayDreams-iphoneos-unsigned.zip.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: experimental-ios-device-unsigned
+          path: |
+            iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip
+            iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip.sha256
+            iosApp/build/device/source-commit.txt
+          if-no-files-found: error

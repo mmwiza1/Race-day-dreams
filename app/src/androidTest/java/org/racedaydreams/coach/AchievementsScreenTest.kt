@@ -41,7 +41,8 @@ class AchievementsScreenTest {
                             "",
                             listOf(
                                 StrengthSession.ExerciseSets(
-                                    ExerciseCatalog.definition("push-up").exercise(),
+                                    requireNotNull(ExerciseCatalog.definition("push-up"))
+                                        .exercise(),
                                     listOf(StrengthSession.SetEntry("set", 6, 0.0, null, false)),
                                 )
                             ),

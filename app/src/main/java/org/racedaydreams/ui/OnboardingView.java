@@ -285,6 +285,11 @@ public final class OnboardingView extends ScrollView {
                     render();
                 },
                 value -> true);
+        text(
+                "General Fitness / Zone 2 focuses on easy, conversational running. A personal"
+                    + " heart-rate zone is only meaningful when suitable boundaries are available.",
+                16,
+                false);
         CheckBox event = new CheckBox(getContext());
         event.setId(View.generateViewId());
         event.setText(R.string.onboarding_event);

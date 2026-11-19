@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import org.json.*
 import org.racedaydreams.domain.polish.CustomWorkout
+import org.racedaydreams.storage.SqliteRunningSupportArchives
 import java.time.Instant
 
 /** Typed, versioned user-owned definitions/preferences, in the existing transaction boundary. */
@@ -12,15 +13,21 @@ class Release08Store(context:Context) {
     private val db=ProfileDatabase.get(context).writableDatabase
     fun get(kind:String,id:String):JSONObject?=db.rawQuery("SELECT payload FROM release08 WHERE kind=? AND id=?",arrayOf(kind,id)).use{if(it.moveToFirst())JSONObject(it.getString(0))else null}
     fun save(kind:String,id:String,j:JSONObject)=put(db,kind,id,j)
-    fun workouts(offset:Int=0,limit:Int=20):List<CustomWorkout> {require(offset>=0&&limit in 1..100);val out=mutableListOf<CustomWorkout>();db.rawQuery("SELECT payload FROM release08 WHERE kind='custom' ORDER BY id LIMIT ? OFFSET ?",arrayOf(limit.toString(),offset.toString())).use{while(it.moveToNext())out.add(decode(JSONObject(it.getString(0))))};return out}
-    fun save(w:CustomWorkout)=save("custom",w.id(),encode(w))
-    fun previous():List<CustomWorkout>{val out=mutableListOf<CustomWorkout>();db.rawQuery("SELECT id,payload FROM coach_support WHERE kind='execution' ORDER BY rowid DESC LIMIT 50",null).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(1));if(j.has("activityId")&&j.optString("mode")!="race")out.add(CustomWorkout(c.getString(0),j.optString("title","Previous structured run"),listOf(CustomWorkout.Group(1,SupportStore.steps(j)))))}};return out}
-    fun removeWorkout(id:String){db.delete("release08","kind='custom' AND id=?",arrayOf(id))}
+    private val runningSupport = SqliteRunningSupportArchives(AndroidSqlConnection { db })
+
+    fun workouts(offset: Int = 0, limit: Int = 20): List<CustomWorkout> =
+        runningSupport.favouriteRuns(offset, limit)
+
+    fun save(workout: CustomWorkout) = runningSupport.saveFavouriteRun(workout)
+
+    fun previous(): List<CustomWorkout> = runningSupport.previousStructuredRuns(limit = 50)
+
+    fun removeWorkout(id: String) = runningSupport.removeFavouriteRun(id)
+
     fun dreamPreferences():Pair<Boolean,Set<String>> {val j=get("config","dream")?:return true to org.racedaydreams.domain.support.DreamRoutes.routes().map{it.id()}.toSet();val a=j.getJSONArray("cities");return j.getBoolean("enabled") to (0 until a.length()).map{a.getString(it)}.toSet()}
     companion object {
     fun snapshot(w:CustomWorkout,mode:String)=JSONObject().put("version",1).put("mode",mode).put("title",w.title()).put("customId",w.id()).put("steps",JSONArray().also{a->w.flattened().forEach{a.put(SupportStore.step(it))}})
 
-        fun encode(w:CustomWorkout):JSONObject=JSONObject().put("version",1).put("id",w.id()).put("title",w.title()).put("groups",JSONArray().also{a->w.groups().forEach{g->a.put(JSONObject().put("repeats",g.repeats()).put("steps",JSONArray().also{b->g.steps().forEach{b.put(SupportStore.step(it))}}))}})
         fun decode(j:JSONObject):CustomWorkout {val a=j.getJSONArray("groups");require(a.length() in 1..500);return CustomWorkout(j.getString("id"),j.getString("title"),(0 until a.length()).map{val g=a.getJSONObject(it);CustomWorkout.Group(g.getInt("repeats"),SupportStore.steps(g))})}
         @JvmStatic fun validateRow(kind:String,j:JSONObject){require(j.get("version") is Int&&j.getInt("version")==1);when(kind){
             "custom"->decode(j)

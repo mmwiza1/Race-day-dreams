@@ -3,6 +3,8 @@
 
 import hashlib
 import importlib.util
+import io
+import urllib.error
 import json
 from pathlib import Path
 import subprocess
@@ -84,6 +86,62 @@ class FormattingTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 formatter.fetch("https://example.com/formatter.jar", 100)
             network.assert_not_called()
+
+    def test_throttled_download_honours_retry_after_and_returns_exact_bytes(self):
+        url = "https://repo.maven.apache.org/maven2/tool.jar"
+        failed_body = io.BytesIO(b"throttled, not executable content")
+        error = urllib.error.HTTPError(url, 429, "Too Many Requests", {"Retry-After": "3"}, failed_body)
+        with patch.object(formatter.urllib.request, "urlopen", side_effect=[error, io.BytesIO(b"exact bytes")]) as network, \
+                patch.object(formatter.time, "sleep") as sleep, \
+                patch.object(formatter.time, "monotonic", return_value=0):
+            self.assertEqual(b"exact bytes", formatter.fetch(url, 100))
+        self.assertTrue(failed_body.closed)
+        self.assertEqual(2, network.call_count)
+        sleep.assert_called_once_with(3)
+
+    def test_retry_after_http_date_is_respected(self):
+        url = "https://repo.maven.apache.org/maven2/tool.jar"
+        error = urllib.error.HTTPError(url, 503, "Unavailable", {"Retry-After": "Thu, 01 Jan 1970 00:00:03 GMT"}, None)
+        with patch.object(formatter.urllib.request, "urlopen", side_effect=[error, io.BytesIO(b"tool")]), \
+                patch.object(formatter.time, "sleep") as sleep, \
+                patch.object(formatter.time, "time", return_value=0), \
+                patch.object(formatter.time, "monotonic", return_value=0):
+            self.assertEqual(b"tool", formatter.fetch(url, 100))
+        sleep.assert_called_once_with(3)
+
+    def test_download_retries_are_bounded_and_permanent_or_long_backoff_fails_closed(self):
+        url = "https://repo.maven.apache.org/maven2/tool.jar"
+        for code, headers, calls in [(404, {}, 1), (429, {"Retry-After": "120"}, 1), (503, {}, 3)]:
+            with self.subTest(code=code, headers=headers):
+                error = urllib.error.HTTPError(url, code, "Unavailable", headers, None)
+                with patch.object(formatter.urllib.request, "urlopen", side_effect=error) as network, \
+                        patch.object(formatter.time, "sleep") as sleep, \
+                        patch.object(formatter.time, "monotonic", return_value=0):
+                    with self.assertRaises(urllib.error.HTTPError):
+                        formatter.fetch(url, 100)
+                self.assertEqual(calls, network.call_count)
+                self.assertEqual([1, 2] if calls == 3 else [], [c.args[0] for c in sleep.call_args_list])
+        # A server delay must fit the ORIGINAL budget, not a new budget for each attempt.
+        error = urllib.error.HTTPError(url, 429, "Throttled", {"Retry-After": "2"}, None)
+        with patch.object(formatter.urllib.request, "urlopen", side_effect=error) as network, \
+                patch.object(formatter.time, "sleep") as sleep, \
+                patch.object(formatter.time, "monotonic", side_effect=[0, 0, 59]):
+            with self.assertRaises(urllib.error.HTTPError):
+                formatter.fetch(url, 100)
+        self.assertEqual(1, network.call_count)
+        sleep.assert_not_called()
+
+    def test_size_and_time_limit_failures_are_not_retried(self):
+        url = "https://repo.maven.apache.org/maven2/tool.jar"
+        for data, clock in [(b"12345", [0, 0, 0]), (b"ok", [0, 0, 61])]:
+            with self.subTest(data=data, clock=clock), \
+                    patch.object(formatter.urllib.request, "urlopen", return_value=io.BytesIO(data)) as network, \
+                    patch.object(formatter.time, "sleep") as sleep, \
+                    patch.object(formatter.time, "monotonic", side_effect=clock):
+                with self.assertRaises(ValueError):
+                    formatter.fetch(url, 4)
+                self.assertEqual(1, network.call_count)
+                sleep.assert_not_called()
 
     def test_check_commands_never_request_in_place_replacement(self):
         jar = Path("tool.jar")

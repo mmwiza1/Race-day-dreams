@@ -229,7 +229,7 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
             distanceKm,
             duration,
             date,
-            time,
+            time.toString(),
             rpe,
             notes,
             onSuccess,
@@ -281,5 +281,5 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun setMilestonesEnabled(enabled: Boolean) = settings.setMilestonesEnabled(enabled)
 
     fun saveReminderPreferences(preferences: ReminderPreferences) =
-        settings.saveReminderPreferences(preferences)
+        settings.saveReminderPreferences(preferences.shared())
 }

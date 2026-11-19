@@ -28,11 +28,11 @@ fun StrengthTrend(points: List<StrengthProgression.Point>, state: CoachUiState) 
     var selected by rememberSaveable(category) { mutableStateOf<String?>(null) }
     val lo = dated.minOf { value(it) }
     val hi = dated.maxOf { value(it) }
-    val first = dated.first().date().toEpochDay()
-    val last = dated.last().date().toEpochDay()
+    val first = dated.first().date()!!.toEpochDay()
+    val last = dated.last().date()!!.toEpochDay()
     val summary =
         dated.joinToString { p ->
-            "${if(p.precision()==HistoricalStrengthRecord.DatePrecision.APPROXIMATE)"Around "else ""}${shortDate(p.date())}: ${decimal(value(p))}"
+            "${if(p.precision()==HistoricalStrengthRecord.DatePrecision.APPROXIMATE)"Around "else ""}${shortDate(requireNotNull(p.date()))}: ${decimal(value(p))}"
         }
     val ink = MaterialTheme.colorScheme.onSurfaceVariant
     val trendColour = MaterialTheme.colorScheme.primary
@@ -48,7 +48,7 @@ fun StrengthTrend(points: List<StrengthProgression.Point>, state: CoachUiState) 
                                 kotlin.math.abs(
                                     (if (last == first) .5
                                     else
-                                        (p.date().toEpochDay() - first).toDouble() /
+                                        (p.date()!!.toEpochDay() - first).toDouble() /
                                             (last - first)) - fraction
                                 )
                             }
@@ -68,7 +68,7 @@ fun StrengthTrend(points: List<StrengthProgression.Point>, state: CoachUiState) 
             Offset(
                 pad +
                     if (last == first) w / 2
-                    else ((p.date().toEpochDay() - first).toFloat() / (last - first)) * w,
+                    else ((p.date()!!.toEpochDay() - first).toFloat() / (last - first)) * w,
                 pad + h - (if (hi == lo) .5f else ((value(p) - lo) / (hi - lo)).toFloat()) * h,
             )
         for (i in 1 until dated.size) drawLine(
@@ -80,8 +80,14 @@ fun StrengthTrend(points: List<StrengthProgression.Point>, state: CoachUiState) 
         dated.forEach { drawCircle(trendColour, 5.dp.toPx(), position(it)) }
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(shortDate(dated.first().date()), style = MaterialTheme.typography.labelSmall)
-        Text(shortDate(dated.last().date()), style = MaterialTheme.typography.labelSmall)
+        Text(
+            shortDate(requireNotNull(dated.first().date())),
+            style = MaterialTheme.typography.labelSmall,
+        )
+        Text(
+            shortDate(requireNotNull(dated.last().date())),
+            style = MaterialTheme.typography.labelSmall,
+        )
     }
     Text(
         "Recorded PB evidence · ${decimal(lo)}–${decimal(hi)} ${if(points.firstOrNull()?.category()?.startsWith("Duration")==true)"seconds"else if(points.firstOrNull()?.category()?.startsWith("Distance")==true)"metres"else if(usesMass)state.massUnit.name.lowercase()else "reps"}",
@@ -90,6 +96,8 @@ fun StrengthTrend(points: List<StrengthProgression.Point>, state: CoachUiState) 
     dated
         .firstOrNull { it.id() == selected }
         ?.let { p ->
-            Text("Selected PB: ${shortDate(p.date())} · ${decimal(value(p))} · ${p.provenance()}")
+            Text(
+                "Selected PB: ${shortDate(requireNotNull(p.date()))} · ${decimal(value(p))} · ${p.provenance()}"
+            )
         }
 }

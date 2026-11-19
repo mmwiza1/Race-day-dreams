@@ -9,7 +9,8 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.racedaydreams.data.HealthIntelligenceStore
-import org.racedaydreams.domain.health.HealthIntelligence.*
+import org.racedaydreams.domain.health.HealthIntelligence.Metric
+import org.racedaydreams.domain.health.HealthIntelligence.Observation
 import java.time.*
 
 /** Optional data cache. No training mutations. Steps use HC's deduplicating aggregate API. */

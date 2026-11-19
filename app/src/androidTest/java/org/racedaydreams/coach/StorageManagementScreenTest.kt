@@ -101,7 +101,7 @@ class StorageManagementScreenTest {
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded"))
         compose.onNodeWithText("Storage details ▴").performClick()
         compose
-            .onNodeWithText("Eligibility cutoff: 5 November 2024 at 12:00 UTC")
+            .onNodeWithText("Detail recorded before: 5 November 2024 at 12:00 UTC")
             .performScrollTo()
             .assertIsDisplayed()
         compose.onNodeWithText("Review cleanup confirmation").performScrollTo().performClick()

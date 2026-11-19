@@ -149,6 +149,25 @@ class AndroidGateTest(unittest.TestCase):
         with self.assertRaises(ProcessLookupError):
             os.kill(pid, 0)
 
+    def test_explicit_development_filter_keeps_focus_guards_and_reaps_reader(self):
+        classes = 'org.racedaydreams.coach.MaterialThemeTest,org.racedaydreams.coach.PlainEnglishUiTest'
+        code, _, stderr = self.run_gate(RDD_FOCUSED_CLASSES=classes)
+        self.assertEqual(0, code, stderr)
+        self.assertIn('platform-settings', self.events())
+        self.assertIn('platform-home', self.events())
+        self.assertIn('gradle-guard', self.events())
+        self.assertNotIn('gradle-full', self.events())
+        self.assertNotIn('pull', self.events())
+        args = json.loads((self.state / 'guard-args.json').read_text())
+        self.assertIn('-Pandroid.testInstrumentationRunnerArguments.class=' + classes, args)
+        self.assert_reader_stopped()
+
+    def test_development_filter_failure_preserves_exit_and_cleans_reader(self):
+        code, _, _ = self.run_gate(RDD_FOCUSED_CLASSES='org.racedaydreams.coach.MaterialThemeTest', RDD_GATE_TEST_GUARD_EXIT='7')
+        self.assertEqual(7, code)
+        self.assertNotIn('gradle-full', self.events())
+        self.assert_reader_stopped()
+
     def test_success_runs_full_gate_then_reaps_the_actual_reader(self):
         code, _, stderr = self.run_gate()
         self.assertEqual(0, code, stderr)
@@ -165,6 +184,13 @@ class AndroidGateTest(unittest.TestCase):
         selected = next(arg for arg in guards if arg.startswith('-Pandroid.testInstrumentationRunnerArguments.class='))
         self.assertIn('org.racedaydreams.coach.ExerciseLibraryDesignTest', selected)
         self.assertIn('CoachingScreenshotTest#capturesCompactLibraryFiltersAndRealDetailTabsInAllModes', selected)
+        self.assertIn('org.racedaydreams.coach.PlainEnglishUiTest', selected)
+        self.assertIn('CoachingScreenshotTest#capturesPlainBackupExplanationInAllModes', selected)
+        self.assertIn('AuthoredGymNowScreenTest#authoredTodayAndDetailsExposeExactPreservedTargets', selected)
+        self.assertIn('AuthoredGymNowScreenTest#authoredTodayAndDetailsAreUsableInDarkModeAtTwoHundredPercent', selected)
+        self.assertIn('org.racedaydreams.coach.StorageManagementScreenTest', selected)
+        self.assertIn('CoachingScreenshotTest#capturesOptionalProgressionInLightDarkAndLargeText', selected)
+        self.assertIn('CoachingScreenshotTest#capturesPlainHealthAndRunningInstructionsInAllModes', selected)
         self.assertIn('CoachOnboardingTest#canContinueWithoutHealthAndSaveGoalThroughExistingForm', selected)
         self.assertIn('CoachingScreenshotTest#capturesPublicPermissionRationaleInLightDarkAndLargeText', selected)
         self.assert_reader_stopped()

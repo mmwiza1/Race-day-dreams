@@ -1,0 +1,17 @@
+headers = sqlite3.h
+package = org.racedaydreams.storage.sqlite
+linkerOpts = -lsqlite3
+---
+// Keep SQL-tail validation inside the lifetime of cinterop's temporary UTF-8 string.
+static inline int rdd_sqlite_prepare_single(sqlite3 *db, const char *sql, sqlite3_stmt **statement) {
+    const char *tail = 0;
+    int result = sqlite3_prepare_v2(db, sql, -1, statement, &tail);
+    if (result != SQLITE_OK) return result;
+    while (tail && (*tail == ' ' || *tail == '\t' || *tail == '\n' || *tail == '\r' || *tail == '\f')) ++tail;
+    if (tail && *tail) {
+        if (*statement) sqlite3_finalize(*statement);
+        *statement = 0;
+        return SQLITE_MISUSE;
+    }
+    return SQLITE_OK;
+}

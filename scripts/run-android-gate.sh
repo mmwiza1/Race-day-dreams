@@ -79,12 +79,22 @@ rdd_wait_for_platform_focus com.android.launcher3
 adb logcat -v raw -s RddGate:I '*:S' &
 rdd_test_log_pid=$!
 
+# Explicit development-only filter. Mandatory release jobs never set this variable and
+# continue through both the original guards and the complete unfiltered suite below.
+if [ -n "${RDD_FOCUSED_CLASSES:-}" ]; then
+    ./gradlew :app:connectedDebugAndroidTest \
+        -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000 \
+        -Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener \
+        "-Pandroid.testInstrumentationRunnerArguments.class=$RDD_FOCUSED_CLASSES"
+    exit 0
+fi
+
 # Fail fast on native interaction, disclosures and the actual multi-window capture lifecycle.
 # A passing guard never substitutes for the complete unfiltered suite below.
 ./gradlew :app:connectedDebugAndroidTest \
     -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000 \
     -Pandroid.testInstrumentationRunnerArguments.listener=org.racedaydreams.coach.GateProgressListener \
-    '-Pandroid.testInstrumentationRunnerArguments.class=org.racedaydreams.coach.CoachOnboardingTest#canContinueWithoutHealthAndSaveGoalThroughExistingForm,org.racedaydreams.ui.OnboardingPaletteTest,org.racedaydreams.coach.StrengthAnalyticsScreenTest,org.racedaydreams.coach.CoachingScreenshotTest#capturesMaterialDeviceAndBrandColoursWithAccessibleLiveControls,org.racedaydreams.coach.CoachingScreenshotTest#capturesWideWindowNavigationAndBoundedContent,org.racedaydreams.coach.CoachingScreenshotTest#capturesPublicPermissionRationaleInLightDarkAndLargeText,org.racedaydreams.coach.ExerciseLibraryDesignTest,org.racedaydreams.coach.CoachingScreenshotTest#capturesCompactLibraryFiltersAndRealDetailTabsInAllModes'
+    '-Pandroid.testInstrumentationRunnerArguments.class=org.racedaydreams.coach.CoachOnboardingTest#canContinueWithoutHealthAndSaveGoalThroughExistingForm,org.racedaydreams.ui.OnboardingPaletteTest,org.racedaydreams.coach.StrengthAnalyticsScreenTest,org.racedaydreams.coach.CoachingScreenshotTest#capturesMaterialDeviceAndBrandColoursWithAccessibleLiveControls,org.racedaydreams.coach.CoachingScreenshotTest#capturesWideWindowNavigationAndBoundedContent,org.racedaydreams.coach.CoachingScreenshotTest#capturesPublicPermissionRationaleInLightDarkAndLargeText,org.racedaydreams.coach.ExerciseLibraryDesignTest,org.racedaydreams.coach.PlainEnglishUiTest,org.racedaydreams.coach.CoachingScreenshotTest#capturesPlainBackupExplanationInAllModes,org.racedaydreams.coach.CoachingScreenshotTest#capturesCompactLibraryFiltersAndRealDetailTabsInAllModes,org.racedaydreams.coach.AuthoredGymNowScreenTest#authoredTodayAndDetailsExposeExactPreservedTargets,org.racedaydreams.coach.AuthoredGymNowScreenTest#authoredTodayAndDetailsAreUsableInDarkModeAtTwoHundredPercent,org.racedaydreams.coach.StorageManagementScreenTest,org.racedaydreams.coach.CoachingScreenshotTest#capturesOptionalProgressionInLightDarkAndLargeText,org.racedaydreams.coach.CoachingScreenshotTest#capturesPlainHealthAndRunningInstructionsInAllModes'
 
 ./gradlew :app:connectedDebugAndroidTest \
     -Pandroid.testInstrumentationRunnerArguments.timeout_msec=600000 \

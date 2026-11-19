@@ -71,8 +71,8 @@ class AuthoredGymNowScreenTest {
         assertTrue(original.actualSets().isEmpty())
         assertEquals("", model.state.value.form.kilograms)
         assertEquals("", model.state.value.form.repetitions)
-        assertNull(original.slots().single().target().restSeconds())
-        assertEquals(1.5, original.slots().single().target().effort().minimum(), 0.0)
+        assertNull(original.slots().single().target()!!.restSeconds())
+        assertEquals(1.5, original.slots().single().target()!!.effort()!!.minimum(), 0.0)
         compose.runOnIdle {
             model.updateForm {
                 it.copy(kilograms = "60", repetitions = "6", effort = "3", rir = true)
@@ -91,6 +91,28 @@ class AuthoredGymNowScreenTest {
         )
         assertNull(io { GymProgrammeStore(app).current() })
         assertFalse(io { SqliteUserPreferencesRepository(app).load().isPresent })
+    }
+
+    @Test
+    fun datedEntryShowsTheExactPrescriptionWithoutStartingIt() {
+        install(plannedDate = day)
+        compose.onNodeWithText("Authored session").performScrollTo().assertIsDisplayed()
+        assertNull(execution())
+        click("Start this session")
+        await { execution() != null }
+        assertEquals("session", execution()!!.source()!!.sessionId())
+        assertTrue(execution()!!.actualSets().isEmpty())
+    }
+
+    @Test
+    fun datedEntryDoesNotOfferADifferentDaysSession() {
+        install(plannedDate = day.plusDays(1))
+        compose
+            .onNodeWithText("No strength session is planned for this date.")
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose.onNodeWithText("Start this session").assertDoesNotExist()
+        assertNull(execution())
     }
 
     @Test
@@ -131,7 +153,7 @@ class AuthoredGymNowScreenTest {
         await { execution()!!.slots().single().exercise() == replacement }
         val compatibleTarget = execution()!!.slots().single().target()
         assertNotNull(compatibleTarget)
-        assertEquals(original.slots().single().target().withoutLoadReference(), compatibleTarget)
+        assertEquals(original.slots().single().target()!!.withoutLoadReference(), compatibleTarget)
         assertNull(compatibleTarget!!.referenceLoadKg())
         compose.runOnIdle {
             model.openSubstitutions(ExerciseSubstitutionEngine.Reason.EQUIPMENT_BUSY)
@@ -221,6 +243,10 @@ class AuthoredGymNowScreenTest {
         compose.onNodeWithText("View workout details").performScrollTo().performClick()
         compose.onNodeWithText("Bench Press").performScrollTo().assertIsDisplayed()
         compose
+            .onNodeWithText("Training targets and weight reference")
+            .performScrollTo()
+            .performClick()
+        compose
             .onNodeWithText("3 × 5–8 reps · RIR 1.5–3.5 · 80 kg reference")
             .performScrollTo()
             .assertIsDisplayed()
@@ -233,7 +259,7 @@ class AuthoredGymNowScreenTest {
         await { execution() != null }
     }
 
-    private fun install(largeDark: Boolean = false) {
+    private fun install(largeDark: Boolean = false, plannedDate: LocalDate? = null) {
         compose.runOnIdle {
             model = createModel()
             shown.value = model
@@ -248,7 +274,7 @@ class AuthoredGymNowScreenTest {
                 ) {
                     shown.value?.let { feature ->
                         if (page.value == "hub")
-                            GymNowScreen(feature, { page.value = "workout" }, {}, {})
+                            GymNowScreen(feature, { page.value = "workout" }, {}, {}, plannedDate)
                         else GymWorkoutScreen(feature) { page.value = "hub" }
                     }
                 }
@@ -286,7 +312,7 @@ class AuthoredGymNowScreenTest {
             listOf(
                 GymWorkoutDefinition.Slot(
                     "bench",
-                    ExerciseCatalog.definition("bench-press").exercise(),
+                    requireNotNull(ExerciseCatalog.definition("bench-press")).exercise(),
                     target,
                     null,
                 )

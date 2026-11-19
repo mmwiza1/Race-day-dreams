@@ -222,7 +222,7 @@ fun RecordedRouteCard(activity: ActivityRecord) {
             val alt =
                 points
                     .filter {
-                        it.fix().verticalAccuracy() != null && it.fix().verticalAccuracy() <= 10
+                        it.fix().verticalAccuracy()?.let { accuracy -> accuracy <= 10 } == true
                     }
                     .mapNotNull { it.fix().altitude() }
             val lo = alt.minOrNull()!!
@@ -238,24 +238,28 @@ fun RecordedRouteCard(activity: ActivityRecord) {
                 for (i in 1 until points.size) {
                     val a = points[i - 1]
                     val b = points[i]
+                    val aAltitude = a.fix().altitude()
+                    val bAltitude = b.fix().altitude()
+                    val aAccuracy = a.fix().verticalAccuracy()
+                    val bAccuracy = b.fix().verticalAccuracy()
                     if (
-                        a.fix().altitude() != null &&
-                            b.fix().altitude() != null &&
-                            a.fix().verticalAccuracy() != null &&
-                            a.fix().verticalAccuracy() <= 10 &&
-                            b.fix().verticalAccuracy() != null &&
-                            b.fix().verticalAccuracy() <= 10 &&
+                        aAltitude != null &&
+                            bAltitude != null &&
+                            aAccuracy != null &&
+                            aAccuracy <= 10 &&
+                            bAccuracy != null &&
+                            bAccuracy <= 10 &&
                             !b.discontinuity()
                     )
                         drawLine(
                             primary,
                             Offset(
                                 (i - 1).toFloat() / points.lastIndex * size.width,
-                                ((1 - (a.fix().altitude() - lo) / span) * size.height).toFloat(),
+                                ((1 - (aAltitude - lo) / span) * size.height).toFloat(),
                             ),
                             Offset(
                                 i.toFloat() / points.lastIndex * size.width,
-                                ((1 - (b.fix().altitude() - lo) / span) * size.height).toFloat(),
+                                ((1 - (bAltitude - lo) / span) * size.height).toFloat(),
                             ),
                             2.dp.toPx(),
                         )

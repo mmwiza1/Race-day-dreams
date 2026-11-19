@@ -59,7 +59,7 @@ class TrainingRecoveryScreenTest {
                 }
             }
         }
-        compose.onNodeWithText(evidence.explanation()).assertDoesNotExist()
+        compose.onNodeWithText(requireNotNull(evidence.explanation())).assertDoesNotExist()
         compose
             .onNodeWithText("Supporting evidence ▾")
             .performScrollTo()
