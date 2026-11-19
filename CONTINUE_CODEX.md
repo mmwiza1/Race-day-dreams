@@ -92,7 +92,7 @@ Progress checkpoints for this work are recorded under "Latest recovery pointer �
   low-risk (A-1, S-1, S-2) PRs separate from recording-pipeline changes (I-1, A-2).
 - Next: Phase 2 bouldering on this branch (draft PR; no merge without explicit approval).
 
-### Latest recovery pointer — checkpoint 263 bouldering implemented; draft PR verification next (Claude)
+### Latest recovery pointer — checkpoint 263 bouldering implemented; full-gate verification of PR #26 (Claude)
 
 - `e02043e` domain + storage: `domain/climbing/Climbing.kt` (V-scale 19 / Font 24 grades, original
   grade kept, `approximately()` display-only; FLASH requires 1 attempt; sessions 1 min–24 h, ≤300
@@ -111,8 +111,18 @@ Progress checkpoints for this work are recorded under "Latest recovery pointer �
   Strength tab highlighted. `SharedBoulderingScreenTest` (flow incl. interruption/resume, review,
   correction, delete; dashboard separation) in draft focused classes; 6 new canonical captures
   `bouldering-*` (465 required). Docs: ARCHITECTURE, PRIVACY, TEST_BUILD physical checklist.
+- PR #26 CI lessons (19 Nov): `94fb7ac` fixed 10 stale Android "backup root 13" asserts and the
+  card's nested merged semantics. `468b408` made the iOS first-run launch check read
+  `ApplicationSchema.VERSION` instead of a hard-coded 19; draft CI then went fully green (Android
+  focused, iOS compile/native/launch/XCUITests). The first ready gate found a real race: the home
+  screen's async `refresh()` could overwrite a just-started session, and "Start" before the first
+  read could `INSERT OR REPLACE` over an interrupted draft. The coordinator now refuses to start
+  while loading, joins pending draft writes before reading and re-reads if a local change happened
+  meanwhile (regression test `startingBeforeTheDeviceIsReadNeverReplacesAnInterruptedSession`).
+  The large-font capture now waits for "How am I doing?" (navigation labels hide at 2.0×).
 - Not yet done: version bump/release notes (only when the owner wants a release), iOS compile is
-  verified only by CI (no local Xcode). PR must stay DRAFT; no merge without explicit approval.
+  verified only by CI (no local Xcode). PR may be "ready" only to run the full gate; its title says
+  do not merge, and no merge without the owner's explicit approval.
 
 ## Earlier baseline (12 November 2026 — superseded by the section above; kept for history)
 

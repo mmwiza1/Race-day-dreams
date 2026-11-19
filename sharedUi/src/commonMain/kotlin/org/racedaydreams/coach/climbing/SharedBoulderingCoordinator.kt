@@ -43,14 +43,27 @@ class SharedBoulderingCoordinator(
     private val mutable = MutableStateFlow(BoulderingState())
     val state: StateFlow<BoulderingState> = mutable.asStateFlow()
     private var persistJob: Job? = null
+    /**
+     * Counts local changes. A refresh that read the database while a change was made must not
+     * replace the newer in-memory session with what it read.
+     */
+    private var generation = 0L
 
     fun refresh() {
         scope.launch {
             try {
+                // A debounced draft write still pending would otherwise be read back as stale data.
+                persistJob?.join()
+                val started = generation
                 val loaded =
                     withContext(io) {
                         Triple(repository.sessions(), repository.draft(), repository.gradeSystem())
                     }
+                if (generation != started) {
+                    // Something changed while reading: read again rather than overwrite it.
+                    refresh()
+                    return@launch
+                }
                 mutable.update {
                     it.copy(
                         loading = false,
@@ -91,6 +104,9 @@ class SharedBoulderingCoordinator(
     }
 
     private fun startDraft(create: (Instant) -> ClimbingDraft) {
+        // Until the device has been read, an interrupted session may exist that a new one would
+        // replace.
+        if (mutable.value.loading) return
         if (mutable.value.draft != null) {
             mutable.update {
                 it.copy(error = "Finish or discard the current bouldering session first.")
@@ -98,6 +114,7 @@ class SharedBoulderingCoordinator(
             return
         }
         val draft = create(now())
+        generation++
         mutable.update { it.copy(draft = draft, editing = null, error = null) }
         persist(draft, immediately = true)
     }
@@ -155,6 +172,7 @@ class SharedBoulderingCoordinator(
             }
         if (current.editing != null) mutable.update { it.copy(editing = updated, error = null) }
         else {
+            generation++
             mutable.update { it.copy(draft = updated, error = null) }
             persist(updated, immediately = !debounce)
         }
@@ -192,6 +210,7 @@ class SharedBoulderingCoordinator(
                 mutable.update { it.copy(error = invalid.message) }
                 return
             }
+        generation++
         mutable.update { it.copy(busy = true, error = null) }
         scope.launch {
             try {
@@ -227,6 +246,7 @@ class SharedBoulderingCoordinator(
     }
 
     fun discardDraft() {
+        generation++
         scope.launch {
             persistJob?.cancelAndJoin()
             withContext(io) { repository.clearDraft() }
@@ -235,6 +255,7 @@ class SharedBoulderingCoordinator(
     }
 
     fun delete(sessionId: String) {
+        generation++
         scope.launch {
             try {
                 withContext(io) { repository.delete(sessionId) }
@@ -253,6 +274,7 @@ class SharedBoulderingCoordinator(
     }
 
     fun setGradeSystem(system: GradeSystem) {
+        generation++
         mutable.update { it.copy(gradeSystem = system) }
         scope.launch { withContext(io) { repository.gradeSystem(system) } }
     }

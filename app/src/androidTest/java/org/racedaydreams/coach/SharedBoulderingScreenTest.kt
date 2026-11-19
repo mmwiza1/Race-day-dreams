@@ -122,8 +122,10 @@ class SharedBoulderingScreenTest {
                 }
             }
         }
-        // New climber: honest empty state.
-        compose.onNodeWithText("Start bouldering session").assertExists()
+        // New climber: honest empty state, offered only after the device has been read.
+        compose.waitUntil(5_000) {
+            compose.onAllNodesWithText("Start bouldering session").fetchSemanticsNodes().isNotEmpty()
+        }
         compose.onNodeWithTag("kpi-Highest send").assert(hasText("None yet"))
         compose.onNodeWithText("No bouldering sessions recorded yet.").performScrollTo().assertExists()
 
@@ -186,6 +188,29 @@ class SharedBoulderingScreenTest {
         compose.onNodeWithText("Delete session").performScrollTo().performClick()
         compose.onNodeWithText("Delete").performClick()
         compose.waitUntil(5_000) { SqliteClimbing(database).sessions().isEmpty() }
+    }
+
+    @Test
+    fun startingBeforeTheDeviceIsReadNeverReplacesAnInterruptedSession() {
+        val interrupted =
+            ClimbingDraft(
+                "interrupted",
+                Instant.now().minusSeconds(1_800),
+                ZoneOffset.UTC,
+                null,
+                "North wall",
+                "",
+                listOf(ClimbingProblem("p", ClimbingGrade(GradeSystem.V_SCALE, "V2"), 1, ClimbOutcome.FLASH)),
+            )
+        SqliteClimbing(database).saveDraft(interrupted)
+        val model = model()
+        // Not yet read: a start request must not create a session over the saved one.
+        model.startLive()
+        model.startPast(LocalDate.now())
+        model.refresh()
+        compose.waitUntil(5_000) { !model.state.value.loading }
+        assertEquals(interrupted, model.state.value.draft)
+        assertEquals(interrupted, SqliteClimbing(database).draft())
     }
 
     @Test

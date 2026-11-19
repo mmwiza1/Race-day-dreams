@@ -1136,7 +1136,8 @@ class CoachingScreenshotTest {
             shell("cmd uimode night no")
             shell("settings put system font_scale 2.0")
             scenario = ActivityScenario.launch(CoachActivity::class.java)
-            await("Strength")
+            // Large text hides the navigation labels; the tab keeps its accessible name.
+            await("How am I doing?")
             Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
             compose.onNodeWithContentDescription("Strength").performClick()
             await("Muscle-group workload")

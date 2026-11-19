@@ -97,6 +97,9 @@ fun SharedBoulderingHome(
                 Text("Resume session")
             }
         }
+    } else if (state.loading) {
+        // Starting is only offered once an interrupted session on this device would be found.
+        Text("Checking for an unsaved session…")
     } else {
         Button(
             onClick = {
