@@ -191,6 +191,16 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         add(attachment)
     }
 
+    private func waitUntilSettled(_ element: XCUIElement) {
+        var previous = element.frame
+        for _ in 0..<12 {
+            Thread.sleep(forTimeInterval: 0.25)
+            let current = element.frame
+            if current == previous { return }
+            previous = current
+        }
+    }
+
     private func control(_ label: String, in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
     }
@@ -203,9 +213,14 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
     ) {
         let element = control(label, in: app)
         for _ in 0..<8 {
-            if element.waitForExistence(timeout: 2), element.isHittable {
-                element.tap()
-                return
+            if element.waitForExistence(timeout: 2) {
+                // A tap during a scroll fling only stops the fling in Compose, so wait for the
+                // element to stop moving before deciding whether it can be tapped.
+                waitUntilSettled(element)
+                if element.isHittable {
+                    element.tap()
+                    return
+                }
             }
             app.swipeUp()
         }

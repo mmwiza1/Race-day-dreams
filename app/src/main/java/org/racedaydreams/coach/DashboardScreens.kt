@@ -23,7 +23,7 @@ import org.racedaydreams.domain.UnitSystem
     ::friendlyDate,
     ::decimal,
     StrengthLink.entries.toList(),
-) { link ->
+    open = { link ->
     open(
         when (link) {
             StrengthLink.GYM_NOW -> "gym-now"
@@ -37,7 +37,9 @@ import org.racedaydreams.domain.UnitSystem
             StrengthLink.RECOVERY -> "strength/recovery"
         }
     )
-}
+    },
+    openWorkout = { open("strength/source/${android.net.Uri.encode(it)}") },
+)
 @Composable fun ProgressDashboard(state:CoachUiState,open:(String)->Unit)=SharedProgressDashboard(
     state,
     androidHomePresentation(state),

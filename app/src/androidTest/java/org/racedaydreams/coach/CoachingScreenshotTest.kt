@@ -915,6 +915,31 @@ class CoachingScreenshotTest {
                     emptyList(),
                 )
         GymProgrammeStore(context).save(programme)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            shell("settings put system font_scale 1.0")
+            shell("cmd uimode night no")
+            // New-user evidence: no runs and no recorded gym sessions yet, only a programme.
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            click("Progress")
+            await("Distance this week")
+            capture("progress-dashboard-empty")
+            click("Strength")
+            await("Muscle-group workload")
+            compose.onAllNodesWithText("No strength workouts recorded yet.").assertCountEquals(1)
+            capture("strength-dashboard-empty")
+        } catch (failure: Throwable) {
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+            throw failure
+        } finally {
+            closeScenario()
+            scenario = null
+        }
         val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         val now = Instant.now()
         for (daysAgo in listOf(3L, 6L)) {
@@ -937,11 +962,6 @@ class CoachingScreenshotTest {
             "Strength fixture must not depend on a running profile",
             SqliteUserPreferencesRepository(context).load().orElse(null),
         )
-        val originalFont = shell("settings get system font_scale").trim()
-        val originalNight =
-            shell("cmd uimode night").let {
-                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
-            }
         try {
             shell("settings put system font_scale 1.0")
             shell("cmd uimode night no")

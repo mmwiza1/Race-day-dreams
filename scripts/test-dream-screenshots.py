@@ -89,13 +89,14 @@ class CaptureValidationTest(unittest.TestCase):
         self.assertEqual(expected,set(captures.STORAGE_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
 
-    def test_analytics_dashboards_extend_the_451_set_in_all_three_modes(self):
+    def test_analytics_dashboards_extend_the_451_set_in_all_modes_and_empty_states(self):
         expected = {'progress-dashboard-trends.png', 'strength-dashboard-analytics.png'} | {
-            f'{scene}-dashboard-{mode}.png' for scene in ('progress', 'strength') for mode in ('dark', 'large-font')}
+            f'{scene}-dashboard-{mode}.png' for scene in ('progress', 'strength')
+            for mode in ('dark', 'large-font', 'empty')}
         self.assertEqual(expected, set(captures.DASHBOARD_REQUIRED))
         self.assertTrue(expected.issubset(captures.REQUIRED))
         self.assertTrue({'progress.png', 'strength.png'}.issubset(captures.REQUIRED))
-        self.assertEqual(457, len(captures.REQUIRED))
+        self.assertEqual(459, len(captures.REQUIRED))
 
     def test_required_five_cities_and_two_accessibility_modes_have_both_panels(self):
         self.assertEqual(14, len(captures.DREAM_REQUIRED))

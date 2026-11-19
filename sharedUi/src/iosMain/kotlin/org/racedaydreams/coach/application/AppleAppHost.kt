@@ -216,6 +216,7 @@ private fun AppleAppContent(
     var recordingWorkout by remember { mutableStateOf<String?>(null) }
     var recoveryDraftId by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
+    var strengthRecordReturn by remember { mutableStateOf(ApplePage.ACHIEVEMENTS) }
     val openDatedGym: (LocalDate) -> Unit = { date ->
         returnFromDatedGym = page
         if (page == ApplePage.HISTORY) {
@@ -472,20 +473,26 @@ private fun AppleAppContent(
                             StrengthLink.EXERCISES,
                             StrengthLink.RECOVERY,
                         ),
-                    ) { link ->
-                        page =
-                            when (link) {
-                                StrengthLink.PROGRAMME -> ApplePage.PROGRAMMES
-                                StrengthLink.ANALYTICS -> ApplePage.STRENGTH_ANALYTICS
-                                StrengthLink.MILESTONES -> ApplePage.ACHIEVEMENTS
-                                StrengthLink.HISTORY -> ApplePage.STRENGTH_HISTORY
-                                StrengthLink.EXERCISES -> ApplePage.EXERCISES
-                                StrengthLink.RECOVERY -> ApplePage.TRAINING_RECOVERY
-                                StrengthLink.GYM_NOW,
-                                StrengthLink.LOG,
-                                StrengthLink.PBS -> ApplePage.GYM
-                            }
-                    }
+                        open = { link ->
+                            page =
+                                when (link) {
+                                    StrengthLink.PROGRAMME -> ApplePage.PROGRAMMES
+                                    StrengthLink.ANALYTICS -> ApplePage.STRENGTH_ANALYTICS
+                                    StrengthLink.MILESTONES -> ApplePage.ACHIEVEMENTS
+                                    StrengthLink.HISTORY -> ApplePage.STRENGTH_HISTORY
+                                    StrengthLink.EXERCISES -> ApplePage.EXERCISES
+                                    StrengthLink.RECOVERY -> ApplePage.TRAINING_RECOVERY
+                                    StrengthLink.GYM_NOW,
+                                    StrengthLink.LOG,
+                                    StrengthLink.PBS -> ApplePage.GYM
+                                }
+                        },
+                        openWorkout = {
+                            activityId = it
+                            strengthRecordReturn = ApplePage.STRENGTH_HOME
+                            page = ApplePage.STRENGTH_RECORD
+                        },
+                    )
                 ApplePage.RUNNING_TRENDS ->
                     AppleRunningTrends(
                         state,
@@ -554,12 +561,13 @@ private fun AppleAppContent(
                         },
                         openGym = {
                             activityId = it
+                            strengthRecordReturn = ApplePage.ACHIEVEMENTS
                             page = ApplePage.STRENGTH_RECORD
                         },
                     )
                 ApplePage.STRENGTH_RECORD ->
                     activityId?.let {
-                        AppleStrengthRecord(state, it) { page = ApplePage.ACHIEVEMENTS }
+                        AppleStrengthRecord(state, it) { page = strengthRecordReturn }
                     }
                 ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it, controller) }
                 ApplePage.START ->

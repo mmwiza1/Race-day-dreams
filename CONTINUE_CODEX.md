@@ -89,6 +89,23 @@ incomplete migration merely because a focused checkpoint passes.
     on-screen Compose nodes) -> now waits for the top "Gym now" control. Android focused gate
     642/644: WeeklyUxTest tapped "PBs & progression"/"Body weight" without scrolling on the longer
     dashboards -> scroll added there, in Release05UiTest and three screenshot-test taps.
+  - Checkpoint 260 (owner's "Final Analytics Dashboard Requirements"): PR #25 returned to DRAFT.
+    Full gate on f2adea7: Android all green (bot screenshot commit 3a1cbc1); iOS 2/4 XCUITests
+    failed because taps landed during a Compose scroll fling (tap only stops the fling) -> the
+    test tap helper now waits for the element frame to settle. Implemented: reporting periods
+    (4 wk/12 wk/6 mo=26 wk/1 yr=52 wk, whole weeks ending today); like-for-like comparisons
+    (week-to-date vs same weekdays last week; period vs same-length earlier window, only when
+    history covers it); moving pace kept labelled "moving"; plan completion by calendar rules
+    (link, latest skip/move decision); gym programme completion by calendar gym-link rules;
+    e1RM exercise selector (eligible exercises only), tappable/accessible points with source
+    workout + "Heaviest recorded set" (actual, separate from estimate); muscle workload with
+    primary shares, separate secondary involvement (once per set/group) and visible Unclassified
+    segment; recent runs show source (ActivitySources.friendly) and open run details; recent
+    workouts open the recorded session (Android strength/source/{id}, iOS STRENGTH_RECORD with
+    return page); compact grouped "More detail"; 2-up KPI grid (1-up at 200% text, 4-up >=600dp);
+    explanations behind toggles. New records count once per record type per workout.
+    12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
+    captures progress-/strength-dashboard-empty (459 required).
 
 ### Latest recovery pointer — checkpoint 258 PR #24 merged; PR #23 staged CI + unsigned iOS releases (Claude)
 
