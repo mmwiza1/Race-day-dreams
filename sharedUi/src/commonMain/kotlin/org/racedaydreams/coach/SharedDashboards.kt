@@ -382,10 +382,7 @@ fun SharedStrengthDashboard(
                 ),
             modifier = Modifier.fillMaxWidth().testTag("strength-bouldering-card"),
         ) {
-            Column(
-                Modifier.padding(16.dp).semantics(mergeDescendants = true) {},
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text("Bouldering", style = MaterialTheme.typography.titleMedium)
                 Text(
                     if (climbingDraft) "Unsaved session · tap to resume"

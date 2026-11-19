@@ -129,7 +129,7 @@ public final class GymToolsRepositoryTest extends AndroidTestCase {
         var out = new java.io.ByteArrayOutputStream();
         manager.exportTo(out);
         var envelope = new JSONObject(out.toString("UTF-8"));
-        assertEquals(13, envelope.getInt("version"));
+        assertEquals(14, envelope.getInt("version"));
         tools.preferences(new GymRestTimer.Preferences(300, false, false, false, false));
         envelope.put("version", 10); // Retain the previous envelope's required gym-tools contract.
         envelope.getJSONObject("data").remove("gymTools");

@@ -55,7 +55,7 @@ public final class AchievementsRepositoryTest extends AndroidTestCase {
         var output = new java.io.ByteArrayOutputStream();
         backup.exportTo(output);
         var envelope = new JSONObject(output.toString("UTF-8"));
-        assertEquals(13, envelope.getInt("version"));
+        assertEquals(14, envelope.getInt("version"));
         new SqliteUserPreferencesRepository(getContext()).clear();
         backup.restoreFrom(new java.io.ByteArrayInputStream(output.toByteArray()));
         assertEquals(before, repository.awards());

@@ -272,7 +272,7 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
                         Clock.fixed(NOW, ZoneOffset.UTC));
         var bytes = new java.io.ByteArrayOutputStream();
         manager.exportTo(bytes);
-        assertEquals(13, new JSONObject(bytes.toString("UTF-8")).getInt("version"));
+        assertEquals(14, new JSONObject(bytes.toString("UTF-8")).getInt("version"));
         drafts.delete(value.id(), 1);
         manager.restoreFrom(new java.io.ByteArrayInputStream(bytes.toByteArray()));
         assertEquals(value, drafts.get(value.id()));
