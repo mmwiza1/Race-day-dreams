@@ -28,8 +28,9 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         let strengthTab = app.buttons["Strength"].firstMatch
         XCTAssertTrue(strengthTab.waitForExistence(timeout: 15))
         strengthTab.tap()
-        // The Strength tab opens the shared dashboard; Gym Now is its primary action.
-        XCTAssertTrue(control("Muscle-group workload", in: app).waitForExistence(timeout: 15))
+        // The Strength tab opens the shared dashboard; Gym Now is its primary action at the top.
+        // iOS exposes only on-screen Compose elements, so wait for the first visible control.
+        XCTAssertTrue(control("Gym now", in: app).waitForExistence(timeout: 15))
         attachScreenshot("ios-strength-dashboard", app)
         app.swipeUp()
         attachScreenshot("ios-strength-dashboard-scrolled", app)

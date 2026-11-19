@@ -84,6 +84,11 @@ incomplete migration merely because a focused checkpoint passes.
     navigation unchanged. Tests scroll to links on the longer screens; 6 new required captures
     (457 total); iOS XCUITests attach dashboard screenshots exported as `ios-review-screenshots`.
   - Today is unchanged (asked before touching it). Bouldering excluded.
+  - Draft run 44456340230 on 09bab8b: iOS framework/app/startup OK; XCUITest navigation (Progress
+    dashboard) passed; Gym Now test failed waiting for an off-screen label (iOS exposes only
+    on-screen Compose nodes) -> now waits for the top "Gym now" control. Android focused gate
+    642/644: WeeklyUxTest tapped "PBs & progression"/"Body weight" without scrolling on the longer
+    dashboards -> scroll added there, in Release05UiTest and three screenshot-test taps.
 
 ### Latest recovery pointer — checkpoint 258 PR #24 merged; PR #23 staged CI + unsigned iOS releases (Claude)
 
