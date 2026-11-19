@@ -43,6 +43,7 @@ private constructor(
     val backupDocuments: AppleBackupDocuments,
     val raceChecklist: SqliteRaceChecklist,
     val runningSupport: SqliteRunningSupportArchives,
+    val bouldering: org.racedaydreams.coach.climbing.SharedBoulderingCoordinator,
 ) {
     private var closed = false
 
@@ -240,6 +241,23 @@ private constructor(
                     backupDocuments,
                     SqliteRaceChecklist(database),
                     runningSupport,
+                    org.racedaydreams.coach.climbing.SharedBoulderingCoordinator(
+                        database,
+                        scope,
+                        now,
+                        { at ->
+                            val instant =
+                                kotlinx.datetime.Instant.fromEpochSeconds(
+                                    at.getEpochSecond(),
+                                    at.getNano(),
+                                )
+                            Offsets.ofTotalSeconds(
+                                TimeZone.currentSystemDefault().offsetAt(instant).totalSeconds
+                            )
+                        },
+                        newId,
+                        io,
+                    ),
                 )
             } catch (failure: Throwable) {
                 withContext(NonCancellable) {

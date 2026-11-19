@@ -92,6 +92,28 @@ Progress checkpoints for this work are recorded under "Latest recovery pointer �
   low-risk (A-1, S-1, S-2) PRs separate from recording-pipeline changes (I-1, A-2).
 - Next: Phase 2 bouldering on this branch (draft PR; no merge without explicit approval).
 
+### Latest recovery pointer — checkpoint 263 bouldering implemented; draft PR verification next (Claude)
+
+- `e02043e` domain + storage: `domain/climbing/Climbing.kt` (V-scale 19 / Font 24 grades, original
+  grade kept, `approximately()` display-only; FLASH requires 1 attempt; sessions 1 min–24 h, ≤300
+  problems; resumable `ClimbingDraft`), `ClimbingAnalytics` (PR #25 periods; distribution and
+  weekly progression in the chosen system only; other-system/ungraded counted, never converted).
+  Schema 20 (`ProfileDatabase` V20 markers → regenerated `SchemaStatements`; API-28-safe SQL, no
+  UPSERT/json_extract): `climbing_sessions`, `climbing_session_draft` (id=1), `climbing_preferences`.
+  Root JSON 14 `climbing` v1 on shared (`ClimbingArchiveJson`, `SqliteApplicationBackup*`) and
+  Android (`AndroidClimbingBackup`, `SqliteBackupRepository`, `BackupManager.VERSION=14`). Roots
+  1–13 restore empty climbing; unsaved draft never exported and blocks restore. Tests: 8 domain,
+  6 repository (JVM + iOS), backup contract round-trip/blocks, schema 3 new (81 pass), Android
+  fixtures drop v20 tables, `SharedBackupEnvelopeTest` Android==shared climbing equality.
+- UI: `SharedBoulderingCoordinator` + `SharedBouldering{Home,Session,Review,Detail,History}`;
+  Strength "More detail › Train › Bouldering" for everyone and a compact card only for climbers;
+  Android routes `bouldering…` (activity-scoped `BoulderingViewModel`); iOS pages BOULDERING_* with
+  Strength tab highlighted. `SharedBoulderingScreenTest` (flow incl. interruption/resume, review,
+  correction, delete; dashboard separation) in draft focused classes; 6 new canonical captures
+  `bouldering-*` (465 required). Docs: ARCHITECTURE, PRIVACY, TEST_BUILD physical checklist.
+- Not yet done: version bump/release notes (only when the owner wants a release), iOS compile is
+  verified only by CI (no local Xcode). PR must stay DRAFT; no merge without explicit approval.
+
 ## Earlier baseline (12 November 2026 — superseded by the section above; kept for history)
 
 - Repository: `mmwiza1/Race-day-dreams`; default branch `main`. **0.12.2-test1 / versionCode 18 is complete, merged and published**, not an unfinished feature branch.

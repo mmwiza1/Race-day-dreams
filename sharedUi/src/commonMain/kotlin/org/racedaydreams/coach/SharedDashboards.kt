@@ -58,6 +58,7 @@ enum class StrengthLink(val title: String, val summary: String) {
     HISTORY("Workout history", "Every recorded strength session"),
     EXERCISES("Exercises", "Search, favourite and manage"),
     RECOVERY("Recovery & training balance", "Optional guidance"),
+    BOULDERING("Bouldering", "Log climbs, grades and sends"),
 }
 
 @Composable
@@ -293,6 +294,10 @@ fun SharedStrengthDashboard(
     links: List<StrengthLink>,
     open: (StrengthLink) -> Unit,
     openWorkout: (String) -> Unit,
+    climbing: List<org.racedaydreams.domain.climbing.ClimbingSession> = emptyList(),
+    climbingDraft: Boolean = false,
+    gradeSystem: org.racedaydreams.domain.climbing.GradeSystem =
+        org.racedaydreams.domain.climbing.GradeSystem.V_SCALE,
 ) = CoachPage {
     var periodName by rememberSaveable { mutableStateOf(Period.FOUR_WEEKS.name) }
     var exerciseId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -356,6 +361,42 @@ fun SharedStrengthDashboard(
             ),
         )
     )
+
+    // Bouldering stays separate from lifting metrics; shown only to people who climb.
+    if (StrengthLink.BOULDERING in links && (climbing.isNotEmpty() || climbingDraft)) {
+        val climbs =
+            remember(climbing, today, period, gradeSystem) {
+                org.racedaydreams.domain.climbing.ClimbingAnalytics.summary(
+                    climbing,
+                    today,
+                    period,
+                    gradeSystem,
+                )
+            }
+        val hardest = climbs.highestSend[gradeSystem] ?: climbs.highestSend.values.firstOrNull()
+        Card(
+            onClick = { open(StrengthLink.BOULDERING) },
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                ),
+            modifier = Modifier.fillMaxWidth().testTag("strength-bouldering-card"),
+        ) {
+            Column(
+                Modifier.padding(16.dp).semantics(mergeDescendants = true) {},
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text("Bouldering", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    if (climbingDraft) "Unsaved session · tap to resume"
+                    else
+                        "${plural(climbs.sessions, "session")} · ${plural(climbs.sends, "send")}" +
+                            (hardest?.let { " · hardest ${it.label}" } ?: "") +
+                            " · ${period.label}"
+                )
+            }
+        }
+    }
 
     CoachCard {
         Text("Estimated 1RM trend", style = MaterialTheme.typography.titleLarge)
@@ -423,7 +464,13 @@ fun SharedStrengthDashboard(
 
     MoreDetail(
         listOf(
-                "Train" to listOf(StrengthLink.LOG, StrengthLink.PROGRAMME, StrengthLink.EXERCISES),
+                "Train" to
+                    listOf(
+                        StrengthLink.LOG,
+                        StrengthLink.BOULDERING,
+                        StrengthLink.PROGRAMME,
+                        StrengthLink.EXERCISES,
+                    ),
                 "Records & trends" to
                     listOf(StrengthLink.ANALYTICS, StrengthLink.PBS, StrengthLink.MILESTONES),
                 "Recovery" to listOf(StrengthLink.RECOVERY),
@@ -435,7 +482,7 @@ fun SharedStrengthDashboard(
     )
 }
 
-private fun plural(count: Int, noun: String) = "$count $noun${if (count == 1) "" else "s"}"
+internal fun plural(count: Int, noun: String) = "$count $noun${if (count == 1) "" else "s"}"
 
 private fun signed(value: Int) = if (value > 0) "+$value" else value.toString()
 
@@ -451,7 +498,7 @@ private val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 private fun weekdaySpan(days: Int) = if (days <= 1) "Mon" else "Mon–${weekdays[days - 1]}"
 
 @Composable
-private fun PeriodSelector(selected: Period, select: (Period) -> Unit) {
+internal fun PeriodSelector(selected: Period, select: (Period) -> Unit) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -466,7 +513,7 @@ private fun PeriodSelector(selected: Period, select: (Period) -> Unit) {
     }
 }
 
-private class Kpi(
+internal class Kpi(
     val title: String,
     val value: String,
     val detail: String,
@@ -475,7 +522,7 @@ private class Kpi(
 
 /** Four tiles: two per row on phones, one per row with very large text, four on wide screens. */
 @Composable
-private fun KpiGrid(tiles: List<Kpi>) {
+internal fun KpiGrid(tiles: List<Kpi>) {
     val large = LocalDensity.current.fontScale >= 1.5f
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val columns =
@@ -518,7 +565,7 @@ private fun KpiTile(tile: Kpi, modifier: Modifier) {
 }
 
 @Composable
-private fun SectionHeader(title: String, seeAll: (() -> Unit)?) {
+internal fun SectionHeader(title: String, seeAll: (() -> Unit)?) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             title,
@@ -530,7 +577,7 @@ private fun SectionHeader(title: String, seeAll: (() -> Unit)?) {
 }
 
 @Composable
-private fun Explainer(label: String, text: String) {
+internal fun Explainer(label: String, text: String) {
     var shown by rememberSaveable(label) { mutableStateOf(false) }
     TextButton(
         onClick = { shown = !shown },
@@ -542,7 +589,7 @@ private fun Explainer(label: String, text: String) {
 }
 
 @Composable
-private fun DashboardRow(
+internal fun DashboardRow(
     title: String,
     detail: String,
     value: String,

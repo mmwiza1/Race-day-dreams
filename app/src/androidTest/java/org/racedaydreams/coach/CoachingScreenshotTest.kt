@@ -997,6 +997,161 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesBoulderingFromTheStrengthTabInAllModes() {
+        val climbs =
+            org.racedaydreams.storage.SqliteClimbing(
+                org.racedaydreams.data.AndroidSqlConnection.forApplication(context)
+            )
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            shell("settings put system font_scale 1.0")
+            shell("cmd uimode night no")
+            // New climber: reached from the Strength tab's More detail list.
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            await("Strength")
+            click("Strength")
+            await("Muscle-group workload")
+            compose.onNodeWithText("Bouldering").performScrollTo().performClick()
+            await("Start bouldering session")
+            capture("bouldering-empty")
+            closeScenario()
+            scenario = null
+
+            // Synthetic history: V-scale with one Fontainebleau problem, sends, flashes and fails.
+            val today = LocalDate.now()
+            fun grade(label: String) =
+                org.racedaydreams.domain.climbing.ClimbingGrade(
+                    if (label.startsWith("V")) org.racedaydreams.domain.climbing.GradeSystem.V_SCALE
+                    else org.racedaydreams.domain.climbing.GradeSystem.FONTAINEBLEAU,
+                    label,
+                )
+            fun problem(
+                id: String,
+                label: String?,
+                attempts: Int,
+                outcome: org.racedaydreams.domain.climbing.ClimbOutcome,
+            ) =
+                org.racedaydreams.domain.climbing.ClimbingProblem(
+                    id,
+                    label?.let(::grade),
+                    attempts,
+                    outcome,
+                )
+            val flash = org.racedaydreams.domain.climbing.ClimbOutcome.FLASH
+            val send = org.racedaydreams.domain.climbing.ClimbOutcome.SEND
+            val fail = org.racedaydreams.domain.climbing.ClimbOutcome.NOT_SENT
+            val plan =
+                listOf(
+                    Triple(
+                        2L,
+                        "Local wall",
+                        listOf(
+                            "V3" to flash,
+                            "V4" to send,
+                            "V5" to send,
+                            "V6" to fail,
+                            "6C+" to send,
+                        ),
+                    ),
+                    Triple(
+                        6L,
+                        "Local wall",
+                        listOf("V2" to flash, "V3" to flash, "V4" to send, "V5" to fail),
+                    ),
+                    Triple(10L, "Boulder barn", listOf("V3" to send, "V4" to send, "V4" to fail)),
+                    Triple(16L, "Local wall", listOf("V2" to flash, "V3" to send, "V4" to fail)),
+                    Triple(23L, "Boulder barn", listOf("V1" to flash, "V2" to send, "V3" to send)),
+                )
+            plan.forEachIndexed { index, (daysAgo, place, problems) ->
+                climbs.saveNew(
+                    org.racedaydreams.domain.climbing.ClimbingSession(
+                        "climb-$index",
+                        today.minusDays(daysAgo).atTime(18, 30).toInstant(ZoneOffset.UTC),
+                        ZoneOffset.UTC,
+                        5400L - index * 600,
+                        place,
+                        "",
+                        problems.mapIndexed { n, (label, outcome) ->
+                            problem("p$index-$n", label, if (outcome == flash) 1 else 3, outcome)
+                        },
+                    )
+                )
+            }
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            await("Strength")
+            click("Strength")
+            await("Muscle-group workload")
+            compose.onNodeWithTag("strength-bouldering-card").performScrollTo().performClick()
+            await("Grade distribution")
+            capture("bouldering-home")
+            compose.onNodeWithText("Grade distribution").performScrollTo()
+            compose.waitForIdle()
+            capture("bouldering-home-analytics")
+            compose.onNodeWithText("Start bouldering session").performScrollTo().performClick()
+            await("Climbing for")
+            climbs.saveDraft(
+                requireNotNull(climbs.draft())
+                    .copy(
+                        location = "Local wall",
+                        problems =
+                            listOf(
+                                problem("live-1", "V3", 1, flash),
+                                problem("live-2", "V5", 4, send),
+                                problem("live-3", "6C+", 2, send),
+                                problem("live-4", "V6", 5, fail),
+                            ),
+                    )
+            )
+            closeScenario()
+            scenario = null
+
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            await("Strength")
+            click("Strength")
+            await("Muscle-group workload")
+            compose.onNodeWithTag("strength-bouldering-card").performScrollTo().performClick()
+            await("Resume session")
+            compose.onNodeWithText("Resume session").performClick()
+            await("4 problems · 3 sent · 1 flashed")
+            capture("bouldering-session")
+            climbs.clearDraft()
+            closeScenario()
+            scenario = null
+
+            shell("cmd uimode night yes")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            await("Strength")
+            click("Strength")
+            await("Muscle-group workload")
+            compose.onNodeWithTag("strength-bouldering-card").performScrollTo().performClick()
+            await("Grade distribution")
+            capture("bouldering-home-dark")
+            closeScenario()
+            scenario = null
+
+            shell("cmd uimode night no")
+            shell("settings put system font_scale 2.0")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            await("Strength")
+            Assert.assertTrue(context.resources.configuration.fontScale >= 1.99f)
+            compose.onNodeWithContentDescription("Strength").performClick()
+            await("Muscle-group workload")
+            compose.onNodeWithTag("strength-bouldering-card").performScrollTo().performClick()
+            await("Grade distribution")
+            capture("bouldering-home-large-font")
+        } finally {
+            closeScenario()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesRecordedStrengthTrendsAndMeasuredVersusEstimatedRecords() {
         val today = LocalDate.now()
         val bench = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()

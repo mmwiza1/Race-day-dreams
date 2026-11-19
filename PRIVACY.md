@@ -49,6 +49,12 @@ encryption scheme.
 
 ## Backup/export and restore
 
+Bouldering sessions (date, climbing time, optional gym or location name, problems, grades,
+attempts, outcomes and notes) and your preferred grading system stay on this device and are
+included in app backups from backup version 14. An unsaved bouldering session is kept only on the
+device so it can be resumed; it is not exported, and a restore waits until it is saved or
+discarded.
+
 A backup is an explicit user-chosen JSON file. It contains app-owned profile,
 goals, preferences, manual/assessment entries, shoes, notes, results, derived PB
 metadata and plan/settings data, including goal/evidence snapshots, complete coaching version/decision history, strength sessions/custom exercises and run responses. Raw imported Health Connect activities,

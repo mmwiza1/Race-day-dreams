@@ -1,3 +1,17 @@
+# Bouldering (schema 20, root JSON 14)
+
+Bouldering is a separate activity inside the Strength section. Shared domain
+`org.racedaydreams.domain.climbing` (grades, problems, sessions, drafts, `ClimbingAnalytics`) and
+`SharedBoulderingCoordinator`/`SharedBouldering*` screens serve Android and iOS. Schema 20 adds
+`climbing_sessions` (bounded JSON payload per session, ordered by start), one resumable
+`climbing_session_draft` row and `climbing_preferences`; nothing is written to strength tables, so
+climbing never creates working sets, estimated 1RM, lifting records or muscle-group workload.
+Root JSON 14 adds a strict `climbing` v1 section on both the shared and Android backup paths
+(`ClimbingArchiveJson`, `AndroidClimbingBackup`); roots 1–13 restore with no climbing history. The
+unsaved draft is never exported and, like an active run or gym workout, blocks replacement.
+Grades keep their original system and label; V-scale/Fontainebleau conversions are display-only
+and labelled approximate.
+
 # 0.11 body/recovery feature boundaries
 
 TrainingRecoveryViewModel builds evidence-backed options off-main; preview-only domain proposals

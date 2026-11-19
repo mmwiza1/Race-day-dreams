@@ -15,7 +15,20 @@ import androidx.compose.ui.semantics.contentDescription
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.UnitSystem
 
-@Composable fun StrengthDashboard(state:CoachUiState,open:(String)->Unit)=SharedStrengthDashboard(
+@Composable fun StrengthDashboard(
+    state:CoachUiState,
+    bouldering:org.racedaydreams.coach.climbing.BoulderingViewModel?,
+    open:(String)->Unit,
+):Unit {
+    val climbing = bouldering?.coordinator?.state?.collectAsState()?.value
+    StrengthDashboardContent(state, climbing, open)
+}
+
+@Composable private fun StrengthDashboardContent(
+    state:CoachUiState,
+    climbing:org.racedaydreams.coach.climbing.BoulderingState?,
+    open:(String)->Unit,
+)=SharedStrengthDashboard(
     state,
     java.time.LocalDate.now(),
     java.time.Instant.now(),
@@ -35,10 +48,14 @@ import org.racedaydreams.domain.UnitSystem
             StrengthLink.HISTORY -> "history?kind=STRENGTH"
             StrengthLink.EXERCISES -> "exercises"
             StrengthLink.RECOVERY -> "strength/recovery"
+            StrengthLink.BOULDERING -> "bouldering"
         }
     )
     },
     openWorkout = { open("strength/source/${android.net.Uri.encode(it)}") },
+    climbing = climbing?.sessions.orEmpty(),
+    climbingDraft = climbing?.draft != null,
+    gradeSystem = climbing?.gradeSystem ?: org.racedaydreams.domain.climbing.GradeSystem.V_SCALE,
 )
 @Composable fun ProgressDashboard(state:CoachUiState,open:(String)->Unit)=SharedProgressDashboard(
     state,
