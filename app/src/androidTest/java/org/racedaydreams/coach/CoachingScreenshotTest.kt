@@ -925,6 +925,7 @@ class CoachingScreenshotTest {
             shell("cmd uimode night no")
             // New-user evidence: no runs and no recorded gym sessions yet, only a programme.
             scenario = ActivityScenario.launch(CoachActivity::class.java)
+            await("Progress")
             click("Progress")
             await("Distance this week")
             capture("progress-dashboard-empty")

@@ -45,10 +45,9 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Bench Press", in: app)
 
         tap("Timer settings ▾", in: app)
-        XCTAssertTrue(control("Default rest when no target is prescribed", in: app)
-            .waitForExistence(timeout: 15))
+        XCTAssertTrue(reveal("Default rest when no target is prescribed", in: app))
         tap("Optional warm-up ▾", in: app)
-        XCTAssertTrue(control("Enter my own warm-up", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(reveal("Enter my own warm-up", in: app))
 
         tap("Discard unfinished workout", in: app)
         tap("Discard workout", in: app)
@@ -192,6 +191,19 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    /// Expanded content can open below the visible area, and iOS exposes only on-screen Compose
+    /// elements, so scroll gently until the control appears.
+    private func reveal(_ label: String, in app: XCUIApplication) -> Bool {
+        let element = control(label, in: app)
+        if element.waitForExistence(timeout: 15) { return true }
+        for _ in 0..<4 {
+            app.swipeUp()
+            settle()
+            if element.waitForExistence(timeout: 3) { return true }
+        }
+        return false
     }
 
     /// A tap during a Compose scroll fling only stops the fling, so let a swipe finish first.

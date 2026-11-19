@@ -121,6 +121,10 @@ incomplete migration merely because a focused checkpoint passes.
     Full gate on 8b15fa3: iOS all green; Android 28/35/36 failed only CoachingScreenshotTest
     click("Strength") (2 nodes) because More detail group headings "Strength"/"Progress" equalled
     tab names -> renamed "Strength training" / "Records & trends" (keep group names != tab names).
+    Full gate on b0da811: API 35/36, guidance, formatting, apple-device GREEN; API 28 failed only
+    the new empty-state capture (tapped "Progress" before the slow emulator showed tabs -> await
+    first); iOS Gym Now flaked at "Default rest…" (expanded below viewport; iOS sees only on-screen
+    nodes) -> reveal() scrolls until visible. Same assertions.
     12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
     captures progress-/strength-dashboard-empty (459 required).
 
