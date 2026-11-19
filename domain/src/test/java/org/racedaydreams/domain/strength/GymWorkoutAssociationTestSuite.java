@@ -429,7 +429,9 @@ public final class GymWorkoutAssociationTestSuite {
         var idCount = new int[] {0};
         var coordinator =
                 new GymAssociationCoordinator(
-                        store, Clock.fixed(NOW, ZoneOffset.UTC), () -> "choice-" + (++idCount[0]));
+                        store,
+                        Clock.fixed(NOW, ZoneOffset.UTC)::instant,
+                        () -> "choice-" + (++idCount[0]));
         coordinator.review(p.actual().id());
         check(store.current == null);
         check(coordinator.view().proposals().size() == 1);

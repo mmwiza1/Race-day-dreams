@@ -9,15 +9,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import java.time.Duration
 import java.time.ZoneOffset
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
@@ -34,187 +31,24 @@ fun ActivityHistoryScreen(
     loadSummaryPage: (suspend (java.time.Instant?, String?, Int) -> List<ActivityRecord>)? = null,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    var page by remember { mutableIntStateOf(0) }
-    var visible by remember { mutableStateOf<List<ActivityRecord>>(emptyList()) }
-    var hasMore by remember { mutableStateOf(false) }
-    var loading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf(false) }
-    var loadedSource by remember { mutableStateOf<List<ActivityRecord>?>(null) }
-    LaunchedEffect(state.activities, page) {
-        val requestedSource = state.activities
-        val append = loadedSource == requestedSource
-        if (!append) visible = emptyList()
-        loading = true
-        error = false
-        try {
-            val last = if (append) visible.lastOrNull() else null
-            // The optional suspend boundary permits deterministic interrupted-query tests;
-            // production continues to read the same bounded, summary-only page on IO.
-            val found =
-                if (loadSummaryPage != null) loadSummaryPage(last?.start(), last?.id(), 31)
-                else
-                    withContext(Dispatchers.IO) {
-                        org.racedaydreams.data
-                            .FeatureStore(context)
-                            .activitySummaryPage(last?.start(), last?.id(), 31)
-                    }
-            visible = if (append) visible + found.take(30) else found.take(30)
-            hasMore = found.size > 30
-            loadedSource = requestedSource
-        } catch (cancelled: kotlinx.coroutines.CancellationException) {
-            throw cancelled
-        } catch (_: Exception) {
-            error = true
-        } finally {
-            // A cancelled predecessor can finish after its replacement has started.
-            // It must not advertise that replacement's still-pending page as ready.
-            if (currentCoroutineContext().isActive) loading = false
-        }
-    }
-    val groups = remember(visible) { visible.groupBy(::displayActivityDate) }
-    // A parent refresh can replace the source before LaunchedEffect starts its new
-    // query. Do not advertise the old page as ready during that transition.
-    val historyPending = loading || state.busy || (!error && loadedSource != state.activities)
-    Box(Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.TopCenter) {
-        LazyColumn(
-            Modifier.fillMaxHeight().widthIn(max = 840.dp).fillMaxWidth().semantics {
-                stateDescription =
-                    if (historyPending) "Loading recorded history"
-                    else if (error) "History unavailable" else "Recorded history ready"
+    SharedActivityHistoryScreen(
+        state,
+        open,
+        allStrength,
+        loadSummaryPage
+            ?: { instant, id, limit ->
+                withContext(Dispatchers.IO) {
+                    org.racedaydreams.data
+                        .FeatureStore(context)
+                        .activitySummaryPage(instant, id, limit)
+                }
             },
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            item {
-                CoachHeading("Activity calendar")
-                Text("Recorded runs · list view", Modifier.padding(top = 8.dp))
-                Text(
-                    "Your week can change. Recorded activities are retained independently of planned workouts.",
-                    Modifier.padding(top = 8.dp),
-                )
-            }
-            if (state.strengthSessions.isNotEmpty()) item { CoachHeading("Strength history") }
-            items(
-                state.strengthSessions.sortedByDescending { it.startedAt() }.take(20),
-                key = { "strength:" + it.id() },
-            ) { session ->
-                CoachCard {
-                    Text(
-                        "${friendlyDate(session.startedAt().atOffset(session.offset()).toLocalDate())} · Strength ✓"
-                    )
-                    Text(
-                        "${session.duration().toMinutes()} min · ${session.exercises().size} exercises"
-                    )
-                    session.exercises().forEach { Text(it.exercise().name()) }
-                }
-            }
-            if (state.strengthSessions.size > 20)
-                item {
-                    TextButton(onClick = allStrength, modifier = Modifier.heightIn(min = 48.dp)) {
-                        Text("View all strength history")
-                    }
-                }
-            if (error)
-                item {
-                    Text("History could not be loaded. Your records are retained.")
-                    TextButton(onClick = { page++ }) { Text("Try again") }
-                }
-            if (groups.isEmpty() && !historyPending && !error)
-                item {
-                    Text(
-                        "No completed runs have been added. Connect Health Connect or enter an optional completed assessment to begin your history."
-                    )
-                }
-            groups.forEach { (date, activities) ->
-                item(key = "date:$date") {
-                    Text(
-                        date,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.semantics { heading() },
-                    )
-                }
-                items(activities, key = { it.id() }) { activity ->
-                    Card(
-                        onClick = { open(activity.id()) },
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
-                        shape = MaterialTheme.shapes.large,
-                        colors =
-                            CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                            ),
-                    ) {
-                        Column(
-                            Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
-                        ) {
-                            Text(
-                                if (activity.source().provider() == "assessment") "Assessment run"
-                                else "Recorded run",
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                activity.distanceMetres()?.let { formatDistance(it, state) }
-                                    ?: "Distance unavailable",
-                                style = MaterialTheme.typography.headlineSmall,
-                            )
-                            Text(
-                                "Elapsed: ${PaceCalculator.formatTime(activity.elapsedTime())}",
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
-                            )
-                            val score =
-                                remember(activity, state.runResponses, state.planVersions) {
-                                    val response =
-                                        state.runResponses.firstOrNull {
-                                            it.activityId() == activity.id()
-                                        }
-                                    val prescription =
-                                        state.planVersions
-                                            .firstOrNull { it.id() == response?.planVersionId() }
-                                            ?.plan()
-                                            ?.workouts()
-                                            ?.firstOrNull {
-                                                it.id() == response?.plannedWorkoutId()
-                                            }
-                                    if (prescription == null) null
-                                    else
-                                        org.racedaydreams.domain.coaching.RunScoreEngine.analyse(
-                                                prescription,
-                                                activity,
-                                                response,
-                                            )
-                                            .score()
-                                }
-                            score?.let { Text("Run Score $it/10") }
-                            recordedElapsedPace(
-                                    activity,
-                                    state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
-                                )
-                                ?.let {
-                                    Text(
-                                        "Elapsed average pace: $it",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                }
-                            Text("Completed · tap for details")
-                        }
-                    }
-                }
-            }
-            if (historyPending) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
-            else if (hasMore)
-                item {
-                    TextButton(
-                        onClick = { page++ },
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                    ) {
-                        Text("Load more recorded runs")
-                    }
-                }
-        }
-    }
+        ::displayActivityDate,
+        { instant, offset -> friendlyDate(instant.atOffset(offset).toLocalDate()) },
+        { formatDistance(it, state) },
+        ::recordedElapsedPace,
+        "No completed runs have been added. Connect Health Connect or enter an optional completed assessment to begin your history.",
+    )
 }
 
 @Composable
@@ -247,13 +81,6 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             value =
                 withContext(Dispatchers.Default) { SplitCalculator.calculate(activity, splitUnits) }
         }
-    var notes by
-        rememberSaveable(activity.id(), activity.notes()) { mutableStateOf(activity.notes() ?: "") }
-    var rpe by
-        rememberSaveable(activity.id(), activity.rpe()) {
-            mutableStateOf(activity.rpe()?.let(::decimal) ?: "")
-        }
-    var error by rememberSaveable(activity.id()) { mutableStateOf<String?>(null) }
     var chooseShoe by rememberSaveable { mutableStateOf(false) }
     val assessment = state.assessments.firstOrNull { it.activityId() == activity.id() }
     val assessmentSummary =
@@ -294,42 +121,13 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             }
             activity.cadence()?.let { Text("Recorded cadence: ${decimal(it)} steps/min") }
             activity.rpe()?.let { Text("Manually entered effort: ${decimal(it)}/10") }
-            val durability =
-                remember(activity) {
-                    org.racedaydreams.domain.presentation.DurabilityData.of(activity)
-                }
-            CoachCard {
-                Text("Long-run durability", style = MaterialTheme.typography.titleMedium)
-                Text(durability.status())
-                if (durability.evidence().sufficient()) {
-                    val factor =
-                        if (
-                            state.profile?.preferences()?.units() ==
-                                org.racedaydreams.domain.UnitSystem.IMPERIAL
-                        )
-                            1.609344
-                        else 1.0
-                    val unit = if (factor > 1) "mi" else "km"
-                    Text(
-                        "First half: ${formatPaceSeconds(durability.firstHalfSecondsPerKm()*factor)}/$unit"
-                    )
-                    Text(
-                        "Second half: ${formatPaceSeconds(durability.secondHalfSecondsPerKm()*factor)}/$unit"
-                    )
-                    Text(
-                        "Late-run pace change: ${decimal(durability.evidence().paceFadePercent())}%"
-                    )
-                    activity.rpe()?.let { Text("Session RPE: ${decimal(it)}/10") }
-                }
-                WhyDetails(
-                    durability.evidence().explanation() +
-                        " These are descriptive equal-time halves, not a precise fitness score. Terrain, stops, conditions and intention matter." +
-                        (durability.evidence().heartRateDriftPercent()?.let {
-                            " HR-to-pace change: ${decimal(it)}%."
-                        } ?: " HR context unavailable."),
-                    "Durability details",
-                )
-            }
+            SharedRunDurabilityCard(
+                activity,
+                state.profile?.preferences()?.units() ==
+                    org.racedaydreams.domain.UnitSystem.IMPERIAL,
+                ::formatPaceSeconds,
+                ::decimal,
+            )
             Text(
                 "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
             )
@@ -350,7 +148,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             CoachCard {
                 Text("What this assessment tells us", style = MaterialTheme.typography.titleMedium)
                 Text("Mode: ${assessment!!.assessment().mode().name.lowercase().replace('_', ' ')}")
-                Text("Baseline confidence: ${summary.confidence().name.lowercase()}")
+                summary.confidence()?.let { Text("Baseline confidence: ${it.name.lowercase()}") }
                 summary.findings().forEach { Text(it) }
             }
         }
@@ -514,26 +312,8 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
         OutlinedButton(onClick = { chooseShoe = true }, enabled = !state.busy) {
             Text("Change shoe assignment")
         }
-        CoachField("Your effort / RPE, 0–10 (optional)", rpe, { rpe = it })
-        CoachField("Your notes", notes, { notes = it }, singleLine = false)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(
-            onClick = {
-                try {
-                    val effort = optionalNumber(rpe)
-                    require(effort == null || effort in 0.0..10.0) {
-                        "RPE must be between 0 and 10."
-                    }
-                    error = null
-                    model.runningEvidence.saveNotes(activity.id(), notes, effort)
-                } catch (failure: IllegalArgumentException) {
-                    error = failure.message
-                }
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Save notes and effort")
+        org.racedaydreams.coach.activity.SharedRunNotes(activity, state.busy) { notes, effort ->
+            model.runningEvidence.saveNotes(activity.id(), notes, effort)
         }
     }
     if (chooseShoe)

@@ -21,11 +21,5 @@ import org.racedaydreams.domain.health.*
         }
     }
     val r=recovery?:return
-    if(r.reviewSuggested())SemanticCard(Tile.Insight){
-        Text("Consider an easier option",style=MaterialTheme.typography.titleMedium)
-        Text("Several signals support reviewing today's demand. This is training context, not a diagnosis.")
-        WhyDetails(r.evidence().joinToString("\n"),"Why?")
-        Text("Keep the plan, run by effort, move or rest. Your goal stays unchanged.")
-        if(workoutId!=null){var confirm by remember{mutableStateOf(false)};TextButton(onClick={confirm=true}){Text("Preview easy alternative")};if(confirm)AlertDialog(onDismissRequest={confirm=false},title={Text("Replace only this session with easy running?")},text={Text("The same distance/time ceiling is retained at conversational effort, RPE about 3. No extra mileage is added. Other sessions, your goal and recurring days stay unchanged. The original version is retained.")},confirmButton={TextButton(onClick={confirm=false;model.runningPlan.chooseEasy(workoutId,r.evidence().joinToString(" "))}){Text("Choose easy")}},dismissButton={TextButton(onClick={confirm=false}){Text("Keep original")}})}
-    }
+    SharedRecoveryContextCard(r, workoutId?.let { id -> { reason -> model.runningPlan.chooseEasy(id,reason) } })
 }

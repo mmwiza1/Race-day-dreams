@@ -128,7 +128,7 @@ class RunRecordingStoreTest : AndroidTestCase() {
         assertEquals(101, a.samples().size)
         assertEquals(101, RecordingStore(context).points(s.id).size)
         assertNull(RecordingStore(context).unfinished())
-        assertTrue(a.distanceMetres() > 300)
+        assertTrue(requireNotNull(a.distanceMetres()) > 300)
     }
 
     fun testInterruptedStageCanRecoverWithoutInventingDowntime() {

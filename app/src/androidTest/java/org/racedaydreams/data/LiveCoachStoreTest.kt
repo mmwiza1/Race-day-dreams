@@ -106,7 +106,7 @@ class LiveCoachStoreTest : AndroidTestCase() {
         CompleteBackup(context).exportTo(bytes)
         SqliteUserPreferencesRepository(context).clear()
         CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()))
-        assertEquals(101, FeatureStore(context).activityDetail(id).samples().size)
+        assertEquals(101, requireNotNull(FeatureStore(context).activityDetail(id)).samples().size)
         assertEquals(dream, SupportStore(context).dream(id, 333.0))
         assertEquals(
             2,
@@ -139,7 +139,7 @@ class LiveCoachStoreTest : AndroidTestCase() {
     fun testNativeHistorySummariesDoNotHydrateCoordinates() {
         val id = native()
         assertEquals(0, FeatureStore(context).activitySummaries().first().samples().size)
-        assertEquals(101, FeatureStore(context).activityDetail(id).samples().size)
+        assertEquals(101, requireNotNull(FeatureStore(context).activityDetail(id)).samples().size)
     }
 
     fun testEveryBundledMovementHasOriginalSupportedPoseAndInstructions() {
@@ -147,8 +147,8 @@ class LiveCoachStoreTest : AndroidTestCase() {
             setOf("walk", "lunge", "stand", "calf", "swing", "march", "bridge", "sit", "quad")
         for (m in RunningRoutines.MOVEMENTS) {
             assertTrue(m.pose() in poses)
-            assertTrue(m.instructions().length > 20)
-            assertTrue(m.cue().isNotBlank())
+            assertTrue(requireNotNull(m.instructions()).length > 20)
+            assertTrue(requireNotNull(m.cue()).isNotBlank())
         }
     }
 
@@ -257,8 +257,14 @@ class LiveCoachStoreTest : AndroidTestCase() {
         SqliteUserPreferencesRepository(context).clear()
         CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()))
         assertEquals(before, CoachingStore(context).responses().single())
-        assertEquals("work", FeatureStore(context).activityDetail(id).plannedWorkoutId())
-        assertEquals("Original", CoachingStore(context).current().plan().workouts().first().note())
+        assertEquals(
+            "work",
+            requireNotNull(FeatureStore(context).activityDetail(id)).plannedWorkoutId(),
+        )
+        assertEquals(
+            "Original",
+            requireNotNull(CoachingStore(context).current()).plan().workouts().first().note(),
+        )
     }
 
     fun testMalformedExecutionTimelineRejectsWithoutReplacement() {
@@ -315,6 +321,6 @@ class LiveCoachStoreTest : AndroidTestCase() {
             it.version = 7
         }
         assertEquals(ProfileDatabase.VERSION, helper.writableDatabase.version)
-        assertEquals(101, FeatureStore(context).activityDetail(id).samples().size)
+        assertEquals(101, requireNotNull(FeatureStore(context).activityDetail(id)).samples().size)
     }
 }

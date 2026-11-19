@@ -653,3 +653,41 @@ Record observations and build commit for each check; nothing below is a claimed 
 - Repeat the outstanding 0.10.1 outdoor/urban/known-distance GPS, locked-screen/background,
   pause/resume/interruption/long-run/GPX and Watch comparison checks. Emulator/synthetic passes
   cannot establish outdoor S24 accuracy, and neither comparison device is automatically ground truth.
+
+## Experimental iOS device acceptance — PR #24
+
+The PR workflow publishes an unsigned **simulator** app and source-bound evidence. Use
+the matching run in `CONTINUE_CODEX.md`. Physical iPhone acceptance is still pending.
+The experimental workflow also compiles an unsigned arm64 iPhone app for the
+non-draft migration PR. Once the workflow exists on the default branch, it can
+also run on demand using the `verify_ios_device_build` dispatch input. A successful
+job archives the app, its source commit and checksum. Installation requires signing
+with an Apple development team.
+
+For a device build, use macOS with Xcode and JDK 17. From the repository root, run
+`./gradlew :sharedUi:linkDebugFrameworkIosArm64`, then open
+`iosApp/RaceDayDreams.xcodeproj`. Select the RaceDayDreams scheme and a connected
+iPhone. Set `RDD_FRAMEWORK_DIRECTORY` to the absolute path of
+`sharedUi/build/bin/iosArm64/debugFramework` in the target's build settings.
+Select a development team with a provisioning profile for the target bundle ID
+and HealthKit entitlement. Build and run from Xcode. Record the checkout SHA,
+iPhone model and iOS version with the results.
+
+- [ ] Test the real Apple Health prompt with running workouts, height and weight.
+  Grant only one requested type first. Import known test records and verify
+  timestamps and provider identity. Revoke access and verify that manual entry
+  still works and existing records are preserved. Confirm that an empty read
+  does not present permission as granted.
+- [ ] Record an outdoor run with locked-screen and background intervals.
+  Pause and resume. Verify that interruption, distance, splits and route
+  evidence agree. Export to Files, inspect the GPX and open it again.
+- [ ] Pair a heart-rate monitor and lock the screen for several minutes; heart rate
+  must keep updating. With spoken cues on and the screen locked: music must lower
+  (not stop) during a cue and return afterwards; a podcast must pause and resume;
+  during a phone call no cue may speak (important cues vibrate instead); with the
+  silent switch on, cues must still play. Verify a rest alert with the device locked.
+  Check VoiceOver, Dynamic Type and dark mode through onboarding, running, Gym Now,
+  Apple Health selection and the Settings licence list.
+- [ ] Export and restore a complete backup using the Files picker on a disposable
+  test installation. Compare workout history, actual sets and recording detail
+  before and after restore. Cancel once before replacement and verify data survives.

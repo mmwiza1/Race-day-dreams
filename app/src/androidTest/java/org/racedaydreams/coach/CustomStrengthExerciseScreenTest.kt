@@ -54,7 +54,7 @@ class CustomStrengthExerciseScreenTest {
         field("Notes · optional", "Use the low bench at my gym")
         click("Save custom exercise")
         await { savedId != null }
-        val custom = io { repository.customExercise(savedId)!! }
+        val custom = io { repository.customExercise(requireNotNull(savedId))!! }
         assertEquals("My dumbbell press", custom.exercise().name())
         assertEquals(ExerciseMetadata.BodyArea.CHEST, custom.bodyArea())
         assertEquals(ExerciseMetadata.Role.HORIZONTAL_PUSH, custom.role())
@@ -100,7 +100,7 @@ class CustomStrengthExerciseScreenTest {
         click("No equipment required")
         click("Save custom exercise")
         await { savedId != null }
-        val custom = io { repository.customExercise(savedId)!! }
+        val custom = io { repository.customExercise(requireNotNull(savedId))!! }
         assertEquals(StrengthExercise.MeasurementProfile.DURATION, custom.exercise().measurement())
         assertTrue(custom.equipment().equipmentFree())
         assertFalse(custom.exercise().estimateOneRepMax())
@@ -136,7 +136,7 @@ class CustomStrengthExerciseScreenTest {
                 }
             }
             await { created != null }
-            val custom = io { repository.customExercise(created)!! }
+            val custom = io { repository.customExercise(requireNotNull(created))!! }
             assertTrue(ids.add(created!!))
             assertTrue(custom.exercise().id().startsWith("custom-"))
             assertEquals(profile, custom.exercise().measurement())
@@ -159,7 +159,7 @@ class CustomStrengthExerciseScreenTest {
         await { savedId != null }
         assertEquals(
             StrengthExercise.Mode.WEIGHTED_BODYWEIGHT,
-            io { repository.customExercise(savedId)!!.exercise().mode() },
+            io { repository.customExercise(requireNotNull(savedId))!!.exercise().mode() },
         )
         assertEquals(
             legacy,
@@ -186,7 +186,7 @@ class CustomStrengthExerciseScreenTest {
             }
         }
         await { savedId != null }
-        val custom = io { repository.customExercise(savedId)!! }
+        val custom = io { repository.customExercise(requireNotNull(savedId))!! }
         compose.runOnIdle { model.newDraft() }
         await { model.state.value.draft != null }
         val draft = model.state.value.draft!!
@@ -242,7 +242,7 @@ class CustomStrengthExerciseScreenTest {
         awaitGym { true }
         compose.runOnIdle { gym!!.startPlanned(candidate.workouts().first().id()) {} }
         awaitGym { it.view?.accepted() != null }
-        assertTrue(gym!!.state.value.view!!.accepted().execution().actualSets().isEmpty())
+        assertTrue(gym!!.state.value.view!!.accepted()!!.execution().actualSets().isEmpty())
         assertEquals("", gym!!.state.value.form.kilograms)
         compose.runOnIdle {
             gym!!.updateForm {
@@ -258,7 +258,14 @@ class CustomStrengthExerciseScreenTest {
         assertEquals(15.0, actual.exercises().single().sets().single().kilograms(), 0.0)
         assertEquals(
             20.0,
-            candidate.workouts().first().definition().slots().single().target().referenceLoadKg(),
+            candidate
+                .workouts()
+                .first()
+                .definition()
+                .slots()
+                .single()
+                .target()!!
+                .referenceLoadKg()!!,
             0.0,
         )
         io {
@@ -269,7 +276,7 @@ class CustomStrengthExerciseScreenTest {
             SqliteUserPreferencesRepository(app).clear()
             backup.restoreFrom(java.io.ByteArrayInputStream(out.toByteArray()))
         }
-        assertEquals(custom, io { repository.customExercise(savedId) })
+        assertEquals(custom, io { repository.customExercise(requireNotNull(savedId)) })
         assertEquals(candidate, io { repository.programme(candidate.id(), candidate.revision()) })
         assertEquals(actual, io { CoachingStore(app).strength().single() })
     }

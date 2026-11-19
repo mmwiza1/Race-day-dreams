@@ -80,7 +80,7 @@ class StrengthAnalyticsScreenTest {
                 "",
                 listOf(
                     StrengthSession.ExerciseSets(
-                        ExerciseCatalog.definition("bench-press").exercise(),
+                        requireNotNull(ExerciseCatalog.definition("bench-press")).exercise(),
                         listOf(
                             StrengthSession.SetEntry("warm", 5, 20.0, null, true),
                             StrengthSession.SetEntry("working", 6, 60.0, 7.0, false),

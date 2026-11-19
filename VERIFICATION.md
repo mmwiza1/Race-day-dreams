@@ -1,3 +1,63 @@
+# 0.13.0-test1 shared Android/iOS migration — full software gate passed (not yet merged)
+
+Exact source `6186f59` on ready PR24 passed every required job.
+[Android 44407108219](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44407108219): full
+unfiltered instrumentation on API 28, 35 and 36 with 451 source-bound captures each, lint,
+domain/schema/backup/release/showcase/geometry checks, formatting and exercise-guidance
+completeness; canonical API 35 captures committed as `2c8561a` with source commit 6186f59.
+[Shared/Apple 44407108265](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44407108265):
+shared Android emulator flows; Apple Native tests, framework link, UI/GPX decoder tests,
+simulator app build, startup at SQLite schema 19, 4/4 production XCUITests; and the first
+unsigned iosArm64 iPhone build. SQLite 19, root JSON 13, raw 3 and package 1 unchanged; no
+Android permission change. Not merged or published. Physical Android/iPhone checks in
+TEST_BUILD.md remain unperformed; there is no signed iOS distribution.
+
+# Experimental Android/iOS migration — checkpoint 253 focused gate (not release acceptance)
+
+Draft PR24 head `13b5e75` passed [44385737143](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44385737143):
+Android shared JVM/domain, schema/backup, APK/lint and 644/644 focused API 35 instrumentation
+tests (0 skipped, 0 failed); Apple Native tests, framework link, UI/GPX decoder tests, simulator
+app build, standalone startup at SQLite schema 19, and 4/4 production XCUITests (Apple Health
+choice, saved run/GPX, Gym Now rest and warm-up, shared navigation). This is the focused draft
+gate, NOT the full API 28/35/36 matrix, canonical screenshots or the unsigned iosArm64 build.
+No version, schema, backup-format or permission change. Physical-device checks remain unperformed.
+
+# Experimental Android/iOS migration — through144 locally verified
+
+Original draft PR24 / `experiment/android-ios-kmp-compose`. Source142ced0982 passed BOTH jobs in
+[44166903090](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44166903090):640unique Android
+runtime cases,700189domain checks/48suites, independent SHA/ZIP/XML proofs JVM490/25/658 and
+Native449/27/658 all0fail/errors/skips; real framework linked. Actual APK58615110bytes/SHA256
+`f76c33bb5aadd852f2ec2ffbeaaae7cb3ee3a64501c5e8667a26e9054b2a748a`,0.12.3-test1/code19/min28/noINTERNET.
+Formatting991files/18contracts passed. Framework is NOT an iOS app; this was focused API35,
+not the full API28/35/36 release matrix. No public artifact publication.
+
+New143–144manual/custom/template/revision programme UI and real review dialogs are shared and
+used by Android. Same coordinator, strict UK input/date/identity/back bindings, slot parser and
+review/activation safeguards; approved progression CONTENT untouched. Local final metadata/
+debugAPK/testAPK/lint passed1436m39/176tasks and1446m57/176tasks. Pinned997formatting targets applied;
+new-head Android/Apple runtime remains PENDING and cannot inherit142acceptance. No data-format,
+version or permission change. Remaining actual iOS host/native services/active UI/navigation/
+operation-owner/full app/visual acceptance remain unfinished. See CONTINUE_CODEX.md for recovery.
+
+# Experimental Android/iOS migration — checkpoint142 (not release acceptance)
+
+Branch `experiment/android-ios-kmp-compose`, draft PR24. Original Gym Now operations and entry,
+execution, builder/editor and authored-programme screens now share production code with Android.
+Typed body measurements, body-only Apple Health refresh and manual/history/protein content are
+shared. A checked Apple SQLite error now retains Gym input and the existing pending retry flow.
+No schema/version/backup/permission change; native destructive restore/cleanup remains disabled.
+
+Final local common metadata/debug APK/test APK/lint passed6m36s/176tasks after an environment-
+terminated attempt. Three new real JDBC body contracts passed,0failures/errors/skips. Pinned991
+formatting targets,18formatter contracts, exact19schema boundaries,3source-fingerprint tests and
+10release-note tests passed/applied. Latest Android runtime/Apple tests/framework are PENDING
+for this source; expected640focused Android and Native449/27/658. An actual iOS app host and
+remaining native services/full API28/35/36/app/visual acceptance remain unfinished. No publication
+or physical-device acceptance is claimed. `CONTINUE_CODEX.md` records the exact recovery boundary.
+
+The completed0.12.3 release records below describe the earlier main build, not this experiment.
+
 # 0.12.3-test1 — merged, verified and published
 
 PR22squashmerged as`0f866185beac51760a3459806ad725eeda10ac56`, identical tree to verifiedPRheadb80a1e0.

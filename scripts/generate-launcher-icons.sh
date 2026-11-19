@@ -26,3 +26,8 @@ for item in mdpi:108:66:48 hdpi:162:99:72 xhdpi:216:132:96 xxhdpi:324:198:144 xx
     -draw "circle $((legacy/2)),$((legacy/2)) $((legacy/2)),0" "$work/mask.png"
   magick "$work/square.png" "$work/mask.png" -compose DstIn -composite -strip "$dest/ic_launcher_round.png"
 done
+
+# iOS masks the square at runtime. Keep a full opaque background in the asset catalog.
+magick "$work/art.png" -resize 939x939 -gravity center -background '#0843A0' \
+  -extent 1024x1024 -alpha remove -alpha off -strip \
+  iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon.png

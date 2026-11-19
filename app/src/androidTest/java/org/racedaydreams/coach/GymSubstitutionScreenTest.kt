@@ -82,7 +82,7 @@ class GymSubstitutionScreenTest {
     @Test
     fun busyEquipmentSwapPreservesOriginalActualAndClearsIncompatibleLoadReferenceAfterChoice() {
         install()
-        val frozen = execution().prescription()
+        val frozen = execution().prescription()!!
         val slotId = execution().selectedSlotId()
         saveOriginalSet()
         val firstActual = execution().actualSets().single()
@@ -132,10 +132,10 @@ class GymSubstitutionScreenTest {
 
         val replaced = execution().slots().single()
         assertEquals(slotId, replaced.id())
-        assertNull(replaced.target().referenceLoadKg())
-        assertEquals(3, replaced.target().sets())
+        assertNull(replaced.target()!!.referenceLoadKg())
+        assertEquals(3, replaced.target()!!.sets())
         assertEquals(frozen, execution().prescription())
-        assertEquals(80.0, frozen.slots().single().target().referenceLoadKg()!!, 0.0)
+        assertEquals(80.0, frozen.slots().single().target()!!.referenceLoadKg()!!, 0.0)
         assertEquals(listOf(firstActual), execution().actualSets())
         assertEquals("", model.state.value.form.kilograms)
         assertEquals("", model.state.value.form.repetitions)
@@ -166,7 +166,7 @@ class GymSubstitutionScreenTest {
     @Test
     fun discomfortBodyweightAlternativeExplainsLimitationsAndRemovesTheOldMeasurementTarget() {
         install(dark = true)
-        val frozen = execution().prescription()
+        val frozen = execution().prescription()!!
         saveOriginalSet()
         val originalActual = execution().actualSets().single()
         compose.onNodeWithText("Swap exercise").performScrollTo().performClick()
@@ -301,7 +301,7 @@ class GymSubstitutionScreenTest {
         assertFalse(io { SqliteUserPreferencesRepository(application).load().isPresent })
     }
 
-    private fun execution() = model.state.value.view!!.accepted().execution()
+    private fun execution() = model.state.value.view!!.accepted()!!.execution()
 
     private fun await(condition: () -> Boolean) {
         compose.waitUntil(20_000) {
@@ -310,7 +310,8 @@ class GymSubstitutionScreenTest {
         assertNull("Gym swap failed: ${model.state.value.error}", model.state.value.error)
     }
 
-    private fun exerciseName(id: String) = ExerciseCatalog.definition(id).exercise().name()
+    private fun exerciseName(id: String) =
+        requireNotNull(ExerciseCatalog.definition(id)).exercise().name()
 
     private fun programme(): GymProgramme {
         val date = LocalDate.now()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproduce ODbL New York course data; no network or runtime dependency."""
+"""Reproduce ODbL New York course data; uses the existing pinned Kotlin formatter, not an application dependency."""
 import json
 import math
 import sys
@@ -20,24 +20,9 @@ scale = 9 / max(max(xs)-min(xs), max(ys)-min(ys))
 xoff = (10-(max(xs)-min(xs))*scale)/2
 yoff = (10-(max(ys)-min(ys))*scale)/2
 vertices = [((x-min(xs))*scale+xoff, (y-min(ys))*scale+yoff) for x,y in zip(xs,ys)]
-source = '''package org.racedaydreams.domain.support;
-import java.util.*;
-
-/** Geometry DATA: ODbL-1.0, (c) OpenStreetMap contributors; prepared by MARATHON TRIP.
- * Original application wrapper code: MIT. Do not relicense the coordinate database.
- * Source, retained projected coordinates, licence and transformation:
- * docs/dream-route-data/new-york-2026.json, NEW_YORK_SOURCE_NOTICE.txt, ODbL-1.0.txt.
- * All371 delivered vertices retained, uniformly scaled, north-up EPSG:26918.
- * Approximate2026 road centreline, not official/certified geometry or navigation.
- * The42,195m equivalent axis is separate from the42.67km retained centreline.
- */
-final class NewYork2026Geometry {
-    private NewYork2026Geometry() {}
-    static DreamRoutes.Route route() {return new DreamRoutes.Route("new-york-2026-geo-v1","New York",Arrays.asList(
-'''
-source += ',\n'.join('        new DreamRoutes.Vertex(%.8f,%.8f)' % p for p in vertices)
-source += '\n    ));}\n}\n'
-target = Path('domain/src/main/java/org/racedaydreams/domain/support/NewYork2026Geometry.java')
+from dream_kotlin import geometry_source, SHARED
+source = geometry_source('NewYork2026Geometry', "new-york-2026-geo-v1", "New York", vertices, '/** Geometry DATA: ODbL-1.0, (c) OpenStreetMap contributors; prepared by MARATHON TRIP.\n * Original application wrapper code: MIT. Do not relicense the coordinate database.\n * Source, retained projected coordinates, licence and transformation:\n * docs/dream-route-data/new-york-2026.json, NEW_YORK_SOURCE_NOTICE.txt, ODbL-1.0.txt.\n * All371 delivered vertices retained, uniformly scaled, north-up EPSG:26918.\n * Approximate2026 road centreline, not official/certified geometry or navigation.\n * The42,195m equivalent axis is separate from the42.67km retained centreline.\n */')
+target = SHARED / 'NewYork2026Geometry.kt'
 if '--check' in sys.argv:
     if target.read_text() != source:
         raise SystemExit('New York projection differs from retained geographic source positions')

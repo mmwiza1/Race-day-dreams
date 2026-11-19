@@ -70,7 +70,7 @@ class CaptureValidationTest(unittest.TestCase):
 
     def test_catalogue_expansion_has_every_display_mode(self):
         import re
-        guide_source = (Path(__file__).resolve().parent.parent / 'domain/src/main/java/org/racedaydreams/domain/strength/ExpandedExerciseGuides.java').read_text()
+        guide_source = (Path(__file__).resolve().parent.parent / 'sharedDomain/src/commonMain/kotlin/org/racedaydreams/domain/strength/ExpandedExerciseGuides.kt').read_text()
         identities = set(re.findall(r'add\(\s*out,\s*"([^"]+)"', guide_source))
         self.assertEqual(identities, set(captures.CATALOGUE_EXPANSION_IDS))
         expected = {f'exercise-{identity}-howto{suffix}.png' for identity in identities for suffix in ('', '-dark', '-large-font')}

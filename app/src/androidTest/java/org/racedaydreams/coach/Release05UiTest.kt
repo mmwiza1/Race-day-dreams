@@ -41,7 +41,7 @@ class Release05UiTest {
         val date=LocalDate.now().minusDays(2)
         val at=date.atTime(9,14,37,123000000).toInstant(ZoneOffset.UTC)
         val duration=Duration.ofSeconds(3017)
-        val e=ExerciseCatalog.definition("back-squat").exercise()
+        val e=requireNotNull(ExerciseCatalog.definition("back-squat")).exercise()
         CoachingStore(context).saveStrength(StrengthSession("precise",at,ZoneOffset.UTC,duration,7.0,"Keep this note",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("kept-set-id",5,80.0,7.0,false))))))
         launch();compose.onNodeWithText("View activity history").performScrollTo().performClick();await("Workout history")
         compose.waitUntil(20000){compose.onAllNodes(hasText(friendlyDate(date)) and hasClickAction()).fetchSemanticsNodes().isNotEmpty()}

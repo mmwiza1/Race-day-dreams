@@ -5,11 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.UUID
@@ -22,8 +18,6 @@ import org.racedaydreams.domain.activity.PersonalBestCalculator
 import org.racedaydreams.domain.activity.PersonalBestEntry
 import org.racedaydreams.domain.activity.RecordedResult
 import org.racedaydreams.domain.activity.ResultSource
-import org.racedaydreams.domain.activity.Shoe
-import org.racedaydreams.domain.activity.ShoeMetricsCalculator
 
 /** Presentation of retained evidence. Blank metrics are not substituted with predicted values. */
 @Composable
@@ -95,7 +89,7 @@ fun ProgressScreen(
                 }
             }
             Text(
-                "${friendlyDate(weeks.first().weekStart())} – ${friendlyDate(today)}",
+                "${friendlyDate(requireNotNull(weeks.first().weekStart()))} – ${friendlyDate(today)}",
                 style = MaterialTheme.typography.bodySmall,
             )
             if (trendSection == "Heart rate") {
@@ -295,8 +289,12 @@ fun ProgressScreen(
                     if (milestones.isEmpty())
                         Text("No qualifying milestones in the retained evidence yet.")
                     milestones.forEach { milestone ->
-                        Text("${milestone.label()} · ${friendlyDate(milestone.date())}")
-                        Text(milestone.explanation(), style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            "${milestone.label()} · ${milestone.date()?.let(::friendlyDate) ?: "Date unavailable"}"
+                        )
+                        milestone.explanation()?.let {
+                            Text(it, style = MaterialTheme.typography.bodySmall)
+                        }
                         milestone
                             .activityId()
                             ?.takeIf { id -> state.activities.any { it.id() == id } }
@@ -345,42 +343,13 @@ private fun RankedRunningResult(
     state: CoachUiState,
     onActivity: (String) -> Unit,
 ) {
-    val units = state.profile?.preferences()?.units() ?: UnitSystem.METRIC
-    Row(
-        Modifier.fillMaxWidth().testTag("running-record-${result.distance().code()}-$rank"),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    SharedRankedRunningResult(
+        result,
+        rank,
+        state.profile?.preferences()?.units() ?: UnitSystem.METRIC,
+        ::friendlyDate,
     ) {
-        Surface(
-            color =
-                if (rank == 1) MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.surfaceContainerHighest,
-            shape = MaterialTheme.shapes.large,
-        ) {
-            Text(
-                "$rank",
-                modifier =
-                    Modifier.padding(horizontal = 14.dp, vertical = 10.dp).semantics {
-                        contentDescription = "Rank $rank"
-                    },
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                PaceCalculator.formatTime(result.duration()),
-                style =
-                    if (rank == 1) MaterialTheme.typography.headlineLarge
-                    else MaterialTheme.typography.titleLarge,
-            )
-            Text(
-                "${org.racedaydreams.domain.activity.PerformancePace.format(result.duration(), result.distance(), units)} average pace",
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(friendlyDate(result.date()), style = MaterialTheme.typography.bodyMedium)
-            Text(resultSource(result), style = MaterialTheme.typography.labelMedium)
-            result.eventName()?.takeIf { it.isNotBlank() }?.let { Text(it) }
-            LinkedActivity(result, state, onActivity)
-        }
+        LinkedActivity(result, state, onActivity)
     }
 }
 
@@ -396,323 +365,38 @@ private fun LinkedActivity(result: RecordedResult, state: CoachUiState, open: (S
         )
 }
 
-private fun resultSource(result: RecordedResult): String =
-    when (result.source()) {
-        ResultSource.OFFICIAL_CHIP -> "Official chip time (entered)"
-        ResultSource.MANUAL -> "Manually entered result"
-        ResultSource.ROLLING -> "Calculated rolling effort"
-    }
+private fun resultSource(result: RecordedResult): String = sharedResultSource(result)
 
 @Composable
 private fun ResultEditor(state: CoachUiState, model: CoachViewModel, onDone: () -> Unit) {
-    var code by rememberSaveable { mutableStateOf(PerformanceDistance.FIVE_K.code()) }
-    var time by rememberSaveable { mutableStateOf("") }
-    var date by rememberSaveable { mutableStateOf(LocalDate.now().toString()) }
-    var event by rememberSaveable { mutableStateOf("") }
-    var note by rememberSaveable { mutableStateOf("") }
-    var official by rememberSaveable { mutableStateOf(false) }
-    var activityId by rememberSaveable { mutableStateOf<String?>(null) }
-    var chooseActivity by rememberSaveable { mutableStateOf(false) }
-    var activitySearch by rememberSaveable { mutableStateOf("") }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
-    CoachCard {
-        Text("Record a result", style = MaterialTheme.typography.titleLarge)
-        PerformanceDistance.CORE.forEach { distance ->
-            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-                RadioButton(code == distance.code(), { code = distance.code() })
-                TextButton(onClick = { code = distance.code() }) { Text(distance.label()) }
-            }
-        }
-        CoachField("Finishing time (MM:SS or H:MM:SS)", time, { time = it })
-        CoachField("Result date (YYYY-MM-DD)", date, { date = it })
-        CoachField("Race or event name (optional)", event, { event = it })
-        CheckRow("This is my official chip time", official) { official = it }
-        Text(
-            "Otherwise this is a manually entered result. Both are kept independently of GPS-recorded totals."
-        )
-        Text(
-            activityId?.let {
-                "Linked activity: ${state.activities.firstOrNull { a -> a.id() == it }?.let(::displayActivityDate) ?: it}"
-            } ?: "No linked activity"
-        )
-        TextButton(onClick = { chooseActivity = !chooseActivity }) {
-            Text(if (chooseActivity) "Hide activity choices" else "Choose optional linked activity")
-        }
-        if (chooseActivity) {
-            CoachField(
-                "Find activity date (e.g. 19 October, optional)",
-                activitySearch,
-                { activitySearch = it },
-            )
-            TextButton(
-                onClick = {
-                    activityId = null
-                    chooseActivity = false
-                }
-            ) {
-                Text("No linked activity")
-            }
-            val matches =
-                state.activities.filter {
-                    activitySearch.isBlank() ||
-                        displayActivityDate(it).contains(activitySearch.trim())
-                }
-            matches.take(100).forEach { activity ->
-                TextButton(
-                    onClick = {
-                        activityId = activity.id()
-                        chooseActivity = false
-                    }
-                ) {
-                    Text(
-                        "${displayActivityDate(activity)} · ${activity.distanceMetres()?.let { formatDistance(it, state) } ?: "distance unavailable"}"
-                    )
-                }
-            }
-            if (matches.size > 100)
-                Text(
-                    "Only the most recent 100 matches are shown. Enter a date to find older activities. Linking an activity is optional."
-                )
-            if (matches.isEmpty()) Text("No retained activities match that date.")
-        }
-        CoachField("Result notes (optional)", note, { note = it }, singleLine = false)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(
-            onClick = {
-                try {
-                    val day = LocalDate.parse(date.trim())
-                    require(!day.isAfter(LocalDate.now())) {
-                        "A completed race result cannot be in the future."
-                    }
-                    val distance = PerformanceDistance.CORE.first { it.code() == code }
-                    val result =
-                        RecordedResult(
-                            UUID.randomUUID().toString(),
-                            distance,
-                            PaceCalculator.parseTime(time),
-                            day,
-                            event.trim().takeIf { it.isNotEmpty() },
-                            if (official) ResultSource.OFFICIAL_CHIP else ResultSource.MANUAL,
-                            activityId,
-                            note.trim().takeIf { it.isNotEmpty() },
-                        )
-                    error = null
-                    model.runningEvidence.saveResult(result, onDone)
-                } catch (failure: Exception) {
-                    error = failure.message ?: "Check the result date and finishing time."
-                }
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Save result")
-        }
-    }
+    org.racedaydreams.coach.activity.SharedResultEditor(
+        state = state,
+        today = LocalDate.now(),
+        parseDate = LocalDate::parse,
+        resultDateField = { value, change ->
+            CoachField("Result date (YYYY-MM-DD)", value, change)
+        },
+        describeActivity = ::displayActivityDate,
+        formatDistance = { formatDistance(it, state) },
+        newId = { UUID.randomUUID().toString() },
+        saveResult = { model.runningEvidence.saveResult(it, onDone) },
+    )
 }
 
 @Composable
 fun ShoesScreen(state: CoachUiState, model: CoachViewModel) {
-    var showEditor by rememberSaveable { mutableStateOf(false) }
-    var editingId by rememberSaveable { mutableStateOf<String?>(null) }
-    val metrics =
-        remember(state.shoes, state.activities) {
-            state.shoes.associate { shoe ->
-                shoe.id() to
-                    ShoeMetricsCalculator.calculate(
-                        shoe,
-                        state.activities,
-                        Clock.systemDefaultZone(),
-                    )
-            }
-        }
-    CoachPage {
-        CoachHeading("Your shoes")
-        Text(
-            "Mileage is recalculated from the current run assignments. Import updates and later corrections therefore change the recorded total."
-        )
-        Button(
-            onClick = {
-                editingId = null
-                showEditor = true
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Add shoes")
-        }
-        if (showEditor)
-            ShoeEditor(state.shoes.firstOrNull { it.id() == editingId }, state, model) {
-                showEditor = false
-            }
-        if (state.shoes.isEmpty())
-            Text("No shoes have been added. You can assign shoes to runs after adding them here.")
-        state.shoes.forEach { shoe ->
-            val summary = metrics.getValue(shoe.id())
-            CoachCard {
-                Text(
-                    "${shoe.brand()} ${shoe.model()}".trim(),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Text(
-                    when {
-                        shoe.retired() -> "Retired"
-                        shoe.defaultShoe() -> "Default for newly added runs"
-                        else -> "Active"
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                )
-                Text(
-                    summary.totalDistanceMetres()?.let { formatDistance(it, state) }
-                        ?: formatDistance(summary.recordedDistanceMetres(), state) + " recorded",
-                    style = MaterialTheme.typography.headlineMedium,
-                )
-                Text(
-                    "${summary.runCount()} runs" +
-                        (summary.ageDays()?.let { " · ${if(it<60)"$it days"else"${it/30} months"}" }
-                            ?: "")
-                )
-                Text(summary.wearGuidance())
-                var expanded by rememberSaveable(shoe.id()) { mutableStateOf(false) }
-                TextButton(onClick = { expanded = !expanded }) {
-                    Text(if (expanded) "Hide shoe details" else "View shoe details")
-                }
-                if (expanded) {
-                    Text(
-                        "Recorded distance: ${formatDistance(summary.recordedDistanceMetres(), state)}"
-                    )
-                    summary.totalDistanceMetres()?.let {
-                        Text(
-                            "Known mileage including entered starting mileage: ${formatDistance(it, state)}"
-                        )
-                    }
-                        ?: Text(
-                            "Earlier mileage was not supplied; recorded distance is a known lower bound, not lifetime shoe mileage."
-                        )
-                    Text(
-                        "${summary.runCount()} assigned runs · ${summary.runsWithKnownDistance()} with known distance"
-                    )
-                    if (summary.runsWithKnownDistance() < summary.runCount())
-                        Text(
-                            "Some assigned runs have no distance. Mileage totals include known distances only."
-                        )
-                    summary.averageRunDistanceMetres()?.let {
-                        Text("Average known run distance: ${formatDistance(it, state)}")
-                    }
-                    summary.longestRunMetres()?.let {
-                        Text("Longest assigned run: ${formatDistance(it, state)}")
-                    }
-                    summary.ageDays()?.let { Text("Age since entered purchase date: $it days") }
-                    summary.firstRecordedRun()?.let {
-                        Text(
-                            "First recorded run: ${friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate())} (device time zone)"
-                        )
-                    }
-                    if (summary.firstRecordedRun() == null) Text("No first recorded run yet.")
-                    Text(summary.wearGuidance())
-                    org.racedaydreams.domain.polish.TrainingInsights.shoes(
-                            shoe,
-                            state.activities,
-                            java.time.Instant.now(),
-                            state.shoeDiscomfort,
-                        )
-                        .forEach { Text(it) }
-                    shoe.notes()?.takeIf { it.isNotBlank() }?.let { Text(it) }
-                }
-                OutlinedButton(
-                    onClick = {
-                        editingId = shoe.id()
-                        showEditor = true
-                    },
-                    enabled = !state.busy,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                ) {
-                    Text("Edit shoes")
-                }
-                Text(
-                    "Assign or change these shoes from an individual run’s detail page.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ShoeEditor(
-    shoe: Shoe?,
-    state: CoachUiState,
-    model: CoachViewModel,
-    onDone: () -> Unit,
-) {
-    val id = shoe?.id() ?: "new"
-    val imperial = state.profile?.preferences()?.units() == UnitSystem.IMPERIAL
-    val metresPerUnit = if (imperial) 1609.344 else 1000.0
-    var brand by rememberSaveable(id) { mutableStateOf(shoe?.brand() ?: "") }
-    var name by rememberSaveable(id) { mutableStateOf(shoe?.model() ?: "") }
-    var date by rememberSaveable(id) { mutableStateOf(shoe?.purchaseDate()?.toString() ?: "") }
-    var starting by
-        rememberSaveable(id) {
-            mutableStateOf(
-                shoe?.startingDistanceMetres()?.let { decimal(it / metresPerUnit) } ?: ""
-            )
-        }
-    var retired by rememberSaveable(id) { mutableStateOf(shoe?.retired() ?: false) }
-    var default by rememberSaveable(id) { mutableStateOf(shoe?.defaultShoe() ?: false) }
-    var notes by rememberSaveable(id) { mutableStateOf(shoe?.notes() ?: "") }
-    var error by rememberSaveable(id) { mutableStateOf<String?>(null) }
-    CoachCard {
-        Text(
-            if (shoe == null) "Add shoes" else "Edit shoes",
-            style = MaterialTheme.typography.titleLarge,
-        )
-        CoachField("Brand (optional)", brand, { brand = it })
-        CoachField("Model", name, { name = it })
-        CoachField("Purchase date (YYYY-MM-DD, optional)", date, { date = it })
-        CoachField(
-            "Starting mileage (${if (imperial) "mi" else "km"}, optional)",
-            starting,
-            { starting = it },
-        )
-        Text(
-            "Leave starting mileage blank if it is unknown. Enter 0 only if no earlier running mileage needs to be included."
-        )
-        CheckRow("Retired", retired) {
-            retired = it
-            if (it) default = false
-        }
-        if (!retired) CheckRow("Use as default for new runs", default) { default = it }
-        CoachField("Shoe notes (optional)", notes, { notes = it }, singleLine = false)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Button(
-            onClick = {
-                try {
-                    val purchase = date.trim().takeIf { it.isNotEmpty() }?.let(LocalDate::parse)
-                    require(purchase == null || !purchase.isAfter(LocalDate.now())) {
-                        "Purchase date cannot be in the future."
-                    }
-                    val mileage = optionalNumber(starting)?.times(metresPerUnit)
-                    val result =
-                        Shoe(
-                            shoe?.id() ?: UUID.randomUUID().toString(),
-                            brand.trim(),
-                            name.trim(),
-                            purchase,
-                            mileage,
-                            retired,
-                            notes.trim().takeIf { it.isNotEmpty() },
-                            default && !retired,
-                        )
-                    error = null
-                    model.runningEvidence.saveShoe(result, onDone)
-                } catch (failure: Exception) {
-                    error = failure.message ?: "Check the shoe details."
-                }
-            },
-            enabled = !state.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Save shoes")
-        }
-        TextButton(onClick = onDone) { Text("Cancel shoe changes") }
-    }
+    org.racedaydreams.coach.activity.SharedShoesScreen(
+        state = state,
+        today = LocalDate.now(),
+        now = java.time.Instant::now,
+        newId = { UUID.randomUUID().toString() },
+        parseDate = LocalDate::parse,
+        formatDecimal = ::decimal,
+        formatDistance = { formatDistance(it, state) },
+        firstRunDate = { friendlyDate(it.atZone(ZoneId.systemDefault()).toLocalDate()) },
+        purchaseDateField = { value, change ->
+            CoachField("Purchase date (YYYY-MM-DD, optional)", value, change)
+        },
+        saveShoe = model.runningEvidence::saveShoe,
+    )
 }
