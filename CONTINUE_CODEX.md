@@ -113,6 +113,11 @@ incomplete migration merely because a focused checkpoint passes.
     Run on 170fc1d: iOS compile/framework/app/launch GREEN; XCUITests timed out (16 min): the
     frame-polling settle in tap() costs ~1 s per frame read on the Intel runner and disturbed the
     unrelated favourite/GPX test -> replaced by a fixed 1 s pause only after swipes.
+    Draft run on 8ea4378 GREEN (Android focused + iOS 4/4 XCUITests). Owner then said "merge once
+    you feel it is ready": version bumped to 0.13.1-test1 / 21 (app/build.gradle, Info.plist
+    0.13.1/21, android.yml artifact names) with docs/RELEASE_0_13_1.md. Merge only after the full
+    ready gate is green on the exact final head (incl. the canonical-screenshot bot commit), then
+    verify main, post-merge CI and the rolling Latest Development Build (APK + iOS assets).
     12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
     captures progress-/strength-dashboard-empty (459 required).
 
