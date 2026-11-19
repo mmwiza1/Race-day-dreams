@@ -1088,7 +1088,8 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("strength-bouldering-card").performScrollTo().performClick()
             await("Grade distribution")
             capture("bouldering-home")
-            compose.onNodeWithText("Grade distribution").performScrollTo()
+            // The distribution and weekly progression sit below the first screen.
+            compose.onNodeWithText("Hardest send by week").performScrollTo()
             compose.waitForIdle()
             capture("bouldering-home-analytics")
             compose.onNodeWithText("Start bouldering session").performScrollTo().performClick()

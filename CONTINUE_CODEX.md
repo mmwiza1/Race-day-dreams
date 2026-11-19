@@ -92,7 +92,7 @@ Progress checkpoints for this work are recorded under "Latest recovery pointer �
   low-risk (A-1, S-1, S-2) PRs separate from recording-pipeline changes (I-1, A-2).
 - Next: Phase 2 bouldering on this branch (draft PR; no merge without explicit approval).
 
-### Latest recovery pointer — checkpoint 263 bouldering implemented; full-gate verification of PR #26 (Claude)
+### Latest recovery pointer — checkpoint 263 bouldering 0.14.0-test1 approved for merge; final gate on PR #26 (Claude)
 
 - `e02043e` domain + storage: `domain/climbing/Climbing.kt` (V-scale 19 / Font 24 grades, original
   grade kept, `approximately()` display-only; FLASH requires 1 attempt; sessions 1 min–24 h, ≤300
@@ -120,9 +120,14 @@ Progress checkpoints for this work are recorded under "Latest recovery pointer �
   while loading, joins pending draft writes before reading and re-reads if a local change happened
   meanwhile (regression test `startingBeforeTheDeviceIsReadNeverReplacesAnInterruptedSession`).
   The large-font capture now waits for "How am I doing?" (navigation labels hide at 2.0×).
-- Not yet done: version bump/release notes (only when the owner wants a release), iOS compile is
-  verified only by CI (no local Xcode). PR may be "ready" only to run the full gate; its title says
-  do not merge, and no merge without the owner's explicit approval.
+- `6fb6fb0` full gate green (782 instrumentation tests on each API 28/35/36, shared Android/iOS,
+  apple-device); the API 28 flow failure was an unscrolled tap on Start. Bot commit `35aadb7`
+  added the 6 `bouldering-*` captures.
+- 19 Nov: the owner approved the merge ("please merge"). Prepared as **0.14.0-test1 /
+  versionCode 22** (`app/build.gradle`, `iosApp/Info.plist` 0.14.0/22, APK names in
+  `android.yml`) with `docs/RELEASE_0_14_0.md`; the analytics capture now scrolls to "Hardest send
+  by week" (it previously duplicated `bouldering-home`). Merge only after the full gate is green on
+  the exact final head; then verify main, post-merge CI and the rolling development APK.
 
 ## Earlier baseline (12 November 2026 — superseded by the section above; kept for history)
 
