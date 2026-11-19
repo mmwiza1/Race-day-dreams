@@ -114,7 +114,12 @@ jobs:
           if [ "$EVENT" = pull_request ] && [ "$DRAFT" = true ]; then
             ui=false
             case " $LABELS " in *" ios-ui-tests "*) ui=true ;; esac
-            changed=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only)
+            # The paginated files API handles large PRs (gh pr diff refuses >300 files, e.g. after
+            # a canonical screenshot refresh). If the list cannot be read, run the suite anyway.
+            if ! changed=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[].filename'); then
+              echo "Changed files unavailable; running the iOS UI suite to stay safe."
+              changed=iosApp/
+            fi
             if printf '%s\n' "$changed" | grep -Eq '^(iosApp/|scripts/check-ios-startup|\.github/workflows/multiplatform\.yml$|[^/]+/src/(ios|apple|native)[A-Za-z]*/)'; then
               ui=true
             fi

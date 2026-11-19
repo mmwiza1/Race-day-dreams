@@ -106,6 +106,10 @@ incomplete migration merely because a focused checkpoint passes.
     explanations behind toggles. New records = distinct (record type, workout) improvements;
     tile text says "Recorded bests improved · each record counted once per workout" (owner asked
     that the wording not imply a count of workouts).
+    Draft run on cbefb4c: Android focused suite incl. SharedDashboardScreenTest GREEN; apple-shared
+    failed in the ios_scope step because `gh pr diff` refuses PRs with >300 files (the canonical
+    screenshot bot commit makes PR #25 475 files) -> now uses the paginated pulls/files API and
+    runs the UI suite if the list cannot be read.
     12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
     captures progress-/strength-dashboard-empty (459 required).
 
