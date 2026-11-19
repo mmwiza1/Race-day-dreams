@@ -167,7 +167,7 @@ class RefinementUiTest {
         launch()
         compose.onNodeWithText("Progress").performClick()
         await("Body weight")
-        compose.onNodeWithText("Body weight").performClick()
+        compose.onNodeWithText("Body weight").performScrollTo().performClick()
         await("Record a measurement")
         compose
             .onNodeWithContentDescription("Weight graph in kg.", substring = true)
@@ -213,7 +213,7 @@ class RefinementUiTest {
         launch()
         compose.onNodeWithText("Strength").performClick()
         await("PBs & progression")
-        compose.onNodeWithText("PBs & progression").performClick()
+        compose.onNodeWithText("PBs & progression").performScrollTo().performClick()
         await("Strength records")
         compose
             .onNodeWithText("Historical entries & full PB history")
@@ -236,7 +236,7 @@ class RefinementUiTest {
         launch()
         compose.onNodeWithText("Strength").performClick()
         await("Log workout")
-        compose.onNodeWithText("Log workout").performClick()
+        compose.onNodeWithText("Log workout").performScrollTo().performClick()
         await("Log strength workout")
         compose.onNodeWithText("Log strength workout").performClick()
         enter("Weight (kg)", "80")

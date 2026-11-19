@@ -62,6 +62,72 @@ platform storage/services and functioning Android AND iOS builds. This supersede
 no-iOS boundary. No version bump/publication until cross-platform ready. Do not merge this
 incomplete migration merely because a focused checkpoint passes.
 
+### Latest recovery pointer — checkpoint 259 iOS publication verified; analytics dashboards DRAFT (Claude)
+
+- PR #23 squash-merged as `146cde4` (tree == verified head 367200b). main run 44439687824
+  attempt 2 (re-ran formatting after a transient Maven 404 and apple-shared after a lost Mac
+  runner) published, from ONE commit: 0.13.0-test1 APK (SHA-256 02d3b128…), universal unsigned
+  iOS Simulator ZIP (37aeff0d…, x86_64+arm64, iPhoneSimulator), unsigned iPhone ZIP (637b54d4…,
+  arm64, iPhoneOS), latest-* aliases, .sha256 files and build-info. All downloaded and checked:
+  checksums, commit 146cde4, Info.plist 0.13.0/20, no code signature, all licence notices;
+  APK 0.13.0-test1/20/min 28/no INTERNET; 0.12.2/0.12.3 assets preserved.
+- Owner-authorised analytics work on `feature/analytics-dashboards` (DRAFT; must NOT merge
+  without explicit owner approval; owner reviews visuals). Reference designs: owner's Progress,
+  overview and Strength images. Implemented:
+  - `sharedDomain/.../presentation/DashboardAnalytics.kt` reusing RecordedWeekAggregation,
+    StrengthVolume, StrengthRecords and StrengthRecordPolicy (Epley); plan completion uses the
+    calendar's plannedWorkoutId link; nulls for missing evidence; 6 commonTest contracts.
+  - `sharedUi/.../SharedDashboards.kt`: SharedProgressDashboard (week hero, KPI tiles, existing
+    SharedWeeklyRunningChart, recent runs, all drill-downs) and SharedStrengthDashboard (Gym now,
+    KPI tiles, estimated-1RM trend, muscle-group donut, recent workouts, all drill-downs).
+  - Android Progress/Strength tabs and iOS PROGRESS + new STRENGTH_HOME page use them; five-tab
+    navigation unchanged. Tests scroll to links on the longer screens; 6 new required captures
+    (457 total); iOS XCUITests attach dashboard screenshots exported as `ios-review-screenshots`.
+  - Today is unchanged (asked before touching it). Bouldering excluded.
+  - Draft run 44456340230 on 09bab8b: iOS framework/app/startup OK; XCUITest navigation (Progress
+    dashboard) passed; Gym Now test failed waiting for an off-screen label (iOS exposes only
+    on-screen Compose nodes) -> now waits for the top "Gym now" control. Android focused gate
+    642/644: WeeklyUxTest tapped "PBs & progression"/"Body weight" without scrolling on the longer
+    dashboards -> scroll added there, in Release05UiTest and three screenshot-test taps.
+  - Checkpoint 260 (owner's "Final Analytics Dashboard Requirements"): PR #25 returned to DRAFT.
+    Full gate on f2adea7: Android all green (bot screenshot commit 3a1cbc1); iOS 2/4 XCUITests
+    failed because taps landed during a Compose scroll fling (tap only stops the fling) -> the
+    test tap helper now waits for the element frame to settle. Implemented: reporting periods
+    (4 wk/12 wk/6 mo=26 wk/1 yr=52 wk, whole weeks ending today); like-for-like comparisons
+    (week-to-date vs same weekdays last week; period vs same-length earlier window, only when
+    history covers it); moving pace kept labelled "moving"; plan completion by calendar rules
+    (link, latest skip/move decision); gym programme completion by calendar gym-link rules;
+    e1RM exercise selector (eligible exercises only), tappable/accessible points with source
+    workout + "Heaviest recorded set" (actual, separate from estimate); muscle workload with
+    primary shares, separate secondary involvement (once per set/group) and visible Unclassified
+    segment; recent runs show source (ActivitySources.friendly) and open run details; recent
+    workouts open the recorded session (Android strength/source/{id}, iOS STRENGTH_RECORD with
+    return page); compact grouped "More detail"; 2-up KPI grid (1-up at 200% text, 4-up >=600dp);
+    explanations behind toggles. New records = distinct (record type, workout) improvements;
+    tile text says "Recorded bests improved · each record counted once per workout" (owner asked
+    that the wording not imply a count of workouts).
+    Draft run on cbefb4c: Android focused suite incl. SharedDashboardScreenTest GREEN; apple-shared
+    failed in the ios_scope step because `gh pr diff` refuses PRs with >300 files (the canonical
+    screenshot bot commit makes PR #25 475 files) -> now uses the paginated pulls/files API and
+    runs the UI suite if the list cannot be read.
+    Run on 170fc1d: iOS compile/framework/app/launch GREEN; XCUITests timed out (16 min): the
+    frame-polling settle in tap() costs ~1 s per frame read on the Intel runner and disturbed the
+    unrelated favourite/GPX test -> replaced by a fixed 1 s pause only after swipes.
+    Draft run on 8ea4378 GREEN (Android focused + iOS 4/4 XCUITests). Owner then said "merge once
+    you feel it is ready": version bumped to 0.13.1-test1 / 21 (app/build.gradle, Info.plist
+    0.13.1/21, android.yml artifact names) with docs/RELEASE_0_13_1.md. Merge only after the full
+    ready gate is green on the exact final head (incl. the canonical-screenshot bot commit), then
+    verify main, post-merge CI and the rolling Latest Development Build (APK + iOS assets).
+    Full gate on 8b15fa3: iOS all green; Android 28/35/36 failed only CoachingScreenshotTest
+    click("Strength") (2 nodes) because More detail group headings "Strength"/"Progress" equalled
+    tab names -> renamed "Strength training" / "Records & trends" (keep group names != tab names).
+    Full gate on b0da811: API 35/36, guidance, formatting, apple-device GREEN; API 28 failed only
+    the new empty-state capture (tapped "Progress" before the slow emulator showed tabs -> await
+    first); iOS Gym Now flaked at "Default rest…" (expanded below viewport; iOS sees only on-screen
+    nodes) -> reveal() scrolls until visible. Same assertions.
+    12 domain contracts, SharedDashboardScreenTest (in draft focused classes), empty-state
+    captures progress-/strength-dashboard-empty (459 required).
+
 ### Latest recovery pointer — checkpoint 258 PR #24 merged; PR #23 staged CI + unsigned iOS releases (Claude)
 
 - PR #24 squash-merged as `f7be1ab` (tree == verified head 529d310 / source 039044a); main run

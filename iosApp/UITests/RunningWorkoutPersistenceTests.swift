@@ -28,16 +28,26 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         let strengthTab = app.buttons["Strength"].firstMatch
         XCTAssertTrue(strengthTab.waitForExistence(timeout: 15))
         strengthTab.tap()
+        // The Strength tab opens the shared dashboard; Gym Now is its primary action at the top.
+        // iOS exposes only on-screen Compose elements, so wait for the first visible control.
+        XCTAssertTrue(control("Gym now", in: app).waitForExistence(timeout: 15))
+        attachScreenshot("ios-strength-dashboard", app)
+        app.swipeUp()
+        settle()
+        attachScreenshot("ios-strength-dashboard-scrolled", app)
+        app.swipeDown()
+        app.swipeDown()
+        settle()
+        tap("Gym now", in: app)
         tap("Start open workout", in: app)
         tap("Add exercise", in: app)
 
         tap("Bench Press", in: app)
 
         tap("Timer settings ▾", in: app)
-        XCTAssertTrue(control("Default rest when no target is prescribed", in: app)
-            .waitForExistence(timeout: 15))
+        XCTAssertTrue(reveal("Default rest when no target is prescribed", in: app))
         tap("Optional warm-up ▾", in: app)
-        XCTAssertTrue(control("Enter my own warm-up", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(reveal("Enter my own warm-up", in: app))
 
         tap("Discard unfinished workout", in: app)
         tap("Discard workout", in: app)
@@ -49,12 +59,17 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         app.launch()
         tap("Progress", in: app)
 
-        XCTAssertTrue(control("Training progress", in: app).waitForExistence(timeout: 15))
-        tap("Recorded race results", in: app)
+        XCTAssertTrue(control("Distance this week", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(control("Weekly distance", in: app).exists)
+        attachScreenshot("ios-progress-dashboard", app)
+        app.swipeUp()
+        settle()
+        attachScreenshot("ios-progress-dashboard-scrolled", app)
+        tap("Running PBs", in: app)
         XCTAssertTrue(control("Record a result", in: app).waitForExistence(timeout: 15))
 
         tap("Progress", in: app)
-        XCTAssertTrue(control("Training progress", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(control("Distance this week", in: app).waitForExistence(timeout: 15))
         XCTAssertTrue(control("Record", in: app).isHittable)
         XCTAssertTrue(control("Settings", in: app).isHittable)
     }
@@ -170,6 +185,32 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         ))
     }
 
+    /// Review evidence for the shared dashboards; synthetic simulator data only.
+    private func attachScreenshot(_ name: String, _ app: XCUIApplication) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    /// Expanded content can open below the visible area, and iOS exposes only on-screen Compose
+    /// elements, so scroll gently until the control appears.
+    private func reveal(_ label: String, in app: XCUIApplication) -> Bool {
+        let element = control(label, in: app)
+        if element.waitForExistence(timeout: 15) { return true }
+        for _ in 0..<4 {
+            app.swipeUp()
+            settle()
+            if element.waitForExistence(timeout: 3) { return true }
+        }
+        return false
+    }
+
+    /// A tap during a Compose scroll fling only stops the fling, so let a swipe finish first.
+    private func settle() {
+        Thread.sleep(forTimeInterval: 1.0)
+    }
+
     private func control(_ label: String, in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
     }
@@ -187,6 +228,7 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
                 return
             }
             app.swipeUp()
+            settle()
         }
         XCTFail("Could not reach \(label)", file: file, line: line)
     }

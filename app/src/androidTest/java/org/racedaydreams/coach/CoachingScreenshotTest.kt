@@ -542,22 +542,32 @@ class CoachingScreenshotTest {
         click("Progress")
         await("Running PBs")
         capture("progress")
-        click("Body weight")
+        compose.onNodeWithText("Recent runs").performScrollTo()
+        compose.waitForIdle()
+        capture("progress-dashboard-trends")
+        compose.onNodeWithText("Body weight").performScrollTo().performClick()
+        compose.waitForIdle()
         await("Record a measurement")
         capture("body-weight")
         back()
-        click("Running PBs")
+        compose.onNodeWithText("Running PBs").performScrollTo().performClick()
+        compose.waitForIdle()
         await("How PBs are calculated")
         capture("running-pbs")
         back()
-        click("Training trends")
+        compose.onNodeWithText("Training trends").performScrollTo().performClick()
+        compose.waitForIdle()
         await("Weekly recorded distance")
         capture("training-trends")
         back()
         click("Strength")
         await("Log workout")
         capture("strength")
-        click("PBs & progression")
+        compose.onNodeWithText("Muscle-group workload").performScrollTo()
+        compose.waitForIdle()
+        capture("strength-dashboard-analytics")
+        compose.onNodeWithText("PBs & progression").performScrollTo().performClick()
+        compose.waitForIdle()
         await("Strength records")
         compose
             .onNodeWithText("Historical entries & full PB history")
@@ -658,7 +668,8 @@ class CoachingScreenshotTest {
         capture("exercise-plank-howto")
         back()
         back()
-        click("Log workout")
+        compose.onNodeWithText("Log workout").performScrollTo().performClick()
+        compose.waitForIdle()
         await("Log strength workout")
         click("Log strength workout")
         alignHeading("Last time")
@@ -838,6 +849,12 @@ class CoachingScreenshotTest {
             capture("mobility-dark")
             back()
             back()
+            click("Progress")
+            await("Distance this week")
+            capture("progress-dashboard-dark")
+            click("Strength")
+            await("Muscle-group workload")
+            capture("strength-dashboard-dark")
             click("Home")
             await("How am I doing?")
             // Font changes already recreate Android activities. Close first so the
@@ -852,6 +869,12 @@ class CoachingScreenshotTest {
             compose.onNodeWithContentDescription("Plan").performClick()
             await("This week")
             capture("plan-large-font")
+            compose.onNodeWithContentDescription("Progress").performClick()
+            await("Distance this week")
+            capture("progress-dashboard-large-font")
+            compose.onNodeWithContentDescription("Strength").performClick()
+            await("Muscle-group workload")
+            capture("strength-dashboard-large-font")
         } finally {
             closeScenario()
             scenario = null
@@ -892,6 +915,32 @@ class CoachingScreenshotTest {
                     emptyList(),
                 )
         GymProgrammeStore(context).save(programme)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            shell("settings put system font_scale 1.0")
+            shell("cmd uimode night no")
+            // New-user evidence: no runs and no recorded gym sessions yet, only a programme.
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            await("Progress")
+            click("Progress")
+            await("Distance this week")
+            capture("progress-dashboard-empty")
+            click("Strength")
+            await("Muscle-group workload")
+            compose.onAllNodesWithText("No strength workouts recorded yet.").assertCountEquals(1)
+            capture("strength-dashboard-empty")
+        } catch (failure: Throwable) {
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+            throw failure
+        } finally {
+            closeScenario()
+            scenario = null
+        }
         val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
         val now = Instant.now()
         for (daysAgo in listOf(3L, 6L)) {
@@ -914,11 +963,6 @@ class CoachingScreenshotTest {
             "Strength fixture must not depend on a running profile",
             SqliteUserPreferencesRepository(context).load().orElse(null),
         )
-        val originalFont = shell("settings get system font_scale").trim()
-        val originalNight =
-            shell("cmd uimode night").let {
-                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
-            }
         try {
             shell("settings put system font_scale 1.0")
             shell("cmd uimode night no")
@@ -2874,7 +2918,8 @@ class CoachingScreenshotTest {
             assertOriginalBottomNavigationOrder()
             clickOriginalNavigationTab("Progress")
             await("Running PBs")
-            click("Running PBs")
+            compose.onNodeWithText("Running PBs").performScrollTo().performClick()
+            compose.waitForIdle()
             await("How PBs are calculated")
             alignHeading("10K")
             compose.onNodeWithTag("running-record-10k-1").assertExists()
@@ -2888,7 +2933,8 @@ class CoachingScreenshotTest {
                 capture("running-records-third-large-font")
             }
             back()
-            click("Training trends")
+            compose.onNodeWithText("Training trends").performScrollTo().performClick()
+            compose.waitForIdle()
             await("Weekly recorded distance")
             compose.onNodeWithText("4 weeks").performScrollTo().performClick().assertIsSelected()
             alignHeading("Weekly recorded distance")

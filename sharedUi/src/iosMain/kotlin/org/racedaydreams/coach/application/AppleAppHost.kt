@@ -182,6 +182,7 @@ private enum class ApplePage {
     STRENGTH_ANALYTICS,
     ACHIEVEMENTS,
     PROGRESS,
+    STRENGTH_HOME,
     RUNNING_TRENDS,
     RACE,
     ROUTINE,
@@ -215,6 +216,7 @@ private fun AppleAppContent(
     var recordingWorkout by remember { mutableStateOf<String?>(null) }
     var recoveryDraftId by remember { mutableStateOf<String?>(null) }
     var activityId by remember { mutableStateOf<String?>(null) }
+    var strengthRecordReturn by remember { mutableStateOf(ApplePage.ACHIEVEMENTS) }
     val openDatedGym: (LocalDate) -> Unit = { date ->
         returnFromDatedGym = page
         if (page == ApplePage.HISTORY) {
@@ -422,15 +424,75 @@ private fun AppleAppContent(
                         StrengthMeasurementPolicy::duration,
                         AthleteLanguage.WORKING_SETS,
                     )
-                ApplePage.PROGRESS ->
-                    CoachPage {
-                        CoachHeading("Training progress")
-                        CoachButton("Running trends") { page = ApplePage.RUNNING_TRENDS }
-                        CoachButton("Recorded race results") { page = ApplePage.RESULTS }
-                        CoachButton("Strength analytics") { page = ApplePage.STRENGTH_ANALYTICS }
-                        CoachButton("Achievements") { page = ApplePage.ACHIEVEMENTS }
-                        CoachButton("Body measurements and protein") { page = ApplePage.BODY }
+                ApplePage.PROGRESS -> {
+                    val zone = TimeZone.currentSystemDefault().id
+                    SharedProgressDashboard(
+                        state,
+                        appleHomePresentation(state),
+                        { KotlinxReminderCalendar.at(it, zone).date },
+                        listOf(
+                            ProgressLink.TRENDS,
+                            ProgressLink.PBS,
+                            ProgressLink.WEEKLY_REVIEW,
+                            ProgressLink.MILESTONES,
+                            ProgressLink.BODY_GUIDANCE,
+                            ProgressLink.STRENGTH_ANALYTICS,
+                        ),
+                        openRun = {
+                            activityId = it
+                            page = ApplePage.ACTIVITY
+                        },
+                    ) { link ->
+                        page =
+                            when (link) {
+                                ProgressLink.TRENDS -> ApplePage.RUNNING_TRENDS
+                                ProgressLink.PBS -> ApplePage.RESULTS
+                                ProgressLink.WEEKLY_REVIEW -> ApplePage.WEEKLY
+                                ProgressLink.MILESTONES -> ApplePage.ACHIEVEMENTS
+                                ProgressLink.STRENGTH_ANALYTICS -> ApplePage.STRENGTH_ANALYTICS
+                                ProgressLink.HISTORY -> ApplePage.HISTORY
+                                ProgressLink.BODY_WEIGHT,
+                                ProgressLink.BODY_GUIDANCE -> ApplePage.BODY
+                            }
                     }
+                }
+                ApplePage.STRENGTH_HOME ->
+                    SharedStrengthDashboard(
+                        state,
+                        AppleCalendarDates.today(),
+                        AppleRecordingClock.now(),
+                        AppleCalendarDates::label,
+                        AppleCalendarDates::label,
+                        { it.toString().removeSuffix(".0") },
+                        listOf(
+                            StrengthLink.GYM_NOW,
+                            StrengthLink.PROGRAMME,
+                            StrengthLink.ANALYTICS,
+                            StrengthLink.MILESTONES,
+                            StrengthLink.HISTORY,
+                            StrengthLink.EXERCISES,
+                            StrengthLink.RECOVERY,
+                        ),
+                        open = { link ->
+                            page =
+                                when (link) {
+                                    StrengthLink.PROGRAMME -> ApplePage.PROGRAMMES
+                                    StrengthLink.ANALYTICS -> ApplePage.STRENGTH_ANALYTICS
+                                    StrengthLink.MILESTONES -> ApplePage.ACHIEVEMENTS
+                                    StrengthLink.HISTORY -> ApplePage.STRENGTH_HISTORY
+                                    StrengthLink.EXERCISES -> ApplePage.EXERCISES
+                                    StrengthLink.RECOVERY -> ApplePage.TRAINING_RECOVERY
+                                    StrengthLink.GYM_NOW,
+                                    StrengthLink.LOG,
+                                    StrengthLink.PBS -> ApplePage.GYM
+                                }
+                        },
+                        openWorkout = {
+                            activityId = it
+                            strengthRecordReturn = ApplePage.STRENGTH_HOME
+                            page = ApplePage.STRENGTH_RECORD
+                        },
+                    )
                 ApplePage.RUNNING_TRENDS ->
                     AppleRunningTrends(
                         state,
@@ -499,12 +561,13 @@ private fun AppleAppContent(
                         },
                         openGym = {
                             activityId = it
+                            strengthRecordReturn = ApplePage.ACHIEVEMENTS
                             page = ApplePage.STRENGTH_RECORD
                         },
                     )
                 ApplePage.STRENGTH_RECORD ->
                     activityId?.let {
-                        AppleStrengthRecord(state, it) { page = ApplePage.ACHIEVEMENTS }
+                        AppleStrengthRecord(state, it) { page = strengthRecordReturn }
                     }
                 ApplePage.ACTIVITY -> activityId?.let { AppleRunDetails(session, it, controller) }
                 ApplePage.START ->
@@ -647,7 +710,8 @@ private fun AppleAppContent(
                     ApplePage.HISTORY -> "calendar"
                     ApplePage.PROGRESS -> "progress"
                     ApplePage.GYM,
-                    ApplePage.DATED_GYM -> "strength"
+                    ApplePage.DATED_GYM,
+                    ApplePage.STRENGTH_HOME -> "strength"
                     else -> null
                 },
             selectTab = { route ->
@@ -660,7 +724,7 @@ private fun AppleAppContent(
                         page = ApplePage.HISTORY
                     }
                     "progress" -> page = ApplePage.PROGRESS
-                    "strength" -> page = ApplePage.GYM
+                    "strength" -> page = ApplePage.STRENGTH_HOME
                 }
             },
         )
