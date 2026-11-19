@@ -56,6 +56,21 @@ class SharedBoulderingScreenTest {
             { UUID.randomUUID().toString() },
         )
 
+    /** Waits for [tag]; on failure reports what the screen and the coordinator actually held. */
+    private fun awaitTag(tag: String, model: SharedBoulderingCoordinator) {
+        try {
+            compose.waitUntil(5_000) {
+                compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (timeout: ComposeTimeoutException) {
+            throw AssertionError(
+                "No '$tag' node. State: ${model.state.value}\n" +
+                    compose.onRoot(useUnmergedTree = true).printToString(),
+                timeout,
+            )
+        }
+    }
+
     private fun addProblem(grade: String?, extraAttempts: Int, outcome: ClimbOutcome) {
         compose.onNodeWithTag("climbing-add-problem").performScrollTo().performClick()
         if (grade != null) compose.onNodeWithTag("grade-$grade").performScrollTo().performClick()
@@ -129,8 +144,8 @@ class SharedBoulderingScreenTest {
         compose.onNodeWithTag("kpi-Highest send").assert(hasText("None yet"))
         compose.onNodeWithText("No bouldering sessions recorded yet.").performScrollTo().assertExists()
 
-        compose.onNodeWithText("Start bouldering session").performClick()
-        compose.onNodeWithTag("climbing-elapsed").assertExists()
+        compose.onNodeWithText("Start bouldering session").performScrollTo().performClick()
+        awaitTag("climbing-elapsed", model)
         addProblem("V4", 0, ClimbOutcome.FLASH)
         addProblem("V5", 3, ClimbOutcome.SEND)
         addProblem(null, 1, ClimbOutcome.NOT_SENT)
