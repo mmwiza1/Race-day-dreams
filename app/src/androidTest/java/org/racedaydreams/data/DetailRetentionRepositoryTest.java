@@ -63,7 +63,7 @@ public final class DetailRetentionRepositoryTest extends AndroidTestCase {
         db.setVersion(18);
         ProfileDatabase.get(getContext()).close();
         db = ProfileDatabase.get(getContext()).getWritableDatabase();
-        assertEquals(19, db.getVersion());
+        assertEquals(20, db.getVersion());
         assertEquals(DetailRetention.Preferences.existing(), repo.preferences());
         var preview = repo.preview(DetailRetention.Policy.LAST_24_MONTHS, NOW);
         rejects(() -> repo.approve(preview, NOW));

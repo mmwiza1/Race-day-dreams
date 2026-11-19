@@ -158,7 +158,7 @@ public final class GymToolsRepositoryTest extends AndroidTestCase {
         db.setVersion(15);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(19, db.getVersion());
+        assertEquals(20, db.getVersion());
         assertEquals("yes", new SqliteSettingsRepository(getContext()).getSetting("preserved"));
         try (var c =
                 db.rawQuery("SELECT payload FROM strength_sessions WHERE id='history'", null)) {

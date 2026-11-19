@@ -19,6 +19,7 @@ class BackupEnvelopeJsonTest {
             "achievements" to 11,
             "bodyMeasurements" to 12,
             "detailRetention" to 13,
+            "climbing" to 14,
         )
 
     // These are envelope fixtures, not substitutes for the complete application-row validator.
@@ -36,8 +37,8 @@ class BackupEnvelopeJsonTest {
     private fun inspect(bytes: ByteArray) = BackupEnvelopeJson.inspect(bytes) { it }
 
     @Test
-    fun allThirteenSupportedVersionsRequireAndDelegateCallerValidationOnce() {
-        for (version in 1..13) {
+    fun allFourteenSupportedVersionsRequireAndDelegateCallerValidationOnce() {
+        for (version in 1..14) {
             var calls = 0
             val expected = data(version)
             val checked =
@@ -68,14 +69,14 @@ class BackupEnvelopeJsonTest {
     fun fullValidatorFailurePropagatesWithoutReturningInspectionOrExport() {
         val error = IllegalArgumentException("Invalid retained graph")
         assertSame(error, assertFails { BackupEnvelopeJson.inspect(bytes()) { throw error } })
-        assertSame(error, assertFails { BackupEnvelopeJson.encode(data(13), at) { throw error } })
+        assertSame(error, assertFails { BackupEnvelopeJson.encode(data(14), at) { throw error } })
     }
 
     @Test
     fun exportUsesCurrentVersionAndRetainsExactLongsTextAndOptionalMetadata() {
         val data =
             JsonObject(
-                data(13) +
+                data(14) +
                     mapOf(
                         "exact" to JsonPrimitive(9007199254740993L),
                         "text" to JsonPrimitive("Recorded / 🏋️ \"\n\u0000"),
@@ -90,7 +91,7 @@ class BackupEnvelopeJsonTest {
             }
         assertEquals(1, calls)
         val checked = inspect(encoded)
-        assertEquals(13, checked.version)
+        assertEquals(14, checked.version)
         assertEquals(data, checked.snapshot)
         assertEquals("9007199254740993", checked.snapshot["exact"].toString())
     }

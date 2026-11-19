@@ -224,7 +224,7 @@ public final class BodyMeasurementsRepositoryTest extends AndroidTestCase {
         db.setVersion(17);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(19, db.getVersion());
+        assertEquals(20, db.getVersion());
         assertEquals(Immutable.list(w), body.weights());
         assertTrue(new SqliteAchievementsRepository(getContext()).celebrations());
         assertFalse(body.preferences().proteinEnabled());

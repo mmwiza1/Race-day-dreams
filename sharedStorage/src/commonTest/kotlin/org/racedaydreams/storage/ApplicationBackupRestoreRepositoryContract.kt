@@ -8,6 +8,7 @@ import org.racedaydreams.domain.achievements.TrainingMilestones.Proof
 import org.racedaydreams.domain.achievements.TrainingMilestones.Source
 import org.racedaydreams.domain.activity.*
 import org.racedaydreams.domain.body.*
+import org.racedaydreams.domain.climbing.*
 import org.racedaydreams.domain.recording.RunMetricsEngine.Fix
 import org.racedaydreams.domain.recording.RunMetricsEngine.Point
 import org.racedaydreams.domain.settings.PrimaryFocus
@@ -187,6 +188,38 @@ abstract class ApplicationBackupRestoreRepositoryContract {
                 Instants.ofEpochSecond(at.getEpochSecond() + 60),
             )
         SqliteTrainingMilestones(db).celebrations(false)
+        climbing(db)
+    }
+
+    private fun climbing(db: SqlDatabase) {
+        val climbs = SqliteClimbing(db)
+        climbs.gradeSystem(GradeSystem.FONTAINEBLEAU)
+        climbs.saveNew(
+            ClimbingSession(
+                "boulder",
+                at,
+                Offsets.ofTotalSeconds(3600),
+                5400,
+                "Local wall",
+                "Felt strong",
+                listOf(
+                    ClimbingProblem(
+                        "a",
+                        ClimbingGrade(GradeSystem.FONTAINEBLEAU, "6C+"),
+                        1,
+                        ClimbOutcome.FLASH,
+                    ),
+                    ClimbingProblem(
+                        "b",
+                        ClimbingGrade(GradeSystem.V_SCALE, "V6"),
+                        5,
+                        ClimbOutcome.NOT_SENT,
+                        "Roof",
+                    ),
+                    ClimbingProblem("c", null, 2, ClimbOutcome.SEND),
+                ),
+            )
+        )
     }
 
     private fun raw(db: SqlDatabase): RemovedRecordingDetail {
@@ -235,7 +268,7 @@ abstract class ApplicationBackupRestoreRepositoryContract {
         )
     }
 
-    private fun envelope(data: JsonObject, version: Int = 13) =
+    private fun envelope(data: JsonObject, version: Int = 14) =
         buildJsonObject {
                 put("format", BackupEnvelopeJson.FORMAT)
                 put("version", version)
@@ -275,7 +308,7 @@ abstract class ApplicationBackupRestoreRepositoryContract {
         val other = LocalBackupOperations(target, { at }, { error("Unexpected replacement") })
         val reviewed = owner.reviewApp(bytes(source))
         SqliteSettings(target).putSetting("old", "retain until confirmation")
-        assertEquals(13, reviewed.version)
+        assertEquals(14, reviewed.version)
         assertEquals("retain until confirmation", SqliteSettings(target).getSetting("old"))
         assertFailsWith<IllegalArgumentException> { other.restoreReviewed(reviewed) }
         owner.writeApp {
@@ -304,6 +337,7 @@ abstract class ApplicationBackupRestoreRepositoryContract {
                     "achievements" to 11,
                     "bodyMeasurements" to 12,
                     "detailRetention" to 13,
+                    "climbing" to 14,
                 )
             val old =
                 JsonObject(
@@ -316,6 +350,9 @@ abstract class ApplicationBackupRestoreRepositoryContract {
             assertTrue(SqliteActivities(target) { at }.activities().isEmpty())
             assertTrue(SqliteTrainingMilestones(target).awards().isEmpty())
             assertFalse(SqliteBodyHeights(target).preferences().proteinEnabled())
+            // Roots before 14 have no bouldering: restore empty, never invented, climbing.
+            assertTrue(SqliteClimbing(target).sessions().isEmpty())
+            assertEquals(GradeSystem.V_SCALE, SqliteClimbing(target).gradeSystem())
             if (version < 13)
                 assertEquals(
                     DetailRetention.Preferences.existing(),
@@ -336,7 +373,8 @@ abstract class ApplicationBackupRestoreRepositoryContract {
             val bad =
                 listOf(
                     "{".encodeToByteArray(),
-                    envelope(data, 14),
+                    envelope(data, 15),
+                    envelope(JsonObject(data - "climbing")),
                     envelope(JsonObject(data - "gymTools")),
                     envelope(
                         JsonObject(
@@ -393,6 +431,52 @@ abstract class ApplicationBackupRestoreRepositoryContract {
             assertEquals(before, target.query("SELECT total_changes()"))
         }
     }
+
+    @Test
+    fun climbingRoundTripsWithOriginalGradesAndAnUnsavedSessionBlocksReplacement() =
+        storage { source, target ->
+            climbing(source)
+            SqliteClimbing(source)
+                .saveDraft(
+                    ClimbingDraft(
+                        "local-only",
+                        at,
+                        Offsets.ofTotalSeconds(0),
+                        null,
+                        "",
+                        "",
+                        emptyList(),
+                    )
+                )
+            val file = bytes(source)
+            // The unsaved draft never leaves the device.
+            assertFalse(file.decodeToString().contains("local-only"))
+            SqliteClimbing(target)
+                .saveDraft(
+                    ClimbingDraft(
+                        "unsaved",
+                        at,
+                        Offsets.ofTotalSeconds(0),
+                        null,
+                        "",
+                        "",
+                        emptyList(),
+                    )
+                )
+            val before = target.query("SELECT total_changes()")
+            assertFails { replacement(target).replace(file) }
+            assertEquals(before, target.query("SELECT total_changes()"))
+            SqliteClimbing(target).clearDraft()
+            replacement(target).replace(file)
+            val restored = SqliteClimbing(target)
+            assertEquals(SqliteClimbing(source).sessions(), restored.sessions())
+            assertEquals(GradeSystem.FONTAINEBLEAU, restored.gradeSystem())
+            val problems = restored.session("boulder")!!.problems
+            assertEquals(ClimbingGrade(GradeSystem.FONTAINEBLEAU, "6C+"), problems[0].grade)
+            assertEquals(ClimbingGrade(GradeSystem.V_SCALE, "V6"), problems[1].grade)
+            assertNull(problems[2].grade)
+            assertNull(restored.draft())
+        }
 
     @Test
     fun ownedRunOmissionIdentityAndMeasuredConflictsRejectBeforeClearingAnything() =

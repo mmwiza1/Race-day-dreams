@@ -24,6 +24,8 @@ object UserBackupDataJson {
         val achievements: AchievementsArchiveJson.Snapshot,
         val body: BodyMeasurementsArchiveJson.Snapshot,
         val retention: DetailRetentionArchiveJson.Snapshot,
+        /** Bouldering (root 14+); older backups restore with no climbing history. */
+        val climbing: ClimbingArchiveJson.Snapshot,
         internal val payload: JsonObject,
     ) {
         val programming =
@@ -91,6 +93,7 @@ object UserBackupDataJson {
         val body = BodyMeasurementsArchiveJson.decode(section("bodyMeasurements"))
         val retention = DetailRetentionArchiveJson.decode(section("detailRetention"))
         CoreBackupDataJson.validateRetention(core, retention)
+        val climbing = ClimbingArchiveJson.decode(section("climbing"))
         val support = section("support")?.let { SupportArchiveJson.decode(it) }
         val release = section("release08")?.let { Release08ArchiveJson.decode(it) }
         // Protect original optional fields, payload strings, fingerprints and retained row
@@ -109,6 +112,7 @@ object UserBackupDataJson {
             achievements,
             body,
             retention,
+            climbing,
             Json.parseToJsonElement(data.toString()).jsonObject,
         )
     }
@@ -209,11 +213,12 @@ object UserBackupDataJson {
         fill("detailRetention") {
             DetailRetentionArchiveJson.element(DetailRetentionArchiveJson.decode(null))
         }
+        fill("climbing") { ClimbingArchiveJson.element(ClimbingArchiveJson.Snapshot.empty()) }
         return JsonObject(values)
     }
 
     /**
-     * Full v13 write validation; no database replacement, raw-detail restore or pruning command.
+     * Full v14 write validation; no database replacement, raw-detail restore or pruning command.
      */
     fun encodeCurrent(snapshot: Snapshot, createdAt: Instant): ByteArray =
         BackupEnvelopeJson.encode(currentElement(snapshot), createdAt) { decode(it) }

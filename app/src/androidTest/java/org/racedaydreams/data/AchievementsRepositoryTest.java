@@ -148,7 +148,7 @@ public final class AchievementsRepositoryTest extends AndroidTestCase {
         db.setVersion(16);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(19, db.getVersion());
+        assertEquals(20, db.getVersion());
         assertEquals("yes", new SqliteSettingsRepository(getContext()).getSetting("previous"));
         assertTrue(repository.awards().isEmpty());
         assertFalse(repository.celebrations());

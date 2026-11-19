@@ -195,6 +195,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             out.put("achievements", SqliteAchievementsRepository.exportData(db));
             out.put("bodyMeasurements", SqliteBodyMeasurementsRepository.exportData(db));
             out.put("detailRetention", SqliteDetailRetentionRepository.exportData(db));
+            out.put("climbing", AndroidClimbingBackup.exportData(db));
             db.setTransactionSuccessful();
             return out;
         } catch (JSONException e) {
@@ -248,7 +249,8 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             SqliteAchievementsRepository.Snapshot achievements,
             SqliteBodyMeasurementsRepository.Snapshot bodyMeasurements,
             SqliteDetailRetentionRepository.Snapshot detailRetention,
-            JSONObject support) {}
+            JSONObject support,
+            org.racedaydreams.storage.ClimbingArchiveJson.Snapshot climbing) {}
 
     private record SourceKey(String provider, String recordId) {}
 
@@ -479,7 +481,9 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
                                     ? data.getJSONObject("bodyMeasurements")
                                     : null),
                     retention,
-                    data.optJSONObject("support"));
+                    data.optJSONObject("support"),
+                    AndroidClimbingBackup.validate(
+                            data.has("climbing") ? data.getJSONObject("climbing") : null));
         } catch (JSONException | java.time.DateTimeException e) {
             throw FeatureJson.invalid(e);
         }
@@ -535,6 +539,10 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             if (SqliteGymExecutionRepository.hasUnfinished(db))
                 throw new IllegalArgumentException(
                         "Finish or discard the unfinished gym workout before replacing app data.");
+            if (AndroidClimbingBackup.hasUnsavedSession(db))
+                throw new IllegalArgumentException(
+                        "Save or discard the unsaved bouldering session before replacing app"
+                                + " data.");
             SqliteGymAssociationRepository.clear(db);
             SqliteGymExecutionRepository.clear(db);
             SqliteStrengthProgrammingRepository.clear(db);
@@ -631,6 +639,7 @@ public final class SqliteBackupRepository extends SqliteStoreAccess implements B
             SqliteAchievementsRepository.restore(db, snapshot.achievements());
             SqliteBodyMeasurementsRepository.restore(db, snapshot.bodyMeasurements());
             SqliteDetailRetentionRepository.restore(db, snapshot.detailRetention());
+            AndroidClimbingBackup.restore(db, snapshot.climbing());
             SupportStore.restore(db, snapshot.support());
             Release08Store.restore(db, data.optJSONObject("release08"));
             RecordingStore.restoreRetainedSamples(db);

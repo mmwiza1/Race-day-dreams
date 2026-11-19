@@ -66,6 +66,8 @@ class SqliteApplicationBackup(private val database: SqlDatabase) {
                     SqliteRecordingDetailReceipts(database).snapshot()
                 ),
             )
+            // Saved sessions and grading preference; an unsaved draft stays on this device only.
+            section("climbing", ClimbingArchiveJson.element(SqliteClimbing(database).snapshot()))
             val root = JsonObject(values)
             val text = root.toString()
             require(text.encodeToByteArray().size <= BackupEnvelopeJson.MAX_BYTES) {

@@ -78,7 +78,7 @@ abstract class StorageContract {
     fun freshInstallationHasExactSchemaAndExplicitDefault() {
         val db = opened()
         try {
-            assertEquals(listOf(SqlValue.Integer(19)), db.query("PRAGMA user_version").single())
+            assertEquals(listOf(SqlValue.Integer(20)), db.query("PRAGMA user_version").single())
             assertEquals(
                 listOf(
                     SqlValue.Text("LAST_24_MONTHS"),
@@ -97,7 +97,7 @@ abstract class StorageContract {
 
     @Test
     fun allHistoricalUpgradesKeepExistingSettingsAndProtectedRetention() {
-        for (version in 1 until 19) {
+        for (version in 1 until 20) {
             val db = database()
             try {
                 db.execute("PRAGMA foreign_keys=ON")
@@ -136,7 +136,7 @@ abstract class StorageContract {
             try {
                 db.execute("CREATE TABLE retained(value TEXT)")
                 db.execute("INSERT INTO retained VALUES('original')")
-                if (future) db.execute("PRAGMA user_version=20")
+                if (future) db.execute("PRAGMA user_version=21")
                 assertFailsWith<IllegalArgumentException> {
                     ApplicationSchema.open(db) { choice() }
                 }
@@ -145,7 +145,7 @@ abstract class StorageContract {
                     db.query("SELECT value FROM retained").single().single(),
                 )
                 assertEquals(
-                    SqlValue.Integer(if (future) 20 else 0),
+                    SqlValue.Integer(if (future) 21 else 0),
                     db.query("PRAGMA user_version").single().single(),
                 )
             } finally {

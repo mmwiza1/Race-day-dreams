@@ -252,7 +252,7 @@ public final class ConcreteStrengthProgrammeDraftRepositoryTest extends AndroidT
         db.setVersion(14);
         helper.close();
         db = helper.getWritableDatabase();
-        assertEquals(19, db.getVersion());
+        assertEquals(20, db.getVersion());
         assertEquals(value.programme(), programmes.programme(value.programme().id(), 1));
         assertEquals(value.programme().id(), programmes.currentReference().id());
         try (var c = db.rawQuery("SELECT payload FROM strength_sessions WHERE id='actual'", null)) {

@@ -84,7 +84,7 @@ abstract class ApplicationBackupRepositoryContract {
             assertEquals(expectedRetention, snapshot.retention.preferences)
             val encoded = SqliteApplicationBackup(db).encode(at)
             val restored = UserBackupDataJson.inspect(encoded)
-            assertEquals(13, restored.version)
+            assertEquals(14, restored.version)
             assertEquals(at, restored.createdAt)
             assertEquals(payload, UserBackupDataJson.element(restored.snapshot))
             assertEquals(before, db.query("SELECT total_changes()"))

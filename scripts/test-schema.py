@@ -82,8 +82,8 @@ def create_schema(connection, version=14, frozen=False):
 def migrate_to_latest(connection, target=14):
     old = connection.execute("PRAGMA user_version").fetchone()[0]
     # Match the Java preflight guard before running any intermediate DDL.
-    if target not in (14, 15, 16, 17, 18, 19) or old < 1 or old >= target:
-        raise ValueError("Only explicit upgrades to historical 14–18 or current 19 are supported")
+    if target not in (14, 15, 16, 17, 18, 19, 20) or old < 1 or old >= target:
+        raise ValueError("Only explicit upgrades to historical 14–19 or current 20 are supported")
     # SQLiteOpenHelper invokes the whole onUpgrade in one transaction. A failure
     # in the second migration must roll back the first migration as well.
     with connection:
@@ -463,7 +463,7 @@ class AnnotationMigrationSchemaTest(unittest.TestCase):
             db.close()
 
     def test_unsupported_source_and_target_paths_are_rejected_before_writes(self):
-        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,20), (2,20), (14,14)):
+        for source, target in ((0,6), (6,6), (99,6), (1,2), (2,2), (1,11), (2,11), (1,21), (2,21), (14,14)):
             with self.subTest(source=source, target=target):
                 db = self.make_v2()
                 try:
@@ -1149,6 +1149,38 @@ class DetailRetentionSchemaTest(unittest.TestCase):
         with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db,19)
         self.assertEqual(18,db.execute('PRAGMA user_version').fetchone()[0])
         self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='detail_retention_preferences'").fetchone())
+        db.close()
+
+class ClimbingSchemaTest(unittest.TestCase):
+    def test_every_supported_upgrade_adds_climbing_and_keeps_existing_rows(self):
+        for old in range(1,20):
+            with self.subTest(old=old):
+                db=sqlite3.connect(':memory:');create_schema(db,old)
+                if old>=2:db.execute("INSERT INTO settings VALUES('keep','yes')");db.commit()
+                migrate_to_latest(db,20)
+                self.assertEqual(20,db.execute('PRAGMA user_version').fetchone()[0])
+                for table in ('climbing_sessions','climbing_session_draft','climbing_preferences'):
+                    self.assertEqual(0,db.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0])
+                self.assertEqual([],db.execute('PRAGMA foreign_key_check').fetchall())
+                if old>=2:self.assertEqual('yes',db.execute("SELECT setting_value FROM settings WHERE setting_key='keep'").fetchone()[0])
+                db.close()
+    def test_constraints_keep_one_draft_one_preference_and_bounded_payloads(self):
+        db=sqlite3.connect(':memory:');create_schema(db,20)
+        db.execute("INSERT INTO climbing_sessions VALUES('a',100,'{}')")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO climbing_sessions VALUES('a',101,'{}')")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO climbing_sessions VALUES('big',1,?)",('x'*262145,))
+        db.execute("INSERT INTO climbing_session_draft VALUES(1,'{}')")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("INSERT INTO climbing_session_draft VALUES(2,'{}')")
+        db.execute("INSERT INTO climbing_preferences VALUES(1,'FONTAINEBLEAU')")
+        with self.assertRaises(sqlite3.IntegrityError):db.execute("UPDATE climbing_preferences SET grade_system='YDS'")
+        self.assertIn('climbing_sessions_by_start',[r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='index'")])
+        db.close()
+    def test_failed_migration_keeps_schema_nineteen(self):
+        db=sqlite3.connect(':memory:');create_schema(db,19)
+        db.execute('CREATE TABLE climbing_preferences (conflict TEXT)');db.commit()
+        with self.assertRaises(sqlite3.OperationalError):migrate_to_latest(db,20)
+        self.assertEqual(19,db.execute('PRAGMA user_version').fetchone()[0])
+        self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='climbing_sessions'").fetchone())
         db.close()
 
 if __name__ == "__main__":
