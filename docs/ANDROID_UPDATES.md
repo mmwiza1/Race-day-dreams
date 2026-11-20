@@ -37,7 +37,8 @@ older test build. The iOS app is unaffected: iOS builds remain unsigned develope
    - the signer's certificate SHA-256 equals the committed public fingerprint
      `config/android-signing-certificate.sha256`;
    - the signed APK's files are identical to the verified APK's (only signature entries differ).
-   Any mismatch stops publication.
+   Any mismatch stops publication. (Before the fingerprint is committed, the same checks run as an
+   identity check only; see "One-time signing setup and activation".)
 3. **An update manifest** `Race-Day-Dreams-latest-update.json` is published with the APK (schema 1:
    package, version name and code, minimum Android version, versioned APK URL, size, SHA-256,
    certificate SHA-256, source commit and the release note's "What's new"). It is uploaded last,
@@ -89,50 +90,56 @@ automatic check is one small HTTPS request (a few kilobytes) when the app is ope
 per day, and never while a run, workout or bouldering session is active. Downloads only happen when
 you tap **Download update**. The recording service, GPS and heart-rate code are unchanged.
 
-## One-time signing setup (owner action required)
+## One-time signing setup and activation
 
-**Status: not configured.** No production signing key has been generated or published by this
-work; that requires the owner's explicit decision. Until it is configured, CI keeps publishing the
-verified test-signed APK exactly as before, without an update manifest, so the in-app updater
-reports "No update-ready release has been published yet".
+**Status (20 November 2026):** the owner reports the four repository secrets are configured. They
+cannot be read back through the GitHub API, and pull-request builds never receive them, so they are
+first exercised by trusted workflows on `main`. **No release-signed APK has been published yet**, and
+`config/android-signing-certificate.sha256` is not committed yet.
 
-1. **Create the release key on a trusted computer** (keep the passwords in a password manager):
+Signing turns on in two deliberate steps, so the first permanently signed release is published only
+when the owner approves it:
 
-   ```sh
-   keytool -genkeypair -v -keystore race-day-dreams-release.jks -storetype PKCS12 \
-     -alias race-day-dreams -keyalg RSA -keysize 4096 -validity 10000 \
-     -dname "CN=Race Day Dreams, O=Race Day Dreams"
-   ```
+1. **Identity check (automatic, after PR #27 merges).** With secrets present and no committed
+   fingerprint, the publish job on `main` signs a scratch copy of the verified APK with the real key
+   and requires: the keystore opens, the alias exists, both passwords work, exactly one v2/v3
+   signer and contents identical to the verified build. It then writes the **public** certificate
+   SHA-256 to the run log and job summary. It still publishes the verified test-signed APK without an
+   update manifest, exactly as before. The manual workflow **Verify Android signing identity**
+   (Actions tab, runs only from `main`, publishes nothing) performs the same keystore, alias,
+   password and fingerprint check at any time.
+2. **Activation (a small owner-approved PR).** Commit that fingerprint as the only line of
+   `config/android-signing-certificate.sha256` with a versionCode increase. Builds from that commit
+   embed the fingerprint, and the next publication to `main` signs, verifies and publishes the first
+   release-signed APK and `Race-Day-Dreams-latest-update.json`. That APK is the baseline: every later
+   release must carry the same certificate, or publication stops.
 
-   **Back this file up in at least two safe places.** If the key is lost, no future build can
-   update existing installations in place; everyone would need the backup/reinstall/restore move
-   again. If it leaks, someone else could sign an update.
+| Secrets | Committed fingerprint | Publish job on `main` |
+| --- | --- | --- |
+| no | no | Verified test-signed APK, no update manifest (as before PR #27). |
+| yes | no | Identity check with the real key, public fingerprint reported, test-signed APK published, no manifest. |
+| no | yes | Refuses to publish. |
+| yes | yes, matching | Release-signed APK and update manifest, both verified after upload. |
+| yes | yes, different | Refuses to publish. |
 
-2. **Record the public fingerprint** (not secret):
+Passwords reach `apksigner`, `keytool` and `jarsigner` only by environment-variable name; the
+decoded keystore exists only in a private temporary directory that is always deleted; GitHub masks
+secret values in logs. Nothing secret is written to the repository, artifacts or release.
 
-   ```sh
-   keytool -exportcert -keystore race-day-dreams-release.jks -alias race-day-dreams | sha256sum
-   ```
+### Creating the key (reference; already done by the owner)
 
-3. **Add four repository secrets** (GitHub › Settings › Secrets and variables › Actions):
+```sh
+keytool -genkeypair -v -keystore race-day-dreams-release.jks -storetype PKCS12 \
+  -alias race-day-dreams -keyalg RSA -keysize 4096 -validity 10000 \
+  -dname "CN=Race Day Dreams, O=Race Day Dreams"
+keytool -exportcert -keystore race-day-dreams-release.jks -alias race-day-dreams | sha256sum
+```
 
-   | Secret | Value |
-   | --- | --- |
-   | `RDD_ANDROID_KEYSTORE_BASE64` | `base64 -w0 race-day-dreams-release.jks` (macOS: `base64 -i race-day-dreams-release.jks`) |
-   | `RDD_ANDROID_KEYSTORE_PASSWORD` | the keystore password |
-   | `RDD_ANDROID_KEY_ALIAS` | `race-day-dreams` |
-   | `RDD_ANDROID_KEY_PASSWORD` | the key password (the same as the keystore password for PKCS12) |
-
-   Optionally restrict who can change them, and require review for workflow changes.
-
-4. **Commit the fingerprint** from step 2 as the only line of
-   `config/android-signing-certificate.sha256` in a normal pull request, with a versionCode
-   increase. Builds from that commit embed the fingerprint; the next publication to `main` signs,
-   verifies and publishes the first update-ready build and its manifest.
-
-The workflow refuses to publish if only one of "secrets" and "committed fingerprint" is present, or
-if the signed APK's certificate differs from the fingerprint. Rotating the key later needs Android
-key rotation (APK Signature Scheme v3 lineage) and a deliberate plan; do not replace the key.
+Secrets: `RDD_ANDROID_KEYSTORE_BASE64` (`base64 -w0` of the keystore), `RDD_ANDROID_KEYSTORE_PASSWORD`,
+`RDD_ANDROID_KEY_ALIAS` and `RDD_ANDROID_KEY_PASSWORD`. **Keep the keystore backed up in at least two
+safe places.** If it is lost, no future build can update existing installations in place; if it
+leaks, someone else could sign an update. Rotating the key later needs Android key rotation (APK
+Signature Scheme v3 lineage) and a deliberate plan; do not replace the key.
 
 ## Moving from an older test build (one time)
 
@@ -186,15 +193,23 @@ This release does not change any data format.
   requires an identical fingerprint and readable data; the in-app verifier must accept build 9002 and
   reject 9003 signed with another key; Android must refuse 9003 (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`)
   and the older 9000 (`INSTALL_FAILED_VERSION_DOWNGRADE`) with the data unchanged.
+- `AppUpdateTest.aVerifiedUpdateIsHandedToAndroidsOwnApprovalScreenOnlyWhenAllowed` (API 28/35/36):
+  with "Install unknown apps" denied, Install opens Android's setting and installs nothing; once
+  allowed, the verified APK goes into a real `PackageInstaller` session and Android returns its own
+  approval screen through the unexported receiver (never approved by the test); a cancel keeps the
+  verified file for retry.
 - `scripts/test-development-assets.py`: signature parsing (one v2/v3 signer), identical contents
-  after re-signing, fingerprint format, manifest fields matching the app's decoder, downgrade guard.
-  `scripts/sign-distribution-apk.sh` was exercised locally with a throwaway key: unconfigured,
-  fingerprint-only, secrets-only, wrong-fingerprint and correct cases.
+  after re-signing, fingerprint format, the identity check printing only the public fingerprint,
+  manifest fields matching the app's decoder, downgrade guard. `scripts/sign-distribution-apk.sh`
+  and the **Verify Android signing identity** workflow body were exercised locally with throwaway
+  keys: unconfigured, identity check (correct fingerprint reported, unchanged test-signed output),
+  wrong alias, wrong key password, fingerprint-only, wrong fingerprint and fully configured; no
+  password appeared in any output.
 
 ## Limitations
 
-- **Not yet active:** in-app updates start with the first build published after the owner completes
-  the signing setup above. Every earlier installation needs the one-time move.
+- **Not yet active:** in-app updates start with the first release-signed build, published only after
+  the activation PR above. Every earlier installation needs the one-time move.
 - Android's own approval screen and a real end-to-end in-app install (download → approve → app
   restarts as the new version) have **not been performed on a physical phone**. The emulator test
   proves the in-place update and data preservation with `adb`, and the verifier on real APKs.

@@ -3492,15 +3492,9 @@ class CoachingScreenshotTest {
                                 context,
                                 // A newer release signed with the release key, which this
                                 // test-key copy cannot install in place.
-                                update.copy(
-                                    versionName = "0.16.0-test1",
-                                    versionCode = update.versionCode + 1,
-                                    apkName = "Race-Day-Dreams-0.16.0-test1.apk",
-                                    apkUrl =
-                                        org.racedaydreams.domain.update.AppUpdates
-                                            .RELEASE_DOWNLOAD_PREFIX +
-                                            "Race-Day-Dreams-0.16.0-test1.apk",
-                                    certificateSha256 = "5".repeat(64),
+                                org.racedaydreams.update.UpdateFixtures.nextRelease(
+                                    context,
+                                    "5".repeat(64),
                                 ),
                             ),
                             org.racedaydreams.update.InstalledApp.read(context),

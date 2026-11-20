@@ -97,7 +97,29 @@ If signing needs the owner, document the exact setup and stop only the dependent
 steps. Never uninstall apps or delete user data automatically; never claim seamless updates for
 installations that cannot support them (all existing debug-signed installs).
 
-### Latest recovery pointer — checkpoint 264 Android updates implemented; draft PR #27 CI next (Claude)
+### Latest recovery pointer — checkpoint 265 PR #27 completion and signing activation plan (Claude)
+
+- 20 Nov: owner reports the four `RDD_ANDROID_*` secrets are configured (not readable via this
+  session's API proxy; never exposed to PR workflows). No fingerprint committed; **no release-signed
+  APK published.** Full gate on `f55090d` was green on API 28/35/36 (798/798 each), shared Android/iOS
+  and apple-device; bot screenshots `420137d`; `verify-android-upgrade.sh` on API 35: 9000→9001 in
+  place with identical data fingerprint, verifier accepted 9002 / rejected key B, Android refused key
+  B (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`) and 9000 (`INSTALL_FAILED_VERSION_DOWNGRADE`).
+- Earlier gate fixes: API 28 archives lack `signingInfo` → `GET_SIGNATURES` fallback (one signer
+  still required); `AppPrivacyTest` now pins INTERNET + REQUEST_INSTALL_PACKAGES only, cleartext off,
+  receiver unexported; FakeConnection streams from disk (two 60 MB heap copies broke the UI test).
+- This completion commit: secrets-without-fingerprint is now an **identity check** in the main-only
+  publish job (real key signs a scratch copy; public fingerprint in log/summary; test-signed APK
+  still published, no manifest) instead of a refusal, so merging PR #27 cannot publish the first
+  signed release and post-merge CI stays green. New main-only `workflow_dispatch`
+  `signing-identity.yml` (public outputs only). Fixture labels derived from the real versionCode
+  (older install = 0.14.0-test1/22, newer = 0.16.0-test1/24). New installer hand-off test.
+- **Next after owner approval to merge:** verify post-merge run and the identity-check fingerprint;
+  then an activation PR committing `config/android-signing-certificate.sha256` + versionCode 24 +
+  release note, merged only with owner authorisation → first release-signed APK and manifest;
+  verify by download (cert, versionCode, checksum, manifest). Never claim it before that.
+
+### Recovery pointer — checkpoint 264 Android updates implemented; draft PR #27 CI next (Claude)
 
 - **Design:** CI re-signs the exact verified API35 APK in the publish job only
   (`scripts/sign-distribution-apk.sh`; secrets `RDD_ANDROID_KEYSTORE_BASE64`,

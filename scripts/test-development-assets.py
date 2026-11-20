@@ -235,6 +235,24 @@ class AndroidSigningAndUpdateManifestTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             assets.update_manifest(alias, '0.14.0-test1', 22, 'c' * 40, self.cert)
 
+    def test_identity_check_reports_only_the_public_fingerprint_for_unchanged_contents(self):
+        import subprocess, sys
+        files = {'AndroidManifest.xml': b'm', 'classes.dex': b'd'}
+        verified = self.zip('verified.apk', {**files, 'META-INF/CERT.RSA': b'debug'})
+        scratch = self.zip('scratch.apk', {**files, 'META-INF/RELEASE.RSA': b'release'})
+        output = self.root / 'verify.txt'
+        output.write_text(SIGNED_OUTPUT.format(cert=self.cert))
+        script = str(ROOT / 'scripts/development-assets.py')
+        def run(apk):
+            return subprocess.run([sys.executable, '-I', script, '--version', '0.0.0-test0', '--directory', str(self.root),
+                                   '--identity-check', str(apk), '--verified-apk', str(verified),
+                                   '--apksigner-output', str(output)], capture_output=True, text=True)
+        ok = run(scratch)
+        self.assertEqual(0, ok.returncode, ok.stderr)
+        self.assertEqual(self.cert, ok.stdout.strip())
+        tampered = self.zip('tampered.apk', {**files, 'classes.dex': b'evil'})
+        self.assertNotEqual(0, run(tampered).returncode)
+
     def test_a_lower_version_code_is_never_announced(self):
         live = '{"versionCode": 23}'
         assets.check_not_downgrade(None, 1)

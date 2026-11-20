@@ -301,8 +301,9 @@ jobs:
       - name: Sign the verified APK with the release key when configured
         id: sign
         # Secrets reach only this publish job, which runs on pushes to main and version tags, never on
-        # pull requests. Without secrets and a committed fingerprint the verified test-signed APK is
-        # published unchanged and no update manifest is offered (see docs/ANDROID_UPDATES.md).
+        # pull requests. Without a committed fingerprint the verified test-signed APK is published
+        # unchanged with no update manifest; if secrets exist, the real key is first checked on a
+        # scratch copy and only its public fingerprint is reported (see docs/ANDROID_UPDATES.md).
         env:
           RDD_ANDROID_KEYSTORE_BASE64: ${{ secrets.RDD_ANDROID_KEYSTORE_BASE64 }}
           RDD_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.RDD_ANDROID_KEYSTORE_PASSWORD }}

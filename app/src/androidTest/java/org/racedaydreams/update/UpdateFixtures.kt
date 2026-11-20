@@ -21,9 +21,31 @@ object UpdateFixtures {
         val real = InstalledApp.read(context)
         val cert = requireNotNull(real.certificateSha256)
         return real.copy(
-            versionName = "0.13.1-test1",
+            versionName = neighbourVersion(real.versionName, -1),
             versionCode = real.versionCode - 1,
             releaseCertificateSha256 = cert,
+        )
+    }
+
+    /**
+     * The release name beside [name] ("0.15.0-test1", -1 -> "0.14.0-test1"). Each release so far
+     * raised the minor version and the versionCode by one, so labels match the real history.
+     */
+    fun neighbourVersion(name: String, minorDelta: Int): String {
+        val parts = requireNotNull(Regex("(\\d+)\\.(\\d+)\\.\\d+(-test\\d+)?").matchEntire(name)).groupValues
+        return "${parts[1]}.${parts[2].toInt() + minorDelta}.0-test1"
+    }
+
+    /** A newer release (next version and versionCode) signed with [certificate]. */
+    fun nextRelease(context: Context, certificate: String): AvailableUpdate {
+        val current = announcedCurrentBuild(context)
+        val name = neighbourVersion(current.versionName, 1)
+        return current.copy(
+            versionName = name,
+            versionCode = current.versionCode + 1,
+            apkName = "Race-Day-Dreams-$name.apk",
+            apkUrl = AppUpdates.RELEASE_DOWNLOAD_PREFIX + "Race-Day-Dreams-$name.apk",
+            certificateSha256 = certificate,
         )
     }
 

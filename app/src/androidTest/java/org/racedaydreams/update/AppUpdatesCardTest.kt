@@ -49,7 +49,7 @@ class AppUpdatesCardTest {
                 )
             } }
         }
-        compose.onNodeWithText("Installed: 0.13.1-test1", substring = true).assertExists()
+        compose.onNodeWithText("Installed: ${installed.versionName} (build ${installed.versionCode})", substring = true).assertExists()
         compose.onNodeWithTag("app-updates-status").assert(hasText("Update available: ${update.versionName}", substring = true))
         compose.onNodeWithText("What's new in ${update.versionName}").performClick()
         compose.onNodeWithTag("app-updates-notes").assert(hasText("Settings › App updates", substring = true))

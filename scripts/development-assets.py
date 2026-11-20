@@ -295,6 +295,7 @@ if __name__ == '__main__':
     mode.add_argument('--prepare-ios', type=Path, help='CI artifact directory for --kind')
     mode.add_argument('--verify-ios', action='store_true')
     mode.add_argument('--signed-check', type=Path, help='re-signed APK to compare with --verified-apk')
+    mode.add_argument('--identity-check', type=Path, help='scratch-signed APK; prints its public fingerprint')
     mode.add_argument('--update-manifest', type=Path, help='versioned APK to describe')
     parser.add_argument('--verified-apk', type=Path)
     parser.add_argument('--apksigner-output', type=Path)
@@ -304,6 +305,12 @@ if __name__ == '__main__':
     parser.add_argument('--version-code')
     parser.add_argument('--commit')
     args = parser.parse_args()
+    if args.identity_check:
+        actual = certificate_sha256(args.apksigner_output.read_text())
+        if not same_content(args.verified_apk, args.identity_check):
+            raise SystemExit('Re-signing changed APK contents')
+        print(actual)
+        raise SystemExit(0)
     if args.signed_check:
         pin = read_pin(args.pin)
         if pin is None:

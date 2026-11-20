@@ -13,8 +13,16 @@
 # States:
 #   no secrets and no fingerprint  -> the verified test-signed APK is published unchanged, with
 #                                     no update manifest (no in-place updates), exactly as before.
-#   only one of them configured    -> refuse: publication stops rather than guessing.
+#   secrets, no fingerprint        -> identity check only: a scratch copy is signed and verified
+#                                     (keystore, alias, both passwords, one v2/v3 signer, identical
+#                                     contents) and the PUBLIC certificate fingerprint is reported.
+#                                     The verified test-signed APK is still what gets published,
+#                                     without an update manifest. Committing the fingerprint is the
+#                                     owner's explicit switch for the first release-signed build.
+#   fingerprint, no secrets        -> refuse: publication stops rather than guessing.
 #   both configured                -> sign, then require the fingerprint and identical contents.
+# Nothing secret is printed: passwords are passed to apksigner by environment-variable name, the
+# decoded keystore lives only in a private temporary directory that is always deleted.
 set -eu
 
 verified=$1
@@ -34,8 +42,8 @@ if [ "$have_secrets" = false ] && [ "$have_pin" = false ]; then
     echo test-signed
     exit 0
 fi
-if [ "$have_secrets" != "$have_pin" ]; then
-    echo "Release signing is only partly configured (secrets: $have_secrets, committed fingerprint: $have_pin)." >&2
+if [ "$have_pin" = true ] && [ "$have_secrets" = false ]; then
+    echo "A release fingerprint is committed but the signing secrets are missing." >&2
     echo "Refusing to publish: see docs/ANDROID_UPDATES.md, 'One-time signing setup'." >&2
     exit 1
 fi
@@ -56,6 +64,17 @@ printf '%s' "$RDD_ANDROID_KEYSTORE_BASE64" | base64 -d > "$work/release.keystore
     --out "$work/signed.apk" "$verified"
 rm -f "$work/release.keystore"
 "$apksigner" verify --print-certs -v "$work/signed.apk" > "$work/verify.txt"
+if [ "$have_pin" = false ]; then
+    fingerprint=$(python3 "$root/scripts/development-assets.py" --version 0.0.0-test0 --directory "$work" \
+        --identity-check "$work/signed.apk" --verified-apk "$verified" --apksigner-output "$work/verify.txt")
+    message="Release signing identity verified (keystore, alias, passwords, one v2/v3 signer, identical contents). Public certificate SHA-256: $fingerprint. Not yet enabled: commit this value as config/android-signing-certificate.sha256 to publish release-signed builds. This run publishes the verified test-signed APK without an update manifest."
+    echo "RELEASE_CERTIFICATE_SHA256=$fingerprint"
+    echo "$message"
+    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then printf '%s\n' "$message" >> "$GITHUB_STEP_SUMMARY"; fi
+    cp "$verified" "$output"
+    echo test-signed
+    exit 0
+fi
 python3 "$root/scripts/development-assets.py" --version 0.0.0-test0 --directory "$work" \
     --signed-check "$work/signed.apk" --verified-apk "$verified" \
     --apksigner-output "$work/verify.txt" --pin "$pin"
