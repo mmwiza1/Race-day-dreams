@@ -3825,12 +3825,13 @@ class CoachingScreenshotTest {
         click("Progress")
         await("Weekly distance")
         alignHeading("Weekly distance")
-        val sources =
-            compose.onAllNodesWithText("Show the runs in this week").fetchSemanticsNodes()
+        val sources = compose.onAllNodesWithText("Show the runs in this week").fetchSemanticsNodes()
         if (sources.isNotEmpty()) {
             compose.onNodeWithText("Show the runs in this week").performScrollTo().performClick()
             compose.waitForIdle()
-            compose.onNodeWithText("Show the runs in this week", substring = true).assertDoesNotExist()
+            compose
+                .onNodeWithText("Show the runs in this week", substring = true)
+                .assertDoesNotExist()
         }
         capture("progress-weekly-run-sources")
 
@@ -3847,7 +3848,11 @@ class CoachingScreenshotTest {
             .perform(scroll, androidx.test.espresso.action.ViewActions.replaceText("Hackney Half"))
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         espresso(text(org.racedaydreams.R.string.onboarding_continue)).perform(scroll, tap)
-        espresso(androidx.test.espresso.matcher.ViewMatchers.withHint(org.racedaydreams.R.string.onboarding_target_hint))
+        espresso(
+                androidx.test.espresso.matcher.ViewMatchers.withHint(
+                    org.racedaydreams.R.string.onboarding_target_hint
+                )
+            )
             .perform(scroll, androidx.test.espresso.action.ViewActions.replaceText("1:55:00"))
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         espresso(text(org.racedaydreams.R.string.onboarding_continue)).perform(scroll, tap)
