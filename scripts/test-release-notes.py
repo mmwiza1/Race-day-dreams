@@ -44,6 +44,18 @@ class ReleaseNotesTest(unittest.TestCase):
         # Permanent tag releases stay Android-only; iOS builds are rolling development assets.
         self.assertNotIn('iphoneos-unsigned', result)
 
+    def test_release_signed_builds_explain_in_place_updates_and_the_one_time_move(self):
+        cert = 'b' * 64
+        signed = notes.render(self.root, self.sha, self.url, development=True, signing_certificate=cert)
+        self.assertIn('release key (certificate SHA-256 `' + cert + '`)', signed)
+        self.assertIn('Settings › App updates', signed)
+        self.assertIn('Complete backup (app + recordings)', signed)
+        self.assertNotIn('debug-signed', signed)
+        unsigned = notes.render(self.root, self.sha, self.url, development=True)
+        self.assertIn('cannot be updated in place', unsigned)
+        with self.assertRaises(ValueError):
+            notes.render(self.root, self.sha, self.url, development=True, signing_certificate='debug')
+
     def test_rolling_release_is_clearly_development(self):
         self.assertIn(
             'Latest Development Build',

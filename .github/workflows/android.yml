@@ -90,17 +90,19 @@ jobs:
           arch: x86_64
           target: default
           disable-animations: true
-          script: sh scripts/run-android-gate.sh
+          # API 35 also proves a real in-place upgrade with throwaway test keys (data kept, other key
+          # and downgrade refused); the verified gate APK is restored byte-for-byte afterwards.
+          script: sh scripts/run-android-gate.sh && if [ "${{ matrix.api-level }}" = "35" ]; then sh scripts/verify-android-upgrade.sh; fi
       - name: Prepare named test APK
         run: |
           mkdir -p build/distributions
-          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.14.0-test1-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.15.0-test1-debug.apk
           stat --format='APK_BYTES=%s' app/build/outputs/apk/debug/app-debug.apk
       - name: Upload verified debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: Race-Day-Dreams-0.14.0-test1-debug-api-${{ matrix.api-level }}
-          path: build/distributions/Race-Day-Dreams-0.14.0-test1-debug.apk
+          name: Race-Day-Dreams-0.15.0-test1-debug-api-${{ matrix.api-level }}
+          path: build/distributions/Race-Day-Dreams-0.15.0-test1-debug.apk
       - name: Upload actual-build screenshots
         uses: actions/upload-artifact@v4
         with:
@@ -286,7 +288,7 @@ jobs:
           python3 scripts/verify-dream-screenshots.py docs/screenshots
       - uses: actions/download-artifact@v4
         with:
-          name: Race-Day-Dreams-0.14.0-test1-debug-api-35
+          name: Race-Day-Dreams-0.15.0-test1-debug-api-35
           path: build/verified-apk
       - uses: actions/download-artifact@v4
         with:
@@ -296,6 +298,25 @@ jobs:
         with:
           name: ios-simulator-universal-unsigned
           path: build/verified-ios/ios-simulator
+      - name: Sign the verified APK with the release key when configured
+        id: sign
+        # Secrets reach only this publish job, which runs on pushes to main and version tags, never on
+        # pull requests. Without secrets and a committed fingerprint the verified test-signed APK is
+        # published unchanged and no update manifest is offered (see docs/ANDROID_UPDATES.md).
+        env:
+          RDD_ANDROID_KEYSTORE_BASE64: ${{ secrets.RDD_ANDROID_KEYSTORE_BASE64 }}
+          RDD_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.RDD_ANDROID_KEYSTORE_PASSWORD }}
+          RDD_ANDROID_KEY_ALIAS: ${{ secrets.RDD_ANDROID_KEY_ALIAS }}
+          RDD_ANDROID_KEY_PASSWORD: ${{ secrets.RDD_ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/distribution
+          verified=(build/verified-apk/*.apk)
+          test "${#verified[@]}" -eq 1
+          mode=$(sh scripts/sign-distribution-apk.sh "${verified[0]}" build/distribution/app.apk | tail -n 1)
+          case "$mode" in signed|test-signed) ;; *) echo "Unexpected signing result: $mode" >&2; exit 1 ;; esac
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
       - name: Publish verified APK and maintained release notes
         env:
           GH_TOKEN: ${{ github.token }}
@@ -304,38 +325,55 @@ jobs:
           BUILD_REF: ${{ github.ref }}
           BUILD_TAG: ${{ github.ref_name }}
           BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SIGNING_MODE: ${{ steps.sign.outputs.mode }}
         shell: bash
         run: |
           set -euo pipefail
           version=$(python3 -c "import re;print(re.search(r\"versionName\\s+'([^']+)'\",open('app/build.gradle').read()).group(1))")
+          code=$(python3 -c "import re;print(re.search(r'versionCode\s+(\d+)',open('app/build.gradle').read()).group(1))")
           apk="Race-Day-Dreams-$version.apk"
-          cp build/verified-apk/*.apk "$apk"
+          cp build/distribution/app.apk "$apk"
           sha256sum "$apk" > "$apk.sha256"
+          certificate=''
+          signing_args=()
+          if [ "$SIGNING_MODE" = signed ]; then
+            certificate=$(tr -d '[:space:]' < config/android-signing-certificate.sha256 | tr 'A-F' 'a-f')
+            signing_args=(--signing-certificate "$certificate")
+          fi
           if [ "$BUILD_REF" = 'refs/heads/main' ]; then
             # An older successful workflow must not overwrite a newer main build.
             live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
             if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
-            python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --development --output build/release-notes.md
+            python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --development "${signing_args[@]}" --output build/release-notes.md
             alias='Race-Day-Dreams-latest-test.apk'
             python3 scripts/development-assets.py --prepare "$apk" --version "$version" --directory build/public-assets
+            if [ "$SIGNING_MODE" = signed ]; then
+              # The in-app update manifest; never announces a lower versionCode than the live one.
+              mkdir -p build/live-manifest
+              if gh release view development --json assets --jq '.assets[].name' 2>/dev/null | grep -qx Race-Day-Dreams-latest-update.json; then
+                gh release download development --pattern Race-Day-Dreams-latest-update.json --dir build/live-manifest --clobber
+              fi
+              python3 scripts/development-assets.py --update-manifest "build/public-assets/$apk" --version "$version" \
+                --version-code "$code" --commit "$BUILD_SHA" --pin config/android-signing-certificate.sha256 \
+                --live-manifest build/live-manifest/Race-Day-Dreams-latest-update.json --directory build/public-assets
+            fi
             # Unsigned iOS developer/test builds from the same run: each must carry this exact commit,
             # bundle version and build number before it can replace the rolling iOS downloads.
-            code=$(python3 -c "import re;print(re.search(r'versionCode\s+(\d+)',open('app/build.gradle').read()).group(1))")
             for kind in ios-simulator iphoneos-unsigned; do
               python3 scripts/development-assets.py --prepare-ios "build/verified-ios/$kind" --kind "$kind" \
                 --version "$version" --version-code "$code" --commit "$BUILD_SHA" --directory build/public-assets
             done
-            python3 - "$version" "$code" "$BUILD_SHA" "$BUILD_URL" <<'PYINFO'
+            python3 - "$version" "$code" "$BUILD_SHA" "$BUILD_URL" "$certificate" <<'PYINFO'
           import importlib.util, sys
           from pathlib import Path
           spec = importlib.util.spec_from_file_location('assets', 'scripts/development-assets.py')
           assets = importlib.util.module_from_spec(spec); spec.loader.exec_module(assets)
-          version, code, commit, run = sys.argv[1:]
+          version, code, commit, run, certificate = sys.argv[1:]
           out = Path('build/public-assets')
           digests = {'android-apk': assets.digest(out / f'Race-Day-Dreams-{version}.apk')}
           for kind in assets.IOS_KINDS:
               digests[kind] = assets.digest(out / assets.ios_names(version, kind)[0])
-          text = assets.build_info(version, code, commit, run, digests)
+          text = assets.build_info(version, code, commit, run, digests, certificate or None)
           (out / f'Race-Day-Dreams-{version}-build-info.txt').write_text(text)
           (out / assets.BUILD_INFO_ALIAS).write_text(text)
           PYINFO
@@ -368,12 +406,19 @@ jobs:
             done
             gh release download development --pattern Race-Day-Dreams-latest-build-info.txt --dir build/published-check --clobber
             cmp build/public-assets/Race-Day-Dreams-latest-build-info.txt build/published-check/Race-Day-Dreams-latest-build-info.txt
+            if [ "$SIGNING_MODE" = signed ]; then
+              # The published manifest must describe exactly the published, release-signed APK.
+              gh release download development --pattern Race-Day-Dreams-latest-update.json --dir build/published-check --clobber
+              cmp build/public-assets/Race-Day-Dreams-latest-update.json build/published-check/Race-Day-Dreams-latest-update.json
+              python3 -c "import importlib.util,sys; s=importlib.util.spec_from_file_location('a','scripts/development-assets.py'); a=importlib.util.module_from_spec(s); s.loader.exec_module(a); a.verify_update_manifest(open(sys.argv[1]).read(), sys.argv[2], sys.argv[3])" \
+                build/published-check/Race-Day-Dreams-latest-update.json "build/published-check/$apk" "$certificate"
+            fi
             live=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
             if [ "$live" != "$BUILD_SHA" ]; then exit 0; fi
             gh api --method PATCH "repos/$GH_REPO/git/refs/tags/development" -f sha="$BUILD_SHA" -F force=true
             gh release edit development --title 'Latest Development Build' --notes-file build/release-notes.md --prerelease --latest=false
           else
-            python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --tag "$BUILD_TAG" --output build/release-notes.md
+            python3 scripts/release-notes.py --commit "$BUILD_SHA" --run-url "$BUILD_URL" --tag "$BUILD_TAG" "${signing_args[@]}" --output build/release-notes.md
             # Permanent tags/releases are never overwritten, including accidental retries.
             if gh release view "$BUILD_TAG" >/dev/null 2>&1; then
               echo 'Version release already exists; refusing to overwrite it.' >&2
