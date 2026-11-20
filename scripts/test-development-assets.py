@@ -98,8 +98,14 @@ class DevelopmentAssetsTest(unittest.TestCase):
     def ios_source(self, kind, commit='a' * 40, version='0.13.0', build='20', payload=b'ios-zip\x00' * 64):
         directory = self.root / ('ci-' + kind)
         directory.mkdir(exist_ok=True)
-        name = {'ios-simulator': 'RaceDayDreams-simulator-universal.zip',
-                'iphoneos-unsigned': 'RaceDayDreams-iphoneos-unsigned.zip'}[kind]
+        name = assets.IOS_SOURCES[kind]
+        if kind == 'ipa':
+            import io, zipfile
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, 'w') as ipa:
+                ipa.writestr('Payload/RaceDayDreams.app/RaceDayDreams', payload)
+                ipa.writestr('Payload/RaceDayDreams.app/Info.plist', b'plist')
+            payload = buffer.getvalue()
         (directory / name).write_bytes(payload)
         (directory / (name + '.sha256')).write_text(f'{assets.digest(directory / name)}  {name}\n')
         (directory / 'source-commit.txt').write_text(commit + '\n')
@@ -112,8 +118,9 @@ class DevelopmentAssetsTest(unittest.TestCase):
             with self.subTest(kind=kind):
                 expected = assets.prepare_ios(self.ios_source(kind), '0.13.0-test1', 20, 'a' * 40, kind, self.output)
                 versioned, _, alias, _ = assets.ios_names('0.13.0-test1', kind)
-                self.assertEqual(versioned, f'Race-Day-Dreams-0.13.0-test1-{kind}.zip')
-                self.assertEqual(alias, f'Race-Day-Dreams-latest-{kind}.zip')
+                suffix = 'unsigned.ipa' if kind == 'ipa' else f'{kind}.zip'
+                self.assertEqual(versioned, f'Race-Day-Dreams-0.13.0-test1-{suffix}')
+                self.assertEqual(alias, f'Race-Day-Dreams-latest-{suffix}')
                 self.assertEqual(assets.verify_ios(self.output, '0.13.0-test1', kind, expected)[2], alias)
 
     def test_ios_source_rejects_wrong_commit_version_build_or_checksum(self):
@@ -131,6 +138,22 @@ class DevelopmentAssetsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             assets.prepare_ios(source, '0.13.0-test1', 20, 'a' * 40, 'ios-simulator', self.output)
 
+    def test_ipa_must_contain_only_the_app_in_payload(self):
+        import zipfile
+        for entries in ({'RaceDayDreams.app/RaceDayDreams': b'x', 'RaceDayDreams.app/Info.plist': b'p'},
+                        {'Payload/RaceDayDreams.app/Info.plist': b'p'},
+                        {'Payload/RaceDayDreams.app/RaceDayDreams': b'x', 'Payload/RaceDayDreams.app/Info.plist': b'p',
+                         'Payload/Other.app/Other': b'x'}):
+            with self.subTest(entries=sorted(entries)):
+                source = self.ios_source('ipa')
+                archive = source / assets.IOS_SOURCES['ipa']
+                with zipfile.ZipFile(archive, 'w') as ipa:
+                    for name, data in entries.items():
+                        ipa.writestr(name, data)
+                (source / (archive.name + '.sha256')).write_text(f'{assets.digest(archive)}  {archive.name}\n')
+                with self.assertRaises(ValueError):
+                    assets.prepare_ios(source, '0.13.0-test1', 20, 'a' * 40, 'ipa', self.output)
+
     def test_corrupt_published_ios_alias_is_rejected(self):
         expected = assets.prepare_ios(self.ios_source('ios-simulator'), '0.13.0-test1', 20, 'a' * 40,
                                       'ios-simulator', self.output)
@@ -141,13 +164,13 @@ class DevelopmentAssetsTest(unittest.TestCase):
     def test_build_info_ties_every_binary_to_one_commit_and_labels_unsigned(self):
         text = assets.build_info('0.13.0-test1', 20, 'c' * 40,
                                  'https://github.com/mmwiza1/Race-day-dreams/actions/runs/7',
-                                 {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64})
+                                 {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64, 'ipa': '4' * 64})
         self.assertIn('Source commit: ' + 'c' * 40, text)
         self.assertIn('iOS 0.13.0 / build 20', text)
-        self.assertEqual(text.count('UNSIGNED'), 2)
+        self.assertEqual(text.count('UNSIGNED'), 3)
         with self.assertRaises(ValueError):
             assets.build_info('0.13.0-test1', 20, 'c' * 40, 'https://example.com/run',
-                              {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64})
+                              {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64, 'ipa': '4' * 64})
 
 
 SIGNED_OUTPUT = """Verifies
@@ -262,7 +285,7 @@ class AndroidSigningAndUpdateManifestTest(unittest.TestCase):
             assets.check_not_downgrade(live, 22)
 
     def test_build_info_names_the_release_certificate_when_signed(self):
-        digests = {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64}
+        digests = {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64, 'ipa': '4' * 64}
         run = 'https://github.com/mmwiza1/Race-day-dreams/actions/runs/7'
         self.assertIn('no in-place updates', assets.build_info('0.14.0-test1', 22, 'c' * 40, run, digests))
         signed = assets.build_info('0.14.0-test1', 22, 'c' * 40, run, digests, self.cert)

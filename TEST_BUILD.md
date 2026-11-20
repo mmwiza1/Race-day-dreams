@@ -720,6 +720,11 @@ consumer-installable builds. Verify each ZIP against its `.sha256` file and
   built with code signing disabled. It cannot be installed until you re-sign it with your own
   Apple development certificate and a provisioning profile that includes the HealthKit
   entitlement for a bundle ID you control. Building from source in Xcode (below) is usually easier.
+- **Unsigned iPhone .ipa (`Race-Day-Dreams-latest-unsigned.ipa`)** — the same app in the standard
+  `Payload/RaceDayDreams.app` layout, for sideloading tools such as AltStore or Sideloadly that
+  re-sign it with your own Apple ID. It is still unsigned and cannot be installed as-is; the
+  HealthKit capability may require a paid Apple developer account, and free-account signatures
+  expire after seven days.
 
 For a device build, use macOS with Xcode and JDK 17. From the repository root, run
 `./gradlew :sharedUi:linkDebugFrameworkIosArm64`, then open

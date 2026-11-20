@@ -360,8 +360,11 @@ jobs:
             fi
             # Unsigned iOS developer/test builds from the same run: each must carry this exact commit,
             # bundle version and build number before it can replace the rolling iOS downloads.
-            for kind in ios-simulator iphoneos-unsigned; do
-              python3 scripts/development-assets.py --prepare-ios "build/verified-ios/$kind" --kind "$kind" \
+            for kind in ios-simulator iphoneos-unsigned ipa; do
+              # The .ipa comes from the same verified unsigned iPhone build artifact.
+              source_dir="build/verified-ios/$kind"
+              if [ "$kind" = ipa ]; then source_dir=build/verified-ios/iphoneos-unsigned; fi
+              python3 scripts/development-assets.py --prepare-ios "$source_dir" --kind "$kind" \
                 --version "$version" --version-code "$code" --commit "$BUILD_SHA" --directory build/public-assets
             done
             python3 - "$version" "$code" "$BUILD_SHA" "$BUILD_URL" "$certificate" <<'PYINFO'
@@ -398,10 +401,12 @@ jobs:
             gh release download development --pattern "$apk" --pattern "$apk.sha256" --pattern "$alias" --pattern "$alias.sha256" --dir build/published-check --clobber
             expected=$(sha256sum "$apk" | cut -d ' ' -f1)
             python3 scripts/development-assets.py --verify --version "$version" --directory build/published-check --expected-sha "$expected"
-            for kind in ios-simulator iphoneos-unsigned; do
-              gh release download development --pattern "Race-Day-Dreams-$version-$kind.zip*" \
-                --pattern "Race-Day-Dreams-latest-$kind.zip*" --dir build/published-check --clobber
-              expected_ios=$(sha256sum "build/public-assets/Race-Day-Dreams-$version-$kind.zip" | cut -d ' ' -f1)
+            for kind in ios-simulator iphoneos-unsigned ipa; do
+              read -r versioned_ios latest_ios < <(python3 scripts/development-assets.py --ios-names --kind "$kind" \
+                --version "$version" --directory build/published-check)
+              gh release download development --pattern "$versioned_ios*" \
+                --pattern "$latest_ios*" --dir build/published-check --clobber
+              expected_ios=$(sha256sum "build/public-assets/$versioned_ios" | cut -d ' ' -f1)
               python3 scripts/development-assets.py --verify-ios --kind "$kind" --version "$version" \
                 --directory build/published-check --expected-sha "$expected_ios"
             done

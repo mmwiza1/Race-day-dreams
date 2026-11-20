@@ -65,7 +65,7 @@ class ShowcaseTest(unittest.TestCase):
     def test_stable_unsigned_ios_downloads_follow_android_link(self):
         base = DOWNLOAD.rsplit('/', 1)[0] + '/Race-Day-Dreams-latest-'
         for name in ('ios-simulator.zip', 'ios-simulator.zip.sha256', 'iphoneos-unsigned.zip',
-                     'iphoneos-unsigned.zip.sha256', 'build-info.txt'):
+                     'iphoneos-unsigned.zip.sha256', 'unsigned.ipa', 'unsigned.ipa.sha256', 'build-info.txt'):
             self.assertIn(base + name, self.text)
         self.assertLess(self.text.index(DOWNLOAD), self.text.index(base + 'ios-simulator.zip'))
         self.assertIn('unsigned engineering builds, not', self.text)
