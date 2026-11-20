@@ -20,7 +20,9 @@ Development/test build for **Android 9 (API 28) or newer**, not a Play Store or 
 [Checksum](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk.sha256) · [Version, release notes and versioned APK](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
 
 The download always points to the last verified development build. It may lag behind work in
-progress. No account or Internet connection is required to use the app.
+progress. No account or Internet connection is required to use the app. Builds signed with the
+release key can optionally check GitHub for updates in Settings › App updates; see
+[Android updates](docs/ANDROID_UPDATES.md).
 
 ## iOS developer/test builds (unsigned)
 

@@ -12,9 +12,13 @@ android {
         applicationId 'org.racedaydreams'
         minSdk 28
         targetSdk 35
-        versionCode 22
-        versionName '0.14.0-test1'
+        versionCode 23
+        versionName '0.15.0-test1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        // Public fingerprint of the project's release signing certificate (never a key). Builds
+        // whose own certificate matches it may check for and install in-place updates; all other
+        // builds, including CI test builds, never contact the network on their own.
+        manifestPlaceholders = [rddReleaseCertificate: rddReleaseCertificate()]
     }
 
     compileOptions {
@@ -32,6 +36,37 @@ android {
         abortOnError true
         warningsAsErrors false
     }
+}
+
+/**
+ * The committed release certificate fingerprint (`config/android-signing-certificate.sha256`), or an
+ * empty string until the owner configures stable signing. `-PrddReleaseCertificate=` overrides it
+ * only for the upgrade-path test, which signs with a throwaway test key.
+ */
+def rddReleaseCertificate() {
+    def override = project.findProperty('rddReleaseCertificate')
+    def pinFile = rootProject.file('config/android-signing-certificate.sha256')
+    def value = override != null ? override.toString() : (pinFile.exists() ? pinFile.text : '')
+    value = value.trim().toLowerCase()
+    if (!value.isEmpty() && !(value ==~ /[0-9a-f]{64}/))
+        throw new GradleException('config/android-signing-certificate.sha256 must hold one SHA-256 hex digest')
+    return value
+}
+
+// The upgrade-path test installs two builds of this source with increasing version codes and
+// a throwaway test key. Publication always uses the literal versionCode above.
+if (project.hasProperty('rddUpgradeTestVersionCode'))
+    android.defaultConfig.versionCode = project.property('rddUpgradeTestVersionCode') as int
+if (System.getenv('RDD_UPGRADE_TEST_KEYSTORE')) {
+    android.signingConfigs {
+        upgradeTest {
+            storeFile file(System.getenv('RDD_UPGRADE_TEST_KEYSTORE'))
+            storePassword System.getenv('RDD_UPGRADE_TEST_PASSWORD')
+            keyAlias 'upgrade-test'
+            keyPassword System.getenv('RDD_UPGRADE_TEST_PASSWORD')
+        }
+    }
+    android.buildTypes.debug.signingConfig = android.signingConfigs.upgradeTest
 }
 
 dependencies {

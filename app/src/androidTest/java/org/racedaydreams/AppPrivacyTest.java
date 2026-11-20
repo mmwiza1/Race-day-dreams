@@ -13,12 +13,18 @@ import java.util.List;
 /** Checks the merged application manifest and packaged notices, including transitive libraries. */
 @SuppressWarnings("deprecation")
 public final class AppPrivacyTest extends AndroidTestCase {
-    public void testMergedManifestHasNoNetworkBackgroundLocationOrUnusedHealthAccess() throws Exception {
+    public void testMergedManifestHasOnlyUpdateNetworkAccessNoBackgroundLocationOrUnusedHealthAccess() throws Exception {
         PackageInfo info = getContext().getPackageManager().getPackageInfo(
                 getContext().getPackageName(), PackageManager.GET_PERMISSIONS);
         List<String> permissions = info.requestedPermissions == null
                 ? Collections.emptyList() : Arrays.asList(info.requestedPermissions);
-        for (String forbidden : new String[]{"android.permission.INTERNET",
+        // Network access exists only for the optional update check/download (docs/ANDROID_UPDATES.md).
+        // Nothing that installs or removes apps without the person, lists other apps or watches
+        // the network is allowed.
+        for (String forbidden : new String[]{"android.permission.INSTALL_PACKAGES",
+                "android.permission.DELETE_PACKAGES", "android.permission.REQUEST_DELETE_PACKAGES",
+                "android.permission.QUERY_ALL_PACKAGES", "android.permission.ACCESS_NETWORK_STATE",
+                "android.permission.ACCESS_WIFI_STATE", "android.permission.CHANGE_NETWORK_STATE",
                 "android.permission.ACCESS_BACKGROUND_LOCATION", "android.permission.MANAGE_EXTERNAL_STORAGE",
                 "android.permission.SCHEDULE_EXACT_ALARM", "android.permission.health.WRITE_SLEEP",
                 "android.permission.health.WRITE_HEART_RATE_VARIABILITY", "android.permission.health.WRITE_STEPS",
@@ -28,6 +34,10 @@ public final class AppPrivacyTest extends AndroidTestCase {
         assertTrue(permissions.contains("android.permission.health.READ_EXERCISE"));
         assertTrue(permissions.contains("android.permission.health.READ_DISTANCE"));
         for(String required:new String[]{"android.permission.ACCESS_FINE_LOCATION","android.permission.FOREGROUND_SERVICE_LOCATION","android.permission.health.READ_SLEEP","android.permission.health.READ_RESTING_HEART_RATE","android.permission.health.READ_HEART_RATE_VARIABILITY","android.permission.health.READ_STEPS","android.permission.health.WRITE_EXERCISE","android.permission.health.WRITE_DISTANCE"})assertTrue("Implemented optional permission missing: "+required,permissions.contains(required));
+        assertTrue(permissions.contains("android.permission.INTERNET"));
+        assertTrue(permissions.contains("android.permission.REQUEST_INSTALL_PACKAGES"));
+        assertEquals("Cleartext network traffic must stay disabled", 0,
+                info.applicationInfo.flags & ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC);
         assertEquals(0, info.applicationInfo.flags & ApplicationInfo.FLAG_ALLOW_BACKUP);
     }
 
@@ -41,6 +51,8 @@ public final class AppPrivacyTest extends AndroidTestCase {
         assertFalse(manager.getServiceInfo(new ComponentName(application,"org.racedaydreams.recording.RunRecordingService"),0).exported);
         assertFalse(manager.getReceiverInfo(new ComponentName(application,
                 "org.racedaydreams.reminders.ReminderReceiver"), 0).exported);
+        assertFalse(manager.getReceiverInfo(new ComponentName(application,
+                "org.racedaydreams.update.UpdateInstallReceiver"), 0).exported);
     }
 
     public void testRequiredNoticesAreAvailableOffline() throws Exception {

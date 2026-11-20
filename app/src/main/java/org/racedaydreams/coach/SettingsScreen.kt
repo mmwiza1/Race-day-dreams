@@ -41,6 +41,7 @@ fun SettingsScreen(
 ) = CoachPage {
     CoachHeading("Settings")
     AppearanceSettings()
+    AppUpdatesSettings()
     SchedulePreferences()
     DreamPreferences()
     DiagnosticExport(state)
@@ -86,7 +87,7 @@ fun SettingsScreen(
     CoachCard {
         Text("Privacy", style = MaterialTheme.typography.titleLarge)
         Text(
-            "No account, advertising, subscriptions, analytics or backend. Health access is optional. Records stay in this app’s private on-device storage; automatic Android backup and device transfer are excluded. Export is an explicit choice."
+            "No account, advertising, subscriptions, analytics or backend. Health access is optional. Records stay in this app’s private on-device storage; automatic Android backup and device transfer are excluded. Export is an explicit choice. The only network access is the optional update check above, which sends no training data."
         )
         Text(
             "The local database relies on Android’s application storage and device protection. Exported backups are not encrypted by the app; store them somewhere you trust."

@@ -126,12 +126,141 @@ def verify_ios(directory, version, kind, expected):
     return files
 
 
-def build_info(version, code, commit, run_url, digests):
+# ---- Consistent Android signing and the in-app update manifest -----------------------------------
+# The verified API35 test APK is re-signed for distribution with the project's release key, held only
+# in GitHub Actions secrets. Its contents stay byte-identical; only the signature changes.
+
+UPDATE_MANIFEST = 'Race-Day-Dreams-latest-update.json'
+RELEASE_DOWNLOAD_PREFIX = 'https://github.com/mmwiza1/Race-day-dreams/releases/download/development/'
+PACKAGE_NAME = 'org.racedaydreams'
+SIGNATURE_ENTRY = re.compile(r'META-INF/([^/]+\.(SF|RSA|DSA|EC)|MANIFEST\.MF)$')
+MAX_NOTES = 4000
+
+
+def read_pin(path):
+    """The committed public certificate fingerprint, or None until stable signing is set up."""
+    path = Path(path)
+    if not path.exists():
+        return None
+    value = path.read_text().strip().lower()
+    if not re.fullmatch(r'[0-9a-f]{64}', value):
+        raise ValueError(f'{path} must contain exactly one SHA-256 hex digest')
+    return value
+
+
+def certificate_sha256(apksigner_output):
+    """Parse `apksigner verify --print-certs -v`; exactly one verified v2+ signer is accepted."""
+    text = apksigner_output
+    if not re.search(r'^Verifies$', text, re.M):
+        raise ValueError('APK signature does not verify')
+    # minSdk 28 (Android 9) apps are signed with APK Signature Scheme v3; v2 is also accepted.
+    if not re.search(r'^Verified using v[23] scheme \(APK Signature Scheme v[23]\): true$', text, re.M):
+        raise ValueError('APK Signature Scheme v2 or v3 is required')
+    signers = re.findall(r'^Signer #(\d+) certificate SHA-256 digest: ([0-9a-f]{64})$', text, re.M)
+    if len(signers) != 1:
+        raise ValueError('Exactly one APK signer is required')
+    return signers[0][1]
+
+
+def same_content(verified, signed):
+    """True when both APKs hold the same files, ignoring only JAR signature entries."""
+    import zipfile
+
+    def entries(path):
+        with zipfile.ZipFile(path) as archive:
+            return {(i.filename, i.CRC, i.file_size) for i in archive.infolist()
+                    if not SIGNATURE_ENTRY.fullmatch(i.filename)}
+    return entries(verified) == entries(signed)
+
+
+def whats_new(version):
+    """The maintained release note's "What's new" bullets as plain text for the app."""
+    names(version)
+    numbers = version.split('-', 1)[0].split('.')
+    note = Path(__file__).resolve().parents[1] / ('docs/RELEASE_' + '_'.join(numbers) + '.md')
+    text = note.read_text()
+    match = re.search(r"^## What's new\n(.*?)(?=^## )", text, re.M | re.S)
+    if not match:
+        raise ValueError("The release note has no What's new section")
+    bullets, current = [], None
+    for line in match.group(1).splitlines():
+        if line.startswith('- '):
+            current = line[2:].strip()
+            bullets.append(current)
+        elif line.startswith('  ') and current is not None:
+            bullets[-1] += ' ' + line.strip()
+    bullets = ['• ' + re.sub(r'[`*_]', '', b) for b in bullets]
+    out = ''
+    for bullet in bullets:
+        candidate = (out + '\n' if out else '') + bullet
+        if len(candidate) > MAX_NOTES - 60:
+            return out + '\n• More in the full release notes.'
+        out = candidate
+    return out
+
+
+def update_manifest(apk, version, code, commit, certificate, min_sdk=28):
+    """The manifest the app reads (AppUpdateManifestJson schema 1). Keys are sorted for stable diffs."""
+    import json
+    apk = Path(apk)
+    names(version)
+    if not re.fullmatch(r'[0-9a-f]{40}', commit):
+        raise ValueError('Full commit SHA required')
+    if not re.fullmatch(r'[0-9a-f]{64}', certificate):
+        raise ValueError('Certificate SHA-256 required')
+    code = int(code)
+    if code < 1:
+        raise ValueError('versionCode must be positive')
+    apk_name = f'Race-Day-Dreams-{version}.apk'
+    if apk.name != apk_name or apk.is_symlink() or not apk.is_file():
+        raise ValueError('The versioned APK is required')
+    return json.dumps({
+        'schema': 1,
+        'packageName': PACKAGE_NAME,
+        'versionName': version,
+        'versionCode': code,
+        'minSdk': int(min_sdk),
+        'apkName': apk_name,
+        'apkUrl': RELEASE_DOWNLOAD_PREFIX + apk_name,
+        'apkBytes': apk.stat().st_size,
+        'apkSha256': digest(apk),
+        'certificateSha256': certificate,
+        'commit': commit,
+        'notes': whats_new(version),
+    }, sort_keys=True, ensure_ascii=False, indent=1) + '\n'
+
+
+def check_not_downgrade(live_manifest_text, new_code):
+    """Refuse to announce a lower versionCode than the live manifest; equal codes are never offered."""
+    import json
+    if live_manifest_text is None:
+        return
+    live = json.loads(live_manifest_text)
+    if int(new_code) < int(live['versionCode']):
+        raise ValueError(f"versionCode {new_code} is lower than the published {live['versionCode']}")
+
+
+def verify_update_manifest(manifest_text, apk, certificate):
+    """The published manifest must describe exactly the published APK and certificate."""
+    import json
+    data = json.loads(manifest_text)
+    apk = Path(apk)
+    if (data.get('apkName') != apk.name or data.get('apkSha256') != digest(apk)
+            or data.get('apkBytes') != apk.stat().st_size or data.get('certificateSha256') != certificate
+            or data.get('apkUrl') != RELEASE_DOWNLOAD_PREFIX + apk.name or data.get('schema') != 1
+            or data.get('packageName') != PACKAGE_NAME):
+        raise ValueError('Published update manifest does not match the published APK')
+    return data
+
+
+def build_info(version, code, commit, run_url, digests, android_certificate=None):
     names(version)
     if not re.fullmatch(r'[0-9a-f]{40}', commit):
         raise ValueError('Full commit SHA required')
     if not re.fullmatch(r'https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/actions/runs/\d+', run_url):
         raise ValueError('Actions evidence link required')
+    if android_certificate is not None and not re.fullmatch(r'[0-9a-f]{64}', android_certificate):
+        raise ValueError('Android certificate SHA-256 required')
     lines = [
         'Race Day Dreams development/test build information',
         f'Version: {version} / versionCode {code} (iOS {bundle_version(version)} / build {code})',
@@ -141,7 +270,9 @@ def build_info(version, code, commit, run_url, digests):
         '',
     ]
     labels = {
-        'android-apk': 'Android APK (debug-signed test build)',
+        'android-apk': ('Android APK (debug-signed test build; no in-place updates)' if android_certificate is None
+                        else 'Android APK (signed with the Race Day Dreams release key, certificate SHA-256 '
+                        f'{android_certificate}; contents identical to the verified test build)'),
         'ios-simulator': 'iOS Simulator app, universal arm64 + x86_64 (UNSIGNED developer/test build)',
         'iphoneos-unsigned': 'iPhone arm64 app (UNSIGNED; requires your own signing and provisioning)',
     }
@@ -163,10 +294,42 @@ if __name__ == '__main__':
     parser.add_argument('--expected-sha')
     mode.add_argument('--prepare-ios', type=Path, help='CI artifact directory for --kind')
     mode.add_argument('--verify-ios', action='store_true')
+    mode.add_argument('--signed-check', type=Path, help='re-signed APK to compare with --verified-apk')
+    mode.add_argument('--identity-check', type=Path, help='scratch-signed APK; prints its public fingerprint')
+    mode.add_argument('--update-manifest', type=Path, help='versioned APK to describe')
+    parser.add_argument('--verified-apk', type=Path)
+    parser.add_argument('--apksigner-output', type=Path)
+    parser.add_argument('--pin', type=Path)
+    parser.add_argument('--live-manifest', type=Path)
     parser.add_argument('--kind', choices=IOS_KINDS)
     parser.add_argument('--version-code')
     parser.add_argument('--commit')
     args = parser.parse_args()
+    if args.identity_check:
+        actual = certificate_sha256(args.apksigner_output.read_text())
+        if not same_content(args.verified_apk, args.identity_check):
+            raise SystemExit('Re-signing changed APK contents')
+        print(actual)
+        raise SystemExit(0)
+    if args.signed_check:
+        pin = read_pin(args.pin)
+        if pin is None:
+            raise SystemExit('A committed certificate fingerprint is required to sign updates')
+        actual = certificate_sha256(args.apksigner_output.read_text())
+        if actual != pin:
+            raise SystemExit(f'Signed APK certificate {actual} does not match the committed {pin}')
+        if not same_content(args.verified_apk, args.signed_check):
+            raise SystemExit('Re-signing changed APK contents')
+        print(f'Release-signed APK verified: certificate {actual}; contents identical to the verified build')
+        raise SystemExit(0)
+    if args.update_manifest:
+        pin = read_pin(args.pin)
+        live = args.live_manifest.read_text() if args.live_manifest and args.live_manifest.exists() else None
+        check_not_downgrade(live, args.version_code)
+        (args.directory / UPDATE_MANIFEST).write_text(
+            update_manifest(args.update_manifest, args.version, args.version_code, args.commit, pin))
+        print(f'Wrote {UPDATE_MANIFEST} for {args.update_manifest.name}')
+        raise SystemExit(0)
     if args.prepare_ios:
         value = prepare_ios(args.prepare_ios, args.version, args.version_code or '', args.commit or '',
                             args.kind, args.directory)

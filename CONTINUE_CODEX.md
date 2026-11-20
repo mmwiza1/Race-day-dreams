@@ -15,7 +15,34 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Current verified baseline (19 November 2026)
+## Current verified baseline (20 November 2026)
+
+- **`main` = `44987a3bd9e0a03686a5caad64524ed7832de908` (0.14.0-test1 / versionCode 22; iOS 0.14.0 /
+  build 22).** Verified live on 20 November 2026 (git, PR, Actions and the `development` release).
+- [PR #26](https://github.com/mmwiza1/Race-day-dreams/pull/26) (bouldering, battery audit, handover)
+  was squash-merged by owner approval ("please merge") as `44987a3` at 22:02 UTC on 19 November.
+  Merged tree == verified head `b51f8b1` (canonical screenshots only) / source `159da63`. The PR-head
+  gate on `159da63`: Android run 44607724202 and shared run 44607724201 SUCCESS (apple-shared
+  attempt 1 stalled 45 min in setup-gradle with no log, an infrastructure loss; attempt 2 passed).
+- Post-merge `main` run [44624667007](https://github.com/mmwiza1/Race-day-dreams/actions/runs/44624667007)
+  attempt 2 SUCCESS, including publish-test-release. Attempt 1 failed only in the iOS XCUITest
+  `testFavouriteSurvivesRelaunchWithoutLocationPermission` ("The native Files picker did not expose an
+  actionable Save control" after 60 s; iOS system UI, GPX export untouched by PR #26, passed on every
+  PR run); one rerun of the failed job passed. Treat a repeat as a flaky test to harden, not rerun.
+- **Published and checked by download:** `Race-Day-Dreams-0.14.0-test1.apk` 59,549,417 bytes, SHA-256
+  `d8cf2fb37343bcfc5bc9f85cdcf482c0ead4d5c4b2f11e7128e4db817feb7e18`; `.sha256`, `latest-test.apk`
+  alias and build-info all match; `development` tag → `44987a3`; build-info records iOS 0.14.0 / 22
+  (simulator `2b0f9e50…`, iPhone unsigned `800bdd5d…`).
+- Data formats: SQLite schema **20**, root JSON backup **14** (adds `climbing`), raw recording archive
+  **3**, complete backup package **1**. Still no INTERNET permission in 0.14.0.
+- **Signing finding (20 November):** every published APK is debug-signed with a *different* throwaway
+  "CN=Android Debug" certificate, because `app/build.gradle` has no signing config and each CI runner
+  creates a fresh debug keystore. Certificate SHA-256: 0.12.2 `1b241e16…`, 0.12.3 `01f3438b…`,
+  0.13.0 `b3837765…`, 0.13.1 `1bbbdccc…`, 0.14.0 `56695050…`. **No existing installation can be
+  updated in place by any other published build**; users have always had to back up, uninstall and
+  restore. PR #27 addresses this.
+
+## Previous verified baseline (19 November 2026 — 0.13.1; kept for history)
 
 - Repository `mmwiza1/Race-day-dreams`, default branch `main`. **`main` = `2196212f0315da0cad5c9e6f1ed93c8da499d463`
   (0.13.1-test1 / versionCode 21; iOS 0.13.1 / build 21).** Verified live on 19 November 2026
@@ -53,7 +80,73 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   audio cues, battery and OEM background behaviour; rotation; human TalkBack and VoiceOver. The
   iPhone app needs the user's own Apple signing. Checklists live in `TEST_BUILD.md`.
 
-## Active work — battery audit and bouldering (owner request, 19 November 2026)
+## Active work — reliable Android app updates (PR #27, owner request, 20 November 2026)
+
+Branch `feature/android-app-updates` from `main` `44987a3`; draft PR targeting `main`. Scope:
+consistent APK signing via protected CI secrets (never committed), safe in-place upgrades preserving
+all data, in-app update check against the official GitHub `development` release, verified download
+(size, SHA-256, package, newer versionCode, same signing certificate as the installed app) and
+Android's user-approved installation, a compact Settings "App updates" card with an optional
+notification, release/CI verification, documentation and tests. Classified **major /
+security-sensitive**. Android only: no iOS updater, TestFlight or App Store work. No battery
+optimisations here.
+
+Hard constraints: **do not merge without the owner's explicit approval; do not generate, publish or
+transition a production signing identity or expose credentials without explicit authorisation.**
+If signing needs the owner, document the exact setup and stop only the dependent signing/publication
+steps. Never uninstall apps or delete user data automatically; never claim seamless updates for
+installations that cannot support them (all existing debug-signed installs).
+
+### Latest recovery pointer — checkpoint 265 PR #27 completion and signing activation plan (Claude)
+
+- 20 Nov: owner reports the four `RDD_ANDROID_*` secrets are configured (not readable via this
+  session's API proxy; never exposed to PR workflows). No fingerprint committed; **no release-signed
+  APK published.** Full gate on `f55090d` was green on API 28/35/36 (798/798 each), shared Android/iOS
+  and apple-device; bot screenshots `420137d`; `verify-android-upgrade.sh` on API 35: 9000→9001 in
+  place with identical data fingerprint, verifier accepted 9002 / rejected key B, Android refused key
+  B (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`) and 9000 (`INSTALL_FAILED_VERSION_DOWNGRADE`).
+- Earlier gate fixes: API 28 archives lack `signingInfo` → `GET_SIGNATURES` fallback (one signer
+  still required); `AppPrivacyTest` now pins INTERNET + REQUEST_INSTALL_PACKAGES only, cleartext off,
+  receiver unexported; FakeConnection streams from disk (two 60 MB heap copies broke the UI test).
+- This completion commit: secrets-without-fingerprint is now an **identity check** in the main-only
+  publish job (real key signs a scratch copy; public fingerprint in log/summary; test-signed APK
+  still published, no manifest) instead of a refusal, so merging PR #27 cannot publish the first
+  signed release and post-merge CI stays green. New main-only `workflow_dispatch`
+  `signing-identity.yml` (public outputs only). Fixture labels derived from the real versionCode
+  (older install = 0.14.0-test1/22, newer = 0.16.0-test1/24). New installer hand-off test.
+- Gate on `f0fe326`: API 28 799/799 and iOS green; API 35/36 crashed in the new test because
+  `appops set … REQUEST_INSTALL_PACKAGES deny` kills the app on Android 12+ (7 tests then unrun).
+  The test now never toggles that access (default state + direct real PackageInstaller commit).
+- **Next after owner approval to merge:** verify post-merge run and the identity-check fingerprint;
+  then an activation PR committing `config/android-signing-certificate.sha256` + versionCode 24 +
+  release note, merged only with owner authorisation → first release-signed APK and manifest;
+  verify by download (cert, versionCode, checksum, manifest). Never claim it before that.
+
+### Recovery pointer — checkpoint 264 Android updates implemented; draft PR #27 CI next (Claude)
+
+- **Design:** CI re-signs the exact verified API35 APK in the publish job only
+  (`scripts/sign-distribution-apk.sh`; secrets `RDD_ANDROID_KEYSTORE_BASE64`,
+  `RDD_ANDROID_KEYSTORE_PASSWORD`, `RDD_ANDROID_KEY_ALIAS`, `RDD_ANDROID_KEY_PASSWORD`), requires the
+  committed public fingerprint `config/android-signing-certificate.sha256`, one v2/v3 signer and
+  identical contents, then publishes `Race-Day-Dreams-latest-update.json` (uploaded last, re-verified,
+  no versionCode downgrade). Neither secrets nor fingerprint → unchanged test-signed publication, no
+  manifest; only one of them → publication refused. **Signing is NOT configured; no production key
+  was generated (owner authorisation required).** Setup steps: `docs/ANDROID_UPDATES.md`.
+- App: rules `domain/update/AppUpdates.kt`, codec `storage/AppUpdateManifestJson.kt`, Android
+  `update/` (client, `ApkVerifier`, `UpdateInstaller` PackageInstaller + unexported receiver,
+  `AppUpdateCoordinator` singleton), `data/ActiveWork.kt` (restore's recording/gym/bouldering guards),
+  Settings `AppUpdatesCard` after Appearance. Embedded fingerprint via manifest placeholder; only
+  builds whose own cert matches it auto-check (daily, on app start, never during active work), so CI
+  test builds never touch the network. New permissions INTERNET + REQUEST_INSTALL_PACKAGES only.
+- Tests: 8 domain + 3 codec (JVM, pass locally: 519/683), `AppUpdateTest`, `AppUpdatesCardTest`,
+  `UpgradePathTest` (focused draft classes), screenshots `settings-app-updates-*` (471 required),
+  `scripts/verify-android-upgrade.sh` after the API35 gate (throwaway keys; restores gate APK),
+  Python asset/release-note tests (17/12 pass). Signing script exercised locally with a throwaway key.
+- Version 0.15.0-test1 / 23 (Android, iOS Info.plist, CI APK names), `docs/RELEASE_0_15_0.md`.
+  Docs: `docs/ANDROID_UPDATES.md`, PRIVACY (first network access, Android only), README, TEST_BUILD
+  (physical checklist UNPERFORMED), ARCHITECTURE. Draft PR must not merge without owner approval.
+
+## Completed work — battery audit and bouldering (PR #26, owner request, 19 November 2026)
 
 Branch `feature/bouldering-and-battery-audit` (from `main` 2196212). One branch, three ordered,
 logically separate deliverables; the continuation update is part of this branch (no standalone

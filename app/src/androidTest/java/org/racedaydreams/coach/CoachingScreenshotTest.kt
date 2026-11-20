@@ -3410,6 +3410,119 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesAppUpdatesInSettingsInAllModes() {
+        // A fake network serves this build's own signed APK, so every state below is produced by
+        // the real Settings card, download, size/SHA-256 and signing verification. No network.
+        val update = org.racedaydreams.update.UpdateFixtures.announcedCurrentBuild(context)
+        fun fake(
+            client: org.racedaydreams.update.FakeUpdateClient,
+            installed: org.racedaydreams.update.InstalledApp =
+                org.racedaydreams.update.UpdateFixtures.olderReleaseInstall(context),
+        ) =
+            org.racedaydreams.update.AppUpdateCoordinator(
+                context,
+                client,
+                installedApp = { installed },
+                activeWork = { null },
+            )
+        val updatePrefs =
+            context.getSharedPreferences(org.racedaydreams.update.UpdatePreferencesStore.NAME, 0)
+        fun openUpdates() {
+            click("Settings")
+            await("App updates")
+            alignHeading("App updates")
+        }
+        fun awaitText(text: String, timeoutMs: Long = 20000) {
+            try {
+                compose.waitUntil(timeoutMs) {
+                    compose
+                        .onAllNodesWithText(text, substring = true)
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+                }
+            } catch (timeout: androidx.compose.ui.test.ComposeTimeoutException) {
+                val shown =
+                    compose
+                        .onAllNodesWithTag("app-updates-status", useUnmergedTree = true)
+                        .fetchSemanticsNodes()
+                        .joinToString { it.config.toString() }
+                throw AssertionError(
+                    "No '$text'. Update state: ${org.racedaydreams.update.AppUpdateCoordinator.get(context).state.value.status}; shown: $shown",
+                    timeout,
+                )
+            }
+        }
+        try {
+            withRefinementCaptureModes { suffix ->
+                updatePrefs.edit().clear().commit()
+                val client = org.racedaydreams.update.FakeUpdateClient(context, update)
+                org.racedaydreams.update.AppUpdateCoordinator.replaceForTesting(fake(client))
+                openUpdates()
+                compose.onNodeWithTag("app-updates-check").performScrollTo().performClick()
+                awaitText("Update available:")
+                compose
+                    .onNodeWithText("What's new in ${update.versionName}")
+                    .performScrollTo()
+                    .performClick()
+                compose.onNodeWithTag("app-updates-notes").assertExists()
+                compose.onNodeWithText("Skip this version").assertExists()
+                alignHeading("App updates")
+                capture("settings-app-updates-available$suffix")
+                if (suffix.isEmpty()) {
+                    client.pauseAtBytes = update.apkBytes * 2 / 5
+                    compose.onNodeWithTag("app-updates-download").performScrollTo().performClick()
+                    Assert.assertTrue(
+                        client.paused.await(30, java.util.concurrent.TimeUnit.SECONDS)
+                    )
+                    awaitText("Downloading")
+                    compose.onNodeWithText("Cancel download").assertExists()
+                    alignHeading("App updates")
+                    capture("settings-app-updates-downloading")
+                    client.resume.countDown()
+                    // The rest of the ~60 MB APK is streamed, hashed, synced and verified again.
+                    awaitText("is downloaded and verified", timeoutMs = 90000)
+                    compose.onNodeWithTag("app-updates-install").assertIsEnabled()
+                    alignHeading("App updates")
+                    capture("settings-app-updates-ready")
+                    // A copy signed with a temporary test key, seeing a release-signed version.
+                    back()
+                    org.racedaydreams.update.AppUpdateCoordinator.replaceForTesting(
+                        fake(
+                            org.racedaydreams.update.FakeUpdateClient(
+                                context,
+                                // A newer release signed with the release key, which this
+                                // test-key copy cannot install in place.
+                                org.racedaydreams.update.UpdateFixtures.nextRelease(
+                                    context,
+                                    "5".repeat(64),
+                                ),
+                            ),
+                            org.racedaydreams.update.InstalledApp.read(context),
+                        )
+                    )
+                    openUpdates()
+                    compose.onNodeWithTag("app-updates-check").performScrollTo().performClick()
+                    awaitText("Android can't install it as an update")
+                    compose
+                        .onNodeWithText("How to move to the update-ready version safely")
+                        .performScrollTo()
+                        .performClick()
+                    compose
+                        .onNodeWithText("Complete backup (app + recordings)", substring = true)
+                        .performScrollTo()
+                        .assertExists()
+                    alignHeading("App updates")
+                    capture("settings-app-updates-test-build")
+                }
+            }
+        } finally {
+            org.racedaydreams.update.AppUpdateCoordinator.replaceForTesting(null)
+            updatePrefs.edit().clear().commit()
+            java.io.File(context.cacheDir, "updates").deleteRecursively()
+        }
+    }
+
+    @Test
     fun capturesPlainBackupExplanationInAllModes() {
         withRefinementCaptureModes { suffix ->
             click("Settings")

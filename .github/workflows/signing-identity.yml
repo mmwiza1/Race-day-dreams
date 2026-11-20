@@ -1,0 +1,65 @@
+name: Verify Android signing identity
+
+# Manual, read-only check of the release signing secrets. Runs only from main (trusted code), never
+# for pull requests, and publishes nothing. It prints only PUBLIC values: the certificate subject
+# and SHA-256 fingerprint, and whether that matches config/android-signing-certificate.sha256.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  identity:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Check the keystore, alias and passwords, and report the public fingerprint
+        env:
+          RDD_ANDROID_KEYSTORE_BASE64: ${{ secrets.RDD_ANDROID_KEYSTORE_BASE64 }}
+          RDD_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.RDD_ANDROID_KEYSTORE_PASSWORD }}
+          RDD_ANDROID_KEY_ALIAS: ${{ secrets.RDD_ANDROID_KEY_ALIAS }}
+          RDD_ANDROID_KEY_PASSWORD: ${{ secrets.RDD_ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in RDD_ANDROID_KEYSTORE_BASE64 RDD_ANDROID_KEYSTORE_PASSWORD RDD_ANDROID_KEY_ALIAS RDD_ANDROID_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then echo "Missing repository secret: $name" >&2; exit 1; fi
+            echo "Repository secret present: $name"
+          done
+          work=$(mktemp -d "$RUNNER_TEMP/rdd-identity.XXXXXX")
+          trap 'rm -rf "$work"' EXIT
+          umask 077
+          printf '%s' "$RDD_ANDROID_KEYSTORE_BASE64" | base64 -d > "$work/release.keystore"
+          # Fails unless the store password opens the keystore and the alias exists.
+          keytool -list -keystore "$work/release.keystore" -storepass:env RDD_ANDROID_KEYSTORE_PASSWORD \
+            -alias "$RDD_ANDROID_KEY_ALIAS" > /dev/null
+          # A scratch signature proves the key password works; the result is discarded.
+          printf 'rdd' > "$work/probe.txt"
+          (cd "$work" && jar cf probe.jar probe.txt)
+          jarsigner -keystore "$work/release.keystore" -storepass:env RDD_ANDROID_KEYSTORE_PASSWORD \
+            -keypass:env RDD_ANDROID_KEY_PASSWORD "$work/probe.jar" "$RDD_ANDROID_KEY_ALIAS" > /dev/null
+          keytool -exportcert -keystore "$work/release.keystore" -storepass:env RDD_ANDROID_KEYSTORE_PASSWORD \
+            -alias "$RDD_ANDROID_KEY_ALIAS" > "$work/certificate.der"
+          fingerprint=$(sha256sum "$work/certificate.der" | cut -d ' ' -f 1)
+          subject=$(keytool -printcert -file "$work/certificate.der" | sed -n 's/^Owner: //p')
+          {
+            echo "Release signing certificate: $subject"
+            echo "Public certificate SHA-256: $fingerprint"
+            if [ -f config/android-signing-certificate.sha256 ]; then
+              committed=$(tr -d '[:space:]' < config/android-signing-certificate.sha256 | tr 'A-F' 'a-f')
+              if [ "$committed" = "$fingerprint" ]; then
+                echo "Matches config/android-signing-certificate.sha256: release signing is enabled."
+              else
+                echo "DOES NOT MATCH config/android-signing-certificate.sha256 ($committed); publication will refuse."
+                exit 1
+              fi
+            else
+              echo "Not yet enabled: commit this fingerprint as config/android-signing-certificate.sha256."
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"

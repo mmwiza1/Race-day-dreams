@@ -149,5 +149,127 @@ class DevelopmentAssetsTest(unittest.TestCase):
             assets.build_info('0.13.0-test1', 20, 'c' * 40, 'https://example.com/run',
                               {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64})
 
+
+SIGNED_OUTPUT = """Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): false
+Verified using v3 scheme (APK Signature Scheme v3): true
+Number of signers: 1
+Signer #1 certificate DN: CN=Example
+Signer #1 certificate SHA-256 digest: {cert}
+"""
+
+
+class AndroidSigningAndUpdateManifestTest(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.cert = '8f' * 32
+
+    def zip(self, name, entries):
+        import zipfile
+        path = self.root / name
+        with zipfile.ZipFile(path, 'w') as archive:
+            for entry, data in entries.items():
+                archive.writestr(entry, data)
+        return path
+
+    def test_only_one_verified_v2_or_v3_signer_is_accepted(self):
+        self.assertEqual(self.cert, assets.certificate_sha256(SIGNED_OUTPUT.format(cert=self.cert)))
+        v2 = SIGNED_OUTPUT.format(cert=self.cert).replace('v2): false', 'v2): true').replace('v3): true', 'v3): false')
+        self.assertEqual(self.cert, assets.certificate_sha256(v2))
+        for bad in (
+            SIGNED_OUTPUT.format(cert=self.cert).replace('Verifies\n', 'DOES NOT VERIFY\n'),
+            SIGNED_OUTPUT.format(cert=self.cert).replace('v3): true', 'v3): false'),
+            SIGNED_OUTPUT.format(cert=self.cert) + 'Signer #2 certificate SHA-256 digest: ' + 'a' * 64 + '\n',
+            SIGNED_OUTPUT.format(cert='not-a-digest'),
+        ):
+            with self.assertRaises(ValueError):
+                assets.certificate_sha256(bad)
+
+    def test_resigning_may_change_only_signature_entries(self):
+        files = {'AndroidManifest.xml': b'm', 'classes.dex': b'd', 'res/raw/a.bin': b'a'}
+        verified = self.zip('verified.apk', {**files, 'META-INF/CERT.RSA': b'debug', 'META-INF/CERT.SF': b's'})
+        resigned = self.zip('signed.apk', {**files, 'META-INF/RELEASE.RSA': b'release', 'META-INF/MANIFEST.MF': b'x'})
+        self.assertTrue(assets.same_content(verified, resigned))
+        tampered = self.zip('tampered.apk', {**files, 'classes.dex': b'evil'})
+        self.assertFalse(assets.same_content(verified, tampered))
+        extra = self.zip('extra.apk', {**files, 'META-INF/services/x': b'new'})
+        self.assertFalse(assets.same_content(verified, extra))
+
+    def test_committed_fingerprint_must_be_one_digest(self):
+        pin = self.root / 'pin'
+        self.assertIsNone(assets.read_pin(pin))
+        pin.write_text(self.cert.upper() + '\n')
+        self.assertEqual(self.cert, assets.read_pin(pin))
+        for bad in ('', 'abc', self.cert + self.cert, self.cert + ' x'):
+            pin.write_text(bad)
+            with self.assertRaises(ValueError):
+                assets.read_pin(pin)
+
+    def test_manifest_matches_the_app_codec_fields_and_describes_the_versioned_apk(self):
+        import json
+        apk = self.root / 'Race-Day-Dreams-0.14.0-test1.apk'
+        apk.write_bytes(b'apk' * 1000)
+        text = assets.update_manifest(apk, '0.14.0-test1', 22, 'c' * 40, self.cert)
+        data = json.loads(text)
+        codec = (ROOT / 'sharedStorage/src/commonMain/kotlin/org/racedaydreams/storage/AppUpdateManifestJson.kt').read_text()
+        fields = codec[codec.index('private val FIELDS'):codec.index(')', codec.index('setOf('))]
+        import re
+        self.assertEqual(set(re.findall(r'"([A-Za-z0-9]+)"', fields)), set(data))
+        self.assertEqual(assets.RELEASE_DOWNLOAD_PREFIX + apk.name, data['apkUrl'])
+        self.assertEqual(assets.digest(apk), data['apkSha256'])
+        self.assertEqual(1, data['schema'])
+        self.assertTrue(data['notes'].startswith('• '))
+        self.assertLessEqual(len(data['notes']), assets.MAX_NOTES)
+        self.assertNotIn('`', data['notes'])
+        self.assertEqual(data, assets.verify_update_manifest(text, apk, self.cert))
+        with self.assertRaises(ValueError):
+            assets.verify_update_manifest(text, apk, 'a' * 64)
+        apk.write_bytes(b'different')
+        with self.assertRaises(ValueError):
+            assets.verify_update_manifest(text, apk, self.cert)
+        alias = self.root / assets.ALIAS
+        alias.write_bytes(b'x')
+        with self.assertRaises(ValueError):
+            assets.update_manifest(alias, '0.14.0-test1', 22, 'c' * 40, self.cert)
+
+    def test_identity_check_reports_only_the_public_fingerprint_for_unchanged_contents(self):
+        import subprocess, sys
+        files = {'AndroidManifest.xml': b'm', 'classes.dex': b'd'}
+        verified = self.zip('verified.apk', {**files, 'META-INF/CERT.RSA': b'debug'})
+        scratch = self.zip('scratch.apk', {**files, 'META-INF/RELEASE.RSA': b'release'})
+        output = self.root / 'verify.txt'
+        output.write_text(SIGNED_OUTPUT.format(cert=self.cert))
+        script = str(ROOT / 'scripts/development-assets.py')
+        def run(apk):
+            return subprocess.run([sys.executable, '-I', script, '--version', '0.0.0-test0', '--directory', str(self.root),
+                                   '--identity-check', str(apk), '--verified-apk', str(verified),
+                                   '--apksigner-output', str(output)], capture_output=True, text=True)
+        ok = run(scratch)
+        self.assertEqual(0, ok.returncode, ok.stderr)
+        self.assertEqual(self.cert, ok.stdout.strip())
+        tampered = self.zip('tampered.apk', {**files, 'classes.dex': b'evil'})
+        self.assertNotEqual(0, run(tampered).returncode)
+
+    def test_a_lower_version_code_is_never_announced(self):
+        live = '{"versionCode": 23}'
+        assets.check_not_downgrade(None, 1)
+        assets.check_not_downgrade(live, 23)
+        assets.check_not_downgrade(live, 24)
+        with self.assertRaises(ValueError):
+            assets.check_not_downgrade(live, 22)
+
+    def test_build_info_names_the_release_certificate_when_signed(self):
+        digests = {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64}
+        run = 'https://github.com/mmwiza1/Race-day-dreams/actions/runs/7'
+        self.assertIn('no in-place updates', assets.build_info('0.14.0-test1', 22, 'c' * 40, run, digests))
+        signed = assets.build_info('0.14.0-test1', 22, 'c' * 40, run, digests, self.cert)
+        self.assertIn('release key, certificate SHA-256 ' + self.cert, signed)
+        with self.assertRaises(ValueError):
+            assets.build_info('0.14.0-test1', 22, 'c' * 40, run, digests, 'debug')
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

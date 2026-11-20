@@ -27,6 +27,10 @@
     <uses-permission android:name="android.permission.health.WRITE_DISTANCE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Only to check the official GitHub release for updates and download one you choose. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Lets Android ask you to approve installing a verified update; never silent. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <queries>
         <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
         <package android:name="com.google.android.apps.healthdata" />
@@ -70,6 +74,10 @@
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
         </activity-alias>
+        <receiver android:name=".update.UpdateInstallReceiver" android:exported="false" />
+        <meta-data
+            android:name="org.racedaydreams.RELEASE_CERTIFICATE_SHA256"
+            android:value="${rddReleaseCertificate}" />
         <receiver android:name=".reminders.ReminderReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

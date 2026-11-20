@@ -654,6 +654,30 @@ Record observations and build commit for each check; nothing below is a claimed 
   pause/resume/interruption/long-run/GPX and Watch comparison checks. Emulator/synthetic passes
   cannot establish outdoor S24 accuracy, and neither comparison device is automatically ground truth.
 
+## Android app updates — physical acceptance UNPERFORMED
+
+Software checks (shared rules, emulator verifier/downloader tests, screenshots and the scripted
+`adb` in-place upgrade with throwaway keys) do not replace these phone checks. They need the first
+build signed with the release key (see `docs/ANDROID_UPDATES.md`), so they cannot run yet:
+
+- [ ] On a phone with an older **test** build: Settings › App updates › Check for updates explains the
+      signing conflict; the six-step move (Complete backup → uninstall → install → Restore complete
+      backup… → Validate and restore) brings back runs with GPS routes, plans, gym programmes and
+      workouts, strength records, bouldering sessions with original grades, shoes, measurements
+      and settings.
+- [ ] On a release-key build with a newer release available: the card shows the version and
+      "What's new"; Download shows progress; Install opens Android's approval screen; approving
+      restarts Race Day Dreams as the new version with all data present.
+- [ ] Cancelling Android's approval keeps the current version and data; **Install update** retries.
+- [ ] "Install unknown apps" denied, then allowed, for Race Day Dreams.
+- [ ] Airplane mode during a manual check, and Wi-Fi switched off part-way through a download.
+- [ ] During a recorded run, an unfinished gym workout and an unsaved bouldering session: download
+      and install wait with an explanation, and the recording is not interrupted.
+- [ ] Remind me later / Skip this version stop repeat prompts; one notification per version only
+      when notifications are allowed; turning automatic checks off stops them.
+- [ ] Dark mode, 200% text and TalkBack on the App updates card.
+- [ ] No noticeable battery change from the daily check (no background activity is expected).
+
 ## Bouldering — physical acceptance UNPERFORMED
 
 Software checks (shared domain/storage tests, Android emulator UI and screenshots, iOS simulator)

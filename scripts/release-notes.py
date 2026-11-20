@@ -5,7 +5,7 @@ import argparse
 import re
 
 
-def render(root, commit, run_url, development=False, tag=None):
+def render(root, commit, run_url, development=False, tag=None, signing_certificate=None):
     build = (root / 'app/build.gradle').read_text()
     name = re.search(r"versionName\s+'([^']+)'", build).group(1)
     code = re.search(r'versionCode\s+(\d+)', build).group(1)
@@ -17,6 +17,8 @@ def render(root, commit, run_url, development=False, tag=None):
         raise ValueError('Actions evidence link required')
     if not development and tag != 'v' + name:
         raise ValueError('Tag must match the built app version')
+    if signing_certificate is not None and not re.fullmatch(r'[0-9a-f]{64}', signing_certificate):
+        raise ValueError('Release certificate SHA-256 required')
 
     release = re.match(r'(\d+)\.(\d+)\.(\d+)', name)
     source = root / ('docs/RELEASE_' + '_'.join(release.groups()) + '.md')
@@ -68,11 +70,17 @@ def render(root, commit, run_url, development=False, tag=None):
             rows.append(' '.join(images))
         preview = '\n### See the app\n\nGenuine production screens with synthetic demonstration records, not real athlete results.\n\n' + '\n\n'.join(rows) + '\n'
 
+    signing_line = (
+        'debug-signed Android test build (cannot update other installations in place)'
+        if signing_certificate is None else
+        'Android build signed with the Race Day Dreams release key (certificate SHA-256 '
+        f'`{signing_certificate}`)'
+    )
     download = f'''## Download
 
 - **[Download for Android]({assets_url}/Race-Day-Dreams-{name}.apk)** — `Race-Day-Dreams-{name}.apk`
 - **[SHA-256 checksum]({assets_url}/Race-Day-Dreams-{name}.apk.sha256)** — `Race-Day-Dreams-{name}.apk.sha256`
-- **Build:** debug-signed Android test build
+- **Build:** {signing_line}
 
 Open **Assets** at the bottom of this GitHub release to download the APK and its
 checksum. The checksum file can be used to verify download integrity.
@@ -98,7 +106,8 @@ Simulator: unzip, boot a simulator in Xcode, then run
 until you re-sign it; see TEST_BUILD.md.
 '''
 
-    installation = f'''## Installation and first launch
+    if signing_certificate is None:
+        installation = f'''## Installation and first launch
 
 1. Download `Race-Day-Dreams-{name}.apk` from **Assets**.
 2. Open the APK. If Android blocks the install, allow **Install unknown apps** only
@@ -109,8 +118,26 @@ until you re-sign it; see TEST_BUILD.md.
 5. If Android reports a signing conflict, back up your data, uninstall the previous
    debug build, install this APK, then restore your backup.
 
-CI debug-signing keys can differ between clean runners, so some test-build upgrades
-may require the backup/reinstall/restore path above.
+This test build is signed with a temporary CI key, so it cannot be updated in place and
+Settings › App updates cannot install newer versions over it. Upgrades use the
+backup/reinstall/restore path above.
+'''
+    else:
+        installation = f'''## Installation and first launch
+
+1. **Already using a Race Day Dreams build signed with the release key?** Open
+   **Settings › App updates** to download and install this version over your current one,
+   keeping your data. Android asks you to approve the update.
+2. To install manually, download `Race-Day-Dreams-{name}.apk` from **Assets** and open it.
+   If Android blocks the install, allow **Install unknown apps** only for the browser or
+   file manager you are using, then retry.
+3. **Moving from an older test build** (signed with a temporary key)? Android reports a
+   signing conflict because the keys differ. Do this once: in **Record a run**, choose
+   **Complete backup (app + recordings)** and keep the file safe; uninstall the old copy;
+   install this APK; then use **Restore complete backup…** and **Validate and restore**.
+   Later versions then install as normal updates.
+4. No account, subscription or analytics. The app works without an Internet connection; it
+   only contacts GitHub to check for and download updates (optional, in Settings).
 '''
 
     build_info = f'''## Build information
@@ -143,6 +170,7 @@ if __name__ == '__main__':
     parser.add_argument('--tag')
     parser.add_argument('--development', action='store_true')
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--signing-certificate')
     args = parser.parse_args()
     output = render(
         Path(__file__).resolve().parents[1],
@@ -150,5 +178,6 @@ if __name__ == '__main__':
         args.run_url,
         args.development,
         args.tag,
+        args.signing_certificate or None,
     )
     args.output.write_text(output)
