@@ -3772,6 +3772,99 @@ class CoachingScreenshotTest {
         }
     }
 
+    @Test
+    fun capturesWeeklyRunSourcesAndTheOnboardingReviewForTheReportedCases() {
+        // The reported cases: one run imported from Samsung Health and again from another app,
+        // another run imported and also entered manually, and a 10K goal named "Hackney Half"
+        // with a 1:55:00 target. Captured with the same steps before and after the fix.
+        val store = FeatureStore(context)
+        val zone = java.time.ZoneId.systemDefault()
+        val start = LocalDate.now().atStartOfDay(zone).toInstant().plusSeconds(10 * 60)
+        fun record(
+            provider: String,
+            id: String,
+            origin: String?,
+            offsetMinutes: Long,
+            minutes: Long,
+            metres: Double,
+        ) =
+            ActivityRecord(
+                "$provider:$id",
+                SourceIdentity(provider, id, origin),
+                start.plusSeconds(offsetMinutes * 60),
+                start.plusSeconds((offsetMinutes + minutes) * 60),
+                null,
+                null,
+                metres,
+                Duration.ofMinutes(minutes),
+                null,
+                null,
+                null,
+                null,
+                null,
+                "Test-only duplicate-source fixture",
+                emptyList(),
+                emptyList(),
+                null,
+                null,
+            )
+        store.applyImport(
+            "health-connect",
+            listOf(
+                record("health-connect", "samsung-a", "com.sec.android.app.shealth", 0, 48, 8000.0),
+                record("health-connect", "strava-a", "com.strava", 1, 47, 8050.0),
+                record("health-connect", "samsung-b", "com.sec.android.app.shealth", 60, 30, 5000.0),
+            ),
+            emptyList(),
+            null,
+        )
+        store.upsertManualActivity(record("manual", "manual-b", null, 62, 28, 5000.0))
+
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        awaitHomeReady(false)
+        click("Progress")
+        await("Weekly distance")
+        alignHeading("Weekly distance")
+        val sources =
+            compose.onAllNodesWithText("Show the runs in this week").fetchSemanticsNodes()
+        if (sources.isNotEmpty()) {
+            compose.onNodeWithText("Show the runs in this week").performScrollTo().performClick()
+            compose.waitForIdle()
+            compose.onNodeWithText("Show the runs in this week", substring = true).assertDoesNotExist()
+        }
+        capture("progress-weekly-run-sources")
+
+        click("Settings")
+        await("Activity data source")
+        compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
+        val espresso = androidx.test.espresso.Espresso::onView
+        fun text(value: String) = androidx.test.espresso.matcher.ViewMatchers.withText(value)
+        fun text(resource: Int) = androidx.test.espresso.matcher.ViewMatchers.withText(resource)
+        val scroll = androidx.test.espresso.action.ViewActions.scrollTo()
+        val tap = androidx.test.espresso.action.ViewActions.click()
+        espresso(text("10K")).perform(scroll, tap)
+        espresso(text("Riverside Half"))
+            .perform(scroll, androidx.test.espresso.action.ViewActions.replaceText("Hackney Half"))
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        espresso(text(org.racedaydreams.R.string.onboarding_continue)).perform(scroll, tap)
+        espresso(androidx.test.espresso.matcher.ViewMatchers.withHint(org.racedaydreams.R.string.onboarding_target_hint))
+            .perform(scroll, androidx.test.espresso.action.ViewActions.replaceText("1:55:00"))
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        espresso(text(org.racedaydreams.R.string.onboarding_continue)).perform(scroll, tap)
+        espresso(text(org.racedaydreams.R.string.onboarding_continue)).perform(scroll, tap)
+        espresso(text(org.racedaydreams.R.string.onboarding_save))
+            .check(
+                androidx.test.espresso.assertion.ViewAssertions.matches(
+                    androidx.test.espresso.matcher.ViewMatchers.isEnabled()
+                )
+            )
+        compose.waitForIdle()
+        capture("onboarding-review-distance")
+        espresso(text(org.racedaydreams.R.string.onboarding_save)).perform(scroll)
+        compose.waitForIdle()
+        capture("onboarding-review-actions")
+    }
+
     private data class MaterialCapture(
         val suffix: String,
         val dynamic: Boolean,
