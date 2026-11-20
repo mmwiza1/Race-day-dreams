@@ -1,3 +1,19 @@
+# Android app updates (Android only)
+
+Pure rules live in `sharedDomain` `org.racedaydreams.domain.update.AppUpdates` (versionCode
+comparison, signing/Android-version incompatibility, skip/later, daily automatic checks never during
+active work, one notification per version) and the strict manifest codec in `sharedStorage`
+`AppUpdateManifestJson`; neither has platform or network types, and iOS never calls them. The
+Android host (`app/.../update/`) adds `AppUpdateClient` (HTTPS manifest + bounded APK download),
+`ApkVerifier` (size, SHA-256, package, newer versionCode, signing certificate equal to the
+installation's and to the release fingerprint embedded via `config/android-signing-certificate.sha256`),
+`UpdateInstaller` (`PackageInstaller` session with user approval; result via an unexported
+receiver), `AppUpdateCoordinator` (one per process; runs only on app start or user action) and the
+Settings `AppUpdatesCard`. Active work is `data.ActiveWork`, the same recording/gym/bouldering states
+that block restore. Preferences are device-local `SharedPreferences`; no schema or backup change.
+CI re-signs the verified APK in the publish job and publishes `Race-Day-Dreams-latest-update.json`
+(`scripts/sign-distribution-apk.sh`, `scripts/development-assets.py`). See `docs/ANDROID_UPDATES.md`.
+
 # Bouldering (schema 20, root JSON 14)
 
 Bouldering is a separate activity inside the Strength section. Shared domain

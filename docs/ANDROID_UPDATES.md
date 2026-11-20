@@ -1,0 +1,206 @@
+# Android app updates
+
+How Race Day Dreams is signed, published and updated on Android, and how to move safely from an
+older test build. The iOS app is unaffected: iOS builds remain unsigned developer/test artifacts.
+
+## The short version
+
+- Android only updates an app in place when the new APK is signed with the **same key** as the
+  installed one and has a **higher versionCode**.
+- Until now every published APK was signed with a different temporary CI debug key (each CI runner
+  generated its own), so **no published build could ever update another in place.** Verified by
+  downloading the published APKs on 20 November 2026:
+
+  | Build | Signing certificate SHA-256 (all `CN=Android Debug`) |
+  | --- | --- |
+  | 0.12.2-test1 | `1b241e1653816950f4e5738927b3e60977b85d3ca94b1556a0ab82659181bbc0` |
+  | 0.12.3-test1 | `01f3438bcc685fee216a3f17196a882355602942cd381f316dce3953a48369e2` |
+  | 0.13.0-test1 | `b383776551c825b66809961ccbd7e750831f12abf868bcdb51ac3eafc3ed0f65` |
+  | 0.13.1-test1 | `1bbbdccc8fa67e86ba361c2acf5cd7a9aac61be5b192c297975327c5d05af817` |
+  | 0.14.0-test1 | `566950502fe098fad792308bad7e2200372696c27c7294424a3510c1d260d67f` |
+
+- From the first build signed with the **Race Day Dreams release key**, every later release is
+  signed with that same key, and the app can check for, download, verify and install updates
+  itself (Settings › App updates). Your data stays in place.
+- Moving from any older test build to the first release-key build is a **one-time** backup,
+  reinstall and restore (below). The app never uninstalls itself or deletes data.
+
+## How it works
+
+1. **CI builds and verifies one APK** (API 28/35/36 instrumentation, screenshots, lint) exactly as
+   before. That verified API 35 APK is the only binary published.
+2. **The publish job re-signs that exact APK** with the release key
+   (`scripts/sign-distribution-apk.sh`). The key comes only from GitHub Actions secrets, which are
+   available to the publish job on pushes to `main` and version tags, never to pull-request builds.
+   The job then requires:
+   - `apksigner verify` passes with exactly one signer and APK Signature Scheme v2 or v3;
+   - the signer's certificate SHA-256 equals the committed public fingerprint
+     `config/android-signing-certificate.sha256`;
+   - the signed APK's files are identical to the verified APK's (only signature entries differ).
+   Any mismatch stops publication.
+3. **An update manifest** `Race-Day-Dreams-latest-update.json` is published with the APK (schema 1:
+   package, version name and code, minimum Android version, versioned APK URL, size, SHA-256,
+   certificate SHA-256, source commit and the release note's "What's new"). It is uploaded last,
+   after the APK, and checked again after upload. A lower versionCode than the live manifest is
+   refused.
+4. **In the app** (`app/.../update/`), Settings › App updates:
+   - fetches the manifest over HTTPS from `github.com` (strictly validated; only the official
+     release's versioned APK URL is accepted);
+   - offers an update only if its versionCode is higher, the device's Android version is supported
+     and its certificate equals **this installation's own signing certificate**;
+   - downloads to private app storage with progress, checking free space first and never writing
+     more than the announced size;
+   - verifies size and SHA-256, then reads the APK with Android's `PackageManager`: package name,
+     versionCode (must match and be newer) and signing certificate (must equal this installation's
+     and the release fingerprint built into the app);
+   - hands the verified file to Android's `PackageInstaller`. **Android always shows its own approval
+     screen.** Nothing is installed silently and no Android security control is bypassed. The APK
+     never leaves the app's private storage (no file sharing is needed).
+5. **Never mid-workout:** downloading and installing are refused while a run is being recorded or
+   needs recovery, a gym workout is unfinished, or a bouldering session is unsaved (the same states
+   that already block a backup restore). Automatic checks also wait.
+6. **Choices:** "Remind me later" (3 days for that version), "Skip this version" (never prompted
+   again for it; still listed in Settings), automatic daily check on/off, notification on/off.
+   These stay on the device and are not part of backups.
+
+Builds whose own certificate does not match the release fingerprint built into them (every test
+build, including CI emulator builds) never check for updates on their own. A manual check on such
+a build explains that it cannot be updated in place and shows the one-time move below.
+
+### Failure handling
+
+| Situation | What happens |
+| --- | --- |
+| No connection / GitHub unavailable | Manual check explains and offers **Try again**; automatic checks stay silent. |
+| No update-ready release yet (no manifest) | "No update-ready release has been published yet." |
+| Malformed, oversized or unexpected manifest | Rejected; no update offered. |
+| Interrupted download, too large, damaged or wrong checksum | Partial file deleted; **Try again** downloads afresh. |
+| Not enough storage | Explained before downloading (needs the APK size plus 50 MB). |
+| Different signing key / not newer / wrong package | Rejected before Android is asked; nothing changes. |
+| You cancel Android's approval screen | "Installation cancelled. Your current version and data are unchanged." The verified file is kept for **Install update** again. |
+| Android reports a conflict or incompatible update | Explained; the file is discarded. |
+| "Install unknown apps" not allowed | Android's setting opens; on return the install continues if you allowed it. |
+| Active run, workout or bouldering session | Download and install wait; the card explains why. |
+
+### Battery and running reliability
+
+There is no background polling, alarm, `WorkManager` job, foreground service or wake lock. An
+automatic check is one small HTTPS request (a few kilobytes) when the app is opened, at most once
+per day, and never while a run, workout or bouldering session is active. Downloads only happen when
+you tap **Download update**. The recording service, GPS and heart-rate code are unchanged.
+
+## One-time signing setup (owner action required)
+
+**Status: not configured.** No production signing key has been generated or published by this
+work; that requires the owner's explicit decision. Until it is configured, CI keeps publishing the
+verified test-signed APK exactly as before, without an update manifest, so the in-app updater
+reports "No update-ready release has been published yet".
+
+1. **Create the release key on a trusted computer** (keep the passwords in a password manager):
+
+   ```sh
+   keytool -genkeypair -v -keystore race-day-dreams-release.jks -storetype PKCS12 \
+     -alias race-day-dreams -keyalg RSA -keysize 4096 -validity 10000 \
+     -dname "CN=Race Day Dreams, O=Race Day Dreams"
+   ```
+
+   **Back this file up in at least two safe places.** If the key is lost, no future build can
+   update existing installations in place; everyone would need the backup/reinstall/restore move
+   again. If it leaks, someone else could sign an update.
+
+2. **Record the public fingerprint** (not secret):
+
+   ```sh
+   keytool -exportcert -keystore race-day-dreams-release.jks -alias race-day-dreams | sha256sum
+   ```
+
+3. **Add four repository secrets** (GitHub › Settings › Secrets and variables › Actions):
+
+   | Secret | Value |
+   | --- | --- |
+   | `RDD_ANDROID_KEYSTORE_BASE64` | `base64 -w0 race-day-dreams-release.jks` (macOS: `base64 -i race-day-dreams-release.jks`) |
+   | `RDD_ANDROID_KEYSTORE_PASSWORD` | the keystore password |
+   | `RDD_ANDROID_KEY_ALIAS` | `race-day-dreams` |
+   | `RDD_ANDROID_KEY_PASSWORD` | the key password (the same as the keystore password for PKCS12) |
+
+   Optionally restrict who can change them, and require review for workflow changes.
+
+4. **Commit the fingerprint** from step 2 as the only line of
+   `config/android-signing-certificate.sha256` in a normal pull request, with a versionCode
+   increase. Builds from that commit embed the fingerprint; the next publication to `main` signs,
+   verifies and publishes the first update-ready build and its manifest.
+
+The workflow refuses to publish if only one of "secrets" and "committed fingerprint" is present, or
+if the signed APK's certificate differs from the fingerprint. Rotating the key later needs Android
+key rotation (APK Signature Scheme v3 lineage) and a deliberate plan; do not replace the key.
+
+## Moving from an older test build (one time)
+
+Every installation from a build before the release key — all builds up to and including
+0.14.0-test1, and any build published while signing is not configured — **cannot be updated in
+place**. Android will report a signing conflict. Do not uninstall until your backup is safe:
+
+1. Finish or save any run, gym workout or bouldering session. Unsaved sessions are not in backups.
+2. In **Record a run**, choose **Complete backup (app + recordings)** and save the file somewhere you
+   trust, ideally also copied off the phone. It contains your app history (goals, plans, runs,
+   gym programmes and workouts, strength records, bouldering sessions, shoes, measurements and
+   settings) together with the detailed GPS recordings still on the device. If you only want the
+   recordings, **Back up raw recordings** creates a separate archive.
+3. Check the file exists in the chosen folder and is not empty. Keep it until step 6 is complete.
+4. Uninstall the old copy. **Uninstalling deletes its on-phone data**, which is why the backup comes
+   first.
+5. Install the update-ready APK from the
+   [release page](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development) and open it.
+6. In **Record a run**, choose **Restore complete backup…**, pick your file and select **Validate and
+   restore**. Every file and checksum is validated before anything is replaced, and the whole
+   restore rolls back on any error. Check your history, plans, gym and bouldering sessions, shoes
+   and measurements. Grant Health Connect access again if you use it; imported Health Connect
+   records are read again from Health Connect rather than copied.
+
+After this, later versions install as normal updates from Settings › App updates.
+
+## Data preservation and migrations
+
+An in-place update keeps the app's private storage. On first launch the database upgrades in one
+transaction from any supported schema (1–20) to the current one; a failed upgrade keeps the old
+database. Current formats: SQLite schema 20, root JSON backup 14 (adds the `climbing` section;
+backups 1–13 restore with no climbing history), raw recording archive 3, complete backup package 1.
+This release does not change any data format.
+
+## Verification
+
+- `sharedDomain` `AppUpdatesTest` and `sharedStorage` `AppUpdateManifestJsonTest`: version-code
+  comparison, signing and Android-version incompatibility, skip/later rules, daily automatic checks
+  never during active work, one notification per version, strict manifest and URL validation.
+- `app` `AppUpdateTest` (emulator): real APK verification against this installation's signing
+  certificate, size, checksum, package and version; rejection of truncated, damaged, junk and
+  differently signed files; offline, 404, server and bad-manifest handling; interrupted, cancelled,
+  oversized and low-storage downloads leaving nothing behind; active-work blocking; skip/later
+  persistence; cancelled-install retry; test builds never checking automatically.
+- `AppUpdatesCardTest` and canonical screenshots `settings-app-updates-*` (available in normal, dark
+  and 200% text, downloading, downloaded-and-verified, test-build migration) from the real app.
+- `scripts/verify-android-upgrade.sh` (API 35 CI gate, **throwaway test keys**): installs build 9000,
+  seeds synthetic profile, goal, baseline, shoe, body weights, historical strength record, a
+  bouldering session with Fontainebleau and V-scale grades and appearance settings, fingerprints
+  every database table, installs build 9001 with the same key **in place** (`adb install -r`), and
+  requires an identical fingerprint and readable data; the in-app verifier must accept build 9002 and
+  reject 9003 signed with another key; Android must refuse 9003 (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`)
+  and the older 9000 (`INSTALL_FAILED_VERSION_DOWNGRADE`) with the data unchanged.
+- `scripts/test-development-assets.py`: signature parsing (one v2/v3 signer), identical contents
+  after re-signing, fingerprint format, manifest fields matching the app's decoder, downgrade guard.
+  `scripts/sign-distribution-apk.sh` was exercised locally with a throwaway key: unconfigured,
+  fingerprint-only, secrets-only, wrong-fingerprint and correct cases.
+
+## Limitations
+
+- **Not yet active:** in-app updates start with the first build published after the owner completes
+  the signing setup above. Every earlier installation needs the one-time move.
+- Android's own approval screen and a real end-to-end in-app install (download → approve → app
+  restarts as the new version) have **not been performed on a physical phone**. The emulator test
+  proves the in-place update and data preservation with `adb`, and the verifier on real APKs.
+- The published APK is still the verified **debug build type** (debuggable), now consistently
+  signed. A separate release build type would be a later, deliberately tested change.
+- Updates come from the rolling `development` release. Every update people should receive needs a
+  higher versionCode; republishing the same versionCode is never offered as an update.
+- Device policies (work profiles, OEM restrictions) may block installs from apps; the card explains
+  and nothing changes.

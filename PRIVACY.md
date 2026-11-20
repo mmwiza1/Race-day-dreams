@@ -2,8 +2,10 @@
 
 ## Local, account-free operation
 
-Race Day Dreams has no Internet permission (Android), networking code (both apps), server,
-account, analytics, advertising or LLM service. Goals, preferences, drafts, manual baseline, activities, results,
+Race Day Dreams has no server, account, analytics, advertising or LLM service. The iOS app has
+no networking code. The Android app's only network access is the optional update check and the
+update download you choose, described under "Android app updates"; your training data is never
+sent anywhere. Goals, preferences, drafts, manual baseline, activities, results,
 shoes, annotations, generated plans/version history, evidence summaries, coaching proposals/decisions, strength sets, run responses/feedback and reminder preferences are stored in the app's private SQLite
 database. Android cloud backup and device transfer are excluded. The database
 uses Android application/device protection, not a separate encryption scheme.
@@ -63,7 +65,8 @@ preserve annotations and derived PB history until records are re-imported.
 
 Exported backups are not encrypted by the app. Choose a trusted destination.
 Android's document picker may offer cloud providers: selecting one is your choice
-and may cause that provider to sync the file. The app itself has no network access.
+and may cause that provider to sync the file. The app itself never uploads backups or any
+training data.
 Restore is replace-only, versioned and prevalidated; database writes are one
 transaction and roll back on failure. Unsupported versions/merge are rejected.
 
@@ -194,3 +197,27 @@ fingerprints document removed detail and allow compatible original archives to b
 guessing. No data is uploaded. JSON13 preserves preferences/receipts; raw3 and complete1 preserve
 available detail with explicit limits. See docs/DATA_LIFECYCLE_0_11.md. SQLite deletion does not
 promise immediate device-space reclamation. Physical S24 cleanup/restore tests remain unperformed.
+
+## Android app updates (optional)
+
+Android builds signed with the Race Day Dreams release key can check the project's official GitHub
+release for a newer version (Settings › App updates). This is the app's only network access:
+
+- **What is contacted:** `github.com` and GitHub's download host, over HTTPS only (cleartext
+  traffic is disabled). Requests go to the `development` release of `mmwiza1/Race-day-dreams`.
+- **What is sent:** an ordinary HTTPS request for a public file, with a `User-Agent` naming the app
+  and its version. GitHub, like any web server, receives your IP address. No account, identifier,
+  device ID, location, health or training data is sent, and nothing is uploaded.
+- **When:** a check runs only when you open the app, at most once a day, and only on builds signed
+  with the release key; or when you tap **Check for updates**. It never runs during a recording,
+  gym workout or unsaved bouldering session. There is no background polling, alarm, wake lock or
+  service. Turn automatic checks off in Settings; manual checks still work.
+- **Downloads** happen only when you tap **Download update**. The file stays in the app's private
+  storage, is checked for size, SHA-256, package, newer version and the installed app's signing
+  certificate, and is then handed to Android, which always asks you to approve the installation.
+- **Notifications:** optional, at most one per version, and only if you already allow Race Day
+  Dreams notifications. Update preferences stay on this device and are not included in backups.
+- **Permissions:** `INTERNET` for the check and download, and `REQUEST_INSTALL_PACKAGES` so Android
+  can ask you to approve an update. Android asks you separately before the app may install updates.
+
+Test builds signed with temporary keys never check for updates on their own.

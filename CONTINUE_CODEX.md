@@ -97,6 +97,30 @@ If signing needs the owner, document the exact setup and stop only the dependent
 steps. Never uninstall apps or delete user data automatically; never claim seamless updates for
 installations that cannot support them (all existing debug-signed installs).
 
+### Latest recovery pointer — checkpoint 264 Android updates implemented; draft PR #27 CI next (Claude)
+
+- **Design:** CI re-signs the exact verified API35 APK in the publish job only
+  (`scripts/sign-distribution-apk.sh`; secrets `RDD_ANDROID_KEYSTORE_BASE64`,
+  `RDD_ANDROID_KEYSTORE_PASSWORD`, `RDD_ANDROID_KEY_ALIAS`, `RDD_ANDROID_KEY_PASSWORD`), requires the
+  committed public fingerprint `config/android-signing-certificate.sha256`, one v2/v3 signer and
+  identical contents, then publishes `Race-Day-Dreams-latest-update.json` (uploaded last, re-verified,
+  no versionCode downgrade). Neither secrets nor fingerprint → unchanged test-signed publication, no
+  manifest; only one of them → publication refused. **Signing is NOT configured; no production key
+  was generated (owner authorisation required).** Setup steps: `docs/ANDROID_UPDATES.md`.
+- App: rules `domain/update/AppUpdates.kt`, codec `storage/AppUpdateManifestJson.kt`, Android
+  `update/` (client, `ApkVerifier`, `UpdateInstaller` PackageInstaller + unexported receiver,
+  `AppUpdateCoordinator` singleton), `data/ActiveWork.kt` (restore's recording/gym/bouldering guards),
+  Settings `AppUpdatesCard` after Appearance. Embedded fingerprint via manifest placeholder; only
+  builds whose own cert matches it auto-check (daily, on app start, never during active work), so CI
+  test builds never touch the network. New permissions INTERNET + REQUEST_INSTALL_PACKAGES only.
+- Tests: 8 domain + 3 codec (JVM, pass locally: 519/683), `AppUpdateTest`, `AppUpdatesCardTest`,
+  `UpgradePathTest` (focused draft classes), screenshots `settings-app-updates-*` (471 required),
+  `scripts/verify-android-upgrade.sh` after the API35 gate (throwaway keys; restores gate APK),
+  Python asset/release-note tests (17/12 pass). Signing script exercised locally with a throwaway key.
+- Version 0.15.0-test1 / 23 (Android, iOS Info.plist, CI APK names), `docs/RELEASE_0_15_0.md`.
+  Docs: `docs/ANDROID_UPDATES.md`, PRIVACY (first network access, Android only), README, TEST_BUILD
+  (physical checklist UNPERFORMED), ARCHITECTURE. Draft PR must not merge without owner approval.
+
 ## Completed work — battery audit and bouldering (PR #26, owner request, 19 November 2026)
 
 Branch `feature/bouldering-and-battery-audit` (from `main` 2196212). One branch, three ordered,
