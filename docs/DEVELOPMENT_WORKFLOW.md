@@ -41,7 +41,7 @@ Implemented in PR #23 after the shared Android/iOS migration (PR #24) merged:
   committed canonical screenshot fingerprint) and calls `multiplatform.yml` in the SAME run for the
   Apple simulator/UI suite, the unsigned iPhone build and a universal unsigned simulator app. Only
   when every job passes does the existing gated publisher release, from that one commit: the APK,
-  `Race-Day-Dreams-<version>-ios-simulator.zip`, `-iphoneos-unsigned.zip`, their `latest-*`
+  `Race-Day-Dreams-<version>-ios-simulator.zip`, `-iphoneos-unsigned.zip`, `-unsigned.ipa`, their `latest-*`
   aliases, `.sha256` files and a build-info file. Each iOS ZIP must carry the run's commit, bundle
   version and build number. Versioned files upload first and `latest-*` aliases last; superseded or
   failed runs never publish. iOS builds are unsigned developer/test artifacts; `v*` tag releases

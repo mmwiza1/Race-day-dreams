@@ -4,6 +4,20 @@ import XCTest
 final class RunningWorkoutPersistenceTests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
+        dismissLeftoverLocationPrompt()
+    }
+
+    /// A system location prompt that appears late on a loaded simulator can outlive the test that
+    /// asked for it and cover the next test's taps. Answer any such leftover prompt first.
+    private func dismissLeftoverLocationPrompt() {
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        for answer in ["Allow While Using App", "Don't Allow"] {
+            let button = springboard.buttons[answer]
+            if button.waitForExistence(timeout: 1) {
+                button.tap()
+                return
+            }
+        }
     }
 
     func testAppleHealthRequiresAnExplicitReadChoice() {
@@ -100,7 +114,8 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Allow location access", in: app)
         let permission = XCUIApplication(bundleIdentifier: "com.apple.springboard")
             .buttons["Allow While Using App"]
-        XCTAssertTrue(permission.waitForExistence(timeout: 20))
+        // The system prompt can take well over 20 seconds to appear on a loaded CI simulator.
+        XCTAssertTrue(permission.waitForExistence(timeout: 60))
         permission.tap()
         tap("Start My workout · 1 steps", in: app)
         tap("Pause", in: app)
@@ -128,13 +143,17 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         addTeardownBlock { XCUIDevice.shared.location = nil }
         setSimulatedLocation(latitude: 51.5000)
         XCTAssertTrue(control("GPS ready", in: app).waitForExistence(timeout: 20))
-        for index in 1...7 {
-            // The fixture moves approximately 11 metres every two seconds.
-            Thread.sleep(forTimeInterval: 2)
-            setSimulatedLocation(latitude: 51.5000 + Double(index) * 0.0001)
-        }
         let measuredDistance = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label CONTAINS %@", "0.1 km")).firstMatch
+        // The fixture walks about 11 metres every two seconds until the recorded distance shows
+        // 0.1 km. A loaded CI simulator can deliver location updates late, so the walk continues
+        // (up to 30 steps) instead of assuming exactly seven updates are enough.
+        var index = 1
+        while !measuredDistance.exists && index <= 30 {
+            Thread.sleep(forTimeInterval: 2)
+            setSimulatedLocation(latitude: 51.5000 + Double(index) * 0.0001)
+            index += 1
+        }
         XCTAssertTrue(measuredDistance.waitForExistence(timeout: 20))
         tap("Finish & save", in: app)
         tap("Save recorded run", in: app)
@@ -168,7 +187,8 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
             },
             object: nil
         )
-        guard XCTWaiter.wait(for: [ready], timeout: 60) == .completed else {
+        // The system Files picker can take well over a minute to populate on a loaded CI runner.
+        guard XCTWaiter.wait(for: [ready], timeout: 120) == .completed else {
             XCTFail("The native Files picker did not expose an actionable Save control.")
             return nil
         }

@@ -33,6 +33,8 @@ installable consumer apps** — there is no App Store or TestFlight version.
   [Checksum](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-ios-simulator.zip.sha256) — run in Xcode's iOS Simulator on a Mac
 - **[Unsigned iPhone arm64 app](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-iphoneos-unsigned.zip)** ·
   [Checksum](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-iphoneos-unsigned.zip.sha256) — needs your own Apple signing and provisioning
+- **[Unsigned iPhone .ipa](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-unsigned.ipa)** ·
+  [Checksum](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-unsigned.ipa.sha256) — the same app as an `.ipa` for sideloading tools (AltStore, Sideloadly) that re-sign it with your own Apple ID; not installable as-is
 - [Build information](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-build-info.txt) — version, source commit and SHA-256 of
   every binary. Android and iOS downloads always come from the same verified commit.
 

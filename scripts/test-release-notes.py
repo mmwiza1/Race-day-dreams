@@ -81,7 +81,8 @@ class ReleaseNotesTest(unittest.TestCase):
         result = notes.render(self.root, self.sha, self.url, development=True)
         base = '/releases/download/development/Race-Day-Dreams-0.8.1-test1'
         for suffix in ('-ios-simulator.zip', '-ios-simulator.zip.sha256', '-iphoneos-unsigned.zip',
-                       '-iphoneos-unsigned.zip.sha256', '-build-info.txt'):
+                       '-iphoneos-unsigned.zip.sha256', '-unsigned.ipa', '-unsigned.ipa.sha256',
+                       '-build-info.txt'):
             self.assertIn(base + suffix, result)
         self.assertIn('unsigned engineering builds, not installable consumer apps', result)
         self.assertIn('same verified commit as the Android APK', result)

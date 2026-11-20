@@ -56,7 +56,14 @@ def verify(directory, version, expected):
 
 
 # Unsigned iOS developer/test builds. Not signed, not App Store/TestFlight packages.
-IOS_KINDS = ('ios-simulator', 'iphoneos-unsigned')
+IOS_KINDS = ('ios-simulator', 'iphoneos-unsigned', 'ipa')
+# CI artifact file for each kind, and the published suffix after "Race-Day-Dreams-<version|latest>-".
+# The .ipa is the same unsigned iPhone app in the standard Payload/ layout, for re-signing tools.
+IOS_SOURCES = {'ios-simulator': 'RaceDayDreams-simulator-universal.zip',
+               'iphoneos-unsigned': 'RaceDayDreams-iphoneos-unsigned.zip',
+               'ipa': 'RaceDayDreams-unsigned.ipa'}
+IOS_SUFFIXES = {'ios-simulator': 'ios-simulator.zip', 'iphoneos-unsigned': 'iphoneos-unsigned.zip',
+                'ipa': 'unsigned.ipa'}
 BUILD_INFO_ALIAS = 'Race-Day-Dreams-latest-build-info.txt'
 
 
@@ -64,8 +71,8 @@ def ios_names(version, kind):
     names(version)  # same strict development/test version contract as Android
     if kind not in IOS_KINDS:
         raise ValueError('Unknown iOS artifact kind')
-    versioned = f'Race-Day-Dreams-{version}-{kind}.zip'
-    alias = f'Race-Day-Dreams-latest-{kind}.zip'
+    versioned = f'Race-Day-Dreams-{version}-{IOS_SUFFIXES[kind]}'
+    alias = f'Race-Day-Dreams-latest-{IOS_SUFFIXES[kind]}'
     return (versioned, versioned + '.sha256', alias, alias + '.sha256')
 
 
@@ -78,8 +85,7 @@ def bundle_version(version):
 def check_ios_source(source, version, code, commit, kind):
     """Validate one CI iOS artifact directory: zip, checksum, commit and bundle version files."""
     source = Path(source)
-    zip_name = {'ios-simulator': 'RaceDayDreams-simulator-universal.zip',
-                'iphoneos-unsigned': 'RaceDayDreams-iphoneos-unsigned.zip'}[kind]
+    zip_name = IOS_SOURCES[kind]
     archive = source / zip_name
     if archive.is_symlink() or not archive.is_file() or archive.stat().st_size == 0:
         raise ValueError(f'Missing or empty {kind} archive')
@@ -87,6 +93,8 @@ def check_ios_source(source, version, code, commit, kind):
     recorded = (source / (zip_name + '.sha256')).read_text().split()
     if not recorded or recorded[0] != expected:
         raise ValueError(f'{kind} checksum does not match its archive')
+    if kind == 'ipa':
+        check_ipa(archive)
     if not re.fullmatch(r'[0-9a-f]{40}', commit):
         raise ValueError('Full commit SHA required')
     fields = {
@@ -98,6 +106,18 @@ def check_ios_source(source, version, code, commit, kind):
         if (source / name).read_text().strip() != value:
             raise ValueError(f'{kind} {name} does not match the verified build')
     return archive, expected
+
+
+def check_ipa(archive):
+    """An .ipa must hold exactly one app at Payload/RaceDayDreams.app with its executable and plist."""
+    import zipfile
+    with zipfile.ZipFile(archive) as ipa:
+        names = set(ipa.namelist())
+    if any(not n.startswith('Payload/RaceDayDreams.app/') and n != 'Payload/' for n in names):
+        raise ValueError('The .ipa must contain only Payload/RaceDayDreams.app')
+    for required in ('Payload/RaceDayDreams.app/RaceDayDreams', 'Payload/RaceDayDreams.app/Info.plist'):
+        if required not in names:
+            raise ValueError(f'The .ipa is missing {required}')
 
 
 def prepare_ios(source, version, code, commit, kind, destination):
@@ -156,10 +176,15 @@ def certificate_sha256(apksigner_output):
     # minSdk 28 (Android 9) apps are signed with APK Signature Scheme v3; v2 is also accepted.
     if not re.search(r'^Verified using v[23] scheme \(APK Signature Scheme v[23]\): true$', text, re.M):
         raise ValueError('APK Signature Scheme v2 or v3 is required')
-    signers = re.findall(r'^Signer #(\d+) certificate SHA-256 digest: ([0-9a-f]{64})$', text, re.M)
-    if len(signers) != 1:
-        raise ValueError('Exactly one APK signer is required')
-    return signers[0][1]
+    # Any signer line ("Signer #1 ...", or per-SDK-range v3 signers "Signer (minSdkVersion=..) ...")
+    # must name the same single certificate; source stamps and other keys are not signers.
+    digests = set(re.findall(r'^Signer\b[^\n]*? certificate SHA-256 digest: ([0-9a-f]{64})\s*$', text, re.M))
+    count = re.search(r'^Number of signers: (\d+)\s*$', text, re.M)
+    if len(digests) != 1 or (count and count.group(1) != '1'):
+        public = '\n'.join(line for line in text.splitlines()
+                           if line.startswith(('Verified', 'Number of signers', 'Signer', 'WARNING')))
+        raise ValueError('Exactly one APK signer is required. apksigner reported (public data only):\n' + public)
+    return digests.pop()
 
 
 def same_content(verified, signed):
@@ -275,6 +300,7 @@ def build_info(version, code, commit, run_url, digests, android_certificate=None
                         f'{android_certificate}; contents identical to the verified test build)'),
         'ios-simulator': 'iOS Simulator app, universal arm64 + x86_64 (UNSIGNED developer/test build)',
         'iphoneos-unsigned': 'iPhone arm64 app (UNSIGNED; requires your own signing and provisioning)',
+        'ipa': 'iPhone .ipa, the same app (UNSIGNED; re-sign with your own Apple ID before installing)',
     }
     for key in ('android-apk',) + IOS_KINDS:
         value = digests[key]
@@ -294,6 +320,7 @@ if __name__ == '__main__':
     parser.add_argument('--expected-sha')
     mode.add_argument('--prepare-ios', type=Path, help='CI artifact directory for --kind')
     mode.add_argument('--verify-ios', action='store_true')
+    mode.add_argument('--ios-names', action='store_true', help='print the versioned and latest names for --kind')
     mode.add_argument('--signed-check', type=Path, help='re-signed APK to compare with --verified-apk')
     mode.add_argument('--identity-check', type=Path, help='scratch-signed APK; prints its public fingerprint')
     mode.add_argument('--update-manifest', type=Path, help='versioned APK to describe')
@@ -305,6 +332,9 @@ if __name__ == '__main__':
     parser.add_argument('--version-code')
     parser.add_argument('--commit')
     args = parser.parse_args()
+    if args.ios_names:
+        print(*ios_names(args.version, args.kind)[0::2])
+        raise SystemExit(0)
     if args.identity_check:
         actual = certificate_sha256(args.apksigner_output.read_text())
         if not same_content(args.verified_apk, args.identity_check):

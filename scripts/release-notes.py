@@ -90,7 +90,7 @@ checksum. The checksum file can be used to verify download integrity.
 ### Unsigned iOS developer/test builds
 
 These are **unsigned engineering builds, not installable consumer apps**. There is no App Store
-or TestFlight version. Both come from the same verified commit as the Android APK.
+or TestFlight version. All come from the same verified commit as the Android APK.
 
 - **[iOS Simulator app]({assets_url}/Race-Day-Dreams-{name}-ios-simulator.zip)** — universal
   arm64 + x86_64, for Xcode's iOS Simulator on a Mac
@@ -98,6 +98,10 @@ or TestFlight version. Both come from the same verified commit as the Android AP
 - **[Unsigned iPhone arm64 app]({assets_url}/Race-Day-Dreams-{name}-iphoneos-unsigned.zip)** — for
   developers who can sign and provision it with their own Apple developer account
   ([SHA-256]({assets_url}/Race-Day-Dreams-{name}-iphoneos-unsigned.zip.sha256))
+- **[Unsigned iPhone .ipa]({assets_url}/Race-Day-Dreams-{name}-unsigned.ipa)** — the same app
+  packaged as an `.ipa`, for sideloading tools such as AltStore or Sideloadly that re-sign it with
+  your own Apple ID; it cannot be installed as-is
+  ([SHA-256]({assets_url}/Race-Day-Dreams-{name}-unsigned.ipa.sha256))
 - **[Build information]({assets_url}/Race-Day-Dreams-{name}-build-info.txt)** — version, source
   commit, CI run and SHA-256 of every binary
 

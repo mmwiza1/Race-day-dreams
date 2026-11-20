@@ -481,10 +481,18 @@ jobs:
             END { exit !found }'
           git rev-parse HEAD > "$output/source-commit.txt"
           ditto -c -k --keepParent "$app" "$output/RaceDayDreams-iphoneos-unsigned.zip"
+          # The same unsigned app in the standard .ipa layout (Payload/RaceDayDreams.app) for tools that
+          # re-sign with the tester's own Apple ID. Still UNSIGNED: it cannot be installed as-is.
+          ipa_root="$RUNNER_TEMP/rdd-ipa"
+          rm -rf "$ipa_root"; mkdir -p "$ipa_root/Payload"
+          ditto "$app" "$ipa_root/Payload/RaceDayDreams.app"
+          (cd "$ipa_root" && ditto -c -k --keepParent Payload "$output/RaceDayDreams-unsigned.ipa")
+          unzip -l "$output/RaceDayDreams-unsigned.ipa" | grep -q ' Payload/RaceDayDreams.app/RaceDayDreams$'
           plutil -extract CFBundleShortVersionString raw "$app/Info.plist" > "$output/bundle-version.txt"
           plutil -extract CFBundleVersion raw "$app/Info.plist" > "$output/bundle-build.txt"
           cd "$output"
           shasum -a 256 RaceDayDreams-iphoneos-unsigned.zip > RaceDayDreams-iphoneos-unsigned.zip.sha256
+          shasum -a 256 RaceDayDreams-unsigned.ipa > RaceDayDreams-unsigned.ipa.sha256
       - name: Build a universal unsigned iOS Simulator app for publication
         # Apple silicon (arm64) and Intel (x86_64) slices from the same commit. The x86_64 slice is
         # the configuration launched and UI-tested by apple-shared on this Intel runner.
@@ -528,6 +536,8 @@ jobs:
           path: |
             iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip
             iosApp/build/device/RaceDayDreams-iphoneos-unsigned.zip.sha256
+            iosApp/build/device/RaceDayDreams-unsigned.ipa
+            iosApp/build/device/RaceDayDreams-unsigned.ipa.sha256
             iosApp/build/device/source-commit.txt
             iosApp/build/device/bundle-version.txt
             iosApp/build/device/bundle-build.txt
