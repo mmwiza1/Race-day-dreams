@@ -38,18 +38,40 @@ class CoachActivity : ComponentActivity() {
         ViewModelProvider(this)[StrengthProgrammeViewModel::class.java]
     }
     private var hasResumed = false
+    /** Set when the "update available" notification opened the app. */
+    private val openUpdatesRequest = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         model = ViewModelProvider(this)[CoachViewModel::class.java]
+        openUpdatesRequest.value = intent.consumeOpenUpdates()
         setContent {
             org.racedaydreams.coach.theme.RaceDayTheme {
                 Surface(Modifier.fillMaxSize()) {
-                    CoachApp(model, { gymModel }, { programmeModel }, { boulderingModel })
+                    CoachApp(
+                        model,
+                        { gymModel },
+                        { programmeModel },
+                        { boulderingModel },
+                        openUpdatesRequest,
+                    )
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // At most a daily check, only for builds signed with the release key; never a background
+        // job.
+        org.racedaydreams.update.AppUpdateCoordinator.get(this).onAppStarted()
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openUpdatesRequest.value = intent.consumeOpenUpdates()
     }
 
     override fun onStop() {
@@ -72,9 +94,16 @@ private fun CoachApp(
     gymModel: () -> GymNowViewModel,
     programmeModel: () -> StrengthProgrammeViewModel,
     boulderingModel: () -> org.racedaydreams.coach.climbing.BoulderingViewModel,
+    openUpdates: MutableState<Boolean> = mutableStateOf(false),
 ) {
     val state by model.state.collectAsStateWithLifecycle()
     val nav = rememberNavController()
+    LaunchedEffect(openUpdates.value) {
+        if (openUpdates.value) {
+            openUpdates.value = false
+            nav.navigate("settings") { launchSingleTop = true }
+        }
+    }
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
     val snackbars = remember { SnackbarHostState() }
@@ -286,4 +315,12 @@ private fun CoachApp(
             },
             dismissButton = { TextButton(onClick = { restoreUri = null }) { Text("Cancel") } },
         )
+}
+
+/** True once for an intent from the update notification; the extra is removed after reading. */
+private fun android.content.Intent?.consumeOpenUpdates(): Boolean {
+    val key = org.racedaydreams.update.AppUpdateCoordinator.EXTRA_OPEN_UPDATES
+    if (this == null || !getBooleanExtra(key, false)) return false
+    removeExtra(key)
+    return true
 }
