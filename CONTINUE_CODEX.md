@@ -97,7 +97,30 @@ If signing needs the owner, document the exact setup and stop only the dependent
 steps. Never uninstall apps or delete user data automatically; never claim seamless updates for
 installations that cannot support them (all existing debug-signed installs).
 
-### Latest recovery pointer — checkpoint 265 PR #27 completion and signing activation plan (Claude)
+### Latest recovery pointer — checkpoint 266 PR #27 merged; signing identity verified; activation PR (Claude)
+
+- PR #27 squash-merged by owner approval as `a064779f721840edc42f5cf8e46de61eb745054e` (tree ==
+  verified head `4e2b104`; source `67833481` gate: API 28/35/36 799/799 each, upgrade script, iOS).
+- Post-merge run 44714113936: attempt 1 build (36) failed on a 404 downloading the Kotlin formatter
+  jar (infra) and apple-shared on the flaky XCUITest `testFavouriteSurvivesRelaunchWithoutLocationPermission`
+  (line 130, simulated GPS distance; its second post-merge flake after PR #26 → harden in a small
+  PR, do not loop reruns). Attempt 2: every build/test job green; publish failed at the keystore
+  decode (`base64: invalid input`) although the secret had been fixed — a re-run appears to reuse
+  the original run's secret snapshot. Attempt 3 (publish only) failed earlier, on Maven Central HTTP
+  429 while resolving dependencies (infra), so it was not retried further: 0.15.0-test1 is NOT
+  published; the development release stays 0.14.0-test1 until the activation PR's fresh post-merge
+  run (current secrets) publishes 0.15.1-test1.
+- Signing identity: secret first failed to decode (owner re-saved it). Main-only workflow run
+  44727056097 passed: 4 secrets present, keystore/alias/both passwords OK,
+  `CN=Race Day Dreams, O=Race Day Dreams`, SHA-256
+  `e7af758a8ff6732ee5fd2e19ab34a85bad1d283ec8b277d83813d7c66afd929d`. **Owner confirmed it matches
+  their keystore backup and authorised activation.**
+- Activation branch `feature/android-signing-activation`: fingerprint file, 0.15.1-test1 / 24,
+  `docs/RELEASE_0_15_1.md`; decoders now ignore whitespace/CRLF in the secret. After its gate and
+  merge, verify the published APK's certificate == fingerprint, versionCode 24, checksum, build-info
+  and `Race-Day-Dreams-latest-update.json` before calling it the first release-signed build.
+
+### Recovery pointer — checkpoint 265 PR #27 completion and signing activation plan (Claude)
 
 - 20 Nov: owner reports the four `RDD_ANDROID_*` secrets are configured (not readable via this
   session's API proxy; never exposed to PR workflows). No fingerprint committed; **no release-signed
