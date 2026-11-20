@@ -312,6 +312,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # The same pinned build-tools as the build jobs, never whatever newest version the runner has.
+          (yes || true) | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'build-tools;35.0.0' > /dev/null
+          export APKSIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          "$APKSIGNER" --version
           mkdir -p build/distribution
           verified=(build/verified-apk/*.apk)
           test "${#verified[@]}" -eq 1

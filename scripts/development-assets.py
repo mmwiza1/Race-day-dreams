@@ -176,10 +176,15 @@ def certificate_sha256(apksigner_output):
     # minSdk 28 (Android 9) apps are signed with APK Signature Scheme v3; v2 is also accepted.
     if not re.search(r'^Verified using v[23] scheme \(APK Signature Scheme v[23]\): true$', text, re.M):
         raise ValueError('APK Signature Scheme v2 or v3 is required')
-    signers = re.findall(r'^Signer #(\d+) certificate SHA-256 digest: ([0-9a-f]{64})$', text, re.M)
-    if len(signers) != 1:
-        raise ValueError('Exactly one APK signer is required')
-    return signers[0][1]
+    # Any signer line ("Signer #1 ...", or per-SDK-range v3 signers "Signer (minSdkVersion=..) ...")
+    # must name the same single certificate; source stamps and other keys are not signers.
+    digests = set(re.findall(r'^Signer\b[^\n]*? certificate SHA-256 digest: ([0-9a-f]{64})\s*$', text, re.M))
+    count = re.search(r'^Number of signers: (\d+)\s*$', text, re.M)
+    if len(digests) != 1 or (count and count.group(1) != '1'):
+        public = '\n'.join(line for line in text.splitlines()
+                           if line.startswith(('Verified', 'Number of signers', 'Signer', 'WARNING')))
+        raise ValueError('Exactly one APK signer is required. apksigner reported (public data only):\n' + public)
+    return digests.pop()
 
 
 def same_content(verified, signed):

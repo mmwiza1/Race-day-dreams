@@ -206,10 +206,24 @@ class AndroidSigningAndUpdateManifestTest(unittest.TestCase):
             SIGNED_OUTPUT.format(cert=self.cert).replace('Verifies\n', 'DOES NOT VERIFY\n'),
             SIGNED_OUTPUT.format(cert=self.cert).replace('v3): true', 'v3): false'),
             SIGNED_OUTPUT.format(cert=self.cert) + 'Signer #2 certificate SHA-256 digest: ' + 'a' * 64 + '\n',
+            SIGNED_OUTPUT.format(cert=self.cert).replace('Number of signers: 1', 'Number of signers: 2'),
+            SIGNED_OUTPUT.format(cert=self.cert).replace('Signer #1 certificate SHA-256', 'Source Stamp Signer certificate SHA-256'),
             SIGNED_OUTPUT.format(cert='not-a-digest'),
         ):
             with self.assertRaises(ValueError):
                 assets.certificate_sha256(bad)
+
+    def test_sdk_range_signer_lines_naming_one_certificate_are_accepted(self):
+        ranged = SIGNED_OUTPUT.format(cert=self.cert).replace(
+            'Signer #1 certificate SHA-256 digest: ' + self.cert,
+            'Signer (minSdkVersion=28, maxSdkVersion=32) certificate SHA-256 digest: ' + self.cert + '\n'
+            'Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate SHA-256 digest: ' + self.cert)
+        self.assertEqual(self.cert, assets.certificate_sha256(ranged))
+        with self.assertRaises(ValueError) as refused:
+            assets.certificate_sha256(ranged.replace('2147483647) certificate SHA-256 digest: ' + self.cert,
+                                                     '2147483647) certificate SHA-256 digest: ' + 'b' * 64))
+        # The refusal shows only public apksigner lines, so it can be diagnosed from the CI log.
+        self.assertIn('Signer (minSdkVersion=28', str(refused.exception))
 
     def test_resigning_may_change_only_signature_entries(self):
         files = {'AndroidManifest.xml': b'm', 'classes.dex': b'd', 'res/raw/a.bin': b'a'}

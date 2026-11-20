@@ -97,7 +97,31 @@ If signing needs the owner, document the exact setup and stop only the dependent
 steps. Never uninstall apps or delete user data automatically; never claim seamless updates for
 installations that cannot support them (all existing debug-signed installs).
 
-### Latest recovery pointer — checkpoint 266 PR #27 merged; signing identity verified; activation PR (Claude)
+## Standing owner instructions (20 November 2026)
+
+- Every iOS download section (release notes rendered by `scripts/release-notes.py`, README,
+  TEST_BUILD) includes the **unsigned iPhone .ipa** link (`Race-Day-Dreams-<version>-unsigned.ipa`,
+  `Race-Day-Dreams-latest-unsigned.ipa`), clearly labelled unsigned / re-sign before installing.
+- Every progress update to the owner states an ETA (UTC) for the next result. Poll CI no more often
+  than every 15 minutes (a background until-loop that stops on the first failed job).
+
+### Latest recovery pointer — checkpoint 267 activation merged; first signed publish refused by parser (Claude)
+
+- PR #28 (activation: fingerprint `e7af758a…929d`, 0.15.1-test1 / 24, whitespace-tolerant decode)
+  merged by owner authorisation as `eeccb89` (tree == verified head `70824dd`; source `34c891c6`
+  gate API 28/35/36 799 each after infra reruns: API 28 emulator death, apple-device 54-min stall).
+- Post-merge run 44748666246: every build/test job green. publish-test-release decoded the keystore
+  and signed, then `certificate_sha256` refused: "Exactly one APK signer is required" (failed
+  closed; **nothing published; development release still 0.14.0-test1; no release-signed APK
+  exists yet**). Local apksigner 35.0.0/36.0.0 with 2048/4096-bit keys print `Signer #1 …`; the
+  runner picks its newest build-tools, whose format is unknown. Fix in PR `feature/ios-ipa-and-ci-reliability`:
+  pin build-tools 35.0.0 in the publish job, accept any `Signer … certificate SHA-256` line naming
+  one certificate, print only public apksigner lines on refusal. Same PR: unsigned .ipa
+  publication + links, flaky iOS GPS/Files waits hardened.
+- **Next:** after that PR merges, verify the post-merge publish: APK cert == `e7af758a…`,
+  versionCode 24, checksums, build-info, `Race-Day-Dreams-latest-update.json`, `.ipa` assets.
+
+### Recovery pointer — checkpoint 266 PR #27 merged; signing identity verified; activation PR (Claude)
 
 - PR #27 squash-merged by owner approval as `a064779f721840edc42f5cf8e46de61eb745054e` (tree ==
   verified head `4e2b104`; source `67833481` gate: API 28/35/36 799/799 each, upgrade script, iOS).
