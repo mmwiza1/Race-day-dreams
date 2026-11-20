@@ -17,6 +17,8 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 
 ## Current verified baseline (20 November 2026)
 
+- **Latest: `main` = `66e963fb` (0.15.1-test1 / 24, iOS 0.15.1 / 24), the first release-signed
+  publication (checkpoint 268).** The 0.14.0 details below are kept as the earlier verified state.
 - **`main` = `44987a3bd9e0a03686a5caad64524ed7832de908` (0.14.0-test1 / versionCode 22; iOS 0.14.0 /
   build 22).** Verified live on 20 November 2026 (git, PR, Actions and the `development` release).
 - [PR #26](https://github.com/mmwiza1/Race-day-dreams/pull/26) (bouldering, battery audit, handover)
@@ -105,7 +107,55 @@ installations that cannot support them (all existing debug-signed installs).
 - Every progress update to the owner states an ETA (UTC) for the next result. Poll CI no more often
   than every 15 minutes (a background until-loop that stops on the first failed job).
 
-### Latest recovery pointer — checkpoint 267 activation merged; first signed publish refused by parser (Claude)
+## Active work — onboarding and running-analytics bug fixes (PR #30, owner request, 20 November 2026)
+
+Focused bug-fix PR (branch `fix/onboarding-and-weekly-run-count`, 0.15.2-test1 / 25, iOS 0.15.2 /
+25). Owner reports from a Samsung Galaxy S24; owner-authorised: "Open a PR for my review … Merge
+following completion." Do not touch signing credentials or the signing-activation workflow.
+
+- **Bug 1, onboarding review buttons.** Cause: `GoalFormScreen` mapped the app-wide
+  `CoachUiState.busy` to `OnboardingView.setSaving`. Every `onResume` calls `model.refresh()`
+  (and the first refresh may import Health Connect), so returning to the app disabled the whole form,
+  relabelled Create my programme "Saving…", blocked Back and re-rendered with `scrollTo(0, 0)`.
+  Save errors went only to a snackbar. Fix: the form disables only for its own save
+  (`setSaving(true)` in `onSave`, cleared by the new `saveFailed(message)`; success navigates away),
+  re-renders keep the scroll position, save failures are shown in the form with answers kept, the
+  primary button is identified by tag (not label text), and actions have a 12 dp gap.
+  `CoachOperationRunner.submit`'s `onFailure` now receives the shown message.
+- **Bug 2, weekly run overcount.** Re-importing one Health Connect record is idempotent (keyed by
+  provider + record ID). The overcount is cross-source: the same physical run arrives as several
+  records (Samsung Health plus another app writing into Health Connect, or an import plus a manual
+  entry or native recording), and every count/sum treated each record as a run. Fix: shared
+  `PhysicalRunSessions` groups records from *different* sources (provider + origin package) that
+  overlap for at least half of the shorter record; one counted record per run (planned-workout link,
+  then rdd > gpx > health platforms > assessment > manual, then has distance). Used by
+  `RecordedWeekAggregation`, `DashboardAnalytics.running`, trend points, `CalendarData.day` and
+  achievements eligibility. Read-only: no stored record is changed, merged or deleted, and no
+  migration is needed. The weekly chart has "Show the runs in this week", listing counted runs,
+  their source and uncounted copies.
+- **Bug 3, race distance.** Pace and programme always used the selected distance (`goal.distance()`),
+  and the 10K pace was correct for 10K. Nothing compared the distance with the free-text race name,
+  and the review said only "Goal: 10K". Fix: the review says "Race distance: 10K (10 km)" and "Target
+  race pace: … over …". `RaceNameDistanceCheck` warns (never infers) when the name clearly names
+  another distance, with a "Change race distance" action. 1:55:00 for a half marathon is 5:27/km.
+- **Two to three runs a week:** no automatic frequency change exists (only the runner's form choice).
+  Editing goals rebuilds the remaining programme from today, keeps every activity, total and older
+  plan version (`PlanPreservation.retainCompleted`); new plan IDs mean earlier weeks' planned
+  workouts are not carried into the new version. A future enhancement could carry them forward.
+- **Before and after screenshots:** commit `0dc93f17` adds only the capture scenario
+  (`progress-weekly-run-sources`, `onboarding-review-distance`, `onboarding-review-actions`; 474
+  required frames) so CI captures the old behaviour; the fix commit recaptures the same steps.
+
+### Recovery pointer — checkpoint 268 PR #29 merged; first release-signed 0.15.1-test1 published (Claude)
+
+- PR #29 merged as `66e963fb` (verified head `9a613ed4`). Post-merge run 44786672669 attempt 3
+  SUCCESS (API 36 reruns: formatter HTTP 429, then a systemui ANR before tests).
+- Downloaded and checked: `Race-Day-Dreams-0.15.1-test1.apk` signer `CN=Race Day Dreams`, cert
+  `e7af758a…929d`, versionCode 24, SHA-256 `3873f010…337b` == `.sha256` == latest alias; embedded
+  pin matches; `Race-Day-Dreams-latest-update.json` matches; unsigned `.ipa` `38224af9…2022`
+  published with checksum and linked in the release notes.
+
+### Recovery pointer — checkpoint 267 activation merged; first signed publish refused by parser (Claude)
 
 - PR #28 (activation: fingerprint `e7af758a…929d`, 0.15.1-test1 / 24, whitespace-tolerant decode)
   merged by owner authorisation as `eeccb89` (tree == verified head `70824dd`; source `34c891c6`

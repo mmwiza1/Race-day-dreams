@@ -24,6 +24,7 @@ import org.racedaydreams.domain.GoalMode;
 import org.racedaydreams.domain.OnboardingValidator;
 import org.racedaydreams.domain.PaceCalculator;
 import org.racedaydreams.domain.RaceDistance;
+import org.racedaydreams.domain.RaceNameDistanceCheck;
 import org.racedaydreams.domain.ScheduleType;
 import org.racedaydreams.domain.TrainingStrategy;
 import org.racedaydreams.domain.UnitSystem;
@@ -99,14 +100,7 @@ public final class OnboardingView extends ScrollView {
                 control.setBackground(tile);
             }
         } else if (view instanceof Button button) {
-            CharSequence title = button.getText();
-            boolean primary =
-                    android.text.TextUtils.equals(
-                                    title, getContext().getString(R.string.onboarding_continue))
-                            || android.text.TextUtils.equals(
-                                    title, getContext().getString(R.string.onboarding_save))
-                            || android.text.TextUtils.equals(
-                                    title, getContext().getString(R.string.onboarding_saving));
+            boolean primary = "onboarding-primary".equals(button.getTag());
             // Preserve the platform drawable, padding and input behaviour; clip only its outline.
             button.setBackgroundTintList(
                     stateColours(primary ? palette[2] : palette[4], disabledColour(0.12f)));
@@ -180,10 +174,28 @@ public final class OnboardingView extends ScrollView {
         return draft.toJson();
     }
 
+    /**
+     * Reflects only this form's own save. Unrelated app work (refreshes, health imports) must not
+     * disable the form, relabel its button or move the runner's place on the page.
+     */
     public void setSaving(boolean saving) {
         if (this.saving == saving) return;
         this.saving = saving;
-        render();
+        render(true);
+    }
+
+    /** Re-enables the form after a failed save and explains what to do; answers are kept. */
+    public void saveFailed(String message) {
+        setSaving(false);
+        String reason =
+                message == null || message.trim().isEmpty()
+                        ? getContext().getString(R.string.onboarding_save_failed_generic)
+                        : message.trim();
+        showError(getContext().getString(R.string.onboarding_save_failed, reason));
+    }
+
+    public boolean isSaving() {
+        return saving;
     }
 
     /** Gives the system Back action the same behavior as the visible onboarding controls. */
@@ -203,6 +215,11 @@ public final class OnboardingView extends ScrollView {
     }
 
     private void render() {
+        render(false);
+    }
+
+    private void render(boolean keepScroll) {
+        int scroll = getScrollY();
         rendering = true;
         removeAllViews();
         content = new LinearLayout(getContext());
@@ -248,22 +265,23 @@ public final class OnboardingView extends ScrollView {
                         draft.step == 3
                                 ? (saving ? R.string.onboarding_saving : R.string.onboarding_save)
                                 : R.string.onboarding_continue);
-        buttons.addView(next, blockParams());
+        next.setTag("onboarding-primary");
+        buttons.addView(next, buttonParams());
         next.setOnClickListener(view -> advance());
         if (draft.step > 0) {
             Button back = button(R.string.onboarding_back);
-            buttons.addView(back, blockParams());
+            buttons.addView(back, buttonParams());
             back.setOnClickListener(view -> navigateBack());
         }
         if (editing) {
             Button cancel = button(R.string.onboarding_cancel);
-            buttons.addView(cancel, blockParams());
+            buttons.addView(cancel, buttonParams());
             cancel.setOnClickListener(view -> listener.onCancel());
         }
         if (saving) setControlsEnabled(content, false);
         applyPaletteToContent();
         rendering = false;
-        post(() -> scrollTo(0, 0));
+        post(() -> scrollTo(0, keepScroll ? scroll : 0));
     }
 
     private void goalStep() {
@@ -316,7 +334,15 @@ public final class OnboardingView extends ScrollView {
                             R.string.onboarding_race_name,
                             draft.raceName,
                             InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-            watch(raceName, value -> draft.raceName = value);
+            TextView mismatch = text("", 16, false);
+            mismatch.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+            showDistanceConflict(mismatch);
+            watch(
+                    raceName,
+                    value -> {
+                        draft.raceName = value;
+                        showDistanceConflict(mismatch);
+                    });
             TextView label = section(R.string.onboarding_race_date);
             Button date = button(R.string.onboarding_choose_date);
             date.setId(View.generateViewId());
@@ -477,7 +503,22 @@ public final class OnboardingView extends ScrollView {
 
     private void reviewStep() {
         text(R.string.onboarding_review_intro, 16, false);
-        detail(R.string.onboarding_review_goal, draft.distance.label());
+        if (draft.distance == RaceDistance.GENERAL_FITNESS)
+            detail(R.string.onboarding_review_goal, draft.distance.label());
+        else detail(R.string.onboarding_review_distance, distanceText(draft.distance));
+        if (draft.event && distanceConflict() != null) {
+            TextView mismatch = text("", 16, true);
+            mismatch.setTag("onboarding-distance-warning");
+            showDistanceConflict(mismatch);
+            Button change = button(R.string.onboarding_change_distance);
+            content.addView(change, blockParams());
+            change.setOnClickListener(
+                    view -> {
+                        draft.step = 0;
+                        changed();
+                        render();
+                    });
+        }
         if (draft.event) {
             detail(
                     R.string.onboarding_review_race,
@@ -497,11 +538,12 @@ public final class OnboardingView extends ScrollView {
             detail(R.string.onboarding_review_time, draft.targetTime);
             try {
                 detail(
-                        R.string.onboarding_target_preview,
+                        R.string.onboarding_review_pace,
                         PaceCalculator.targetPace(
                                 PaceCalculator.parseTime(draft.targetTime),
                                 draft.distance,
-                                draft.units));
+                                draft.units),
+                        distanceText(draft.distance));
             } catch (IllegalArgumentException exception) {
                 // A restored unfinished draft may need correction. Save still validates all inputs.
                 text(exception.getMessage(), 16, false);
@@ -568,11 +610,43 @@ public final class OnboardingView extends ScrollView {
                                         PaceCalculator.targetPace(
                                                 PaceCalculator.parseTime(draft.targetTime),
                                                 draft.distance,
-                                                draft.units)));
+                                                draft.units),
+                                        distanceText(draft.distance)));
             }
         } catch (IllegalArgumentException exception) {
             pacePreview.setText(exception.getMessage());
         }
+    }
+
+    /** The distance a race name names when it differs from the selected one, else null. */
+    private RaceDistance distanceConflict() {
+        return RaceNameDistanceCheck.conflict(draft.raceName, draft.distance);
+    }
+
+    private void showDistanceConflict(TextView view) {
+        RaceDistance named = distanceConflict();
+        if (named == null) {
+            view.setVisibility(GONE);
+            return;
+        }
+        view.setText(
+                getContext()
+                        .getString(
+                                R.string.onboarding_distance_conflict,
+                                draft.raceName.trim(),
+                                named.label(),
+                                distanceText(draft.distance)));
+        view.setVisibility(VISIBLE);
+    }
+
+    /** "Half Marathon (21.1 km)": the label with the distance the pace is calculated over. */
+    private String distanceText(RaceDistance distance) {
+        double km = distance.kilometres();
+        String amount =
+                km == Math.rint(km)
+                        ? String.valueOf((long) km)
+                        : String.format(Locale.UK, "%.1f", km);
+        return getContext().getString(R.string.onboarding_distance_value, distance.label(), amount);
     }
 
     private void changed() {
@@ -627,8 +701,8 @@ public final class OnboardingView extends ScrollView {
         return text(resource, 19, true);
     }
 
-    private void detail(int resource, String value) {
-        text(getContext().getString(resource, value), 16, false);
+    private void detail(int resource, Object... values) {
+        text(getContext().getString(resource, values), 16, false);
     }
 
     private EditText input(int labelResource, String value, int inputType) {
@@ -753,6 +827,13 @@ public final class OnboardingView extends ScrollView {
         button.setAllCaps(false);
         button.setMinHeight(dp(56));
         return button;
+    }
+
+    /** Full-width actions separated so adjacent 56 dp targets are not tapped by mistake. */
+    private LinearLayout.LayoutParams buttonParams() {
+        LinearLayout.LayoutParams params = blockParams();
+        params.topMargin = dp(12);
+        return params;
     }
 
     private LinearLayout.LayoutParams blockParams() {

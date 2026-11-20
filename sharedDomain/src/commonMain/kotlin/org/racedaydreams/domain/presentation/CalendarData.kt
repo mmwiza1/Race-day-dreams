@@ -3,6 +3,7 @@ package org.racedaydreams.domain.presentation
 import kotlin.jvm.JvmStatic
 import org.racedaydreams.domain.*
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.time.*
@@ -141,6 +142,13 @@ object CalendarData {
     ): List<Entry> {
         val out = mutableListOf<Entry>()
         val represented = mutableSetOf<String>()
+        // Other sources' copies of a run already shown are not listed as extra recorded runs.
+        val sameRun = mutableMapOf<String, List<String>>()
+        for (session in PhysicalRunSessions.sessions(activities)) {
+            val ids = session.records().map { it.id() }
+            for (id in ids) sameRun[id] = ids
+        }
+        fun represent(a: ActivityRecord) = represented.addAll(sameRun[a.id()] ?: listOf(a.id()))
         val latest = HashMap<String, WorkoutDecision>()
         for (d in decisions) {
             val old = latest[d.workoutId()]
@@ -160,7 +168,7 @@ object CalendarData {
                             a.id(),
                         )
                     )
-                    represented.add(a.id())
+                    represent(a)
                 } else
                     out.add(
                         Entry(
@@ -182,7 +190,8 @@ object CalendarData {
                     )
                 )
         }
-        for (a in activities) if (runDate(a) == date && represented.add(a.id())) {
+        for (a in activities) if (runDate(a) == date && a.id() !in represented) {
+            represent(a)
             val w = workouts.firstOrNull { it.id() == a.plannedWorkoutId() }
             out.add(
                 Entry(

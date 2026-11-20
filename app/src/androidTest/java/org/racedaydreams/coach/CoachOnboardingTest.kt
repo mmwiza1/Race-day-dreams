@@ -109,6 +109,38 @@ class CoachOnboardingTest {
     }
 
     @Test
+    fun reviewControlsStayUsableAndInPlaceWhenTheAppResumesAndRefreshes() {
+        launch()
+        continueToGoals()
+        repeat(3) { index -> nativeContinue(index + 2) }
+        waitNativeText(R.string.onboarding_save)
+        onView(withText(R.string.onboarding_save)).perform(scrollTo())
+
+        // Returning to the app refreshes local data and may import health records. That shared
+        // work must not relabel the form as saving, disable it or move it back to the top.
+        scenario!!.moveToState(androidx.lifecycle.Lifecycle.State.STARTED)
+        scenario!!.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+        repeat(30) {
+            scenario!!.onActivity { activity ->
+                assertTrue(
+                    "Create my programme must stay enabled during an unrelated refresh",
+                    hasEnabledText(activity.window.decorView, context.getString(R.string.onboarding_save)),
+                )
+            }
+            Thread.sleep(100)
+        }
+        onView(withText(R.string.onboarding_save))
+            .check(matches(androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed()))
+
+        onView(withText(R.string.onboarding_back)).perform(scrollTo(), click())
+        waitNativeStep(3)
+        nativeContinue(4)
+        onView(withText(R.string.onboarding_save)).perform(scrollTo(), click())
+        waitForText("Review running baseline")
+        assertTrue(SqliteUserPreferencesRepository(context).load().isPresent)
+    }
+
+    @Test
     fun optionalManualBaselineSurvivesRecreationAndKeepsItsProvenance() {
         launch()
         compose
@@ -150,7 +182,7 @@ class CoachOnboardingTest {
 
         scenario!!.recreate()
         onView(withHint(R.string.onboarding_target_hint)).check(matches(withText("1:59:59")))
-        onView(withText("Target race pace: 5:41/km"))
+        onView(withText("Target race pace: 5:41/km over Half Marathon (21.1 km)"))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
         assertTrue(

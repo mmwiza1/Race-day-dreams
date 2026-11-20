@@ -2,6 +2,7 @@ package org.racedaydreams.domain.presentation
 
 import org.racedaydreams.domain.PlannedWorkout
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.activity.RecordedWeek
 import org.racedaydreams.domain.activity.RecordedWeekAggregation
 import org.racedaydreams.domain.coaching.WorkoutDecision
@@ -230,8 +231,7 @@ object DashboardAnalytics {
         val window = window(period, today)
         val previous = previousWindow(period, today)
         val dated =
-            activities
-                .distinctBy { it.id() }
+            PhysicalRunSessions.counted(activities)
                 .map { it to displayDate(it.start()) }
                 .filter { !before(today, it.second) }
         val weekStart = monday(today)

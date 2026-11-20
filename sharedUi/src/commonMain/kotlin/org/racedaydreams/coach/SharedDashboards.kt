@@ -205,6 +205,7 @@ fun SharedProgressDashboard(
                 presentation.paceSeconds,
                 presentation.shortDate,
                 presentation.friendlyDate,
+                remember(state.activities) { sharedWeekRuns(state.activities, dateAt) },
             )
             Text("Tap a bar to inspect that week.", style = MaterialTheme.typography.bodySmall)
         }

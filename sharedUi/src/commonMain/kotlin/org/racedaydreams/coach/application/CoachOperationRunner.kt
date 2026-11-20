@@ -53,7 +53,8 @@ class CoachOperationRunner(
     fun submit(
         message: String? = null,
         onSuccess: () -> Unit = {},
-        onFailure: () -> Unit = {},
+        /** Receives the same message shown to the runner, after state is left unchanged. */
+        onFailure: (String) -> Unit = {},
         operation: suspend () -> Unit,
     ) {
         scope.launch {
@@ -69,8 +70,9 @@ class CoachOperationRunner(
                 }
             } catch (failure: Exception) {
                 if (failure is CancellationException) throw failure
-                onFailure()
-                showFailure(failure)
+                val message = failureMessage(failure)
+                onFailure(message)
+                update { it.copy(loading = false, busy = false, error = message) }
             }
         }
     }
@@ -88,15 +90,17 @@ class CoachOperationRunner(
     }
 
     private fun showFailure(failure: Exception) {
-        // Preserve retained observations and input; corruption is never replaced by defaults.
-        val message =
-            if (failure is IllegalArgumentException) {
-                failure.message ?: "Check the entered values."
-            } else {
-                "Your local data could not be read or saved. It has been left in place. Try again, or use the confirmed local-data reset."
-            }
+        val message = failureMessage(failure)
         update { it.copy(loading = false, busy = false, error = message) }
     }
+
+    // Preserve retained observations and input; corruption is never replaced by defaults.
+    private fun failureMessage(failure: Exception): String =
+        if (failure is IllegalArgumentException) {
+            failure.message ?: "Check the entered values."
+        } else {
+            "Your local data could not be read or saved. It has been left in place. Try again, or use the confirmed local-data reset."
+        }
 }
 
 internal expect fun applicationIoDispatcher(): CoroutineDispatcher

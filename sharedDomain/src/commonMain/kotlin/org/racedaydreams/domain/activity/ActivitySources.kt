@@ -22,4 +22,12 @@ object ActivitySources {
             else -> "Activity provider"
         }
     }
+
+    /** [friendly], naming the writing app when Health Connect alone would be ambiguous. */
+    @JvmStatic
+    fun detailed(source: SourceIdentity): String {
+        val name = friendly(source)
+        val origin = source.originPackage()?.takeIf { it.isNotBlank() }
+        return if (name == "Health Connect" && origin != null) "$name ($origin)" else name
+    }
 }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.*
 import org.racedaydreams.coach.application.applicationIoDispatcher
 import org.racedaydreams.domain.achievements.TrainingMilestones
 import org.racedaydreams.domain.activity.ActivityRepository
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.coaching.CoachingRepository
 import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.storage.SqlDatabase
@@ -48,7 +49,13 @@ class SharedAchievementsCoordinator(
                             // Summary query only: achievement counts never load a GPS route.
                             val runs = running.activitySummaries()
                             val now = now()
-                            val candidates = TrainingMilestones.eligible(gym, runs, now)
+                            val candidates =
+                                TrainingMilestones.eligible(
+                                    gym,
+                                    // One award step per physical run, not per imported copy.
+                                    PhysicalRunSessions.counted(runs),
+                                    now,
+                                )
                             currentCoroutineContext().ensureActive()
                             val count = repository.recognize(candidates, now)
                             val enabled = repository.celebrations()

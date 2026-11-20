@@ -35,5 +35,9 @@ internal fun WeeklyRunningChart(
         ::formatPaceSeconds,
         ::shortDate,
         ::friendlyDate,
+        remember(activities) {
+            val zone = ZoneId.systemDefault()
+            sharedWeekRuns(activities) { it.atZone(zone).toLocalDate() }
+        },
     )
 }
