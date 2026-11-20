@@ -107,8 +107,12 @@ public final class OnboardingView extends ScrollView {
             android.graphics.drawable.GradientDrawable shape =
                     new android.graphics.drawable.GradientDrawable();
             shape.setCornerRadius(dp(28));
-            shape.setColor(stateColours(primary ? palette[2] : palette[0], disabledColour(0.12f)));
-            if (!primary) shape.setStroke(dp(1), stateColours(palette[5], disabledColour(0.12f)));
+            // Plain colours chosen from the current enabled state: a stateful colour list on this
+            // drawable kept its initial (disabled) colour on device. Every enabled-state change
+            // re-renders the form, which restyles the buttons.
+            boolean enabled = button.isEnabled();
+            shape.setColor(enabled ? (primary ? palette[2] : palette[0]) : disabledColour(0.12f));
+            if (!primary) shape.setStroke(dp(1), enabled ? palette[5] : disabledColour(0.12f));
             int ripple = (primary ? palette[3] : palette[2]) & 0x00FFFFFF | 0x33000000;
             button.setBackground(
                     new android.graphics.drawable.RippleDrawable(

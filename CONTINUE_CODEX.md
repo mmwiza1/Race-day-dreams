@@ -121,7 +121,9 @@ following completion." Do not touch signing credentials or the signing-activatio
   (`setSaving(true)` in `onSave`, cleared by the new `saveFailed(message)`; success navigates away),
   re-renders keep the scroll position, buttons are drawn explicitly as Material 3 filled/outlined
   shapes (the before-capture showed an *enabled* Create my programme drawn disabled-grey: the
-  platform drawable ignored `setBackgroundTintList` under the app theme), save failures are shown in the form with answers kept, the
+  platform drawable ignored `setBackgroundTintList` under the app theme; a stateful
+  `ColorStateList` on the replacement `GradientDrawable` then stayed disabled-grey on the emulator,
+  so colours are now plain values from `isEnabled()` and the test samples drawn pixels), save failures are shown in the form with answers kept, the
   primary button is identified by tag (not label text), and actions have a 12 dp gap.
   `CoachOperationRunner.submit`'s `onFailure` now receives the shown message.
 - **Bug 2, weekly run overcount.** Re-importing one Health Connect record is idempotent (keyed by

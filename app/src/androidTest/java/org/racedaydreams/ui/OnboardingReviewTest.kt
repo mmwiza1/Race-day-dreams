@@ -130,7 +130,8 @@ class OnboardingReviewTest {
     @Test
     fun anEnabledCreateButtonIsDrawnInThePrimaryColourInLightAndDark() {
         // Reported: Create my programme looked disabled. The platform button ignored the tint,
-        // so an enabled button was drawn grey. Check the colour actually drawn for its state.
+        // then a stateful colour list kept its disabled colour, so an enabled button was drawn
+        // grey. Check the pixels actually drawn.
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             val view =
                 OnboardingView(context, review(RaceDistance.HALF_MARATHON), null, false, Calls())
@@ -145,17 +146,28 @@ class OnboardingReviewTest {
                     c.outlineVariant.toArgb(),
                     c.error.toArgb(),
                 )
+                // The colour actually painted: draw the laid-out button and sample its
+                // background beside the centred label.
                 fun drawn(button: Button): Int {
-                    val ripple = button.background as android.graphics.drawable.RippleDrawable
-                    val shape = ripple.getDrawable(0) as android.graphics.drawable.GradientDrawable
-                    return requireNotNull(shape.color).getColorForState(button.drawableState, 0)
+                    val bitmap =
+                        android.graphics.Bitmap.createBitmap(
+                            button.width,
+                            button.height,
+                            android.graphics.Bitmap.Config.ARGB_8888,
+                        )
+                    button.draw(android.graphics.Canvas(bitmap))
+                    return bitmap.getPixel(button.width / 10, button.height / 2)
                 }
+                laidOut(view)
                 val create = button(view, R.string.onboarding_save)
                 assertTrue(create.isEnabled)
                 assertEquals(c.primary.toArgb(), drawn(create))
                 assertEquals(c.onPrimary.toArgb(), create.currentTextColor)
                 assertEquals(0f, create.elevation)
+                // Back is outlined on the page surface, never a grey filled block.
+                assertEquals(c.surface.toArgb(), drawn(button(view, R.string.onboarding_back)))
                 view.setSaving(true)
+                laidOut(view)
                 val saving = button(view, R.string.onboarding_saving)
                 assertFalse(saving.isEnabled)
                 assertNotEquals(c.primary.toArgb(), drawn(saving))
