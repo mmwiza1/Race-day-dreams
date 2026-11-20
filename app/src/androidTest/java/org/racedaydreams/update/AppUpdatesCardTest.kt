@@ -1,6 +1,11 @@
 package org.racedaydreams.update
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,7 +36,8 @@ class AppUpdatesCardTest {
         var state by
             mutableStateOf(AppUpdateState(installed, UpdatePreferences(), UpdateStatus.Available(update, true)))
         compose.setContent {
-            MaterialTheme {
+            // Hosted in a scrolling page, as in Settings.
+            MaterialTheme { Page {
                 AppUpdatesCard(
                     state,
                     AppUpdateActions(
@@ -41,7 +47,7 @@ class AppUpdatesCardTest {
                         check = { calls += "check" },
                     ),
                 )
-            }
+            } }
         }
         compose.onNodeWithText("Installed: 0.13.1-test1", substring = true).assertExists()
         compose.onNodeWithTag("app-updates-status").assert(hasText("Update available: ${update.versionName}", substring = true))
@@ -79,7 +85,8 @@ class AppUpdatesCardTest {
                 )
             )
         compose.setContent {
-            MaterialTheme {
+            // Hosted in a scrolling page, as in Settings.
+            MaterialTheme { Page {
                 AppUpdatesCard(
                     state,
                     AppUpdateActions(
@@ -89,7 +96,7 @@ class AppUpdatesCardTest {
                         openReleasePage = { calls += "release" },
                     ),
                 )
-            }
+            } }
         }
         compose.onNodeWithTag("app-updates-status").assert(hasText("interrupted", substring = true))
         compose.onNodeWithText("Try again").performClick()
@@ -108,3 +115,7 @@ class AppUpdatesCardTest {
         compose.onNodeWithTag("app-updates-download").assertDoesNotExist()
     }
 }
+
+@Composable
+private fun Page(content: @Composable () -> Unit) =
+    Column(Modifier.verticalScroll(rememberScrollState())) { content() }
