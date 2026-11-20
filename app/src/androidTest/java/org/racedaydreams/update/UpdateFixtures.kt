@@ -77,23 +77,41 @@ class FakeUpdateClient(
     // the local APK served by open().
 
     override fun open(url: java.net.URL): java.net.HttpURLConnection {
-        val bytes = UpdateFixtures.ownApk(context).readBytes()
-        val served = bytes.copyOf((bytes.size - truncateBy).toInt())
-        if (corrupt) served[served.size / 2] = (served[served.size / 2] + 1).toByte()
-        return FakeConnection(url, 200, served, downloadFailure, pauseAtBytes, paused, resume)
+        // Streamed from the installed APK file, never held in memory (it is ~60 MB).
+        val apk = UpdateFixtures.ownApk(context)
+        val length = apk.length() - truncateBy
+        return FakeConnection(
+            url,
+            200,
+            source = { apk.inputStream() },
+            length = length,
+            corruptAt = if (corrupt) length / 2 else null,
+            failure = downloadFailure,
+            pauseAt = pauseAtBytes,
+            paused = paused,
+            resume = resume,
+        )
     }
 }
 
-/** A minimal HTTPS response: a status, a body, an optional failure part-way, an optional pause. */
+/** A minimal HTTPS response: a status, a streamed body, an optional failure part-way, a pause. */
 class FakeConnection(
     url: java.net.URL,
     private val status: Int,
-    private val body: ByteArray,
+    private val source: () -> java.io.InputStream,
+    private val length: Long,
+    private val corruptAt: Long? = null,
     private val failure: IOException? = null,
     private val pauseAt: Long? = null,
     private val paused: CountDownLatch? = null,
     private val resume: CountDownLatch? = null,
 ) : java.net.HttpURLConnection(url) {
+    constructor(
+        url: java.net.URL,
+        status: Int,
+        body: ByteArray,
+    ) : this(url, status, { body.inputStream() }, body.size.toLong())
+
     override fun connect() = Unit
 
     override fun disconnect() = Unit
@@ -104,7 +122,8 @@ class FakeConnection(
 
     override fun getInputStream(): java.io.InputStream =
         object : java.io.InputStream() {
-            private var position = 0
+            private val input = source()
+            private var position = 0L
 
             override fun read(): Int {
                 val one = ByteArray(1)
@@ -116,12 +135,19 @@ class FakeConnection(
                     paused.countDown()
                     resume?.await(60, TimeUnit.SECONDS)
                 }
-                if (failure != null && position >= body.size / 3) throw failure
-                if (position >= body.size) return -1
-                val count = minOf(length, body.size - position, 1 shl 16)
-                System.arraycopy(body, position, buffer, offset, count)
+                if (failure != null && position >= this@FakeConnection.length / 3) throw failure
+                val remaining = this@FakeConnection.length - position
+                if (remaining <= 0) return -1
+                val count = input.read(buffer, offset, minOf(length.toLong(), remaining, 1L shl 16).toInt())
+                if (count < 0) return -1
+                if (corruptAt != null && corruptAt in position until position + count) {
+                    val index = offset + (corruptAt - position).toInt()
+                    buffer[index] = (buffer[index] + 1).toByte()
+                }
                 position += count
                 return count
             }
+
+            override fun close() = input.close()
         }
 }

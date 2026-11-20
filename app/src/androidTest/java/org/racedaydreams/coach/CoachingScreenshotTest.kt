@@ -3432,13 +3432,26 @@ class CoachingScreenshotTest {
             await("App updates")
             alignHeading("App updates")
         }
-        fun awaitText(text: String) =
-            compose.waitUntil(20000) {
-                compose
-                    .onAllNodesWithText(text, substring = true)
-                    .fetchSemanticsNodes()
-                    .isNotEmpty()
+        fun awaitText(text: String, timeoutMs: Long = 20000) {
+            try {
+                compose.waitUntil(timeoutMs) {
+                    compose
+                        .onAllNodesWithText(text, substring = true)
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+                }
+            } catch (timeout: androidx.compose.ui.test.ComposeTimeoutException) {
+                val shown =
+                    compose
+                        .onAllNodesWithTag("app-updates-status", useUnmergedTree = true)
+                        .fetchSemanticsNodes()
+                        .joinToString { it.config.toString() }
+                throw AssertionError(
+                    "No '$text'. Update state: ${org.racedaydreams.update.AppUpdateCoordinator.get(context).state.value.status}; shown: $shown",
+                    timeout,
+                )
             }
+        }
         try {
             withRefinementCaptureModes { suffix ->
                 updatePrefs.edit().clear().commit()
@@ -3466,7 +3479,8 @@ class CoachingScreenshotTest {
                     alignHeading("App updates")
                     capture("settings-app-updates-downloading")
                     client.resume.countDown()
-                    awaitText("is downloaded and verified")
+                    // The rest of the ~60 MB APK is streamed, hashed, synced and verified again.
+                    awaitText("is downloaded and verified", timeoutMs = 90000)
                     compose.onNodeWithTag("app-updates-install").assertIsEnabled()
                     alignHeading("App updates")
                     capture("settings-app-updates-ready")

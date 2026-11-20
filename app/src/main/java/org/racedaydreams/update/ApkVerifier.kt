@@ -82,11 +82,13 @@ object ApkVerifier {
             return Result.Rejected(
                 "The download is damaged or does not match the published release. It was deleted; try again."
             )
+        // Android 9 and 10 return no signingInfo for an APK file (installed apps are fine), so the
+        // long-standing signatures field is also requested and used only in that case.
         @Suppress("DEPRECATION")
         val info =
             context.packageManager.getPackageArchiveInfo(
                 apk.path,
-                PackageManager.GET_SIGNING_CERTIFICATES,
+                PackageManager.GET_SIGNING_CERTIFICATES or PackageManager.GET_SIGNATURES,
             ) ?: return Result.Rejected("The download is not a valid Android app.")
         if (info.packageName != installed.packageName)
             return Result.Rejected("The download is for a different app.")
@@ -108,9 +110,15 @@ object ApkVerifier {
 
     /** The single current signer; multi-signer or unreadable signing data is never trusted. */
     fun signerSha256(info: PackageInfo): String? {
-        val signing = info.signingInfo ?: return null
-        if (signing.hasMultipleSigners()) return null
-        val signers: Array<Signature> = signing.apkContentsSigners ?: return null
+        val signing = info.signingInfo
+        val signers: Array<Signature> =
+            if (signing != null) {
+                if (signing.hasMultipleSigners()) return null
+                signing.apkContentsSigners ?: return null
+            } else {
+                // Only for APK files on older Android versions; requires GET_SIGNATURES.
+                @Suppress("DEPRECATION") info.signatures ?: return null
+            }
         if (signers.size != 1) return null
         return hex(MessageDigest.getInstance("SHA-256").digest(signers[0].toByteArray()))
     }
