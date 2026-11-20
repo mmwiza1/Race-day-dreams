@@ -114,6 +114,9 @@ installations that cannot support them (all existing debug-signed installs).
   signed release and post-merge CI stays green. New main-only `workflow_dispatch`
   `signing-identity.yml` (public outputs only). Fixture labels derived from the real versionCode
   (older install = 0.14.0-test1/22, newer = 0.16.0-test1/24). New installer hand-off test.
+- Gate on `f0fe326`: API 28 799/799 and iOS green; API 35/36 crashed in the new test because
+  `appops set … REQUEST_INSTALL_PACKAGES deny` kills the app on Android 12+ (7 tests then unrun).
+  The test now never toggles that access (default state + direct real PackageInstaller commit).
 - **Next after owner approval to merge:** verify post-merge run and the identity-check fingerprint;
   then an activation PR committing `config/android-signing-certificate.sha256` + versionCode 24 +
   release note, merged only with owner authorisation → first release-signed APK and manifest;

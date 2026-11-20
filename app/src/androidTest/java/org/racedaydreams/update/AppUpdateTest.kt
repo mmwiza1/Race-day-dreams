@@ -328,37 +328,48 @@ class AppUpdateTest {
         assertEquals(0, client.manifestRequests.get())
     }
 
-    private fun shell(command: String) {
-        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command).use {
-            android.os.ParcelFileDescriptor.AutoCloseInputStream(it).use { input -> input.readBytes() }
-        }
-    }
-
     @Test
-    fun aVerifiedUpdateIsHandedToAndroidsOwnApprovalScreenOnlyWhenAllowed() {
+    fun aVerifiedUpdateIsHandedToAndroidsOwnApprovalScreen() {
+        // The test never changes "Install unknown apps": on Android 12+ revoking that access kills
+        // the app process (and with it the test run), as a real person revoking it would.
         val update = UpdateFixtures.announcedCurrentBuild(context)
         val model = coordinator(FakeUpdateClient(context, update))
         AppUpdateCoordinator.replaceForTesting(model)
         try {
-            // "Install unknown apps" not allowed: Android's own setting is requested, nothing installs.
-            shell("appops set ${context.packageName} REQUEST_INSTALL_PACKAGES deny")
             model.check()
             waitFor { model.state.value.status is UpdateStatus.Available }
             model.download()
             waitFor(60_000) { model.state.value.status is UpdateStatus.Ready }
-            model.install()
-            waitFor(60_000) { model.state.value.status is UpdateStatus.NeedsInstallPermission }
-            assertEquals(
-                android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
-                UpdateInstaller.installPermissionIntent(context).action,
+            val apk = File(context.cacheDir, "updates/${update.apkName}")
+            if (!UpdateInstaller.canInstall(context)) {
+                // Not allowed (the default): Install asks for Android's setting and installs nothing.
+                model.install()
+                waitFor(60_000) { model.state.value.status is UpdateStatus.NeedsInstallPermission }
+                assertEquals(
+                    android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                    UpdateInstaller.installPermissionIntent(context).action,
+                )
+                // Returning without allowing it keeps the verified file and explains the choice.
+                model.installPermissionReturned()
+                val kept = model.state.value.status as UpdateStatus.Ready
+                assertTrue(kept.note!!.contains("permission"))
+                assertTrue(apk.isFile)
+            }
+            // The verified file goes into a real PackageInstaller session; Android answers with its
+            // own approval screen through the unexported receiver. It is never approved here.
+            UpdateInstaller.commit(context, apk)
+            waitFor(90_000) {
+                model.state.value.status.let {
+                    it is UpdateStatus.AwaitingApproval || it is UpdateStatus.Failed
+                }
+            }
+            val awaiting = model.state.value.status
+            assertTrue("$awaiting", awaiting is UpdateStatus.AwaitingApproval)
+            val confirmation = (awaiting as UpdateStatus.AwaitingApproval).confirmation
+            assertTrue(
+                "${confirmation.action}",
+                confirmation.action.orEmpty().startsWith("android.content.pm.action.CONFIRM"),
             )
-            // Allowed: the verified file goes into a real PackageInstaller session and Android
-            // returns its own approval screen. The test never approves it, so nothing is installed.
-            shell("appops set ${context.packageName} REQUEST_INSTALL_PACKAGES allow")
-            model.installPermissionReturned()
-            waitFor(90_000) { model.state.value.status is UpdateStatus.AwaitingApproval }
-            val confirmation = (model.state.value.status as UpdateStatus.AwaitingApproval).confirmation
-            assertTrue("${confirmation.action}", confirmation.action.orEmpty().startsWith("android.content.pm.action.CONFIRM"))
             model.approvalShown()
             assertTrue(model.state.value.status is UpdateStatus.Installing)
             // Android's answer arrives through the unexported receiver; a cancel keeps the file.
@@ -372,10 +383,9 @@ class AppUpdateTest {
                         ),
                 )
             assertTrue(model.state.value.status is UpdateStatus.Ready)
-            assertTrue(File(context.cacheDir, "updates/${update.apkName}").isFile)
+            assertTrue(apk.isFile)
         } finally {
             AppUpdateCoordinator.replaceForTesting(null)
-            shell("appops set ${context.packageName} REQUEST_INSTALL_PACKAGES default")
         }
     }
 

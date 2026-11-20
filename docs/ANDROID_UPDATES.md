@@ -193,11 +193,12 @@ This release does not change any data format.
   requires an identical fingerprint and readable data; the in-app verifier must accept build 9002 and
   reject 9003 signed with another key; Android must refuse 9003 (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`)
   and the older 9000 (`INSTALL_FAILED_VERSION_DOWNGRADE`) with the data unchanged.
-- `AppUpdateTest.aVerifiedUpdateIsHandedToAndroidsOwnApprovalScreenOnlyWhenAllowed` (API 28/35/36):
-  with "Install unknown apps" denied, Install opens Android's setting and installs nothing; once
-  allowed, the verified APK goes into a real `PackageInstaller` session and Android returns its own
-  approval screen through the unexported receiver (never approved by the test); a cancel keeps the
-  verified file for retry.
+- `AppUpdateTest.aVerifiedUpdateIsHandedToAndroidsOwnApprovalScreen` (API 28/35/36): without
+  "Install unknown apps" access, Install opens Android's setting, installs nothing and keeps the
+  verified file; the verified APK then goes into a real `PackageInstaller` session and Android
+  returns its own approval screen through the unexported receiver (never approved by the test); a
+  cancel keeps the file for retry. The test never toggles that access, because Android 12+ kills an
+  app whose access is revoked.
 - `scripts/test-development-assets.py`: signature parsing (one v2/v3 signer), identical contents
   after re-signing, fingerprint format, the identity check printing only the public fingerprint,
   manifest fields matching the app's decoder, downgrade guard. `scripts/sign-distribution-apk.sh`
