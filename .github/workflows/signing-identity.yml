@@ -35,7 +35,7 @@ jobs:
           work=$(mktemp -d "$RUNNER_TEMP/rdd-identity.XXXXXX")
           trap 'rm -rf "$work"' EXIT
           umask 077
-          printf '%s' "$RDD_ANDROID_KEYSTORE_BASE64" | base64 -d > "$work/release.keystore"
+          printf '%s' "$RDD_ANDROID_KEYSTORE_BASE64" | tr -d ' \t\r\n' | base64 -d > "$work/release.keystore"
           # Fails unless the store password opens the keystore and the alias exists.
           keytool -list -keystore "$work/release.keystore" -storepass:env RDD_ANDROID_KEYSTORE_PASSWORD \
             -alias "$RDD_ANDROID_KEY_ALIAS" > /dev/null

@@ -55,7 +55,8 @@ done
 work=$(mktemp -d "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/rdd-sign.XXXXXX")
 trap 'rm -rf "$work"' EXIT INT TERM
 umask 077
-printf '%s' "$RDD_ANDROID_KEYSTORE_BASE64" | base64 -d > "$work/release.keystore"
+# Line breaks, Windows line endings or spaces pasted into the secret are ignored; nothing is printed.
+printf '%s' "$RDD_ANDROID_KEYSTORE_BASE64" | tr -d ' \t\r\n' | base64 -d > "$work/release.keystore"
 "$apksigner" sign \
     --ks "$work/release.keystore" \
     --ks-key-alias "$RDD_ANDROID_KEY_ALIAS" \

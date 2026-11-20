@@ -92,10 +92,14 @@ you tap **Download update**. The recording service, GPS and heart-rate code are 
 
 ## One-time signing setup and activation
 
-**Status (20 November 2026):** the owner reports the four repository secrets are configured. They
-cannot be read back through the GitHub API, and pull-request builds never receive them, so they are
-first exercised by trusted workflows on `main`. **No release-signed APK has been published yet**, and
-`config/android-signing-certificate.sha256` is not committed yet.
+**Status (20 November 2026):** the four repository secrets are configured. The main-only **Verify
+Android signing identity** run 44727056097 decoded the keystore, opened it with the keystore
+password, found the alias and signed a probe with the key password. Certificate
+`CN=Race Day Dreams, O=Race Day Dreams`, public SHA-256
+`e7af758a8ff6732ee5fd2e19ab34a85bad1d283ec8b277d83813d7c66afd929d`, which the owner confirmed matches
+their keystore backup. The activation PR commits this value as
+`config/android-signing-certificate.sha256`; the first release-signed APK exists only once that PR's
+post-merge publication has been verified.
 
 Signing turns on in two deliberate steps, so the first permanently signed release is published only
 when the owner approves it:
