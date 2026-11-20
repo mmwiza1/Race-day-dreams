@@ -4,6 +4,20 @@ import XCTest
 final class RunningWorkoutPersistenceTests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
+        dismissLeftoverLocationPrompt()
+    }
+
+    /// A system location prompt that appears late on a loaded simulator can outlive the test that
+    /// asked for it and cover the next test's taps. Answer any such leftover prompt first.
+    private func dismissLeftoverLocationPrompt() {
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        for answer in ["Allow While Using App", "Don't Allow"] {
+            let button = springboard.buttons[answer]
+            if button.waitForExistence(timeout: 1) {
+                button.tap()
+                return
+            }
+        }
     }
 
     func testAppleHealthRequiresAnExplicitReadChoice() {
@@ -100,7 +114,8 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Allow location access", in: app)
         let permission = XCUIApplication(bundleIdentifier: "com.apple.springboard")
             .buttons["Allow While Using App"]
-        XCTAssertTrue(permission.waitForExistence(timeout: 20))
+        // The system prompt can take well over 20 seconds to appear on a loaded CI simulator.
+        XCTAssertTrue(permission.waitForExistence(timeout: 60))
         permission.tap()
         tap("Start My workout · 1 steps", in: app)
         tap("Pause", in: app)
