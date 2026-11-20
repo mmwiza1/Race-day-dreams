@@ -11,6 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import java.time.LocalDate
 import org.junit.Assert.*
 import org.junit.Test
+import androidx.compose.ui.graphics.toArgb
 import org.junit.runner.RunWith
 import org.racedaydreams.R
 import org.racedaydreams.domain.GoalMode
@@ -123,6 +124,43 @@ class OnboardingReviewTest {
                         )
                 }
             )
+        }
+    }
+
+    @Test
+    fun anEnabledCreateButtonIsDrawnInThePrimaryColourInLightAndDark() {
+        // Reported: Create my programme looked disabled. The platform button ignored the tint,
+        // so an enabled button was drawn grey. Check the colour actually drawn for its state.
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            val view =
+                OnboardingView(context, review(RaceDistance.HALF_MARATHON), null, false, Calls())
+            for (dark in listOf(false, true)) {
+                val c = org.racedaydreams.coach.theme.raceDayColourScheme(context, dark, false)
+                view.applyPalette(
+                    c.surface.toArgb(),
+                    c.onSurface.toArgb(),
+                    c.primary.toArgb(),
+                    c.onPrimary.toArgb(),
+                    c.surfaceContainerLow.toArgb(),
+                    c.outlineVariant.toArgb(),
+                    c.error.toArgb(),
+                )
+                fun drawn(button: Button): Int {
+                    val ripple = button.background as android.graphics.drawable.RippleDrawable
+                    val shape = ripple.getDrawable(0) as android.graphics.drawable.GradientDrawable
+                    return requireNotNull(shape.color).getColorForState(button.drawableState, 0)
+                }
+                val create = button(view, R.string.onboarding_save)
+                assertTrue(create.isEnabled)
+                assertEquals(c.primary.toArgb(), drawn(create))
+                assertEquals(c.onPrimary.toArgb(), create.currentTextColor)
+                assertEquals(0f, create.elevation)
+                view.setSaving(true)
+                val saving = button(view, R.string.onboarding_saving)
+                assertFalse(saving.isEnabled)
+                assertNotEquals(c.primary.toArgb(), drawn(saving))
+                view.setSaving(false)
+            }
         }
     }
 

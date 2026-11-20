@@ -28,6 +28,8 @@ updates can install this version over it, keeping your data.
   calendar and running achievements now count each physical run once. The same run recorded by
   Samsung Health and written by another app into Health Connect, or recorded here and also entered
   manually, previously counted as two or more runs with its distance added each time.
+- **Create my programme** is now drawn in the app's primary colour when it can be tapped. It was
+  drawn grey, like a disabled button, even when it worked.
 - **Create my programme** and **Back** on the onboarding review no longer turn into a disabled
   "Saving…" state, or jump back to the top of the page, while the app refreshes in the background
   after you return to it.

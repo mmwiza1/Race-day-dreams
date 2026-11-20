@@ -3832,6 +3832,8 @@ class CoachingScreenshotTest {
             compose
                 .onNodeWithText("Show the runs in this week", substring = true)
                 .assertDoesNotExist()
+            compose.onNodeWithTag("week-run-sources").performScrollTo()
+            compose.waitForIdle()
         }
         capture("progress-weekly-run-sources")
 
@@ -3865,7 +3867,8 @@ class CoachingScreenshotTest {
             )
         compose.waitForIdle()
         capture("onboarding-review-distance")
-        espresso(text(org.racedaydreams.R.string.onboarding_save)).perform(scroll)
+        // Bring both review actions into view (Create my programme and Back below it).
+        espresso(text(org.racedaydreams.R.string.onboarding_back)).perform(scroll)
         compose.waitForIdle()
         capture("onboarding-review-actions")
     }

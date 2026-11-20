@@ -101,20 +101,24 @@ public final class OnboardingView extends ScrollView {
             }
         } else if (view instanceof Button button) {
             boolean primary = "onboarding-primary".equals(button.getTag());
-            // Preserve the platform drawable, padding and input behaviour; clip only its outline.
-            button.setBackgroundTintList(
-                    stateColours(primary ? palette[2] : palette[4], disabledColour(0.12f)));
+            // Draw Material 3 filled (primary) and outlined (other) buttons explicitly. Tinting the
+            // platform drawable was ignored under the app theme, so an enabled Create my programme
+            // was drawn in the grey of a disabled control.
+            android.graphics.drawable.GradientDrawable shape =
+                    new android.graphics.drawable.GradientDrawable();
+            shape.setCornerRadius(dp(28));
+            shape.setColor(stateColours(primary ? palette[2] : palette[0], disabledColour(0.12f)));
+            if (!primary) shape.setStroke(dp(1), stateColours(palette[5], disabledColour(0.12f)));
+            int ripple = (primary ? palette[3] : palette[2]) & 0x00FFFFFF | 0x33000000;
+            button.setBackground(
+                    new android.graphics.drawable.RippleDrawable(
+                            android.content.res.ColorStateList.valueOf(ripple), shape, null));
+            button.setBackgroundTintList(null);
+            button.setStateListAnimator(null);
+            button.setElevation(0);
+            button.setPadding(dp(24), dp(12), dp(24), dp(12));
             button.setTextColor(
                     stateColours(primary ? palette[3] : palette[2], disabledColour(0.38f)));
-            button.setOutlineProvider(
-                    new android.view.ViewOutlineProvider() {
-                        @Override
-                        public void getOutline(View target, android.graphics.Outline outline) {
-                            outline.setRoundRect(
-                                    0, 0, target.getWidth(), target.getHeight(), dp(28));
-                        }
-                    });
-            button.setClipToOutline(true);
         } else if (view instanceof TextView label) {
             label.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
             if (view instanceof EditText)

@@ -119,7 +119,9 @@ following completion." Do not touch signing credentials or the signing-activatio
   relabelled Create my programme "Saving…", blocked Back and re-rendered with `scrollTo(0, 0)`.
   Save errors went only to a snackbar. Fix: the form disables only for its own save
   (`setSaving(true)` in `onSave`, cleared by the new `saveFailed(message)`; success navigates away),
-  re-renders keep the scroll position, save failures are shown in the form with answers kept, the
+  re-renders keep the scroll position, buttons are drawn explicitly as Material 3 filled/outlined
+  shapes (the before-capture showed an *enabled* Create my programme drawn disabled-grey: the
+  platform drawable ignored `setBackgroundTintList` under the app theme), save failures are shown in the form with answers kept, the
   primary button is identified by tag (not label text), and actions have a 12 dp gap.
   `CoachOperationRunner.submit`'s `onFailure` now receives the shown message.
 - **Bug 2, weekly run overcount.** Re-importing one Health Connect record is idempotent (keyed by
