@@ -175,7 +175,17 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Export recorded route (GPX)", in: app)
         guard let save = waitForFilesSave(in: app) else { return }
         save.tap()
-        XCTAssertTrue(control("GPX file saved.", in: app).waitForExistence(timeout: 20))
+        // On a loaded CI runner the Files picker can still be settling when Save is tapped, so the
+        // tap is ignored and the picker stays open. Tap Save again only while it is still present;
+        // the saved confirmation itself is still required.
+        let saved = control("GPX file saved.", in: app)
+        var retries = 0
+        while !saved.waitForExistence(timeout: 20) && retries < 2 {
+            guard save.exists && save.frame.width > 1 && save.isHittable else { break }
+            save.tap()
+            retries += 1
+        }
+        XCTAssertTrue(saved.waitForExistence(timeout: 20))
     }
 
     private func waitForFilesSave(in app: XCUIApplication) -> XCUIElement? {
