@@ -137,6 +137,25 @@ physical measurements. Do not touch signing credentials or the signing-activatio
   - I-3 (needs a real strap).
 - **Evidence:** Section 0 of the audit doc. JVM benchmarks are in `DashboardHistoryPerformanceTest`
   (its output is in the jvmTest XML).
+- **Checkpoint 270 (21 November 2026, Claude):**
+  - [PR #31](https://github.com/mmwiza1/Race-day-dreams/pull/31) was merged as `3b4c06b5`. Its
+    tree equals the verified head `aeb8dca2` (screenshots only), whose source is `c94071ea`. All
+    PR-head jobs passed.
+  - Post-merge run 44855647354 attempt 1 failed in two places:
+    - API 36: a launcher ANR before any test ran.
+    - `apple-shared`: `testAppleHealthRequiresAnExplicitReadChoice` could not reach "Weight".
+  - Attempt 2 passed API 36, but `apple-shared` failed a different test:
+    `testFavouriteSurvivesRelaunchWithoutLocationPermission` could not reach "Pause" after Start.
+  - Root cause: the XCUITest `tap` helper waited only 2 s before swiping. On the loaded Mac runner
+    (17 s app launch), the next screen had not appeared yet, so the swipe hit the old screen or
+    scrolled the new control away.
+  - Fix PR `fix/ios-ui-test-transition-waits` lets the first look wait 10 s for the transition. It
+    does not change assertions or the swipe count. Publication of 0.15.3-test1 waits on that PR.
+  - PR #32's first run passed both iOS tests, but API 28 timed out in the new
+    `CoachOperationRunnerTest.refreshesThatImportOrAreNotMergeableAreNeverDropped`. This was a test
+    race: every read published an equal state, and `StateFlow` does not re-emit an equal value, so
+    the waiting collector could miss the final read. Each test read now publishes a distinct
+    `startingPath`. Runner code is unchanged.
 - **Local results:**
   - `:sharedDomain:jvmTest` 548/548;
   - app and androidTest compile;

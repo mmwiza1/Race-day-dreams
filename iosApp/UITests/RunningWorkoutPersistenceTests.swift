@@ -242,8 +242,11 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         line: UInt = #line
     ) {
         let element = control(label, in: app)
-        for _ in 0..<8 {
-            if element.waitForExistence(timeout: 2), element.isHittable {
+        for attempt in 0..<8 {
+            // On a loaded CI simulator the screen opened by the previous tap can take several
+            // seconds to appear. Scrolling before it does swipes the old screen, or scrolls the
+            // new screen's control out of view, so allow the first look to wait for the transition.
+            if element.waitForExistence(timeout: attempt == 0 ? 10 : 2), element.isHittable {
                 element.tap()
                 return
             }
