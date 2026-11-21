@@ -99,7 +99,7 @@ class CaptureValidationTest(unittest.TestCase):
         self.assertEqual(474, len(set(captures.REQUIRED) - set(captures.UX_REQUIRED)))
 
     def test_ux_review_requires_scrolled_home_focus_progress_settings_and_onboarding_modes(self):
-        expected = {'today-scrolled.png', 'today-more.png', 'strength-today-scrolled.png',
+        expected = {'today-scrolled.png', 'today-more.png', 'today-strength-scrolled.png',
                     'progress-strength-focus.png', 'settings-training-open.png',
                     'onboarding-material-light.png', 'onboarding-week-options-light.png'} | {
             f'onboarding-{step}-{mode}.png' for step in ('approach', 'week')
