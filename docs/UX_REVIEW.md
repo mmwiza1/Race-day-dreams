@@ -78,6 +78,16 @@ captures in [`screenshots/`](screenshots/).
 | 5 | Averages with limited data | ![](ux-review/round1/progress.png) | ![](screenshots/progress.png) | Average pace names its sample when only some runs qualify (for example "Moving pace · based on 11 of 12 runs"), and "Moving pace · 12 runs" when all do. Calculations are unchanged. The weekly pace chart and heart-rate panel already state their counts. |
 | 6 | First-run choice | (none existed) | ![](screenshots/starting-path-light.png) ![](screenshots/starting-path-dark.png) ![](screenshots/starting-path-large-font.png) | A real emulator capture of the first-run screen, taken with a genuinely empty profile in light, dark and 200% text. |
 
+## Final polish (owner review 2)
+
+"Round 2" images are kept in [`ux-review/round2/`](ux-review/round2/); "Round 3" images are the
+current captures in [`screenshots/`](screenshots/).
+
+| Request | Round 2 | Round 3 | Change |
+| --- | --- | --- | --- |
+| First-run top bar | ![](ux-review/round2/starting-path-light.png) ![](ux-review/round2/starting-path-dark.png) | ![](screenshots/starting-path-light.png) ![](screenshots/starting-path-dark.png) ![](screenshots/starting-path-large-font.png) | The first-run choice shows neither Back (there is no earlier step) nor Settings (there is no focus yet). Later setup steps keep their navigation: the baseline step has Back to the choice, and the goal form keeps its own Back buttons. On iPhone, the top-bar Settings action is hidden while the first-run choice is shown. |
+| Training volume | ![](ux-review/round2/progress-strength-focus.png) ![](ux-review/round2/strength.png) | ![](screenshots/progress-strength-focus.png) ![](screenshots/strength.png) | Recent workouts show volume as "2,100 kg" with thousands separators, labelled **Training volume (load × reps)**, so it reads as accumulated volume rather than a weight lifted, a PB or an estimated 1RM. The same component is used on the Strength tab and in Progress. Calculations are unchanged. |
+
 ## Where advanced functionality moved
 
 | Item | Was | Now |

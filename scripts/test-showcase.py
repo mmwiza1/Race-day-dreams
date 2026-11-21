@@ -7,7 +7,7 @@ from urllib.parse import urlsplit, unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 DOWNLOAD = 'https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk'
-GROUPS = ('Running Coach', 'Strength and Gym', 'Progress and Performance', 'Health and Recovery', 'Privacy and Data Ownership')
+GROUPS = ('Get Started', 'Running Coach', 'Strength and Gym', 'Progress and Performance', 'Health and Recovery', 'Privacy and Data Ownership')
 
 
 def validate(text, root):
@@ -22,10 +22,14 @@ def validate(text, root):
     for line in text.splitlines():
         if line.count('<img ') > 2:
             raise ValueError('At most two screenshots per row')
-    for index, group in enumerate(GROUPS):
+    for group in GROUPS:
         section = text.split('### ' + group + '\n', 1)[1].split('\n### ', 1)[0].split('\n## ', 1)[0]
-        if '<img ' not in section or DOWNLOAD not in section:
-            raise ValueError('Each feature needs screenshots and an adjacent direct download')
+        if '<img ' not in section:
+            raise ValueError('Each feature needs screenshots')
+    # One direct download after the curated showcase rather than one between every pair.
+    features = text.split('## Features\n', 1)[1].split('\n## ', 1)[0]
+    if DOWNLOAD not in features.rsplit('<img ', 1)[1]:
+        raise ValueError('The showcase must end with a direct download')
     if DOWNLOAD not in text[:2200] or DOWNLOAD + '.sha256' not in text[:2200]:
         raise ValueError('Primary APK/checksum links must be prominent')
     if re.search(r'releases/download/development/Race-Day-Dreams-\d', text):
@@ -49,18 +53,24 @@ class ShowcaseTest(unittest.TestCase):
 
     def test_missing_image_is_rejected(self):
         with self.assertRaises(ValueError):
-            validate(self.text.replace('home-material-brand-light.png', 'missing-image.png'), ROOT)
+            validate(self.text.replace('starting-path-light.png', 'missing-image.png'), ROOT)
 
     def test_versioned_rolling_link_is_rejected(self):
         with self.assertRaises(ValueError):
             validate(self.text.replace(DOWNLOAD, DOWNLOAD.replace('latest-test', '0.12.3-test1')), ROOT)
 
-    def test_missing_group_download_is_rejected(self):
+    def test_missing_showcase_download_is_rejected(self):
         begin = self.text.index('### Privacy and Data Ownership')
         end = self.text.index('## Installation', begin)
         bad = self.text[:begin] + self.text[begin:end].replace(DOWNLOAD, 'https://example.org') + self.text[end:]
         with self.assertRaises(ValueError):
             validate(bad, ROOT)
+
+    def test_feature_group_without_screenshots_is_rejected(self):
+        begin = self.text.index('### Health and Recovery')
+        end = self.text.index('### Privacy and Data Ownership', begin)
+        with self.assertRaises(ValueError):
+            validate(self.text[:begin] + '### Health and Recovery\n\nText only.\n\n' + self.text[end:], ROOT)
 
     def test_stable_unsigned_ios_downloads_follow_android_link(self):
         base = DOWNLOAD.rsplit('/', 1)[0] + '/Race-Day-Dreams-latest-'

@@ -42,77 +42,58 @@ See [Build and device testing](TEST_BUILD.md) for simulator installation and re-
 
 ## Features
 
-Screenshots below are genuine production screens using **synthetic demonstration records**,
-not real athlete results or promotional mock-ups. Tap any image for its full-resolution original.
-Device colours, light/dark themes and large text are supported.
+Screenshots below are genuine Android emulator captures of the current app using
+**synthetic demonstration records**, not real athlete results or promotional mock-ups. Tap any
+image for its full-resolution original. Device colours, light/dark themes and large text are supported.
+
+### Get Started
+
+Choose what you want to train for. Running, strength and hybrid users each get a Today screen
+built around their next session, with one clear way to start and spontaneous training one tap away.
+
+<a href="docs/screenshots/starting-path-light.png"><img src="docs/screenshots/starting-path-light.png" alt="First-run choice between training for a race, recording runs, strength, or running plus strength" width="280"></a> <a href="docs/screenshots/home.png"><img src="docs/screenshots/home.png" alt="Running Today with the planned long run, Start with Live Coach and the sessions coming up" width="280"></a>
 
 ### Running Coach
 
-See today's session, follow a plan and record your run with clear distance, time, pace and GPS
-status. Build towards your chosen race distance with guidance that leaves decisions to you.
+Follow a weekly plan towards a 5K, 10K, half marathon or marathon, then record your run with clear
+distance, time, pace and GPS status. Guidance leaves every decision to you.
 
-<a href="docs/screenshots/home-material-brand-light.png"><img src="docs/screenshots/home-material-brand-light.png" alt="Today's planned running session and start action" width="280"></a> <a href="docs/screenshots/live-refined-statistics-dark.png"><img src="docs/screenshots/live-refined-statistics-dark.png" alt="Live elapsed time, distance, pace and recording controls" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
-
-Review the week ahead and the route you actually recorded. Route outlines work offline; they are not street-map navigation.
-
-<a href="docs/screenshots/training-plan.png"><img src="docs/screenshots/training-plan.png" alt="Weekly running plan with planned workouts" width="280"></a> <a href="docs/screenshots/live-refined-route.png"><img src="docs/screenshots/live-refined-route.png" alt="Offline outline from recorded GPS points" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
+<a href="docs/screenshots/training-plan.png"><img src="docs/screenshots/training-plan.png" alt="Weekly running plan with planned and completed workouts" width="280"></a> <a href="docs/screenshots/live-refined-statistics.png"><img src="docs/screenshots/live-refined-statistics.png" alt="Live run recording with elapsed time, distance, pace and pause controls" width="280"></a>
 
 ### Strength and Gym
 
-Use Strength on its own or alongside running. Start from a programme or Gym Now, browse
-illustrated exercises and review each session before training.
+Use Strength on its own or alongside running. Start a planned or unplanned workout, build and
+review programmes, and browse an illustrated exercise library. Bouldering is there for climbers
+and stays out of the way for everyone else.
 
-<a href="docs/screenshots/strength-home.png"><img src="docs/screenshots/strength-home.png" alt="Strength-first Today with planned workout" width="280"></a> <a href="docs/screenshots/exercise-library-refined-dark.png"><img src="docs/screenshots/exercise-library-refined-dark.png" alt="Compact illustrated Exercise Library with search and filters" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
-
-Optional rest timers, warm-up ideas and grouped exercises (supersets) support your workout. Record the sets you actually complete; progression suggestions and programme changes remain your choice.
-
-<a href="docs/screenshots/gym-now.png"><img src="docs/screenshots/gym-now.png" alt="Gym Now choices for planned and spontaneous training" width="280"></a> <a href="docs/screenshots/strength-generated-preview.png"><img src="docs/screenshots/strength-generated-preview.png" alt="Dated strength programme preview before activation" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
+<a href="docs/screenshots/strength-home.png"><img src="docs/screenshots/strength-home.png" alt="Strength-focused Today with the planned workout and a separate unplanned-workout start" width="280"></a> <a href="docs/screenshots/gym-now.png"><img src="docs/screenshots/gym-now.png" alt="Gym Now choices for planned, quick, built or generated workouts" width="280"></a>
+<a href="docs/screenshots/strength-programme-builder.png"><img src="docs/screenshots/strength-programme-builder.png" alt="Strength programme builder with blocks, sessions and editing controls" width="280"></a> <a href="docs/screenshots/exercise-library-refined.png"><img src="docs/screenshots/exercise-library-refined.png" alt="Illustrated exercise library with search, filters and muscle groups" width="280"></a>
+<a href="docs/screenshots/bouldering-home.png"><img src="docs/screenshots/bouldering-home.png" alt="Bouldering overview with sessions, sends, highest grade and grade distribution" width="280"></a>
 
 ### Progress and Performance
 
-Review running trends, recorded personal bests, strength training and workout history.
-Recorded results stay distinct from estimates. Missing measurements are shown honestly.
+Progress follows your focus: running trends for runners, lifting first for strength athletes and
+both side by side for hybrid training. Recorded results stay distinct from estimates, and averages
+say how many sessions they are based on.
 
-<a href="docs/screenshots/running-trends-distance.png"><img src="docs/screenshots/running-trends-distance.png" alt="Weekly recorded running distance with selectable weeks" width="280"></a> <a href="docs/screenshots/running-records-refined.png"><img src="docs/screenshots/running-records-refined.png" alt="Ranked recorded running results with dates and sources" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
-
-<a href="docs/screenshots/strength-analytics.png"><img src="docs/screenshots/strength-analytics.png" alt="Recorded strength sets across recent weeks" width="280"></a> <a href="docs/screenshots/history.png"><img src="docs/screenshots/history.png" alt="Retained running and strength workout history" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
+<a href="docs/screenshots/progress.png"><img src="docs/screenshots/progress.png" alt="Running progress with distance this week, period choice and running statistics" width="280"></a> <a href="docs/screenshots/progress-strength-focus.png"><img src="docs/screenshots/progress-strength-focus.png" alt="Strength-focused progress with working sets, workouts, recent training volume and the 1RM trend" width="280"></a>
 
 ### Health and Recovery
 
 Understand optional recovery suggestions and choose whether to change your training.
 Health Connect is optional; the app works without a connected provider.
 
-<a href="docs/screenshots/training-recovery.png"><img src="docs/screenshots/training-recovery.png" alt="Optional lighter-week suggestion with supporting evidence" width="280"></a> <a href="docs/screenshots/body-measurements.png"><img src="docs/screenshots/body-measurements.png" alt="Height and weight entry with retained source and date" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
-
-Optional protein guidance gives a general daily range based on a chosen weight and training focus. It is not a medical prescription, calorie tracker or weight-loss programme.
-
-<a href="docs/screenshots/body-protein-dark.png"><img src="docs/screenshots/body-protein-dark.png" alt="Optional protein range and body-weight basis" width="280"></a>
-
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
+<a href="docs/screenshots/training-recovery.png"><img src="docs/screenshots/training-recovery.png" alt="Optional lighter-week suggestion with supporting evidence" width="280"></a>
 
 ### Privacy and Data Ownership
 
 Your training records stay on your device. No account, advertising, analytics, subscriptions
-or backend. Back up and restore your history, and choose how much detailed GPS/sensor data to
-keep. Cleanup requires review and confirmation; workout summaries and personal bests remain.
+or backend. Settings are grouped into clear sections, including backup and restore and how much
+detailed GPS/sensor data to keep. Cleanup requires review and confirmation.
 
-<a href="docs/screenshots/storage-management.png"><img src="docs/screenshots/storage-management.png" alt="Storage management explaining retained history and detail cleanup" width="280"></a>
+<a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="Settings grouped into Training, Health, Reminders, Appearance, Data and Privacy sections" width="280"></a> <a href="docs/screenshots/storage-management.png"><img src="docs/screenshots/storage-management.png" alt="Storage management explaining retained history and detail cleanup" width="280"></a>
 
-**[Download for Android](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation)
+**[Download the latest verified Android test build](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation) · [Explore every screenshot](#screenshots)
 
 ## Installation
 
@@ -129,7 +110,7 @@ physical GPS, audio, Health Connect/BLE and OEM behaviour still need the [device
 
 ## Screenshots
 
-[Explore the full authentic app gallery](docs/screenshots) · [Screenshot sources and integrity](docs/SCREENSHOTS.md)
+[Explore the full authentic app gallery](docs/screenshots) · [Screenshot sources and integrity](docs/SCREENSHOTS.md) · [Design review and before/after captures](docs/UX_REVIEW.md)
 
 The gallery includes light, dark, large-text, running, gym, technique, recovery, settings and
 backup views. Design references are kept separate from actual-build captures.

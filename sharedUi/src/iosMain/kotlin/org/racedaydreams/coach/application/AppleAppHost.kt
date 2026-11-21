@@ -252,7 +252,13 @@ private fun AppleAppContent(
             ) {
                 Text("Record")
             }
-            if (page != ApplePage.SETTINGS)
+            // No Settings while choosing a first focus (as on Android) or inside Settings itself.
+            val firstRun =
+                page == ApplePage.START &&
+                    !state.loading &&
+                    !state.busy &&
+                    state.primaryFocus == null
+            if (page != ApplePage.SETTINGS && !firstRun)
                 TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
         }
         Box(Modifier.weight(1f)) {

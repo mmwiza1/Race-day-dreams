@@ -4,6 +4,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Density
@@ -161,6 +163,25 @@ class SharedDashboardScreenTest {
             .onNodeWithText("Also involved secondarily", substring = true)
             .performScrollTo()
             .assertExists()
+        // Recent workouts label accumulated load × reps as training volume, grouped by thousands,
+        // so it cannot be read as a lifted weight, a PB or an estimated 1RM.
+        org.junit.Assert.assertTrue(
+            compose
+                .onAllNodesWithText("Training volume (load × reps)")
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        )
+        compose.onAllNodesWithText("load × reps").assertCountEquals(0)
+        compose
+            .onAllNodes(
+                SemanticsMatcher("thousands-grouped volume") { node ->
+                    node.config.getOrNull(SemanticsProperties.Text).orEmpty().any {
+                        Regex("""\d{1,3}(,\d{3})+ kg""").matches(it.text)
+                    }
+                }
+            )
+            .fetchSemanticsNodes()
+            .let { org.junit.Assert.assertTrue("A grouped volume is shown", it.isNotEmpty()) }
         compose
             .onNodeWithText("Recorded workload only — not a measure of muscle growth or recovery.")
             .performScrollTo()

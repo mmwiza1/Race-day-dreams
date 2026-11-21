@@ -63,4 +63,28 @@ class SettingsRefinementTest {
         compose.onNodeWithTag("settings-data").performClick()
         compose.runOnIdle { assertEquals(null, lastOpened.value) }
     }
+
+    @Test
+    fun firstRunChoiceHasNoBackOrSettingsButLaterSetupStepsKeepTheirNavigation() {
+        var route by mutableStateOf("welcome")
+        compose.setContent {
+            RaceDayTheme(dynamicColour = false) {
+                CoachShell(route, false, remember { SnackbarHostState() }, {}, {}, {}) {
+                    Text("Hosted content")
+                }
+            }
+        }
+        // Nothing to go back to and no focus yet: neither control is offered.
+        compose.onNodeWithText("Back").assertDoesNotExist()
+        compose.onNodeWithText("Settings").assertDoesNotExist()
+        compose.onNodeWithText("Race Day Dreams").assertExists()
+        // The baseline step after the choice can still return to it.
+        route = "baseline"
+        compose.onNodeWithText("Back").assertExists()
+        compose.onNodeWithText("Settings").assertExists()
+        // The goal form keeps its own Back buttons, as before.
+        route = "goals"
+        compose.onNodeWithText("Back").assertDoesNotExist()
+        compose.onNodeWithText("Settings").assertExists()
+    }
 }

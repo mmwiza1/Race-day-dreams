@@ -24,6 +24,9 @@ fun CoachShell(
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val showNavigation = route in (coachTabs.map { it.first } + "strength?date={date}")
+    // The first-run choice has nothing to go back to, and Settings is not useful before a focus
+    // exists. Later setup steps (baseline, goals) keep their own Back and Settings as before.
+    val firstRun = route == "welcome"
     Row(Modifier.fillMaxSize()) {
         if (useRail && showNavigation) {
             NavigationRail(
@@ -61,6 +64,7 @@ fun CoachShell(
                     navigationIcon = {
                         if (
                             route != null &&
+                                !firstRun &&
                                 route !in coachTabs.map { it.first } &&
                                 route != "strength?date={date}" &&
                                 route != "goals"
@@ -71,7 +75,7 @@ fun CoachShell(
                     // Already in Settings: Back is the way out, so a second Settings action would
                     // only reload the screen people are on.
                     actions = {
-                        if (route != "settings")
+                        if (route != "settings" && !firstRun)
                             TextButton(onClick = onSettings) { Text("Settings") }
                     },
                 )

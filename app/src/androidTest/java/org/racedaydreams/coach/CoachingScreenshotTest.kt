@@ -3775,6 +3775,9 @@ class CoachingScreenshotTest {
                 shell("settings put system font_scale ${mode.scale}")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 await("Make today yours")
+                // First run: nothing to go back to and no Settings before a focus exists.
+                compose.onNodeWithText("Back").assertDoesNotExist()
+                compose.onNodeWithText("Settings").assertDoesNotExist()
                 for (choice in
                     listOf(
                         "Train for a race",

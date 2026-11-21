@@ -99,6 +99,8 @@ fun SharedProgressDashboard(
     val unit = state.massUnit
     fun mass(kilograms: Double) =
         "${presentation.decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
+    fun volume(kilograms: Double) =
+        "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
 
     val runningWeek: @Composable () -> Unit = {
         SemanticCard(Tile.Progress) {
@@ -284,7 +286,7 @@ fun SharedProgressDashboard(
                     ({ open(ProgressLink.STRENGTH_ANALYTICS) })
                 else null,
             )
-            RecentWorkoutsCard(strength, presentation.friendlyDate, ::mass, null, openWorkout)
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
             OneRepMaxCard(
                 strength,
                 ::mass,
@@ -324,7 +326,7 @@ fun SharedProgressDashboard(
             )
             weeklyDistance()
             recentRuns()
-            RecentWorkoutsCard(strength, presentation.friendlyDate, ::mass, null, openWorkout)
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
             MoreDetail(
                 listOf(
                         "Running" to runningLinks,
@@ -460,7 +462,7 @@ internal fun StrengthKpis(data: StrengthPeriod, openRecords: (() -> Unit)?) {
 internal fun RecentWorkoutsCard(
     data: StrengthPeriod,
     friendlyDate: (LocalDate) -> String,
-    mass: (Double) -> String,
+    volume: (Double) -> String,
     seeAll: (() -> Unit)?,
     openWorkout: ((String) -> Unit)?,
 ) = CoachCard {
@@ -474,8 +476,10 @@ internal fun RecentWorkoutsCard(
                     else "",
             detail =
                 "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
-            value = workout.loadVolumeKg?.let(mass) ?: "",
-            secondary = if (workout.loadVolumeKg != null) "load × reps" else null,
+            // Accumulated load × repetitions, labelled so it is never read as a weight lifted,
+            // a personal best or an estimated one-rep maximum.
+            value = workout.loadVolumeKg?.let(volume) ?: "",
+            secondary = if (workout.loadVolumeKg != null) "Training volume (load × reps)" else null,
             onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
         )
     }
@@ -555,6 +559,8 @@ fun SharedStrengthDashboard(
     val unit = state.massUnit
     fun mass(kilograms: Double) =
         "${decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
+    fun volume(kilograms: Double) =
+        "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
     CoachHeading("Strength")
     if (StrengthLink.GYM_NOW in links)
         Button(
@@ -610,7 +616,7 @@ fun SharedStrengthDashboard(
     RecentWorkoutsCard(
         data,
         friendlyDate,
-        ::mass,
+        ::volume,
         if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
         openWorkout,
     )
@@ -629,6 +635,13 @@ fun SharedStrengthDashboard(
         { it.summary },
         open,
     )
+}
+
+/** A whole number with thousands separators, e.g. 2100.0 → "2,100". */
+internal fun groupedWhole(value: Double): String {
+    val digits = kotlin.math.abs(kotlin.math.round(value)).toLong().toString()
+    val grouped = digits.reversed().chunked(3).joinToString(",").reversed()
+    return if (value < -0.5) "−$grouped" else grouped
 }
 
 internal fun plural(count: Int, noun: String) = "$count $noun${if (count == 1) "" else "s"}"

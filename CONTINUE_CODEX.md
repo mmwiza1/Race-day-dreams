@@ -131,6 +131,12 @@ action; no assertion was removed.
     - pace averages state their sample;
     - a real first-run capture.
   - Round 1 images are kept in `docs/ux-review/round1/`. Still **do not merge**; awaiting the next owner review.
+- **Round 3 (owner review 2):**
+  - The first-run choice has no Back or Settings (Android and iPhone).
+  - Training volume is labelled "Training volume (load × reps)" with thousands separators.
+  - The README showcase is refreshed with 14 current captures under six feature headings, with one download link after the gallery. `scripts/test-showcase.py` is updated to match.
+  - Round 2 images are kept in `docs/ux-review/round2/`.
+  - Still **do not merge** and do not release.
 - 0.15.3-test1 (battery/performance, PRs #31–#33) is published and verified by download on
   21 November 2026: APK `bbdd2224…6459`, versionCode 26, signer `e7af758a…929d`, update manifest
   commit `b1e99333`, unsigned `.ipa` `45944e77…9b2a`, main run 44886264006 all green.
