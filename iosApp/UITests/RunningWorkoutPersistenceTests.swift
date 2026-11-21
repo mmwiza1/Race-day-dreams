@@ -141,8 +141,16 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         app.swipeDown()
 
         addTeardownBlock { XCUIDevice.shared.location = nil }
-        setSimulatedLocation(latitude: 51.5000)
-        XCTAssertTrue(control("GPS ready", in: app).waitForExistence(timeout: 20))
+        // A loaded CI simulator can drop or delay the first simulated fix, for example when it is
+        // set before location updates have started. Repeat the same starting fix (up to 10 times)
+        // until the app reports a real GPS fix; the recording still needs one to become ready.
+        let gpsReady = control("GPS ready", in: app)
+        var fixes = 0
+        repeat {
+            setSimulatedLocation(latitude: 51.5000)
+            fixes += 1
+        } while !gpsReady.waitForExistence(timeout: 6) && fixes < 10
+        XCTAssertTrue(gpsReady.waitForExistence(timeout: 20))
         let measuredDistance = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label CONTAINS %@", "0.1 km")).firstMatch
         // The fixture walks about 11 metres every two seconds until the recorded distance shows
