@@ -29,6 +29,7 @@ internal fun appleHomePresentation(state: CoachUiState): HomePresentation {
         distance = { distanceLabel(it, miles) },
         // These route strings are dispatched directly in Compose, with no URL parsing.
         encodeRouteComponent = { it },
+        dateOf = { KotlinxReminderCalendar.at(it, TimeZone.currentSystemDefault().id).date },
     )
 }
 

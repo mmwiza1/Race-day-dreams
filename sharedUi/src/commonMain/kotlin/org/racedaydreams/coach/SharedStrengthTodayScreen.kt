@@ -1,9 +1,13 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -22,18 +26,26 @@ fun SharedStrengthTodayScreen(
     open: (String) -> Unit,
     openSession: (String) -> Unit,
     gymNow: (() -> Unit)? = null,
+    week: List<WeekDay> = emptyList(),
 ) {
     CoachPage {
         TodayHeader(dateLabel)
-        // One card answers what, how long and how to start; logging after the fact is secondary.
-        SemanticCard(Tile.Strength) {
-            Text("Your strength training", style = MaterialTheme.typography.labelLarge)
+        if (week.any { it.sessions.isNotEmpty() }) {
+            SectionTitle("This week", WeekAtAGlance.summary(week))
+            WeekStrip(week, today)
+        }
+        // One hero answers what, how long and how to start; logging after the fact is secondary.
+        HeroCard(Discipline.STRENGTH) {
+            DisciplineLabel("Your strength training")
             val session = summary.today()
             val authored = summary.authoredToday()
             if (authored != null) {
-                Text(authored.definition().title(), style = MaterialTheme.typography.headlineMedium)
-                Text(
-                    "${authored.definition().slots().size} exercises · about ${authored.expectedMinutes()} min"
+                Text(authored.definition().title(), style = MaterialTheme.typography.headlineLarge)
+                StatRow(
+                    listOf(
+                        Stat("Exercises", "${authored.definition().slots().size}"),
+                        Stat("About", "${authored.expectedMinutes()}", "min"),
+                    )
                 )
                 ExercisePreview(authored.definition().slots().map { it.exercise().name() })
                 if (summary.todayCompleted())
@@ -43,7 +55,7 @@ fun SharedStrengthTodayScreen(
                     Text("View workout details")
                 }
             } else if (session == null) {
-                Text("Your day, your choice", style = MaterialTheme.typography.headlineMedium)
+                Text("Your day, your choice", style = MaterialTheme.typography.headlineLarge)
                 Text(
                     if (!hasProgramme)
                         "Build a programme or log a workout independently. No race goal is needed."
@@ -58,9 +70,12 @@ fun SharedStrengthTodayScreen(
                         Text("View gym programme")
                     }
             } else {
-                Text(session.title(), style = MaterialTheme.typography.headlineMedium)
-                Text(
-                    "${session.exercises().size} exercises · up to ${requireNotNull(legacyMinutes)} min"
+                Text(session.title(), style = MaterialTheme.typography.headlineLarge)
+                StatRow(
+                    listOf(
+                        Stat("Exercises", "${session.exercises().size}"),
+                        Stat("Up to", "${requireNotNull(legacyMinutes)}", "min"),
+                    )
                 )
                 ExercisePreview(
                     session.exercises().map {
@@ -83,7 +98,6 @@ fun SharedStrengthTodayScreen(
             }
         }
 
-        // Unplanned training is named as such, so it cannot be mistaken for today's session.
         Text(
             "Unplanned training",
             style = MaterialTheme.typography.titleMedium,
@@ -114,21 +128,28 @@ fun SharedStrengthTodayScreen(
             }
         }
 
-        SemanticCard(Tile.Progress) {
-            Text("This week", style = MaterialTheme.typography.titleMedium)
-            if (summary.plannedThisWeek() > 0) {
-                Text(
-                    "${summary.completedThisWeek()} / ${summary.plannedThisWeek()} programmed sessions completed",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-            Text(
-                "${summary.actualWorkoutsThisWeek()} actual strength ${if (summary.actualWorkoutsThisWeek() == 1) "workout" else "workouts"} recorded"
+        // This week as figures rather than sentences; each label names exactly what is counted.
+        SectionTitle("Your week so far")
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            modifier = Modifier.fillMaxWidth().testTag("strength-week-figures"),
+        ) {
+            StatRow(
+                buildList {
+                    if (summary.plannedThisWeek() > 0)
+                        add(
+                            Stat(
+                                "Programmed sessions done",
+                                "${summary.completedThisWeek()} / ${summary.plannedThisWeek()}",
+                            )
+                        )
+                    add(Stat("Workouts recorded", "${summary.actualWorkoutsThisWeek()}"))
+                    if (summary.recentPbExercises() > 0)
+                        add(Stat("Exercises with a PB, 28 days", "${summary.recentPbExercises()}"))
+                },
+                Modifier.padding(16.dp),
             )
-            if (summary.recentPbExercises() > 0)
-                Text(
-                    "PB evidence in ${summary.recentPbExercises()} ${if (summary.recentPbExercises() == 1) "exercise" else "exercises"} in the past 28 days"
-                )
         }
 
         ActionGroup("More") {
@@ -139,17 +160,34 @@ fun SharedStrengthTodayScreen(
     }
 }
 
-/** The first three exercises on one line keep the card short; the count states the rest. */
+/** The first three exercises as a numbered list; the count states the rest. */
 @Composable
 private fun ExercisePreview(names: List<String>) {
     if (names.isEmpty()) return
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        names.take(3).forEach { Text(it, style = MaterialTheme.typography.bodyMedium) }
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        names.take(3).forEachIndexed { index, name ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                    modifier = Modifier.size(24.dp).clearAndSetSemantics {},
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text("${index + 1}", style = MaterialTheme.typography.labelMedium)
+                    }
+                }
+                Text(name, style = MaterialTheme.typography.bodyLarge)
+            }
+        }
         if (names.size > 3)
             Text(
                 "+ ${names.size - 3} more",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 36.dp),
             )
     }
 }

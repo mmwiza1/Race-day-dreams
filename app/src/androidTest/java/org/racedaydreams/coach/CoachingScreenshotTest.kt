@@ -935,7 +935,8 @@ class CoachingScreenshotTest {
             scenario = ActivityScenario.launch(CoachActivity::class.java)
             await("Progress")
             click("Progress")
-            await("Distance this week")
+            // Strength focus opens Progress on its strength tab; this is its empty state.
+            await("Strength this week")
             capture("progress-dashboard-empty")
             click("Strength")
             await("Muscle-group workload")
@@ -981,7 +982,7 @@ class CoachingScreenshotTest {
             alignHeading("Unplanned training")
             capture("today-strength-scrolled")
             click("Progress")
-            await("Distance this week")
+            await("Strength this week")
             // Strength focus: the lifting figures lead the page.
             compose.onNodeWithTag("kpi-Working sets").assertIsDisplayed()
             capture("progress-strength-focus")

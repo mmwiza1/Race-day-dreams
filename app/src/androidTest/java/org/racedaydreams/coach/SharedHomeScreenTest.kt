@@ -211,4 +211,33 @@ class SharedHomeScreenTest {
             .performClick()
         compose.runOnIdle { assertEquals(listOf("gym-now"), actions) }
     }
+
+    @Test
+    fun weekAtAGlanceMarksDonePlannedAndMissedFromThePlanOnly() {
+        // Tuesday's run is planned and Thursday's is next; Monday has nothing.
+        val week = WeekAtAGlance.build(state(), day, null, ::workoutName)
+        assertEquals(7, week.size)
+        assertEquals(day.minusDays(1), week[0].date)
+        assertTrue(week[0].sessions.isEmpty())
+        assertEquals(SessionMark.PLANNED, week[1].sessions.single().mark)
+        assertEquals(SessionMark.PLANNED, week[3].sessions.single().mark)
+        // A recorded response linked to Tuesday's workout makes it done.
+        val done = WeekAtAGlance.build(state(completed = true), day, null, ::workoutName)
+        assertEquals(SessionMark.DONE, done[1].sessions.single().mark)
+        assertEquals("1 of 2 done", WeekAtAGlance.summary(done))
+        // Seen from Thursday, an unrecorded Tuesday is missed, never silently done.
+        val later = WeekAtAGlance.build(state(), day.plusDays(2), null, ::workoutName)
+        assertEquals(SessionMark.MISSED, later[1].sessions.single().mark)
+    }
+
+    @Test
+    fun weekStripDescribesEachDayForScreenReadersWithoutRelyingOnColour() {
+        show(state())
+        compose.onNodeWithTag("week-strip").assertExists()
+        compose.onNodeWithText("0 of 2 done").assertExists()
+        compose
+            .onNodeWithContentDescription("Tue 17, today:", substring = true)
+            .assert(hasContentDescription("planned", substring = true))
+        compose.onNodeWithContentDescription("Mon 16: nothing planned").assertExists()
+    }
 }

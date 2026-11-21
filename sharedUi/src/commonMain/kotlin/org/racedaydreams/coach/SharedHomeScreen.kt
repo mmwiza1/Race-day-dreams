@@ -3,9 +3,8 @@ package org.racedaydreams.coach
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -25,6 +24,8 @@ class HomePresentation(
     val activityDate: (ActivityRecord) -> String,
     val distance: (Double) -> String,
     val encodeRouteComponent: (String) -> String,
+    /** The local calendar date of an instant; lets the week strip place unplanned sessions. */
+    val dateOf: ((org.racedaydreams.domain.time.Instant) -> LocalDate)? = null,
 )
 
 /**
@@ -97,21 +98,29 @@ private fun RunningTodayScreen(
             .sortedBy { it.date().toEpochDay() }
             .take(2)
     val hybrid = state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID
+    // The week at a glance, Runna-style: what is done, what is next, what was missed.
+    val week =
+        remember(state, currentDate) {
+            WeekAtAGlance.build(state, currentDate, presentation.dateOf, presentation.workoutName)
+        }
+    if (week.any { it.sessions.isNotEmpty() }) {
+        SectionTitle("This week", WeekAtAGlance.summary(week))
+        WeekStrip(week, currentDate)
+    }
 
-    // 1. What am I doing today, and how do I start? One card, one primary action.
-    SemanticCard(Tile.Planned) {
-        Text(
+    // 1. What am I doing today, and how do I start? One hero, one primary action, three figures.
+    HeroCard(Discipline.RUNNING) {
+        DisciplineLabel(
             when {
                 today == null -> "Nothing planned"
                 completed -> "Done today"
                 else -> "Today's run"
-            },
-            style = MaterialTheme.typography.labelLarge,
+            }
         )
         if (today != null) {
             Text(
                 presentation.workoutName(today.category()),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineLarge,
             )
             val run =
                 today.segments().firstOrNull {
@@ -119,20 +128,30 @@ private fun RunningTodayScreen(
                 }
             val minimumPace = run?.minimumSecondsPerKm()
             val maximumPace = run?.maximumSecondsPerKm()
-            MetaLine(
+            StatRow(
                 listOfNotNull(
-                    today.distanceKm()?.let { "${presentation.decimal(it)} km" }
-                        ?: today.duration()?.let { "${it.getSeconds() / 60} min" }
-                        ?: "Run by effort",
+                    today.distanceKm()?.let { Stat("Distance", presentation.decimal(it), "km") }
+                        ?: today.duration()?.let {
+                            Stat("Duration", "${it.getSeconds() / 60}", "min")
+                        }
+                        ?: Stat("Target", "By effort"),
                     run?.rpe()
                         ?.takeIf { it.isFinite() && it >= 1.0 && it <= 10.0 }
                         ?.let {
-                            org.racedaydreams.domain.presentation.StrengthPrescriptionText
-                                .effortDescription(it)
-                                .replaceFirstChar { c -> c.uppercaseChar() } + " effort"
+                            Stat(
+                                "Effort",
+                                org.racedaydreams.domain.presentation.StrengthPrescriptionText
+                                    .effortDescription(it)
+                                    .replaceFirstChar { c -> c.uppercaseChar() },
+                            )
                         },
                     if (minimumPace != null && maximumPace != null)
-                        "${presentation.paceSeconds(minimumPace)}–${presentation.paceSeconds(maximumPace)}/km"
+                        Stat(
+                            "Pace",
+                            "${presentation.paceSeconds(minimumPace)}–${presentation.paceSeconds(maximumPace)}",
+                            "/km",
+                            unitGap = false,
+                        )
                     else null,
                 )
             )
@@ -147,7 +166,7 @@ private fun RunningTodayScreen(
                 Text(if (completed) "View completed workout" else "View workout details")
             }
         } else {
-            Text("Your day, your choice", style = MaterialTheme.typography.headlineMedium)
+            Text("Your day, your choice", style = MaterialTheme.typography.headlineLarge)
             Text("Rest, or start a run or workout below.")
             upcoming.firstOrNull()?.let { next ->
                 Text(
@@ -229,7 +248,10 @@ private fun RunningTodayScreen(
     if (upcoming.isNotEmpty())
         ActionGroup("Coming up", emphasised = true) {
             upcoming.forEach { next ->
-                ActionRow(
+                ScheduleRow(
+                    WeekAtAGlance.weekdays[next.date().getDayOfWeek().getValue() - 1],
+                    next.date().getDayOfMonth(),
+                    Discipline.RUNNING,
                     presentation.workoutName(next.category()),
                     presentation.shortDate(next.date()),
                     next.distanceKm()?.let { "${presentation.decimal(it)} km" }
@@ -281,54 +303,29 @@ private fun RunningTodayScreen(
 
     state.profile?.raceGoal()?.let { goal ->
         val raceDate = goal.raceDate()
-        val colors =
-            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
-        val content: @Composable ColumnScope.() -> Unit = {
-            Row(
-                Modifier.fillMaxWidth().padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        if (raceDate != null) "Race preparation" else "Current goal",
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                    Text(
-                        if (raceDate != null) goal.raceName().ifBlank { goal.distance().label() }
-                        else goal.distance().label(),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    Text(
-                        if (raceDate != null)
-                            "${raceDate.toEpochDay() - currentDate.toEpochDay()} days · ${presentation.friendlyDate(raceDate)}"
-                        else goal.mode().label(),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-                if (raceDate != null)
-                    Text(
-                        "›",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.clearAndSetSemantics {},
-                    )
-            }
-        }
         if (raceDate != null)
-            Card(
-                onClick = race,
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                colors = colors,
-                content = content,
+            CountdownCard(
+                raceDate.toEpochDay() - currentDate.toEpochDay(),
+                "Race preparation",
+                goal.raceName().ifBlank { goal.distance().label() },
+                presentation.friendlyDate(raceDate),
+                race,
             )
         else
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large,
-                colors = colors,
-                content = content,
-            )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    ),
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text("Current goal", style = MaterialTheme.typography.labelLarge)
+                    Text(goal.distance().label(), style = MaterialTheme.typography.titleLarge)
+                    Text(goal.mode().label(), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
     }
 
     val summary = org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)

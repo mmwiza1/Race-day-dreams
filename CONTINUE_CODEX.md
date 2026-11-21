@@ -111,6 +111,17 @@ installations that cannot support them (all existing debug-signed installs).
 - Every progress update to the owner states an ETA (UTC) for the next result. Poll CI no more often
   than every 15 minutes (a background until-loop that stops on the first failed job).
 
+## Active work — 2026 product experience redesign (owner request, 21 November 2026)
+
+- **Plan:** a phased presentation-layer redesign, described in [docs/DESIGN_2026.md](docs/DESIGN_2026.md): benchmark, inventory, design system and roadmap C1–C8.
+- **Phase B:** a PR on branch `ccr-60f602a7-tfmok3` (from `main` `9cf6774c`) demonstrates the design system on running Today, strength Today and Progress.
+  - The new components are in `sharedUi/.../RddDesignSystem.kt` and `WeekAtAGlance.kt`.
+  - Before images are in `docs/design-2026/before/`.
+- **Rules:**
+  - **Do not merge, auto-merge or release without explicit owner approval.**
+  - Do not start the C1–C8 phases before approval.
+  - No algorithm, schema, integration, recording, signing or update change.
+
 ## Release 0.15.4-test1 — UX redesign (owner-authorised, 21 November 2026)
 
 - **Approval:** the owner approved PR #34 (UX simplification, refinements, README showcase) and authorised the merge plus the next verified development release.

@@ -362,14 +362,13 @@ class SharedDashboardScreenTest {
         focusedProgress(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH, workouts, links)
         compose.onNodeWithTag("kpi-Working sets").assert(hasText("2")).assertIsDisplayed()
         compose.onNodeWithTag("kpi-Workouts").assert(hasText("2"))
-        // Strength trends come before running, which keeps its weekly summary only.
-        val workoutsTop =
-            compose.onNodeWithText("Recent workouts").fetchSemanticsNode().positionInRoot.y
-        val runningTop =
-            compose.onNodeWithText("Distance this week").fetchSemanticsNode().positionInRoot.y
-        org.junit.Assert.assertTrue(workoutsTop < runningTop)
+        // Strength focus opens on the strength tab: lifting trends, no running figures.
+        compose.onNodeWithTag("progress-tab-STRENGTH").assertIsSelected()
+        compose.onNodeWithTag("progress-strength-hero").assertExists()
+        compose.onNodeWithText("Recent workouts").assertExists()
         compose.onNodeWithText("Estimated 1RM trend").assertExists()
         compose.onNodeWithText("Muscle-group workload").assertExists()
+        compose.onNodeWithText("Distance this week").assertDoesNotExist()
         compose.onNodeWithTag("kpi-Distance").assertDoesNotExist()
         compose.onNodeWithText("Bench Press").performScrollTo().performClick()
         assertEquals("recent-lift", workouts.last())
@@ -380,6 +379,11 @@ class SharedDashboardScreenTest {
         assertEquals(ProgressLink.HISTORY, links.last())
         compose.onNodeWithText("Running PBs").performScrollTo().performClick()
         assertEquals(ProgressLink.PBS, links.last())
+        // Running analytics are one tab away.
+        compose.onNodeWithTag("progress-tab-RUNNING").performClick()
+        compose.onNodeWithText("Distance this week").assertExists()
+        compose.onNodeWithTag("kpi-Distance").assert(hasText("1 run", substring = true))
+        compose.onNodeWithTag("progress-strength-hero").assertDoesNotExist()
     }
 
     @Test
@@ -387,6 +391,12 @@ class SharedDashboardScreenTest {
         val workouts = CopyOnWriteArrayList<String>()
         val links = CopyOnWriteArrayList<ProgressLink>()
         focusedProgress(org.racedaydreams.domain.settings.PrimaryFocus.HYBRID, workouts, links)
+        // Hybrid opens on an overview with both disciplines; each has its own tab too.
+        compose.onNodeWithTag("progress-tab-OVERVIEW").assertIsSelected()
+        compose.onNodeWithTag("progress-tab-RUNNING").assertExists()
+        compose.onNodeWithTag("progress-tab-STRENGTH").assertExists()
+        compose.onNodeWithText("Distance this week").assertExists()
+        compose.onNodeWithTag("progress-strength-hero").assertExists()
         compose.onNodeWithTag("kpi-Distance").assert(hasText("1 run", substring = true))
         compose.onNodeWithTag("kpi-Working sets").performScrollTo().assert(hasText("2"))
         compose.onNodeWithText("Recent runs").performScrollTo().assertExists()
