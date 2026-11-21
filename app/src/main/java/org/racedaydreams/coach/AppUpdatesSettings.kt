@@ -24,27 +24,34 @@ import org.racedaydreams.update.UpdateStatus
 
 const val RELEASE_PAGE = "https://github.com/mmwiza1/Race-day-dreams/releases/tag/development"
 
-/** Settings › App updates, bound to the process-wide update coordinator. */
+/**
+ * Settings › App updates, bound to the process-wide update coordinator. The installer hand-offs
+ * ([effects]) must stay composed for the whole Settings screen, even while the section that shows
+ * the [card] is collapsed, so Settings composes them separately from the card.
+ */
 @Composable
-fun AppUpdatesSettings() {
+fun AppUpdatesSettings(effects: Boolean = true, card: Boolean = true) {
     val context = LocalContext.current
     val coordinator = remember { AppUpdateCoordinator.get(context) }
     val state by coordinator.state.collectAsStateWithLifecycle()
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        coordinator.refreshActiveWork()
-        coordinator.installPermissionReturned()
+    if (effects) {
+        LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+            coordinator.refreshActiveWork()
+            coordinator.installPermissionReturned()
+        }
+        val status = state.status
+        if (status is UpdateStatus.AwaitingApproval)
+            LaunchedEffect(status) {
+                // Android's own approval screen; the person decides whether to install.
+                context.startActivity(status.confirmation.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                coordinator.approvalShown()
+            }
+        if (status is UpdateStatus.NeedsInstallPermission)
+            LaunchedEffect(status) {
+                context.startActivity(UpdateInstaller.installPermissionIntent(context))
+            }
     }
-    val status = state.status
-    if (status is UpdateStatus.AwaitingApproval)
-        LaunchedEffect(status) {
-            // Android's own approval screen; the person decides whether to install.
-            context.startActivity(status.confirmation.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            coordinator.approvalShown()
-        }
-    if (status is UpdateStatus.NeedsInstallPermission)
-        LaunchedEffect(status) {
-            context.startActivity(UpdateInstaller.installPermissionIntent(context))
-        }
+    if (!card) return
     AppUpdatesCard(
         state,
         AppUpdateActions(

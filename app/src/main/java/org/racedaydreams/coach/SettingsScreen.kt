@@ -40,121 +40,154 @@ fun SettingsScreen(
     storage: (() -> Unit)? = null,
 ) = CoachPage {
     CoachHeading("Settings")
-    AppearanceSettings()
-    AppUpdatesSettings()
-    SchedulePreferences()
-    DreamPreferences()
-    DiagnosticExport(state)
+    Text(
+        "Everything is grouped below. Open a section to change it.",
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
     val context = LocalContext.current
     var showLicence by rememberSaveable { mutableStateOf(false) }
     var noticeAsset by rememberSaveable { mutableStateOf<String?>(null) }
-    storage?.let {
-        OutlinedButton(it, Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-            Text("Storage & recording detail")
-        }
-    }
-    SharedPrimaryFocusSettings(state) { model.settings.primaryFocus(it) }
-    CoachButton("Personal health context", healthContext)
-    CoachButton("Edit race goal and availability", editGoals)
-    OutlinedButton(reviewBaseline, Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-        Text("Review running baseline")
-    }
-    OutlinedButton(shoes, Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-        Text("Shoes and mileage")
-    }
-    HealthConnectionCard(state, model, historyAvailable, connect, providerUpdate)
-    TextButton(providerSettings) { Text("Manage Health Connect permissions") }
-    Text(
-        "Revoking access stops future reads. Existing locally imported records remain until you delete local data. Optional native-run totals are written only through your explicit Record a run → Write action. The app never deletes Health Connect records."
-    )
-    CoachCard {
-        Text("Activity data source", style = MaterialTheme.typography.titleMedium)
-        Text("Health Connect")
-        Text("Optional health access. Manual entry works independently.")
-        TextButton(
-            onClick = weightPermissions,
-            enabled =
-                state.healthAvailability == org.racedaydreams.health.HealthAvailability.AVAILABLE,
-        ) {
-            Text("Allow optional Health Connect weight")
-        }
-        Text(
-            "Optional weight observations support your personal trend and any general protein guidance you choose to enable. Body measurements are not required for training."
-        )
-    }
-    ReminderSettings(state, model)
-    SharedBackupSettings(state.busy, export, restore)
-    CoachCard {
-        Text("Privacy", style = MaterialTheme.typography.titleLarge)
-        Text(
-            "No account, advertising, subscriptions, analytics or backend. Health access is optional. Records stay in this app’s private on-device storage; automatic Android backup and device transfer are excluded. Export is an explicit choice. The only network access is the optional update check above, which sends no training data."
-        )
-        Text(
-            "The local database relies on Android’s application storage and device protection. Exported backups are not encrypted by the app; store them somewhere you trust."
-        )
-    }
-    CoachCard {
-        Text("Fitness guidance", style = MaterialTheme.typography.titleLarge)
-        Text("The app recommends. The runner decides. The plan adapts.")
-        Text(
-            "This app provides fitness guidance, not medical care. Recommendations and estimates are not guarantees and do not promise to prevent injury."
-        )
-        Text(
-            "If you experience chest pain, fainting, severe difficulty breathing or serious injury symptoms, stop exercise and seek appropriate medical advice."
-        )
-    }
-    CoachCard {
-        Text("About and licences", style = MaterialTheme.typography.titleLarge)
-        Text("Race Day Dreams · free and open source · original code under the MIT License.")
-        Text(
-            "Kotlin, kotlinx.coroutines, AndroidX Compose / Material 3, Activity, Navigation, Lifecycle and Health Connect are used under Apache License 2.0. Their source, versions and required notices are recorded in THIRD_PARTY.md."
-        )
-        Text(
-            "No commercial training schedules or proprietary assets are included. NHS programme structure is not implemented in this version; NHS source and reuse terms must be verified before adding it."
-        )
-        TextButton(onClick = { showLicence = true }) { Text("Read app licence") }
-        TextButton(onClick = { noticeAsset = "third_party.md" }) {
-            Text("Third-party inventory and source notices")
-        }
-        TextButton(onClick = { noticeAsset = "apache-2.0.txt" }) { Text("Apache License 2.0") }
-        TextButton(onClick = { noticeAsset = "kotlin-LICENSE.txt" }) { Text("Kotlin licence") }
-        TextButton(onClick = { noticeAsset = "coroutines-LICENSE.txt" }) {
-            Text("Coroutines licence")
-        }
-        TextButton(onClick = { noticeAsset = "protobuf-LICENSE.txt" }) {
-            Text("Protocol Buffers licence")
-        }
-        TextButton(onClick = { noticeAsset = "licences/berlin-2014-MIT.txt" }) {
-            Text("Berlin route source licence")
-        }
-        TextButton(onClick = { noticeAsset = "licences/tokyo-2026-CC0.txt" }) {
-            Text("Tokyo route source licence")
-        }
-        TextButton(onClick = { noticeAsset = "licences/london-historical-MIT.txt" }) {
-            Text("London route source licence")
-        }
-        TextButton(onClick = { noticeAsset = "licences/new-york-2026-NOTICE.txt" }) {
-            Text("New York route source attribution")
-        }
-        TextButton(onClick = { noticeAsset = "licences/paris-2026-NOTICE.txt" }) {
-            Text("Paris2026 annual route source attribution")
-        }
-        TextButton(onClick = { noticeAsset = "licences/ODbL-1.0.txt" }) {
-            Text("Open Database Licence")
-        }
-        TextButton(onClick = { noticeAsset = "licences/dream-basemaps-NOTICE.txt" }) {
-            Text("Offline city context attribution")
-        }
-        TextButton(onClick = { noticeAsset = "transitive-NOTICES.txt" }) {
-            Text("Dependency notices")
-        }
-    }
-    OutlinedButton(
-        reset,
-        enabled = !state.busy,
-        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+    AppUpdatesSettings(card = false)
+
+    ExpandableSection(
+        "Training",
+        "Primary focus, race goal, baseline, shoes and session choices",
+        "settings-training",
     ) {
-        Text("Delete local app data")
+        SharedPrimaryFocusSettings(state) { model.settings.primaryFocus(it) }
+        ActionGroup(null) {
+            ActionRow("Edit race goal and availability", "Goal, race date and weekly routine") {
+                editGoals()
+            }
+            ActionRow("Review running baseline", onClick = reviewBaseline)
+            ActionRow("Shoes and mileage", onClick = shoes)
+            ActionRow(
+                "Personal health context",
+                "Optional context for coaching",
+                onClick = healthContext,
+            )
+        }
+        SchedulePreferences()
+        DreamPreferences()
+    }
+
+    ExpandableSection(
+        "Health and connected data",
+        "Health Connect access, activity source and weight",
+        "settings-health",
+    ) {
+        HealthConnectionCard(state, model, historyAvailable, connect, providerUpdate)
+        CoachCard {
+            Text("Activity data source", style = MaterialTheme.typography.titleMedium)
+            Text("Health Connect · optional. Manual entry works independently.")
+            TextButton(providerSettings) { Text("Manage Health Connect permissions") }
+            TextButton(
+                onClick = weightPermissions,
+                enabled =
+                    state.healthAvailability ==
+                        org.racedaydreams.health.HealthAvailability.AVAILABLE,
+            ) {
+                Text("Allow optional Health Connect weight")
+            }
+            WhyDetails(
+                "Revoking access stops future reads. Existing locally imported records remain until you delete local data. Optional native-run totals are written only through your explicit Record a run → Write action. The app never deletes Health Connect records.\n\n" +
+                    "Optional weight observations support your personal trend and any general protein guidance you choose to enable. Body measurements are not required for training.",
+                "What access means",
+            )
+        }
+    }
+
+    ExpandableSection(
+        "Reminders",
+        "Evening-before preparation for planned runs",
+        "settings-reminders",
+    ) {
+        ReminderSettings(state, model)
+    }
+
+    ExpandableSection("Appearance and updates", "Colours and app updates", "settings-app") {
+        AppearanceSettings()
+        AppUpdatesSettings(effects = false)
+    }
+
+    ExpandableSection(
+        "Data and storage",
+        "Backup, restore, recording storage and diagnostics",
+        "settings-data",
+    ) {
+        SharedBackupSettings(state.busy, export, restore)
+        storage?.let {
+            OutlinedButton(it, Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                Text("Storage & recording detail")
+            }
+        }
+        DiagnosticExport(state)
+        OutlinedButton(
+            reset,
+            enabled = !state.busy,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        ) {
+            Text("Delete local app data")
+        }
+    }
+
+    ExpandableSection(
+        "Privacy, safety and licences",
+        "How your data is kept, fitness guidance and open-source notices",
+        "settings-about",
+    ) {
+        CoachCard {
+            Text("Privacy", style = MaterialTheme.typography.titleLarge)
+            Text(
+                "No account, advertising, subscriptions, analytics or backend. Health access is optional. Records stay in this app’s private on-device storage; automatic Android backup and device transfer are excluded. Export is an explicit choice. The only network access is the optional update check, which sends no training data."
+            )
+            Text(
+                "The local database relies on Android’s application storage and device protection. Exported backups are not encrypted by the app; store them somewhere you trust."
+            )
+        }
+        CoachCard {
+            Text("Fitness guidance", style = MaterialTheme.typography.titleLarge)
+            Text("The app recommends. The runner decides. The plan adapts.")
+            Text(
+                "This app provides fitness guidance, not medical care. Recommendations and estimates are not guarantees and do not promise to prevent injury."
+            )
+            Text(
+                "If you experience chest pain, fainting, severe difficulty breathing or serious injury symptoms, stop exercise and seek appropriate medical advice."
+            )
+        }
+        CoachCard {
+            Text("About and licences", style = MaterialTheme.typography.titleLarge)
+            Text("Race Day Dreams · free and open source · original code under the MIT License.")
+            TextButton(onClick = { showLicence = true }) { Text("Read app licence") }
+            WhyDetails("Third-party licences and route sources") {
+                Text(
+                    "Kotlin, kotlinx.coroutines, AndroidX Compose / Material 3, Activity, Navigation, Lifecycle and Health Connect are used under Apache License 2.0. Their source, versions and required notices are recorded in THIRD_PARTY.md."
+                )
+                Text(
+                    "No commercial training schedules or proprietary assets are included. NHS programme structure is not implemented in this version; NHS source and reuse terms must be verified before adding it."
+                )
+                listOf(
+                        "third_party.md" to "Third-party inventory and source notices",
+                        "apache-2.0.txt" to "Apache License 2.0",
+                        "kotlin-LICENSE.txt" to "Kotlin licence",
+                        "coroutines-LICENSE.txt" to "Coroutines licence",
+                        "protobuf-LICENSE.txt" to "Protocol Buffers licence",
+                        "licences/berlin-2014-MIT.txt" to "Berlin route source licence",
+                        "licences/tokyo-2026-CC0.txt" to "Tokyo route source licence",
+                        "licences/london-historical-MIT.txt" to "London route source licence",
+                        "licences/new-york-2026-NOTICE.txt" to "New York route source attribution",
+                        "licences/paris-2026-NOTICE.txt" to
+                            "Paris2026 annual route source attribution",
+                        "licences/ODbL-1.0.txt" to "Open Database Licence",
+                        "licences/dream-basemaps-NOTICE.txt" to "Offline city context attribution",
+                        "transitive-NOTICES.txt" to "Dependency notices",
+                    )
+                    .forEach { (asset, label) ->
+                        TextButton(onClick = { noticeAsset = asset }) { Text(label) }
+                    }
+            }
+        }
     }
     if (showLicence)
         AlertDialog(

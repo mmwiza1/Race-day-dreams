@@ -450,6 +450,7 @@ private fun AppleAppContent(
                             activityId = it
                             page = ApplePage.ACTIVITY
                         },
+                        asOf = AppleRecordingClock.now(),
                     ) { link ->
                         page =
                             when (link) {

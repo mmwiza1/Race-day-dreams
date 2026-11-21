@@ -165,6 +165,7 @@ class PrimaryFocusOnboardingTest {
         launch()
         await("Today")
         compose.onNodeWithText("Settings").performClick()
+        compose.onNodeWithTag("settings-training").performScrollTo().performClick()
         await("Primary focus")
         for (focus in listOf(PrimaryFocus.STRENGTH, PrimaryFocus.HYBRID, PrimaryFocus.RUNNING)) {
             compose
@@ -279,6 +280,7 @@ class PrimaryFocusOnboardingTest {
 
         // Changing emphasis changes presentation, never either programme or its history.
         compose.onNodeWithText("Settings").performClick()
+        compose.onNodeWithTag("settings-training").performScrollTo().performClick()
         await("Primary focus")
         compose.onNodeWithTag("primary-focus-choice-running").performScrollTo().performClick()
         compose.onNodeWithText("Save primary focus").performScrollTo().performClick()

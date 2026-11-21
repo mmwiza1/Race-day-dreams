@@ -16,6 +16,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
+import org.racedaydreams.coach.ExpandableSection
 import org.racedaydreams.coach.SharedBackupSettings
 import org.racedaydreams.coach.SharedPrimaryFocusSettings
 import org.racedaydreams.coach.documents.AppleBackupDocuments
@@ -126,88 +127,115 @@ fun AppleSettingsScreen(
 
     CoachPage {
         CoachHeading("Settings")
-        health()
-        SharedPrimaryFocusSettings(state) { session.services.settings.primaryFocus(it) }
-        SharedBackupSettings(
-            busy = state.busy || exporting || importing,
-            restore = ::importApp,
-            export = { export(AppleBackupDocuments.Kind.APP) },
-            completeExport = { export(AppleBackupDocuments.Kind.COMPLETE) },
-            description =
-                "The app backup saves your goals, workouts and settings. " +
-                    "The complete backup also includes detailed recordings still on this device. " +
-                    "These backups are not encrypted by the app. Keep them somewhere you trust.",
-        )
-        TextButton(
-            enabled = !importing && !exporting && !state.busy,
-            onClick = {
-                importing = true
-                message = null
-                try {
-                    session.backupDocuments.chooseGpx(presenter) { url ->
-                        if (url == null) importing = false
-                        else
-                            scope.launch {
-                                try {
-                                    session.backupDocuments.importGpx(url)
-                                    session.services.operations.refresh()
-                                    message = "The GPX run is available in history."
-                                } catch (cancelled: CancellationException) {
-                                    throw cancelled
-                                } catch (failure: Exception) {
-                                    message = failure.message ?: "Could not import the GPX track."
-                                } finally {
-                                    importing = false
-                                }
-                            }
-                    }
-                } catch (failure: Exception) {
-                    importing = false
-                    message = failure.message ?: "Could not open the GPX picker."
-                }
-            },
+        Text("Everything is grouped below. Open a section to change it.")
+        ExpandableSection(
+            "Training",
+            "Primary focus, session choices and Dream routes",
+            "settings-training",
         ) {
-            Text("Import recorded route (GPX)")
+            SharedPrimaryFocusSettings(state) { session.services.settings.primaryFocus(it) }
+            AppleScheduleSettings(session.runningSupport)
+            AppleDreamSettings(session.runningSupport)
         }
-        AppleScheduleSettings(session.runningSupport)
-        AppleDreamSettings(session.runningSupport)
-        AppleRecordingStorage(session.backupDocuments)
-        Text(
-            "Diagnostic reports contain app and iOS versions and access status. They exclude workouts, routes, health measurements and notes."
-        )
-        TextButton(
-            enabled = !state.busy && !importing && !exporting,
-            onClick = {
-                exporting = true
-                message = null
-                scope.launch {
+        ExpandableSection(
+            "Health and connected data",
+            "Apple Health, body measurements and shoes",
+            "settings-health",
+        ) {
+            health()
+        }
+        ExpandableSection(
+            "Data and storage",
+            "Backup, restore, GPX import, recording storage and diagnostics",
+            "settings-data",
+        ) {
+            SharedBackupSettings(
+                busy = state.busy || exporting || importing,
+                restore = ::importApp,
+                export = { export(AppleBackupDocuments.Kind.APP) },
+                completeExport = { export(AppleBackupDocuments.Kind.COMPLETE) },
+                description =
+                    "The app backup saves your goals, workouts and settings. " +
+                        "The complete backup also includes detailed recordings still on this device. " +
+                        "These backups are not encrypted by the app. Keep them somewhere you trust.",
+            )
+            TextButton(
+                enabled = !importing && !exporting && !state.busy,
+                onClick = {
+                    importing = true
+                    message = null
                     try {
-                        session.backupDocuments.exportDiagnostics(
-                            state.healthAvailability,
-                            session.recording.permission.value,
-                            presenter,
-                        ) { outcome ->
-                            exporting = false
-                            message =
-                                when (outcome) {
-                                    AppleBackupDocuments.Outcome.SAVED -> "Diagnostic report saved."
-                                    AppleBackupDocuments.Outcome.CANCELLED ->
-                                        "Diagnostic export cancelled."
+                        session.backupDocuments.chooseGpx(presenter) { url ->
+                            if (url == null) importing = false
+                            else
+                                scope.launch {
+                                    try {
+                                        session.backupDocuments.importGpx(url)
+                                        session.services.operations.refresh()
+                                        message = "The GPX run is available in history."
+                                    } catch (cancelled: CancellationException) {
+                                        throw cancelled
+                                    } catch (failure: Exception) {
+                                        message =
+                                            failure.message ?: "Could not import the GPX track."
+                                    } finally {
+                                        importing = false
+                                    }
                                 }
                         }
-                    } catch (cancelled: CancellationException) {
-                        exporting = false
-                        throw cancelled
                     } catch (failure: Exception) {
-                        exporting = false
-                        message = failure.message ?: "Could not export the diagnostic report."
+                        importing = false
+                        message = failure.message ?: "Could not open the GPX picker."
                     }
-                }
-            },
-        ) {
-            Text("Export diagnostic report")
+                },
+            ) {
+                Text("Import recorded route (GPX)")
+            }
+            AppleRecordingStorage(session.backupDocuments)
+            Text(
+                "Diagnostic reports contain app and iOS versions and access status. They exclude workouts, routes, health measurements and notes."
+            )
+            TextButton(
+                enabled = !state.busy && !importing && !exporting,
+                onClick = {
+                    exporting = true
+                    message = null
+                    scope.launch {
+                        try {
+                            session.backupDocuments.exportDiagnostics(
+                                state.healthAvailability,
+                                session.recording.permission.value,
+                                presenter,
+                            ) { outcome ->
+                                exporting = false
+                                message =
+                                    when (outcome) {
+                                        AppleBackupDocuments.Outcome.SAVED ->
+                                            "Diagnostic report saved."
+                                        AppleBackupDocuments.Outcome.CANCELLED ->
+                                            "Diagnostic export cancelled."
+                                    }
+                            }
+                        } catch (cancelled: CancellationException) {
+                            exporting = false
+                            throw cancelled
+                        } catch (failure: Exception) {
+                            exporting = false
+                            message = failure.message ?: "Could not export the diagnostic report."
+                        }
+                    }
+                },
+            ) {
+                Text("Export diagnostic report")
+            }
         }
-        ApplePrivacyAndLicences()
+        ExpandableSection(
+            "Privacy, safety and licences",
+            "How your data is kept, fitness guidance and open-source notices",
+            "settings-about",
+        ) {
+            ApplePrivacyAndLicences()
+        }
         val feedback = message ?: state.error ?: state.message ?: reminderFailure
         if (feedback != null) {
             Text(feedback, Modifier.semantics { liveRegion = LiveRegionMode.Polite })

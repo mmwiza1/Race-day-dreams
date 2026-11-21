@@ -3,8 +3,11 @@ package org.racedaydreams.coach
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.WorkoutCategory
 import org.racedaydreams.domain.activity.ActivityRecord
@@ -69,60 +72,71 @@ private fun RunningTodayScreen(
     presentation: HomePresentation,
     weekly: () -> Unit,
     baseline: () -> Unit,
-    assessment: () -> Unit,
+    @Suppress("UNUSED_PARAMETER") assessment: () -> Unit,
     history: () -> Unit,
-    plan: () -> Unit,
+    @Suppress("UNUSED_PARAMETER") plan: () -> Unit,
     workout: (String) -> Unit,
     record: () -> Unit,
     quick: (String) -> Unit,
     race: () -> Unit,
     hasRoute: (String) -> Boolean,
 ) = CoachPage {
-    CoachHeading("Today")
-    Text(presentation.dateLabel())
-    val today =
-        state.currentPlan?.plan()?.workouts()?.firstOrNull {
-            it.date() == presentation.currentDate()
-        }
+    val currentDate = presentation.currentDate()
+    TodayHeader(presentation.dateLabel())
+    val today = state.currentPlan?.plan()?.workouts()?.firstOrNull { it.date() == currentDate }
     val completed =
         today != null &&
             (state.runResponses.any { it.plannedWorkoutId() == today.id() } ||
                 state.activities.any { it.plannedWorkoutId() == today.id() })
+    val upcoming =
+        state.currentPlan
+            ?.plan()
+            ?.workouts()
+            .orEmpty()
+            .filter { it.date().toEpochDay() > currentDate.toEpochDay() }
+            .sortedBy { it.date().toEpochDay() }
+            .take(2)
+    val hybrid = state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID
+
+    // 1. What am I doing today, and how do I start? One card, one primary action.
     SemanticCard(Tile.Planned) {
         Text(
-            if (today == null) "Your day, your choice"
-            else presentation.workoutName(today.category()),
-            style = MaterialTheme.typography.headlineMedium,
+            when {
+                today == null -> "Nothing planned"
+                completed -> "Done today"
+                else -> "Today's run"
+            },
+            style = MaterialTheme.typography.labelLarge,
         )
         if (today != null) {
             Text(
-                today.distanceKm()?.let { "${presentation.decimal(it)} km" }
-                    ?: today.duration()?.let { "${it.getSeconds() / 60} min" }
-                    ?: "Run by effort"
+                presentation.workoutName(today.category()),
+                style = MaterialTheme.typography.headlineMedium,
             )
-            Text(
-                if (completed) "Completed training is retained. No catch-up mileage."
-                else "Your planned session"
-            )
-            today
-                .segments()
-                .firstOrNull { it.kind() == org.racedaydreams.domain.WorkoutSegment.Kind.RUN }
-                ?.let { segment ->
-                    segment.rpe()?.let {
-                        Text(
-                            if (completed)
-                                "Planned effort: ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)}."
-                            else
-                                "Aim for a ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)} effort."
-                        )
-                    }
-                    val minimumPace = segment.minimumSecondsPerKm()
-                    val maximumPace = segment.maximumSecondsPerKm()
-                    if (minimumPace != null && maximumPace != null)
-                        Text(
-                            "${presentation.paceSeconds(minimumPace)}–${presentation.paceSeconds(maximumPace)}/km"
-                        )
+            val run =
+                today.segments().firstOrNull {
+                    it.kind() == org.racedaydreams.domain.WorkoutSegment.Kind.RUN
                 }
+            val minimumPace = run?.minimumSecondsPerKm()
+            val maximumPace = run?.maximumSecondsPerKm()
+            MetaLine(
+                listOfNotNull(
+                    today.distanceKm()?.let { "${presentation.decimal(it)} km" }
+                        ?: today.duration()?.let { "${it.getSeconds() / 60} min" }
+                        ?: "Run by effort",
+                    run?.rpe()
+                        ?.takeIf { it.isFinite() && it >= 1.0 && it <= 10.0 }
+                        ?.let {
+                            org.racedaydreams.domain.presentation.StrengthPrescriptionText
+                                .effortDescription(it)
+                                .replaceFirstChar { c -> c.uppercaseChar() } + " effort"
+                        },
+                    if (minimumPace != null && maximumPace != null)
+                        "${presentation.paceSeconds(minimumPace)}–${presentation.paceSeconds(maximumPace)}/km"
+                    else null,
+                )
+            )
+            if (completed) Text("Completed training is retained. No catch-up mileage.")
             if (!completed && hasRoute("execute"))
                 CoachButton("Start with Live Coach") {
                     quick(
@@ -133,60 +147,44 @@ private fun RunningTodayScreen(
                 Text(if (completed) "View completed workout" else "View workout details")
             }
         } else {
-            Text("No running session is planned today. Rest or record independently.")
+            Text("Your day, your choice", style = MaterialTheme.typography.headlineMedium)
+            Text("Rest, or start a run or workout below.")
+            upcoming.firstOrNull()?.let { next ->
+                Text(
+                    "Next: ${presentation.workoutName(next.category())} · ${presentation.shortDate(next.date())}",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
             state.gymProgramme
                 ?.sessions()
-                ?.firstOrNull { it.date() == presentation.currentDate() }
+                ?.firstOrNull { it.date() == currentDate }
                 ?.let { gym ->
-                    Text(gym.title())
+                    Text(gym.title(), style = MaterialTheme.typography.titleMedium)
                     CoachButton("View strength session") {
                         quick("gym/session/${presentation.encodeRouteComponent(gym.id())}")
                     }
                 }
         }
     }
-    if (
-        today != null && state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID
-    ) {
+
+    // Hybrid days: today's strength session is secondary to the run, so its actions are tonal.
+    if (today != null && hybrid) {
         state.gymProgramme
             ?.sessions()
-            ?.firstOrNull { it.date() == presentation.currentDate() }
+            ?.firstOrNull { it.date() == currentDate }
             ?.let { gym ->
                 SemanticCard(Tile.Strength) {
-                    Text("Today's strength", style = MaterialTheme.typography.titleMedium)
+                    Text("Today's strength", style = MaterialTheme.typography.labelLarge)
                     Text(gym.title(), style = MaterialTheme.typography.titleLarge)
                     Text(
                         "${gym.exercises().size} exercises · up to ${state.gymProgramme!!.settings().minutes()} min"
                     )
-                    TextButton(
-                        onClick = {
-                            quick("gym/session/${presentation.encodeRouteComponent(gym.id())}")
-                        }
-                    ) {
-                        Text("View strength session")
-                    }
                     OutlinedButton(
                         onClick = { quick("strength?date=${gym.date()}") },
                         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                     ) {
                         Text("Log today's strength workout")
                     }
-                }
-            }
-    }
-    if (
-        today == null || state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID
-    ) {
-        state.authoredGymProgramme
-            ?.workouts()
-            ?.firstOrNull { it.date() == presentation.currentDate() }
-            ?.let { gym ->
-                SemanticCard(Tile.Strength) {
-                    Text("Today's strength", style = MaterialTheme.typography.titleMedium)
-                    Text(gym.definition().title(), style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        "${gym.definition().slots().size} exercises · about ${gym.expectedMinutes()} min"
-                    )
                     TextButton(
                         onClick = {
                             quick("gym/session/${presentation.encodeRouteComponent(gym.id())}")
@@ -194,85 +192,58 @@ private fun RunningTodayScreen(
                     ) {
                         Text("View strength session")
                     }
-                    CoachButton("Start strength workout") { quick("gym-now") }
                 }
             }
     }
-    state.profile
-        ?.raceGoal()
-        ?.takeIf { it.raceDate() != null }
-        ?.let { goal ->
-            val raceDate = goal.raceDate() ?: return@let
-            SemanticCard(Tile.Race) {
-                Text(
-                    goal.raceName().ifBlank { goal.distance().label() },
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Text(
-                    "${raceDate.toEpochDay() - presentation.currentDate().toEpochDay()} days · ${presentation.friendlyDate(raceDate)}"
-                )
-                TextButton(onClick = race) { Text("Race preparation") }
-            }
-        }
-    state.profile
-        ?.raceGoal()
-        ?.takeIf { it.raceDate() == null }
-        ?.let { goal ->
-            SemanticCard(Tile.Race) {
-                Text("Current goal", style = MaterialTheme.typography.titleMedium)
-                Text(goal.distance().label(), style = MaterialTheme.typography.titleLarge)
-                Text(goal.mode().label())
-            }
-        }
-    val upcoming =
-        state.currentPlan
-            ?.plan()
+    if (today == null || hybrid) {
+        state.authoredGymProgramme
             ?.workouts()
-            .orEmpty()
-            .filter { it.date().toEpochDay() > presentation.currentDate().toEpochDay() }
-            .sortedBy { it.date().toEpochDay() }
-            .take(2)
-    if (upcoming.isNotEmpty()) {
-        CoachHeading("Coming up")
-        upcoming.forEach { next ->
-            Card(
-                onClick = { workout(next.id()) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                colors =
-                    CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                    ),
-            ) {
-                ListItem(
-                    headlineContent = {
-                        Text(
-                            presentation.workoutName(next.category()),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    },
-                    supportingContent = { Text(presentation.shortDate(next.date())) },
-                    colors =
-                        ListItemDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                        ),
-                    trailingContent = { Text("›", modifier = Modifier.clearAndSetSemantics {}) },
-                )
+            ?.firstOrNull { it.date() == currentDate }
+            ?.let { gym ->
+                SemanticCard(Tile.Strength) {
+                    Text("Today's strength", style = MaterialTheme.typography.labelLarge)
+                    Text(gym.definition().title(), style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        "${gym.definition().slots().size} exercises · about ${gym.expectedMinutes()} min"
+                    )
+                    if (today == null) CoachButton("Start strength workout") { quick("gym-now") }
+                    else
+                        OutlinedButton(
+                            onClick = { quick("gym-now") },
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                        ) {
+                            Text("Start strength workout")
+                        }
+                    TextButton(
+                        onClick = {
+                            quick("gym/session/${presentation.encodeRouteComponent(gym.id())}")
+                        }
+                    ) {
+                        Text("View strength session")
+                    }
+                }
             }
+    }
+
+    // 2. Start something unplanned: always one row away, never another primary button.
+    Text(
+        "Start something else",
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.semantics { heading() },
+    )
+    QuickStartRow(
+        buildList {
+            add("Run now" to record)
+            if (hasRoute("gym-now")) add("Gym now" to { quick("gym-now") })
         }
-    }
-    CoachCard {
-        Text("Run now", style = MaterialTheme.typography.titleLarge)
-        Text("Not on the plan? Record a spontaneous run anytime.")
-        OutlinedButton(record, Modifier.fillMaxWidth().heightIn(min = 56.dp)) { Text("Run now") }
-    }
-    val summary = org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
-    SharedHomeCoachingCard(summary, weekly)
+    )
+
+    // 3. What do I need to know? Only shown when there is something to know.
     val hard =
         org.racedaydreams.domain.strength.StrengthAnalytics.hardLowerBodyDates(
                 state.strengthSessions
             )
-            .contains(presentation.currentDate().minusDays(1))
+            .contains(currentDate.minusDays(1))
     if (hard || state.proposals.isNotEmpty())
         SemanticCard(Tile.Insight) {
             Text("Anything I should know?", style = MaterialTheme.typography.titleMedium)
@@ -292,49 +263,107 @@ private fun RunningTodayScreen(
                 "Current evidence does not support extra performance-focused workload. Your saved goal and routine have not been changed."
             )
         }
-    if (state.activities.isNotEmpty()) {
-        CoachHeading("Recent progress")
-        CoachCard {
-            state.activities
-                .maxByOrNull { it.start() }
-                ?.let { recent ->
-                    Text("Most recent run", style = MaterialTheme.typography.titleMedium)
+
+    state.profile?.raceGoal()?.let { goal ->
+        val raceDate = goal.raceDate()
+        val colors =
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+        val content: @Composable ColumnScope.() -> Unit = {
+            Row(
+                Modifier.fillMaxWidth().padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
-                        presentation.activityDate(recent),
+                        if (raceDate != null) "Race preparation" else "Current goal",
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                    Text(
+                        if (raceDate != null) goal.raceName().ifBlank { goal.distance().label() }
+                        else goal.distance().label(),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    Text(
+                        if (raceDate != null)
+                            "${raceDate.toEpochDay() - currentDate.toEpochDay()} days · ${presentation.friendlyDate(raceDate)}"
+                        else goal.mode().label(),
                         style = MaterialTheme.typography.bodyMedium,
                     )
-                    Text(
-                        recent.distanceMetres()?.let { presentation.distance(it) }
-                            ?: "Distance unavailable",
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                    TextButton(
-                        onClick = {
-                            quick("activity/${presentation.encodeRouteComponent(recent.id())}")
-                        }
-                    ) {
-                        Text("View recorded run")
-                    }
                 }
-            if (hasRoute("progress/trends"))
-                TextButton(onClick = { quick("progress/trends") }) { Text("Training trends") }
-            if (hasRoute("achievements"))
-                TextButton(onClick = { quick("achievements") }) { Text("Recorded milestones") }
+                if (raceDate != null)
+                    Text(
+                        "›",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.clearAndSetSemantics {},
+                    )
+            }
         }
+        if (raceDate != null)
+            Card(
+                onClick = race,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = colors,
+                content = content,
+            )
+        else
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = colors,
+                content = content,
+            )
     }
-    CoachHeading("Quick actions")
-    CoachButton("Log strength") { quick("strength/log") }
-    if (hasRoute("progress/weight"))
-        OutlinedButton(
-            onClick = { quick("progress/weight") },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Add weight")
+
+    val summary = org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
+    SharedHomeCoachingCard(summary, weekly)
+
+    if (upcoming.isNotEmpty())
+        ActionGroup("Coming up") {
+            upcoming.forEach { next ->
+                ActionRow(
+                    presentation.workoutName(next.category()),
+                    presentation.shortDate(next.date()),
+                ) {
+                    workout(next.id())
+                }
+            }
         }
-    OutlinedButton(onClick = plan, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
-        Text("View plan")
+
+    val recent = state.activities.maxByOrNull { it.start() }
+    ActionGroup("More") {
+        recent?.let {
+            ActionRow(
+                "Last run",
+                presentation.activityDate(it),
+                it.distanceMetres()?.let { metres -> presentation.distance(metres) },
+            ) {
+                quick("activity/${presentation.encodeRouteComponent(it.id())}")
+            }
+        }
+        if (recent != null && hasRoute("progress/trends"))
+            ActionRow("Training trends", "Distance, pace and time by week") {
+                quick("progress/trends")
+            }
+        if (recent != null && hasRoute("achievements"))
+            ActionRow("Recorded milestones") { quick("achievements") }
+        ActionRow("View activity history", null, null, onClick = history)
+        ActionRow("Log strength", "Record a gym session you did") { quick("strength/log") }
+        if (hasRoute("progress/weight")) ActionRow("Add weight") { quick("progress/weight") }
+        ActionRow("Review running baseline", null, null, onClick = baseline)
+        ActionRow("Not feeling 100%?", "Adjust this week safely", null, onClick = weekly)
     }
-    TextButton(onClick = history) { Text("View activity history") }
-    TextButton(onClick = baseline) { Text("Review running baseline") }
-    TextButton(onClick = weekly) { Text("Not feeling 100%?") }
+}
+
+@Composable
+internal fun TodayHeader(dateLabel: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        CoachHeading("Today")
+        Text(
+            dateLabel,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }

@@ -89,7 +89,9 @@ fun SharedWeeklyRunningChart(
         Column(
             Modifier.fillMaxWidth().padding(16.dp).testTag("selected-running-week").semantics(
                 mergeDescendants = true
-            ) {},
+            ) {
+                liveRegion = LiveRegionMode.Polite
+            },
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
@@ -116,12 +118,10 @@ fun SharedWeeklyRunningChart(
         )
         return
     }
-    Text(
+    val axis =
         if (metric == RunningTrendMetric.PACE)
             "Pace axis: ${valueText(minimum)} at top to ${valueText(upper)} at bottom"
-        else "${metric.label} axis: ${valueText(0.0)} to ${valueText(upper)}",
-        style = MaterialTheme.typography.labelMedium,
-    )
+        else "${metric.label} axis: ${valueText(0.0)} to ${valueText(upper)}"
     val chartHeight = if (LocalDensity.current.fontScale >= 1.5f) 224.dp else 180.dp
     Row(
         Modifier.fillMaxWidth().height(chartHeight),
@@ -295,15 +295,17 @@ fun SharedWeeklyRunningChart(
             Text("Later week")
         }
     }
-    Text(description(current), style = MaterialTheme.typography.bodyMedium)
     current.week.longestRunMetres()?.let {
         Text("Longest: ${distance(it)}", style = MaterialTheme.typography.bodySmall)
     }
     if (weekRuns != null && current.week.activityCount() > 0)
         WeekRunSources(weekRuns(requireNotNull(current.week.weekStart())), distance, friendlyDate)
-    Text(
-        "Tap a week or use the buttons · dot: no recorded runs · cross: unavailable · outline: recorded zero",
-        style = MaterialTheme.typography.bodySmall,
+    // The visible axis labels and selected-week panel carry the reading; the full key stays
+    // available on request instead of three permanent lines of small print.
+    Explainer(
+        "How to read this chart",
+        "$axis. Tap a week or use the buttons. A dot means no recorded runs, a cross means " +
+            "unavailable and an outline means a recorded zero. ${description(current)}.",
     )
 }
 

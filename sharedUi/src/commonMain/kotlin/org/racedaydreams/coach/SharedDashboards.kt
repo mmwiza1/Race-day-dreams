@@ -68,6 +68,7 @@ fun SharedProgressDashboard(
     dateAt: (Instant) -> LocalDate,
     links: List<ProgressLink>,
     openRun: (String) -> Unit,
+    asOf: Instant? = null,
     open: (ProgressLink) -> Unit,
 ) = CoachPage {
     val today = presentation.currentDate()
@@ -90,12 +91,22 @@ fun SharedProgressDashboard(
         }
     val distance = presentation.distance
     CoachHeading("Progress")
+    val focus = state.primaryFocus
+    val strengthFirst = focus == org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH
+    val showStrength =
+        asOf != null &&
+            (strengthFirst || focus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID)
+    // Strength-focused people see their lifting first; hybrid people see both summaries before
+    // the running detail. Every running analytic below stays available to everyone.
+    if (showStrength && strengthFirst)
+        StrengthProgressSnapshot(state, today, requireNotNull(asOf), period, links, open)
 
     SemanticCard(Tile.Progress) {
         Text("Distance this week", style = MaterialTheme.typography.titleMedium)
         val week = overview.weekToDate
+        val days = weekdaySpan(overview.weekDays)
         if (week.runs == 0) {
-            Text("No runs recorded yet this week", style = MaterialTheme.typography.headlineSmall)
+            Text("No runs recorded yet this week", style = MaterialTheme.typography.titleLarge)
         } else {
             Text(
                 week.distanceMetres?.let(distance) ?: "Distance unavailable",
@@ -103,31 +114,36 @@ fun SharedProgressDashboard(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.testTag("dashboard-week-distance"),
             )
-            Text("${plural(week.runs, "run")} · ${plural(week.runningDays, "running day")}")
+            Text(
+                "${plural(week.runs, "run")} · ${plural(week.runningDays, "running day")}" +
+                    if (overview.weekDays == 7) " · full week" else " · $days so far"
+            )
         }
-        val days = weekdaySpan(overview.weekDays)
-        Text(
-            if (overview.weekDays == 7) "Full week" else "Week in progress · $days so far",
-            style = MaterialTheme.typography.bodyMedium,
-        )
         val last = overview.sameDaysLastWeek
         val lastDistance = last.distanceMetres
         Text(
-            "Same days last week ($days): " +
+            "Same days last week: " +
                 when {
                     last.runs == 0 -> "no runs"
                     lastDistance == null -> "distance unavailable"
                     else ->
                         distance(lastDistance) +
                             (week.distanceMetres?.let {
-                                " · ${change(it - lastDistance, distance)}"
+                                " (${change(it - lastDistance, distance)})"
                             } ?: "")
                 },
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.testTag("dashboard-week-comparison"),
         )
         if (week.missingDistance > 0)
-            Text("${plural(week.missingDistance, "run")} without distance not added.")
+            Text(
+                "${plural(week.missingDistance, "run")} without distance not added.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
     }
+
+    if (showStrength && !strengthFirst)
+        StrengthProgressSnapshot(state, today, requireNotNull(asOf), period, links, open)
 
     PeriodSelector(period) { periodName = it.name }
 
@@ -179,8 +195,9 @@ fun SharedProgressDashboard(
     CoachCard {
         Text("Weekly distance", style = MaterialTheme.typography.titleLarge)
         Text(
-            "${period.label} · from ${presentation.shortDate(overview.window.start)} · this week in progress",
+            "${period.label} · from ${presentation.shortDate(overview.window.start)}",
             style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (!overview.hasAnyRun()) {
             Text("Record or import runs to see your trend.")
@@ -207,7 +224,6 @@ fun SharedProgressDashboard(
                 presentation.friendlyDate,
                 remember(state.activities) { sharedWeekRuns(state.activities, dateAt) },
             )
-            Text("Tap a bar to inspect that week.", style = MaterialTheme.typography.bodySmall)
         }
         if (ProgressLink.TRENDS in links)
             TextButton(onClick = { open(ProgressLink.TRENDS) }) {
@@ -254,6 +270,67 @@ fun SharedProgressDashboard(
         { it.summary },
         open,
     )
+}
+
+/**
+ * The lifting summary for strength-focused and hybrid people: the same recorded figures as the
+ * Strength tab, for the selected period, with a drill-down into the full analytics.
+ */
+@Composable
+private fun StrengthProgressSnapshot(
+    state: CoachUiState,
+    today: LocalDate,
+    asOf: Instant,
+    period: Period,
+    links: List<ProgressLink>,
+    open: (ProgressLink) -> Unit,
+) {
+    val strength =
+        remember(state.strengthSessions, today, asOf, period) {
+            DashboardAnalytics.strength(state.strengthSessions, today, asOf, period, null)
+        }
+    val drillDown = ProgressLink.STRENGTH_ANALYTICS in links
+    val colors =
+        CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        )
+    val content: @Composable ColumnScope.() -> Unit = {
+        Row(
+            Modifier.fillMaxWidth().padding(CoachSpace.Inset),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text("Strength · ${period.label}", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    if (strength.workouts == 0) "No workouts recorded"
+                    else plural(strength.workouts, "workout"),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    "${plural(strength.workingSets, "working set")} · " +
+                        plural(strength.recordImprovements, "new record")
+                )
+            }
+            if (drillDown)
+                Text(
+                    "›",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.clearAndSetSemantics {},
+                )
+        }
+    }
+    val modifier = Modifier.fillMaxWidth().testTag("progress-strength-snapshot")
+    if (drillDown)
+        Card(
+            onClick = { open(ProgressLink.STRENGTH_ANALYTICS) },
+            modifier = modifier,
+            colors = colors,
+            content = content,
+        )
+    else Card(modifier = modifier, colors = colors, content = content)
 }
 
 /** Scheduled programme sessions and those completed, using the calendar's gym link rules. */
@@ -331,6 +408,12 @@ fun SharedStrengthDashboard(
         ) {
             Text(StrengthLink.GYM_NOW.title)
         }
+    // The two other frequent jobs sit directly under Gym now as secondary actions.
+    QuickStartRow(
+        listOf(StrengthLink.LOG, StrengthLink.PROGRAMME)
+            .filter { it in links }
+            .map { link -> link.title to { open(link) } }
+    )
 
     PeriodSelector(period) { periodName = it.name }
 
@@ -357,7 +440,7 @@ fun SharedStrengthDashboard(
             Kpi(
                 "New records",
                 overview.recordImprovements.toString(),
-                "Recorded bests improved · each record counted once per workout",
+                "Recorded bests improved",
                 if (StrengthLink.PBS in links) ({ open(StrengthLink.PBS) }) else null,
             ),
         )
@@ -393,6 +476,27 @@ fun SharedStrengthDashboard(
                             " · ${period.label}"
                 )
             }
+        }
+    }
+
+    CoachCard {
+        SectionHeader(
+            "Recent workouts",
+            if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
+        )
+        if (overview.recentWorkouts.isEmpty()) Text("No strength workouts recorded yet.")
+        for (workout in overview.recentWorkouts) {
+            DashboardRow(
+                title =
+                    workout.exerciseNames.take(3).joinToString(", ") +
+                        if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
+                        else "",
+                detail =
+                    "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
+                value = workout.loadVolumeKg?.let(::mass) ?: "",
+                secondary = if (workout.loadVolumeKg != null) "load × reps" else null,
+                onClick = { openWorkout(workout.sessionId) },
+            )
         }
     }
 
@@ -439,36 +543,9 @@ fun SharedStrengthDashboard(
         Explainer("How sets are counted", StrengthVolume.attribution())
     }
 
-    CoachCard {
-        SectionHeader(
-            "Recent workouts",
-            if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
-        )
-        if (overview.recentWorkouts.isEmpty()) Text("No strength workouts recorded yet.")
-        for (workout in overview.recentWorkouts) {
-            DashboardRow(
-                title =
-                    workout.exerciseNames.take(3).joinToString(", ") +
-                        if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
-                        else "",
-                detail =
-                    "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
-                value = workout.loadVolumeKg?.let(::mass) ?: "",
-                secondary = if (workout.loadVolumeKg != null) "load × reps" else null,
-                onClick = { openWorkout(workout.sessionId) },
-            )
-        }
-    }
-
     MoreDetail(
         listOf(
-                "Train" to
-                    listOf(
-                        StrengthLink.LOG,
-                        StrengthLink.BOULDERING,
-                        StrengthLink.PROGRAMME,
-                        StrengthLink.EXERCISES,
-                    ),
+                "Train" to listOf(StrengthLink.EXERCISES, StrengthLink.BOULDERING),
                 "Records & trends" to
                     listOf(StrengthLink.ANALYTICS, StrengthLink.PBS, StrengthLink.MILESTONES),
                 "Recovery" to listOf(StrengthLink.RECOVERY),

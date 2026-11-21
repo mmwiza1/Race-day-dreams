@@ -457,6 +457,10 @@ class CoachingScreenshotTest {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         await("Today")
         capture("home")
+        alignHeading("Start something else")
+        capture("home-scrolled")
+        alignHeading("More")
+        capture("home-more")
         compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick()
         await("Recommendation")
         capture("weekly-review")
@@ -722,8 +726,12 @@ class CoachingScreenshotTest {
         capture("gym-strength-first")
         back()
         click("Settings")
-        await("Activity data source")
+        await("Health and connected data")
         capture("settings")
+        openSettingsSection("settings-training")
+        capture("settings-training-open")
+        openSettingsSection("settings-health")
+        await("Activity data source")
         alignHeading("Activity data source")
         capture("data-sources")
         compose.onNodeWithText("Personal health context").performScrollTo().performClick()
@@ -805,13 +813,13 @@ class CoachingScreenshotTest {
         back()
         back()
         click("Settings")
-        await("Activity data source")
+        openSettingsSection("settings-training")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle()
         capture("onboarding")
         back()
         click("Settings")
-        await("Activity data source")
+        openSettingsSection("settings-training")
         compose.onNodeWithText("Shoes and mileage").performScrollTo().performClick()
         await("Your shoes")
         capture("shoes")
@@ -970,6 +978,12 @@ class CoachingScreenshotTest {
             await("Your strength training")
             capture("strength-home")
             compose.onAllNodesWithText("How am I doing?").assertCountEquals(0)
+            alignHeading("Start something else")
+            capture("strength-home-scrolled")
+            click("Progress")
+            await("Distance this week")
+            compose.onNodeWithTag("progress-strength-snapshot").assertIsDisplayed()
+            capture("progress-strength-focus")
             closeScenario()
             scenario = null
             shell("cmd uimode night yes")
@@ -1309,6 +1323,7 @@ class CoachingScreenshotTest {
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
                 click("Settings")
+                openSettingsSection("settings-data")
                 await("Storage & recording detail")
                 compose
                     .onNodeWithText("Storage & recording detail")
@@ -3429,6 +3444,7 @@ class CoachingScreenshotTest {
             context.getSharedPreferences(org.racedaydreams.update.UpdatePreferencesStore.NAME, 0)
         fun openUpdates() {
             click("Settings")
+            openSettingsSection("settings-app")
             await("App updates")
             alignHeading("App updates")
         }
@@ -3526,6 +3542,7 @@ class CoachingScreenshotTest {
     fun capturesPlainBackupExplanationInAllModes() {
         withRefinementCaptureModes { suffix ->
             click("Settings")
+            openSettingsSection("settings-data")
             await("Local backup and restore")
             alignHeading("Local backup and restore")
             capture("settings-backup-plain$suffix")
@@ -3544,6 +3561,7 @@ class CoachingScreenshotTest {
     fun capturesPlainHealthAndRunningInstructionsInAllModes() {
         withRefinementCaptureModes { suffix ->
             click("Settings")
+            openSettingsSection("settings-training")
             compose.onNodeWithText("Personal health context").performScrollTo().performClick()
             await("Heart-rate variability")
             alignHeading("Heart-rate variability")
@@ -3660,6 +3678,7 @@ class CoachingScreenshotTest {
                 if (suffix == "brand-light" && android.os.Build.VERSION.SDK_INT >= 31) {
                     // Exercise the real preference control, not only fixture writes.
                     click("Settings")
+                    openSettingsSection("settings-app")
                     await("Appearance")
                     val deviceColours = compose.onNodeWithText("Use device colours")
                     deviceColours.performScrollTo().performClick()
@@ -3732,6 +3751,7 @@ class CoachingScreenshotTest {
         try {
             for (mode in
                 listOf(
+                    MaterialCapture("light", false, "no", 1f),
                     MaterialCapture("dark", false, "yes", 1f),
                     MaterialCapture("large-font", false, "no", 2f),
                 )) {
@@ -3746,7 +3766,7 @@ class CoachingScreenshotTest {
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
                 click("Settings")
-                await("Activity data source")
+                openSettingsSection("settings-training")
                 compose
                     .onNodeWithText("Edit race goal and availability")
                     .performScrollTo()
@@ -3762,6 +3782,43 @@ class CoachingScreenshotTest {
                         )
                     )
                 capture("onboarding-material-${mode.suffix}")
+                // The simplified later steps: strategy and weekly extras start closed.
+                fun continueStep() =
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(
+                                org.racedaydreams.R.string.onboarding_continue
+                            )
+                        )
+                        .perform(
+                            androidx.test.espresso.action.ViewActions.scrollTo(),
+                            androidx.test.espresso.action.ViewActions.click(),
+                        )
+                continueStep()
+                capture("onboarding-approach-${mode.suffix}")
+                continueStep()
+                capture("onboarding-week-${mode.suffix}")
+                if (mode.suffix == "light") {
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(
+                                "More options: long-run day, schedule and units"
+                            )
+                        )
+                        .perform(
+                            androidx.test.espresso.action.ViewActions.scrollTo(),
+                            androidx.test.espresso.action.ViewActions.click(),
+                        )
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(
+                                org.racedaydreams.R.string.onboarding_units
+                            )
+                        )
+                        .perform(androidx.test.espresso.action.ViewActions.scrollTo())
+                    capture("onboarding-week-options-light")
+                }
+                // Step back to the first step so the retained draft matches the saved profile.
+                back()
+                back()
+                back()
             }
         } finally {
             closeScenario()
@@ -3838,7 +3895,7 @@ class CoachingScreenshotTest {
         capture("progress-weekly-run-sources")
 
         click("Settings")
-        await("Activity data source")
+        openSettingsSection("settings-training")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         val espresso = androidx.test.espresso.Espresso::onView
         fun text(value: String) = androidx.test.espresso.matcher.ViewMatchers.withText(value)
@@ -4234,6 +4291,22 @@ class CoachingScreenshotTest {
                 predicate(state)
         }
         Assert.assertNull("A gym capture must not conceal a failed write", model.state.value.error)
+        compose.waitForIdle()
+    }
+
+    /** Settings groups controls into collapsible sections; open one unless it is already open. */
+    private fun openSettingsSection(tag: String) {
+        compose.waitUntil(20000) {
+            compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
+        }
+        val section = compose.onNodeWithTag(tag)
+        val state =
+            section.fetchSemanticsNode().config.getOrElseNullable(
+                SemanticsProperties.StateDescription
+            ) {
+                null
+            }
+        if (state != "Expanded") section.performScrollTo().performClick()
         compose.waitForIdle()
     }
 

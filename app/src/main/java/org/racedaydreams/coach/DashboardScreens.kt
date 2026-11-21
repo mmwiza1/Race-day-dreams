@@ -63,6 +63,7 @@ import org.racedaydreams.domain.UnitSystem
     { it.atZone(java.time.ZoneId.systemDefault()).toLocalDate() },
     ProgressLink.entries.toList(),
     { open("activity/${android.net.Uri.encode(it)}") },
+    java.time.Instant.now(),
 ) { link ->
     open(
         when (link) {
