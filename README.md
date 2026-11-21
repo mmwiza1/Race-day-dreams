@@ -51,14 +51,24 @@ image for its full-resolution original. Device colours, light/dark themes and la
 Choose what you want to train for. Running, strength and hybrid users each get a Today screen
 built around their next session, with one clear way to start and spontaneous training one tap away.
 
-<a href="docs/screenshots/starting-path-light.png"><img src="docs/screenshots/starting-path-light.png" alt="First-run choice between training for a race, recording runs, strength, or running plus strength" width="46%"></a> <a href="docs/screenshots/home.png"><img src="docs/screenshots/home.png" alt="Running Today with the planned long run, Start with Live Coach and the sessions coming up" width="46%"></a>
+<table>
+  <tr>
+    <td width="280"><a href="docs/screenshots/starting-path-light.png"><img src="docs/screenshots/starting-path-light.png" alt="First-run choice between training for a race, recording runs, strength, or running plus strength" width="100%"></a></td>
+    <td width="280"><a href="docs/screenshots/home.png"><img src="docs/screenshots/home.png" alt="Running Today with the planned long run, Start with Live Coach and the sessions coming up" width="100%"></a></td>
+  </tr>
+</table>
 
 ### Running Coach
 
 Follow a weekly plan towards a 5K, 10K, half marathon or marathon, then record your run with clear
 distance, time, pace and GPS status. Guidance leaves every decision to you.
 
-<a href="docs/screenshots/training-plan.png"><img src="docs/screenshots/training-plan.png" alt="Weekly running plan with planned and completed workouts" width="46%"></a> <a href="docs/screenshots/live-refined-statistics.png"><img src="docs/screenshots/live-refined-statistics.png" alt="Live run recording with elapsed time, distance, pace and pause controls" width="46%"></a>
+<table>
+  <tr>
+    <td width="280"><a href="docs/screenshots/training-plan.png"><img src="docs/screenshots/training-plan.png" alt="Weekly running plan with planned and completed workouts" width="100%"></a></td>
+    <td width="280"><a href="docs/screenshots/live-refined-statistics.png"><img src="docs/screenshots/live-refined-statistics.png" alt="Live run recording with elapsed time, distance, pace and pause controls" width="100%"></a></td>
+  </tr>
+</table>
 
 ### Strength and Gym
 
@@ -66,11 +76,19 @@ Use Strength on its own or alongside running. Start a planned or unplanned worko
 review programmes, and browse an illustrated exercise library. Bouldering is there for climbers
 and stays out of the way for everyone else.
 
-<a href="docs/screenshots/strength-home.png"><img src="docs/screenshots/strength-home.png" alt="Strength-focused Today with the planned workout and a separate unplanned-workout start" width="46%"></a> <a href="docs/screenshots/gym-now.png"><img src="docs/screenshots/gym-now.png" alt="Gym Now choices for planned, quick, built or generated workouts" width="46%"></a>
-
-<a href="docs/screenshots/strength-programme-builder.png"><img src="docs/screenshots/strength-programme-builder.png" alt="Strength programme builder with blocks, sessions and editing controls" width="46%"></a> <a href="docs/screenshots/exercise-library-refined.png"><img src="docs/screenshots/exercise-library-refined.png" alt="Illustrated exercise library with search, filters and muscle groups" width="46%"></a>
-
-<a href="docs/screenshots/bouldering-home.png"><img src="docs/screenshots/bouldering-home.png" alt="Bouldering overview with sessions, sends, highest grade and grade distribution" width="46%"></a>
+<table>
+  <tr>
+    <td width="280"><a href="docs/screenshots/strength-home.png"><img src="docs/screenshots/strength-home.png" alt="Strength-focused Today with the planned workout and a separate unplanned-workout start" width="100%"></a></td>
+    <td width="280"><a href="docs/screenshots/gym-now.png"><img src="docs/screenshots/gym-now.png" alt="Gym Now choices for planned, quick, built or generated workouts" width="100%"></a></td>
+  </tr>
+  <tr>
+    <td width="280"><a href="docs/screenshots/strength-programme-builder.png"><img src="docs/screenshots/strength-programme-builder.png" alt="Strength programme builder with blocks, sessions and editing controls" width="100%"></a></td>
+    <td width="280"><a href="docs/screenshots/exercise-library-refined.png"><img src="docs/screenshots/exercise-library-refined.png" alt="Illustrated exercise library with search, filters and muscle groups" width="100%"></a></td>
+  </tr>
+  <tr>
+    <td width="280"><a href="docs/screenshots/bouldering-home.png"><img src="docs/screenshots/bouldering-home.png" alt="Bouldering overview with sessions, sends, highest grade and grade distribution" width="100%"></a></td>
+  </tr>
+</table>
 
 ### Progress and Performance
 
@@ -78,14 +96,23 @@ Progress follows your focus: running trends for runners, lifting first for stren
 both side by side for hybrid training. Recorded results stay distinct from estimates, and averages
 say how many sessions they are based on.
 
-<a href="docs/screenshots/progress.png"><img src="docs/screenshots/progress.png" alt="Running progress with distance this week, period choice and running statistics" width="46%"></a> <a href="docs/screenshots/progress-strength-focus.png"><img src="docs/screenshots/progress-strength-focus.png" alt="Strength-focused progress with working sets, workouts, recent training volume and the 1RM trend" width="46%"></a>
+<table>
+  <tr>
+    <td width="280"><a href="docs/screenshots/progress.png"><img src="docs/screenshots/progress.png" alt="Running progress with distance this week, period choice and running statistics" width="100%"></a></td>
+    <td width="280"><a href="docs/screenshots/progress-strength-focus.png"><img src="docs/screenshots/progress-strength-focus.png" alt="Strength-focused progress with working sets, workouts, recent training volume and the 1RM trend" width="100%"></a></td>
+  </tr>
+</table>
 
 ### Health and Recovery
 
 Understand optional recovery suggestions and choose whether to change your training.
 Health Connect is optional; the app works without a connected provider.
 
-<a href="docs/screenshots/training-recovery.png"><img src="docs/screenshots/training-recovery.png" alt="Optional lighter-week suggestion with supporting evidence" width="46%"></a>
+<table>
+  <tr>
+    <td width="280"><a href="docs/screenshots/training-recovery.png"><img src="docs/screenshots/training-recovery.png" alt="Optional lighter-week suggestion with supporting evidence" width="100%"></a></td>
+  </tr>
+</table>
 
 ### Privacy and Data Ownership
 
@@ -93,7 +120,12 @@ Your training records stay on your device. No account, advertising, analytics, s
 or backend. Settings are grouped into clear sections, including backup and restore and how much
 detailed GPS/sensor data to keep. Cleanup requires review and confirmation.
 
-<a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="Settings grouped into Training, Health, Reminders, Appearance, Data and Privacy sections" width="46%"></a> <a href="docs/screenshots/storage-management.png"><img src="docs/screenshots/storage-management.png" alt="Storage management explaining retained history and detail cleanup" width="46%"></a>
+<table>
+  <tr>
+    <td width="280"><a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="Settings grouped into Training, Health, Reminders, Appearance, Data and Privacy sections" width="100%"></a></td>
+    <td width="280"><a href="docs/screenshots/storage-management.png"><img src="docs/screenshots/storage-management.png" alt="Storage management explaining retained history and detail cleanup" width="100%"></a></td>
+  </tr>
+</table>
 
 **[Download the latest verified Android test build](https://github.com/mmwiza1/Race-day-dreams/releases/download/development/Race-Day-Dreams-latest-test.apk)** · [Installation](#installation) · [Explore every screenshot](#screenshots)
 
