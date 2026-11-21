@@ -380,7 +380,7 @@ class SharedDashboardScreenTest {
         compose.onNodeWithText("Running PBs").performScrollTo().performClick()
         assertEquals(ProgressLink.PBS, links.last())
         // Running analytics are one tab away.
-        compose.onNodeWithTag("progress-tab-RUNNING").performClick()
+        compose.onNodeWithTag("progress-tab-RUNNING").performScrollTo().performClick()
         compose.onNodeWithText("Distance this week").assertExists()
         compose.onNodeWithTag("kpi-Distance").assert(hasText("1 run", substring = true))
         compose.onNodeWithTag("progress-strength-hero").assertDoesNotExist()
