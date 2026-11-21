@@ -459,7 +459,7 @@ class CoachingScreenshotTest {
         capture("home")
         alignHeading("Start something else")
         capture("today-scrolled")
-        alignHeading("More")
+        alignHeadingOrPageEnd("More")
         capture("today-more")
         compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick()
         await("Recommendation")
@@ -732,7 +732,7 @@ class CoachingScreenshotTest {
         capture("settings-training-open")
         openSettingsSection("settings-health")
         await("Activity data source")
-        alignSettingsHeading("Activity data source")
+        alignHeadingOrPageEnd("Activity data source")
         capture("data-sources")
         compose.onNodeWithText("Personal health context").performScrollTo().performClick()
         await("Personal health context")
@@ -3446,7 +3446,7 @@ class CoachingScreenshotTest {
             click("Settings")
             openSettingsSection("settings-app")
             await("App updates")
-            alignSettingsHeading("App updates")
+            alignHeadingOrPageEnd("App updates")
         }
         fun awaitText(text: String, timeoutMs: Long = 20000) {
             try {
@@ -4295,11 +4295,12 @@ class CoachingScreenshotTest {
     }
 
     /**
-     * Like [alignHeading], for a Settings section near the end of the page. When the page is
-     * scrolled fully to its end the heading cannot move higher; accept that only if the page truly
-     * cannot scroll further and the heading is visible in the upper half of the screen.
+     * Like [alignHeading], for content near the end of a page (late Settings sections, Today's More
+     * group). When the page is scrolled fully to its end the heading cannot move higher; accept
+     * that only if the page truly cannot scroll further and the heading is visible in the upper
+     * half of the screen.
      */
-    private fun alignSettingsHeading(text: String) {
+    private fun alignHeadingOrPageEnd(text: String) {
         try {
             alignHeading(text)
         } catch (notAligned: AssertionError) {
@@ -4309,15 +4310,12 @@ class CoachingScreenshotTest {
             val range =
                 container.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange]
             Assert.assertTrue(
-                "Settings page is not at its end: ${notAligned.message}",
+                "Page is not at its end: ${notAligned.message}",
                 range.value() >= range.maxValue() - 1f,
             )
             val top = heading.fetchSemanticsNode().positionInRoot.y
             val height = compose.onRoot().fetchSemanticsNode().size.height.toFloat()
-            Assert.assertTrue(
-                "Settings heading $text is not in the upper half at $top",
-                top < height / 2f,
-            )
+            Assert.assertTrue("Heading $text is not in the upper half at $top", top < height / 2f)
         }
     }
 
