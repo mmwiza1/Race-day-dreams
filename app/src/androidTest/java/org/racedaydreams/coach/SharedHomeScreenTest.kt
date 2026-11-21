@@ -160,7 +160,9 @@ class SharedHomeScreenTest {
         val original = state()
         show(original)
         compose.onNodeWithText("Tuesday, 17 November").assertIsDisplayed()
-        compose.onNodeWithText("${decimal(5.0)} km").assertExists()
+        // Today's own distance: the plain fact line, not a tappable Coming up row that may
+        // show the same distance for a later session.
+        compose.onNode(hasText("${decimal(5.0)} km") and !hasClickAction()).assertExists()
         compose.onNodeWithText("5:00–6:00/km").assertExists()
         compose.onNodeWithText("Start with Live Coach").performScrollTo().performClick()
         compose.runOnIdle {
