@@ -458,9 +458,9 @@ class CoachingScreenshotTest {
         await("Today")
         capture("home")
         alignHeading("Start something else")
-        capture("home-scrolled")
+        capture("today-scrolled")
         alignHeading("More")
-        capture("home-more")
+        capture("today-more")
         compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick()
         await("Recommendation")
         capture("weekly-review")
@@ -732,7 +732,7 @@ class CoachingScreenshotTest {
         capture("settings-training-open")
         openSettingsSection("settings-health")
         await("Activity data source")
-        alignHeading("Activity data source")
+        alignSettingsHeading("Activity data source")
         capture("data-sources")
         compose.onNodeWithText("Personal health context").performScrollTo().performClick()
         await("Personal health context")
@@ -979,7 +979,7 @@ class CoachingScreenshotTest {
             capture("strength-home")
             compose.onAllNodesWithText("How am I doing?").assertCountEquals(0)
             alignHeading("Start something else")
-            capture("strength-home-scrolled")
+            capture("today-strength-scrolled")
             click("Progress")
             await("Distance this week")
             compose.onNodeWithTag("progress-strength-snapshot").assertIsDisplayed()
@@ -3446,7 +3446,7 @@ class CoachingScreenshotTest {
             click("Settings")
             openSettingsSection("settings-app")
             await("App updates")
-            alignHeading("App updates")
+            alignSettingsHeading("App updates")
         }
         fun awaitText(text: String, timeoutMs: Long = 20000) {
             try {
@@ -4292,6 +4292,33 @@ class CoachingScreenshotTest {
         }
         Assert.assertNull("A gym capture must not conceal a failed write", model.state.value.error)
         compose.waitForIdle()
+    }
+
+    /**
+     * Like [alignHeading], for a Settings section near the end of the page. When the page is
+     * scrolled fully to its end the heading cannot move higher; accept that only if the page truly
+     * cannot scroll further and the heading is visible in the upper half of the screen.
+     */
+    private fun alignSettingsHeading(text: String) {
+        try {
+            alignHeading(text)
+        } catch (notAligned: AssertionError) {
+            val heading = compose.onNodeWithText(text)
+            heading.assertIsDisplayed()
+            val container = compose.onNode(hasScrollAction() and hasAnyDescendant(hasText(text)))
+            val range =
+                container.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange]
+            Assert.assertTrue(
+                "Settings page is not at its end: ${notAligned.message}",
+                range.value() >= range.maxValue() - 1f,
+            )
+            val top = heading.fetchSemanticsNode().positionInRoot.y
+            val height = compose.onRoot().fetchSemanticsNode().size.height.toFloat()
+            Assert.assertTrue(
+                "Settings heading $text is not in the upper half at $top",
+                top < height / 2f,
+            )
+        }
     }
 
     /** Settings groups controls into collapsible sections; open one unless it is already open. */
