@@ -111,7 +111,35 @@ installations that cannot support them (all existing debug-signed installs).
 - Every progress update to the owner states an ETA (UTC) for the next result. Poll CI no more often
   than every 15 minutes (a background until-loop that stops on the first failed job).
 
-## Active work — UX simplification and content hierarchy (owner request, 21 November 2026)
+## Release 0.15.4-test1 — UX redesign (owner-authorised, 21 November 2026)
+
+- **Approval:** the owner approved PR #34 (UX simplification, refinements, README showcase) and authorised the merge plus the next verified development release.
+- **Versions:**
+  - Android `0.15.4-test1` / versionCode 27 (was 0.15.3-test1 / 26).
+  - iOS 0.15.4 / build 27.
+  - Release notes: `docs/RELEASE_0_15_4.md`.
+- **Unchanged:**
+  - signing (permanent release certificate `e7af758a…929d`);
+  - the update manifest format, package ID, schemas and backups;
+  - Health Connect/HealthKit and GPS recording;
+  - the five bottom destinations.
+- **Merge and publication:**
+  - Squash merge of PR #34 after the exact-head checks on the version-bump commit and its canonical-screenshot commit.
+  - The trusted `main` run publishes the rolling `development` release.
+  - Its `Race-Day-Dreams-latest-build-info.txt` records the exact merged commit, CI run and every artifact SHA-256. That is the authoritative post-merge evidence; no docs-only commit is made after release.
+- **Verify by download:**
+  - apksigner certificate equals `e7af758a8ff6732ee5fd2e19ab34a85bad1d283ec8b277d83813d7c66afd929d`;
+  - aapt reports `org.racedaydreams`, 27, `0.15.4-test1`;
+  - the APK SHA-256 equals its `.sha256` and the `latest-test.apk` alias;
+  - `Race-Day-Dreams-latest-update.json` has versionCode 27 with the same SHA and certificate;
+  - the unsigned `.ipa` and the simulator and iPhone ZIPs are present with matching SHA files.
+- **Outstanding physical checks:**
+  - an in-place update from 0.15.3-test1 on a Galaxy S24;
+  - a human TalkBack and VoiceOver pass of the redesigned screens;
+  - an iPhone install of the unsigned `.ipa` with the tester's own signing;
+  - the earlier GPS, battery and BLE checklists in `TEST_BUILD.md`.
+
+## Completed — UX simplification and content hierarchy (owner request, 21 November 2026)
 
 Owner-requested redesign of Home, onboarding, Progress, Strength and Settings for review with
 ChatGPT. **Do not merge, do not enable auto-merge and do not treat green CI as approval: merge only
