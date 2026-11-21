@@ -11,6 +11,7 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -314,6 +315,7 @@ class CoachOnboardingTest {
             .assertIsDisplayed()
 
         compose.onNodeWithText("Settings").performClick()
+        compose.openSettingsSection("settings-training")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         waitNativeText(R.string.onboarding_edit_title)
         nativeContinue(2)
@@ -405,11 +407,30 @@ class CoachOnboardingTest {
         onView(withText(R.string.onboarding_title)).check(matches(isDisplayed()))
     }
 
+    /**
+     * Espresso's scrollTo() does nothing once 90% of a view is visible, so on a page only slightly
+     * taller than its viewport the last pixels of Continue can stay clipped. Ask the scroll
+     * container for the button's whole rectangle, as a person scrolling to it would; the
+     * navigation-safe bounds check below is unchanged.
+     */
+    private fun scrollFullyIntoView() =
+        object : androidx.test.espresso.ViewAction {
+            override fun getConstraints() =
+                androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+
+            override fun getDescription() = "scroll the whole view into its scroll container"
+
+            override fun perform(uiController: androidx.test.espresso.UiController, view: View) {
+                view.requestRectangleOnScreen(android.graphics.Rect(0, 0, view.width, view.height), true)
+                uiController.loopMainThreadUntilIdle()
+            }
+        }
+
     private fun nativeContinue(nextStep: Int) {
         waitNativeStep(nextStep - 1)
         waitNativeText(R.string.onboarding_continue)
         onView(withText(R.string.onboarding_continue))
-            .perform(scrollTo())
+            .perform(scrollTo(), scrollFullyIntoView())
             .check { view, missing ->
                 if (missing != null) throw missing
                 val button = requireNotNull(view)

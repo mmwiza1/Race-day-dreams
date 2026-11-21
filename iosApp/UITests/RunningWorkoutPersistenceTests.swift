@@ -23,7 +23,12 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
     func testAppleHealthRequiresAnExplicitReadChoice() {
         let app = XCUIApplication()
         app.launch()
+        // A fresh install opens on the first-run choice, which has no Settings action; any tab
+        // leaves it, after which Settings is in the top bar.
+        tap("Progress", in: app)
         tap("Settings", in: app)
+        // Settings groups its controls; Apple Health lives under Health and connected data.
+        tap("Health and connected data", in: app)
         tap("Weight", in: app)
 
         let request = control("Request access and import", in: app)

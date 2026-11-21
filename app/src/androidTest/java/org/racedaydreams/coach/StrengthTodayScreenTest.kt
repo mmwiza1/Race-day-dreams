@@ -6,6 +6,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -56,8 +58,11 @@ class StrengthTodayScreenTest {
                 }
             }
         }
-        // The first occurrence is the card heading; the second is its accessible button label.
-        compose.onAllNodesWithText("Gym now")[1].performScrollTo().performClick()
+        // The unplanned start is a single secondary action, named apart from the planned one.
+        compose
+            .onNode(hasText("Start unplanned workout") and hasClickAction())
+            .performScrollTo()
+            .performClick()
         compose.runOnIdle { assertEquals(1, now) }
         compose.onNodeWithText("PBs & progression").performScrollTo().performClick()
         compose.runOnIdle { assertEquals("strength/pbs", destination) }

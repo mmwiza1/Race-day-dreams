@@ -68,6 +68,8 @@ fun SharedProgressDashboard(
     dateAt: (Instant) -> LocalDate,
     links: List<ProgressLink>,
     openRun: (String) -> Unit,
+    asOf: Instant? = null,
+    openWorkout: ((String) -> Unit)? = null,
     open: (ProgressLink) -> Unit,
 ) = CoachPage {
     val today = presentation.currentDate()
@@ -89,171 +91,273 @@ fun SharedProgressDashboard(
             )
         }
     val distance = presentation.distance
-    CoachHeading("Progress")
+    val focus = state.primaryFocus
+    val strengthFocus =
+        asOf != null && focus == org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH
+    val hybridFocus = asOf != null && focus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID
+    var exerciseId by rememberSaveable { mutableStateOf<String?>(null) }
+    val unit = state.massUnit
+    fun mass(kilograms: Double) =
+        "${presentation.decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
+    fun volume(kilograms: Double) =
+        "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
 
-    SemanticCard(Tile.Progress) {
-        Text("Distance this week", style = MaterialTheme.typography.titleMedium)
-        val week = overview.weekToDate
-        if (week.runs == 0) {
-            Text("No runs recorded yet this week", style = MaterialTheme.typography.headlineSmall)
-        } else {
+    val runningWeek: @Composable () -> Unit = {
+        SemanticCard(Tile.Progress) {
+            Text("Distance this week", style = MaterialTheme.typography.titleMedium)
+            val week = overview.weekToDate
+            val days = weekdaySpan(overview.weekDays)
+            if (week.runs == 0) {
+                Text("No runs recorded yet this week", style = MaterialTheme.typography.titleLarge)
+            } else {
+                Text(
+                    week.distanceMetres?.let(distance) ?: "Distance unavailable",
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.testTag("dashboard-week-distance"),
+                )
+                Text(
+                    "${plural(week.runs, "run")} · ${plural(week.runningDays, "running day")}" +
+                        if (overview.weekDays == 7) " · full week" else " · $days so far"
+                )
+            }
+            val last = overview.sameDaysLastWeek
+            val lastDistance = last.distanceMetres
             Text(
-                week.distanceMetres?.let(distance) ?: "Distance unavailable",
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.testTag("dashboard-week-distance"),
+                "Same days last week: " +
+                    when {
+                        last.runs == 0 -> "no runs"
+                        lastDistance == null -> "distance unavailable"
+                        else ->
+                            distance(lastDistance) +
+                                (week.distanceMetres?.let {
+                                    " (${change(it - lastDistance, distance)})"
+                                } ?: "")
+                    },
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.testTag("dashboard-week-comparison"),
             )
-            Text("${plural(week.runs, "run")} · ${plural(week.runningDays, "running day")}")
+            if (week.missingDistance > 0)
+                Text(
+                    "${plural(week.missingDistance, "run")} without distance not added.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
         }
-        val days = weekdaySpan(overview.weekDays)
-        Text(
-            if (overview.weekDays == 7) "Full week" else "Week in progress · $days so far",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        val last = overview.sameDaysLastWeek
-        val lastDistance = last.distanceMetres
-        Text(
-            "Same days last week ($days): " +
-                when {
-                    last.runs == 0 -> "no runs"
-                    lastDistance == null -> "distance unavailable"
-                    else ->
-                        distance(lastDistance) +
-                            (week.distanceMetres?.let {
-                                " · ${change(it - lastDistance, distance)}"
-                            } ?: "")
-                },
-            modifier = Modifier.testTag("dashboard-week-comparison"),
-        )
-        if (week.missingDistance > 0)
-            Text("${plural(week.missingDistance, "run")} without distance not added.")
     }
-
-    PeriodSelector(period) { periodName = it.name }
-
-    val current = overview.current
-    val currentDistance = current.distanceMetres
-    val previousDistance = overview.previous.distanceMetres
-    val previousNote =
-        when {
-            !overview.comparable -> "no earlier ${period.label} to compare"
-            currentDistance != null && previousDistance != null ->
-                "${change(currentDistance - previousDistance, distance)} vs previous"
-            else -> "previous ${period.label}: ${plural(overview.previous.runs, "run")}"
-        }
-    KpiGrid(
-        listOf(
-            Kpi(
-                "Distance",
-                if (current.runs == 0) "No runs"
-                else currentDistance?.let(distance) ?: "Unavailable",
-                "${plural(current.runs, "run")} · $previousNote",
-            ),
-            Kpi(
-                "Average pace",
-                current.movingSecondsPerKm?.let { presentation.paceSeconds(it) }
-                    ?: "Not enough data",
-                if (current.pacedRuns > 0)
-                    "Moving pace · ${current.pacedRuns} of ${plural(current.runs, "run")}"
-                else "Needs distance and moving time",
-            ),
-            Kpi(
-                "Longest run",
-                current.longestMetres?.let(distance) ?: "No runs",
-                current.longestDate?.let { presentation.shortDate(it) } ?: period.label,
-                current.longestActivityId?.let { id -> { openRun(id) } },
-            ),
-            Kpi(
-                "Plan completion",
-                if (completion.due > 0) "${completion.completed} / ${completion.due}"
-                else "Nothing due",
-                buildList {
-                        add(if (completion.due > 0) "Planned runs due" else "No planned runs due")
-                        if (completion.skipped > 0) add("${completion.skipped} skipped")
+    val runningKpis: @Composable () -> Unit = {
+        val current = overview.current
+        val currentDistance = current.distanceMetres
+        val previousDistance = overview.previous.distanceMetres
+        val previousNote =
+            when {
+                !overview.comparable -> "no earlier ${period.label} to compare"
+                currentDistance != null && previousDistance != null ->
+                    "${change(currentDistance - previousDistance, distance)} vs previous"
+                else -> "previous ${period.label}: ${plural(overview.previous.runs, "run")}"
+            }
+        KpiGrid(
+            listOf(
+                Kpi(
+                    "Distance",
+                    if (current.runs == 0) "No runs"
+                    else currentDistance?.let(distance) ?: "Unavailable",
+                    "${plural(current.runs, "run")} · $previousNote",
+                ),
+                Kpi(
+                    "Average pace",
+                    current.movingSecondsPerKm?.let { presentation.paceSeconds(it) }
+                        ?: "Not enough data",
+                    // An average from part of the period says how many runs qualified.
+                    when {
+                        current.pacedRuns == 0 -> "Needs distance and moving time"
+                        current.pacedRuns < current.runs ->
+                            "Moving pace · based on ${current.pacedRuns} of ${plural(current.runs, "run")}"
+                        else -> "Moving pace · ${plural(current.runs, "run")}"
+                    },
+                ),
+                Kpi(
+                    "Longest run",
+                    current.longestMetres?.let(distance) ?: "No runs",
+                    current.longestDate?.let { presentation.shortDate(it) } ?: period.label,
+                    current.longestActivityId?.let { id -> { openRun(id) } },
+                ),
+                Kpi(
+                    "Plan completion",
+                    if (completion.due > 0) "${completion.completed} / ${completion.due}"
+                    else "Nothing due",
+                    buildList {
+                            add(
+                                if (completion.due > 0) "Planned runs due"
+                                else "No planned runs due"
+                            )
+                            if (completion.skipped > 0) add("${completion.skipped} skipped")
+                        }
+                        .joinToString(" · "),
+                ),
+            )
+        )
+    }
+    val weeklyDistance: @Composable () -> Unit = {
+        CoachCard {
+            Text("Weekly distance", style = MaterialTheme.typography.titleLarge)
+            Text(
+                "${period.label} · from ${presentation.shortDate(overview.window.start)}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (!overview.hasAnyRun()) {
+                Text("Record or import runs to see your trend.")
+            } else {
+                val points =
+                    remember(overview.weeklyTrend, state.activities) {
+                        sharedRunningTrendPoints(
+                            overview.weeklyTrend,
+                            state.activities,
+                            RunningTrendMetric.DISTANCE,
+                            today,
+                            dateAt,
+                        )
                     }
-                    .joinToString(" · "),
-            ),
-        )
-    )
-
-    CoachCard {
-        Text("Weekly distance", style = MaterialTheme.typography.titleLarge)
-        Text(
-            "${period.label} · from ${presentation.shortDate(overview.window.start)} · this week in progress",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        if (!overview.hasAnyRun()) {
-            Text("Record or import runs to see your trend.")
-        } else {
-            val points =
-                remember(overview.weeklyTrend, state.activities) {
-                    sharedRunningTrendPoints(
-                        overview.weeklyTrend,
-                        state.activities,
-                        RunningTrendMetric.DISTANCE,
-                        today,
-                        dateAt,
-                    )
+                SharedWeeklyRunningChart(
+                    overview.weeklyTrend,
+                    points,
+                    RunningTrendMetric.DISTANCE,
+                    state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
+                    distance,
+                    presentation.decimal,
+                    presentation.paceSeconds,
+                    presentation.shortDate,
+                    presentation.friendlyDate,
+                    remember(state.activities) { sharedWeekRuns(state.activities, dateAt) },
+                )
+            }
+            if (ProgressLink.TRENDS in links)
+                TextButton(onClick = { open(ProgressLink.TRENDS) }) {
+                    Text("Distance, pace and time trends")
                 }
-            SharedWeeklyRunningChart(
-                overview.weeklyTrend,
-                points,
-                RunningTrendMetric.DISTANCE,
-                state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
-                distance,
-                presentation.decimal,
-                presentation.paceSeconds,
+        }
+    }
+    val recentRuns: @Composable () -> Unit = {
+        CoachCard {
+            SectionHeader(
+                "Recent runs",
+                if (ProgressLink.HISTORY in links) ({ open(ProgressLink.HISTORY) }) else null,
+            )
+            if (overview.recentRuns.isEmpty()) Text("No runs recorded yet.")
+            for (run in overview.recentRuns) {
+                val record = state.activities.firstOrNull { it.id() == run.activityId }
+                DashboardRow(
+                    title = if (run.planned) "Planned run" else "Run",
+                    detail =
+                        presentation.friendlyDate(run.date) +
+                            (record?.let { " · ${ActivitySources.friendly(it.source())}" } ?: ""),
+                    value = run.distanceMetres?.let(distance) ?: "No distance",
+                    secondary =
+                        run.movingSecondsPerKm?.let { "${presentation.paceSeconds(it)} moving" }
+                            ?: "Pace unavailable",
+                    onClick = { openRun(run.activityId) },
+                )
+            }
+        }
+    }
+    @Composable
+    fun sectionTitle(title: String) =
+        Text(
+            title,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.semantics { heading() },
+        )
+    val runningLinks = listOf(ProgressLink.TRENDS, ProgressLink.PBS, ProgressLink.WEEKLY_REVIEW)
+    val bodyLinks =
+        listOf(ProgressLink.MILESTONES, ProgressLink.BODY_WEIGHT, ProgressLink.BODY_GUIDANCE)
+    val strengthLinks = listOf(ProgressLink.STRENGTH_ANALYTICS)
+
+    CoachHeading("Progress")
+    when {
+        // Strength focus: the Strength tab's own figures and trends lead; running is a short,
+        // secondary summary with every running analytic one tap away.
+        strengthFocus -> {
+            val strength =
+                rememberStrengthPeriod(state, today, requireNotNull(asOf), period, exerciseId)
+            PeriodSelector(period) { periodName = it.name }
+            StrengthKpis(
+                strength,
+                if (ProgressLink.STRENGTH_ANALYTICS in links)
+                    ({ open(ProgressLink.STRENGTH_ANALYTICS) })
+                else null,
+            )
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
+            OneRepMaxCard(
+                strength,
+                ::mass,
                 presentation.shortDate,
                 presentation.friendlyDate,
-                remember(state.activities) { sharedWeekRuns(state.activities, dateAt) },
+                { exerciseId = it },
+                openWorkout ?: {},
             )
-            Text("Tap a bar to inspect that week.", style = MaterialTheme.typography.bodySmall)
-        }
-        if (ProgressLink.TRENDS in links)
-            TextButton(onClick = { open(ProgressLink.TRENDS) }) {
-                Text("Distance, pace and time trends")
-            }
-    }
-
-    CoachCard {
-        SectionHeader(
-            "Recent runs",
-            if (ProgressLink.HISTORY in links) ({ open(ProgressLink.HISTORY) }) else null,
-        )
-        if (overview.recentRuns.isEmpty()) Text("No runs recorded yet.")
-        for (run in overview.recentRuns) {
-            val record = state.activities.firstOrNull { it.id() == run.activityId }
-            DashboardRow(
-                title = if (run.planned) "Planned run" else "Run",
-                detail =
-                    presentation.friendlyDate(run.date) +
-                        (record?.let { " · ${ActivitySources.friendly(it.source())}" } ?: ""),
-                value = run.distanceMetres?.let(distance) ?: "No distance",
-                secondary =
-                    run.movingSecondsPerKm?.let { "${presentation.paceSeconds(it)} moving" }
-                        ?: "Pace unavailable",
-                onClick = { openRun(run.activityId) },
+            MuscleWorkloadCard(strength, presentation.decimal)
+            sectionTitle("Running")
+            runningWeek()
+            MoreDetail(
+                listOf(
+                        "Strength training" to strengthLinks,
+                        "Running" to listOf(ProgressLink.HISTORY) + runningLinks,
+                        "Milestones & body" to bodyLinks,
+                    )
+                    .map { (name, group) -> name to group.filter { it in links } },
+                { it.title },
+                { it.summary },
+                open,
             )
         }
-    }
-
-    MoreDetail(
-        listOf(
-                "Running" to
-                    listOf(ProgressLink.TRENDS, ProgressLink.PBS, ProgressLink.WEEKLY_REVIEW),
-                "Milestones & body" to
-                    listOf(
-                        ProgressLink.MILESTONES,
-                        ProgressLink.BODY_WEIGHT,
-                        ProgressLink.BODY_GUIDANCE,
-                    ),
-                "Strength training" to listOf(ProgressLink.STRENGTH_ANALYTICS),
+        // Hybrid focus: both disciplines side by side at the same depth, then the details.
+        hybridFocus -> {
+            val strength = rememberStrengthPeriod(state, today, requireNotNull(asOf), period, null)
+            PeriodSelector(period) { periodName = it.name }
+            sectionTitle("Running")
+            runningWeek()
+            runningKpis()
+            sectionTitle("Strength")
+            StrengthKpis(
+                strength,
+                if (ProgressLink.STRENGTH_ANALYTICS in links)
+                    ({ open(ProgressLink.STRENGTH_ANALYTICS) })
+                else null,
             )
-            .map { (name, group) -> name to group.filter { it in links } },
-        { it.title },
-        { it.summary },
-        open,
-    )
+            weeklyDistance()
+            recentRuns()
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
+            MoreDetail(
+                listOf(
+                        "Running" to runningLinks,
+                        "Strength training" to strengthLinks,
+                        "Milestones & body" to bodyLinks,
+                    )
+                    .map { (name, group) -> name to group.filter { it in links } },
+                { it.title },
+                { it.summary },
+                open,
+            )
+        }
+        else -> {
+            runningWeek()
+            PeriodSelector(period) { periodName = it.name }
+            runningKpis()
+            weeklyDistance()
+            recentRuns()
+            MoreDetail(
+                listOf(
+                        "Running" to runningLinks,
+                        "Milestones & body" to bodyLinks,
+                        "Strength training" to strengthLinks,
+                    )
+                    .map { (name, group) -> name to group.filter { it in links } },
+                { it.title },
+                { it.summary },
+                open,
+            )
+        }
+    }
 }
 
 /** Scheduled programme sessions and those completed, using the calendar's gym link rules. */
@@ -284,25 +388,21 @@ private fun programmeSchedule(s: CoachUiState): Pair<List<Pair<String, LocalDate
         s.gymLinks.values.map { it.prescribedSessionId() }.toSet()
 }
 
+/** The recorded strength overview and programme completion for one period, shared by tabs. */
+internal class StrengthPeriod(
+    val period: Period,
+    val overview: DashboardAnalytics.Strength,
+    val programme: DashboardAnalytics.PlanCompletion?,
+)
+
 @Composable
-fun SharedStrengthDashboard(
+internal fun rememberStrengthPeriod(
     state: CoachUiState,
     today: LocalDate,
     asOf: Instant,
-    shortDate: (LocalDate) -> String,
-    friendlyDate: (LocalDate) -> String,
-    decimal: (Double) -> String,
-    links: List<StrengthLink>,
-    open: (StrengthLink) -> Unit,
-    openWorkout: (String) -> Unit,
-    climbing: List<org.racedaydreams.domain.climbing.ClimbingSession> = emptyList(),
-    climbingDraft: Boolean = false,
-    gradeSystem: org.racedaydreams.domain.climbing.GradeSystem =
-        org.racedaydreams.domain.climbing.GradeSystem.V_SCALE,
-) = CoachPage {
-    var periodName by rememberSaveable { mutableStateOf(Period.FOUR_WEEKS.name) }
-    var exerciseId by rememberSaveable { mutableStateOf<String?>(null) }
-    val period = Period.valueOf(periodName)
+    period: Period,
+    exerciseId: String?,
+): StrengthPeriod {
     val overview =
         remember(state.strengthSessions, today, asOf, period, exerciseId) {
             DashboardAnalytics.strength(state.strengthSessions, today, asOf, period, exerciseId)
@@ -320,20 +420,14 @@ fun SharedStrengthDashboard(
         schedule?.let { (scheduled, completed) ->
             DashboardAnalytics.programmeCompletion(scheduled, completed, overview.window, today)
         }
-    val unit = state.massUnit
-    fun mass(kilograms: Double) =
-        "${decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
-    CoachHeading("Strength")
-    if (StrengthLink.GYM_NOW in links)
-        Button(
-            onClick = { open(StrengthLink.GYM_NOW) },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text(StrengthLink.GYM_NOW.title)
-        }
+    return StrengthPeriod(period, overview, programme)
+}
 
-    PeriodSelector(period) { periodName = it.name }
-
+@Composable
+internal fun StrengthKpis(data: StrengthPeriod, openRecords: (() -> Unit)?) {
+    val overview = data.overview
+    val period = data.period
+    val programme = data.programme
     KpiGrid(
         listOf(
             Kpi(
@@ -357,11 +451,134 @@ fun SharedStrengthDashboard(
             Kpi(
                 "New records",
                 overview.recordImprovements.toString(),
-                "Recorded bests improved · each record counted once per workout",
-                if (StrengthLink.PBS in links) ({ open(StrengthLink.PBS) }) else null,
+                "Recorded bests improved",
+                openRecords,
             ),
         )
     )
+}
+
+@Composable
+internal fun RecentWorkoutsCard(
+    data: StrengthPeriod,
+    friendlyDate: (LocalDate) -> String,
+    volume: (Double) -> String,
+    seeAll: (() -> Unit)?,
+    openWorkout: ((String) -> Unit)?,
+) = CoachCard {
+    SectionHeader("Recent workouts", seeAll)
+    if (data.overview.recentWorkouts.isEmpty()) Text("No strength workouts recorded yet.")
+    for (workout in data.overview.recentWorkouts) {
+        DashboardRow(
+            title =
+                workout.exerciseNames.take(3).joinToString(", ") +
+                    if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
+                    else "",
+            detail =
+                "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
+            // Accumulated load × repetitions, labelled so it is never read as a weight lifted,
+            // a personal best or an estimated one-rep maximum.
+            value = workout.loadVolumeKg?.let(volume) ?: "",
+            secondary = if (workout.loadVolumeKg != null) "Training volume (load × reps)" else null,
+            onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
+        )
+    }
+}
+
+@Composable
+internal fun OneRepMaxCard(
+    data: StrengthPeriod,
+    mass: (Double) -> String,
+    shortDate: (LocalDate) -> String,
+    friendlyDate: (LocalDate) -> String,
+    selectExercise: (String) -> Unit,
+    openWorkout: (String) -> Unit,
+) = CoachCard {
+    val overview = data.overview
+    Text("Estimated 1RM trend", style = MaterialTheme.typography.titleLarge)
+    val exercise = overview.trendExercise
+    if (exercise == null) {
+        Text("Record weighted working sets of 2–10 repetitions in this period to see an estimate.")
+    } else {
+        ExerciseSelector(overview.eligibleExercises.map { it.id() to it.name() }, exercise.id()) {
+            selectExercise(it)
+        }
+        OneRepMaxChart(overview.oneRepMaxTrend, mass, shortDate, friendlyDate, openWorkout)
+        overview.heaviestSet?.let { set ->
+            DashboardRow(
+                title = "Heaviest recorded set",
+                detail = "Actual, not estimated · ${friendlyDate(set.date)}",
+                value = "${mass(set.kilograms)} × ${set.reps}",
+                secondary = null,
+                onClick = { openWorkout(set.sessionId) },
+            )
+        }
+        Explainer("How the estimate works", StrengthRecords.estimateExplanation())
+    }
+}
+
+@Composable
+internal fun MuscleWorkloadCard(data: StrengthPeriod, decimal: (Double) -> String) = CoachCard {
+    Text("Muscle-group workload", style = MaterialTheme.typography.titleLarge)
+    Text(
+        "Recorded working sets · ${data.period.label}",
+        style = MaterialTheme.typography.bodyMedium,
+    )
+    if (data.overview.workingSets == 0) {
+        Text("Record working sets to see how your training is spread.")
+    } else {
+        MuscleGroupBreakdown(data.overview, decimal)
+    }
+    Text(
+        "Recorded workload only — not a measure of muscle growth or recovery.",
+        style = MaterialTheme.typography.bodySmall,
+    )
+    Explainer("How sets are counted", StrengthVolume.attribution())
+}
+
+@Composable
+fun SharedStrengthDashboard(
+    state: CoachUiState,
+    today: LocalDate,
+    asOf: Instant,
+    shortDate: (LocalDate) -> String,
+    friendlyDate: (LocalDate) -> String,
+    decimal: (Double) -> String,
+    links: List<StrengthLink>,
+    open: (StrengthLink) -> Unit,
+    openWorkout: (String) -> Unit,
+    climbing: List<org.racedaydreams.domain.climbing.ClimbingSession> = emptyList(),
+    climbingDraft: Boolean = false,
+    gradeSystem: org.racedaydreams.domain.climbing.GradeSystem =
+        org.racedaydreams.domain.climbing.GradeSystem.V_SCALE,
+) = CoachPage {
+    var periodName by rememberSaveable { mutableStateOf(Period.FOUR_WEEKS.name) }
+    var exerciseId by rememberSaveable { mutableStateOf<String?>(null) }
+    val period = Period.valueOf(periodName)
+    val data = rememberStrengthPeriod(state, today, asOf, period, exerciseId)
+    val unit = state.massUnit
+    fun mass(kilograms: Double) =
+        "${decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
+    fun volume(kilograms: Double) =
+        "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
+    CoachHeading("Strength")
+    if (StrengthLink.GYM_NOW in links)
+        Button(
+            onClick = { open(StrengthLink.GYM_NOW) },
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+        ) {
+            Text(StrengthLink.GYM_NOW.title)
+        }
+    // The two other frequent jobs sit directly under Gym now as secondary actions.
+    QuickStartRow(
+        listOf(StrengthLink.LOG, StrengthLink.PROGRAMME)
+            .filter { it in links }
+            .map { link -> link.title to { open(link) } }
+    )
+
+    PeriodSelector(period) { periodName = it.name }
+
+    StrengthKpis(data, if (StrengthLink.PBS in links) ({ open(StrengthLink.PBS) }) else null)
 
     // Bouldering stays separate from lifting metrics; shown only to people who climb.
     if (StrengthLink.BOULDERING in links && (climbing.isNotEmpty() || climbingDraft)) {
@@ -396,79 +613,19 @@ fun SharedStrengthDashboard(
         }
     }
 
-    CoachCard {
-        Text("Estimated 1RM trend", style = MaterialTheme.typography.titleLarge)
-        val exercise = overview.trendExercise
-        if (exercise == null) {
-            Text(
-                "Record weighted working sets of 2–10 repetitions in this period to see an estimate."
-            )
-        } else {
-            ExerciseSelector(
-                overview.eligibleExercises.map { it.id() to it.name() },
-                exercise.id(),
-            ) {
-                exerciseId = it
-            }
-            OneRepMaxChart(overview.oneRepMaxTrend, ::mass, shortDate, friendlyDate, openWorkout)
-            overview.heaviestSet?.let { set ->
-                DashboardRow(
-                    title = "Heaviest recorded set",
-                    detail = "Actual, not estimated · ${friendlyDate(set.date)}",
-                    value = "${mass(set.kilograms)} × ${set.reps}",
-                    secondary = null,
-                    onClick = { openWorkout(set.sessionId) },
-                )
-            }
-            Explainer("How the estimate works", StrengthRecords.estimateExplanation())
-        }
-    }
-
-    CoachCard {
-        Text("Muscle-group workload", style = MaterialTheme.typography.titleLarge)
-        Text("Recorded working sets · ${period.label}", style = MaterialTheme.typography.bodyMedium)
-        if (overview.workingSets == 0) {
-            Text("Record working sets to see how your training is spread.")
-        } else {
-            MuscleGroupBreakdown(overview, decimal)
-        }
-        Text(
-            "Recorded workload only — not a measure of muscle growth or recovery.",
-            style = MaterialTheme.typography.bodySmall,
-        )
-        Explainer("How sets are counted", StrengthVolume.attribution())
-    }
-
-    CoachCard {
-        SectionHeader(
-            "Recent workouts",
-            if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
-        )
-        if (overview.recentWorkouts.isEmpty()) Text("No strength workouts recorded yet.")
-        for (workout in overview.recentWorkouts) {
-            DashboardRow(
-                title =
-                    workout.exerciseNames.take(3).joinToString(", ") +
-                        if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
-                        else "",
-                detail =
-                    "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
-                value = workout.loadVolumeKg?.let(::mass) ?: "",
-                secondary = if (workout.loadVolumeKg != null) "load × reps" else null,
-                onClick = { openWorkout(workout.sessionId) },
-            )
-        }
-    }
+    RecentWorkoutsCard(
+        data,
+        friendlyDate,
+        ::volume,
+        if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
+        openWorkout,
+    )
+    OneRepMaxCard(data, ::mass, shortDate, friendlyDate, { exerciseId = it }, openWorkout)
+    MuscleWorkloadCard(data, decimal)
 
     MoreDetail(
         listOf(
-                "Train" to
-                    listOf(
-                        StrengthLink.LOG,
-                        StrengthLink.BOULDERING,
-                        StrengthLink.PROGRAMME,
-                        StrengthLink.EXERCISES,
-                    ),
+                "Train" to listOf(StrengthLink.EXERCISES, StrengthLink.BOULDERING),
                 "Records & trends" to
                     listOf(StrengthLink.ANALYTICS, StrengthLink.PBS, StrengthLink.MILESTONES),
                 "Recovery" to listOf(StrengthLink.RECOVERY),
@@ -478,6 +635,13 @@ fun SharedStrengthDashboard(
         { it.summary },
         open,
     )
+}
+
+/** A whole number with thousands separators, e.g. 2100.0 → "2,100". */
+internal fun groupedWhole(value: Double): String {
+    val digits = kotlin.math.abs(kotlin.math.round(value)).toLong().toString()
+    val grouped = digits.reversed().chunked(3).joinToString(",").reversed()
+    return if (value < -0.5) "−$grouped" else grouped
 }
 
 internal fun plural(count: Int, noun: String) = "$count $noun${if (count == 1) "" else "s"}"

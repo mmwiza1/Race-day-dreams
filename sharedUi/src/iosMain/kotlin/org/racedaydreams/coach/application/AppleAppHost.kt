@@ -210,6 +210,8 @@ private fun AppleAppContent(
 ) {
     val state by session.services.operations.state.collectAsState()
     var page by remember { mutableStateOf(ApplePage.START) }
+    // The last opened Settings section, for this app session only.
+    val settingsSection = remember { mutableStateOf<String?>(null) }
     var calendarWorkout by remember { mutableStateOf<String?>(null) }
     var calendarStrength by remember { mutableStateOf<String?>(null) }
     var gymDate by remember { mutableStateOf<LocalDate?>(null) }
@@ -250,12 +252,24 @@ private fun AppleAppContent(
             ) {
                 Text("Record")
             }
-            TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
+            // No Settings while choosing a first focus (as on Android) or inside Settings itself.
+            val firstRun =
+                page == ApplePage.START &&
+                    !state.loading &&
+                    !state.busy &&
+                    state.primaryFocus == null
+            if (page != ApplePage.SETTINGS && !firstRun)
+                TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
         }
         Box(Modifier.weight(1f)) {
             when (page) {
                 ApplePage.SETTINGS ->
-                    AppleSettingsScreen(session, controller, onRestore) {
+                    AppleSettingsScreen(
+                        session,
+                        controller,
+                        onRestore,
+                        lastOpened = settingsSection,
+                    ) {
                         CoachButton("Body measurements and protein") { page = ApplePage.BODY }
                         CoachButton("Your shoes") { page = ApplePage.SHOES }
                         health(false)
@@ -449,6 +463,12 @@ private fun AppleAppContent(
                         openRun = {
                             activityId = it
                             page = ApplePage.ACTIVITY
+                        },
+                        asOf = AppleRecordingClock.now(),
+                        openWorkout = {
+                            activityId = it
+                            strengthRecordReturn = ApplePage.PROGRESS
+                            page = ApplePage.STRENGTH_RECORD
                         },
                     ) { link ->
                         page =

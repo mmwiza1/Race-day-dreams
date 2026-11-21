@@ -1,11 +1,11 @@
 package org.racedaydreams.coach
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.presentation.StrengthTodaySummary
 import org.racedaydreams.domain.strength.ExerciseCatalog
@@ -24,10 +24,10 @@ fun SharedStrengthTodayScreen(
     gymNow: (() -> Unit)? = null,
 ) {
     CoachPage {
-        CoachHeading("Today")
-        Text(dateLabel)
+        TodayHeader(dateLabel)
+        // One card answers what, how long and how to start; logging after the fact is secondary.
         SemanticCard(Tile.Strength) {
-            Text("Your strength training", style = MaterialTheme.typography.titleMedium)
+            Text("Your strength training", style = MaterialTheme.typography.labelLarge)
             val session = summary.today()
             val authored = summary.authoredToday()
             if (authored != null) {
@@ -35,14 +35,10 @@ fun SharedStrengthTodayScreen(
                 Text(
                     "${authored.definition().slots().size} exercises · about ${authored.expectedMinutes()} min"
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    authored.definition().slots().take(4).forEach { Text(it.exercise().name()) }
-                    if (authored.definition().slots().size > 4)
-                        Text("+ ${authored.definition().slots().size - 4} more")
-                }
+                ExercisePreview(authored.definition().slots().map { it.exercise().name() })
                 if (summary.todayCompleted())
                     Text("Actual workout recorded and explicitly linked to this session.")
-                else if (gymNow != null) CoachButton("Start workout", gymNow)
+                else if (gymNow != null) CoachButton("Start planned workout", gymNow)
                 TextButton(onClick = { openSession(authored.id()) }) {
                     Text("View workout details")
                 }
@@ -53,61 +49,58 @@ fun SharedStrengthTodayScreen(
                         "Build a programme or log a workout independently. No race goal is needed."
                     else "No gym session is planned today. Rest or train independently."
                 )
-                CoachButton(if (!hasProgramme) "Create a gym programme" else "View gym programme") {
-                    open("gym")
-                }
+                if (!hasProgramme) CoachButton("Create a gym programme") { open("gym") }
+                else
+                    OutlinedButton(
+                        onClick = { open("gym") },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                    ) {
+                        Text("View gym programme")
+                    }
             } else {
                 Text(session.title(), style = MaterialTheme.typography.headlineMedium)
                 Text(
                     "${session.exercises().size} exercises · up to ${requireNotNull(legacyMinutes)} min"
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    session.exercises().take(4).forEach {
-                        Text(
-                            ExerciseCatalog.definition(it.exerciseId())?.exercise()?.name()
-                                ?: "Retained exercise"
-                        )
+                ExercisePreview(
+                    session.exercises().map {
+                        ExerciseCatalog.definition(it.exerciseId())?.exercise()?.name()
+                            ?: "Retained exercise"
                     }
-                    if (session.exercises().size > 4) Text("+ ${session.exercises().size - 4} more")
-                }
+                )
                 if (summary.todayCompleted()) {
                     Text("Actual workout recorded and explicitly linked to this session.")
                 } else {
-                    if (gymNow != null) CoachButton("Start workout", gymNow)
-                    CoachButton("Log today's workout") { open("strength?date=$today") }
+                    if (gymNow != null) CoachButton("Start planned workout", gymNow)
+                    OutlinedButton(
+                        onClick = { open("strength?date=$today") },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                    ) {
+                        Text("Log today's workout")
+                    }
                 }
                 TextButton(onClick = { openSession(session.id()) }) { Text("View workout details") }
             }
         }
-        SemanticCard(Tile.Strength) {
-            Text(
-                if (gymNow != null) "Gym now" else "Train independently",
-                style = MaterialTheme.typography.titleLarge,
+
+        // Unplanned training is named as such, so it cannot be mistaken for today's session.
+        Text(
+            "Unplanned training",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.semantics { heading() },
+        )
+        QuickStartRow(
+            listOf(
+                if (gymNow != null) "Start unplanned workout" to gymNow
+                else "Log a spontaneous workout" to { open("strength/log") }
             )
-            Text(
-                "Spontaneous training stays separate from your programme unless you choose to associate it."
-            )
-            CoachButton(if (gymNow != null) "Gym now" else "Log a spontaneous workout") {
-                gymNow?.invoke() ?: open("strength/log")
-            }
-        }
-        SemanticCard(Tile.Progress) {
-            Text("This week", style = MaterialTheme.typography.titleMedium)
-            if (summary.plannedThisWeek() > 0) {
-                Text(
-                    "${summary.completedThisWeek()} / ${summary.plannedThisWeek()} programmed sessions completed",
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-            }
-            Text(
-                "${summary.actualWorkoutsThisWeek()} actual strength ${if (summary.actualWorkoutsThisWeek() == 1) "workout" else "workouts"} recorded"
-            )
-            if (summary.recentPbExercises() > 0)
-                Text(
-                    "PB evidence in ${summary.recentPbExercises()} ${if (summary.recentPbExercises() == 1) "exercise" else "exercises"} in the past 28 days"
-                )
-            TextButton(onClick = { open("strength/pbs") }) { Text("PBs & progression") }
-        }
+        )
+        Text(
+            "Saved separately from your programme unless you choose to link it.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
         summary.recommendation()?.let { advice ->
             SemanticCard(Tile.Insight) {
                 Text("Coach", style = MaterialTheme.typography.titleMedium)
@@ -120,7 +113,43 @@ fun SharedStrengthTodayScreen(
                 TextButton(onClick = { open("gym") }) { Text("Review programme and choices") }
             }
         }
-        TextButton(onClick = { open("exercises") }) { Text("Exercises & technique") }
-        TextButton(onClick = { open("history?kind=STRENGTH") }) { Text("Strength workout history") }
+
+        SemanticCard(Tile.Progress) {
+            Text("This week", style = MaterialTheme.typography.titleMedium)
+            if (summary.plannedThisWeek() > 0) {
+                Text(
+                    "${summary.completedThisWeek()} / ${summary.plannedThisWeek()} programmed sessions completed",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+            Text(
+                "${summary.actualWorkoutsThisWeek()} actual strength ${if (summary.actualWorkoutsThisWeek() == 1) "workout" else "workouts"} recorded"
+            )
+            if (summary.recentPbExercises() > 0)
+                Text(
+                    "PB evidence in ${summary.recentPbExercises()} ${if (summary.recentPbExercises() == 1) "exercise" else "exercises"} in the past 28 days"
+                )
+        }
+
+        ActionGroup("More") {
+            ActionRow("PBs & progression", "Recorded bests and history") { open("strength/pbs") }
+            ActionRow("Exercises & technique", "Search, favourite and learn") { open("exercises") }
+            ActionRow("Strength workout history") { open("history?kind=STRENGTH") }
+        }
+    }
+}
+
+/** The first three exercises on one line keep the card short; the count states the rest. */
+@Composable
+private fun ExercisePreview(names: List<String>) {
+    if (names.isEmpty()) return
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        names.take(3).forEach { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        if (names.size > 3)
+            Text(
+                "+ ${names.size - 3} more",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
     }
 }

@@ -37,7 +37,7 @@ class SharedHomeAndStrengthTodayTest {
         compose.onNodeWithText("Build a programme or log a workout independently. No race goal is needed.").assertExists()
         compose.onNodeWithText("0 actual strength workouts recorded").assertExists()
         compose.runOnIdle {assertEquals(emptyList<String>(),actions)}
-        compose.onNode(hasText("Gym now") and hasClickAction()).performScrollTo().performClick()
+        compose.onNode(hasText("Start unplanned workout") and hasClickAction()).performScrollTo().performClick()
         compose.runOnIdle {assertEquals(listOf("gym-now"),actions)}
     }
     @Test fun plannedWorkoutKeepsRawSessionIdentityAndSeparateLogging() {
@@ -52,7 +52,7 @@ class SharedHomeAndStrengthTodayTest {
     @Test fun completedWorkoutAt200PercentKeepsEvidenceAndHistoryActionsScrollable() {
         show(completed=true,planned=true,dark=true,large=true)
         compose.onNodeWithText("Actual workout recorded and explicitly linked to this session.").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("Start workout").assertDoesNotExist()
+        compose.onNodeWithText("Start planned workout").assertDoesNotExist()
         compose.onNodeWithText("1 / 1 programmed sessions completed").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("1 actual strength workout recorded").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Strength workout history").performScrollTo().performClick()
