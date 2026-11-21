@@ -31,8 +31,8 @@ fun AppleSettingsScreen(
     session: AppleCoachSession<*>,
     presenter: UIViewController,
     onRestore: (ReviewedBackup) -> Unit,
-    health: @Composable () -> Unit = {},
     lastOpened: MutableState<String?>? = null,
+    health: @Composable () -> Unit = {},
 ) {
     val state by session.services.operations.state.collectAsState()
     val reminderFailure by session.platform.reminderFailure.collectAsState()
