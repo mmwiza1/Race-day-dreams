@@ -53,7 +53,10 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     }
 
     fun refresh(autoImport: Boolean = false) =
-        operations.refresh { healthOperations.beforeRefresh(autoImport) }
+        if (autoImport) operations.refresh(beforeRead = { healthOperations.beforeRefresh(true) })
+        // Without an import nothing runs before the read, so overlapping requests (resume,
+        // permission results, screen entry) share one queued read.
+        else operations.refresh(merge = true)
 
     fun saveProfile(
         profile: UserProfile,

@@ -230,10 +230,9 @@ object DashboardAnalytics {
     ): Running {
         val window = window(period, today)
         val previous = previousWindow(period, today)
+        val counted = PhysicalRunSessions.counted(activities)
         val dated =
-            PhysicalRunSessions.counted(activities)
-                .map { it to displayDate(it.start()) }
-                .filter { !before(today, it.second) }
+            counted.map { it to displayDate(it.start()) }.filter { !before(today, it.second) }
         val weekStart = monday(today)
         val weekDays = (today.toEpochDay() - weekStart.toEpochDay() + 1).toInt()
         val earliest = dated.minOfOrNull { it.second.toEpochDay() }
@@ -268,7 +267,7 @@ object DashboardAnalytics {
             previous = totals(dated, previous),
             comparable = earliest != null && earliest <= previous.start.toEpochDay(),
             weeklyTrend =
-                RecordedWeekAggregation.weekly(activities, today, period.weeks, displayDate),
+                RecordedWeekAggregation.weeklyCounted(counted, today, period.weeks, displayDate),
             recentRuns = recent,
         )
     }

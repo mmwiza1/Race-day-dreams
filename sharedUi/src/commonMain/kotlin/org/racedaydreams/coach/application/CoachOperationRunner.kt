@@ -35,17 +35,43 @@ class CoachOperationRunner(
         mutableState.update(transform)
     }
 
-    fun refresh(beforeRead: suspend () -> Unit = {}) {
+    /** True while a mergeable refresh is queued and has not started reading. Main thread only. */
+    private var mergeableRefreshWaiting = false
+
+    /**
+     * Re-reads and publishes the snapshot.
+     *
+     * With [merge], a request made while another merged refresh is still queued, and has not yet
+     * started reading, is folded into it. Resuming the app, returning from a permission screen and
+     * re-entering a screen often ask at almost the same moment; the queued refresh reads after all
+     * of those requests, so it already sees every change made before them, and one full read
+     * replaces several. A refresh that has started reading is never relied on: a later request
+     * queues a new read, so data is never left stale. Only use [merge] when [beforeRead] does
+     * nothing. Call on the [scope]'s main thread.
+     */
+    fun refresh(beforeRead: suspend () -> Unit = {}, merge: Boolean = false) {
+        if (merge) {
+            if (mergeableRefreshWaiting) return
+            mergeableRefreshWaiting = true
+        }
         scope.launch {
+            var waiting = merge
             update { it.copy(busy = true, error = null) }
             try {
                 mutex.withLock {
+                    if (waiting) {
+                        mergeableRefreshWaiting = false
+                        waiting = false
+                    }
                     beforeRead()
                     publishSnapshot()
                 }
             } catch (failure: Exception) {
                 if (failure is CancellationException) throw failure
                 showFailure(failure)
+            } finally {
+                // Cancelled before reading: let the next request queue its own refresh.
+                if (waiting) mergeableRefreshWaiting = false
             }
         }
     }

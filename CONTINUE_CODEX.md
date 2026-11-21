@@ -17,7 +17,11 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 
 ## Current verified baseline (20 November 2026)
 
-- **Latest: `main` = `66e963fb` (0.15.1-test1 / 24, iOS 0.15.1 / 24), the first release-signed
+- **Latest: `main` = `e46d884d` (0.15.2-test1 / 25, iOS 0.15.2 / 25), PR #30 merged (checkpoint
+  269).** Published and verified by download on 21 November 2026: APK SHA-256 `8f484d61…b6d2`,
+  signer cert `e7af758a…929d`, versionCode 25, `latest-update.json` versionCode 25, unsigned `.ipa`
+  `4348bc50…8878`. Battery/performance work (0.15.3-test1) is in progress below.
+- **Earlier: `main` = `66e963fb` (0.15.1-test1 / 24, iOS 0.15.1 / 24), the first release-signed
   publication (checkpoint 268).** The 0.14.0 details below are kept as the earlier verified state.
 - **`main` = `44987a3bd9e0a03686a5caad64524ed7832de908` (0.14.0-test1 / versionCode 22; iOS 0.14.0 /
   build 22).** Verified live on 20 November 2026 (git, PR, Actions and the `development` release).
@@ -106,6 +110,40 @@ installations that cannot support them (all existing debug-signed installs).
   `Race-Day-Dreams-latest-unsigned.ipa`), clearly labelled unsigned / re-sign before installing.
 - Every progress update to the owner states an ETA (UTC) for the next result. Poll CI no more often
   than every 15 minutes (a background until-loop that stops on the first failed job).
+
+## Active work — battery and performance optimisation (0.15.3-test1, owner request, 21 November 2026)
+
+Owner-authorised implementation of `docs/BATTERY_EFFICIENCY_AUDIT.md`, with automatic merge "once
+implementation, regression testing and required CI checks have passed" (this work only; do not merge
+unrelated PRs). Branch `perf/battery-efficiency` from `e46d884d`. Never trade GPS accuracy, recording
+reliability, heart rate or data integrity for battery, and claim no battery percentage without
+physical measurements. Do not touch signing credentials or the signing-activation workflow.
+
+- **Implemented:**
+  - A-1: notification posted only on change (`NotificationUpdateGate`, cached `PendingIntent`s,
+    delete intent re-shows).
+  - S-1: incremental live route (`IncrementalRoutePoints` + `RecordingStore.pointsFrom`, gap-checked,
+    reset on failure).
+  - S-2: linear week bucketing (`RecordedWeekAggregation.byWeek`/`weeklyCounted`, trend points) and
+    linear `PhysicalRunSessions.sessions`.
+  - A-8 (partial): plain refreshes merged while queued (`CoachOperationRunner.refresh(merge = true)`,
+    used by `CoachViewModel.refresh(autoImport = false)`).
+  - I-5: iOS gym clock and checkpoint driven by app background/foreground (`AppleAppVisibility`).
+- **Deferred with reasons:**
+  - A-8 skip-unchanged (time-dependent derivations, side-effect writes, no change counter without a
+    schema change).
+  - I-1 (no demonstrably redundant commit; `last_mono` is the recovery end time).
+  - A-2 (needs Battery Historian).
+  - I-3 (needs a real strap).
+- **Evidence:** Section 0 of the audit doc. JVM benchmarks are in `DashboardHistoryPerformanceTest`
+  (its output is in the jvmTest XML).
+- **Local results:**
+  - `:sharedDomain:jvmTest` 548/548;
+  - app and androidTest compile;
+  - formatting check;
+  - release-notes tests;
+  - iOS code (`AppleAppVisibility`, `AppleGymScreen`, iosTest) is compiled and tested only on CI
+    Mac runners.
 
 ## Active work — onboarding and running-analytics bug fixes (PR #30, owner request, 20 November 2026)
 

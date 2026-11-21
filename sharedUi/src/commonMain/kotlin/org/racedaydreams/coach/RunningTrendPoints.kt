@@ -3,6 +3,7 @@ package org.racedaydreams.coach
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.activity.RecordedWeek
+import org.racedaydreams.domain.activity.RecordedWeekAggregation
 import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.domain.time.LocalDate
 
@@ -23,18 +24,28 @@ fun sharedRunningTrendPoints(
     dateAt: (Instant) -> LocalDate,
 ): List<RunningTrendPoint> =
     PhysicalRunSessions.counted(activities).let { counted ->
+        // Each run's display date is computed once and grouped by week, rather than scanning the
+        // whole history for every week shown (52 times for a year). Order within a week is kept.
+        val byWeek = RecordedWeekAggregation.byWeek(counted, dateAt)
         weeks.map { week ->
             val weekStart =
                 requireNotNull(week.weekStart()) {
                     "Generated week must retain its calendar identity."
                 }
+            val monday = RecordedWeekAggregation.mondayEpochDay(weekStart.toEpochDay())
+            // Generated weeks start on Monday; any other start also spans the next ISO week.
+            val candidates =
+                byWeek[monday].orEmpty() +
+                    if (monday == weekStart.toEpochDay()) emptyList()
+                    else byWeek[monday + 7].orEmpty()
             val runs =
-                counted.filter {
-                    val date = dateAt(it.start())
-                    date.toEpochDay() >= weekStart.toEpochDay() &&
-                        date.toEpochDay() < weekStart.toEpochDay() + 7 &&
-                        date.toEpochDay() <= today.toEpochDay()
-                }
+                candidates
+                    .filter { (_, date) ->
+                        date.toEpochDay() >= weekStart.toEpochDay() &&
+                            date.toEpochDay() < weekStart.toEpochDay() + 7 &&
+                            date.toEpochDay() <= today.toEpochDay()
+                    }
+                    .map { it.first }
             when (metric) {
                 RunningTrendMetric.DISTANCE ->
                     RunningTrendPoint(

@@ -12,8 +12,8 @@ android {
         applicationId 'org.racedaydreams'
         minSdk 28
         targetSdk 35
-        versionCode 25
-        versionName '0.15.2-test1'
+        versionCode 26
+        versionName '0.15.3-test1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         // Public fingerprint of the project's release signing certificate (never a key). Builds
         // whose own certificate matches it may check for and install in-place updates; all other

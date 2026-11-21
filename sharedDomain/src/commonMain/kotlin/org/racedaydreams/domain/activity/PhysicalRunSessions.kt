@@ -2,6 +2,7 @@ package org.racedaydreams.domain.activity
 
 import kotlin.jvm.JvmStatic
 import org.racedaydreams.domain.coaching.Immutable
+import org.racedaydreams.domain.time.Instant
 
 /**
  * Groups retained activity records that describe the same physical run so analytics count each run
@@ -33,13 +34,27 @@ object PhysicalRunSessions {
                 .distinctBy { it.id() }
                 .sortedWith(compareBy<ActivityRecord> { it.start() }.thenBy { it.id() })
         val groups = mutableListOf<MutableList<ActivityRecord>>()
+        // Groups that can still overlap a later record, in creation order, with their latest end.
+        // Records are visited by start time, so once every member of a group has ended at or before
+        // a record's start, no later record can overlap it either. Skipping those groups keeps a
+        // long history linear without changing which group a record joins.
+        val open = mutableListOf<Pair<MutableList<ActivityRecord>, Instant>>()
         for (activity in ordered) {
+            open.removeAll { !it.second.isAfter(activity.start()) }
             val key = sourceKey(activity)
-            val group =
-                groups.firstOrNull { members ->
+            val index =
+                open.indexOfFirst { (members, _) ->
                     members.none { sourceKey(it) == key } && members.any { sameRun(it, activity) }
                 }
-            if (group == null) groups.add(mutableListOf(activity)) else group.add(activity)
+            if (index < 0) {
+                val members = mutableListOf(activity)
+                groups.add(members)
+                open.add(members to activity.end())
+            } else {
+                val (members, end) = open[index]
+                members.add(activity)
+                open[index] = members to maxOf(end, activity.end())
+            }
         }
         val result =
             groups.map { members ->
