@@ -457,6 +457,10 @@ class CoachingScreenshotTest {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         await("Today")
         capture("home")
+        alignHeading("Start something else")
+        capture("today-scrolled")
+        alignHeadingOrPageEnd("Your training")
+        capture("today-more")
         compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick()
         await("Recommendation")
         capture("weekly-review")
@@ -722,9 +726,13 @@ class CoachingScreenshotTest {
         capture("gym-strength-first")
         back()
         click("Settings")
-        await("Activity data source")
+        await("Health and connected data")
         capture("settings")
-        alignHeading("Activity data source")
+        openSettingsSection("settings-training")
+        capture("settings-training-open")
+        openSettingsSection("settings-health")
+        await("Activity data source")
+        alignHeadingOrPageEnd("Activity data source")
         capture("data-sources")
         compose.onNodeWithText("Personal health context").performScrollTo().performClick()
         await("Personal health context")
@@ -805,13 +813,13 @@ class CoachingScreenshotTest {
         back()
         back()
         click("Settings")
-        await("Activity data source")
+        openSettingsSection("settings-training")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         compose.waitForIdle()
         capture("onboarding")
         back()
         click("Settings")
-        await("Activity data source")
+        openSettingsSection("settings-training")
         compose.onNodeWithText("Shoes and mileage").performScrollTo().performClick()
         await("Your shoes")
         capture("shoes")
@@ -970,6 +978,13 @@ class CoachingScreenshotTest {
             await("Your strength training")
             capture("strength-home")
             compose.onAllNodesWithText("How am I doing?").assertCountEquals(0)
+            alignHeading("Unplanned training")
+            capture("today-strength-scrolled")
+            click("Progress")
+            await("Distance this week")
+            // Strength focus: the lifting figures lead the page.
+            compose.onNodeWithTag("kpi-Working sets").assertIsDisplayed()
+            capture("progress-strength-focus")
             closeScenario()
             scenario = null
             shell("cmd uimode night yes")
@@ -1309,6 +1324,7 @@ class CoachingScreenshotTest {
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
                 click("Settings")
+                openSettingsSection("settings-data")
                 await("Storage & recording detail")
                 compose
                     .onNodeWithText("Storage & recording detail")
@@ -1517,6 +1533,12 @@ class CoachingScreenshotTest {
                     )
                     .performClick()
                 await("Body & protein guidance")
+                if (suffix == "") {
+                    // Hybrid focus: running and strength summaries at the same depth.
+                    await("Distance this week")
+                    compose.onNodeWithTag("kpi-Working sets").assertExists()
+                    capture("progress-hybrid-focus")
+                }
                 compose.onNodeWithText("Body & protein guidance").performScrollTo().performClick()
                 await("A general daily range is about 120–175 grams of protein.")
                 alignHeading("Body & protein guidance")
@@ -1618,7 +1640,7 @@ class CoachingScreenshotTest {
                 shell("settings put system font_scale $scale")
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
-                awaitHomeReady(true, "Start workout")
+                awaitHomeReady(true, "Start planned workout")
                 compose
                     .onNode(
                         (hasText("Strength") or hasContentDescription("Strength")) and
@@ -3429,8 +3451,9 @@ class CoachingScreenshotTest {
             context.getSharedPreferences(org.racedaydreams.update.UpdatePreferencesStore.NAME, 0)
         fun openUpdates() {
             click("Settings")
+            openSettingsSection("settings-app")
             await("App updates")
-            alignHeading("App updates")
+            alignHeadingOrPageEnd("App updates")
         }
         fun awaitText(text: String, timeoutMs: Long = 20000) {
             try {
@@ -3526,6 +3549,7 @@ class CoachingScreenshotTest {
     fun capturesPlainBackupExplanationInAllModes() {
         withRefinementCaptureModes { suffix ->
             click("Settings")
+            openSettingsSection("settings-data")
             await("Local backup and restore")
             alignHeading("Local backup and restore")
             capture("settings-backup-plain$suffix")
@@ -3544,6 +3568,7 @@ class CoachingScreenshotTest {
     fun capturesPlainHealthAndRunningInstructionsInAllModes() {
         withRefinementCaptureModes { suffix ->
             click("Settings")
+            openSettingsSection("settings-training")
             compose.onNodeWithText("Personal health context").performScrollTo().performClick()
             await("Heart-rate variability")
             alignHeading("Heart-rate variability")
@@ -3660,6 +3685,7 @@ class CoachingScreenshotTest {
                 if (suffix == "brand-light" && android.os.Build.VERSION.SDK_INT >= 31) {
                     // Exercise the real preference control, not only fixture writes.
                     click("Settings")
+                    openSettingsSection("settings-app")
                     await("Appearance")
                     val deviceColours = compose.onNodeWithText("Use device colours")
                     deviceColours.performScrollTo().performClick()
@@ -3720,6 +3746,54 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesFirstRunFocusChoiceInAllModes() {
+        // A genuine first run: no profile, no reviewed baseline and no chosen focus.
+        SqliteUserPreferencesRepository(context).clear()
+        FeatureStore(context).putSetting("baseline.reviewed", "false")
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for (mode in
+                listOf(
+                    MaterialCapture("light", false, "no", 1f),
+                    MaterialCapture("dark", false, "yes", 1f),
+                    MaterialCapture("large-font", false, "no", 2f),
+                )) {
+                closeScenario()
+                scenario = null
+                prefs
+                    .edit()
+                    .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false)
+                    .commit()
+                shell("cmd uimode night ${mode.night}")
+                shell("settings put system font_scale ${mode.scale}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                await("Make today yours")
+                for (choice in
+                    listOf(
+                        "Train for a race",
+                        "Record my runs",
+                        "Focus on strength",
+                        "Running + strength",
+                    )) compose.onNode(hasText(choice) and hasClickAction()).assertExists()
+                capture("starting-path-${mode.suffix}")
+            }
+        } finally {
+            closeScenario()
+            scenario = null
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("cmd uimode night $night")
+        }
+    }
+
+    @Test
     fun capturesRetainedGoalFormInDarkAndLargeText() {
         val prefs =
             context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
@@ -3732,6 +3806,7 @@ class CoachingScreenshotTest {
         try {
             for (mode in
                 listOf(
+                    MaterialCapture("light", false, "no", 1f),
                     MaterialCapture("dark", false, "yes", 1f),
                     MaterialCapture("large-font", false, "no", 2f),
                 )) {
@@ -3746,7 +3821,7 @@ class CoachingScreenshotTest {
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
                 click("Settings")
-                await("Activity data source")
+                openSettingsSection("settings-training")
                 compose
                     .onNodeWithText("Edit race goal and availability")
                     .performScrollTo()
@@ -3762,6 +3837,43 @@ class CoachingScreenshotTest {
                         )
                     )
                 capture("onboarding-material-${mode.suffix}")
+                // The simplified later steps: strategy and weekly extras start closed.
+                fun continueStep() =
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(
+                                org.racedaydreams.R.string.onboarding_continue
+                            )
+                        )
+                        .perform(
+                            androidx.test.espresso.action.ViewActions.scrollTo(),
+                            androidx.test.espresso.action.ViewActions.click(),
+                        )
+                continueStep()
+                capture("onboarding-approach-${mode.suffix}")
+                continueStep()
+                capture("onboarding-week-${mode.suffix}")
+                if (mode.suffix == "light") {
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(
+                                "More options: long-run day, schedule and units"
+                            )
+                        )
+                        .perform(
+                            androidx.test.espresso.action.ViewActions.scrollTo(),
+                            androidx.test.espresso.action.ViewActions.click(),
+                        )
+                    androidx.test.espresso.Espresso.onView(
+                            androidx.test.espresso.matcher.ViewMatchers.withText(
+                                org.racedaydreams.R.string.onboarding_units
+                            )
+                        )
+                        .perform(androidx.test.espresso.action.ViewActions.scrollTo())
+                    capture("onboarding-week-options-light")
+                }
+                // Step back to the first step so the retained draft matches the saved profile.
+                back()
+                back()
+                back()
             }
         } finally {
             closeScenario()
@@ -3838,7 +3950,7 @@ class CoachingScreenshotTest {
         capture("progress-weekly-run-sources")
 
         click("Settings")
-        await("Activity data source")
+        openSettingsSection("settings-training")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         val espresso = androidx.test.espresso.Espresso::onView
         fun text(value: String) = androidx.test.espresso.matcher.ViewMatchers.withText(value)
@@ -4234,6 +4346,47 @@ class CoachingScreenshotTest {
                 predicate(state)
         }
         Assert.assertNull("A gym capture must not conceal a failed write", model.state.value.error)
+        compose.waitForIdle()
+    }
+
+    /**
+     * Like [alignHeading], for content near the end of a page (late Settings sections, Today's More
+     * group). When the page is scrolled fully to its end the heading cannot move higher; accept
+     * that only if the page truly cannot scroll further and the heading is visible in the upper
+     * half of the screen.
+     */
+    private fun alignHeadingOrPageEnd(text: String) {
+        try {
+            alignHeading(text)
+        } catch (notAligned: AssertionError) {
+            val heading = compose.onNodeWithText(text)
+            heading.assertIsDisplayed()
+            val container = compose.onNode(hasScrollAction() and hasAnyDescendant(hasText(text)))
+            val range =
+                container.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange]
+            Assert.assertTrue(
+                "Page is not at its end: ${notAligned.message}",
+                range.value() >= range.maxValue() - 1f,
+            )
+            val top = heading.fetchSemanticsNode().positionInRoot.y
+            val height = compose.onRoot().fetchSemanticsNode().size.height.toFloat()
+            Assert.assertTrue("Heading $text is not in the upper half at $top", top < height / 2f)
+        }
+    }
+
+    /** Settings groups controls into collapsible sections; open one unless it is already open. */
+    private fun openSettingsSection(tag: String) {
+        compose.waitUntil(20000) {
+            compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
+        }
+        val section = compose.onNodeWithTag(tag)
+        val state =
+            section.fetchSemanticsNode().config.getOrElseNullable(
+                SemanticsProperties.StateDescription
+            ) {
+                null
+            }
+        if (state != "Expanded") section.performScrollTo().performClick()
         compose.waitForIdle()
     }
 

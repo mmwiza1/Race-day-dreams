@@ -65,6 +65,11 @@ public final class OnboardingView extends ScrollView {
     private boolean saving;
     private int[] palette;
 
+    /** Optional, advanced choices start closed; they stay open across re-renders once opened. */
+    private boolean strategyOpen;
+
+    private boolean weekOptionsOpen;
+
     /** Receives the existing Compose theme without rebuilding the retained form or its draft. */
     public void applyPalette(
             int background,
@@ -99,6 +104,21 @@ public final class OnboardingView extends ScrollView {
                 tile.setStroke(dp(1), palette[5]);
                 control.setBackground(tile);
             }
+        } else if (view instanceof Button button && "onboarding-link".equals(button.getTag())) {
+            // Text buttons for optional detail: no container, so they never compete with the
+            // step's own Continue action.
+            int ripple = palette[2] & 0x00FFFFFF | 0x33000000;
+            button.setBackground(
+                    new android.graphics.drawable.RippleDrawable(
+                            android.content.res.ColorStateList.valueOf(ripple),
+                            null,
+                            new android.graphics.drawable.ColorDrawable(0xFFFFFFFF)));
+            button.setBackgroundTintList(null);
+            button.setStateListAnimator(null);
+            button.setElevation(0);
+            button.setGravity(android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL);
+            button.setPadding(dp(4), dp(12), dp(4), dp(12));
+            button.setTextColor(stateColours(palette[2], disabledColour(0.38f)));
         } else if (view instanceof Button button) {
             boolean primary = "onboarding-primary".equals(button.getTag());
             // Draw Material 3 filled (primary) and outlined (other) buttons explicitly. Tinting the
@@ -293,8 +313,7 @@ public final class OnboardingView extends ScrollView {
     }
 
     private void goalStep() {
-        text(R.string.onboarding_philosophy, 18, false);
-        disclosure(R.string.onboarding_privacy);
+        note(R.string.onboarding_privacy);
         section(R.string.onboarding_distance);
         radioOptions(
                 RaceDistance.values(),
@@ -311,11 +330,11 @@ public final class OnboardingView extends ScrollView {
                     render();
                 },
                 value -> true);
-        text(
-                "General Fitness / Zone 2 focuses on easy, conversational running. A personal"
-                    + " heart-rate zone is only meaningful when suitable boundaries are available.",
-                16,
-                false);
+        if (draft.distance == RaceDistance.GENERAL_FITNESS)
+            note(
+                    "General Fitness / Zone 2 focuses on easy, conversational running. A personal"
+                            + " heart-rate zone is only meaningful when suitable boundaries are"
+                            + " available.");
         CheckBox event = new CheckBox(getContext());
         event.setId(View.generateViewId());
         event.setText(R.string.onboarding_event);
@@ -330,12 +349,10 @@ public final class OnboardingView extends ScrollView {
                     changed();
                     render();
                 });
-        text(
+        note(
                 draft.distance == RaceDistance.GENERAL_FITNESS
                         ? R.string.onboarding_general_event_hint
-                        : R.string.onboarding_event_hint,
-                16,
-                false);
+                        : R.string.onboarding_event_hint);
         if (draft.event) {
             EditText raceName =
                     input(
@@ -359,7 +376,7 @@ public final class OnboardingView extends ScrollView {
             content.addView(date, blockParams());
             date.setOnClickListener(view -> chooseDate());
         }
-        text(R.string.onboarding_safety, 16, false);
+        note(R.string.onboarding_safety);
     }
 
     private void chooseDate() {
@@ -399,7 +416,10 @@ public final class OnboardingView extends ScrollView {
                 },
                 value ->
                         draft.distance != RaceDistance.GENERAL_FITNESS || value == GoalMode.FINISH);
-        disclosure(R.string.onboarding_finish_explanation, R.string.onboarding_max_explanation);
+        disclosure(
+                "What do these mean?",
+                R.string.onboarding_finish_explanation,
+                R.string.onboarding_max_explanation);
         content.addView(target, blockParams());
         TextView targetLabel = new TextView(getContext());
         targetLabel.setText(R.string.onboarding_target_time);
@@ -433,31 +453,43 @@ public final class OnboardingView extends ScrollView {
         updatePacePreview();
         target.setVisibility(draft.goalMode == GoalMode.TARGET_TIME ? VISIBLE : GONE);
         section(R.string.onboarding_strategy);
-        radioOptions(
-                TrainingStrategy.values(),
-                draft.strategy,
-                TrainingStrategy::label,
-                value -> {
-                    draft.strategy = value;
-                    changed();
-                },
-                value -> value != TrainingStrategy.PERFORMANCE || draft.canSelectPerformance());
-        disclosure(
-                R.string.onboarding_distance_first_explanation,
-                R.string.onboarding_balanced_explanation,
-                R.string.onboarding_performance_explanation,
-                R.string.onboarding_zone2_explanation);
-        if (draft.retainingPerformanceWithoutCurrentEvidence()) {
-            text(R.string.onboarding_performance_retained, 16, false);
-        } else if (!draft.performanceEligible) {
-            disclosure(R.string.onboarding_performance_unavailable);
-        }
+        TextView strategySummary = text(draft.strategy.label(), 16, false);
+        // Beginners can keep the suggested strategy; the full choice is one tap away.
+        boolean mustReview = draft.retainingPerformanceWithoutCurrentEvidence();
+        collapsible(
+                "Change training strategy",
+                "Hide training strategies",
+                strategyOpen || mustReview,
+                open -> strategyOpen = open,
+                () -> {
+                    radioOptions(
+                            TrainingStrategy.values(),
+                            draft.strategy,
+                            TrainingStrategy::label,
+                            value -> {
+                                draft.strategy = value;
+                                strategySummary.setText(value.label());
+                                changed();
+                            },
+                            value ->
+                                    value != TrainingStrategy.PERFORMANCE
+                                            || draft.canSelectPerformance());
+                    disclosure(
+                            "Compare strategies",
+                            R.string.onboarding_distance_first_explanation,
+                            R.string.onboarding_balanced_explanation,
+                            R.string.onboarding_performance_explanation,
+                            R.string.onboarding_zone2_explanation);
+                    if (!mustReview && !draft.performanceEligible) {
+                        disclosure(
+                                "Why is Performance unavailable?",
+                                R.string.onboarding_performance_unavailable);
+                    }
+                });
+        if (mustReview) text(R.string.onboarding_performance_retained, 16, false);
     }
 
     private void routineStep() {
-        section(R.string.onboarding_running_days);
-        disclosure(R.string.onboarding_running_days_hint);
-        dayCheckboxes(draft.runningDays, R.string.onboarding_running_day_description);
         TextView countLabel = section(R.string.onboarding_run_count);
         List<String> countLabels = new ArrayList<>();
         for (int count = 1; count <= 7; count++) countLabels.add(Integer.toString(count));
@@ -470,43 +502,54 @@ public final class OnboardingView extends ScrollView {
                             changed();
                         });
         countLabel.setLabelFor(count.getId());
-        TextView longDayLabel = section(R.string.onboarding_long_run_day);
-        List<String> dayLabels = new ArrayList<>();
-        dayLabels.add(getContext().getString(R.string.onboarding_no_preference));
-        for (DayOfWeek day : DayOfWeek.values()) dayLabels.add(dayName(day));
-        Spinner longDay =
-                spinner(
-                        dayLabels,
-                        draft.longRunDay == null ? 0 : draft.longRunDay.getValue(),
-                        position -> {
-                            draft.longRunDay = position == 0 ? null : DayOfWeek.of(position);
-                            changed();
-                        });
-        longDayLabel.setLabelFor(longDay.getId());
+        section(R.string.onboarding_running_days);
+        note(R.string.onboarding_running_days_hint);
+        dayCheckboxes(draft.runningDays, R.string.onboarding_running_day_description);
         section(R.string.onboarding_gym_days);
-        disclosure(R.string.onboarding_gym_days_hint);
+        note(R.string.onboarding_gym_days_hint);
         dayCheckboxes(draft.gymDays, R.string.onboarding_gym_day_description);
-        section(R.string.onboarding_schedule);
-        radioOptions(
-                ScheduleType.values(),
-                draft.scheduleType,
-                ScheduleType::label,
-                value -> {
-                    draft.scheduleType = value;
-                    changed();
-                },
-                value -> true);
-        disclosure(R.string.onboarding_fixed_hint);
-        section(R.string.onboarding_units);
-        radioOptions(
-                UnitSystem.values(),
-                draft.units,
-                UnitSystem::label,
-                value -> {
-                    draft.units = value;
-                    changed();
-                },
-                value -> true);
+        collapsible(
+                "More options: long-run day, schedule and units",
+                "Hide more options",
+                weekOptionsOpen,
+                open -> weekOptionsOpen = open,
+                () -> {
+                    TextView longDayLabel = section(R.string.onboarding_long_run_day);
+                    List<String> dayLabels = new ArrayList<>();
+                    dayLabels.add(getContext().getString(R.string.onboarding_no_preference));
+                    for (DayOfWeek day : DayOfWeek.values()) dayLabels.add(dayName(day));
+                    Spinner longDay =
+                            spinner(
+                                    dayLabels,
+                                    draft.longRunDay == null ? 0 : draft.longRunDay.getValue(),
+                                    position -> {
+                                        draft.longRunDay =
+                                                position == 0 ? null : DayOfWeek.of(position);
+                                        changed();
+                                    });
+                    longDayLabel.setLabelFor(longDay.getId());
+                    section(R.string.onboarding_schedule);
+                    radioOptions(
+                            ScheduleType.values(),
+                            draft.scheduleType,
+                            ScheduleType::label,
+                            value -> {
+                                draft.scheduleType = value;
+                                changed();
+                            },
+                            value -> true);
+                    note(R.string.onboarding_fixed_hint);
+                    section(R.string.onboarding_units);
+                    radioOptions(
+                            UnitSystem.values(),
+                            draft.units,
+                            UnitSystem::label,
+                            value -> {
+                                draft.units = value;
+                                changed();
+                            },
+                            value -> true);
+                });
     }
 
     private void reviewStep() {
@@ -668,9 +711,9 @@ public final class OnboardingView extends ScrollView {
         error.post(() -> smoothScrollTo(0, error.getTop()));
     }
 
-    private void disclosure(int... resources) {
-        Button help = button(android.R.string.dialog_alert_title);
-        help.setText("Why? / Learn more");
+    /** A text button that reveals an explanation in place; the label says what it explains. */
+    private void disclosure(String label, int... resources) {
+        Button help = linkButton(label);
         TextView details = new TextView(getContext());
         StringBuilder explanation = new StringBuilder();
         for (int resource : resources) {
@@ -686,8 +729,61 @@ public final class OnboardingView extends ScrollView {
                 v -> {
                     boolean show = details.getVisibility() != VISIBLE;
                     details.setVisibility(show ? VISIBLE : GONE);
-                    help.setText(show ? "Hide details" : "Why? / Learn more");
+                    help.setText(show ? "Hide details" : label);
                 });
+    }
+
+    /**
+     * Optional controls grouped behind one text button. Their values are always part of the draft
+     * and shown on the Review step, so closing the group never hides what will be saved.
+     */
+    private void collapsible(
+            String closedLabel,
+            String openLabel,
+            boolean open,
+            Consumer<Boolean> remember,
+            Runnable build) {
+        Button toggle = linkButton(open ? openLabel : closedLabel);
+        content.addView(toggle, blockParams());
+        LinearLayout group = new LinearLayout(getContext());
+        group.setOrientation(LinearLayout.VERTICAL);
+        content.addView(group, blockParams());
+        LinearLayout outer = content;
+        content = group;
+        try {
+            build.run();
+        } finally {
+            content = outer;
+        }
+        group.setVisibility(open ? VISIBLE : GONE);
+        toggle.setOnClickListener(
+                v -> {
+                    boolean show = group.getVisibility() != VISIBLE;
+                    group.setVisibility(show ? VISIBLE : GONE);
+                    toggle.setText(show ? openLabel : closedLabel);
+                    remember.accept(show);
+                });
+    }
+
+    private Button linkButton(String label) {
+        Button button = new Button(getContext());
+        button.setText(label);
+        button.setTextSize(16);
+        button.setAllCaps(false);
+        button.setMinHeight(dp(48));
+        button.setTag("onboarding-link");
+        return button;
+    }
+
+    /** Secondary guidance: smaller than questions and answers, still at least 14 sp. */
+    private TextView note(int resource) {
+        return note(getContext().getString(resource));
+    }
+
+    private TextView note(String value) {
+        TextView view = text(value, 14, false);
+        view.setPadding(0, 0, 0, dp(8));
+        return view;
     }
 
     private TextView text(int resource, int size, boolean heading) {

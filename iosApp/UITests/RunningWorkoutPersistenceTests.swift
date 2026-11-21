@@ -24,6 +24,8 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         tap("Settings", in: app)
+        // Settings groups its controls; Apple Health lives under Health and connected data.
+        tap("Health and connected data", in: app)
         tap("Weight", in: app)
 
         let request = control("Request access and import", in: app)

@@ -111,7 +111,31 @@ installations that cannot support them (all existing debug-signed installs).
 - Every progress update to the owner states an ETA (UTC) for the next result. Poll CI no more often
   than every 15 minutes (a background until-loop that stops on the first failed job).
 
-## Active work — battery and performance optimisation (0.15.3-test1, owner request, 21 November 2026)
+## Active work — UX simplification and content hierarchy (owner request, 21 November 2026)
+
+Owner-requested redesign of Home, onboarding, Progress, Strength and Settings for review with
+ChatGPT. **Do not merge, do not enable auto-merge and do not treat green CI as approval: merge only
+on the owner's explicit authorisation.** Branch `ccr-60f602a7-tfmok3` (merged up to `main`
+`b1e99333`), PR targeting `main`. No version bump or release unless the owner asks. Scope, design
+rationale, before/after captures and deferred items: [docs/UX_REVIEW.md](docs/UX_REVIEW.md).
+Training algorithms, schema, Health Connect/HealthKit, recording and bottom navigation are
+untouched. Tests changed only to open the new Settings sections or select a button by its click
+action; no assertion was removed.
+
+- **Round 2 (owner review 1, 21 November 2026):**
+  - Direction approved; six refinements requested and implemented:
+    - strength-first Progress, and a balanced hybrid Progress;
+    - Home: Coming up promoted, and its actions grouped;
+    - Strength Today: planned and unplanned workouts named apart;
+    - Settings: no Settings action in its own top bar, and the last opened section remembered for the session (in memory only);
+    - pace averages state their sample;
+    - a real first-run capture.
+  - Round 1 images are kept in `docs/ux-review/round1/`. Still **do not merge**; awaiting the next owner review.
+- 0.15.3-test1 (battery/performance, PRs #31–#33) is published and verified by download on
+  21 November 2026: APK `bbdd2224…6459`, versionCode 26, signer `e7af758a…929d`, update manifest
+  commit `b1e99333`, unsigned `.ipa` `45944e77…9b2a`, main run 44886264006 all green.
+
+## Completed — battery and performance optimisation (0.15.3-test1, owner request, 21 November 2026)
 
 Owner-authorised implementation of `docs/BATTERY_EFFICIENCY_AUDIT.md`, with automatic merge "once
 implementation, regression testing and required CI checks have passed" (this work only; do not merge

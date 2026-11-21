@@ -68,7 +68,12 @@ fun CoachShell(
                             TextButton(onClick = onBack) { Text("Back") }
                         }
                     },
-                    actions = { TextButton(onClick = onSettings) { Text("Settings") } },
+                    // Already in Settings: Back is the way out, so a second Settings action would
+                    // only reload the screen people are on.
+                    actions = {
+                        if (route != "settings")
+                            TextButton(onClick = onSettings) { Text("Settings") }
+                    },
                 )
             },
             bottomBar = {
