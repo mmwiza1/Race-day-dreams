@@ -151,6 +151,11 @@ physical measurements. Do not touch signing credentials or the signing-activatio
     scrolled the new control away.
   - Fix PR `fix/ios-ui-test-transition-waits` lets the first look wait 10 s for the transition. It
     does not change assertions or the swipe count. Publication of 0.15.3-test1 waits on that PR.
+  - PR #32's first run passed both iOS tests, but API 28 timed out in the new
+    `CoachOperationRunnerTest.refreshesThatImportOrAreNotMergeableAreNeverDropped`. This was a test
+    race: every read published an equal state, and `StateFlow` does not re-emit an equal value, so
+    the waiting collector could miss the final read. Each test read now publishes a distinct
+    `startingPath`. Runner code is unchanged.
 - **Local results:**
   - `:sharedDomain:jvmTest` 548/548;
   - app and androidTest compile;

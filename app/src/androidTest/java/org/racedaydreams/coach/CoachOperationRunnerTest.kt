@@ -180,13 +180,19 @@ class CoachOperationRunnerTest {
         val reading = CompletableDeferred<Unit>()
 
         suspend fun read(): CoachUiState {
-            reads.incrementAndGet()
+            val number = reads.incrementAndGet()
             // What this read observed; a change after this point needs another read.
             val observed = data.get()
             reading.complete(Unit)
             gate?.await()
             return withContext(Dispatchers.IO) {
-                CoachUiState(loading = false, calendarView = observed.toString())
+                // Each read publishes a distinct state, so a waiting collector always sees the
+                // last one: StateFlow does not re-emit a value equal to the one already delivered.
+                CoachUiState(
+                    loading = false,
+                    calendarView = observed.toString(),
+                    startingPath = "read $number",
+                )
             }
         }
     }
