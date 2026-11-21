@@ -4,8 +4,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import org.racedaydreams.coach.strength.*
@@ -72,10 +70,14 @@ internal fun AppleGymScreen(
                 ::number,
             )
         GymPage.WORKOUT -> {
-            LaunchedEffect(model) {
-                while (isActive) {
-                    model.observeWorkoutTime()
-                    delay(1_000)
+            // As on Android: the shared coordinator ticks the clock while the workout is visible,
+            // and checkpoints the workout and stops ticking when the app goes to the background.
+            DisposableEffect(model) {
+                model.setWorkoutVisible(true)
+                val visibility = AppleAppVisibility { visible -> model.setWorkoutVisible(visible) }
+                onDispose {
+                    visibility.close()
+                    model.setWorkoutVisible(false)
                 }
             }
             SharedGymWorkoutScreen(

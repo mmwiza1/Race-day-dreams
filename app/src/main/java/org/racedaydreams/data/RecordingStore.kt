@@ -58,6 +58,8 @@ class RecordingStore(context:Context) {
             db.setTransactionSuccessful()
         }finally{db.endTransaction()}
     }
+    /** Points saved at [from] and later, in order; staging sequences are append-only and gap-free. */
+    fun pointsFrom(id:String,from:Int):List<RunMetricsEngine.Point>{require(from>=0);val out=mutableListOf<RunMetricsEngine.Point>();helper.readableDatabase.rawQuery("SELECT sequence,payload FROM recording_points WHERE session_id=? AND sequence>=? ORDER BY sequence",arrayOf(id,from.toString())).use{c->while(c.moveToNext()){check(c.getInt(0)==from+out.size){"Staged route sequence gap"};out.add(decode(JSONObject(c.getString(1))))}};return out}
     fun points(id:String):List<RunMetricsEngine.Point>{val out=mutableListOf<RunMetricsEngine.Point>();helper.readableDatabase.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext())out.add(decode(JSONObject(c.getString(0))))};return out}
     data class Pause(val start:Long,val duration:Long,val metres:Double)
     fun pauses(id:String):List<Pause>{val points=points(id);val out=mutableListOf<Pause>();var start:Long?=null;helper.readableDatabase.rawQuery("SELECT payload FROM recording_events WHERE session_id=? ORDER BY sequence",arrayOf(id)).use{c->while(c.moveToNext()){val j=JSONObject(c.getString(0));val type=j.getString("type");if(type in listOf("PAUSE","AUTO_PAUSE"))start=j.getLong("mono");if(type in listOf("RESUME","AUTO_RESUME","FINISH")){start?.let{t->out.add(Pause(t,(j.getLong("mono")-t).coerceAtLeast(0),points.lastOrNull{it.fix().monotonicMillis()<=t}?.cumulativeMetres()?:0.0))};start=null}}};return out}

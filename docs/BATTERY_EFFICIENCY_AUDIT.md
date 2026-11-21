@@ -1,6 +1,6 @@
 # Race Day Dreams — Android and iOS battery efficiency audit
 
-- **Scope:** assessment only. No application code was changed for this audit.
+- **Scope:** assessment only. No application code was changed for this audit. The implementation that followed (0.15.3-test1) is recorded in Section 0.
 - **Audited source:** `main` at `2196212` (0.13.1-test1 / versionCode 21; iOS 0.13.1 / build 21).
 - **Date:** 19 November 2026.
 - **Method:** static source review of every energy-relevant path (location, recording service, wake
@@ -25,6 +25,51 @@ Finding labels:
 | **High-confidence risk** | The code very likely costs energy or CPU in a realistic scenario, but the size depends on device, data volume or OS behaviour. |
 | **Needs profiling** | Plausible opportunity; do not change without measurements. |
 | **Efficient — preserve** | Existing design that is already energy-conscious and should not be "optimised" away. |
+
+---
+
+## 0. Implementation status — 0.15.3-test1 (21 November 2026)
+
+The owner authorised implementing the outstanding recommendations. Every finding was first
+**revalidated on `main` at `e46d884` (0.15.2-test1)**, not on the audited `2196212`. All of A-1,
+S-1, S-2, A-8, I-1, A-2, I-3 and I-5 were still present. S-2 had also grown: the duplicate-run
+grouping added in 0.15.2 (`PhysicalRunSessions`) compared each record with every earlier group,
+and it ran up to four times per dashboard. **No percentage battery saving is claimed: nothing here
+was measured on a physical device.**
+
+| ID | Decision | Change | Evidence (methodology below) |
+| --- | --- | --- | --- |
+| A-1 | **Implemented** | `RunRecordingService.publish()` posts only when the shown content changes. Content is the title plus the paused state, so Pause/Resume, the heart-rate foreground upgrade and a granted notification permission always post. `PendingIntent`s are created once. A delete intent re-shows a dismissed notification. `startForeground` is unchanged. Gate: `NotificationUpdateGate`. | 5K–marathon simulated runs (1 tick + 1 fix per second, one manual pause): **4 posts per run instead of 3,720–32,520**. `NotificationUpdateGateTest` (6 tests). |
+| S-1 | **Implemented** | `LiveRecordedRoute` holds the decoded route and reads only `sequence >= held` through `RecordingStore.pointsFrom`. The store fails on any sequence gap, and any read failure discards the held copy, so the next refresh reads everything. A refresh with no new points does no projection work. The projection itself stays a full pass, because normalisation depends on the whole route's bounds. | Points decoded while the route is visible (flush and refresh every 5 s): 5K 324,900 → **1,800**; 10K 1,297,800 → **3,600**; half 5,187,600 → **7,200**; marathon 20,743,200 → **14,400**. One query per refresh, as before. Incremental route equals a full read, and so do its fit and render geometry, including gaps, segments and order. `IncrementalRoutePointsTest` (7 tests). |
+| S-2 | **Implemented** | Weekly totals and running trend points bucket runs by ISO week once, computing each display date once. `PhysicalRunSessions.sessions` skips groups that ended before the next record starts, which is exact because records are visited by start time. `DashboardAnalytics.running` reuses its counted runs for the weekly trend. Strength analytics already bucket in one pass (`StrengthVolume.weekly`) and are unchanged. | Desktop JVM, median of 5 runs, 5-year history (1,872 records with duplicates): duplicate grouping 31.0 → **1.0 ms**; 52-week totals 2.5 → **0.2 ms**; the whole running dashboard (1 year) **1.6 ms**. 3 years: 7.3 → 0.7 ms and 1.6 → 0.3 ms. Identical results for 1/3/5 years and 4–104 weeks (`DashboardHistoryPerformanceTest`); the 12 dashboard contract tests and 10 duplicate-run tests pass unchanged. |
+| S-2 (off-main) | **Not needed now** | After the linear rewrite, the heaviest running projection is about 1.6 ms on desktop for 5 years. Moving it to a background dispatcher would add a loading state and test idling risk for little gain. | Re-measure on a phone (scenario F) before revisiting. |
+| A-8 | **Partly implemented** | Plain refreshes (no Health Connect import) are merged while one is still queued and has not started reading. Resume, permission results and screen entry often ask together, so one read replaces several. A request made after a read has started always queues another read, and import refreshes are never merged. | `CoachOperationRunnerTest`: four overlapping requests produce **1 read instead of 4**; a change during an in-progress read causes a second read that sees it; import and unmergeable refreshes all run. |
+| A-8 (skip unchanged) | **Deferred** | Skipping the resume read when "nothing changed" is not safe yet. The read also derives time-dependent results (84-day baseline window, eligibility, adaptive and weekly reviews, reminder reconciliation), writes proposals and reviews, and rechecks Health permissions. The Android connection pool exposes no reliable database change counter without a schema change. | Needs a change-token design (for example triggers with a schema migration) and per-write-path tests. |
+| I-1 | **Deferred (documented)** | While running, nearly every 1 s tick carries a new GPS point, so the commit is not redundant. During pauses or GPS gaps, the commit advances `last_mono`, which is the recovered end time and elapsed time after an iOS termination. No write is demonstrably unnecessary, so none was removed and the cadence was not lengthened. | Recommend Instruments (File Activity / Energy Log) on a real iPhone, scenario B, before an owner decision on pause-time cadence. |
+| A-2 | **Deferred (documented)** | The wake lock and 1 Hz GNSS during a manual pause are unchanged, keeping Resume, auto-resume and splits instant and accurate. | Battery Historian, scenario B with a 10-minute manual pause, on a Galaxy S24. |
+| I-5 | **Implemented** | The iOS gym workout screen drives the shared `setWorkoutVisible` from `UIApplicationDidEnterBackground` / `WillEnterForeground` (`AppleAppVisibility`), like Android's lifecycle. It checkpoints an unfinished workout and stops the 1 s display clock when backgrounded, then resumes on return. This replaces the screen's own always-running loop. | `AppleAppVisibilityTest` (iOS simulator); coordinator path shared with Android. Real iPhone background behaviour remains a physical check. |
+| I-3 | **Deferred (separate PR)** | iOS heart-rate reconnection needs a real Bluetooth strap; the simulator has no Bluetooth. It is a reliability change, not a battery change. | Scenario C on a real iPhone with a strap. |
+
+**Methodology:**
+
+- **Notification posts (A-1):** the gate is driven exactly as `publish()` drives it, with 2 requests
+  per simulated second.
+- **Points decoded (S-1):** an append-only fake staging store mirrors `RecordingStore`'s gap-free
+  sequences, with records added at 1 Hz and a refresh every 5 s. Full reloads decode
+  `5·r(r+1)/2` points for `r` refreshes.
+- **Dashboard timings (S-2):** `System.nanoTime` medians in `sharedDomain` `jvmTest` on the CI-class
+  Linux container. The earlier algorithms are kept in the test as references, and outputs are
+  compared for equality. The histories are synthetic:
+  - four runs a week cycling through 5K, 10K, half-marathon and marathon lengths;
+  - another app's Health Connect copy of the same run, manual copies, separate evening runs and
+    runs without distance;
+  - repeated syncs.
+
+  Phone timings will be higher; only the ratios are meaningful.
+- **Refreshes (A-8):** reads are counted on an instrumented `CoachOperationRunner` in the Android
+  emulator matrix.
+
+Physical-device measurements in Section 11 (scenarios B–F) remain **unperformed**.
 
 ---
 

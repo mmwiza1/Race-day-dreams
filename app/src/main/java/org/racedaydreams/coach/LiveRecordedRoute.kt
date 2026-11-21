@@ -11,12 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import org.racedaydreams.data.RecordingStore
-import org.racedaydreams.domain.recording.RunMetricsEngine
-
-private data class LiveRouteEvidence(
-    val checkpoint: Pair<String, Long>?,
-    val points: List<RunMetricsEngine.Point>,
-)
+import org.racedaydreams.domain.recording.IncrementalRoutePoints
 
 /**
  * An optional offline outline of the recorder's accepted, persisted evidence. Preparation is
@@ -31,30 +26,23 @@ internal fun LiveRecordedRoute() {
     LaunchedEffect(context, lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             val store = RecordingStore(context)
-            var observed: Pair<String, Long>? = null
+            // Holds the decoded saved route; each refresh reads only newly saved points.
+            val route = IncrementalRoutePoints(store::pointsFrom)
             while (isActive) {
                 try {
-                    val snapshot =
+                    val points =
                         withContext(Dispatchers.IO) {
                             val session =
                                 store.unfinished()?.takeIf {
                                     it.state in listOf("ACTIVE", "PAUSED")
                                 }
-                            if (session == null) LiveRouteEvidence(null, emptyList())
-                            else {
-                                val key = session.id to session.last
-                                if (key == observed) null
-                                else LiveRouteEvidence(key, store.points(session.id))
-                            }
+                            route.refresh(session?.id)
                         }
-                    if (snapshot != null) {
-                        val points = snapshot.points
-                        val prepared =
+                    if (points != null) {
+                        projection =
                             withContext(Dispatchers.Default) {
                                 PreparedLiveRoute.fromPoints(points)
                             }
-                        observed = snapshot.checkpoint
-                        projection = prepared
                     }
                     unavailable = false
                 } catch (cancelled: CancellationException) {

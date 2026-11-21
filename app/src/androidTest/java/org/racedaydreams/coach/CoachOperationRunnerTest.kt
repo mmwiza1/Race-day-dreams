@@ -171,4 +171,108 @@ class CoachOperationRunnerTest {
         assertFalse(runner.current.busy)
         assertTrue(runner.current.error!!.contains("left in place"))
     }
+
+    /** Reads the current data on IO, counting reads; [gate] can hold a read in progress. */
+    private class CountingReads {
+        val data = AtomicInteger(0)
+        val reads = AtomicInteger(0)
+        @Volatile var gate: CompletableDeferred<Unit>? = null
+        val reading = CompletableDeferred<Unit>()
+
+        suspend fun read(): CoachUiState {
+            reads.incrementAndGet()
+            // What this read observed; a change after this point needs another read.
+            val observed = data.get()
+            reading.complete(Unit)
+            gate?.await()
+            return withContext(Dispatchers.IO) {
+                CoachUiState(loading = false, calendarView = observed.toString())
+            }
+        }
+    }
+
+    private fun CoachOperationRunner.settle(reads: CountingReads, expected: Int) {
+        runBlocking {
+            withTimeout(20_000) { state.first { !it.busy && reads.reads.get() >= expected } }
+        }
+    }
+
+    @Test
+    fun overlappingResumeRefreshesShareOneQueuedReadThatSeesEveryEarlierChange() {
+        val reads = CountingReads()
+        val runner = CoachOperationRunner(scope, reads::read)
+        val release = CompletableDeferred<Unit>()
+        val holding = CompletableDeferred<Unit>()
+        instrumentation.runOnMainSync {
+            // A feature command holds the boundary, as a save or import does.
+            runner.submit {
+                holding.complete(Unit)
+                release.await()
+                reads.data.incrementAndGet()
+            }
+        }
+        runBlocking { withTimeout(20_000) { holding.await() } }
+        instrumentation.runOnMainSync {
+            // Resume, a permission result and screen entry ask together, around more changes.
+            runner.refresh(merge = true)
+            reads.data.incrementAndGet()
+            runner.refresh(merge = true)
+            runner.refresh(merge = true)
+            reads.data.incrementAndGet()
+            runner.refresh(merge = true)
+        }
+        release.complete(Unit)
+        runner.settle(reads, 2)
+        Thread.sleep(500)
+        // One read for the command and one for all four refreshes, instead of five.
+        assertEquals(2, reads.reads.get())
+        assertEquals("3", runner.current.calendarView)
+    }
+
+    @Test
+    fun aChangeDuringAnInProgressRefreshAlwaysCausesAnotherRead() {
+        val reads = CountingReads()
+        val runner = CoachOperationRunner(scope, reads::read)
+        val gate = CompletableDeferred<Unit>()
+        reads.gate = gate
+        instrumentation.runOnMainSync { runner.refresh(merge = true) }
+        runBlocking { withTimeout(20_000) { reads.reading.await() } }
+        // The first refresh is already reading; a run is then saved and the app asks again.
+        reads.data.incrementAndGet()
+        instrumentation.runOnMainSync { runner.refresh(merge = true) }
+        reads.gate = null
+        gate.complete(Unit)
+        // The in-progress read saw the old data; the later request reads again and sees the run.
+        runner.settle(reads, 2)
+        runBlocking { withTimeout(20_000) { runner.state.first { it.calendarView == "1" } } }
+        assertEquals(2, reads.reads.get())
+    }
+
+    @Test
+    fun refreshesThatImportOrAreNotMergeableAreNeverDropped() {
+        val reads = CountingReads()
+        val runner = CoachOperationRunner(scope, reads::read)
+        val imports = AtomicInteger(0)
+        val release = CompletableDeferred<Unit>()
+        val holding = CompletableDeferred<Unit>()
+        instrumentation.runOnMainSync {
+            runner.submit {
+                holding.complete(Unit)
+                release.await()
+            }
+        }
+        runBlocking { withTimeout(20_000) { holding.await() } }
+        instrumentation.runOnMainSync {
+            runner.refresh(merge = true)
+            runner.refresh({ imports.incrementAndGet() })
+            runner.refresh()
+            runner.refresh(merge = true)
+        }
+        release.complete(Unit)
+        runner.settle(reads, 4)
+        Thread.sleep(500)
+        assertEquals(1, imports.get())
+        // The command, the merged pair, the import refresh and the plain refresh.
+        assertEquals(4, reads.reads.get())
+    }
 }

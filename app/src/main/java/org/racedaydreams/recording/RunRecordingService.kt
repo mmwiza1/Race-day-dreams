@@ -37,6 +37,7 @@ import org.racedaydreams.domain.execution.RecordingCueCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.AutoPausePolicy
+import org.racedaydreams.domain.recording.NotificationUpdateGate
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.domain.support.DreamRoutes
 
@@ -61,6 +62,22 @@ class RunRecordingService : Service() {
     private val commandLock = Mutex()
     private var ticker: Job? = null
 
+    /** What the ongoing notification shows; it is re-posted only when this changes. */
+    private data class Shown(val title: String, val paused: Boolean)
+
+    private val notificationGate = NotificationUpdateGate<Shown>()
+    private val openIntent by lazy {
+        PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, CoachActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+    }
+    private val pauseIntent by lazy { serviceIntent(PAUSE) }
+    private val resumeIntent by lazy { serviceIntent(RESUME) }
+    private val dismissedIntent by lazy { serviceIntent(NOTIFICATION_DISMISSED) }
+
     companion object {
         val dreamRoute = MutableStateFlow<String?>(null)
         val savedActivity = MutableStateFlow<String?>(null)
@@ -76,6 +93,8 @@ class RunRecordingService : Service() {
         const val PAUSE = "PAUSE"
         const val RESUME = "RESUME"
         const val FINISH = "FINISH"
+        /** Sent when the runner swipes the notification away; it is shown again. */
+        const val NOTIFICATION_DISMISSED = "NOTIFICATION_DISMISSED"
     }
 
     override fun onCreate() {
@@ -118,6 +137,7 @@ class RunRecordingService : Service() {
             } else {
                 startForeground(104, notification("Preparing GPS recording"))
             }
+            notificationGate.posted(shown("Preparing GPS recording"))
         }
         scope.launch {
             commandLock.withLock {
@@ -152,6 +172,10 @@ class RunRecordingService : Service() {
                             publish()
                         }
                         FINISH -> finishRecording()
+                        NOTIFICATION_DISMISSED -> {
+                            notificationGate.invalidate()
+                            publish()
+                        }
                     }
                 } catch (_: Exception) {
                     message.value =
@@ -347,6 +371,7 @@ class RunRecordingService : Service() {
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION or
                             ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
                     )
+                    notificationGate.posted(shown("Recording with heart-rate monitor"))
                 }
             },
             onUnavailable = { message.value = it },
@@ -412,21 +437,25 @@ class RunRecordingService : Service() {
         }
     }
 
+    private fun shown(title: String) = Shown(title, status.value?.paused() == true)
+
     private fun publish() {
         status.value = engine?.status(SystemClock.elapsedRealtime())
         status.value?.let { updateExecution(it) }
+        // Live metrics are shown in the app, not the notification. Its content changes only with
+        // pause and resume, so an unchanged notification is not rebuilt or posted again on every
+        // tick and fix.
+        val content =
+            shown(if (status.value?.paused() == true) "Run paused" else "Recording your run")
+        if (!notificationGate.shouldPost(content)) return
         if (
             Build.VERSION.SDK_INT < 33 ||
                 checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED
         ) {
             getSystemService(NotificationManager::class.java)
-                .notify(
-                    104,
-                    notification(
-                        if (status.value?.paused() == true) "Run paused" else "Recording your run"
-                    ),
-                )
+                .notify(104, notification(content.title))
+            notificationGate.posted(content)
         }
     }
 
@@ -434,21 +463,15 @@ class RunRecordingService : Service() {
         recording?.flush()
     }
 
+    private fun serviceIntent(type: String) =
+        PendingIntent.getService(
+            this,
+            type.hashCode(),
+            Intent(this, RunRecordingService::class.java).setAction(type),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+
     private fun notification(text: String): Notification {
-        val open =
-            PendingIntent.getActivity(
-                this,
-                0,
-                Intent(this, CoachActivity::class.java),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
-        fun action(type: String) =
-            PendingIntent.getService(
-                this,
-                type.hashCode(),
-                Intent(this, RunRecordingService::class.java).setAction(type),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
         val paused = status.value?.paused() == true
         return Notification.Builder(this, "recording")
             .setContentTitle(text)
@@ -457,12 +480,13 @@ class RunRecordingService : Service() {
             )
             .setSmallIcon(org.racedaydreams.R.drawable.ic_nav_progress)
             .setOngoing(true)
-            .setContentIntent(open)
+            .setContentIntent(openIntent)
+            .setDeleteIntent(dismissedIntent)
             .addAction(
                 Notification.Action.Builder(
                         null,
                         if (paused) "Resume" else "Pause",
-                        action(if (paused) RESUME else PAUSE),
+                        if (paused) resumeIntent else pauseIntent,
                     )
                     .build()
             )
