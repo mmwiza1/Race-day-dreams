@@ -19,6 +19,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.dp
+import org.racedaydreams.domain.activity.ActivitySources
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.activity.RecordedWeek
 import org.racedaydreams.domain.time.LocalDate
 
@@ -33,6 +35,8 @@ fun SharedWeeklyRunningChart(
     formatPaceSeconds: (Double) -> String,
     shortDate: (LocalDate) -> String,
     friendlyDate: (LocalDate) -> String,
+    /** Physical runs counted in a week, with each run's display date, for inspection. */
+    weekRuns: ((LocalDate) -> List<Pair<LocalDate, PhysicalRunSessions.Session>>)? = null,
 ) {
     if (weeks.isEmpty()) {
         Text("Record runs to see your weekly distance.")
@@ -295,8 +299,55 @@ fun SharedWeeklyRunningChart(
     current.week.longestRunMetres()?.let {
         Text("Longest: ${distance(it)}", style = MaterialTheme.typography.bodySmall)
     }
+    if (weekRuns != null && current.week.activityCount() > 0)
+        WeekRunSources(weekRuns(requireNotNull(current.week.weekStart())), distance, friendlyDate)
     Text(
         "Tap a week or use the buttons · dot: no recorded runs · cross: unavailable · outline: recorded zero",
         style = MaterialTheme.typography.bodySmall,
     )
+}
+
+/**
+ * Which runs and sources make up a week's totals. Copies of the same run from other sources are
+ * listed but not counted again, so the runner can see why the count differs from raw imports.
+ */
+@Composable
+private fun WeekRunSources(
+    runs: List<Pair<LocalDate, PhysicalRunSessions.Session>>,
+    distance: (Double) -> String,
+    friendlyDate: (LocalDate) -> String,
+) {
+    var open by rememberSaveable { mutableStateOf(false) }
+    TextButton(
+        onClick = { open = !open },
+        modifier = Modifier.heightIn(min = 48.dp).testTag("week-run-sources-toggle"),
+    ) {
+        Text(if (open) "Hide the runs in this week" else "Show the runs in this week")
+    }
+    if (!open) return
+    Column(
+        Modifier.fillMaxWidth().testTag("week-run-sources"),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        for ((date, session) in runs) {
+            val run = session.counted
+            Column(Modifier.semantics(mergeDescendants = true) {}) {
+                Text(
+                    "${friendlyDate(date)} · ${run.distanceMetres()?.let(distance) ?: "No distance"}",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    "Counted from ${ActivitySources.detailed(run.source())}",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                for (copy in session.duplicates) Text(
+                    "Same run also from ${ActivitySources.detailed(copy.source())}" +
+                        (copy.distanceMetres()?.let { " (${distance(it)})" } ?: "") +
+                        ": not counted again",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
 }

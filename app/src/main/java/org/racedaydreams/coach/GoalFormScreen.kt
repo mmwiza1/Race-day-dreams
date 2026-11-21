@@ -26,7 +26,12 @@ internal fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () -
                         state.performanceEligible,
                         object : OnboardingView.Listener {
                             override fun onSave(profile: org.racedaydreams.domain.UserProfile) {
-                                model.saveProfile(profile, createPlan = true)
+                                // Only this save disables the form; a failure re-enables it with
+                                // the reason in place. Success navigates away from the form.
+                                form?.setSaving(true)
+                                model.saveProfile(profile, createPlan = true) { message ->
+                                    form?.saveFailed(message)
+                                }
                             }
 
                             override fun onDraftChanged(json: String) {
@@ -38,10 +43,7 @@ internal fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () -
                             }
                         },
                     )
-                    .also {
-                        form = it
-                        it.tag = false
-                    }
+                    .also { form = it }
             },
             update = { view ->
                 view.applyPalette(
@@ -53,10 +55,8 @@ internal fun GoalForm(state: CoachUiState, model: CoachViewModel, onCancel: () -
                     colours.outlineVariant.toArgb(),
                     colours.error.toArgb(),
                 )
-                if (view.tag != state.busy) {
-                    view.setSaving(state.busy)
-                    view.tag = state.busy
-                }
+                // Unrelated app work (resume refreshes, health imports) sets the shared busy
+                // flag; it must not disable this form or relabel its buttons as "Saving…".
             },
         )
     }

@@ -55,7 +55,11 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
     fun refresh(autoImport: Boolean = false) =
         operations.refresh { healthOperations.beforeRefresh(autoImport) }
 
-    fun saveProfile(profile: UserProfile, createPlan: Boolean = false) {
+    fun saveProfile(
+        profile: UserProfile,
+        createPlan: Boolean = false,
+        onFailed: (String) -> Unit = {},
+    ) {
         suspendDraftWrites()
         operations.submit(
             "Your goal and routine are saved on this device.",
@@ -64,7 +68,10 @@ class CoachViewModel(application: Application, private val savedState: SavedStat
                 operations.update { it.copy(savedProfileRevision = it.savedProfileRevision + 1) }
                 if (createPlan) runningPlan.generatePlan()
             },
-            onFailure = { draftWritesSuspended = false },
+            onFailure = { message ->
+                draftWritesSuspended = false
+                onFailed(message)
+            },
         ) {
             services.profile.save(profile, operations.current.performanceEligible)
         }

@@ -15,6 +15,8 @@ object RecordedWeekAggregation {
         require(weeks in 1..104) { "Choose between one and 104 weeks." }
         val current = today.minusDays((today.getDayOfWeek().getValue() - 1).toLong())
         val result = mutableListOf<RecordedWeek>()
+        // One entry per physical run: other sources' copies of the same run are not counted again.
+        val counted = PhysicalRunSessions.counted(activities)
         for (offset in weeks - 1 downTo 0) {
             val start = current.plusWeeks(-offset.toLong())
             var distance = 0.0
@@ -22,7 +24,7 @@ object RecordedWeekAggregation {
             var unknown = 0
             var longest: Double? = null
             val days = mutableSetOf<LocalDate>()
-            for (activity in activities) {
+            for (activity in counted) {
                 val date = displayDate(activity.start())
                 if (
                     date.toEpochDay() < start.toEpochDay() ||

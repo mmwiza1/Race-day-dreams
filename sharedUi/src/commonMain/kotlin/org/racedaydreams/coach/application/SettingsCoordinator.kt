@@ -34,7 +34,7 @@ class SettingsCoordinator<File>(
         }
 
     fun restoreBackup(file: File, onSuccess: () -> Unit, onFailure: () -> Unit) =
-        operations.submit(platform.restoredMessage, onSuccess, onFailure) {
+        operations.submit(platform.restoredMessage, onSuccess, { onFailure() }) {
             platform.restoreBackup(file)
         }
 
@@ -47,7 +47,9 @@ class SettingsCoordinator<File>(
     }
 
     fun reset(onSuccess: () -> Unit, onFailure: () -> Unit) =
-        operations.submit("Local app data deleted.", onSuccess, onFailure) { platform.reset() }
+        operations.submit("Local app data deleted.", onSuccess, { onFailure() }) {
+            platform.reset()
+        }
 
     fun setMilestonesEnabled(enabled: Boolean) =
         operations.submit { settings.putSetting("milestones.enabled", enabled.toString()) }

@@ -23,7 +23,7 @@
     <string name="onboarding_max_explanation">Maximum performance: work toward your strongest realistic performance without a fixed finishing-time target.</string>
     <string name="onboarding_target_time">Target finishing time</string>
     <string name="onboarding_target_hint">H:MM:SS or MM:SS, for example 1:59:59</string>
-    <string name="onboarding_target_preview">Target race pace: %1$s</string>
+    <string name="onboarding_target_preview">Target race pace: %1$s over %2$s</string>
     <string name="onboarding_target_prompt">Enter a target time to calculate average race pace.</string>
     <string name="onboarding_strategy">Training strategy</string>
     <string name="onboarding_distance_first_explanation">Build the endurance foundation for your distance before gradually adding more race-specific speed work.</string>
@@ -46,6 +46,13 @@
     <string name="onboarding_units">Distance units</string>
     <string name="onboarding_review_intro">Check your goals and weekly routine. You can change these later in Settings.</string>
     <string name="onboarding_review_goal">Goal: %1$s</string>
+    <string name="onboarding_review_distance">Race distance: %1$s</string>
+    <string name="onboarding_review_pace">Target race pace: %1$s over %2$s</string>
+    <string name="onboarding_distance_value">%1$s (%2$s km)</string>
+    <string name="onboarding_distance_conflict">“%1$s” sounds like a %2$s, but the selected race distance is %3$s. Your target pace and programme use the selected distance, so check it before you continue.</string>
+    <string name="onboarding_change_distance">Change race distance</string>
+    <string name="onboarding_save_failed">Your programme was not created: %1$s Your answers are kept, so you can check them and tap Create my programme again.</string>
+    <string name="onboarding_save_failed_generic">it could not be saved on this device.</string>
     <string name="onboarding_review_race">Race: %1$s</string>
     <string name="onboarding_review_date">Race date: %1$s</string>
     <string name="onboarding_no_event">No specific event</string>

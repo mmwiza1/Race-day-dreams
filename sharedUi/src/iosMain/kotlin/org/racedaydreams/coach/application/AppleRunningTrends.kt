@@ -97,6 +97,9 @@ internal fun AppleRunningTrends(
                 presentation.paceSeconds,
                 presentation.shortDate,
                 presentation.friendlyDate,
+                remember(state.activities, zone) {
+                    sharedWeekRuns(state.activities) { KotlinxReminderCalendar.at(it, zone).date }
+                },
             )
         }
     }
