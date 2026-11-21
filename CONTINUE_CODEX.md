@@ -156,6 +156,22 @@ physical measurements. Do not touch signing credentials or the signing-activatio
     race: every read published an equal state, and `StateFlow` does not re-emit an equal value, so
     the waiting collector could miss the final read. Each test read now publishes a distinct
     `startingPath`. Runner code is unchanged.
+- **Checkpoint 271 (21 November 2026, Claude):**
+  - [PR #32](https://github.com/mmwiza1/Race-day-dreams/pull/32) was merged as `1e8f09f6`.
+  - Post-merge run 44871969884 attempt 1 failed in two places:
+    - API 36: another launcher ANR before any test ran. The gate fails closed on purpose and is
+      unchanged.
+    - `apple-shared`: the Pause step now passed, but `GPX file saved.` did not appear within 20 s
+      of tapping the system Files picker's Save.
+  - Attempt 2 passed API 36. `apple-shared` failed the same test earlier: one simulated fix was set
+    and "GPS ready" never appeared within 20 s.
+  - Both are single-shot system interactions on the loaded Mac runner. They have nothing to do with
+    the battery work, and the iPhone app and recording code are unchanged.
+  - Follow-up PR (branch `ccr-60f602a7-tfmok3`) makes the test:
+    - resend the same start fix (up to 10 times) until GPS is ready;
+    - tap Save again (at most twice) only while the picker still shows it.
+  - Both assertions are still required.
+  - 0.15.3-test1 is published only after main passes.
 - **Local results:**
   - `:sharedDomain:jvmTest` 548/548;
   - app and androidTest compile;
