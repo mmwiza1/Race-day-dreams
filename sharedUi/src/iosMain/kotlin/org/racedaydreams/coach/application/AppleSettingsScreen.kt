@@ -32,6 +32,7 @@ fun AppleSettingsScreen(
     presenter: UIViewController,
     onRestore: (ReviewedBackup) -> Unit,
     health: @Composable () -> Unit = {},
+    lastOpened: MutableState<String?>? = null,
 ) {
     val state by session.services.operations.state.collectAsState()
     val reminderFailure by session.platform.reminderFailure.collectAsState()
@@ -132,6 +133,7 @@ fun AppleSettingsScreen(
             "Training",
             "Primary focus, session choices and Dream routes",
             "settings-training",
+            lastOpened = lastOpened,
         ) {
             SharedPrimaryFocusSettings(state) { session.services.settings.primaryFocus(it) }
             AppleScheduleSettings(session.runningSupport)
@@ -141,6 +143,7 @@ fun AppleSettingsScreen(
             "Health and connected data",
             "Apple Health, body measurements and shoes",
             "settings-health",
+            lastOpened = lastOpened,
         ) {
             health()
         }
@@ -148,6 +151,7 @@ fun AppleSettingsScreen(
             "Data and storage",
             "Backup, restore, GPX import, recording storage and diagnostics",
             "settings-data",
+            lastOpened = lastOpened,
         ) {
             SharedBackupSettings(
                 busy = state.busy || exporting || importing,
@@ -233,6 +237,7 @@ fun AppleSettingsScreen(
             "Privacy, safety and licences",
             "How your data is kept, fitness guidance and open-source notices",
             "settings-about",
+            lastOpened = lastOpened,
         ) {
             ApplePrivacyAndLicences()
         }

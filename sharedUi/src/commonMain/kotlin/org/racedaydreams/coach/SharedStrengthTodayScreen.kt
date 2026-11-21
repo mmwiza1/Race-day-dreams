@@ -38,7 +38,7 @@ fun SharedStrengthTodayScreen(
                 ExercisePreview(authored.definition().slots().map { it.exercise().name() })
                 if (summary.todayCompleted())
                     Text("Actual workout recorded and explicitly linked to this session.")
-                else if (gymNow != null) CoachButton("Start workout", gymNow)
+                else if (gymNow != null) CoachButton("Start planned workout", gymNow)
                 TextButton(onClick = { openSession(authored.id()) }) {
                     Text("View workout details")
                 }
@@ -71,7 +71,7 @@ fun SharedStrengthTodayScreen(
                 if (summary.todayCompleted()) {
                     Text("Actual workout recorded and explicitly linked to this session.")
                 } else {
-                    if (gymNow != null) CoachButton("Start workout", gymNow)
+                    if (gymNow != null) CoachButton("Start planned workout", gymNow)
                     OutlinedButton(
                         onClick = { open("strength?date=$today") },
                         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
@@ -83,19 +83,20 @@ fun SharedStrengthTodayScreen(
             }
         }
 
+        // Unplanned training is named as such, so it cannot be mistaken for today's session.
         Text(
-            "Start something else",
+            "Unplanned training",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.semantics { heading() },
         )
         QuickStartRow(
             listOf(
-                if (gymNow != null) "Gym now" to gymNow
+                if (gymNow != null) "Start unplanned workout" to gymNow
                 else "Log a spontaneous workout" to { open("strength/log") }
             )
         )
         Text(
-            "Unplanned workouts stay separate from your programme unless you link them.",
+            "Saved separately from your programme unless you choose to link it.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

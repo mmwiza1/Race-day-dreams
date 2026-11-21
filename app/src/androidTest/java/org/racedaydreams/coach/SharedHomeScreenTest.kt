@@ -201,7 +201,10 @@ class SharedHomeScreenTest {
         compose.onNodeWithText("Current goal").assertDoesNotExist()
         compose.onNodeWithText("Review running baseline").assertDoesNotExist()
         compose.onNodeWithText("Run now").assertDoesNotExist()
-        compose.onNode(hasText("Gym now") and hasClickAction()).performScrollTo().performClick()
+        compose
+            .onNode(hasText("Start unplanned workout") and hasClickAction())
+            .performScrollTo()
+            .performClick()
         compose.runOnIdle { assertEquals(listOf("gym-now"), actions) }
     }
 }

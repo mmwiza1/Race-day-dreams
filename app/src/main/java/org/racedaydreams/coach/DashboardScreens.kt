@@ -64,6 +64,7 @@ import org.racedaydreams.domain.UnitSystem
     ProgressLink.entries.toList(),
     { open("activity/${android.net.Uri.encode(it)}") },
     java.time.Instant.now(),
+    { open("strength/source/${android.net.Uri.encode(it)}") },
 ) { link ->
     open(
         when (link) {

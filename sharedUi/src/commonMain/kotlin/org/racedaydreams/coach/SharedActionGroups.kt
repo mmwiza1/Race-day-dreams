@@ -20,7 +20,11 @@ import androidx.compose.ui.unit.dp
  * secondary destinations stay one tap away without competing with the screen's primary action.
  */
 @Composable
-fun ActionGroup(title: String?, content: @Composable ColumnScope.() -> Unit) {
+fun ActionGroup(
+    title: String?,
+    emphasised: Boolean = false,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
         if (title != null)
             Text(
@@ -28,9 +32,22 @@ fun ActionGroup(title: String?, content: @Composable ColumnScope.() -> Unit) {
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.semantics { heading() },
             )
-        OutlinedCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(vertical = 4.dp), content = content)
-        }
+        // Emphasised groups (Coming up) sit on a filled container; the rest stay outlined.
+        if (emphasised)
+            Card(
+                Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    ),
+            ) {
+                Column(Modifier.padding(vertical = 4.dp), content = content)
+            }
+        else
+            OutlinedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(vertical = 4.dp), content = content)
+            }
     }
 }
 
@@ -112,12 +129,21 @@ fun ExpandableSection(
     summary: String,
     tag: String,
     initiallyExpanded: Boolean = false,
+    lastOpened: MutableState<String?>? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    var expanded by rememberSaveable(tag) { mutableStateOf(initiallyExpanded) }
+    // [lastOpened] is held by the host for the current app session only (never saved to disk),
+    // so returning to the screen reopens the section the person last opened.
+    var expanded by
+        rememberSaveable(tag) { mutableStateOf(initiallyExpanded || lastOpened?.value == tag) }
     Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Card)) {
         Surface(
-            onClick = { expanded = !expanded },
+            onClick = {
+                expanded = !expanded
+                lastOpened?.let {
+                    if (expanded) it.value = tag else if (it.value == tag) it.value = null
+                }
+            },
             shape = MaterialTheme.shapes.large,
             color =
                 if (expanded) MaterialTheme.colorScheme.secondaryContainer

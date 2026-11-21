@@ -238,7 +238,7 @@ class AuthoredGymNowScreenTest {
             }
         }
         compose.onNodeWithText("Authored session").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("Start workout").performScrollTo().performClick()
+        compose.onNodeWithText("Start planned workout").performScrollTo().performClick()
         compose.runOnIdle { assertTrue(started) }
         compose.onNodeWithText("View workout details").performScrollTo().performClick()
         compose.onNodeWithText("Bench Press").performScrollTo().assertIsDisplayed()

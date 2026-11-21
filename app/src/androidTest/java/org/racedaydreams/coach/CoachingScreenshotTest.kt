@@ -459,7 +459,7 @@ class CoachingScreenshotTest {
         capture("home")
         alignHeading("Start something else")
         capture("today-scrolled")
-        alignHeadingOrPageEnd("More")
+        alignHeadingOrPageEnd("Your training")
         capture("today-more")
         compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick()
         await("Recommendation")
@@ -978,11 +978,12 @@ class CoachingScreenshotTest {
             await("Your strength training")
             capture("strength-home")
             compose.onAllNodesWithText("How am I doing?").assertCountEquals(0)
-            alignHeading("Start something else")
+            alignHeading("Unplanned training")
             capture("today-strength-scrolled")
             click("Progress")
             await("Distance this week")
-            compose.onNodeWithTag("progress-strength-snapshot").assertIsDisplayed()
+            // Strength focus: the lifting figures lead the page.
+            compose.onNodeWithTag("kpi-Working sets").assertIsDisplayed()
             capture("progress-strength-focus")
             closeScenario()
             scenario = null
@@ -1532,6 +1533,12 @@ class CoachingScreenshotTest {
                     )
                     .performClick()
                 await("Body & protein guidance")
+                if (suffix == "") {
+                    // Hybrid focus: running and strength summaries at the same depth.
+                    await("Distance this week")
+                    compose.onNodeWithTag("kpi-Working sets").assertExists()
+                    capture("progress-hybrid-focus")
+                }
                 compose.onNodeWithText("Body & protein guidance").performScrollTo().performClick()
                 await("A general daily range is about 120–175 grams of protein.")
                 alignHeading("Body & protein guidance")
@@ -1633,7 +1640,7 @@ class CoachingScreenshotTest {
                 shell("settings put system font_scale $scale")
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
-                awaitHomeReady(true, "Start workout")
+                awaitHomeReady(true, "Start planned workout")
                 compose
                     .onNode(
                         (hasText("Strength") or hasContentDescription("Strength")) and
@@ -3735,6 +3742,54 @@ class CoachingScreenshotTest {
                 .commit()
             restoreFontScale(originalFont)
             shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
+    fun capturesFirstRunFocusChoiceInAllModes() {
+        // A genuine first run: no profile, no reviewed baseline and no chosen focus.
+        SqliteUserPreferencesRepository(context).clear()
+        FeatureStore(context).putSetting("baseline.reviewed", "false")
+        val prefs =
+            context.getSharedPreferences(org.racedaydreams.coach.theme.APPEARANCE_PREFERENCES, 0)
+        val dynamic = prefs.getBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, true)
+        val font = shell("settings get system font_scale").trim()
+        val night =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            for (mode in
+                listOf(
+                    MaterialCapture("light", false, "no", 1f),
+                    MaterialCapture("dark", false, "yes", 1f),
+                    MaterialCapture("large-font", false, "no", 2f),
+                )) {
+                closeScenario()
+                scenario = null
+                prefs
+                    .edit()
+                    .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false)
+                    .commit()
+                shell("cmd uimode night ${mode.night}")
+                shell("settings put system font_scale ${mode.scale}")
+                scenario = ActivityScenario.launch(CoachActivity::class.java)
+                await("Make today yours")
+                for (choice in
+                    listOf(
+                        "Train for a race",
+                        "Record my runs",
+                        "Focus on strength",
+                        "Running + strength",
+                    )) compose.onNode(hasText(choice) and hasClickAction()).assertExists()
+                capture("starting-path-${mode.suffix}")
+            }
+        } finally {
+            closeScenario()
+            scenario = null
+            prefs.edit().putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, dynamic).commit()
+            restoreFontScale(font)
+            shell("cmd uimode night $night")
         }
     }
 

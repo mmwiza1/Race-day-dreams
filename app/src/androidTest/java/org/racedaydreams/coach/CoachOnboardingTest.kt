@@ -315,7 +315,7 @@ class CoachOnboardingTest {
             .assertIsDisplayed()
 
         compose.onNodeWithText("Settings").performClick()
-        compose.onNodeWithTag("settings-training").performScrollTo().performClick()
+        compose.openSettingsSection("settings-training")
         compose.onNodeWithText("Edit race goal and availability").performScrollTo().performClick()
         waitNativeText(R.string.onboarding_edit_title)
         nativeContinue(2)

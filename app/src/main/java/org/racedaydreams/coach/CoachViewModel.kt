@@ -31,6 +31,9 @@ import org.racedaydreams.domain.strength.StrengthSession
  */
 class CoachViewModel(application: Application, private val savedState: SavedStateHandle) :
     AndroidViewModel(application) {
+    /** The last opened Settings section for this session; display state only, never stored. */
+    val settingsSection = androidx.compose.runtime.mutableStateOf<String?>(null)
+
     private val services =
         CoachApplicationServices(application, viewModelScope) {
             savedState.get<String>("goalDraft")

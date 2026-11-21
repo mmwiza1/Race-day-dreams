@@ -58,8 +58,11 @@ class StrengthTodayScreenTest {
                 }
             }
         }
-        // Gym now is a single secondary action; the card no longer repeats it as a heading.
-        compose.onNode(hasText("Gym now") and hasClickAction()).performScrollTo().performClick()
+        // The unplanned start is a single secondary action, named apart from the planned one.
+        compose
+            .onNode(hasText("Start unplanned workout") and hasClickAction())
+            .performScrollTo()
+            .performClick()
         compose.runOnIdle { assertEquals(1, now) }
         compose.onNodeWithText("PBs & progression").performScrollTo().performClick()
         compose.runOnIdle { assertEquals("strength/pbs", destination) }

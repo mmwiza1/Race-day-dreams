@@ -279,7 +279,8 @@ class SharedDashboardScreenTest {
         compose.onNodeWithText("Distance this week").assertExists()
         compose.onNodeWithTag("dashboard-week-comparison").assert(hasText("Same days last week", substring = true))
         compose.onNodeWithTag("kpi-Distance").assert(hasText("3 runs", substring = true))
-        compose.onNodeWithTag("kpi-Average pace").assert(hasText("Moving pace · 2 of 3 runs"))
+        // An average from part of the period names its qualifying sample.
+        compose.onNodeWithTag("kpi-Average pace").assert(hasText("Moving pace · based on 2 of 3 runs"))
         compose.onNodeWithTag("kpi-Plan completion").assert(hasText("1 / 2"))
         compose.onNodeWithTag("kpi-Longest run").assert(hasText("6", substring = true))
 
@@ -296,6 +297,80 @@ class SharedDashboardScreenTest {
         compose.onNodeWithText("See all").performScrollTo().performClick()
         assertEquals(ProgressLink.HISTORY, links.last())
         compose.onNodeWithText("Strength analytics").performScrollTo().performClick()
+        assertEquals(ProgressLink.STRENGTH_ANALYTICS, links.last())
+    }
+
+    private fun focusedProgress(
+        focus: org.racedaydreams.domain.settings.PrimaryFocus,
+        workouts: MutableList<String>,
+        links: MutableList<ProgressLink>,
+    ) {
+        val today = LocalDate.now()
+        val state =
+            CoachUiState(
+                loading = false,
+                primaryFocus = focus,
+                activities = listOf(run("easy", today.minusDays(1), 5_000.0, 1_500)),
+                strengthSessions =
+                    listOf(
+                        gym("recent-lift", today.minusDays(2), bench to listOf(5 to 80.0)),
+                        gym("older-lift", today.minusDays(9), squat to listOf(5 to 100.0)),
+                    ),
+            )
+        compose.setContent {
+            MaterialTheme {
+                SharedProgressDashboard(
+                    state,
+                    androidHomePresentation(state),
+                    { it.atZone(ZoneId.systemDefault()).toLocalDate() },
+                    ProgressLink.entries.toList(),
+                    {},
+                    Instant.now(),
+                    { workouts.add(it) },
+                ) {
+                    links.add(it)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun strengthFocusLeadsWithLiftingAndKeepsRunningSecondaryButReachable() {
+        val workouts = CopyOnWriteArrayList<String>()
+        val links = CopyOnWriteArrayList<ProgressLink>()
+        focusedProgress(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH, workouts, links)
+        compose.onNodeWithTag("kpi-Working sets").assert(hasText("2")).assertIsDisplayed()
+        compose.onNodeWithTag("kpi-Workouts").assert(hasText("2"))
+        // Strength trends come before running, which keeps its weekly summary only.
+        val workoutsTop =
+            compose.onNodeWithText("Recent workouts").fetchSemanticsNode().positionInRoot.y
+        val runningTop =
+            compose.onNodeWithText("Distance this week").fetchSemanticsNode().positionInRoot.y
+        org.junit.Assert.assertTrue(workoutsTop < runningTop)
+        compose.onNodeWithText("Estimated 1RM trend").assertExists()
+        compose.onNodeWithText("Muscle-group workload").assertExists()
+        compose.onNodeWithTag("kpi-Distance").assertDoesNotExist()
+        compose.onNodeWithText("Bench Press").performScrollTo().performClick()
+        assertEquals("recent-lift", workouts.last())
+        // Every running analytic stays one tap away.
+        compose.onNodeWithText("Training trends").performScrollTo().performClick()
+        assertEquals(ProgressLink.TRENDS, links.last())
+        compose.onNodeWithText("Run history").performScrollTo().performClick()
+        assertEquals(ProgressLink.HISTORY, links.last())
+        compose.onNodeWithText("Running PBs").performScrollTo().performClick()
+        assertEquals(ProgressLink.PBS, links.last())
+    }
+
+    @Test
+    fun hybridFocusShowsRunningAndStrengthAtTheSameDepth() {
+        val workouts = CopyOnWriteArrayList<String>()
+        val links = CopyOnWriteArrayList<ProgressLink>()
+        focusedProgress(org.racedaydreams.domain.settings.PrimaryFocus.HYBRID, workouts, links)
+        compose.onNodeWithTag("kpi-Distance").assert(hasText("1 run", substring = true))
+        compose.onNodeWithTag("kpi-Working sets").performScrollTo().assert(hasText("2"))
+        compose.onNodeWithText("Recent runs").performScrollTo().assertExists()
+        compose.onNodeWithText("Recent workouts").performScrollTo().assertExists()
+        compose.onNodeWithTag("kpi-New records").performScrollTo().performClick()
         assertEquals(ProgressLink.STRENGTH_ANALYTICS, links.last())
     }
 }

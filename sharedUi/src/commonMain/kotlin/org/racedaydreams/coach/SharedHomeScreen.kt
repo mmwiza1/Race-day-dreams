@@ -225,6 +225,21 @@ private fun RunningTodayScreen(
             }
     }
 
+    // The next sessions follow today's directly, so the week ahead is visible without scrolling.
+    if (upcoming.isNotEmpty())
+        ActionGroup("Coming up", emphasised = true) {
+            upcoming.forEach { next ->
+                ActionRow(
+                    presentation.workoutName(next.category()),
+                    presentation.shortDate(next.date()),
+                    next.distanceKm()?.let { "${presentation.decimal(it)} km" }
+                        ?: next.duration()?.let { "${it.getSeconds() / 60} min" },
+                ) {
+                    workout(next.id())
+                }
+            }
+        }
+
     // 2. Start something unplanned: always one row away, never another primary button.
     Text(
         "Start something else",
@@ -319,20 +334,9 @@ private fun RunningTodayScreen(
     val summary = org.racedaydreams.domain.presentation.HomeCoachingSummary.from(state.weeklyReview)
     SharedHomeCoachingCard(summary, weekly)
 
-    if (upcoming.isNotEmpty())
-        ActionGroup("Coming up") {
-            upcoming.forEach { next ->
-                ActionRow(
-                    presentation.workoutName(next.category()),
-                    presentation.shortDate(next.date()),
-                ) {
-                    workout(next.id())
-                }
-            }
-        }
-
     val recent = state.activities.maxByOrNull { it.start() }
-    ActionGroup("More") {
+    // Secondary destinations in two purpose groups instead of one long list; still one tap each.
+    ActionGroup("Your training") {
         recent?.let {
             ActionRow(
                 "Last run",
@@ -349,10 +353,12 @@ private fun RunningTodayScreen(
         if (recent != null && hasRoute("achievements"))
             ActionRow("Recorded milestones") { quick("achievements") }
         ActionRow("View activity history", null, null, onClick = history)
+    }
+    ActionGroup("Log and adjust") {
         ActionRow("Log strength", "Record a gym session you did") { quick("strength/log") }
         if (hasRoute("progress/weight")) ActionRow("Add weight") { quick("progress/weight") }
-        ActionRow("Review running baseline", null, null, onClick = baseline)
         ActionRow("Not feeling 100%?", "Adjust this week safely", null, onClick = weekly)
+        ActionRow("Review running baseline", null, null, onClick = baseline)
     }
 }
 

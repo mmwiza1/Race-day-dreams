@@ -62,6 +62,22 @@ is a mock-up.
 Dark and 200% captures for the changed dashboards and onboarding steps are in
 [`screenshots/`](screenshots/): `*-dark.png` and `*-large-font.png`.
 
+## Refinement pass after the first owner review
+
+The owner approved the direction and asked for six refinements. "Round 1" images are the first PR
+captures, kept in [`ux-review/round1/`](ux-review/round1/). "Round 2" images are the current
+captures in [`screenshots/`](screenshots/).
+
+| # | Request | Round 1 | Round 2 | Change |
+| --- | --- | --- | --- | --- |
+| 1 | Strength-focused Progress | ![](ux-review/round1/progress-strength-focus.png) | ![](screenshots/progress-strength-focus.png) | Strength focus now leads with the Strength tab's own figures: period selector, KPIs (working sets, workouts, programme, new records), recent workouts, estimated 1RM trend and muscle-group workload. A **Running** heading follows with the weekly running summary. Every running analytic is under More detail (Run history, Training trends, Running PBs, Weekly coaching review). The calculations and cards are shared with the Strength tab; nothing new is calculated. |
+| 1 | Hybrid Progress | — | ![](screenshots/progress-hybrid-focus.png) | One period selector, then **Running** (week summary and the four running KPIs) and **Strength** (the four strength KPIs) at the same depth. Then the weekly distance chart, recent runs and recent workouts. |
+| 2 | Home: Coming up, grouped actions | ![](ux-review/round1/home.png) ![](ux-review/round1/today-more.png) | ![](screenshots/home.png) ![](screenshots/today-scrolled.png) ![](screenshots/today-more.png) | Coming up moves directly under Today, on a filled card, and each session shows its distance or duration. The eight actions become **Your training** (last run, trends, milestones, history) and **Log and adjust** (log strength, add weight, Not feeling 100%?, running baseline). Still one tap each. |
+| 3 | Strength Today wording | ![](ux-review/round1/strength-home.png) ![](ux-review/round1/today-strength-scrolled.png) | ![](screenshots/strength-home.png) ![](screenshots/today-strength-scrolled.png) | **Start planned workout** in the session card. **Unplanned training** → **Start unplanned workout**, saved separately from the programme unless linked. The Strength tab keeps its own "Gym now". |
+| 4 | Settings top bar and remembered section | ![](ux-review/round1/settings.png) | ![](screenshots/settings.png) ![](screenshots/settings-training-open.png) | Settings no longer shows a Settings action in its own top bar (Android and iPhone). The last opened section reopens when you come back to Settings in the same session. It is held in memory only and never saved. |
+| 5 | Averages with limited data | ![](ux-review/round1/progress.png) | ![](screenshots/progress.png) | Average pace names its sample when only some runs qualify (for example "Moving pace · based on 11 of 12 runs"), and "Moving pace · 12 runs" when all do. Calculations are unchanged. The weekly pace chart and heart-rate panel already state their counts. |
+| 6 | First-run choice | (none existed) | ![](screenshots/starting-path-light.png) ![](screenshots/starting-path-dark.png) ![](screenshots/starting-path-large-font.png) | A real emulator capture of the first-run screen, taken with a genuinely empty profile in light, dark and 200% text. |
+
 ## Where advanced functionality moved
 
 | Item | Was | Now |

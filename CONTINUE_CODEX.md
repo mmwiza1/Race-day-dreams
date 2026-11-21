@@ -122,6 +122,15 @@ Training algorithms, schema, Health Connect/HealthKit, recording and bottom navi
 untouched. Tests changed only to open the new Settings sections or select a button by its click
 action; no assertion was removed.
 
+- **Round 2 (owner review 1, 21 November 2026):**
+  - Direction approved; six refinements requested and implemented:
+    - strength-first Progress, and a balanced hybrid Progress;
+    - Home: Coming up promoted, and its actions grouped;
+    - Strength Today: planned and unplanned workouts named apart;
+    - Settings: no Settings action in its own top bar, and the last opened section remembered for the session (in memory only);
+    - pace averages state their sample;
+    - a real first-run capture.
+  - Round 1 images are kept in `docs/ux-review/round1/`. Still **do not merge**; awaiting the next owner review.
 - 0.15.3-test1 (battery/performance, PRs #31–#33) is published and verified by download on
   21 November 2026: APK `bbdd2224…6459`, versionCode 26, signer `e7af758a…929d`, update manifest
   commit `b1e99333`, unsigned `.ipa` `45944e77…9b2a`, main run 44886264006 all green.

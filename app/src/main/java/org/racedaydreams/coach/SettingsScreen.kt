@@ -54,6 +54,7 @@ fun SettingsScreen(
         "Training",
         "Primary focus, race goal, baseline, shoes and session choices",
         "settings-training",
+        lastOpened = model.settingsSection,
     ) {
         SharedPrimaryFocusSettings(state) { model.settings.primaryFocus(it) }
         ActionGroup(null) {
@@ -76,6 +77,7 @@ fun SettingsScreen(
         "Health and connected data",
         "Health Connect access, activity source and weight",
         "settings-health",
+        lastOpened = model.settingsSection,
     ) {
         HealthConnectionCard(state, model, historyAvailable, connect, providerUpdate)
         CoachCard {
@@ -102,11 +104,17 @@ fun SettingsScreen(
         "Reminders",
         "Evening-before preparation for planned runs",
         "settings-reminders",
+        lastOpened = model.settingsSection,
     ) {
         ReminderSettings(state, model)
     }
 
-    ExpandableSection("Appearance and updates", "Colours and app updates", "settings-app") {
+    ExpandableSection(
+        "Appearance and updates",
+        "Colours and app updates",
+        "settings-app",
+        lastOpened = model.settingsSection,
+    ) {
         AppearanceSettings()
         AppUpdatesSettings(effects = false)
     }
@@ -115,6 +123,7 @@ fun SettingsScreen(
         "Data and storage",
         "Backup, restore, recording storage and diagnostics",
         "settings-data",
+        lastOpened = model.settingsSection,
     ) {
         SharedBackupSettings(state.busy, export, restore)
         storage?.let {
@@ -136,6 +145,7 @@ fun SettingsScreen(
         "Privacy, safety and licences",
         "How your data is kept, fitness guidance and open-source notices",
         "settings-about",
+        lastOpened = model.settingsSection,
     ) {
         CoachCard {
             Text("Privacy", style = MaterialTheme.typography.titleLarge)
