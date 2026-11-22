@@ -141,15 +141,19 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("exercise-selector").performClick()
         // Recent workouts also say "Bench Press"; pick the menu entry.
         compose.onNode(hasText("Bench Press") and hasAnyAncestor(isPopup())).performClick()
+        // The readout keeps the actual heaviest set and the estimate apart, with its sample.
         compose
             .onNodeWithTag("selected-one-rep-max")
             .performScrollTo()
-            .assert(hasText("From 80.0 kg × 5 on 17 November 2026"))
-        compose.onNodeWithText("Heaviest recorded set").performScrollTo().assertExists()
-        compose.onNodeWithText("‹ Earlier").performScrollTo().performClick()
+            .assert(hasText("80.0 kg × 5"))
+            .assert(hasText("Heaviest set · recorded"))
+            .assert(hasText("Estimated 1RM · from 80.0 kg × 5 · 2 qualifying sets"))
+        compose.onNodeWithTag("progression-earlier").performScrollTo().performClick()
         compose
             .onNodeWithTag("selected-one-rep-max")
-            .assert(hasText("From 75.0 kg × 5 on 10 November 2026"))
+            .assert(hasText("75.0 kg × 5"))
+            .assert(hasText("Estimated 1RM · from 75.0 kg × 5 · 1 qualifying set"))
+        // Heaviest set and estimate come from the same workout here: one button opens it.
         compose.onNodeWithText("Open workout").performScrollTo().performClick()
         assertEquals("last-week", workouts.last())
 
@@ -157,18 +161,30 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("one-rep-max-chart").performScrollTo().performTouchInput {
             click(centerRight)
         }
-        compose
-            .onNodeWithTag("selected-one-rep-max")
-            .assert(hasText("From 80.0 kg × 5 on 17 November 2026"))
+        compose.onNodeWithTag("selected-one-rep-max").assert(hasText("80.0 kg × 5"))
 
-        // Muscle workload keeps unclassified and secondary involvement visible and separate.
-        compose.onNodeWithText("Unclassified").performScrollTo().assertExists()
+        // Training volume: load × reps by week, with the selected week's workouts to open.
+        compose.onNodeWithTag("volume-chart").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("volume-period").assert(hasText("4 weeks:", substring = true))
         compose
-            .onNodeWithText("Also involved secondarily", substring = true)
+            .onNode(
+                hasText("Back Squat, Overhead Press, My machine") and
+                    hasAnyAncestor(hasTestTag("volume-week-workouts"))
+            )
             .performScrollTo()
-            .assertExists()
-        // Recent workouts label accumulated load × reps as training volume, grouped by thousands,
-        // so it cannot be read as a lifted weight, a PB or an estimated 1RM.
+            .performClick()
+        assertEquals("today", workouts.last())
+        compose.onNodeWithTag("volume-by-exercise").performScrollTo().assert(
+            hasAnyDescendant(hasText("Back Squat"))
+        )
+
+        // Muscle workload keeps unclassified and secondary involvement visible and separate,
+        // and a group opens the exercises that contributed.
+        compose.onNodeWithText("not assigned to a group", substring = true).performScrollTo().assertExists()
+        compose.onNodeWithTag("muscle-CHEST").performScrollTo().performClick()
+        compose.onNodeWithTag("muscle-CHEST-exercises", useUnmergedTree = true).assert(hasText("Bench Press", substring = true))
+        // Volume is labelled as accumulated load × reps, grouped by thousands, so it cannot be
+        // read as a lifted weight, a PB or an estimated 1RM.
         org.junit.Assert.assertTrue(
             compose
                 .onAllNodesWithText("Training volume (load × reps)")
@@ -187,13 +203,16 @@ class SharedDashboardScreenTest {
             .fetchSemanticsNodes()
             .let { org.junit.Assert.assertTrue("A grouped volume is shown", it.isNotEmpty()) }
         compose
-            .onNodeWithText("Recorded workload only — not a measure of muscle growth or recovery.")
+            .onNodeWithText("Recorded workload only — not a measure of muscle growth or recovery.", substring = true)
             .performScrollTo()
             .assertExists()
 
-        // Recent workouts open the actual recorded session.
+        // Recent workouts still open the actual recorded session.
         compose
-            .onNodeWithText("Back Squat, Overhead Press, My machine")
+            .onNode(
+                hasText("Back Squat, Overhead Press, My machine") and
+                    !hasAnyAncestor(hasTestTag("volume-week-workouts"))
+            )
             .performScrollTo()
             .performClick()
         assertEquals("today", workouts.last())
@@ -378,15 +397,20 @@ class SharedDashboardScreenTest {
         // Strength focus opens on the strength tab, chart first: progression above the figures.
         compose.onNodeWithTag("progress-tab-STRENGTH").assertIsSelected()
         org.junit.Assert.assertTrue(
-            compose.onNodeWithText("Estimated 1RM trend").fetchSemanticsNode().positionInRoot.y <
+            compose.onNodeWithText("Exercise progression").fetchSemanticsNode().positionInRoot.y <
                 compose.onNodeWithTag("kpi-Working sets").fetchSemanticsNode().positionInRoot.y
         )
         compose.onNodeWithText("Recent workouts").assertExists()
-        compose.onNodeWithText("Estimated 1RM trend").assertExists()
+        compose.onNodeWithText("Exercise progression").assertExists()
+        compose.onNodeWithText("Training volume").assertExists()
         compose.onNodeWithText("Muscle-group workload").assertExists()
         compose.onNodeWithText("Distance this week").assertDoesNotExist()
         compose.onNodeWithTag("kpi-Distance").assertDoesNotExist()
-        compose.onNodeWithText("Bench Press").performScrollTo().performClick()
+        compose
+            .onAllNodes(hasText("Bench Press") and hasClickAction())
+            .onFirst()
+            .performScrollTo()
+            .performClick()
         assertEquals("recent-lift", workouts.last())
         // Every running analytic stays one tap away.
         compose.onNodeWithText("Training trends").performScrollTo().performClick()
@@ -605,8 +629,8 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("one-rep-max-single-week").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("one-rep-max-chart").assertDoesNotExist()
         compose.onNodeWithText("Range", substring = true).assertDoesNotExist()
-        compose.onNodeWithText("Tap a point to inspect that week.").assertDoesNotExist()
-        compose.onNodeWithText("‹ Earlier").assertDoesNotExist()
+        compose.onNodeWithTag("progression-earlier").assertDoesNotExist()
+        compose.onNodeWithTag("selected-one-rep-max").assert(hasText("Heaviest set · recorded"))
         compose.onAllNodesWithText("Open workout").onFirst().assertExists()
 
         // Bench press has estimates in two weeks, so the trend line appears.
@@ -614,6 +638,6 @@ class SharedDashboardScreenTest {
         compose.onAllNodes(hasText("Bench Press") and hasAnyAncestor(isPopup())).onFirst().performClick()
         compose.onNodeWithTag("one-rep-max-chart").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("one-rep-max-single-week").assertDoesNotExist()
-        compose.onNodeWithText("Tap a point to inspect that week.").assertExists()
+        compose.onNodeWithTag("progression-earlier").performScrollTo().assertIsEnabled()
     }
 }

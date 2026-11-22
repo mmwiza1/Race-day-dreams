@@ -517,7 +517,7 @@ private fun TrendChart(
                         }
                     }
                 }
-                ChartDates(points, dense, shortDate)
+                ChartDates(points.map { requireNotNull(it.week.weekStart()) }, dense, shortDate)
             }
             // Quiet scale on the right: top and bottom values only.
             Column(
@@ -576,11 +576,7 @@ private fun TrendChart(
  * the start.
  */
 @Composable
-private fun ChartDates(
-    points: List<RunningTrendPoint>,
-    dense: Boolean,
-    shortDate: (LocalDate) -> String,
-) {
+internal fun ChartDates(starts: List<LocalDate>, dense: Boolean, shortDate: (LocalDate) -> String) {
     val style = MaterialTheme.typography.labelSmall
     val colour = MaterialTheme.colorScheme.onSurfaceVariant
     if (!dense) {
@@ -588,16 +584,11 @@ private fun ChartDates(
             Modifier.fillMaxWidth().padding(top = 4.dp).clearAndSetSemantics {},
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                shortDate(requireNotNull(points.first().week.weekStart())),
-                style = style,
-                color = colour,
-            )
+            Text(shortDate(starts.first()), style = style, color = colour)
             Text("This week", style = style, color = colour)
         }
         return
     }
-    val starts = points.map { requireNotNull(it.week.weekStart()) }
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     BoxWithConstraints(

@@ -66,7 +66,10 @@ enum class ChartHue(
     /** Pace: indigo-violet. */
     VIOLET(0xFF5B3FC4, 0xFF8A73D9, 0xFFC9B8FF, 0xFF7C68C4),
     /** Heart rate: soft coral. */
-    CORAL(0xFFC9483B, 0xFFD9685A, 0xFFFFB4A8, 0xFFB9655A);
+    CORAL(0xFFC9483B, 0xFFD9685A, 0xFFFFB4A8, 0xFFB9655A),
+
+    /** Strength (lifts, volume, workload): plum, distinct from the indigo-violet of pace. */
+    PLUM(0xFF7B2D78, 0xFFA65BA2, 0xFFF0A6E8, 0xFFA8649F);
 
     fun strong(dark: Boolean): Color = Color(if (dark) darkStrong else lightStrong)
 

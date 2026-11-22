@@ -2,9 +2,7 @@
 
 package org.racedaydreams.coach
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -12,13 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
@@ -26,12 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
-import kotlin.math.roundToInt
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.presentation.DashboardAnalytics
 import org.racedaydreams.domain.presentation.DashboardAnalytics.Period
-import org.racedaydreams.domain.strength.StrengthRecords
-import org.racedaydreams.domain.strength.StrengthVolume
 import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.domain.time.LocalDate
 
@@ -230,12 +219,13 @@ fun SharedProgressDashboard(
         if (ProgressLink.STRENGTH_ANALYTICS in links) ({ open(ProgressLink.STRENGTH_ANALYTICS) })
         else null
     when (tab) {
-        // Strength: the progression chart leads, figures follow, workload and history after.
+        // Strength (V3): exercise progression with actual lifts first, then volume, workload,
+        // supporting figures and recent workouts.
         ProgressTab.STRENGTH -> {
             val strength =
                 rememberStrengthPeriod(state, today, requireNotNull(asOf), period, exerciseId)
             PeriodSelector(period) { periodName = it.name }
-            OneRepMaxCard(
+            ExerciseProgressionCard(
                 strength,
                 ::mass,
                 presentation.shortDate,
@@ -243,8 +233,15 @@ fun SharedProgressDashboard(
                 { exerciseId = it },
                 openWorkout ?: {},
             )
-            StrengthKpis(strength, strengthRecords)
+            TrainingVolumeCard(
+                strength,
+                ::volume,
+                presentation.shortDate,
+                presentation.friendlyDate,
+                openWorkout,
+            )
             MuscleWorkloadCard(strength, presentation.decimal)
+            StrengthKpis(strength, strengthRecords)
             RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
         }
         // Hybrid: one split summary, then the running chart, then both sets of figures.
@@ -507,57 +504,6 @@ internal fun RecentWorkoutsCard(
 }
 
 @Composable
-internal fun OneRepMaxCard(
-    data: StrengthPeriod,
-    mass: (Double) -> String,
-    shortDate: (LocalDate) -> String,
-    friendlyDate: (LocalDate) -> String,
-    selectExercise: (String) -> Unit,
-    openWorkout: (String) -> Unit,
-) = CoachCard {
-    val overview = data.overview
-    Text("Estimated 1RM trend", style = MaterialTheme.typography.titleLarge)
-    val exercise = overview.trendExercise
-    if (exercise == null) {
-        Text("Record weighted working sets of 2–10 repetitions in this period to see an estimate.")
-    } else {
-        ExerciseSelector(overview.eligibleExercises.map { it.id() to it.name() }, exercise.id()) {
-            selectExercise(it)
-        }
-        OneRepMaxChart(overview.oneRepMaxTrend, mass, shortDate, friendlyDate, openWorkout)
-        overview.heaviestSet?.let { set ->
-            DashboardRow(
-                title = "Heaviest recorded set",
-                detail = "Actual, not estimated · ${friendlyDate(set.date)}",
-                value = "${mass(set.kilograms)} × ${set.reps}",
-                secondary = null,
-                onClick = { openWorkout(set.sessionId) },
-            )
-        }
-        Explainer("How the estimate works", StrengthRecords.estimateExplanation())
-    }
-}
-
-@Composable
-internal fun MuscleWorkloadCard(data: StrengthPeriod, decimal: (Double) -> String) = CoachCard {
-    Text("Muscle-group workload", style = MaterialTheme.typography.titleLarge)
-    Text(
-        "Recorded working sets · ${data.period.label}",
-        style = MaterialTheme.typography.bodyMedium,
-    )
-    if (data.overview.workingSets == 0) {
-        Text("Record working sets to see how your training is spread.")
-    } else {
-        MuscleGroupBreakdown(data.overview, decimal)
-    }
-    Text(
-        "Recorded workload only — not a measure of muscle growth or recovery.",
-        style = MaterialTheme.typography.bodySmall,
-    )
-    Explainer("How sets are counted", StrengthVolume.attribution())
-}
-
-@Composable
 fun SharedStrengthDashboard(
     state: CoachUiState,
     today: LocalDate,
@@ -599,6 +545,10 @@ fun SharedStrengthDashboard(
 
     PeriodSelector(period) { periodName = it.name }
 
+    // V3 hierarchy: exercise progression (with actual lifts), volume, workload, then figures.
+    ExerciseProgressionCard(data, ::mass, shortDate, friendlyDate, { exerciseId = it }, openWorkout)
+    TrainingVolumeCard(data, ::volume, shortDate, friendlyDate, openWorkout)
+    MuscleWorkloadCard(data, decimal)
     StrengthKpis(data, if (StrengthLink.PBS in links) ({ open(StrengthLink.PBS) }) else null)
 
     // Bouldering stays separate from lifting metrics; shown only to people who climb.
@@ -641,9 +591,6 @@ fun SharedStrengthDashboard(
         if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
         openWorkout,
     )
-    OneRepMaxCard(data, ::mass, shortDate, friendlyDate, { exerciseId = it }, openWorkout)
-    MuscleWorkloadCard(data, decimal)
-
     MoreDetail(
         listOf(
                 "Train" to listOf(StrengthLink.EXERCISES, StrengthLink.BOULDERING),
@@ -881,7 +828,7 @@ private fun <T> MoreDetail(
 }
 
 @Composable
-private fun ExerciseSelector(
+internal fun ExerciseSelector(
     options: List<Pair<String, String>>,
     selected: String,
     select: (String) -> Unit,
@@ -909,306 +856,4 @@ private fun ExerciseSelector(
             )
         }
     }
-}
-
-@Composable
-private fun OneRepMaxChart(
-    points: List<DashboardAnalytics.OneRepMaxPoint>,
-    mass: (Double) -> String,
-    shortDate: (LocalDate) -> String,
-    friendlyDate: (LocalDate) -> String,
-    openWorkout: (String) -> Unit,
-) {
-    val known = points.withIndex().filter { it.value.kilograms != null }
-    if (known.isEmpty()) {
-        Text(
-            "No estimate for this exercise in this period.",
-            modifier = Modifier.testTag("one-rep-max-empty"),
-        )
-        return
-    }
-    var selectedWeek by
-        rememberSaveable(points.first().weekStart.toString(), known.size) {
-            mutableStateOf(known.last().value.weekStart.toString())
-        }
-    val selectedIndex =
-        known.indexOfFirst { it.value.weekStart.toString() == selectedWeek }.takeIf { it >= 0 }
-            ?: known.lastIndex
-    val selected = known[selectedIndex].value
-    val line = MaterialTheme.colorScheme.primary
-    val fill = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-    val grid = MaterialTheme.colorScheme.outlineVariant
-    val dot = MaterialTheme.colorScheme.surface
-    fun describe(point: DashboardAnalytics.OneRepMaxPoint) =
-        "Week of ${shortDate(point.weekStart)}: ${mass(requireNotNull(point.kilograms))} estimated"
-    val low = known.minOf { requireNotNull(it.value.kilograms) }
-    val high = known.maxOf { requireNotNull(it.value.kilograms) }
-
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = MaterialTheme.shapes.large,
-    ) {
-        Column(
-            Modifier.fillMaxWidth().padding(16.dp).testTag("selected-one-rep-max").semantics(
-                mergeDescendants = true
-            ) {},
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            Text(
-                "Week of ${friendlyDate(selected.weekStart)}",
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Text(
-                "${mass(requireNotNull(selected.kilograms))} estimated",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
-            )
-            val setKilograms = selected.setKilograms
-            val reps = selected.reps
-            val date = selected.date
-            if (setKilograms != null && reps != null && date != null)
-                Text("From ${mass(setKilograms)} × $reps on ${friendlyDate(date)}")
-        }
-    }
-    FlowRow(verticalArrangement = Arrangement.Center) {
-        if (known.size >= 2) {
-            TextButton(
-                onClick = { selectedWeek = known[selectedIndex - 1].value.weekStart.toString() },
-                enabled = selectedIndex > 0,
-            ) {
-                Text("‹ Earlier")
-            }
-            TextButton(
-                onClick = { selectedWeek = known[selectedIndex + 1].value.weekStart.toString() },
-                enabled = selectedIndex < known.lastIndex,
-            ) {
-                Text("Later ›")
-            }
-        }
-        selected.sessionId?.let { id ->
-            TextButton(onClick = { openWorkout(id) }) { Text("Open workout") }
-        }
-    }
-    if (known.size == 1) {
-        // One estimate cannot show a direction, so draw no line, range or axis that suggests one.
-        Text(
-            "Only one week has an estimate in this period. A trend appears once a second week " +
-                "is recorded.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.testTag("one-rep-max-single-week"),
-        )
-        return
-    }
-    Canvas(
-        Modifier.fillMaxWidth()
-            .height(160.dp)
-            .testTag("one-rep-max-chart")
-            .clearAndSetSemantics {
-                contentDescription =
-                    "Estimated one-rep max by week. " +
-                        known.joinToString("; ") { describe(it.value) }
-                stateDescription = describe(selected)
-                customActions =
-                    known.map { (_, point) ->
-                        CustomAccessibilityAction("Select week of ${shortDate(point.weekStart)}") {
-                            selectedWeek = point.weekStart.toString()
-                            true
-                        }
-                    }
-            }
-            .pointerInput(points) {
-                detectTapGestures { position ->
-                    val step =
-                        if (points.size <= 1) 1f else size.width.toFloat() / (points.size - 1)
-                    val nearest = known.minByOrNull { abs(it.index * step - position.x) }
-                    nearest?.let { selectedWeek = it.value.weekStart.toString() }
-                }
-            }
-    ) {
-        val span = (high - low).takeIf { it > 0 } ?: 1.0
-        val bottom = size.height - 10.dp.toPx()
-        val top = 10.dp.toPx()
-        fun x(index: Int) =
-            if (points.size <= 1) size.width / 2 else size.width * index / (points.size - 1)
-        fun y(value: Double) =
-            (bottom - (value - low) / span * (bottom - top) * 0.85 - (bottom - top) * 0.05)
-                .toFloat()
-        for (fraction in listOf(0f, .5f, 1f)) {
-            val gy = top + (bottom - top) * fraction
-            drawLine(grid, Offset(0f, gy), Offset(size.width, gy), 1.dp.toPx())
-        }
-        if (known.size >= 2) {
-            val path = Path()
-            val area = Path()
-            known.forEachIndexed { n, (i, point) ->
-                val px = x(i)
-                val py = y(requireNotNull(point.kilograms))
-                if (n == 0) {
-                    path.moveTo(px, py)
-                    area.moveTo(px, bottom)
-                    area.lineTo(px, py)
-                } else {
-                    path.lineTo(px, py)
-                    area.lineTo(px, py)
-                }
-            }
-            area.lineTo(x(known.last().index), bottom)
-            area.close()
-            drawPath(area, fill)
-            drawPath(path, line, style = Stroke(3.dp.toPx(), cap = StrokeCap.Round))
-        }
-        known.forEachIndexed { n, (i, point) ->
-            val centre = Offset(x(i), y(requireNotNull(point.kilograms)))
-            val radius = if (n == selectedIndex) 7.dp.toPx() else 5.dp.toPx()
-            drawCircle(if (n == selectedIndex) line else dot, radius, centre)
-            drawCircle(line, radius, centre, style = Stroke(2.dp.toPx()))
-        }
-    }
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(shortDate(points.first().weekStart), style = MaterialTheme.typography.bodySmall)
-        Text("Range ${mass(low)} – ${mass(high)}", style = MaterialTheme.typography.bodySmall)
-        Text(shortDate(points.last().weekStart), style = MaterialTheme.typography.bodySmall)
-    }
-    Text("Tap a point to inspect that week.", style = MaterialTheme.typography.bodySmall)
-}
-
-@Composable
-private fun LegendRow(
-    colour: Color,
-    label: String,
-    sets: Double,
-    total: Double,
-    decimal: (Double) -> String,
-) {
-    val share = (sets / total * 100).roundToInt()
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier =
-            Modifier.semantics(mergeDescendants = true) {
-                contentDescription = "$label: $share percent, ${decimal(sets)} working sets"
-            },
-    ) {
-        Surface(shape = CircleShape, color = colour, modifier = Modifier.size(12.dp)) {}
-        Spacer(Modifier.width(8.dp))
-        Text(label, modifier = Modifier.weight(1f))
-        Text("$share%", modifier = Modifier.widthIn(min = 44.dp))
-        Text("${decimal(sets)} sets", style = MaterialTheme.typography.bodySmall)
-    }
-}
-
-@Composable
-private fun MuscleGroupBreakdown(
-    overview: DashboardAnalytics.Strength,
-    decimal: (Double) -> String,
-) {
-    val scheme = MaterialTheme.colorScheme
-    val palette =
-        listOf(
-            scheme.primary,
-            scheme.tertiary,
-            scheme.secondary,
-            scheme.inversePrimary,
-            scheme.tertiaryContainer,
-            scheme.secondaryContainer,
-            scheme.primaryContainer,
-        )
-    val unclassifiedColour = scheme.outline
-    val primary = overview.muscleGroups.filter { it.primarySets > 0.0 }
-    val total = overview.workingSets.toDouble()
-    val track = scheme.surfaceContainerHighest
-    val stacked = LocalDensity.current.fontScale >= 1.5f
-    val donut: @Composable () -> Unit = {
-        Box(Modifier.size(140.dp), contentAlignment = Alignment.Center) {
-            Canvas(Modifier.fillMaxSize().clearAndSetSemantics {}) {
-                val stroke = 22.dp.toPx()
-                val inset = stroke / 2
-                val arcSize = Size(size.width - stroke, size.height - stroke)
-                drawArc(
-                    track,
-                    0f,
-                    360f,
-                    false,
-                    Offset(inset, inset),
-                    arcSize,
-                    style = Stroke(stroke),
-                )
-                var start = -90f
-                val segments =
-                    primary.mapIndexed { i, g -> palette[i % palette.size] to g.primarySets } +
-                        listOf(unclassifiedColour to overview.unclassifiedSets.toDouble())
-                for ((colour, sets) in segments) {
-                    if (sets <= 0.0) continue
-                    val sweep = (sets / total * 360f).toFloat()
-                    drawArc(
-                        colour,
-                        start,
-                        (sweep - 1.5f).coerceAtLeast(0.5f),
-                        false,
-                        Offset(inset, inset),
-                        arcSize,
-                        style = Stroke(stroke),
-                    )
-                    start += sweep
-                }
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    overview.workingSets.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text("sets", style = MaterialTheme.typography.bodySmall)
-            }
-        }
-    }
-    val legend: @Composable (Modifier) -> Unit = { modifier ->
-        Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            primary.forEachIndexed { i, group ->
-                LegendRow(
-                    palette[i % palette.size],
-                    group.group.label,
-                    group.primarySets,
-                    total,
-                    decimal,
-                )
-            }
-            if (overview.unclassifiedSets > 0)
-                LegendRow(
-                    unclassifiedColour,
-                    "Unclassified",
-                    overview.unclassifiedSets.toDouble(),
-                    total,
-                    decimal,
-                )
-        }
-    }
-    if (stacked) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            donut()
-            legend(Modifier.fillMaxWidth())
-        }
-    } else {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            donut()
-            legend(Modifier.weight(1f))
-        }
-    }
-    val secondary = overview.muscleGroups.filter { it.secondarySets > 0 }
-    if (secondary.isNotEmpty())
-        Text(
-            "Also involved secondarily (not added to the total): " +
-                secondary.joinToString(", ") {
-                    "${it.group.label} ${plural(it.secondarySets, "set")}"
-                },
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    if (overview.unclassifiedSets > 0)
-        Text(
-            "Unclassified sets come from custom or changed exercises without catalogue muscle data.",
-            style = MaterialTheme.typography.bodySmall,
-        )
 }
