@@ -47,4 +47,5 @@ internal fun androidHomePresentation(state: CoachUiState) =
         ::displayActivityDate,
         { formatDistance(it, state) },
         Uri::encode,
+        { it.atZone(java.time.ZoneId.systemDefault()).toLocalDate() },
     )

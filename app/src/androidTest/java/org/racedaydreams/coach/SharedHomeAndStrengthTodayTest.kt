@@ -35,7 +35,7 @@ class SharedHomeAndStrengthTodayTest {
     @Test fun strengthOnlyStartsIndependentlyWithoutARaceOrAnAutomaticAssociation() {
         show()
         compose.onNodeWithText("Build a programme or log a workout independently. No race goal is needed.").assertExists()
-        compose.onNodeWithText("0 actual strength workouts recorded").assertExists()
+        compose.onNode(hasText("0") and hasText("Workouts recorded")).assertExists()
         compose.runOnIdle {assertEquals(emptyList<String>(),actions)}
         compose.onNode(hasText("Start unplanned workout") and hasClickAction()).performScrollTo().performClick()
         compose.runOnIdle {assertEquals(listOf("gym-now"),actions)}
@@ -43,7 +43,7 @@ class SharedHomeAndStrengthTodayTest {
     @Test fun plannedWorkoutKeepsRawSessionIdentityAndSeparateLogging() {
         show(planned=true,dark=true)
         compose.onNodeWithText("Bench Press").assertExists()
-        compose.onNodeWithText("0 / 1 programmed sessions completed").assertExists()
+        compose.onNode(hasText("0 / 1") and hasText("Programmed sessions done")).assertExists()
         compose.onNodeWithText("View workout details").performScrollTo().performClick()
         compose.runOnIdle {assertEquals(listOf("session:session/id"),actions)}
         compose.onNodeWithText("Log today's workout").performScrollTo().performClick()
@@ -53,8 +53,8 @@ class SharedHomeAndStrengthTodayTest {
         show(completed=true,planned=true,dark=true,large=true)
         compose.onNodeWithText("Actual workout recorded and explicitly linked to this session.").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Start planned workout").assertDoesNotExist()
-        compose.onNodeWithText("1 / 1 programmed sessions completed").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("1 actual strength workout recorded").performScrollTo().assertIsDisplayed()
+        compose.onNode(hasText("1 / 1") and hasText("Programmed sessions done")).performScrollTo().assertIsDisplayed()
+        compose.onNode(hasText("1") and hasText("Workouts recorded")).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Strength workout history").performScrollTo().performClick()
         compose.runOnIdle {assertEquals(listOf("history?kind=STRENGTH"),actions)}
     }

@@ -62,5 +62,13 @@ internal fun StrengthTodayScreen(
         open,
         { open("gym/session/${Uri.encode(it)}") },
         gymNow,
+        remember(state, today) {
+            WeekAtAGlance.nextSevenDays(
+                state,
+                today,
+                { it.atZone(java.time.ZoneId.systemDefault()).toLocalDate() },
+                ::workoutName,
+            )
+        },
     )
 }

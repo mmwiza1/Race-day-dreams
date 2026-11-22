@@ -22,6 +22,7 @@ import org.racedaydreams.coach.strength.SharedTrainingRecoveryContent
 import org.racedaydreams.coach.theme.SharedRaceDayTheme
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.presentation.AthleteLanguage
+import org.racedaydreams.domain.presentation.CalendarData
 import org.racedaydreams.domain.reminders.ReminderSettings
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.StrengthMeasurementPolicy
@@ -706,6 +707,19 @@ private fun AppleAppContent(
                                 page = ApplePage.HISTORY
                             },
                             gymNow = { page = ApplePage.GYM },
+                            week =
+                                WeekAtAGlance.nextSevenDays(
+                                    state,
+                                    today,
+                                    {
+                                        KotlinxReminderCalendar.at(
+                                                it,
+                                                TimeZone.currentSystemDefault().id,
+                                            )
+                                            .date
+                                    },
+                                    CalendarData::label,
+                                ),
                         )
                     } else if (state.primaryFocus == PrimaryFocus.STRENGTH) {
                         CoachPage { Text(state.error ?: "Loading strength training…") }

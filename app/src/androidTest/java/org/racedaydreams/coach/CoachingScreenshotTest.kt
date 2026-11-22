@@ -457,6 +457,22 @@ class CoachingScreenshotTest {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         await("Today")
         capture("home")
+        // The rolling seven-day preview: open a later day's sessions, then close it again.
+        await("Your next 7 days")
+        val laterDay =
+            hasAnyAncestor(hasTestTag("week-strip")) and
+                hasContentDescription(":", substring = true) and
+                !hasContentDescription("today", substring = true)
+        val laterPlanned = laterDay and hasContentDescription("planned", substring = true)
+        // Prefer a later day with a planned session; any later day still shows its detail.
+        val choice =
+            if (compose.onAllNodes(laterPlanned).fetchSemanticsNodes().isNotEmpty()) laterPlanned
+            else laterDay
+        compose.onAllNodes(choice)[0].performClick()
+        compose.onNodeWithTag("week-day-detail").assertExists()
+        capture("home-next-7-days-selected")
+        compose.onAllNodes(choice)[0].performClick()
+        compose.onNodeWithTag("week-day-detail").assertDoesNotExist()
         alignHeading("Start something else")
         capture("today-scrolled")
         alignHeadingOrPageEnd("Your training")
@@ -546,9 +562,38 @@ class CoachingScreenshotTest {
         click("Progress")
         await("Running PBs")
         capture("progress")
-        compose.onNodeWithText("Recent runs").performScrollTo()
+        // Chart-first Progress: the selected week's runs are the chart's drill-down.
+        compose.onNodeWithTag("week-runs").performScrollTo()
         compose.waitForIdle()
         capture("progress-dashboard-trends")
+        // Owner review: each measure of the same chart, then an earlier week and its runs.
+        compose.onNodeWithTag("trend-metric-TIME").performScrollTo().performClick()
+        await("Training time this week")
+        capture("progress-trend-time")
+        compose.onNodeWithTag("trend-metric-PACE").performClick()
+        await("Pace this week")
+        capture("progress-trend-pace")
+        compose.onNodeWithTag("trend-metric-DISTANCE").performClick()
+        await("Distance this week")
+        val earlierWeeks =
+            hasContentDescription("Week of ", substring = true) and
+                !hasContentDescription("no recorded runs", substring = true) and
+                isNotSelected()
+        val weeksWithRuns = compose.onAllNodes(earlierWeeks).fetchSemanticsNodes()
+        Assert.assertTrue(weeksWithRuns.isNotEmpty())
+        compose.onAllNodes(earlierWeeks)[weeksWithRuns.lastIndex].performClick()
+        await("Runs that week")
+        Assert.assertTrue(
+            compose.onAllNodesWithText("Distance this week").fetchSemanticsNodes().isEmpty()
+        )
+        capture("progress-trend-selected-week")
+        compose.onNodeWithTag("week-runs").performScrollTo()
+        compose.waitForIdle()
+        capture("progress-trend-selected-week-runs")
+        // Return to the current week so later Progress captures start from the default view.
+        val allWeeks = compose.onAllNodes(hasContentDescription("Week of ", substring = true))
+        allWeeks[allWeeks.fetchSemanticsNodes().lastIndex].performScrollTo().performClick()
+        await("Distance this week")
         compose.onNodeWithText("Body weight").performScrollTo().performClick()
         compose.waitForIdle()
         await("Record a measurement")
@@ -880,6 +925,11 @@ class CoachingScreenshotTest {
             compose.onNodeWithContentDescription("Progress").performClick()
             await("Distance this week")
             capture("progress-dashboard-large-font")
+            // At 200% the measure choices wrap as full-size chips; show them with the readout.
+            compose.onNodeWithTag("trend-metric-chips").performScrollTo()
+            compose.onNodeWithText("Distance this week").performScrollTo()
+            compose.waitForIdle()
+            capture("progress-controls-large-font")
             compose.onNodeWithContentDescription("Strength").performClick()
             await("Muscle-group workload")
             capture("strength-dashboard-large-font")
@@ -935,7 +985,8 @@ class CoachingScreenshotTest {
             scenario = ActivityScenario.launch(CoachActivity::class.java)
             await("Progress")
             click("Progress")
-            await("Distance this week")
+            // Strength focus opens Progress on its strength tab; this is its empty state.
+            await("Estimated 1RM trend")
             capture("progress-dashboard-empty")
             click("Strength")
             await("Muscle-group workload")
@@ -981,9 +1032,10 @@ class CoachingScreenshotTest {
             alignHeading("Unplanned training")
             capture("today-strength-scrolled")
             click("Progress")
-            await("Distance this week")
-            // Strength focus: the lifting figures lead the page.
-            compose.onNodeWithTag("kpi-Working sets").assertIsDisplayed()
+            await("Estimated 1RM trend")
+            // Strength focus, chart first: the progression chart leads, figures follow.
+            compose.onNodeWithText("Estimated 1RM trend").assertIsDisplayed()
+            compose.onNodeWithTag("kpi-Working sets").assertExists()
             capture("progress-strength-focus")
             closeScenario()
             scenario = null
@@ -3888,6 +3940,37 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesStrengthProgressWithASingleQualifyingWeek() {
+        // One recorded workout: one estimate, which must not be drawn as a trend.
+        val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
+        val id = "single-week"
+        val sets = (1..3).map { StrengthSession.SetEntry("$id-$it", 8, 60.0, 7.0, false) }
+        CoachingStore(context)
+            .saveStrength(
+                StrengthSession(
+                    id,
+                    Instant.now().minus(Duration.ofMinutes(90)),
+                    ZoneOffset.UTC,
+                    Duration.ofMinutes(40),
+                    7.0,
+                    "Recorded working sets",
+                    listOf(StrengthSession.ExerciseSets(exercise, sets)),
+                )
+            )
+        // This class's fixture is running-focused, so open Progress's Strength training tab.
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        awaitHomeReady(false)
+        click("Progress")
+        await("Distance this week")
+        compose.onNodeWithTag("progress-tab-STRENGTH").performScrollTo().performClick()
+        await("Estimated 1RM trend")
+        compose.onNodeWithTag("one-rep-max-single-week").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("one-rep-max-chart").assertDoesNotExist()
+        alignHeadingOrPageEnd("Estimated 1RM trend")
+        capture("progress-strength-single-week")
+    }
+
+    @Test
     fun capturesWeeklyRunSourcesAndTheOnboardingReviewForTheReportedCases() {
         // The reported cases: one run imported from Samsung Health and again from another app,
         // another run imported and also entered manually, and a 10K goal named "Hackney Half"
@@ -3938,18 +4021,15 @@ class CoachingScreenshotTest {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         awaitHomeReady(false)
         click("Progress")
-        await("Weekly distance")
-        alignHeading("Weekly distance")
-        val sources = compose.onAllNodesWithText("Show the runs in this week").fetchSemanticsNodes()
-        if (sources.isNotEmpty()) {
-            compose.onNodeWithText("Show the runs in this week").performScrollTo().performClick()
-            compose.waitForIdle()
+        // The week's runs list each physical run once, noting copies from other sources.
+        await("Runs this week")
+        alignHeading("Runs this week")
+        Assert.assertTrue(
             compose
-                .onNodeWithText("Show the runs in this week", substring = true)
-                .assertDoesNotExist()
-            compose.onNodeWithTag("week-run-sources").performScrollTo()
-            compose.waitForIdle()
-        }
+                .onAllNodes(hasText("also from", substring = true))
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        )
         capture("progress-weekly-run-sources")
 
         click("Settings")
