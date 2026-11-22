@@ -550,6 +550,34 @@ class CoachingScreenshotTest {
         compose.onNodeWithTag("week-runs").performScrollTo()
         compose.waitForIdle()
         capture("progress-dashboard-trends")
+        // Owner review: each measure of the same chart, then an earlier week and its runs.
+        compose.onNodeWithTag("trend-metric-TIME").performScrollTo().performClick()
+        await("Training time this week")
+        capture("progress-trend-time")
+        compose.onNodeWithTag("trend-metric-PACE").performClick()
+        await("Pace this week")
+        capture("progress-trend-pace")
+        compose.onNodeWithTag("trend-metric-DISTANCE").performClick()
+        await("Distance this week")
+        val earlierWeeks =
+            hasContentDescription("Week of ", substring = true) and
+                !hasContentDescription("no recorded runs", substring = true) and
+                isNotSelected()
+        val weeksWithRuns = compose.onAllNodes(earlierWeeks).fetchSemanticsNodes()
+        Assert.assertTrue(weeksWithRuns.isNotEmpty())
+        compose.onAllNodes(earlierWeeks)[weeksWithRuns.lastIndex].performClick()
+        await("Runs that week")
+        Assert.assertTrue(
+            compose.onAllNodesWithText("Distance this week").fetchSemanticsNodes().isEmpty()
+        )
+        capture("progress-trend-selected-week")
+        compose.onNodeWithTag("week-runs").performScrollTo()
+        compose.waitForIdle()
+        capture("progress-trend-selected-week-runs")
+        // Return to the current week so later Progress captures start from the default view.
+        val allWeeks = compose.onAllNodes(hasContentDescription("Week of ", substring = true))
+        allWeeks[allWeeks.fetchSemanticsNodes().lastIndex].performScrollTo().performClick()
+        await("Distance this week")
         compose.onNodeWithText("Body weight").performScrollTo().performClick()
         compose.waitForIdle()
         await("Record a measurement")

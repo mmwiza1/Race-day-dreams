@@ -331,9 +331,10 @@ private fun SplitSummary(
             SummaryColumn(
                 Discipline.RUNNING,
                 "Running this week",
-                if (week.runs == 0) "No runs"
-                else week.distanceMetres?.let(presentation.distance) ?: "Distance unavailable",
-                plural(week.runs, "run"),
+                // The chart below is the focal point for distance, time and pace; this column only
+                // keeps running represented next to strength, so it does not repeat the distance.
+                if (week.runs == 0) "No runs" else plural(week.runs, "run"),
+                "Distance, time and pace in the chart below",
                 Modifier.weight(1f),
             )
             VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -917,7 +918,10 @@ private fun OneRepMaxChart(
 ) {
     val known = points.withIndex().filter { it.value.kilograms != null }
     if (known.isEmpty()) {
-        Text("No estimate for this exercise in this period.")
+        Text(
+            "No estimate for this exercise in this period.",
+            modifier = Modifier.testTag("one-rep-max-empty"),
+        )
         return
     }
     var selectedWeek by
@@ -964,21 +968,34 @@ private fun OneRepMaxChart(
         }
     }
     FlowRow(verticalArrangement = Arrangement.Center) {
-        TextButton(
-            onClick = { selectedWeek = known[selectedIndex - 1].value.weekStart.toString() },
-            enabled = selectedIndex > 0,
-        ) {
-            Text("‹ Earlier")
-        }
-        TextButton(
-            onClick = { selectedWeek = known[selectedIndex + 1].value.weekStart.toString() },
-            enabled = selectedIndex < known.lastIndex,
-        ) {
-            Text("Later ›")
+        if (known.size >= 2) {
+            TextButton(
+                onClick = { selectedWeek = known[selectedIndex - 1].value.weekStart.toString() },
+                enabled = selectedIndex > 0,
+            ) {
+                Text("‹ Earlier")
+            }
+            TextButton(
+                onClick = { selectedWeek = known[selectedIndex + 1].value.weekStart.toString() },
+                enabled = selectedIndex < known.lastIndex,
+            ) {
+                Text("Later ›")
+            }
         }
         selected.sessionId?.let { id ->
             TextButton(onClick = { openWorkout(id) }) { Text("Open workout") }
         }
+    }
+    if (known.size == 1) {
+        // One estimate cannot show a direction, so draw no line, range or axis that suggests one.
+        Text(
+            "Only one week has an estimate in this period. A trend appears once a second week " +
+                "is recorded.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.testTag("one-rep-max-single-week"),
+        )
+        return
     }
     Canvas(
         Modifier.fillMaxWidth()

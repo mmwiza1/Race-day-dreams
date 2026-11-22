@@ -133,6 +133,11 @@ Screen readers already hear each day's full state, so the legend is hidden from 
 
 Chart modernisation is explicit in phases V1–V4 below, and they run alongside the C phases that touch the same screens.
 
+**Owner priorities:** **V1 Running trends** and **V3 Strength progression** are major priorities
+of the wider roadmap. Once Phase B is approved, they are the first chart phases proposed, ahead
+of V2 and V4, with their paired C phases (C3, then C2 and C4) scoped around them. Each still
+needs its own owner approval before it starts.
+
 1. **Phase B (this draft PR):** design-system foundation, running Today, strength Today and
    Progress (running, strength, hybrid).
 2. **C1 — Plan & Calendar:** WeekStrip and DateBadge in Plan; the shared mark language and a
@@ -153,12 +158,12 @@ Chart modernisation is explicit in phases V1–V4 below, and they run alongside 
 
 **Data-visualisation phases** (reusing `RunningTrendExplorer`'s chart, readout and drill-down pattern):
 
-- **V1 — Running trends screen:** move the full Training trends screen (distance, time, pace, heart rate) onto the explorer, replacing `SharedWeeklyRunningChart`. Add the 12–52-week scale and month labels, and keep heart-rate "n of m runs" counts. Runs with C3.
+- **V1 — Running trends screen (major priority):** move the full Training trends screen (distance, time, pace, heart rate) onto the explorer, replacing `SharedWeeklyRunningChart`. Add the 12–52-week scale and month labels, and keep heart-rate "n of m runs" counts. Runs with C3.
 - **V2 — Activity analysis:**
   - Splits become a horizontal pace-per-split chart, where the selected split shows its time, pace, heart rate and elevation, and partial splits are marked.
   - Heart rate over time becomes an area chart with recorded samples only, and gaps shown as gaps.
   - The route map and split chart share a selected split (tap a split to highlight its route segment), using existing route and split data.
-- **V3 — Strength progression:**
+- **V3 — Strength progression (major priority):**
   - Per-exercise estimated-1RM and heaviest-set charts on one axis: recorded as filled points, estimated as hollow, each with "from n sets".
   - Weekly working-sets chart per muscle group, reusing the existing attribution.
   - Session-volume history, labelled training volume.
@@ -185,4 +190,8 @@ tests while developing and the full Android API 28/35/36 and iOS gates on its fi
 - **No new motion and no icon dependency:** text chevrons remain until an icon decision is made.
 - **Explorer and the full trends screen:** the explorer replaces the Progress chart only. The full Training trends screen still uses the earlier chart until V1.
 - **Chart range:** the explorer shows the weeks of the selected period; for one year (52 bars) the bars become thin, and month labels come in V1.
+- **Polish pass (owner review 2):**
+  - Hybrid Progress no longer repeats the week's distance above the chart. The running column shows the run count and points to the chart.
+  - At 150% text and above, the Distance / Time / Pace selector wraps as 48 dp chips instead of a clipped segmented row.
+  - The estimated-1RM chart shows a single week's estimate on its own, with no line, range or tap hint, and says a trend appears once a second week is recorded. Its full redesign remains V3.
 - **Not yet done:** no human screen-reader pass or physical-device review.

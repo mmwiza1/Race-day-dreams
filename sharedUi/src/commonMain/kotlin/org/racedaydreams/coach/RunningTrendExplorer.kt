@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class,
+    androidx.compose.foundation.layout.ExperimentalLayoutApi::class,
+)
 
 package org.racedaydreams.coach
 
@@ -103,7 +106,7 @@ fun RunningTrendExplorer(
                 modifier =
                     if (isCurrent && metric == RunningTrendMetric.DISTANCE)
                         Modifier.testTag("dashboard-week-distance")
-                    else Modifier,
+                    else Modifier.testTag("trend-readout-value"),
             )
             Text(
                 buildString {
@@ -174,6 +177,24 @@ private fun MetricSwitch(selected: RunningTrendMetric, choose: (RunningTrendMetr
             RunningTrendMetric.TIME to "Time",
             RunningTrendMetric.PACE to "Pace",
         )
+    if (LocalDensity.current.fontScale >= 1.5f) {
+        // At large text a three-way segmented row clips its labels, so the same choices wrap as
+        // full-size chips that keep every word readable and each target at least 48 dp.
+        FlowRow(
+            Modifier.fillMaxWidth().testTag("trend-metric-chips"),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            options.forEach { (metric, label) ->
+                CoachFilterChip(
+                    selected = metric == selected,
+                    onClick = { choose(metric) },
+                    label = { Text(label) },
+                    modifier = Modifier.testTag("trend-metric-${metric.name}"),
+                )
+            }
+        }
+        return
+    }
     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
         options.forEachIndexed { index, (metric, label) ->
             SegmentedButton(

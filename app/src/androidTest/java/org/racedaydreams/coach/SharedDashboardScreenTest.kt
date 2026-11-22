@@ -4,11 +4,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.Duration
 import java.time.Instant
@@ -452,10 +454,102 @@ class SharedDashboardScreenTest {
             .performClick()
         compose.onNodeWithText("Runs that week").assertExists()
         compose.onNodeWithText("Week of ${friendlyDate(earlierWeek)}").assertExists()
+        // The figure, period label and runs all follow the selection: 8 km from the earlier run
+        // only, never this week's 5 km.
+        compose.onNodeWithText("Distance this week").assertDoesNotExist()
+        compose.onNodeWithTag("trend-readout-value").assert(hasText("8", substring = true))
+        compose.onNodeWithTag("trend-readout-value").assert(!hasText("5", substring = true))
+        compose.onNodeWithTag("week-runs").performScrollTo()
+        compose
+            .onNodeWithTag("week-runs")
+            .assert(hasAnyDescendant(hasText(friendlyDate(earlier), substring = true)))
+            .assert(!hasAnyDescendant(hasText(friendlyDate(today), substring = true)))
+        // Returning to the current week restores its label, figure and runs.
+        compose
+            .onNode(hasContentDescription("Week of ${shortDate(weekOf(today))}:", substring = true))
+            .performScrollTo()
+            .performClick()
+        compose.onNodeWithText("Distance this week").assertExists()
+        compose.onNodeWithTag("dashboard-week-distance").assert(hasText("5", substring = true))
+        compose
+            .onNodeWithTag("week-runs")
+            .assert(hasAnyDescendant(hasText(friendlyDate(today), substring = true)))
+            .assert(!hasAnyDescendant(hasText(friendlyDate(earlier), substring = true)))
+        compose
+            .onNode(hasContentDescription("Week of ${shortDate(earlierWeek)}:", substring = true))
+            .performScrollTo()
+            .performClick()
         // Pace is the existing weekly elapsed pace; switching measure never adds a figure.
         compose.onNodeWithTag("trend-metric-PACE").performClick()
         compose.onNodeWithText("Tap or drag to inspect a week. Higher is faster.").assertExists()
         compose.onNodeWithTag("trend-metric-TIME").performClick()
         compose.onNodeWithTag("running-trend-chart").assertExists()
+    }
+
+    private fun weekOf(date: LocalDate) = date.minusDays((date.dayOfWeek.value - 1).toLong())
+
+    @Test
+    fun runningMeasureSelectorKeepsEveryChoiceReadableAt200PercentText() {
+        val today = LocalDate.now()
+        val state =
+            CoachUiState(
+                loading = false,
+                activities = listOf(run("now", today, 5_000.0, 1_500)),
+            )
+        compose.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
+                MaterialTheme {
+                    SharedProgressDashboard(
+                        state,
+                        androidHomePresentation(state),
+                        { it.atZone(ZoneId.systemDefault()).toLocalDate() },
+                        ProgressLink.entries.toList(),
+                        {},
+                    ) {}
+                }
+            }
+        }
+        compose.onNodeWithTag("trend-metric-chips").performScrollTo().assertIsDisplayed()
+        for ((metric, label) in listOf("DISTANCE" to "Distance", "TIME" to "Time", "PACE" to "Pace")) {
+            val chip = compose.onNodeWithTag("trend-metric-$metric")
+            chip.performScrollTo().assertIsDisplayed().assertHeightIsAtLeast(48.dp)
+            chip.assert(hasText(label))
+            // The full word is laid out on screen, not clipped or ellipsised.
+            val layout = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+            compose
+                .onNode(hasText(label) and hasAnyAncestor(hasTestTag("trend-metric-$metric")))
+                .fetchSemanticsNode()
+                .config[SemanticsActions.GetTextLayoutResult]
+                .action
+                ?.invoke(layout)
+            assertEquals(false, layout.single().hasVisualOverflow)
+        }
+        compose.onNodeWithTag("trend-metric-PACE").performClick()
+        compose.onNodeWithTag("trend-metric-PACE").assertIsSelected()
+        compose
+            .onNodeWithText("Tap or drag to inspect a week. Higher is faster.")
+            .performScrollTo()
+            .assertExists()
+    }
+
+    @Test
+    fun oneRepMaxWithASingleWeekShowsTheEstimateWithoutImplyingATrend() {
+        // Back squat, the default exercise, has an estimate in this week only.
+        strength(CoachUiState(loading = false, strengthSessions = sessions))
+        compose.onNodeWithTag("selected-one-rep-max").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("one-rep-max-single-week").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("one-rep-max-chart").assertDoesNotExist()
+        compose.onNodeWithText("Range", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Tap a point to inspect that week.").assertDoesNotExist()
+        compose.onNodeWithText("‹ Earlier").assertDoesNotExist()
+        compose.onAllNodesWithText("Open workout").onFirst().assertExists()
+
+        // Bench press has estimates in two weeks, so the trend line appears.
+        compose.onNodeWithTag("exercise-selector").performScrollTo().performClick()
+        compose.onAllNodes(hasText("Bench Press") and hasAnyAncestor(isPopup())).onFirst().performClick()
+        compose.onNodeWithTag("one-rep-max-chart").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("one-rep-max-single-week").assertDoesNotExist()
+        compose.onNodeWithText("Tap a point to inspect that week.").assertExists()
     }
 }
