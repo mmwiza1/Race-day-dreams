@@ -121,6 +121,16 @@ installations that cannot support them (all existing debug-signed installs).
   - The owner approved Phase B and authorised merging PR #36 after one correction: the distance-only "Same days last week" comparison now shows in Distance mode only.
   - No version bump. The `main` workflow republishes the rolling `development` build as usual.
   - Next phases (V1 Running trends, V3 Strength progression, then C1–C8) each need separate owner authorisation. See `docs/DESIGN_2026.md` §3c, §5 and §6.
+- **Phase B post-merge verification (22 November 2026):** PR #36 was squash-merged as `main` `730fd97d`, with a tree identical to the verified PR head.
+  - The `main` run [45032992162](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45032992162) passed. It covered Android API 28/35/36, Apple shared and device, formatting and guidance, and republished the rolling `development` release. The version is unchanged at 0.15.4-test1 / 27.
+  - Verified by download:
+    - the build info names `730fd97d` and run 45032992162;
+    - the APK SHA-256 `01e89594…5ed2` matches its `.sha256` and the `latest-test.apk` alias;
+    - apksigner reports certificate `e7af758a…929d`;
+    - aapt reports `org.racedaydreams` / 27 / `0.15.4-test1`;
+    - `latest-update.json` has versionCode 27, commit `730fd97d` and the same APK SHA and certificate;
+    - the unsigned .ipa SHA-256 `e4a40636…00be` matches its `.sha256`.
+  - On `main`: `RddDesignSystem.kt`, `WeekAtAGlance.kt`, `RunningTrendExplorer.kt` and `docs/DESIGN_2026.md`, with V1 and V3 marked as major priorities.
 - **V1 Running trends (owner-authorised 22 November 2026):**
   - A draft PR from `ccr-60f602a7-tfmok3`, which merges `main` 730fd97d.
   - It moves the Training trends screen onto the shared explorer (§3d), adds heart rate as a fourth measure, and adds long-range month labels, steppers and a missing-data key.
