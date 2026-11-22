@@ -166,7 +166,13 @@ The full Training trends screen now uses the Phase B explorer, so Progress and T
   - Each week's bar spans its lowest to highest run average, with one dot per run. The readout shows "142–150 bpm" (or one value) and "heart rate on 2 of 3" when some runs lack it.
   - The drill-down shows each run's average and maximum, or "No heart rate".
   - With no heart rate in the period, a plain empty state replaces the chart. No zones, readiness or load scores.
-- **Contrast:** unselected bars use 70% of the running accent, giving at least 3:1 against the surface in light and dark themes (tested). The selected week is full strength, with a marker and a guide line.
+- **Metric colours (owner review, final V1 polish):** shared `ChartHue` tokens in `RddDesignSystem.kt` give each measure a restrained identity: Distance a rich blue, Time teal, Pace indigo-violet, and Heart rate a soft coral.
+  - Each hue has a strong tone for the selected week and a softer, related tone for the rest, in light and dark variants.
+  - Every tone keeps at least 3:1 contrast against light and dark surfaces (unit-tested).
+  - Hues identify the measure only. They never mean a result is good or bad, and they are the same with dynamic colour on or off.
+  - `chartAccent(hue)` is ready for V3 strength charts.
+- **Selection:** the selected week uses the strong tone, a neutral outline halo around its bar or dots, a marker above and a guide line in the hue. Selection never relies on colour alone and stays clear in dark mode.
+- **Timeline labels (`ChartTimeline`):** every January is labelled with its year ("Jan '26") first. The range start comes next, with its year where it fits, otherwise the plain month. Other months appear only if they do not overlap. Labels are measured at the current text size, so 200% text drops months rather than overlapping or truncating.
 - **Large text and narrow screens:** the measure switch wraps as 48 dp chips (now four measures), period chips wrap, and steppers stay 48 dp.
 - **Unchanged:** analytics (`sharedRunningTrendPoints`, `RecordedWeekAggregation`), deduplication, schemas, recording, Health Connect/HealthKit, signing, release and the bottom navigation.
 - **Before images:** `docs/design-2026/v1-before/`.

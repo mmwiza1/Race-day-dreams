@@ -136,6 +136,12 @@ installations that cannot support them (all existing debug-signed installs).
   - It moves the Training trends screen onto the shared explorer (§3d), adds heart rate as a fourth measure, and adds long-range month labels, steppers and a missing-data key.
   - Do not merge or release without explicit owner approval.
   - Do not start V2, V3, V4 or C1–C8.
+- **Proportional testing (standing owner rule, 22 November 2026):**
+  - **SMALL:** focused tests and targeted validation (for example `:sharedUi:testDebugUnitTest --tests …` locally).
+  - **MEDIUM:** the relevant module and integration tests.
+  - **MAJOR:** progressive testing with broader verification.
+  - **RELEASE:** full mandatory release and signing verification.
+  - Run a full Android/iOS cycle only when the repository requires it (ready-PR canonical screenshots, merge gates), once, after all changes. Never repeat it for small visual tweaks.
 - **CI note:** API 35's "persistence and draft tests" step now runs close to its 30-minute limit (27 min before Phase B's added captures). A timeout with 0 failures is a time-limit issue; rerun once. Raising the limit needs owner agreement.
 - **Rules:**
   - **Do not merge, auto-merge or release without explicit owner approval.**

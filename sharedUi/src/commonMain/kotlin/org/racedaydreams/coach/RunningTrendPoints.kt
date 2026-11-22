@@ -7,11 +7,11 @@ import org.racedaydreams.domain.activity.RecordedWeekAggregation
 import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.domain.time.LocalDate
 
-enum class RunningTrendMetric(val label: String, val heading: String) {
-    DISTANCE("Distance", "Weekly recorded distance"),
-    PACE("Pace", "Weekly elapsed average pace"),
-    TIME("Training time", "Weekly recorded running time"),
-    HEART_RATE("Heart rate", "Recorded average heart rate per run"),
+enum class RunningTrendMetric(val label: String, val heading: String, val hue: ChartHue) {
+    DISTANCE("Distance", "Weekly recorded distance", ChartHue.BLUE),
+    PACE("Pace", "Weekly elapsed average pace", ChartHue.VIOLET),
+    TIME("Training time", "Weekly recorded running time", ChartHue.TEAL),
+    HEART_RATE("Heart rate", "Recorded average heart rate per run", ChartHue.CORAL),
 }
 
 /**

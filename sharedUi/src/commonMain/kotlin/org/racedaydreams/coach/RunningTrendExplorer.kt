@@ -307,11 +307,13 @@ private fun TrendChart(
     imperial: Boolean,
     select: (Int) -> Unit,
 ) {
-    val accent = MaterialTheme.colorScheme.primary
-    // Unselected marks use the scheme's secondary tone (the running hue, desaturated), which keeps
-    // at least 3:1 contrast with the surface in light and dark themes; the selected week is the
-    // full running accent with a marker above it and a guide line.
-    val muted = MaterialTheme.colorScheme.secondary
+    // Each measure has its own hue (shared chart tokens): the selected week in the strong tone
+    // with a halo, a marker above it and a guide line; other weeks in the softer, related tone.
+    // Both tones keep at least 3:1 contrast with the surface in light and dark themes.
+    val tones = chartAccent(metric.hue)
+    val accent = tones.strong
+    val muted = tones.soft
+    val halo = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
     val outline = MaterialTheme.colorScheme.outline
     val grid = MaterialTheme.colorScheme.outlineVariant
     val pace = metric == RunningTrendMetric.PACE
@@ -394,8 +396,14 @@ private fun TrendChart(
                         }
                         // Selection guide, as a scrubbing cursor, with a marker at the top.
                         val sx = slot * selectedIndex + slot / 2
-                        drawLine(grid, Offset(sx, chartTop), Offset(sx, baseline), 2.dp.toPx())
-                        drawCircle(accent, 4.dp.toPx(), Offset(sx, chartTop - 7.dp.toPx()))
+                        drawLine(
+                            accent.copy(alpha = 0.45f),
+                            Offset(sx, chartTop),
+                            Offset(sx, baseline),
+                            2.dp.toPx(),
+                        )
+                        drawCircle(halo, 6.dp.toPx(), Offset(sx, chartTop - 7.dp.toPx()))
+                        drawCircle(accent, 4.5.dp.toPx(), Offset(sx, chartTop - 7.dp.toPx()))
                         val barWidth =
                             (slot * if (dense) 0.72f else 0.58f).coerceAtMost(40.dp.toPx())
                         val radius =
@@ -429,11 +437,15 @@ private fun TrendChart(
                                         CornerRadius(w / 2),
                                     )
                                     point.heartRates.forEach {
-                                        drawCircle(
-                                            ink,
-                                            (if (chosen) 4f else 3f).dp.toPx(),
-                                            Offset(cx, y(it)),
-                                        )
+                                        val c = Offset(cx, y(it))
+                                        if (chosen)
+                                            drawCircle(
+                                                halo,
+                                                5.5.dp.toPx(),
+                                                c,
+                                                style = Stroke(1.5.dp.toPx()),
+                                            )
+                                        drawCircle(ink, (if (chosen) 4f else 3f).dp.toPx(), c)
                                     }
                                 }
                                 pace -> {
@@ -443,6 +455,18 @@ private fun TrendChart(
                                 }
                                 else -> {
                                     val by = y(requireNotNull(value))
+                                    if (chosen) {
+                                        // An outline as well as colour, so selection never relies
+                                        // on hue alone (and stands out in dark mode).
+                                        val o = 2.5.dp.toPx()
+                                        drawRoundRect(
+                                            halo,
+                                            Offset(cx - barWidth / 2 - o, by - o),
+                                            Size(barWidth + o * 2, baseline - by + o),
+                                            CornerRadius(radius + o),
+                                            style = Stroke(1.5.dp.toPx()),
+                                        )
+                                    }
                                     drawRoundRect(
                                         ink,
                                         Offset(cx - barWidth / 2, by),
@@ -464,9 +488,15 @@ private fun TrendChart(
                                 val value = point.value?.takeIf { it > 0 } ?: return@forEachIndexed
                                 val c = Offset(slot * index + slot / 2, y(value))
                                 if (index == selectedIndex) {
-                                    drawCircle(accent.copy(alpha = 0.2f), 12.dp.toPx(), c)
+                                    drawCircle(accent.copy(alpha = 0.25f), 12.dp.toPx(), c)
+                                    drawCircle(
+                                        halo,
+                                        7.5.dp.toPx(),
+                                        c,
+                                        style = Stroke(1.5.dp.toPx()),
+                                    )
                                     drawCircle(accent, 6.dp.toPx(), c)
-                                } else if (!dense) drawCircle(accent, 3.5.dp.toPx(), c)
+                                } else if (!dense) drawCircle(muted, 3.5.dp.toPx(), c)
                             }
                         }
                     }
@@ -568,10 +598,6 @@ private fun ChartDates(
         return
     }
     val starts = points.map { requireNotNull(it.week.weekStart()) }
-    val marks =
-        starts.indices.filter { i ->
-            i == 0 || starts[i].getMonthValue() != starts[i - 1].getMonthValue()
-        }
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     BoxWithConstraints(
@@ -580,19 +606,21 @@ private fun ChartDates(
             .testTag("trend-month-labels")
             .clearAndSetSemantics {}
     ) {
-        val slot = maxWidth / points.size
-        var lastEnd = (-1000).dp
-        for (i in marks) {
-            val date = starts[i]
-            val label =
-                WeekAtAGlance.monthShort(date) +
-                    if (i == 0 || date.getMonthValue() == 1) " ${date.getYear()}" else ""
-            val width = with(density) { measurer.measure(label, style).size.width.toDp() }
-            val x = (slot * i).coerceAtMost(maxWidth - width)
-            if (x < lastEnd + 6.dp) continue
-            lastEnd = x + width
-            Text(label, style = style, color = colour, modifier = Modifier.offset(x = x))
-        }
+        val total = with(density) { maxWidth.toPx() }
+        val marks =
+            remember(starts, total, style, density.fontScale) {
+                ChartTimeline.monthMarks(starts, total, with(density) { 6.dp.toPx() }) {
+                    measurer.measure(it, style).size.width.toFloat()
+                }
+            }
+        for (mark in marks) Text(
+            mark.label,
+            style = style,
+            color = colour,
+            maxLines = 1,
+            softWrap = false,
+            modifier = Modifier.offset(x = with(density) { mark.x.toDp() }),
+        )
     }
 }
 
