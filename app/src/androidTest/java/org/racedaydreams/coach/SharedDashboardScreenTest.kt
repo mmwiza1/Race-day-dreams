@@ -20,6 +20,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.concurrent.CopyOnWriteArrayList
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -533,19 +534,30 @@ class SharedDashboardScreenTest {
             val option = compose.onNodeWithTag("trend-metric-$metric")
             option.performScrollTo().assertIsDisplayed().assertHeightIsAtLeast(48.dp)
             option.assert(hasText(label))
-            // The full word is laid out on one line, not clipped, ellipsised or broken.
+            // The full word is laid out on one line, not ellipsised, cut off at the side or
+            // drawn outside its control.
+            val labelNode =
+                compose
+                    .onNode(
+                        hasText(label) and hasAnyAncestor(hasTestTag("trend-metric-$metric")),
+                        useUnmergedTree = true,
+                    )
+                    .fetchSemanticsNode()
             val layout = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
-            compose
-                .onNode(
-                    hasText(label) and hasAnyAncestor(hasTestTag("trend-metric-$metric")),
-                    useUnmergedTree = true,
-                )
-                .fetchSemanticsNode()
-                .config[SemanticsActions.GetTextLayoutResult]
-                .action
-                ?.invoke(layout)
-            assertEquals(false, layout.single().hasVisualOverflow)
-            assertEquals(1, layout.single().lineCount)
+            labelNode.config[SemanticsActions.GetTextLayoutResult].action?.invoke(layout)
+            val text = layout.single()
+            assertEquals("$label lines", 1, text.lineCount)
+            assertEquals("$label ellipsised", false, text.isLineEllipsized(0))
+            assertEquals("$label cut off", false, text.didOverflowWidth)
+            val outer = option.fetchSemanticsNode().boundsInRoot
+            val inner = labelNode.boundsInRoot
+            assertTrue(
+                "$label $inner outside $outer",
+                inner.left >= outer.left - 1f &&
+                    inner.right <= outer.right + 1f &&
+                    inner.top >= outer.top - 1f &&
+                    inner.bottom <= outer.bottom + 1f,
+            )
         }
         compose.onNodeWithTag("trend-metric-DISTANCE").assertIsSelected()
         compose.onNodeWithTag("trend-metric-PACE").performClick()
