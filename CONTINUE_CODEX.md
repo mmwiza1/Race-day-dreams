@@ -136,6 +136,13 @@ installations that cannot support them (all existing debug-signed installs).
   - It moves the Training trends screen onto the shared explorer (§3d), adds heart rate as a fourth measure, and adds long-range month labels, steppers and a missing-data key.
   - Do not merge or release without explicit owner approval.
   - Do not start V2, V3, V4 or C1–C8.
+- **Outstanding issue to retest (owner-reported):** the running-goal selection buttons were unresponsive on the owner's physical Galaxy S24.
+  - Retest it on that device after the UI modernisation.
+  - Do not mark it resolved on emulator evidence alone.
+  - Not in V3 scope unless authorised.
+- **V3 Strength progression (owner-authorised 22 November 2026):** see `docs/DESIGN_2026.md` §3e.
+  - Draft PR only: no merge or release without explicit approval.
+  - No further roadmap phase after V3.
 - **Proportional testing (standing owner rule, 22 November 2026):**
   - **SMALL:** focused tests and targeted validation (for example `:sharedUi:testDebugUnitTest --tests …` locally).
   - **MEDIUM:** the relevant module and integration tests.

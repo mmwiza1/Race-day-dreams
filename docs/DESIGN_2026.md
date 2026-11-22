@@ -177,6 +177,42 @@ The full Training trends screen now uses the Phase B explorer, so Progress and T
 - **Unchanged:** analytics (`sharedRunningTrendPoints`, `RecordedWeekAggregation`), deduplication, schemas, recording, Health Connect/HealthKit, signing, release and the bottom navigation.
 - **Before images:** `docs/design-2026/v1-before/`.
 
+## 3e. V3 Strength progression (owner-authorised; draft PR, not merged)
+
+Strength analytics now follow the V1 chart-first pattern in the plum `ChartHue.PLUM`.
+
+The order on Strength and Progress → Strength training is:
+1. Exercise progression, with actual lifts.
+2. Training volume.
+3. Muscle-group workload.
+4. Supporting figures.
+5. Recent workouts.
+
+Quick actions (Gym now, log, programme) stay at the top of Strength. Hybrid Progress is unchanged, with its compact strength figures and recent workouts, so nothing is duplicated.
+
+- **Exercise progression:**
+  - For the selected exercise, each week shows:
+    - the heaviest **recorded** working set as a filled mark on a solid line;
+    - the existing **estimated** 1RM as a hollow mark on a dashed line.
+  - Both share one mass axis but are always labelled separately ("Heaviest set (recorded)", "Estimated 1RM (calculated)").
+  - The readout shows the actual set first, then the estimate with its source set and the number of qualifying sets that week.
+  - Lines join only weeks with that measure. With fewer than two weeks of data, no chart or line is drawn and the screen says a trend needs a second week.
+  - Tap, drag or use the 48 dp steppers. The workout behind each figure opens, with one button when both figures come from the same workout.
+- **Training volume:**
+  - Weekly bars of accumulated load × repetitions of weighted load/rep working sets (the existing per-workout rule), with a previous-period comparison when history covers it.
+  - The selected week's workouts open from below, and volume by exercise is shown as proportional bars.
+  - Weeks with workouts but no load × reps sets show a hollow ring, and weeks without workouts a dot.
+  - Labelled "not the heaviest weight lifted".
+- **Muscle-group workload:**
+  - Bars of primary working-set shares (the existing attribution), with the earlier period marked by a thin line when history covers it. Secondary-only and unclassified sets are kept separate.
+  - Tapping a group lists the exercises that contributed.
+  - The copy says this is recorded workload, not growth or recovery, and that more is not necessarily better.
+- **Domain:** `DashboardAnalytics.Strength` gained presentation groupings of existing data: weekly heaviest set, qualifying sets, weekly and per-exercise volume, earlier-period shares, contributors and workouts by week. No new formula or schema.
+- **Not in V3:**
+  - The separate Strength analytics/records screens keep their current charts (candidate for C4).
+  - Strength logging (C2) and the exercise library (C4) are unchanged.
+- **Before images:** `docs/design-2026/v3-before/`.
+
 ## 4. Representative journeys (synthetic data; checked against Phase B)
 
 | Person | Onboarding → training → history → progress | Phase B effect | Still to address (later phases) |
@@ -223,7 +259,7 @@ needs its own owner approval before it starts.
   - Splits become a horizontal pace-per-split chart, where the selected split shows its time, pace, heart rate and elevation, and partial splits are marked.
   - Heart rate over time becomes an area chart with recorded samples only, and gaps shown as gaps.
   - The route map and split chart share a selected split (tap a split to highlight its route segment), using existing route and split data.
-- **V3 — Strength progression (major priority):**
+- **V3 — Strength progression (major priority; in progress, owner-authorised 22 November 2026, see §3e):**
   - Per-exercise estimated-1RM and heaviest-set charts on one axis: recorded as filled points, estimated as hollow, each with "from n sets".
   - Weekly working-sets chart per muscle group, reusing the existing attribution.
   - Session-volume history, labelled training volume.
