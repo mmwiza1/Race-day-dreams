@@ -518,7 +518,10 @@ class SharedDashboardScreenTest {
             // The full word is laid out on screen, not clipped or ellipsised.
             val layout = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
             compose
-                .onNode(hasText(label) and hasAnyAncestor(hasTestTag("trend-metric-$metric")))
+                .onNode(
+                    hasText(label) and hasAnyAncestor(hasTestTag("trend-metric-$metric")),
+                    useUnmergedTree = true,
+                )
                 .fetchSemanticsNode()
                 .config[SemanticsActions.GetTextLayoutResult]
                 .action
