@@ -7,6 +7,7 @@ import kotlin.math.min
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.racedaydreams.domain.time.CalendarDates
 import org.racedaydreams.domain.time.LocalDate
 
 class ChartTokensTest {
@@ -68,7 +69,7 @@ class ChartTokensTest {
 
     @Test
     fun oneYearKeepsTheJanuaryTransitionWithoutOverlapAtNormalAndLargeText() {
-        val weeks = mondays(LocalDate.of(2025, 11, 24), 52)
+        val weeks = mondays(CalendarDates.of(2025, 11, 24), 52)
         for (charWidth in listOf(6.5f, 13f)) { // about 100% and 200% text
             val marks = ChartTimeline.monthMarks(weeks, 300f, 6f) { it.length * charWidth }
             val labels = marks.map { it.label }
@@ -86,7 +87,7 @@ class ChartTokensTest {
 
     @Test
     fun rangesWithoutJanuaryStillNameTheirYearAtTheStart() {
-        val weeks = mondays(LocalDate.of(2026, 5, 25), 26)
+        val weeks = mondays(CalendarDates.of(2026, 5, 25), 26)
         val marks = ChartTimeline.monthMarks(weeks, 300f, 6f) { it.length * 6.5f }
         assertEquals("May '26", marks.first().label)
         assertTrue(marks.none { it.label.startsWith("Jan") })
