@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -181,62 +183,115 @@ fun WeekStrip(days: List<WeekDay>, today: LocalDate, modifier: Modifier = Modifi
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            days.forEach { day ->
-                val isToday = day.date == today
-                val description =
-                    "${day.weekday} ${day.date.getDayOfMonth()}" +
-                        (if (isToday) ", today" else "") +
-                        ": " +
-                        if (day.sessions.isEmpty()) "nothing planned"
-                        else
-                            day.sessions.joinToString("; ") {
-                                "${it.title} " +
-                                    when (it.mark) {
-                                        SessionMark.DONE -> "done"
-                                        SessionMark.PLANNED -> "planned"
-                                        SessionMark.MISSED -> "not recorded"
-                                    }
-                            }
-                Column(
-                    Modifier.weight(1f).heightIn(min = 72.dp).clearAndSetSemantics {
-                        contentDescription = description
-                    },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text(
-                        day.weekday.take(1),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Box(
-                        Modifier.size(32.dp)
-                            .clip(CircleShape)
-                            .background(
-                                if (isToday) MaterialTheme.colorScheme.primary
-                                else Color.Transparent
-                            ),
-                        contentAlignment = Alignment.Center,
+        Column {
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                days.forEach { day ->
+                    val isToday = day.date == today
+                    val description =
+                        "${day.weekday} ${day.date.getDayOfMonth()}" +
+                            (if (isToday) ", today" else "") +
+                            ": " +
+                            if (day.sessions.isEmpty()) "nothing planned"
+                            else
+                                day.sessions.joinToString("; ") {
+                                    "${it.title} " +
+                                        when (it.mark) {
+                                            SessionMark.DONE -> "done"
+                                            SessionMark.PLANNED -> "planned"
+                                            SessionMark.MISSED -> "not recorded"
+                                        }
+                                }
+                    Column(
+                        Modifier.weight(1f).heightIn(min = 72.dp).clearAndSetSemantics {
+                            contentDescription = description
+                        },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         Text(
-                            "${day.date.getDayOfMonth()}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color =
-                                if (isToday) MaterialTheme.colorScheme.onPrimary
-                                else MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center,
+                            day.weekday.take(1),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                        day.sessions.take(3).forEach { SessionDot(it) }
+                        Box(
+                            Modifier.size(32.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isToday) MaterialTheme.colorScheme.primary
+                                    else Color.Transparent
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                "${day.date.getDayOfMonth()}",
+                                style = MaterialTheme.typography.labelLarge,
+                                color =
+                                    if (isToday) MaterialTheme.colorScheme.onPrimary
+                                    else MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                            day.sessions.take(3).forEach { SessionDot(it) }
+                        }
                     }
                 }
             }
+            WeekLegend(days)
         }
+    }
+}
+
+/**
+ * A visible key, so a first-time user reads the marks without explanation: the three shapes, plus
+ * the discipline colours when the week mixes running and strength. Each day already speaks its own
+ * state, so the key is hidden from screen readers.
+ */
+@Composable
+private fun WeekLegend(days: List<WeekDay>) {
+    val sessions = days.flatMap { it.sessions }
+    if (sessions.isEmpty()) return
+    val disciplines = sessions.map { it.discipline }.distinct()
+    val ink = disciplines.singleOrNull() ?: Discipline.RUNNING
+    FlowRow(
+        Modifier.fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+            .clearAndSetSemantics {},
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        listOf(
+                SessionMark.DONE to "Done",
+                SessionMark.PLANNED to "Planned",
+                SessionMark.MISSED to "Missed",
+            )
+            .forEach { (mark, label) ->
+                LegendItem(label) { SessionDot(DaySession(ink, mark, label)) }
+            }
+        if (disciplines.size > 1)
+            disciplines.forEach { discipline ->
+                LegendItem(discipline.label) {
+                    Box(Modifier.size(9.dp).clip(CircleShape).background(discipline.accent()))
+                }
+            }
+    }
+}
+
+@Composable
+private fun LegendItem(label: String, mark: @Composable () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        mark()
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -247,8 +302,19 @@ private fun SessionDot(session: DaySession) {
     when (session.mark) {
         SessionMark.DONE -> Box(base.background(accent))
         SessionMark.PLANNED -> Box(base.border(2.dp, accent, CircleShape))
-        SessionMark.MISSED ->
-            Box(base.border(1.5.dp, MaterialTheme.colorScheme.outline, CircleShape))
+        SessionMark.MISSED -> {
+            val outline = MaterialTheme.colorScheme.outline
+            Box(
+                base.border(1.5.dp, outline, CircleShape).drawBehind {
+                    drawLine(
+                        outline,
+                        Offset(0f, size.height),
+                        Offset(size.width, 0f),
+                        1.5.dp.toPx(),
+                    )
+                }
+            )
+        }
     }
 }
 

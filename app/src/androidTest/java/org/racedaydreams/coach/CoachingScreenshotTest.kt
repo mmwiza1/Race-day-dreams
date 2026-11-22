@@ -546,7 +546,8 @@ class CoachingScreenshotTest {
         click("Progress")
         await("Running PBs")
         capture("progress")
-        compose.onNodeWithText("Recent runs").performScrollTo()
+        // Chart-first Progress: the selected week's runs are the chart's drill-down.
+        compose.onNodeWithTag("week-runs").performScrollTo()
         compose.waitForIdle()
         capture("progress-dashboard-trends")
         compose.onNodeWithText("Body weight").performScrollTo().performClick()
@@ -936,7 +937,7 @@ class CoachingScreenshotTest {
             await("Progress")
             click("Progress")
             // Strength focus opens Progress on its strength tab; this is its empty state.
-            await("Strength this week")
+            await("Estimated 1RM trend")
             capture("progress-dashboard-empty")
             click("Strength")
             await("Muscle-group workload")
@@ -982,7 +983,7 @@ class CoachingScreenshotTest {
             alignHeading("Unplanned training")
             capture("today-strength-scrolled")
             click("Progress")
-            await("Strength this week")
+            await("Estimated 1RM trend")
             // Strength focus: the lifting figures lead the page.
             compose.onNodeWithTag("kpi-Working sets").assertIsDisplayed()
             capture("progress-strength-focus")
@@ -3939,18 +3940,10 @@ class CoachingScreenshotTest {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         awaitHomeReady(false)
         click("Progress")
-        await("Weekly distance")
-        alignHeading("Weekly distance")
-        val sources = compose.onAllNodesWithText("Show the runs in this week").fetchSemanticsNodes()
-        if (sources.isNotEmpty()) {
-            compose.onNodeWithText("Show the runs in this week").performScrollTo().performClick()
-            compose.waitForIdle()
-            compose
-                .onNodeWithText("Show the runs in this week", substring = true)
-                .assertDoesNotExist()
-            compose.onNodeWithTag("week-run-sources").performScrollTo()
-            compose.waitForIdle()
-        }
+        // The week's runs list each physical run once, noting copies from other sources.
+        await("Runs this week")
+        alignHeading("Runs this week")
+        compose.onNode(hasText("also from", substring = true)).assertExists()
         capture("progress-weekly-run-sources")
 
         click("Settings")

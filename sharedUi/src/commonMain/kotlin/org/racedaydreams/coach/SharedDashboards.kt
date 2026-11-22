@@ -3,6 +3,7 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -27,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import org.racedaydreams.domain.UnitSystem
-import org.racedaydreams.domain.activity.ActivitySources
 import org.racedaydreams.domain.presentation.DashboardAnalytics
 import org.racedaydreams.domain.presentation.DashboardAnalytics.Period
 import org.racedaydreams.domain.strength.StrengthRecords
@@ -99,47 +99,37 @@ fun SharedProgressDashboard(
     fun volume(kilograms: Double) =
         "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
 
-    val runningWeek: @Composable () -> Unit = {
-        HeroCard(Discipline.RUNNING) {
-            DisciplineLabel("Distance this week")
-            val week = overview.weekToDate
-            val days = weekdaySpan(overview.weekDays)
-            if (week.runs == 0) {
-                Text("No runs recorded yet this week", style = MaterialTheme.typography.titleLarge)
-            } else {
-                Text(
-                    week.distanceMetres?.let(distance) ?: "Distance unavailable",
-                    style = MaterialTheme.typography.displayMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.testTag("dashboard-week-distance"),
-                )
-                Text(
-                    "${plural(week.runs, "run")} · ${plural(week.runningDays, "running day")}" +
-                        if (overview.weekDays == 7) " · full week" else " · $days so far"
-                )
+    val sameDays = overview.sameDaysLastWeek
+    val sameDaysDistance = sameDays.distanceMetres
+    val comparison =
+        "Same days last week: " +
+            when {
+                sameDays.runs == 0 -> "no runs"
+                sameDaysDistance == null -> "distance unavailable"
+                else ->
+                    distance(sameDaysDistance) +
+                        (overview.weekToDate.distanceMetres?.let {
+                            " (${change(it - sameDaysDistance, distance)})"
+                        } ?: "")
             }
-            val last = overview.sameDaysLastWeek
-            val lastDistance = last.distanceMetres
-            Text(
-                "Same days last week: " +
-                    when {
-                        last.runs == 0 -> "no runs"
-                        lastDistance == null -> "distance unavailable"
-                        else ->
-                            distance(lastDistance) +
-                                (week.distanceMetres?.let {
-                                    " (${change(it - lastDistance, distance)})"
-                                } ?: "")
-                    },
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.testTag("dashboard-week-comparison"),
-            )
-            if (week.missingDistance > 0)
-                Text(
-                    "${plural(week.missingDistance, "run")} without distance not added.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-        }
+    val explorer: @Composable () -> Unit = {
+        if (!overview.hasAnyRun()) Text("Record or import runs to see your trend.")
+        RunningTrendExplorer(
+            overview.weeklyTrend,
+            state.activities,
+            today,
+            dateAt,
+            state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
+            distance,
+            presentation.decimal,
+            presentation.paceSeconds,
+            presentation.shortDate,
+            presentation.friendlyDate,
+            comparison,
+            openRun,
+            if (ProgressLink.HISTORY in links) ({ open(ProgressLink.HISTORY) }) else null,
+            if (ProgressLink.TRENDS in links) ({ open(ProgressLink.TRENDS) }) else null,
+        )
     }
     val runningKpis: @Composable () -> Unit = {
         val current = overview.current
@@ -194,69 +184,6 @@ fun SharedProgressDashboard(
             )
         )
     }
-    val weeklyDistance: @Composable () -> Unit = {
-        CoachCard {
-            Text("Weekly distance", style = MaterialTheme.typography.titleLarge)
-            Text(
-                "${period.label} · from ${presentation.shortDate(overview.window.start)}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            if (!overview.hasAnyRun()) {
-                Text("Record or import runs to see your trend.")
-            } else {
-                val points =
-                    remember(overview.weeklyTrend, state.activities) {
-                        sharedRunningTrendPoints(
-                            overview.weeklyTrend,
-                            state.activities,
-                            RunningTrendMetric.DISTANCE,
-                            today,
-                            dateAt,
-                        )
-                    }
-                SharedWeeklyRunningChart(
-                    overview.weeklyTrend,
-                    points,
-                    RunningTrendMetric.DISTANCE,
-                    state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
-                    distance,
-                    presentation.decimal,
-                    presentation.paceSeconds,
-                    presentation.shortDate,
-                    presentation.friendlyDate,
-                    remember(state.activities) { sharedWeekRuns(state.activities, dateAt) },
-                )
-            }
-            if (ProgressLink.TRENDS in links)
-                TextButton(onClick = { open(ProgressLink.TRENDS) }) {
-                    Text("Distance, pace and time trends")
-                }
-        }
-    }
-    val recentRuns: @Composable () -> Unit = {
-        CoachCard {
-            SectionHeader(
-                "Recent runs",
-                if (ProgressLink.HISTORY in links) ({ open(ProgressLink.HISTORY) }) else null,
-            )
-            if (overview.recentRuns.isEmpty()) Text("No runs recorded yet.")
-            for (run in overview.recentRuns) {
-                val record = state.activities.firstOrNull { it.id() == run.activityId }
-                DashboardRow(
-                    title = if (run.planned) "Planned run" else "Run",
-                    detail =
-                        presentation.friendlyDate(run.date) +
-                            (record?.let { " · ${ActivitySources.friendly(it.source())}" } ?: ""),
-                    value = run.distanceMetres?.let(distance) ?: "No distance",
-                    secondary =
-                        run.movingSecondsPerKm?.let { "${presentation.paceSeconds(it)} moving" }
-                            ?: "Pace unavailable",
-                    onClick = { openRun(run.activityId) },
-                )
-            }
-        }
-    }
     @Composable
     fun sectionTitle(title: String) =
         Text(
@@ -303,13 +230,11 @@ fun SharedProgressDashboard(
         if (ProgressLink.STRENGTH_ANALYTICS in links) ({ open(ProgressLink.STRENGTH_ANALYTICS) })
         else null
     when (tab) {
+        // Strength: the progression chart leads, figures follow, workload and history after.
         ProgressTab.STRENGTH -> {
             val strength =
                 rememberStrengthPeriod(state, today, requireNotNull(asOf), period, exerciseId)
-            StrengthHero(state, today, dateAt, presentation)
             PeriodSelector(period) { periodName = it.name }
-            StrengthKpis(strength, strengthRecords)
-            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
             OneRepMaxCard(
                 strength,
                 ::mass,
@@ -318,26 +243,27 @@ fun SharedProgressDashboard(
                 { exerciseId = it },
                 openWorkout ?: {},
             )
+            StrengthKpis(strength, strengthRecords)
             MuscleWorkloadCard(strength, presentation.decimal)
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
         }
+        // Hybrid: one split summary, then the running chart, then both sets of figures.
         ProgressTab.OVERVIEW -> {
             val strength = rememberStrengthPeriod(state, today, requireNotNull(asOf), period, null)
-            runningWeek()
-            StrengthHero(state, today, dateAt, presentation)
+            SplitSummary(state, overview, today, dateAt, presentation)
             PeriodSelector(period) { periodName = it.name }
+            explorer()
             sectionTitle("Running")
             runningKpis()
             sectionTitle("Strength")
             StrengthKpis(strength, strengthRecords)
-            recentRuns()
             RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
         }
+        // Running: chart first, with the week's runs as its drill-down, then the figures.
         ProgressTab.RUNNING -> {
-            runningWeek()
             PeriodSelector(period) { periodName = it.name }
+            explorer()
             runningKpis()
-            weeklyDistance()
-            recentRuns()
         }
     }
     MoreDetail(
@@ -377,12 +303,13 @@ private fun ProgressTabs(
 }
 
 /**
- * The strength counterpart of "Distance this week": workouts recorded since Monday and the last
- * one, from recorded sessions only (no estimate).
+ * Hybrid summary without stacked cards: running and strength this week side by side on one quiet
+ * surface, from the existing week-to-date running summary and recorded strength sessions.
  */
 @Composable
-private fun StrengthHero(
+private fun SplitSummary(
     state: CoachUiState,
+    overview: DashboardAnalytics.Running,
     today: LocalDate,
     dateAt: (Instant) -> LocalDate,
     presentation: HomePresentation,
@@ -390,25 +317,62 @@ private fun StrengthHero(
     val start = WeekAtAGlance.weekStart(today)
     val dates =
         remember(state.strengthSessions) { state.strengthSessions.map { dateAt(it.startedAt()) } }
-    val thisWeek =
+    val workouts =
         dates.count {
             it.toEpochDay() >= start.toEpochDay() && it.toEpochDay() <= today.toEpochDay()
         }
-    val last =
-        dates.filter { it.toEpochDay() <= today.toEpochDay() }.maxByOrNull { it.toEpochDay() }
-    HeroCard(Discipline.STRENGTH, Modifier.testTag("progress-strength-hero")) {
-        DisciplineLabel("Strength this week")
+    val week = overview.weekToDate
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(Modifier.padding(vertical = 16.dp).height(IntrinsicSize.Min)) {
+            SummaryColumn(
+                Discipline.RUNNING,
+                "Running this week",
+                if (week.runs == 0) "No runs"
+                else week.distanceMetres?.let(presentation.distance) ?: "Distance unavailable",
+                plural(week.runs, "run"),
+                Modifier.weight(1f),
+            )
+            VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            SummaryColumn(
+                Discipline.STRENGTH,
+                "Strength this week",
+                if (workouts == 0) "None yet" else plural(workouts, "workout"),
+                dates
+                    .filter { it.toEpochDay() <= today.toEpochDay() }
+                    .maxByOrNull { it.toEpochDay() }
+                    ?.let { "Last: ${presentation.shortDate(it)}" } ?: "No workouts recorded",
+                Modifier.weight(1f).testTag("progress-strength-hero"),
+            )
+        }
+    }
+}
+
+@Composable
+private fun SummaryColumn(
+    discipline: Discipline,
+    label: String,
+    value: String,
+    detail: String,
+    modifier: Modifier,
+) {
+    Column(
+        modifier.padding(horizontal = 16.dp).semantics(mergeDescendants = true) {},
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(8.dp).background(discipline.accent(), CircleShape))
+            Spacer(Modifier.width(8.dp))
+            Text(label, style = MaterialTheme.typography.labelLarge)
+        }
+        Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         Text(
-            if (thisWeek == 0) "No workouts yet this week" else plural(thisWeek, "workout"),
-            style =
-                if (thisWeek == 0) MaterialTheme.typography.titleLarge
-                else MaterialTheme.typography.displayMedium,
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            last?.let { "Last workout: ${presentation.friendlyDate(it)}" }
-                ?: "Record a workout to start your history.",
-            style = MaterialTheme.typography.bodyMedium,
+            detail,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -760,11 +724,11 @@ internal fun KpiGrid(tiles: List<Kpi>) {
 
 @Composable
 private fun KpiTile(tile: Kpi, modifier: Modifier) {
-    val colors =
-        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
-    val content: @Composable ColumnScope.() -> Unit = {
-        // Design system: the figure leads (headline size), the label and context recede.
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    // Flat figures, not cards: a divider above, the figure leading, label and context receding.
+    val content: @Composable () -> Unit = {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Spacer(Modifier.height(6.dp))
             Text(
                 tile.title,
                 style = MaterialTheme.typography.labelLarge,
@@ -780,12 +744,26 @@ private fun KpiTile(tile: Kpi, modifier: Modifier) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            if (tile.onClick != null)
+                Text(
+                    "Details ›",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clearAndSetSemantics {},
+                )
         }
     }
     val tagged = modifier.semantics(mergeDescendants = true) {}.testTag("kpi-${tile.title}")
     val click = tile.onClick
-    if (click != null) Card(onClick = click, modifier = tagged, colors = colors, content = content)
-    else Card(modifier = tagged, colors = colors, content = content)
+    if (click != null)
+        Surface(
+            onClick = click,
+            modifier = tagged.heightIn(min = 48.dp),
+            color = Color.Transparent,
+        ) {
+            content()
+        }
+    else Box(tagged) { content() }
 }
 
 @Composable

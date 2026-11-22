@@ -84,6 +84,43 @@ Priority: **P1** high usability impact and used daily; **P2** weekly; **P3** occ
   - Large-text layouts stack rather than truncate.
   - Tab labels never repeat a bottom-navigation label (hence "Strength training").
 
+## 3a. Data visualisation: chart-first analytics (owner review 1)
+
+The owner asked for more visual ambition in Progress and for chart quality comparable to or better than Strava's. These principles apply to every chart in the roadmap:
+
+1. **Chart first, figures second.** The trend is the headline. A scrub readout above the chart states the selected period's figure in display type. Supporting figures follow as a flat typographic strip with dividers, not a grid of cards.
+2. **One surface, direct manipulation.** Tap or drag across the chart to select. The readout updates live, as a polite live region for screen readers, and the drill-down below lists the activities behind the selected bar, one tap each.
+3. **Honest marks:**
+   - bars for totals, a line for rates;
+   - pace drawn so that higher is faster, and said so;
+   - a baseline dot for "no runs" and a hollow ring for "unavailable";
+   - "based on n of m" whenever only some sessions qualify;
+   - recorded and estimated values always visually distinct.
+4. **Accessible by construction.** Every bar or point is a separate selectable element with a spoken description. Colour is never the only cue. Charts grow taller at large text. Axis labels are minimal (top and bottom only), because the readout carries the exact value.
+5. **No invented metrics.** Charts draw the existing weekly trend points, splits, heart-rate samples and strength records only.
+
+**Better than a copy:**
+- **Drill-down:** the readout plus the week's actual runs makes each bar explainable, and Strava's summary chart does not list the activities behind a week.
+- **Duplicates:** copies of a run from other sources are noted ("also from 1 other source") rather than double counted.
+
+**Implemented in Phase B for review** (`RunningTrendExplorer.kt`, Progress → Running and Overview):
+- a Distance / Time / Pace connected button group;
+- the scrub readout;
+- the interactive weekly chart;
+- the selected week's runs.
+
+Strength progression now leads its tab with the estimated-1RM trend chart, and the figures follow as flat cells.
+
+## 3b. Week strip clarity review (owner review 1)
+
+The first version relied on dot styles alone (filled, ring, muted ring), so a new user could not reliably tell "missed" from "planned". Changes:
+- a visible legend under the strip (Done ● · Planned ○ · Missed ⊘), drawn with the same shapes;
+- a Run / Strength colour key when the week mixes disciplines;
+- "missed" now has a diagonal slash, so it differs from "planned" by shape;
+- the summary "n of m done" stays beside the title.
+
+Screen readers already hear each day's full state, so the legend is hidden from them.
+
 ## 4. Representative journeys (synthetic data; checked against Phase B)
 
 | Person | Onboarding → training → history → progress | Phase B effect | Still to address (later phases) |
@@ -93,6 +130,8 @@ Priority: **P1** high usability impact and used daily; **P2** weekly; **P3** occ
 | Strength-only | Focus on strength → programme | Strength Today shows the week of gym sessions, a strength hero and figures. Progress opens on Strength training (KPIs, recent volume, 1RM, muscle workload); Running is one tab away | Set table with previous values; exercise progression chart first |
 
 ## 5. App-wide staged roadmap (each a focused PR with tests and real screenshots; none starts before approval)
+
+Chart modernisation is explicit in phases V1–V4 below, and they run alongside the C phases that touch the same screens.
 
 1. **Phase B (this draft PR):** design-system foundation, running Today, strength Today and
    Progress (running, strength, hybrid).
@@ -112,6 +151,27 @@ Priority: **P1** high usability impact and used daily; **P2** weekly; **P3** occ
 9. **C8 — Onboarding, settings, empty, loading and error states, iOS-only screens:** the
    EmptyState pattern and skeletons everywhere; iOS screens aligned with the shared components.
 
+**Data-visualisation phases** (reusing `RunningTrendExplorer`'s chart, readout and drill-down pattern):
+
+- **V1 — Running trends screen:** move the full Training trends screen (distance, time, pace, heart rate) onto the explorer, replacing `SharedWeeklyRunningChart`. Add the 12–52-week scale and month labels, and keep heart-rate "n of m runs" counts. Runs with C3.
+- **V2 — Activity analysis:**
+  - Splits become a horizontal pace-per-split chart, where the selected split shows its time, pace, heart rate and elevation, and partial splits are marked.
+  - Heart rate over time becomes an area chart with recorded samples only, and gaps shown as gaps.
+  - The route map and split chart share a selected split (tap a split to highlight its route segment), using existing route and split data.
+- **V3 — Strength progression:**
+  - Per-exercise estimated-1RM and heaviest-set charts on one axis: recorded as filled points, estimated as hollow, each with "from n sets".
+  - Weekly working-sets chart per muscle group, reusing the existing attribution.
+  - Session-volume history, labelled training volume.
+  - Each point opens its workout.
+
+  Runs with C2 and C4.
+- **V4 — Hybrid and long-range:**
+  - A combined week view with running time and strength sessions side by side, never summing distance with sets.
+  - Year-in-review style monthly bars.
+  - Bouldering grade-pyramid chart.
+
+  Runs with C7.
+
 Each phase reuses the Phase B components first, so visual changes propagate. Each runs focused
 tests while developing and the full Android API 28/35/36 and iOS gates on its final head.
 
@@ -123,4 +183,6 @@ tests while developing and the full Android API 28/35/36 and iOS gates on its fi
 - **Strength hero:** it counts recorded strength workouts since Monday (a count, not a new
   metric); working sets and records stay in the KPI grid.
 - **No new motion and no icon dependency:** text chevrons remain until an icon decision is made.
+- **Explorer and the full trends screen:** the explorer replaces the Progress chart only. The full Training trends screen still uses the earlier chart until V1.
+- **Chart range:** the explorer shows the weeks of the selected period; for one year (52 bars) the bars become thin, and month labels come in V1.
 - **Not yet done:** no human screen-reader pass or physical-device review.

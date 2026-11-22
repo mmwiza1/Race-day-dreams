@@ -311,6 +311,13 @@ class SharedDashboardScreenTest {
         assertEquals("old-long", runs.last())
 
         compose.onNodeWithTag("running-trend-chart").performScrollTo().assertExists()
+        // Drill-down: select the imported run's week on the chart, then open it from that week.
+        val imported = today.minusDays(3)
+        val importedWeek = imported.minusDays((imported.dayOfWeek.value - 1).toLong())
+        compose
+            .onNode(hasContentDescription("Week of ${shortDate(importedWeek)}:", substring = true))
+            .performScrollTo()
+            .performClick()
         compose.onNodeWithText("Imported GPX", substring = true).performScrollTo().performClick()
         assertEquals("imported", runs.last())
         compose.onNodeWithText("Distance, pace and time trends").performScrollTo().performClick()
@@ -362,9 +369,12 @@ class SharedDashboardScreenTest {
         focusedProgress(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH, workouts, links)
         compose.onNodeWithTag("kpi-Working sets").assert(hasText("2")).assertIsDisplayed()
         compose.onNodeWithTag("kpi-Workouts").assert(hasText("2"))
-        // Strength focus opens on the strength tab: lifting trends, no running figures.
+        // Strength focus opens on the strength tab, chart first: progression above the figures.
         compose.onNodeWithTag("progress-tab-STRENGTH").assertIsSelected()
-        compose.onNodeWithTag("progress-strength-hero").assertExists()
+        org.junit.Assert.assertTrue(
+            compose.onNodeWithText("Estimated 1RM trend").fetchSemanticsNode().positionInRoot.y <
+                compose.onNodeWithTag("kpi-Working sets").fetchSemanticsNode().positionInRoot.y
+        )
         compose.onNodeWithText("Recent workouts").assertExists()
         compose.onNodeWithText("Estimated 1RM trend").assertExists()
         compose.onNodeWithText("Muscle-group workload").assertExists()
@@ -399,9 +409,51 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("progress-strength-hero").assertExists()
         compose.onNodeWithTag("kpi-Distance").assert(hasText("1 run", substring = true))
         compose.onNodeWithTag("kpi-Working sets").performScrollTo().assert(hasText("2"))
-        compose.onNodeWithText("Recent runs").performScrollTo().assertExists()
+        compose.onNodeWithTag("week-runs").performScrollTo().assertExists()
         compose.onNodeWithText("Recent workouts").performScrollTo().assertExists()
         compose.onNodeWithTag("kpi-New records").performScrollTo().performClick()
         assertEquals(ProgressLink.STRENGTH_ANALYTICS, links.last())
+    }
+
+    @Test
+    fun chartFirstRunningExplorerSwitchesMeasureAndSelectsWeeksWithoutNewFigures() {
+        val today = LocalDate.now()
+        val state =
+            CoachUiState(
+                loading = false,
+                activities =
+                    listOf(
+                        run("now", today, 5_000.0, 1_500),
+                        run("earlier", today.minusDays(14), 8_000.0, 2_400),
+                    ),
+            )
+        compose.setContent {
+            MaterialTheme {
+                SharedProgressDashboard(
+                    state,
+                    androidHomePresentation(state),
+                    { it.atZone(ZoneId.systemDefault()).toLocalDate() },
+                    ProgressLink.entries.toList(),
+                    {},
+                ) {}
+            }
+        }
+        // The readout leads with this week's recorded distance.
+        compose.onNodeWithText("Distance this week").assertIsDisplayed()
+        compose.onNodeWithTag("dashboard-week-distance").assert(hasText("5", substring = true))
+        compose.onNodeWithText("Runs this week").assertExists()
+        // Selecting an earlier week updates the readout and its runs.
+        val earlier = today.minusDays(14)
+        val earlierWeek = earlier.minusDays((earlier.dayOfWeek.value - 1).toLong())
+        compose
+            .onNode(hasContentDescription("Week of ${shortDate(earlierWeek)}:", substring = true))
+            .performClick()
+        compose.onNodeWithText("Runs that week").assertExists()
+        compose.onNodeWithText("Week of ${friendlyDate(earlierWeek)}").assertExists()
+        // Pace is the existing weekly elapsed pace; switching measure never adds a figure.
+        compose.onNodeWithTag("trend-metric-PACE").performClick()
+        compose.onNodeWithText("Tap or drag to inspect a week. Higher is faster.").assertExists()
+        compose.onNodeWithTag("trend-metric-TIME").performClick()
+        compose.onNodeWithTag("running-trend-chart").assertExists()
     }
 }

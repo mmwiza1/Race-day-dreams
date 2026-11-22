@@ -79,7 +79,8 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Progress", in: app)
 
         XCTAssertTrue(control("Distance this week", in: app).waitForExistence(timeout: 15))
-        XCTAssertTrue(control("Weekly distance", in: app).exists)
+        // Chart-first Progress: the selected week's runs follow the chart.
+        XCTAssertTrue(reveal("Runs this week", in: app))
         attachScreenshot("ios-progress-dashboard", app)
         app.swipeUp()
         settle()
