@@ -3957,9 +3957,12 @@ class CoachingScreenshotTest {
                     listOf(StrengthSession.ExerciseSets(exercise, sets)),
                 )
             )
+        // This class's fixture is running-focused, so open Progress's Strength training tab.
         scenario = ActivityScenario.launch(CoachActivity::class.java)
-        await("Your strength training")
+        awaitHomeReady(false)
         click("Progress")
+        await("Distance this week")
+        compose.onNodeWithTag("progress-tab-STRENGTH").performScrollTo().performClick()
         await("Estimated 1RM trend")
         compose.onNodeWithTag("one-rep-max-single-week").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("one-rep-max-chart").assertDoesNotExist()
