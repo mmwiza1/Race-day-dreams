@@ -307,7 +307,8 @@ class SharedDashboardScreenTest {
 
         compose.onNodeWithTag("period-SIX_MONTHS").performClick()
         compose.onNodeWithTag("kpi-Distance").assert(hasText("4 runs", substring = true))
-        compose.onNodeWithTag("kpi-Longest run").performClick()
+        // Chart first: the figures sit below the chart, so bring the tile into view to tap it.
+        compose.onNodeWithTag("kpi-Longest run").performScrollTo().performClick()
         assertEquals("old-long", runs.last())
 
         compose.onNodeWithTag("running-trend-chart").performScrollTo().assertExists()
