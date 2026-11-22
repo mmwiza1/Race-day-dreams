@@ -119,7 +119,9 @@ fun RunningTrendExplorer(
                 },
                 style = MaterialTheme.typography.bodyLarge,
             )
-            if (isCurrent && currentWeekComparison != null)
+            // The comparison is a distance comparison, so it belongs to the Distance view only;
+            // Time and Pace show their own figures without a substitute comparison.
+            if (isCurrent && metric == RunningTrendMetric.DISTANCE && currentWeekComparison != null)
                 Text(
                     currentWeekComparison,
                     style = MaterialTheme.typography.bodyMedium,

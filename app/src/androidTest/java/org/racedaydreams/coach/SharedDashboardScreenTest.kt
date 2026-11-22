@@ -484,15 +484,25 @@ class SharedDashboardScreenTest {
             .onNodeWithTag("week-runs")
             .assert(hasAnyDescendant(hasText(friendlyDate(today), substring = true)))
             .assert(!hasAnyDescendant(hasText(friendlyDate(earlier), substring = true)))
-        compose
-            .onNode(hasContentDescription("Week of ${shortDate(earlierWeek)}:", substring = true))
-            .performScrollTo()
-            .performClick()
+        // The same-days comparison is about distance, so only Distance shows it.
+        compose.onNodeWithTag("dashboard-week-comparison").assertExists()
         // Pace is the existing weekly elapsed pace; switching measure never adds a figure.
         compose.onNodeWithTag("trend-metric-PACE").performClick()
         compose.onNodeWithText("Tap or drag to inspect a week. Higher is faster.").assertExists()
+        compose.onNodeWithText("Pace this week").assertExists()
+        compose.onNodeWithTag("trend-readout-value").assert(hasText("/km", substring = true))
+        compose.onNodeWithTag("dashboard-week-comparison").assertDoesNotExist()
+        compose.onNodeWithText("Same days last week", substring = true).assertDoesNotExist()
         compose.onNodeWithTag("trend-metric-TIME").performClick()
         compose.onNodeWithTag("running-trend-chart").assertExists()
+        compose.onNodeWithText("Training time this week").assertExists()
+        compose.onNodeWithTag("trend-readout-value").assert(hasText("min", substring = true))
+        compose.onNodeWithTag("dashboard-week-comparison").assertDoesNotExist()
+        // Back on Distance, the original figure and comparison return.
+        compose.onNodeWithTag("trend-metric-DISTANCE").performClick()
+        compose.onNodeWithText("Distance this week").assertExists()
+        compose.onNodeWithTag("dashboard-week-distance").assert(hasText("5", substring = true))
+        compose.onNodeWithTag("dashboard-week-comparison").assertExists()
     }
 
     private fun weekOf(date: LocalDate) = date.minusDays((date.dayOfWeek.value - 1).toLong())
