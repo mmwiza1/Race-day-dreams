@@ -548,9 +548,11 @@ class SharedDashboardScreenTest {
             val text = layout.single()
             assertEquals("$label lines", 1, text.lineCount)
             assertEquals("$label ellipsised", false, text.isLineEllipsized(0))
-            assertEquals("$label cut off", false, text.didOverflowWidth)
             val outer = option.fetchSemanticsNode().boundsInRoot
             val inner = labelNode.boundsInRoot
+            // The word's natural width fits the label's actual on-screen width.
+            val natural = text.multiParagraph.intrinsics.maxIntrinsicWidth
+            assertTrue("$label needs $natural px, has ${inner.width}", natural <= inner.width + 1f)
             assertTrue(
                 "$label $inner outside $outer",
                 inner.left >= outer.left - 1f &&
