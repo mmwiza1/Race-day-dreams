@@ -272,7 +272,7 @@ class CoachOnboardingTest {
         compose.onNodeWithText("Progress").performClick()
         waitForText("Training trends")
         compose.onNodeWithText("Training trends").performScrollTo().performClick()
-        waitForText("Progress from your recorded running")
+        waitForText("About these measures")
         compose.onNodeWithText("View and manage shoes").performScrollTo().performClick()
         waitForText("Your shoes")
         compose.onNodeWithText("Add shoes").performScrollTo().performClick()

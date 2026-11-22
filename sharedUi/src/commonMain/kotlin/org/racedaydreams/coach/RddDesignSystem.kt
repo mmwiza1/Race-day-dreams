@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
@@ -41,6 +42,44 @@ enum class Discipline(val label: String) {
     RUNNING("Run"),
     STRENGTH("Strength"),
     RECOVERY("Recovery"),
+}
+
+/**
+ * Chart identities: one restrained hue per measure, shared by every chart (running trends now,
+ * strength progression later). Each hue has a strong tone for the selected value and a softer,
+ * related tone for the rest, in light and dark variants. Both tones keep at least 3:1 contrast with
+ * the app's light and dark surfaces, so marks stay readable; selection is also shown by a marker
+ * and guide line, never by colour alone. Hues identify a measure only; they never mean a result is
+ * good or bad. They are fixed tones rather than wallpaper-derived, so a measure looks the same with
+ * dynamic colour on or off.
+ */
+enum class ChartHue(
+    internal val lightStrong: Long,
+    internal val lightSoft: Long,
+    internal val darkStrong: Long,
+    internal val darkSoft: Long,
+) {
+    /** Distance: rich blue. */
+    BLUE(0xFF1D4ED8, 0xFF5F82DA, 0xFFA8C4FF, 0xFF5E7FC7),
+    /** Training time: teal. */
+    TEAL(0xFF00796B, 0xFF3F9A8E, 0xFF7FDACB, 0xFF3E8F85),
+    /** Pace: indigo-violet. */
+    VIOLET(0xFF5B3FC4, 0xFF8A73D9, 0xFFC9B8FF, 0xFF7C68C4),
+    /** Heart rate: soft coral. */
+    CORAL(0xFFC9483B, 0xFFD9685A, 0xFFFFB4A8, 0xFFB9655A);
+
+    fun strong(dark: Boolean): Color = Color(if (dark) darkStrong else lightStrong)
+
+    fun soft(dark: Boolean): Color = Color(if (dark) darkSoft else lightSoft)
+}
+
+/** The strong and soft tones of [hue] for the current theme's surface. */
+class ChartAccent(val strong: Color, val soft: Color)
+
+@Composable
+fun chartAccent(hue: ChartHue): ChartAccent {
+    val dark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    return ChartAccent(hue.strong(dark), hue.soft(dark))
 }
 
 /** Accent (marks, figures) and container (hero surfaces) colours for a discipline. */

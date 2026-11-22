@@ -146,6 +146,37 @@ The owner approved the chart-first direction and asked Home to say what to do ne
   what happened: Plan's "This week", Calendar, Progress and Strength Today's "Your week so far".
   Scheduling and training logic are unchanged; only Home's preview window moved.
 
+## 3d. V1 Running trends (owner-authorised; draft PR, not merged)
+
+The full Training trends screen now uses the Phase B explorer, so Progress and Training trends share one visual system for running data. `SharedWeeklyRunningChart` and `SharedRunningHeartRatePanel` are retired. Both Android and iOS host the shared `SharedTrainingTrends`.
+
+- **Periods:** 4 weeks, 12 weeks (default), 6 months and 1 year, matching Progress. A range line names the dates covered.
+- **Long ranges:**
+  - Above 12 weeks the chart switches to a dense layout: narrower bars with small corners, and pace drawn as a line without per-week dots.
+  - Month labels sit at each month's first week, with the year at the start and at January. Labels that would collide are skipped.
+  - Weekly values are kept (no monthly re-aggregation), so no historical detail or week boundary changes.
+- **Interaction:**
+  - Tap or drag on the chart, or use the 48 dp "Earlier week / Later week" steppers. Steppers make dense charts precise and suit switch and keyboard users.
+  - The readout names the selected week and its figure. The drill-down lists only that week's runs, with duplicate sources noted, and each run opens.
+  - The chart announces the selected week, and each week is a selectable accessible element.
+- **Missing versus zero:** a week without runs shows a baseline dot ("no recorded runs"). A week whose runs lack the measure shows a hollow ring and reads "Not recorded". A small key appears only when either case is present.
+- **Pace:** drawn higher when faster, with the caption "Higher is faster: less time per kilometre (or mile)".
+- **Heart rate:**
+  - Each run's own recorded average heart rate, unchanged. No weekly heart-rate figure is computed.
+  - Each week's bar spans its lowest to highest run average, with one dot per run. The readout shows "142–150 bpm" (or one value) and "heart rate on 2 of 3" when some runs lack it.
+  - The drill-down shows each run's average and maximum, or "No heart rate".
+  - With no heart rate in the period, a plain empty state replaces the chart. No zones, readiness or load scores.
+- **Metric colours (owner review, final V1 polish):** shared `ChartHue` tokens in `RddDesignSystem.kt` give each measure a restrained identity: Distance a rich blue, Time teal, Pace indigo-violet, and Heart rate a soft coral.
+  - Each hue has a strong tone for the selected week and a softer, related tone for the rest, in light and dark variants.
+  - Every tone keeps at least 3:1 contrast against light and dark surfaces (unit-tested).
+  - Hues identify the measure only. They never mean a result is good or bad, and they are the same with dynamic colour on or off.
+  - `chartAccent(hue)` is ready for V3 strength charts.
+- **Selection:** the selected week uses the strong tone, a neutral outline halo around its bar or dots, a marker above and a guide line in the hue. Selection never relies on colour alone and stays clear in dark mode.
+- **Timeline labels (`ChartTimeline`):** every January is labelled with its year ("Jan '26") first. The range start comes next, with its year where it fits, otherwise the plain month. Other months appear only if they do not overlap. Labels are measured at the current text size, so 200% text drops months rather than overlapping or truncating.
+- **Large text and narrow screens:** the measure switch wraps as 48 dp chips (now four measures), period chips wrap, and steppers stay 48 dp.
+- **Unchanged:** analytics (`sharedRunningTrendPoints`, `RecordedWeekAggregation`), deduplication, schemas, recording, Health Connect/HealthKit, signing, release and the bottom navigation.
+- **Before images:** `docs/design-2026/v1-before/`.
+
 ## 4. Representative journeys (synthetic data; checked against Phase B)
 
 | Person | Onboarding → training → history → progress | Phase B effect | Still to address (later phases) |
@@ -187,7 +218,7 @@ needs its own owner approval before it starts.
 
 **Data-visualisation phases** (reusing `RunningTrendExplorer`'s chart, readout and drill-down pattern):
 
-- **V1 — Running trends screen (major priority):** move the full Training trends screen (distance, time, pace, heart rate) onto the explorer, replacing `SharedWeeklyRunningChart`. Add the 12–52-week scale and month labels, and keep heart-rate "n of m runs" counts. Runs with C3.
+- **V1 — Running trends screen (major priority; in progress, owner-authorised 22 November 2026, see §3d):** move the full Training trends screen (distance, time, pace, heart rate) onto the explorer, replacing `SharedWeeklyRunningChart`. Add the 12–52-week scale and month labels, and keep heart-rate "n of m runs" counts. Runs with C3.
 - **V2 — Activity analysis:**
   - Splits become a horizontal pace-per-split chart, where the selected split shows its time, pace, heart rate and elevation, and partial splits are marked.
   - Heart rate over time becomes an area chart with recorded samples only, and gaps shown as gaps.

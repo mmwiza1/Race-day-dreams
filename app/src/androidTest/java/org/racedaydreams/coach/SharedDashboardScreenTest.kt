@@ -488,7 +488,7 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("dashboard-week-comparison").assertExists()
         // Pace is the existing weekly elapsed pace; switching measure never adds a figure.
         compose.onNodeWithTag("trend-metric-PACE").performClick()
-        compose.onNodeWithText("Tap or drag to inspect a week. Higher is faster.").assertExists()
+        compose.onNodeWithText("Higher is faster: less time per kilometre.").assertExists()
         compose.onNodeWithText("Pace this week").assertExists()
         compose.onNodeWithTag("trend-readout-value").assert(hasText("/km", substring = true))
         compose.onNodeWithTag("dashboard-week-comparison").assertDoesNotExist()
@@ -576,7 +576,7 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("trend-metric-PACE").assertIsSelected()
         compose.onNodeWithTag("trend-metric-DISTANCE").assertIsNotSelected()
         compose
-            .onNodeWithText("Tap or drag to inspect a week. Higher is faster.")
+            .onNodeWithText("Higher is faster: less time per kilometre.")
             .performScrollTo()
             .assertExists()
     }

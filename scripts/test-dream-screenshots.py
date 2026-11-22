@@ -105,6 +105,11 @@ class CaptureValidationTest(unittest.TestCase):
                     'progress-trend-selected-week.png', 'progress-trend-selected-week-runs.png',
                     'progress-strength-single-week.png', 'progress-controls-large-font.png',
                     'home-next-7-days-selected.png',
+                    'trends-distance-12-weeks.png', 'trends-distance-6-months.png',
+                    'trends-distance-1-year.png', 'trends-pace-1-year.png',
+                    'trends-heart-rate-1-year.png', 'trends-selected-week.png',
+                    'trends-selected-week-runs.png', 'trends-distance-1-year-dark.png',
+                    'trends-large-font.png', 'trends-chart-large-font.png',
                     'starting-path-light.png', 'starting-path-dark.png', 'starting-path-large-font.png',
                     'onboarding-material-light.png', 'onboarding-week-options-light.png'} | {
             f'onboarding-{step}-{mode}.png' for step in ('approach', 'week')
@@ -114,7 +119,7 @@ class CaptureValidationTest(unittest.TestCase):
         # Every earlier capture, including the before images of redesigned screens, stays required.
         self.assertTrue({'home.png', 'onboarding.png', 'progress.png', 'strength.png',
                          'strength-home.png', 'settings.png'}.issubset(captures.REQUIRED))
-        self.assertEqual(498, len(captures.REQUIRED))
+        self.assertEqual(508, len(captures.REQUIRED))
 
     def test_bouldering_requires_real_empty_data_session_dark_and_large_font_captures(self):
         expected = {'bouldering-empty.png', 'bouldering-home.png', 'bouldering-home-analytics.png',

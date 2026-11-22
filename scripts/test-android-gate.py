@@ -291,7 +291,9 @@ class AndroidGateTest(unittest.TestCase):
     def test_action_calls_one_shell_without_changing_the_timeout(self):
         workflow = (ROOT / '.github/workflows/android.yml').read_text()
         self.assertIn('script: sh scripts/run-android-gate.sh', workflow)
-        self.assertIn('timeout-minutes: 30', workflow)
+        # A bound still exists for stalled emulators; 45 minutes was owner-approved when the full
+        # capture matrix grew to about 30 minutes.
+        self.assertIn('timeout-minutes: 45', workflow)
         self.assertIn('profile: pixel_2', workflow)
         self.assertIn('emulator-build: 16740729', workflow)
         self.assertIn('emulator-options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim', workflow)

@@ -15,6 +15,10 @@ object WeekAtAGlance {
     val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     private val months =
         listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+    /** "Nov", for chart month labels. */
+    fun monthShort(date: LocalDate): String = months[date.getMonthValue() - 1]
+
     private val monthNames =
         listOf(
             "January",

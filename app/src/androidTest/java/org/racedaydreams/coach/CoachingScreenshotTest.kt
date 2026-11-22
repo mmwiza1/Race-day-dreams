@@ -606,7 +606,7 @@ class CoachingScreenshotTest {
         back()
         compose.onNodeWithText("Training trends").performScrollTo().performClick()
         compose.waitForIdle()
-        await("Weekly recorded distance")
+        awaitTrainingTrends()
         capture("training-trends")
         back()
         click("Strength")
@@ -3166,38 +3166,45 @@ class CoachingScreenshotTest {
             back()
             compose.onNodeWithText("Training trends").performScrollTo().performClick()
             compose.waitForIdle()
-            await("Weekly recorded distance")
-            compose.onNodeWithText("4 weeks").performScrollTo().performClick().assertIsSelected()
-            alignHeading("Weekly recorded distance")
+            awaitTrainingTrends()
+            compose.onNodeWithTag("period-FOUR_WEEKS").performScrollTo().performClick()
+            compose.onNodeWithTag("period-FOUR_WEEKS").assertIsSelected()
+            alignHeading("Training trends")
             capture("running-trends-distance$suffix")
-            compose.onNodeWithText("Pace").performScrollTo().performClick().assertIsSelected()
-            await("Weekly elapsed average pace")
-            alignHeading("Weekly elapsed average pace")
+            compose.onNodeWithTag("trend-metric-PACE").performScrollTo().performClick()
+            await("Pace this week")
+            alignHeading("Training trends")
             capture("running-trends-pace$suffix")
-            compose
-                .onNodeWithText("Training time")
-                .performScrollTo()
-                .performClick()
-                .assertIsSelected()
-            await("Weekly recorded running time")
-            alignHeading("Weekly recorded running time")
+            compose.onNodeWithTag("trend-metric-TIME").performScrollTo().performClick()
+            await("Training time this week")
+            alignHeading("Training trends")
             capture("running-trends-time$suffix")
-            compose.onNodeWithText("Heart rate").performScrollTo().performClick()
-            await("Recorded heart rate")
-            alignHeading("Recorded heart rate")
-            compose.onNodeWithText("Average heart rate").assertExists()
-            compose.onNodeWithText("Maximum heart rate").assertExists()
+            compose.onNodeWithTag("trend-metric-HEART_RATE").performScrollTo().performClick()
+            await("Heart rate this week")
+            alignHeading("Training trends")
             capture("running-heart-rate$suffix")
             if (suffix == "-large-font") {
-                val chart = compose.onNodeWithTag("running-heart-rate-chart")
+                val chart = compose.onNodeWithTag("running-trend-chart")
                 chart.performScrollTo()
-                alignHeading("Recent recorded readings")
-                assertFullyVisibleInScroll(chart, "running-heart-rate-chart")
+                assertFullyVisibleInScroll(chart, "running-trend-chart")
                 capture("running-heart-rate-chart-large-font")
             }
-            compose.onNodeWithText("View earlier run").performScrollTo().performClick()
-            await("No heart-rate measurements recorded for this run.")
-            alignHeading("Recorded heart rate")
+            // An incomplete or empty week: step back until a week without heart rate is shown.
+            var steps = 0
+            while (
+                steps < 4 &&
+                    compose
+                        .onAllNodes(
+                            hasTestTag("trend-readout-value") and
+                                (hasText("Not recorded") or hasText("No runs"))
+                        )
+                        .fetchSemanticsNodes()
+                        .isEmpty()
+            ) {
+                compose.onNodeWithTag("trend-earlier").performScrollTo().performClick()
+                steps++
+            }
+            alignHeading("Training trends")
             capture("running-heart-rate-empty$suffix")
             back()
             clickOriginalNavigationTab("Calendar")
@@ -3940,6 +3947,126 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesV1TrainingTrendsAcrossPeriodsMeasuresAndModes() {
+        // Synthetic year: two to four runs most weeks, some weeks without runs, heart rate on most
+        // runs but not all, so long ranges, missing data and qualifying counts are all visible.
+        val store = FeatureStore(context)
+        val zone = java.time.ZoneId.systemDefault()
+        val today = LocalDate.now()
+        for (week in 0L until 52L) {
+            if (week % 9L == 5L) continue
+            val monday = today.minusDays((today.dayOfWeek.value - 1).toLong()).minusWeeks(week)
+            val runs = 2 + ((week * 7) % 3).toInt()
+            for (n in 0 until runs) {
+                val day = monday.plusDays((n * 2).toLong())
+                if (day.isAfter(today)) continue
+                val metres = 4_000.0 + ((week * 13 + n * 5) % 9) * 1_000.0 + (51 - week) * 40.0
+                val secondsPerKm = 345 - (51 - week) + ((week + n) % 4) * 6
+                val elapsed = (metres / 1000.0 * secondsPerKm).toLong()
+                val start = day.atTime(7 + n * 3, 15).atZone(zone).toInstant()
+                val heart = (week + n) % 4L != 3L
+                store.upsertManualActivity(
+                    ActivityRecord(
+                        "v1-trends-$week-$n",
+                        SourceIdentity("manual", "v1-trends-$week-$n", null),
+                        start,
+                        start.plusSeconds(elapsed),
+                        null,
+                        null,
+                        metres,
+                        Duration.ofSeconds(elapsed),
+                        if (heart) 138.0 + ((week * 5 + n * 3) % 17) else null,
+                        if (heart) 166.0 + ((week * 3 + n) % 15) else null,
+                        null,
+                        null,
+                        null,
+                        "Synthetic V1 trends fixture",
+                        emptyList(),
+                        emptyList(),
+                        null,
+                        null,
+                    )
+                )
+            }
+        }
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        fun openTrends() {
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            // New synthetic history can surface a milestone dialog; it must not cover navigation.
+            dismissCaptureDialogs()
+            clickOriginalNavigationTab("Progress")
+            await("Distance this week")
+            compose.onNodeWithText("Training trends").performScrollTo().performClick()
+            awaitTrainingTrends()
+        }
+        try {
+            shell("settings put system font_scale 1.0")
+            shell("cmd uimode night no")
+            openTrends()
+            // 12 weeks is the default; then the long ranges with month labels.
+            compose.onNodeWithTag("period-TWELVE_WEEKS").assertIsSelected()
+            alignHeading("Training trends")
+            capture("trends-distance-12-weeks")
+            compose.onNodeWithTag("period-SIX_MONTHS").performScrollTo().performClick()
+            compose.onNodeWithTag("trend-month-labels").assertExists()
+            alignHeading("Training trends")
+            capture("trends-distance-6-months")
+            compose.onNodeWithTag("period-ONE_YEAR").performScrollTo().performClick()
+            compose.onNodeWithTag("trend-month-labels").assertExists()
+            alignHeading("Training trends")
+            capture("trends-distance-1-year")
+            compose.onNodeWithTag("trend-metric-PACE").performScrollTo().performClick()
+            await("Pace this week")
+            alignHeading("Training trends")
+            capture("trends-pace-1-year")
+            compose.onNodeWithTag("trend-metric-HEART_RATE").performScrollTo().performClick()
+            await("Heart rate this week")
+            alignHeading("Training trends")
+            capture("trends-heart-rate-1-year")
+            // A historical week, chosen with the accessible stepper, and the runs behind it.
+            compose.onNodeWithTag("trend-metric-DISTANCE").performScrollTo().performClick()
+            compose.onNodeWithTag("period-TWELVE_WEEKS").performScrollTo().performClick()
+            repeat(3) { compose.onNodeWithTag("trend-earlier").performScrollTo().performClick() }
+            await("Runs that week")
+            alignHeading("Training trends")
+            capture("trends-selected-week")
+            compose.onNodeWithTag("week-runs").performScrollTo()
+            alignHeading("Runs that week")
+            capture("trends-selected-week-runs")
+            closeScenario()
+            scenario = null
+
+            shell("cmd uimode night yes")
+            openTrends()
+            compose.onNodeWithTag("period-ONE_YEAR").performScrollTo().performClick()
+            alignHeading("Training trends")
+            capture("trends-distance-1-year-dark")
+            closeScenario()
+            scenario = null
+
+            shell("cmd uimode night no")
+            shell("settings put system font_scale 2.0")
+            openTrends()
+            compose.onNodeWithTag("trend-metric-chips").performScrollTo()
+            alignHeading("Training trends")
+            capture("trends-large-font")
+            compose.onNodeWithTag("running-trend-chart").performScrollTo()
+            compose.waitForIdle()
+            capture("trends-chart-large-font")
+        } finally {
+            closeScenario()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesStrengthProgressWithASingleQualifyingWeek() {
         // One recorded workout: one estimate, which must not be drawn as a trend.
         val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
@@ -4621,6 +4748,14 @@ class CoachingScreenshotTest {
     private fun back() {
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         androidx.test.espresso.Espresso.pressBack()
+        compose.waitForIdle()
+    }
+
+    /** The shared Training trends screen is ready once its period range and chart are laid out. */
+    private fun awaitTrainingTrends() {
+        compose.waitUntil(20000) {
+            compose.onAllNodesWithTag("trends-range").fetchSemanticsNodes().isNotEmpty()
+        }
         compose.waitForIdle()
     }
 
