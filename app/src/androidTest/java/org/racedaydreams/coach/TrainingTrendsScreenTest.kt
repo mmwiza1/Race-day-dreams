@@ -137,7 +137,11 @@ class TrainingTrendsScreenTest {
             .onNodeWithTag("week-runs")
             .assert(hasAnyDescendant(hasText(friendlyDate(earlier), substring = true)))
             .assert(!hasAnyDescendant(hasText(friendlyDate(today), substring = true)))
-        compose.onNode(hasText(friendlyDate(earlier), substring = true) and hasClickAction())
+        compose
+            .onNode(
+                hasText(friendlyDate(earlier), substring = true) and
+                    hasAnyAncestor(hasTestTag("week-runs"))
+            )
             .performScrollTo()
             .performClick()
         assertEquals(listOf("old"), opened.toList())
@@ -174,7 +178,8 @@ class TrainingTrendsScreenTest {
                 )
             )
             .assertExists()
-        compose.onNodeWithTag("trend-readout-value").assert(hasText("Not recorded"))
+        // The current week's Distance readout keeps the dashboard's distance tag.
+        compose.onNodeWithTag("dashboard-week-distance").assert(hasText("Not recorded"))
         compose.onNodeWithTag("trend-readout-sample").assert(hasText("based on 0 of 1", substring = true))
         compose.onNodeWithTag("trend-legend").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("0.0 km").assertDoesNotExist()
@@ -209,7 +214,7 @@ class TrainingTrendsScreenTest {
                 )
             )
             .assertExists()
-        compose.onNodeWithText("0 bpm", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("0 bpm").assertDoesNotExist()
         compose.onNodeWithTag("heart-rate-empty").assertDoesNotExist()
     }
 

@@ -308,9 +308,10 @@ private fun TrendChart(
     select: (Int) -> Unit,
 ) {
     val accent = MaterialTheme.colorScheme.primary
-    // Unselected marks keep at least 3:1 contrast with the surface in light and dark themes; the
-    // selected week is full strength with a marker above it and a guide line.
-    val muted = accent.copy(alpha = 0.7f)
+    // Unselected marks use the scheme's secondary tone (the running hue, desaturated), which keeps
+    // at least 3:1 contrast with the surface in light and dark themes; the selected week is the
+    // full running accent with a marker above it and a guide line.
+    val muted = MaterialTheme.colorScheme.secondary
     val outline = MaterialTheme.colorScheme.outline
     val grid = MaterialTheme.colorScheme.outlineVariant
     val pace = metric == RunningTrendMetric.PACE

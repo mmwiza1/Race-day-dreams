@@ -3997,7 +3997,9 @@ class CoachingScreenshotTest {
         fun openTrends() {
             scenario = ActivityScenario.launch(CoachActivity::class.java)
             awaitHomeReady(false)
-            click("Progress")
+            // New synthetic history can surface a milestone dialog; it must not cover navigation.
+            dismissCaptureDialogs()
+            clickOriginalNavigationTab("Progress")
             await("Distance this week")
             compose.onNodeWithText("Training trends").performScrollTo().performClick()
             awaitTrainingTrends()
