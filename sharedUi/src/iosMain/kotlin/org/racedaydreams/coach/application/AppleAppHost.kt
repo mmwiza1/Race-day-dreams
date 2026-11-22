@@ -583,6 +583,10 @@ private fun AppleAppContent(
                         results = { page = ApplePage.RESULTS },
                         routines = { page = ApplePage.ROUTINES },
                         back = { page = ApplePage.START },
+                        openRun = {
+                            activityId = it
+                            page = ApplePage.ACTIVITY
+                        },
                     )
                 ApplePage.RACE ->
                     SharedRaceDay(

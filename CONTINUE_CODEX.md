@@ -121,6 +121,11 @@ installations that cannot support them (all existing debug-signed installs).
   - The owner approved Phase B and authorised merging PR #36 after one correction: the distance-only "Same days last week" comparison now shows in Distance mode only.
   - No version bump. The `main` workflow republishes the rolling `development` build as usual.
   - Next phases (V1 Running trends, V3 Strength progression, then C1–C8) each need separate owner authorisation. See `docs/DESIGN_2026.md` §3c, §5 and §6.
+- **V1 Running trends (owner-authorised 22 November 2026):**
+  - A draft PR from `ccr-60f602a7-tfmok3`, which merges `main` 730fd97d.
+  - It moves the Training trends screen onto the shared explorer (§3d), adds heart rate as a fourth measure, and adds long-range month labels, steppers and a missing-data key.
+  - Do not merge or release without explicit owner approval.
+  - Do not start V2, V3, V4 or C1–C8.
 - **CI note:** API 35's "persistence and draft tests" step now runs close to its 30-minute limit (27 min before Phase B's added captures). A timeout with 0 failures is a time-limit issue; rerun once. Raising the limit needs owner agreement.
 - **Rules:**
   - **Do not merge, auto-merge or release without explicit owner approval.**

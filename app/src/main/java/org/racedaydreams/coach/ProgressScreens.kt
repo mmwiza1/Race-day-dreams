@@ -11,7 +11,6 @@ import java.time.ZoneId
 import java.util.UUID
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.UnitSystem
-import org.racedaydreams.domain.activity.ActivityAnalytics
 import org.racedaydreams.domain.activity.MilestoneEngine
 import org.racedaydreams.domain.activity.PerformanceDistance
 import org.racedaydreams.domain.activity.PersonalBestCalculator
@@ -29,22 +28,8 @@ fun ProgressScreen(
     onStrength: () -> Unit = {},
     section: String = "pbs",
 ) {
-    var weekCount by rememberSaveable { mutableIntStateOf(12) }
-    var trendMetric by rememberSaveable { mutableStateOf(RunningTrendMetric.DISTANCE) }
-    var trendSection by rememberSaveable { mutableStateOf("Training trends") }
     val today = LocalDate.now()
     val displayZone = ZoneId.systemDefault()
-    val weeks =
-        remember(state.activities, weekCount, today, displayZone) {
-            ActivityAnalytics.weekly(state.activities, today, displayZone, weekCount)
-        }
-    val rangedRuns =
-        remember(state.activities, weeks, today, displayZone) {
-            state.activities.filter {
-                val day = it.start().atZone(displayZone).toLocalDate()
-                !day.isBefore(weeks.first().weekStart()) && !day.isAfter(today)
-            }
-        }
     val current =
         remember(state.results) {
             PersonalBestCalculator.current(state.results).associateBy {
@@ -61,68 +46,20 @@ fun ProgressScreen(
     var showAllEntered by rememberSaveable { mutableStateOf(false) }
     CoachPage {
         if (section == "trends") {
-            CoachHeading("Progress from your recorded running")
-            Text("Your recorded performances, weekly training and heart-rate evidence.")
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                listOf("Training trends", "Heart rate").forEach { title ->
-                    CoachFilterChip(
-                        selected = trendSection == title,
-                        onClick = { trendSection = title },
-                        label = { Text(title) },
-                    )
-                }
-            }
-            Text("Date range", style = MaterialTheme.typography.labelLarge)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                listOf(4, 8, 12).forEach { count ->
-                    CoachFilterChip(
-                        selected = weekCount == count,
-                        onClick = { weekCount = count },
-                        label = { Text("$count weeks") },
-                    )
-                }
-            }
-            Text(
-                "${friendlyDate(requireNotNull(weeks.first().weekStart()))} – ${friendlyDate(today)}",
-                style = MaterialTheme.typography.bodySmall,
+            SharedTrainingTrends(
+                state.activities,
+                today,
+                { it.atZone(displayZone).toLocalDate() },
+                state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
+                { formatDistance(it, state) },
+                ::decimal,
+                ::formatPaceSeconds,
+                ::shortDate,
+                ::friendlyDate,
+                onActivity,
+                null,
             )
-            if (trendSection == "Heart rate") {
-                RunningHeartRatePanel(rangedRuns, state)
-            } else {
-                CoachCard {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        RunningTrendMetric.entries.forEach { metric ->
-                            CoachFilterChip(
-                                selected = trendMetric == metric,
-                                onClick = { trendMetric = metric },
-                                label = { Text(metric.label) },
-                            )
-                        }
-                    }
-                    Text(trendMetric.heading, style = MaterialTheme.typography.titleLarge)
-                    Text("Calendar weeks · this week is still in progress.")
-                    WeeklyRunningChart(weeks, rangedRuns, trendMetric, state)
-                    WhyDetails(
-                        when (trendMetric) {
-                            RunningTrendMetric.DISTANCE ->
-                                "Known recorded distances are added within each calendar week. Runs without distance remain missing. No recorded runs does not prove that no training happened."
-                            RunningTrendMetric.PACE ->
-                                "Total recorded elapsed time divided by total recorded distance for runs with a known positive distance. Elapsed time includes pauses. Runs without distance are excluded; this does not estimate missing splits or predict race performance. Lower pace values mean faster running."
-                            RunningTrendMetric.TIME ->
-                                "The elapsed durations of recorded runs are added by week. They include pauses and are not a universal training-load or recovery score."
-                        },
-                        "About this chart",
-                    )
-                }
+            run {
                 val insights =
                     remember(state.activities) {
                         org.racedaydreams.domain.polish.TrainingInsights.from(

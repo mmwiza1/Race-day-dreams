@@ -11,10 +11,20 @@ enum class RunningTrendMetric(val label: String, val heading: String) {
     DISTANCE("Distance", "Weekly recorded distance"),
     PACE("Pace", "Weekly elapsed average pace"),
     TIME("Training time", "Weekly recorded running time"),
+    HEART_RATE("Heart rate", "Recorded average heart rate per run"),
 }
 
-/** Derived presentation only; this never replaces an activity's historical totals. */
-data class RunningTrendPoint(val week: RecordedWeek, val value: Double?, val measuredRuns: Int)
+/**
+ * Derived presentation only; this never replaces an activity's historical totals. For heart rate,
+ * [value] is unused and [heartRates] lists each counted run's own recorded average (beats per
+ * minute), unchanged: no weekly heart-rate figure is computed.
+ */
+data class RunningTrendPoint(
+    val week: RecordedWeek,
+    val value: Double?,
+    val measuredRuns: Int,
+    val heartRates: List<Double> = emptyList(),
+)
 
 fun sharedRunningTrendPoints(
     weeks: List<RecordedWeek>,
@@ -59,6 +69,10 @@ fun sharedRunningTrendPoints(
                         runs.takeIf { it.isNotEmpty() }?.sumOf { elapsedSeconds(it) },
                         runs.size,
                     )
+                RunningTrendMetric.HEART_RATE -> {
+                    val rates = runs.mapNotNull { it.averageHeartRate() }
+                    RunningTrendPoint(week, null, rates.size, rates)
+                }
                 RunningTrendMetric.PACE -> {
                     val measured = runs.filter { (it.distanceMetres() ?: 0.0) > 0.0 }
                     val metres = measured.sumOf { it.distanceMetres()!! }
