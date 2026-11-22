@@ -407,7 +407,7 @@ class SharedDashboardScreenTest {
         compose.onNodeWithText("Distance this week").assertDoesNotExist()
         compose.onNodeWithTag("kpi-Distance").assertDoesNotExist()
         compose
-            .onAllNodes(hasText("Bench Press") and hasClickAction())
+            .onAllNodes(hasText("Bench Press") and hasAnyAncestor(hasClickAction()))
             .onFirst()
             .performScrollTo()
             .performClick()

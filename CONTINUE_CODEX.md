@@ -149,6 +149,7 @@ installations that cannot support them (all existing debug-signed installs).
   - **MAJOR:** progressive testing with broader verification.
   - **RELEASE:** full mandatory release and signing verification.
   - Run a full Android/iOS cycle only when the repository requires it (ready-PR canonical screenshots, merge gates), once, after all changes. Never repeat it for small visual tweaks.
+- **CI monitoring (standing owner rule):** check running CI every 15 minutes and also at each job's estimated completion time. Schedule both whenever a run starts.
 - **CI note:** API 35's "persistence and draft tests" step now runs close to its 30-minute limit (27 min before Phase B's added captures). A timeout with 0 failures is a time-limit issue; rerun once. Raising the limit needs owner agreement.
 - **Rules:**
   - **Do not merge, auto-merge or release without explicit owner approval.**
