@@ -72,9 +72,10 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Run Android persistence and draft tests
-        # Normal full matrix instrumentation takes9–11minutes. Bound a stalled emulator/test
-        # so failure logs remain actionable rather than waiting for the six-hour job limit.
-        timeout-minutes: 30
+        # The full matrix instrumentation now takes about 27–30 minutes (it was 9–11 before the
+        # canonical capture set grew). Bound a stalled emulator/test so failure logs remain
+        # actionable rather than waiting for the six-hour job limit. Owner-approved 45 minutes.
+        timeout-minutes: 45
         uses: reactivecircus/android-emulator-runner@v2
         with:
           #37.2.13 fixes leaked GLES contexts/surfaces/framebuffers on process exit.
