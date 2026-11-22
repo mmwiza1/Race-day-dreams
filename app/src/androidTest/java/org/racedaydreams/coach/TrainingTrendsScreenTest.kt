@@ -77,6 +77,11 @@ class TrainingTrendsScreenTest {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
                 RaceDayTheme(darkTheme = dark.value, dynamicColour = false) {
+                    // The app's scaffold paints the theme background; do the same here so contrast
+                    // is measured against what users actually see.
+                    androidx.compose.material3.Surface(
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.background
+                    ) {
                     Box(if (width == null) Modifier else Modifier.width(width)) {
                         CoachPage {
                             SharedTrainingTrends(
@@ -93,6 +98,7 @@ class TrainingTrendsScreenTest {
                                 null,
                             )
                         }
+                    }
                     }
                 }
             }
