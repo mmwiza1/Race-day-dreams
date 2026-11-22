@@ -31,7 +31,7 @@ fun SharedStrengthTodayScreen(
     CoachPage {
         TodayHeader(dateLabel)
         if (week.any { it.sessions.isNotEmpty() }) {
-            SectionTitle("This week", WeekAtAGlance.summary(week))
+            SectionTitle("Your next 7 days", WeekAtAGlance.summary(week))
             WeekStrip(week, today)
         }
         // One hero answers what, how long and how to start; logging after the fact is secondary.

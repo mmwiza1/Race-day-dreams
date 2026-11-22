@@ -708,7 +708,7 @@ private fun AppleAppContent(
                             },
                             gymNow = { page = ApplePage.GYM },
                             week =
-                                WeekAtAGlance.build(
+                                WeekAtAGlance.nextSevenDays(
                                     state,
                                     today,
                                     {

@@ -69,8 +69,9 @@ Priority: **P1** high usability impact and used daily; **P2** weekly; **P3** occ
 - **Components (shared, Phase B):**
   - `HeroCard`, `DisciplineLabel`.
   - `StatBlock` / `StatRow`: up to three figures, stacked at ≥150% text.
-  - `WeekStrip`: done = filled dot, planned = ring, missed = muted ring. Every day has a
-    spoken description.
+  - `WeekStrip`: Home's "Your next 7 days" (today first). Done = filled dot, planned = ring,
+    missed = muted ring with a slash. Every day has a spoken description, is a 48 dp target and
+    opens its sessions below the strip; at ≥150% text the days stack as full-width rows.
   - `DateBadge` / `ScheduleRow`, `CountdownCard`, `SectionTitle`.
   - Restyled `KpiTile`, plus `ProgressTabs`.
   - Existing: `ActionGroup` / `ActionRow`, `QuickStartRow`, `ExpandableSection`, `Explainer`.
@@ -121,6 +122,30 @@ The first version relied on dot styles alone (filled, ring, muted ring), so a ne
 
 Screen readers already hear each day's full state, so the legend is hidden from them.
 
+## 3c. Forward-looking Home, historical weeks elsewhere (owner review 3)
+
+The owner approved the chart-first direction and asked Home to say what to do next:
+
+- **Home: "Your next 7 days".** The strip shows today and the following six calendar days, with
+  today always on the left. Opened on a Sunday it runs Sunday–Saturday; on a Monday,
+  Monday–Sunday.
+  - A range line ("Sun 22 Nov – Sat 28 Nov") makes month and year boundaries explicit; years are
+    added when the window crosses into a new year.
+  - Several sessions on one day show as several marks.
+  - Rest days are stated, not left blank, when a day is opened.
+- **Summary of what is ahead.** The title's summary counts sessions still planned in the
+  window, e.g. "3 runs planned" or "4 planned: 3 runs, 1 strength". Sessions already done today
+  are not counted as upcoming.
+- **Missed sessions.** Because the window starts today, a past missed session is not shown on
+  Home. Missed marks remain part of the shared mark language for Plan and Calendar (C1).
+- **No duplication with Coming up.** The strip is the compact visual overview, and no day is
+  open at first, so it does not repeat today's hero. Tapping a day lists that day's sessions;
+  Coming up keeps the useful details of the next runs (date, distance or duration, link to the
+  workout).
+- **Monday–Sunday stays historical.** Weekly figures stay Monday–Sunday wherever they summarise
+  what happened: Plan's "This week", Calendar, Progress and Strength Today's "Your week so far".
+  Scheduling and training logic are unchanged; only Home's preview window moved.
+
 ## 4. Representative journeys (synthetic data; checked against Phase B)
 
 | Person | Onboarding → training → history → progress | Phase B effect | Still to address (later phases) |
@@ -132,6 +157,10 @@ Screen readers already hear each day's full state, so the legend is hidden from 
 ## 5. App-wide staged roadmap (each a focused PR with tests and real screenshots; none starts before approval)
 
 Chart modernisation is explicit in phases V1–V4 below, and they run alongside the C phases that touch the same screens.
+
+**Approved direction:** the owner approved the chart-first design direction (owner review 2):
+the chart leads, the readout states the selected period, and the drill-down lists the activities
+behind it.
 
 **Owner priorities:** **V1 Running trends** and **V3 Strength progression** are major priorities
 of the wider roadmap. Once Phase B is approved, they are the first chart phases proposed, ahead
@@ -182,16 +211,16 @@ tests while developing and the full Android API 28/35/36 and iOS gates on its fi
 
 ## 6. Phase B compromises and known limits
 
-- **Week strip scope:** it shows the current Monday–Sunday week only; swiping between weeks
-  belongs with Calendar (C1). Unplanned recorded sessions appear as done marks once the platform
-  supplies local dates (Android and iOS both do).
+- **Next-7-days scope:** Home shows a fixed rolling window from today; browsing other weeks
+  belongs with Calendar (C1). Unplanned sessions recorded today appear as done marks (Android and
+  iOS both supply local dates).
 - **Strength hero:** it counts recorded strength workouts since Monday (a count, not a new
   metric); working sets and records stay in the KPI grid.
 - **No new motion and no icon dependency:** text chevrons remain until an icon decision is made.
 - **Explorer and the full trends screen:** the explorer replaces the Progress chart only. The full Training trends screen still uses the earlier chart until V1.
 - **Chart range:** the explorer shows the weeks of the selected period; for one year (52 bars) the bars become thin, and month labels come in V1.
 - **Polish pass (owner review 2):**
-  - Hybrid Progress no longer repeats the week's distance above the chart. The running column shows the run count and points to the chart.
-  - At 150% text and above, the Distance / Time / Pace selector wraps as 48 dp chips instead of a clipped segmented row.
+  - Hybrid Progress no longer repeats the week's distance above the chart. Both columns are compact and symmetric: a count plus the last recorded date. The chart owns the only large figure.
+  - The Distance / Time / Pace selector wraps as 48 dp chips at 150% text and above, or whenever its measured labels would not fit a segmented row (for example on a narrow screen).
   - The estimated-1RM chart shows a single week's estimate on its own, with no line, range or tap hint, and says a trend appears once a second week is recorded. Its full redesign remains V3.
 - **Not yet done:** no human screen-reader pass or physical-device review.

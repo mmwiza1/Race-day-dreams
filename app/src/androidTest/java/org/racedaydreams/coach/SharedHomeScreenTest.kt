@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.*
 import org.junit.Assert.*
@@ -25,7 +26,7 @@ class SharedHomeScreenTest {
     private val day = LocalDate.of(2026, 11, 17)
     private val actions = mutableListOf<String>()
 
-    private fun state(completed: Boolean = false): CoachUiState {
+    private fun state(completed: Boolean = false, second: Boolean = false): CoachUiState {
         val profile =
             UserProfile(
                 RaceGoal(RaceDistance.GENERAL_FITNESS, "", null, GoalMode.FINISH, null),
@@ -71,7 +72,14 @@ class SharedHomeScreenTest {
                 "Athlete choice",
                 profile,
                 "Retained evidence",
-                TrainingPlan("plan", day, day.plusWeeks(2), emptyList(), listOf(target, future)),
+                TrainingPlan(
+                    "plan",
+                    day,
+                    day.plusWeeks(2),
+                    emptyList(),
+                    listOf(target, future) +
+                        if (second) listOf(future.copy(id = "next/two")) else emptyList(),
+                ),
             )
         return CoachUiState(
             loading = false,
@@ -213,31 +221,102 @@ class SharedHomeScreenTest {
     }
 
     @Test
-    fun weekAtAGlanceMarksDonePlannedAndMissedFromThePlanOnly() {
-        // Tuesday's run is planned and Thursday's is next; Monday has nothing.
-        val week = WeekAtAGlance.build(state(), day, null, ::workoutName)
-        assertEquals(7, week.size)
-        assertEquals(day.minusDays(1), week[0].date)
-        assertTrue(week[0].sessions.isEmpty())
-        assertEquals(SessionMark.PLANNED, week[1].sessions.single().mark)
-        assertEquals(SessionMark.PLANNED, week[3].sessions.single().mark)
-        // A recorded response linked to Tuesday's workout makes it done.
-        val done = WeekAtAGlance.build(state(completed = true), day, null, ::workoutName)
-        assertEquals(SessionMark.DONE, done[1].sessions.single().mark)
-        assertEquals("1 of 2 done", WeekAtAGlance.summary(done))
-        // Seen from Thursday, an unrecorded Tuesday is missed, never silently done.
-        val later = WeekAtAGlance.build(state(), day.plusDays(2), null, ::workoutName)
-        assertEquals(SessionMark.MISSED, later[1].sessions.single().mark)
+    fun nextSevenDaysStartsTodayAndCountsOnlyWhatIsStillAhead() {
+        // Tuesday's run is today and Thursday's is next; the other days are rest days.
+        val days = WeekAtAGlance.nextSevenDays(state(), day, null, ::workoutName)
+        assertEquals((0L..6L).map { day.plusDays(it) }, days.map { it.date })
+        assertEquals(
+            listOf("Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Mon"),
+            days.map { it.weekday },
+        )
+        assertEquals(SessionMark.PLANNED, days[0].sessions.single().mark)
+        assertEquals(SessionMark.PLANNED, days[2].sessions.single().mark)
+        assertTrue(days.filterIndexed { i, _ -> i != 0 && i != 2 }.all { it.sessions.isEmpty() })
+        assertEquals("2 runs planned", WeekAtAGlance.summary(days))
+        // Today's run, once recorded, is done and no longer counted as upcoming.
+        val done = WeekAtAGlance.nextSevenDays(state(completed = true), day, null, ::workoutName)
+        assertEquals(SessionMark.DONE, done[0].sessions.single().mark)
+        assertEquals("1 run planned", WeekAtAGlance.summary(done))
+        // Seen from Thursday, Tuesday has left the window rather than showing as missed.
+        val later = WeekAtAGlance.nextSevenDays(state(), day.plusDays(2), null, ::workoutName)
+        assertEquals(day.plusDays(2), later.first().date)
+        assertEquals("1 run planned", WeekAtAGlance.summary(later))
     }
 
     @Test
-    fun weekStripDescribesEachDayForScreenReadersWithoutRelyingOnColour() {
-        show(state())
-        compose.onNodeWithTag("week-strip").assertExists()
-        compose.onNodeWithText("0 of 2 done").assertExists()
+    fun nextSevenDaysFollowsTheCalendarFromSundayAndAcrossMonthAndYearEnds() {
+        val sunday = LocalDate.of(2026, 11, 22)
+        val fromSunday = WeekAtAGlance.nextSevenDays(state(), sunday, null, ::workoutName)
+        assertEquals(
+            listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+            fromSunday.map { it.weekday },
+        )
+        assertEquals("Sun 22 Nov – Sat 28 Nov", WeekAtAGlance.range(fromSunday))
+        val monday = WeekAtAGlance.nextSevenDays(state(), sunday.plusDays(1), null, ::workoutName)
+        assertEquals("Mon 23 Nov – Sun 29 Nov", WeekAtAGlance.range(monday))
+        val monthEnd =
+            WeekAtAGlance.nextSevenDays(state(), LocalDate.of(2026, 11, 28), null, ::workoutName)
+        assertEquals(LocalDate.of(2026, 12, 4), monthEnd.last().date)
+        assertEquals("Sat 28 Nov – Fri 4 Dec", WeekAtAGlance.range(monthEnd))
+        val yearEnd =
+            WeekAtAGlance.nextSevenDays(state(), LocalDate.of(2026, 12, 29), null, ::workoutName)
+        assertEquals(LocalDate.of(2027, 1, 4), yearEnd.last().date)
+        assertEquals("Tue 29 Dec 2026 – Mon 4 Jan 2027", WeekAtAGlance.range(yearEnd))
+        // A leap day is an ordinary calendar day in the window.
+        val leap =
+            WeekAtAGlance.nextSevenDays(state(), LocalDate.of(2028, 2, 27), null, ::workoutName)
+        assertEquals(listOf(27, 28, 29, 1, 2, 3, 4), leap.map { it.date.dayOfMonth })
+    }
+
+    @Test
+    fun multipleSessionsOnOneDayAreAllShownAndCounted() {
+        val days = WeekAtAGlance.nextSevenDays(state(second = true), day, null, ::workoutName)
+        assertEquals(2, days[2].sessions.size)
+        assertEquals("3 runs planned", WeekAtAGlance.summary(days))
+    }
+
+    @Test
+    fun nextSevenDaysDescribesEachDayAndOpensTheSelectedDaysSessions() {
+        show(state(second = true))
+        compose.onNodeWithText("Your next 7 days").assertExists()
+        compose.onNodeWithText("3 runs planned").assertExists()
+        compose.onNodeWithText("Tue 17 Nov – Mon 23 Nov").assertExists()
         compose
-            .onNodeWithContentDescription("Tue 17, today:", substring = true)
+            .onNodeWithContentDescription("Tuesday 17 November, today:", substring = true)
             .assert(hasContentDescription("planned", substring = true))
-        compose.onNodeWithContentDescription("Mon 16: nothing planned").assertExists()
+        compose
+            .onNodeWithContentDescription("Wednesday 18 November: rest day, nothing scheduled")
+            .assertExists()
+        // Nothing is open until a day is chosen, so the strip does not repeat today's hero.
+        compose.onNodeWithTag("week-day-detail").assertDoesNotExist()
+        compose.onNodeWithTag("week-day-${day.plusDays(2)}").performClick()
+        compose.onNodeWithTag("week-day-${day.plusDays(2)}").assertIsSelected()
+        compose.onNodeWithTag("week-day-detail").assertExists()
+        compose.onNodeWithText("Thu 19 Nov").assertExists()
+        compose.onAllNodesWithText(" · Planned", substring = true).assertCountEquals(2)
+        // Choosing a rest day says so; choosing it again closes the detail.
+        compose.onNodeWithTag("week-day-${day.plusDays(1)}").performClick()
+        compose.onNodeWithText("Rest day: nothing scheduled.").assertExists()
+        compose.onNodeWithTag("week-day-${day.plusDays(1)}").performClick()
+        compose.onNodeWithTag("week-day-detail").assertDoesNotExist()
+        // Every day is at least a 48 dp target.
+        for (offset in 0L..6L) compose
+            .onNodeWithTag("week-day-${day.plusDays(offset)}")
+            .assertHeightIsAtLeast(48.dp)
+    }
+
+    @Test
+    fun nextSevenDaysStacksAsReadableRowsAt200PercentText() {
+        show(state(), large = true)
+        // Each row speaks as a whole (its visible "Tue 17 Nov · Today" is part of that).
+        compose
+            .onNodeWithContentDescription("Tuesday 17 November, today:", substring = true)
+            .assertExists()
+        for (offset in 0L..6L) {
+            val row = compose.onNodeWithTag("week-day-${day.plusDays(offset)}")
+            row.performScrollTo().assertIsDisplayed().assertHeightIsAtLeast(48.dp)
+        }
+        compose.onNodeWithTag("week-day-${day.plusDays(2)}").performScrollTo().performClick()
+        compose.onNodeWithTag("week-day-detail").performScrollTo().assertIsDisplayed()
     }
 }

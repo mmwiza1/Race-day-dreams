@@ -98,13 +98,18 @@ private fun RunningTodayScreen(
             .sortedBy { it.date().toEpochDay() }
             .take(2)
     val hybrid = state.primaryFocus == org.racedaydreams.domain.settings.PrimaryFocus.HYBRID
-    // The week at a glance, Runna-style: what is done, what is next, what was missed.
+    // Forward-looking: today and the next six days. Weekly Monday–Sunday figures live elsewhere.
     val week =
         remember(state, currentDate) {
-            WeekAtAGlance.build(state, currentDate, presentation.dateOf, presentation.workoutName)
+            WeekAtAGlance.nextSevenDays(
+                state,
+                currentDate,
+                presentation.dateOf,
+                presentation.workoutName,
+            )
         }
     if (week.any { it.sessions.isNotEmpty() }) {
-        SectionTitle("This week", WeekAtAGlance.summary(week))
+        SectionTitle("Your next 7 days", WeekAtAGlance.summary(week))
         WeekStrip(week, currentDate)
     }
 

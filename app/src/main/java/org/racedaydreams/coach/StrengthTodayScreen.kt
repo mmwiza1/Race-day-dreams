@@ -63,7 +63,7 @@ internal fun StrengthTodayScreen(
         { open("gym/session/${Uri.encode(it)}") },
         gymNow,
         remember(state, today) {
-            WeekAtAGlance.build(
+            WeekAtAGlance.nextSevenDays(
                 state,
                 today,
                 { it.atZone(java.time.ZoneId.systemDefault()).toLocalDate() },

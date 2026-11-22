@@ -457,6 +457,22 @@ class CoachingScreenshotTest {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
         await("Today")
         capture("home")
+        // The rolling seven-day preview: open a later day's sessions, then close it again.
+        await("Your next 7 days")
+        val laterDay =
+            hasAnyAncestor(hasTestTag("week-strip")) and
+                hasContentDescription(":", substring = true) and
+                !hasContentDescription("today", substring = true)
+        val laterPlanned = laterDay and hasContentDescription("planned", substring = true)
+        // Prefer a later day with a planned session; any later day still shows its detail.
+        val choice =
+            if (compose.onAllNodes(laterPlanned).fetchSemanticsNodes().isNotEmpty()) laterPlanned
+            else laterDay
+        compose.onAllNodes(choice)[0].performClick()
+        compose.onNodeWithTag("week-day-detail").assertExists()
+        capture("home-next-7-days-selected")
+        compose.onAllNodes(choice)[0].performClick()
+        compose.onNodeWithTag("week-day-detail").assertDoesNotExist()
         alignHeading("Start something else")
         capture("today-scrolled")
         alignHeadingOrPageEnd("Your training")
@@ -909,6 +925,11 @@ class CoachingScreenshotTest {
             compose.onNodeWithContentDescription("Progress").performClick()
             await("Distance this week")
             capture("progress-dashboard-large-font")
+            // At 200% the measure choices wrap as full-size chips; show them with the readout.
+            compose.onNodeWithTag("trend-metric-chips").performScrollTo()
+            compose.onNodeWithText("Distance this week").performScrollTo()
+            compose.waitForIdle()
+            capture("progress-controls-large-font")
             compose.onNodeWithContentDescription("Strength").performClick()
             await("Muscle-group workload")
             capture("strength-dashboard-large-font")
@@ -3916,6 +3937,34 @@ class CoachingScreenshotTest {
             restoreFontScale(font)
             shell("cmd uimode night $night")
         }
+    }
+
+    @Test
+    fun capturesStrengthProgressWithASingleQualifyingWeek() {
+        // One recorded workout: one estimate, which must not be drawn as a trend.
+        val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
+        val id = "single-week"
+        val sets = (1..3).map { StrengthSession.SetEntry("$id-$it", 8, 60.0, 7.0, false) }
+        CoachingStore(context)
+            .saveStrength(
+                StrengthSession(
+                    id,
+                    Instant.now().minus(Duration.ofMinutes(90)),
+                    ZoneOffset.UTC,
+                    Duration.ofMinutes(40),
+                    7.0,
+                    "Recorded working sets",
+                    listOf(StrengthSession.ExerciseSets(exercise, sets)),
+                )
+            )
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        await("Your strength training")
+        click("Progress")
+        await("Estimated 1RM trend")
+        compose.onNodeWithTag("one-rep-max-single-week").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("one-rep-max-chart").assertDoesNotExist()
+        alignHeadingOrPageEnd("Estimated 1RM trend")
+        capture("progress-strength-single-week")
     }
 
     @Test

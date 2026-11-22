@@ -117,6 +117,14 @@ installations that cannot support them (all existing debug-signed installs).
 - **Phase B:** a PR on branch `ccr-60f602a7-tfmok3` (from `main` `9cf6774c`) demonstrates the design system on running Today, strength Today and Progress.
   - The new components are in `sharedUi/.../RddDesignSystem.kt` and `WeekAtAGlance.kt`.
   - Before images are in `docs/design-2026/before/`.
+- **Status (22 November 2026):** PR #36 is a draft. The owner approved the chart-first direction and requested final Phase B refinements:
+  - Home's rolling "Your next 7 days";
+  - no duplicated hybrid figures;
+  - an accessible measure selector;
+  - the sparse estimated-1RM state;
+  - week-selection evidence.
+
+  See `docs/DESIGN_2026.md` §3c and §6. V1 Running trends and V3 Strength progression are the priority follow-up phases, each needing approval. The owner allowed temporarily marking PR #36 ready only to run full checks and capture screenshots, after confirming auto-merge is off; return it to draft afterwards.
 - **Rules:**
   - **Do not merge, auto-merge or release without explicit owner approval.**
   - Do not start the C1–C8 phases before approval.

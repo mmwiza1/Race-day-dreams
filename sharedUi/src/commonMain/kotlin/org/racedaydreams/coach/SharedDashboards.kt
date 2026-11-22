@@ -331,11 +331,14 @@ private fun SplitSummary(
             SummaryColumn(
                 Discipline.RUNNING,
                 "Running this week",
-                // The chart below is the focal point for distance, time and pace; this column only
-                // keeps running represented next to strength, so it does not repeat the distance.
+                // A compact count only: the chart directly below owns the large weekly figure.
                 if (week.runs == 0) "No runs" else plural(week.runs, "run"),
-                "Distance, time and pace in the chart below",
-                Modifier.weight(1f),
+                state.activities
+                    .map { dateAt(it.start()) }
+                    .filter { it.toEpochDay() <= today.toEpochDay() }
+                    .maxByOrNull { it.toEpochDay() }
+                    ?.let { "Last: ${presentation.shortDate(it)}" } ?: "No runs recorded",
+                Modifier.weight(1f).testTag("progress-running-summary"),
             )
             VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             SummaryColumn(
@@ -369,7 +372,7 @@ private fun SummaryColumn(
             Spacer(Modifier.width(8.dp))
             Text(label, style = MaterialTheme.typography.labelLarge)
         }
-        Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Text(
             detail,
             style = MaterialTheme.typography.bodySmall,

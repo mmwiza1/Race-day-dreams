@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import org.racedaydreams.domain.activity.ActivityRecord
@@ -177,9 +178,28 @@ private fun MetricSwitch(selected: RunningTrendMetric, choose: (RunningTrendMetr
             RunningTrendMetric.TIME to "Time",
             RunningTrendMetric.PACE to "Pace",
         )
-    if (LocalDensity.current.fontScale >= 1.5f) {
-        // At large text a three-way segmented row clips its labels, so the same choices wrap as
-        // full-size chips that keep every word readable and each target at least 48 dp.
+    // The segmented row is used only when every label, with the selected checkmark and padding,
+    // fits its third of the width. At 150% text and above, or on a narrow screen, the same choices
+    // wrap as full-size chips, so no label is squeezed and each target stays at least 48 dp.
+    val measurer = rememberTextMeasurer()
+    val style = MaterialTheme.typography.labelLarge
+    val density = LocalDensity.current
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val longest = options.maxOf { (_, label) -> measurer.measure(label, style).size.width }
+        val segment = with(density) { longest.toDp() } + 18.dp + 8.dp + 24.dp + 4.dp
+        val wrap = density.fontScale >= 1.5f || segment * options.size > maxWidth
+        MetricOptions(options, selected, choose, wrap)
+    }
+}
+
+@Composable
+private fun MetricOptions(
+    options: List<Pair<RunningTrendMetric, String>>,
+    selected: RunningTrendMetric,
+    choose: (RunningTrendMetric) -> Unit,
+    wrap: Boolean,
+) {
+    if (wrap) {
         FlowRow(
             Modifier.fillMaxWidth().testTag("trend-metric-chips"),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

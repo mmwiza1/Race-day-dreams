@@ -4,10 +4,15 @@ package org.racedaydreams.coach
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -172,75 +177,198 @@ class DaySession(val discipline: Discipline, val mark: SessionMark, val title: S
 class WeekDay(val date: LocalDate, val weekday: String, val sessions: List<DaySession>)
 
 /**
- * The week at a glance: seven days, today highlighted, one mark per session. Done is a filled dot,
- * planned an outlined ring, missed a muted ring with a slash, so state never relies on colour.
+ * Seven days at a glance, today highlighted, one mark per session. Done is a filled dot, planned an
+ * outlined ring, missed a muted ring with a slash, so state never relies on colour. Tapping a day
+ * opens its sessions below the strip (tap again to close); nothing is open at first, so the strip
+ * stays a compact overview and does not repeat today's hero or Coming up. At 150% text and above
+ * the days stack as full-width rows so dates and marks are never squeezed.
  */
 @Composable
 fun WeekStrip(days: List<WeekDay>, today: LocalDate, modifier: Modifier = Modifier) {
     if (days.isEmpty()) return
+    var selectedDay by
+        rememberSaveable(days.first().date.toString()) { mutableStateOf<String?>(null) }
+    val selected = days.firstOrNull { it.date.toString() == selectedDay }
+    fun toggle(day: WeekDay) {
+        selectedDay = if (selectedDay == day.date.toString()) null else day.date.toString()
+    }
+    val large = LocalDensity.current.fontScale >= 1.5f
     Surface(
         modifier = modifier.fillMaxWidth().testTag("week-strip"),
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column {
-            Row(
-                Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                days.forEach { day ->
-                    val isToday = day.date == today
-                    val description =
-                        "${day.weekday} ${day.date.getDayOfMonth()}" +
-                            (if (isToday) ", today" else "") +
-                            ": " +
-                            if (day.sessions.isEmpty()) "nothing planned"
-                            else
-                                day.sessions.joinToString("; ") {
-                                    "${it.title} " +
-                                        when (it.mark) {
-                                            SessionMark.DONE -> "done"
-                                            SessionMark.PLANNED -> "planned"
-                                            SessionMark.MISSED -> "not recorded"
-                                        }
-                                }
-                    Column(
-                        Modifier.weight(1f).heightIn(min = 72.dp).clearAndSetSemantics {
-                            contentDescription = description
-                        },
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        Text(
-                            day.weekday.take(1),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Box(
-                            Modifier.size(32.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (isToday) MaterialTheme.colorScheme.primary
-                                    else Color.Transparent
-                                ),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                "${day.date.getDayOfMonth()}",
-                                style = MaterialTheme.typography.labelLarge,
-                                color =
-                                    if (isToday) MaterialTheme.colorScheme.onPrimary
-                                    else MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                            day.sessions.take(3).forEach { SessionDot(it) }
+            Text(
+                WeekAtAGlance.range(days),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
+            )
+            if (large) {
+                Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                    days.forEach { day ->
+                        DayRow(day, day.date == today, day == selected) { toggle(day) }
+                        if (day == selected) DayDetail(day, day.date == today)
+                    }
+                }
+            } else {
+                Row(
+                    Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    days.forEach { day ->
+                        DayColumn(day, day.date == today, day == selected, Modifier.weight(1f)) {
+                            toggle(day)
                         }
                     }
                 }
+                selected?.let { DayDetail(it, it.date == today) }
             }
             WeekLegend(days)
+        }
+    }
+}
+
+private fun markText(mark: SessionMark) =
+    when (mark) {
+        SessionMark.DONE -> "done"
+        SessionMark.PLANNED -> "planned"
+        SessionMark.MISSED -> "not recorded"
+    }
+
+private fun daySemantics(day: WeekDay, isToday: Boolean, isSelected: Boolean, toggle: () -> Unit) =
+    Modifier.clearAndSetSemantics {
+        contentDescription =
+            WeekAtAGlance.spokenDay(day.date) +
+                (if (isToday) ", today" else "") +
+                ": " +
+                if (day.sessions.isEmpty()) "rest day, nothing scheduled"
+                else day.sessions.joinToString("; ") { "${it.title} ${markText(it.mark)}" }
+        selected = isSelected
+        role = Role.Tab
+        onClick(label = if (isSelected) "Hide sessions" else "Show sessions") {
+            toggle()
+            true
+        }
+    }
+
+@Composable
+private fun DayColumn(
+    day: WeekDay,
+    isToday: Boolean,
+    isSelected: Boolean,
+    modifier: Modifier,
+    toggle: () -> Unit,
+) {
+    Column(
+        modifier
+            .clip(MaterialTheme.shapes.medium)
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+            )
+            .clickable(onClick = toggle)
+            .heightIn(min = 80.dp)
+            .padding(vertical = 6.dp)
+            .testTag("week-day-${day.date}")
+            .then(daySemantics(day, isToday, isSelected, toggle)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            day.weekday,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+        )
+        DayNumber(day, isToday)
+        Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+            day.sessions.take(3).forEach { SessionDot(it) }
+        }
+    }
+}
+
+@Composable
+private fun DayNumber(day: WeekDay, isToday: Boolean) {
+    Box(
+        Modifier.size(32.dp)
+            .clip(CircleShape)
+            .background(if (isToday) MaterialTheme.colorScheme.primary else Color.Transparent),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            "${day.date.getDayOfMonth()}",
+            style = MaterialTheme.typography.labelLarge,
+            color =
+                if (isToday) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+        )
+    }
+}
+
+/** Large-text layout: one full-width row per day, at least 48 dp tall. */
+@Composable
+private fun DayRow(day: WeekDay, isToday: Boolean, isSelected: Boolean, toggle: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth()
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+            )
+            .clickable(onClick = toggle)
+            .heightIn(min = 48.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .testTag("week-day-${day.date}")
+            .then(daySemantics(day, isToday, isSelected, toggle)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            WeekAtAGlance.dayLabel(day.date) + if (isToday) " · Today" else "",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.weight(1f),
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            day.sessions.take(3).forEach { SessionDot(it) }
+        }
+    }
+}
+
+/** The selected day's sessions; a rest day says so plainly. */
+@Composable
+private fun DayDetail(day: WeekDay, isToday: Boolean) {
+    Column(
+        Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .testTag("week-day-detail")
+            .semantics { liveRegion = LiveRegionMode.Polite },
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            (if (isToday) "Today, " else "") + WeekAtAGlance.dayLabel(day.date),
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.semantics { heading() },
+        )
+        if (day.sessions.isEmpty())
+            Text(
+                "Rest day: nothing scheduled.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        day.sessions.forEach { session ->
+            Row(
+                Modifier.semantics(mergeDescendants = true) {},
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                SessionDot(session)
+                Text(
+                    "${session.title} · ${markText(session.mark).replaceFirstChar { it.uppercase() }}",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
@@ -263,11 +391,13 @@ private fun WeekLegend(days: List<WeekDay>) {
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
+        val marks = sessions.map { it.mark }.toSet()
         listOf(
                 SessionMark.DONE to "Done",
                 SessionMark.PLANNED to "Planned",
                 SessionMark.MISSED to "Missed",
             )
+            .filter { it.first in marks }
             .forEach { (mark, label) ->
                 LegendItem(label) { SessionDot(DaySession(ink, mark, label)) }
             }

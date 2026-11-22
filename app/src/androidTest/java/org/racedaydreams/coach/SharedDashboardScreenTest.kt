@@ -11,6 +11,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.width
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.Duration
 import java.time.Instant
@@ -411,6 +412,13 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("progress-tab-STRENGTH").assertExists()
         compose.onNodeWithText("Distance this week").assertExists()
         compose.onNodeWithTag("progress-strength-hero").assertExists()
+        // The compact overview never repeats the chart's distance: counts and last dates only,
+        // for both disciplines alike.
+        compose
+            .onNodeWithTag("progress-running-summary")
+            .assert(hasText("Last: ", substring = true))
+            .assert(!hasText(" km", substring = true))
+        compose.onNodeWithTag("progress-strength-hero").assert(hasText("Last: ", substring = true))
         compose.onNodeWithTag("kpi-Distance").assert(hasText("1 run", substring = true))
         compose.onNodeWithTag("kpi-Working sets").performScrollTo().assert(hasText("2"))
         compose.onNodeWithTag("week-runs").performScrollTo().assertExists()
@@ -488,8 +496,11 @@ class SharedDashboardScreenTest {
 
     private fun weekOf(date: LocalDate) = date.minusDays((date.dayOfWeek.value - 1).toLong())
 
-    @Test
-    fun runningMeasureSelectorKeepsEveryChoiceReadableAt200PercentText() {
+    /**
+     * Shows running Progress at [fontScale] (and, when given, a narrow [width]) and checks every
+     * measure option is shown whole on one line, at least 48 dp tall, and selectable.
+     */
+    private fun checkMeasureSelector(fontScale: Float, width: androidx.compose.ui.unit.Dp?, chips: Boolean?) {
         val today = LocalDate.now()
         val state =
             CoachUiState(
@@ -498,24 +509,31 @@ class SharedDashboardScreenTest {
             )
         compose.setContent {
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
                 MaterialTheme {
-                    SharedProgressDashboard(
-                        state,
-                        androidHomePresentation(state),
-                        { it.atZone(ZoneId.systemDefault()).toLocalDate() },
-                        ProgressLink.entries.toList(),
-                        {},
-                    ) {}
+                    androidx.compose.foundation.layout.Box(
+                        if (width == null) androidx.compose.ui.Modifier
+                        else androidx.compose.ui.Modifier.width(width)
+                    ) {
+                        SharedProgressDashboard(
+                            state,
+                            androidHomePresentation(state),
+                            { it.atZone(ZoneId.systemDefault()).toLocalDate() },
+                            ProgressLink.entries.toList(),
+                            {},
+                        ) {}
+                    }
                 }
             }
         }
-        compose.onNodeWithTag("trend-metric-chips").performScrollTo().assertIsDisplayed()
+        // Null: the device width decides; either layout must pass the same checks.
+        if (chips == true) compose.onNodeWithTag("trend-metric-chips").performScrollTo().assertIsDisplayed()
+        else if (chips == false) compose.onNodeWithTag("trend-metric-chips").assertDoesNotExist()
         for ((metric, label) in listOf("DISTANCE" to "Distance", "TIME" to "Time", "PACE" to "Pace")) {
-            val chip = compose.onNodeWithTag("trend-metric-$metric")
-            chip.performScrollTo().assertIsDisplayed().assertHeightIsAtLeast(48.dp)
-            chip.assert(hasText(label))
-            // The full word is laid out on screen, not clipped or ellipsised.
+            val option = compose.onNodeWithTag("trend-metric-$metric")
+            option.performScrollTo().assertIsDisplayed().assertHeightIsAtLeast(48.dp)
+            option.assert(hasText(label))
+            // The full word is laid out on one line, not clipped, ellipsised or broken.
             val layout = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
             compose
                 .onNode(
@@ -527,14 +545,33 @@ class SharedDashboardScreenTest {
                 .action
                 ?.invoke(layout)
             assertEquals(false, layout.single().hasVisualOverflow)
+            assertEquals(1, layout.single().lineCount)
         }
+        compose.onNodeWithTag("trend-metric-DISTANCE").assertIsSelected()
         compose.onNodeWithTag("trend-metric-PACE").performClick()
         compose.onNodeWithTag("trend-metric-PACE").assertIsSelected()
+        compose.onNodeWithTag("trend-metric-DISTANCE").assertIsNotSelected()
         compose
             .onNodeWithText("Tap or drag to inspect a week. Higher is faster.")
             .performScrollTo()
             .assertExists()
     }
+
+    @Test
+    fun runningMeasureSelectorKeepsEveryChoiceReadableAt200PercentText() =
+        checkMeasureSelector(2f, null, chips = true)
+
+    @Test
+    fun runningMeasureSelectorWrapsOnANarrowScreenAt200PercentText() =
+        checkMeasureSelector(2f, 280.dp, chips = true)
+
+    @Test
+    fun runningMeasureSelectorWrapsOnANarrowScreenAtDefaultText() =
+        checkMeasureSelector(1f, 280.dp, chips = true)
+
+    @Test
+    fun runningMeasureSelectorIsWholeAtDefaultTextOnThisDevice() =
+        checkMeasureSelector(1f, null, chips = null)
 
     @Test
     fun oneRepMaxWithASingleWeekShowsTheEstimateWithoutImplyingATrend() {
