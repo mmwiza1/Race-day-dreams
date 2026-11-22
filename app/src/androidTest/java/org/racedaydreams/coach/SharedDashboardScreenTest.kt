@@ -368,7 +368,8 @@ class SharedDashboardScreenTest {
         val workouts = CopyOnWriteArrayList<String>()
         val links = CopyOnWriteArrayList<ProgressLink>()
         focusedProgress(org.racedaydreams.domain.settings.PrimaryFocus.STRENGTH, workouts, links)
-        compose.onNodeWithTag("kpi-Working sets").assert(hasText("2")).assertIsDisplayed()
+        // The chart leads, so the figures may start below the fold on small screens.
+        compose.onNodeWithTag("kpi-Working sets").assert(hasText("2")).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("kpi-Workouts").assert(hasText("2"))
         // Strength focus opens on the strength tab, chart first: progression above the figures.
         compose.onNodeWithTag("progress-tab-STRENGTH").assertIsSelected()
