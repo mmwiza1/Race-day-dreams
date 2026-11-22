@@ -84,7 +84,7 @@ fun RunningTrendExplorer(
 
         // Readout: what the chart says about the selected week, before the chart itself.
         Column(
-            Modifier.semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+            Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(

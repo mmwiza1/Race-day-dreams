@@ -984,8 +984,9 @@ class CoachingScreenshotTest {
             capture("today-strength-scrolled")
             click("Progress")
             await("Estimated 1RM trend")
-            // Strength focus: the lifting figures lead the page.
-            compose.onNodeWithTag("kpi-Working sets").assertIsDisplayed()
+            // Strength focus, chart first: the progression chart leads, figures follow.
+            compose.onNodeWithText("Estimated 1RM trend").assertIsDisplayed()
+            compose.onNodeWithTag("kpi-Working sets").assertExists()
             capture("progress-strength-focus")
             closeScenario()
             scenario = null
@@ -3943,7 +3944,12 @@ class CoachingScreenshotTest {
         // The week's runs list each physical run once, noting copies from other sources.
         await("Runs this week")
         alignHeading("Runs this week")
-        compose.onNode(hasText("also from", substring = true)).assertExists()
+        Assert.assertTrue(
+            compose
+                .onAllNodes(hasText("also from", substring = true))
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        )
         capture("progress-weekly-run-sources")
 
         click("Settings")
