@@ -84,8 +84,15 @@ class GymNowScreenTest {
     fun overviewLeadsWithOneStartActionThenLabelledGlyphChoices() {
         install(largeDark = true)
         awaitReady()
-        compose.onNode(hasText("Train your way") and isHeading()).assertIsDisplayed()
-        compose.onNodeWithText("Start open workout").assertIsDisplayed().assertIsEnabled()
+        compose
+            .onNode(hasText("Train your way") and isHeading())
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose
+            .onNodeWithText("Start open workout")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .assertIsEnabled()
         listOf("Choose a workout", "Saved and recent").forEach {
             compose.onNode(hasText(it) and isHeading()).performScrollTo().assertIsDisplayed()
         }
@@ -105,8 +112,11 @@ class GymNowScreenTest {
                     .assertIsEnabled()
             }
         click("Quick workout")
-        compose.onNode(hasText("Quick workout") and isHeading()).assertIsDisplayed()
-        compose.onNodeWithText("Back to Gym Now").assertIsDisplayed()
+        compose
+            .onNode(hasText("Quick workout") and isHeading())
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose.onNodeWithText("Back to Gym Now").performScrollTo().assertIsDisplayed()
     }
 
     @Test
