@@ -30,6 +30,55 @@ internal fun raceCountdown(days: Long): String =
         else -> "Race date was ${-days} days ago"
     }
 
+/** A stage's distance span, converted from stored metres to the user's unit (B-04). */
+internal fun stageDistanceLabel(
+    fromMetres: Double,
+    toMetres: Double,
+    imperial: Boolean,
+    decimal: (Double) -> String,
+): String {
+    fun shown(metres: Double) =
+        decimal(kotlin.math.round(DisplayUnits.distance(metres / 1000, imperial) * 100) / 100)
+    return "${shown(fromMetres)}–${shown(toMetres)} ${DisplayUnits.distanceUnit(imperial)}"
+}
+
+/** A stage's pace range, converted from stored s/km to the user's unit (B-04). */
+internal fun stagePaceLabel(
+    fastSecondsPerKm: Double,
+    slowSecondsPerKm: Double,
+    imperial: Boolean,
+    formatPaceSeconds: (Double) -> String,
+): String =
+    "${formatPaceSeconds(DisplayUnits.pace(fastSecondsPerKm, imperial))}–" +
+        "${formatPaceSeconds(DisplayUnits.pace(slowSecondsPerKm, imperial))}/" +
+        DisplayUnits.distanceUnit(imperial)
+
+/**
+ * B-R3: the average pace, in s/km, that the final open stage needs for the race to finish on
+ * [targetSeconds] when the earlier stages are run at the middle of their ranges. The opening range
+ * is deliberately conservative, so this is usually a little quicker than the target average; the
+ * runner sees the figure instead of finishing slower than their goal without knowing why. Null
+ * without a target, for effort-only strategies, or when the arithmetic is not meaningful.
+ */
+internal fun closingPaceForTarget(
+    stages: List<org.racedaydreams.domain.race.RaceStrategyEngine.Stage>,
+    targetSeconds: Long?,
+): Double? {
+    if (targetSeconds == null || stages.size < 2) return null
+    val closing = stages.last()
+    if (closing.fastPace() != null) return null
+    val paced = stages.dropLast(1)
+    if (paced.any { it.fastPace() == null || it.slowPace() == null }) return null
+    val used =
+        paced.sumOf {
+            (requireNotNull(it.fastPace()) + requireNotNull(it.slowPace())) / 2 *
+                (it.to() - it.from()) / 1000
+        }
+    val kilometres = (closing.to() - closing.from()) / 1000
+    val remaining = targetSeconds - used
+    return if (kilometres > 0 && remaining > 0) remaining / kilometres else null
+}
+
 @Composable
 fun SharedRaceDay(
     state: CoachUiState,
@@ -66,6 +115,7 @@ fun SharedRaceDay(
         }
     var hilly by rememberSaveable { mutableStateOf(false) }
     val days = raceDate.toEpochDay() - today.toEpochDay()
+    val imperial = DisplayUnits.imperial(state)
     // The race itself leads: name, countdown, date and the chosen goal in one running-colour hero.
     HeroSurface(Discipline.RUNNING, Glyph.FLAG, "Race day", Modifier) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -94,8 +144,10 @@ fun SharedRaceDay(
                     add(
                         Stat(
                             "Target average",
-                            formatPaceSeconds(it.getSeconds() / (metres / 1000)),
-                            "/km",
+                            formatPaceSeconds(
+                                DisplayUnits.pace(it.getSeconds() / (metres / 1000), imperial)
+                            ),
+                            "/${DisplayUnits.distanceUnit(imperial)}",
                             unitGap = false,
                         )
                     )
@@ -137,12 +189,21 @@ fun SharedRaceDay(
     Panel {
         CheckRow("Hilly course / uncertain elevation — use effort guidance", hilly) { hilly = it }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        val closingPace = closingPaceForTarget(stages, goal.targetTime()?.getSeconds())
         StageTimeline(
             stages.map { stage ->
                 TimelineStage(
-                    "${decimal(stage.from()/1000)}–${decimal(stage.to()/1000)} km",
+                    stageDistanceLabel(stage.from(), stage.to(), imperial, decimal),
                     if (stage.fastPace() != null)
-                        "${formatPaceSeconds(requireNotNull(stage.fastPace()))}–${formatPaceSeconds(requireNotNull(stage.slowPace()))}/km"
+                        stagePaceLabel(
+                            requireNotNull(stage.fastPace()),
+                            requireNotNull(stage.slowPace()),
+                            imperial,
+                            formatPaceSeconds,
+                        )
+                    else if (stage === stages.last() && closingPace != null)
+                        "About ${formatPaceSeconds(DisplayUnits.pace(closingPace, imperial))}/" +
+                            "${DisplayUnits.distanceUnit(imperial)} finishes on your target"
                     else null,
                     stage.guidance(),
                 )

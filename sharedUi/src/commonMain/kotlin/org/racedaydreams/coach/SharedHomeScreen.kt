@@ -146,9 +146,18 @@ private fun RunningTodayScreen(
                 }
             val minimumPace = run?.minimumSecondsPerKm()
             val maximumPace = run?.maximumSecondsPerKm()
+            // Stored in km and s/km; shown in the user's distance unit (B-04).
+            val imperial = DisplayUnits.imperial(state)
+            val unit = DisplayUnits.distanceUnit(imperial)
             StatRow(
                 listOfNotNull(
-                    today.distanceKm()?.let { Stat("Distance", presentation.decimal(it), "km") }
+                    today.distanceKm()?.let {
+                        Stat(
+                            "Distance",
+                            presentation.decimal(DisplayUnits.distance(it, imperial)),
+                            unit,
+                        )
+                    }
                         ?: today.duration()?.let {
                             Stat("Duration", "${it.getSeconds() / 60}", "min")
                         }
@@ -166,8 +175,8 @@ private fun RunningTodayScreen(
                     if (minimumPace != null && maximumPace != null)
                         Stat(
                             "Pace",
-                            "${presentation.paceSeconds(minimumPace)}–${presentation.paceSeconds(maximumPace)}",
-                            "/km",
+                            "${presentation.paceSeconds(DisplayUnits.pace(minimumPace, imperial))}–${presentation.paceSeconds(DisplayUnits.pace(maximumPace, imperial))}",
+                            "/$unit",
                             unitGap = false,
                         )
                     else null,
@@ -289,7 +298,8 @@ private fun RunningTodayScreen(
                     Discipline.RUNNING,
                     presentation.workoutName(next.category()),
                     presentation.shortDate(next.date()),
-                    next.distanceKm()?.let { "${presentation.decimal(it)} km" }
+                    // The platform distance formatter honours the user's km/mi setting (B-04).
+                    next.distanceKm()?.let { presentation.distance(it * 1000) }
                         ?: next.duration()?.let { "${it.getSeconds() / 60} min" },
                 ) {
                     workout(next.id())
