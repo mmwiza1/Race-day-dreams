@@ -104,7 +104,10 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      # R-3: this restore takes 38-82 s on macos-26-intel (main run 45243713104); one attempt
+      # once stalled for 45 minutes with no log. Fail such a hung runner in minutes instead.
       - uses: gradle/actions/setup-gradle@v4
+        timeout-minutes: 10
       - name: Decide whether this run needs the iOS launch and UI suite
         id: ios_scope
         # Ready PRs, main and manual runs: always. Drafts: only when native iOS code changes or the
@@ -468,7 +471,10 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      # R-3: this restore takes 38-82 s on macos-26-intel (main run 45243713104); one attempt
+      # once stalled for 45 minutes with no log. Fail such a hung runner in minutes instead.
       - uses: gradle/actions/setup-gradle@v4
+        timeout-minutes: 10
       - name: Build for a physical iPhone without signing
         shell: bash
         run: |
