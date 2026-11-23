@@ -19,7 +19,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.Duration
-import java.time.ZoneOffset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.racedaydreams.domain.PaceCalculator
@@ -99,20 +98,12 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
         ScreenHeader(
             Discipline.RUNNING,
             Glyph.RUN,
-            activity
-                .start()
-                .atOffset(activity.startOffset() ?: ZoneOffset.UTC)
-                .format(
-                    java.time.format.DateTimeFormatter.ofPattern(
-                        "EEEE, d MMMM uuuu · HH:mm XXX",
-                        java.util.Locale.UK,
-                    )
-                ),
+            localStartLabel(activity.start(), context),
             if (assessment != null) "Assessment run" else "Run detail",
         )
         if (activity.startOffset() == null)
             Text(
-                "The source did not provide a time-zone offset; this time is shown explicitly in UTC.",
+                "The source did not provide a time-zone offset; this time is shown in your device's time zone.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -446,4 +437,29 @@ private fun SplitRow(
                 }
         }
     }
+}
+
+/**
+ * The run's start for display only: the device's time zone and locale, the weekday and full date,
+ * then the time in the system's 12- or 24-hour setting (for example "Monday 23 November 2026 ·
+ * 12:08"). The stored instant and offset are unchanged.
+ */
+private fun localStartLabel(start: java.time.Instant, context: android.content.Context): String {
+    val locale = java.util.Locale.getDefault()
+    val local = start.atZone(java.time.ZoneId.systemDefault())
+    val date =
+        java.time.format.DateTimeFormatter.ofPattern(
+            android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMMyyyy")
+                .replace(",", ""),
+            locale,
+        )
+    val time =
+        java.time.format.DateTimeFormatter.ofPattern(
+            android.text.format.DateFormat.getBestDateTimePattern(
+                locale,
+                if (android.text.format.DateFormat.is24HourFormat(context)) "Hm" else "hma",
+            ),
+            locale,
+        )
+    return "${local.format(date)} · ${local.format(time)}"
 }

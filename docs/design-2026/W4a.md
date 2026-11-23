@@ -17,8 +17,11 @@ and the post-run sections, following `docs/DESIGN_2026.md` §3f and §3g.
 
 ## What changed
 
-- **Run detail header:** `ScreenHeader` in the running colour, with the start date and time as the
-  eyebrow and "Run detail" or "Assessment run" as the heading.
+- **Run detail header:** `ScreenHeader` in the running colour, with "Run detail" or "Assessment
+  run" as the heading. The eyebrow is the start as a readable local date and time in the device's
+  time zone and locale ("Monday 23 November 2026 · 12:08"), following the system 12/24-hour
+  setting. It replaces the raw offset form ending in "Z". Display only; stored timestamps are
+  unchanged. History rows and iOS already show plain dates.
 - **Headline figures:** "Recorded summary" is a glyph-labelled section. Its borderless panel leads
   with elapsed time (display size, time hue), then distance (distance hue) and elapsed average pace
   (pace hue) side by side. The figures stack at 150% text and above. Every figure is a merged
