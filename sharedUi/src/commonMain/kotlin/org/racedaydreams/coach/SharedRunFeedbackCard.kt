@@ -1,19 +1,32 @@
 package org.racedaydreams.coach
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import kotlin.math.round
 import org.racedaydreams.domain.coaching.RunFeedback
 import org.racedaydreams.domain.coaching.RunScoreEngine
 
-/** Actual recorded-run feedback card, without platform IO, activation or new calculations. */
+/**
+ * Actual recorded-run feedback on a borderless panel (its section label is supplied by the host),
+ * without platform IO, activation or new calculations.
+ */
 @Composable
 fun SharedRunFeedbackCard(result: RunFeedback) {
-    CoachCard {
+    Panel {
         if (result.score() != null || result.label() != "Run Analysis") {
             val heading = result.score()?.let { "$it/10 — ${result.label()}" } ?: result.label()
-            heading?.let { Text(it, style = MaterialTheme.typography.headlineSmall) }
+            heading?.let {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
         WhyDetails(
             "RPE describes how hard this felt. Run Score describes execution of the intended purpose; neither is a health or fitness-improvement score.",
@@ -26,20 +39,30 @@ fun SharedRunFeedbackCard(result: RunFeedback) {
             "Score components",
         )
         if (result.wentWell().isNotEmpty()) {
-            Text("What went well", style = MaterialTheme.typography.titleMedium)
+            FeedbackHeading("What went well")
             result.wentWell().forEach { Text(it) }
         }
         if (result.differed().isNotEmpty()) {
-            Text("What differed from the plan", style = MaterialTheme.typography.titleMedium)
+            FeedbackHeading("What differed from the plan")
             result.differed().forEach { Text(it) }
         }
-        Text("What we learned", style = MaterialTheme.typography.titleMedium)
+        FeedbackHeading("What we learned")
         result.learned()?.let { Text(it) }
-        Text("Next step", style = MaterialTheme.typography.titleMedium)
+        FeedbackHeading("Next step")
         result.nextStep()?.let { Text(it) }
         WhyDetails(
             "Deterministic product heuristics, rule version ${RunScoreEngine.RULE_VERSION}; not scientifically validated weights. Missing evidence is excluded.",
             "How was this calculated?",
         )
     }
+}
+
+@Composable
+private fun FeedbackHeading(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(top = 4.dp),
+    )
 }

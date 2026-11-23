@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
@@ -100,113 +101,153 @@ fun RunningTrendExplorer(
         }
     val select: (Int) -> Unit = { selectedWeek = weeks[it].weekStart().toString() }
 
+    val tones = chartAccent(metric.hue)
+    val heartEmpty = heart && points.all { it.heartRates.isEmpty() }
+    // Expressive chrome (W3): the section is labelled outside a borderless panel in the selected
+    // measure's hue; the measure switch, readout and chart sit together in that panel, and the
+    // week's runs follow as their own labelled section. The chart itself is unchanged.
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        MetricSwitch(metric, heartRate) { metricName = it.name }
+        SectionLabel("Weekly trend", Glyph.TREND, metric.hue, metric.heading)
+        Panel(contentPadding = PaddingValues(16.dp)) {
+            MetricSwitch(metric, heartRate) { metricName = it.name }
 
-        if (heart && points.all { it.heartRates.isEmpty() }) {
-            // Nothing to draw: say so plainly rather than drawing an empty or zero chart.
-            Text(
-                if (points.all { it.week.activityCount() == 0 }) "No runs in this period."
-                else
-                    "No heart-rate summaries in this period. Runs recorded with a heart-rate " +
-                        "sensor, or imported with heart rate, appear here.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.testTag("heart-rate-empty"),
-            )
-            return@Column
-        }
-
-        // Readout: what the chart says about the selected week, before the chart itself.
-        Column(
-            Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            Text(
-                when {
-                    isCurrent && metric == RunningTrendMetric.DISTANCE -> "Distance this week"
-                    isCurrent -> "${metric.label} this week"
-                    else -> "Week of ${friendlyDate(weekStart)}"
-                },
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                pointText(point),
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.Bold,
-                modifier =
-                    if (isCurrent && metric == RunningTrendMetric.DISTANCE)
-                        Modifier.testTag("dashboard-week-distance")
-                    else Modifier.testTag("trend-readout-value"),
-            )
-            Text(
-                buildString {
-                    append(plural(week.activityCount(), "run"))
-                    append(" · ")
-                    append(plural(week.runningDays(), "running day"))
-                    if (point.measuredRuns < week.activityCount() && week.activityCount() > 0)
-                        append(
-                            if (heart)
-                                " · heart rate on ${point.measuredRuns} of ${week.activityCount()}"
-                            else " · based on ${point.measuredRuns} of ${week.activityCount()}"
-                        )
-                },
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.testTag("trend-readout-sample"),
-            )
-            // The comparison is a distance comparison, so it belongs to the Distance view only;
-            // Time and Pace show their own figures without a substitute comparison.
-            if (isCurrent && metric == RunningTrendMetric.DISTANCE && currentWeekComparison != null)
+            if (heartEmpty) {
+                // Nothing to draw: say so plainly rather than drawing an empty or zero chart.
                 Text(
-                    currentWeekComparison,
-                    style = MaterialTheme.typography.bodyMedium,
+                    if (points.all { it.week.activityCount() == 0 }) "No runs in this period."
+                    else
+                        "No heart-rate summaries in this period. Runs recorded with a heart-rate " +
+                            "sensor, or imported with heart rate, appear here.",
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.testTag("dashboard-week-comparison"),
+                    modifier = Modifier.testTag("heart-rate-empty"),
                 )
-        }
+                return@Panel
+            }
 
-        TrendChart(points, metric, selected, ::valueText, ::pointText, shortDate, imperial, select)
+            // Readout: what the chart says about the selected week, before the chart itself. The
+            // figure leads in the measure's strong hue, the same colour as the selected bar.
+            Column(
+                Modifier.padding(top = 4.dp).semantics { liveRegion = LiveRegionMode.Polite },
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    when {
+                        isCurrent && metric == RunningTrendMetric.DISTANCE -> "Distance this week"
+                        isCurrent -> "${metric.label} this week"
+                        else -> "Week of ${friendlyDate(weekStart)}"
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    pointText(point),
+                    style = MaterialTheme.typography.displayMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = tones.strong,
+                    modifier =
+                        if (isCurrent && metric == RunningTrendMetric.DISTANCE)
+                            Modifier.testTag("dashboard-week-distance")
+                        else Modifier.testTag("trend-readout-value"),
+                )
+                Text(
+                    buildString {
+                        append(plural(week.activityCount(), "run"))
+                        append(" · ")
+                        append(plural(week.runningDays(), "running day"))
+                        if (point.measuredRuns < week.activityCount() && week.activityCount() > 0)
+                            append(
+                                if (heart)
+                                    " · heart rate on ${point.measuredRuns} of ${week.activityCount()}"
+                                else " · based on ${point.measuredRuns} of ${week.activityCount()}"
+                            )
+                    },
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.testTag("trend-readout-sample"),
+                )
+                // The comparison is a distance comparison, so it belongs to the Distance view
+                // only; Time and Pace show their own figures without a substitute comparison.
+                if (
+                    isCurrent &&
+                        metric == RunningTrendMetric.DISTANCE &&
+                        currentWeekComparison != null
+                )
+                    Text(
+                        currentWeekComparison,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.testTag("dashboard-week-comparison"),
+                    )
+            }
+
+            TrendChart(
+                points,
+                metric,
+                selected,
+                ::valueText,
+                ::pointText,
+                shortDate,
+                imperial,
+                select,
+            )
+        }
+        if (heartEmpty) return@Column
 
         // Drill-down: the runs behind the selected bar, one tap from each activity.
         val runs =
             remember(weekRuns, weekStart) {
                 weekRuns(weekStart).sortedByDescending { it.first.toEpochDay() }
             }
-        SectionHeader(if (isCurrent) "Runs this week" else "Runs that week", seeAll)
-        Column(Modifier.testTag("week-runs")) {
-            if (runs.isEmpty())
-                Text(
-                    "No runs recorded in this week.",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            runs.forEach { (date, session) ->
-                val run = session.counted
-                DashboardRow(
-                    title = friendlyDate(date),
-                    detail =
-                        ActivitySources.friendly(run.source()) +
-                            if (session.duplicates.isNotEmpty())
-                                " · also from ${plural(session.duplicates.size, "other source")}"
-                            else "",
-                    value =
-                        if (heart)
-                            run.averageHeartRate()?.let { "${it.roundToInt()} bpm" }
-                                ?: "No heart rate"
-                        else run.distanceMetres()?.let(distance) ?: "No distance",
-                    secondary =
-                        if (heart)
-                            run.averageHeartRate()?.let { _ ->
-                                "average" +
-                                    (run.maxHeartRate()?.let { " · max ${it.roundToInt()}" } ?: "")
-                            }
-                        else null,
-                    onClick = { openRun(run.id()) },
-                )
+        SectionLabel(
+            if (isCurrent) "Runs this week" else "Runs that week",
+            Glyph.LIST,
+            metric.hue,
+            trailing = seeAll?.let { { TextButton(onClick = it) { Text("See all") } } },
+        )
+        Panel(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
+            Column(Modifier.testTag("week-runs")) {
+                if (runs.isEmpty())
+                    Text(
+                        "No runs recorded in this week.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 12.dp),
+                    )
+                runs.forEach { (date, session) ->
+                    val run = session.counted
+                    DashboardRow(
+                        title = friendlyDate(date),
+                        detail =
+                            ActivitySources.friendly(run.source()) +
+                                if (session.duplicates.isNotEmpty())
+                                    " · also from ${plural(session.duplicates.size, "other source")}"
+                                else "",
+                        value =
+                            if (heart)
+                                run.averageHeartRate()?.let { "${it.roundToInt()} bpm" }
+                                    ?: "No heart rate"
+                            else run.distanceMetres()?.let(distance) ?: "No distance",
+                        secondary =
+                            if (heart)
+                                run.averageHeartRate()?.let { _ ->
+                                    "average" +
+                                        (run.maxHeartRate()?.let { " · max ${it.roundToInt()}" }
+                                            ?: "")
+                                }
+                            else null,
+                        onClick = { openRun(run.id()) },
+                    )
+                }
             }
         }
         if (openTrends != null)
-            TextButton(onClick = openTrends) { Text("Distance, pace and time trends") }
+            ActionGroup(null) {
+                ActionRow(
+                    "Distance, pace and time trends",
+                    "Longer periods and recorded heart rate",
+                    onClick = openTrends,
+                )
+            }
     }
 }
 
@@ -237,8 +278,9 @@ private fun MetricSwitch(
             RunningTrendMetric.PACE to "Pace",
         ) + if (heartRate) listOf(RunningTrendMetric.HEART_RATE to "Heart rate") else emptyList()
     // The segmented row is used only when every label, with the selected checkmark and padding,
-    // fits its share of the width. At 150% text and above, or on a narrow screen, the same choices
-    // wrap as full-size chips, so no label is squeezed and each target stays at least 48 dp.
+    // fits its share of the width. Otherwise the same choices become tonal pills (one row when
+    // they fit, wrapped at 150%+ text or on a narrow screen), so no label is squeezed and each
+    // target stays at least 48 dp.
     val measurer = rememberTextMeasurer()
     val style = MaterialTheme.typography.labelLarge
     val density = LocalDensity.current
@@ -257,28 +299,41 @@ private fun MetricOptions(
     choose: (RunningTrendMetric) -> Unit,
     wrap: Boolean,
 ) {
+    // A borderless, tonal connected group: the selected measure fills with its own chart hue
+    // (the surface colour reads on the strong tone in light and dark themes), the others recede.
+    val tones = chartAccent(selected.hue)
     if (wrap) {
-        FlowRow(
-            Modifier.fillMaxWidth().testTag("trend-metric-chips"),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            options.forEach { (metric, label) ->
-                CoachFilterChip(
-                    selected = metric == selected,
-                    onClick = { choose(metric) },
-                    label = { Text(label) },
-                    modifier = Modifier.testTag("trend-metric-${metric.name}"),
-                )
-            }
-        }
+        // Tonal pills in the same colours: one row when they fit at normal text (e.g. four
+        // measures on Training trends), wrapped at 150%+ text or on narrow screens.
+        TonalPills(
+            options,
+            selected,
+            choose,
+            selectedContainer = tones.strong,
+            selectedContent = MaterialTheme.colorScheme.surface,
+            unselectedContainer = MaterialTheme.colorScheme.surfaceContainerHighest,
+            unselectedContent = MaterialTheme.colorScheme.onSurface,
+            tag = { "trend-metric-${it.name}" },
+            modifier = Modifier.testTag("trend-metric-chips"),
+        )
         return
     }
+    val colors =
+        SegmentedButtonDefaults.colors(
+            activeContainerColor = tones.strong,
+            activeContentColor = MaterialTheme.colorScheme.surface,
+            activeBorderColor = Color.Transparent,
+            inactiveContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            inactiveContentColor = MaterialTheme.colorScheme.onSurface,
+            inactiveBorderColor = Color.Transparent,
+        )
     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
         options.forEachIndexed { index, (metric, label) ->
             SegmentedButton(
                 selected = metric == selected,
                 onClick = { choose(metric) },
                 shape = SegmentedButtonDefaults.itemShape(index, options.size),
+                colors = colors,
                 modifier = Modifier.heightIn(min = 48.dp).testTag("trend-metric-${metric.name}"),
             ) {
                 Text(label)

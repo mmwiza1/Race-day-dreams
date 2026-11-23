@@ -5,12 +5,16 @@ package org.racedaydreams.coach.strength
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -23,13 +27,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.racedaydreams.coach.ChartHue
 import org.racedaydreams.coach.CoachFilterChip
-import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.CoachSpace
+import org.racedaydreams.coach.Discipline
+import org.racedaydreams.coach.Glyph
+import org.racedaydreams.coach.HeroSurface
+import org.racedaydreams.coach.HeroTitle
+import org.racedaydreams.coach.Panel
+import org.racedaydreams.coach.ScreenHeader
+import org.racedaydreams.coach.SectionLabel
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
+import org.racedaydreams.coach.chartAccent
 import org.racedaydreams.domain.strength.GymNowWorkouts
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.domain.time.Instant
@@ -49,6 +62,7 @@ fun SharedGymNowScreen(
     formatTarget: (org.racedaydreams.domain.strength.GymWorkoutDefinition.Slot) -> String,
     plannedDate: LocalDate? = null,
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
+    appBarBack: Boolean = false,
 ) {
     LaunchedEffect(model) { model.refresh() }
     var section by
@@ -67,13 +81,18 @@ fun SharedGymNowScreen(
     backHandler(section != "Overview") { section = "Overview" }
 
     CoachPage {
-        TextButton(
-            onClick = { if (section == "Overview") onBack() else section = "Overview" },
-            modifier = Modifier.heightIn(min = 48.dp),
-        ) {
-            Text(if (section == "Overview") "Back" else "Back to Gym Now")
-        }
-        CoachHeading(if (section == "Overview") "Gym Now" else section)
+        // Where the host's app bar already has a Back that leaves Gym Now (Android), the overview
+        // does not repeat it. iOS has no app bar Back, so it keeps this in-content control.
+        // Sub-sections always keep "Back to Gym Now", which returns to the overview.
+        if (section != "Overview" || !appBarBack)
+            TextButton(
+                onClick = { if (section == "Overview") onBack() else section = "Overview" },
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) {
+                Text(if (section == "Overview") "Back" else "Back to Gym Now")
+            }
+        if (section != "Overview")
+            ScreenHeader(Discipline.STRENGTH, sectionGlyph(section), "Gym Now", section)
         if (state.loading) CircularProgressIndicator()
         if (state.busy && !state.loading)
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -127,61 +146,80 @@ fun SharedGymNowScreen(
         }
         when (section) {
             "Overview" -> {
-                SemanticCard(Tile.Strength) {
-                    Text("Train your way", style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        "Follow a programme or choose a one-off workout. Spontaneous training stays separate from planned sessions."
-                    )
-                    Button(
-                        onClick = { model.startFree(onWorkout) },
-                        enabled = mayStart,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                    ) {
-                        Text("Start open workout")
+                HeroSurface(Discipline.STRENGTH, Glyph.DUMBBELL, "Gym Now") {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        HeroTitle("Train your way")
+                        Text(
+                            "Follow a programme or choose a one-off workout. Spontaneous training stays separate from planned sessions.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = LocalContentColor.current.copy(alpha = 0.85f),
+                        )
                     }
+                    GymStartAction("Start open workout", mayStart) { model.startFree(onWorkout) }
                     Text(
                         "Choose exercises as you go. You choose the sets and weights.",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
-                EntryButton(
-                    "Start planned workout",
-                    "Follow the session saved in your programme",
-                    mutable,
-                ) {
-                    section = "Planned workouts"
+                SectionLabel(
+                    "Choose a workout",
+                    Glyph.LIST,
+                    ChartHue.PLUM,
+                    caption = "From your programme, a one-off session or your own plan",
+                )
+                GymOptionTiles {
+                    GymOptionTile(
+                        "Start planned workout",
+                        "Follow the session saved in your programme",
+                        Glyph.CALENDAR,
+                        mutable,
+                    ) {
+                        section = "Planned workouts"
+                    }
+                    GymOptionTile(
+                        "Quick workout",
+                        "A simple one-off session for the time and equipment you have",
+                        Glyph.DUMBBELL,
+                        mutable,
+                    ) {
+                        section = "Quick workout"
+                    }
+                    GymOptionTile(
+                        "Build a workout",
+                        "Choose exercises, sets and targets",
+                        Glyph.LIST,
+                        mutable,
+                    ) {
+                        model.newBuilder()
+                        onBuild()
+                    }
+                    GymOptionTile(
+                        "Generate one for me",
+                        "Choose your focus and review a suggested workout",
+                        Glyph.SPARK,
+                        mutable,
+                    ) {
+                        section = "Generate one for me"
+                    }
                 }
-                EntryButton(
-                    "Quick workout",
-                    "A simple one-off session for the time and equipment you have",
-                    mutable,
-                ) {
-                    section = "Quick workout"
-                }
-                EntryButton("Build a workout", "Choose exercises, sets and targets", mutable) {
-                    model.newBuilder()
-                    onBuild()
-                }
-                EntryButton(
-                    "Generate one for me",
-                    "Choose your focus and review a suggested workout",
-                    mutable,
-                ) {
-                    section = "Generate one for me"
-                }
-                TextButton(
-                    onClick = { section = "Favourite workouts" },
-                    enabled = mutable,
-                    modifier = Modifier.heightIn(min = 48.dp),
-                ) {
-                    Text("Favourite workouts")
-                }
-                TextButton(
-                    onClick = { section = "Repeat previous workout" },
-                    enabled = mutable,
-                    modifier = Modifier.heightIn(min = 48.dp),
-                ) {
-                    Text("Repeat previous workout")
+                SectionLabel("Saved and recent", Glyph.FLAG, ChartHue.PLUM)
+                GymOptionTiles {
+                    GymOptionTile(
+                        "Favourite workouts",
+                        "Start or edit a workout you saved",
+                        Glyph.FLAG,
+                        mutable,
+                    ) {
+                        section = "Favourite workouts"
+                    }
+                    GymOptionTile(
+                        "Repeat previous workout",
+                        "Use the structure of a recent workout with empty sets",
+                        Glyph.TREND,
+                        mutable,
+                    ) {
+                        section = "Repeat previous workout"
+                    }
                 }
             }
             "Planned workouts" -> {
@@ -195,11 +233,13 @@ fun SharedGymNowScreen(
                         Text("Choose a quick workout")
                     }
                 } else {
-                    Text(
-                        "Programme version ${authored?.revision() ?: programme!!.version()}. Starting a session preserves this exact prescription."
+                    SectionLabel(
+                        authored?.name() ?: "Your gym programme",
+                        Glyph.CALENDAR,
+                        ChartHue.PLUM,
+                        caption =
+                            "Programme version ${authored?.revision() ?: programme!!.version()}. Starting a session preserves this exact prescription.",
                     )
-                    if (authored != null)
-                        Text(authored.name(), style = MaterialTheme.typography.titleLarge)
                     val sessions =
                         remember(programme, authored, state.exercises) {
                             authored?.workouts()?.map { w ->
@@ -211,6 +251,7 @@ fun SharedGymNowScreen(
                                         it.exercise().name()
                                     },
                                     w.expectedMinutes(),
+                                    w.definition().slots().size,
                                 )
                             }
                                 ?: programme!!.sessions().map { w ->
@@ -224,6 +265,7 @@ fun SharedGymNowScreen(
                                                 ?.name() ?: p.exerciseId()
                                         },
                                         null,
+                                        w.exercises().size,
                                     )
                                 }
                         }
@@ -238,32 +280,44 @@ fun SharedGymNowScreen(
                                         .asReversed()
                             }
                         }
+                    val caption = MaterialTheme.colorScheme.onSurfaceVariant
                     if (plannedDate != null) {
                         Text("Programme sessions for ${formatDate(plannedDate)}")
                         if (ordered.isEmpty()) Text("No strength session is planned for this date.")
                     } else {
                         Text(
-                            "Today and upcoming sessions first. Earlier prescriptions remain available; there is no catch-up requirement."
+                            "Today and upcoming sessions first. Earlier prescriptions remain available; there is no catch-up requirement.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = caption,
                         )
                     }
-                    ordered.take(plannedLimit).forEach { session ->
-                        SemanticCard(Tile.Planned) {
-                            Text(
-                                formatDate(session.date),
-                                style = MaterialTheme.typography.labelLarge,
-                            )
-                            Text(session.title, style = MaterialTheme.typography.titleLarge)
-                            Text(session.exercises)
-                            session.minutes?.let { Text("About $it min · planned, not recorded") }
-                            Button(
-                                onClick = { model.startPlanned(session.id, onWorkout) },
-                                enabled = mayStart,
-                                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                            ) {
-                                Text("Start this session")
+                    if (ordered.isNotEmpty())
+                        Panel {
+                            ordered.take(plannedLimit).forEachIndexed { index, session ->
+                                if (index > 0) HorizontalDivider()
+                                GymSessionRow(
+                                    formatDate(session.date),
+                                    session.title,
+                                    exerciseCount(session.exerciseCount),
+                                ) {
+                                    Text(
+                                        session.exercises,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                    session.minutes?.let {
+                                        Text(
+                                            "About $it min · planned, not recorded",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = caption,
+                                        )
+                                    }
+                                    Spacer(Modifier.height(4.dp))
+                                    GymRowAction("Start this session", mayStart) {
+                                        model.startPlanned(session.id, onWorkout)
+                                    }
+                                }
                             }
                         }
-                    }
                     if (plannedLimit < ordered.size)
                         TextButton(
                             onClick = { plannedLimit += 7 },
@@ -300,17 +354,20 @@ fun SharedGymNowScreen(
                     }
                 }
                 state.favourites.forEach { definition ->
-                    SemanticCard(Tile.Progress) {
-                        Text(definition.title(), style = MaterialTheme.typography.titleLarge)
+                    Panel {
                         Text(
-                            "${definition.slots().size} exercises · revision ${definition.revision()}"
+                            definition.title(),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text(
+                            "${definition.slots().size} exercises · revision ${definition.revision()}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = chartAccent(ChartHue.PLUM).strong,
                         )
                         Text(definition.slots().joinToString(" · ") { it.exercise().name() })
-                        Button(
-                            onClick = { model.startFavourite(definition, onWorkout) },
-                            enabled = mayStart,
-                        ) {
-                            Text("Start favourite")
+                        GymRowAction("Start favourite", mayStart) {
+                            model.startFavourite(definition, onWorkout)
                         }
                         TextButton(
                             onClick = {
@@ -350,20 +407,14 @@ fun SharedGymNowScreen(
                 if (state.recent.isEmpty())
                     Text("No completed strength workouts yet. Start an open workout or build one.")
                 state.recent.forEach { actual ->
-                    SemanticCard(Tile.Strength) {
-                        Text(
+                    Panel {
+                        GymSessionRow(
                             formatRecordedDate(actual.startedAt()),
-                            style = MaterialTheme.typography.titleMedium,
+                            actual.exercises().joinToString(" · ") { it.exercise().name() },
+                            "${actual.exercises().sumOf { it.sets().size }} recorded sets in the original workout",
                         )
-                        Text(actual.exercises().joinToString(" · ") { it.exercise().name() })
-                        Text(
-                            "${actual.exercises().sumOf { it.sets().size }} recorded sets in the original workout"
-                        )
-                        Button(
-                            onClick = { model.repeatPrevious(actual.id(), onWorkout) },
-                            enabled = mayStart,
-                        ) {
-                            Text("Repeat workout")
+                        GymRowAction("Repeat workout", mayStart) {
+                            model.repeatPrevious(actual.id(), onWorkout)
                         }
                         if (actual.id() in state.nativeRecentIds)
                             TextButton(
@@ -425,20 +476,6 @@ fun SharedGymNowScreen(
                 TextButton(onClick = { confirmReload = false }) { Text("Keep pending action") }
             },
         )
-}
-
-@Composable
-private fun EntryButton(title: String, detail: String, enabled: Boolean, action: () -> Unit) {
-    OutlinedButton(
-        onClick = action,
-        enabled = enabled,
-        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
-    ) {
-        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
-            Text(detail, style = MaterialTheme.typography.bodyMedium)
-        }
-    }
 }
 
 @Composable
@@ -619,23 +656,32 @@ private fun OneOffWorkoutPicker(
     }
     if (showPreview && !state.busy)
         state.generated?.let { suggestion ->
-            SemanticCard(Tile.Strength) {
-                Text(suggestion.definition().title(), style = MaterialTheme.typography.titleLarge)
+            SectionLabel(
+                suggestion.definition().title(),
+                Glyph.SPARK,
+                ChartHue.PLUM,
+                caption = exerciseCount(suggestion.definition().slots().size),
+            )
+            Panel {
                 Text(suggestion.explanation())
-                suggestion.definition().slots().forEach { slot ->
-                    Text(slot.exercise().name(), style = MaterialTheme.typography.titleMedium)
+                suggestion.definition().slots().forEachIndexed { index, slot ->
+                    if (index > 0) HorizontalDivider()
+                    Text(
+                        slot.exercise().name(),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                     SharedPlainWorkoutTarget(slot, formatTarget)
                 }
                 suggestion.limitations().forEach { limitation -> Text(limitation) }
                 Text(
                     "These are targets, not completed sets. You choose and record your actual loads."
                 )
-                Button(
-                    onClick = { model.startGenerated(quick, onWorkout) },
-                    enabled = mayStart,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                GymStartAction(
+                    if (quick) "Start quick workout" else "Start generated workout",
+                    mayStart,
                 ) {
-                    Text(if (quick) "Start quick workout" else "Start generated workout")
+                    model.startGenerated(quick, onWorkout)
                 }
             }
         }
@@ -675,4 +721,14 @@ private data class PlannedSessionDisplay(
     val title: String,
     val exercises: String,
     val minutes: Int?,
+    val exerciseCount: Int,
 )
+
+private fun sectionGlyph(section: String) =
+    when (section) {
+        "Planned workouts" -> Glyph.CALENDAR
+        "Generate one for me" -> Glyph.SPARK
+        "Favourite workouts" -> Glyph.FLAG
+        "Repeat previous workout" -> Glyph.TREND
+        else -> Glyph.DUMBBELL
+    }

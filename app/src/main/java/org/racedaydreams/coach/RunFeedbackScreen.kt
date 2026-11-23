@@ -25,7 +25,11 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
                     RunScoreEngine.analyse(planned, activity, response)
                 }
         }
-    CoachHeading(if (planned == null) "Run Analysis" else "Run Score and feedback")
+    SectionLabel(
+        if (planned == null) "Run Analysis" else "Run Score and feedback",
+        Glyph.SPARK,
+        ChartHue.VIOLET,
+    )
     feedback?.let { SharedRunFeedbackCard(it) }
     if (planned != null) {
         if (state.proposals.isEmpty())
@@ -42,7 +46,7 @@ fun RunFeedbackSection(state: CoachUiState, model: CoachViewModel, activity: Act
         }
     }
     if (planned != null) {
-        CoachCard {
+        Panel {
             Text(
                 "Preserved planned workout · version ${version.version()}",
                 style = MaterialTheme.typography.titleMedium,

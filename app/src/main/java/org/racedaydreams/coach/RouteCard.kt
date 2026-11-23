@@ -67,8 +67,8 @@ fun RecordedRouteCard(activity: ActivityRecord) {
     val km = prepared.kilometres
     if (xy.size < 2) {
         prepared.removed?.let {
-            SemanticCard(Tile.Planned) {
-                Text("Detailed recording removed", style = MaterialTheme.typography.titleLarge)
+            SectionLabel("Detailed recording removed", Glyph.FLAG, ChartHue.BLUE)
+            Panel {
                 Text(
                     "You removed this run's raw GPS and sensor detail through storage cleanup. Your original distance, timing, summary and PB evidence are retained. No map or sample-based splits have been recreated."
                 )
@@ -98,8 +98,8 @@ fun RecordedRouteCard(activity: ActivityRecord) {
                 (lo - 1).coerceAtLeast(0)
             }
         }
-    SemanticCard(Tile.Planned) {
-        Text("Your recorded route", style = MaterialTheme.typography.titleLarge)
+    SectionLabel("Your recorded route", Glyph.FLAG, ChartHue.BLUE)
+    Panel {
         Canvas(
             Modifier.fillMaxWidth().height(280.dp).semantics {
                 contentDescription =
@@ -267,8 +267,8 @@ fun RecordedRouteCard(activity: ActivityRecord) {
             }
         } else Text("Detailed elevation is unavailable or not reliable enough to chart.")
     }
-    SemanticCard(Tile.Insight) {
-        Text("Route story", style = MaterialTheme.typography.titleLarge)
+    SectionLabel("Route story", Glyph.SPARK, ChartHue.BLUE)
+    Panel {
         if (story.isEmpty())
             Text("Not enough uninterrupted distance evidence for pacing observations.")
         else story.take(2).forEach { Text(it) }

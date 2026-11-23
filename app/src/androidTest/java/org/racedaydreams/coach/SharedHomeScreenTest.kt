@@ -18,6 +18,7 @@ import org.racedaydreams.domain.*
 import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.presentation.StrengthTodaySummary
 import org.racedaydreams.domain.settings.PrimaryFocus
+import org.racedaydreams.domain.strength.GymProgramme
 
 /** Full existing Home UI, original Android formatters/routes, fixed test clock and real targets. */
 @RunWith(AndroidJUnit4::class)
@@ -320,6 +321,83 @@ class SharedHomeScreenTest {
         compose.onNode(hasText("Gym now") and hasClickAction()).performScrollTo().performClick()
         compose.runOnIdle { assertEquals("gym-now", actions.last()) }
         compose.onNode(hasText("Run now") and hasClickAction()).assertHeightIsAtLeast(48.dp)
+    }
+
+    /** A hybrid athlete's day with a planned run and a gym programme session on the same date. */
+    private fun hybridSameDay(): CoachUiState {
+        val gym =
+            GymProgramme(
+                "gym/one",
+                1,
+                Instant.parse("2026-11-16T12:00:00Z"),
+                "Athlete accepted programme",
+                GymProgramme.Settings(
+                    GymProgramme.Goal.SUPPORT_RUNNING,
+                    GymProgramme.Priority.RUNNING_FIRST,
+                    GymProgramme.Experience.INTERMEDIATE,
+                    setOf(day.dayOfWeek),
+                    1,
+                    setOf("full gym"),
+                    45,
+                    GymProgramme.Effort.RPE,
+                ),
+                day,
+                day.plusDays(41),
+                listOf(
+                    GymProgramme.Session(
+                        "gym/today",
+                        day,
+                        "Lower body strength",
+                        listOf(
+                            GymProgramme.Prescription(
+                                "back-squat",
+                                3,
+                                5,
+                                8,
+                                null,
+                                null,
+                                6,
+                                7,
+                                120,
+                                "Controlled working sets",
+                            )
+                        ),
+                        "Original prescription",
+                    )
+                ),
+                emptyList(),
+            )
+        return state().copy(primaryFocus = PrimaryFocus.HYBRID, gymProgramme = gym)
+    }
+
+    @Test
+    fun hybridSameDayShowsRunAndStrengthInTodaysHeroWithTheirOwnRoutes() {
+        val original = hybridSameDay()
+        show(original)
+        val inHero = hasAnyAncestor(hasTestTag("today-hero"))
+        val inCompanion = hasAnyAncestor(hasTestTag("companion-session"))
+        compose.onNode(hasText("Today's run") and inHero).assertExists()
+        compose.onNode(hasTestTag("companion-session") and inHero).assertExists()
+        compose.onNode(hasText("Lower body strength") and inCompanion and inHero).assertExists()
+        compose.onNode(hasText("Start with Live Coach") and inHero).performScrollTo().performClick()
+        compose.runOnIdle { assertEquals(listOf("execute/version%2Fone/today%2Fone"), actions) }
+        compose
+            .onNode(hasText("Log today's strength workout") and inCompanion and inHero)
+            .performScrollTo()
+            .performClick()
+        compose.runOnIdle { assertEquals("strength?date=$day", actions.last()) }
+        compose
+            .onNode(hasText("View strength session") and inCompanion and inHero)
+            .performScrollTo()
+            .performClick()
+        compose.runOnIdle {
+            assertEquals("gym/session/gym%2Ftoday", actions.last())
+            assertEquals(3, actions.size)
+            // Presentation only: neither prescription is changed by opening it.
+            assertEquals(5.0, original.currentPlan!!.plan().workouts().first().distanceKm()!!, 0.0)
+            assertEquals(day, original.gymProgramme!!.sessions().single().date())
+            assertTrue(original.strengthSessions.isEmpty())
+        }
     }
 
     @Test

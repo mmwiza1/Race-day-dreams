@@ -211,7 +211,7 @@ private fun RunningTodayScreen(
                     Glyph.DUMBBELL,
                     "Today's strength",
                     gym.title(),
-                    "${gym.exercises().size} exercises · up to ${state.gymProgramme!!.settings().minutes()} min",
+                    "${gym.exercises().size.let { if (it == 1) "1 exercise" else "$it exercises" }} · up to ${state.gymProgramme!!.settings().minutes()} min",
                 ) {
                     OutlinedButton(
                         onClick = { quick("strength?date=${gym.date()}") },
@@ -236,7 +236,7 @@ private fun RunningTodayScreen(
                     Glyph.DUMBBELL,
                     "Today's strength",
                     gym.definition().title(),
-                    "${gym.definition().slots().size} exercises · about ${gym.expectedMinutes()} min",
+                    "${gym.definition().slots().size.let { if (it == 1) "1 exercise" else "$it exercises" }} · about ${gym.expectedMinutes()} min",
                 ) {
                     if (today == null) CoachButton("Start strength workout") { quick("gym-now") }
                     else

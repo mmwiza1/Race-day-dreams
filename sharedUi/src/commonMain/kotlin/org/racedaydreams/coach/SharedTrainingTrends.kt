@@ -17,9 +17,10 @@ import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.domain.time.LocalDate
 
 /**
- * The full Training trends screen, shared by Android and iOS: the reporting period, then the same
- * chart-first explorer as Progress with heart rate added. Weeks come from the existing weekly
- * aggregation (one entry per physical run); nothing here computes a new figure.
+ * The full Training trends screen, shared by Android and iOS: a compact running header and the
+ * reporting period, then the same chart-first explorer as Progress with heart rate added. Weeks
+ * come from the existing weekly aggregation (one entry per physical run); nothing here computes a
+ * new figure.
  */
 @Composable
 fun SharedTrainingTrends(
@@ -41,8 +42,14 @@ fun SharedTrainingTrends(
         remember(activities, today, period) {
             RecordedWeekAggregation.weekly(activities, today, period.weeks, dateAt)
         }
-    CoachHeading("Training trends")
-    PeriodSelector(period) { periodName = it.name }
+    // The same compact running header as Progress → Running: content, not an action, leads.
+    ScreenHeader(
+        Discipline.RUNNING,
+        Glyph.TREND,
+        eyebrow = "Weekly running",
+        title = "Training trends",
+    )
+    PeriodSelector(period, Discipline.RUNNING) { periodName = it.name }
     weeks.firstOrNull()?.weekStart()?.let { first ->
         Text(
             "${friendlyDate(first)} – ${friendlyDate(today)} · calendar weeks, this week in progress",

@@ -1,19 +1,24 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.Duration
-import java.time.ZoneOffset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.racedaydreams.domain.PaceCalculator
@@ -87,22 +92,20 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
         remember(activity, assessment, state.baseline) {
             assessment?.let { AssessmentAnalyzer.analyze(it, activity, state.baseline) }
         }
+    val units = if (imperial) "mi" else "km"
     CoachPage {
-        CoachHeading(if (assessment != null) "Assessment run" else "Run detail")
-        Text(
-            activity
-                .start()
-                .atOffset(activity.startOffset() ?: ZoneOffset.UTC)
-                .format(
-                    java.time.format.DateTimeFormatter.ofPattern(
-                        "EEEE, d MMMM uuuu · HH:mm XXX",
-                        java.util.Locale.UK,
-                    )
-                )
+        // A compact running header: the start date and time as the eyebrow, the title as heading.
+        ScreenHeader(
+            Discipline.RUNNING,
+            Glyph.RUN,
+            localStartLabel(activity.start(), context),
+            if (assessment != null) "Assessment run" else "Run detail",
         )
         if (activity.startOffset() == null)
             Text(
-                "The source did not provide a time-zone offset; this time is shown explicitly in UTC."
+                "The source did not provide a time-zone offset; this time is shown in your device's time zone.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         RecordedRunSummary(activity, state)
         RecordedHeartRateSummary(activity)
@@ -115,21 +118,15 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             ) {
                 model.runningEvidence.shoeDiscomfort(activity.id(), it)
             }
-        CoachCard {
+        ExpressiveSection("Source and measurements", Glyph.LIST, ChartHue.TEAL) {
             activity.elevationGainMetres()?.let {
                 Text("Recorded elevation gain: ${decimal(it)} m")
             }
             activity.cadence()?.let { Text("Recorded cadence: ${decimal(it)} steps/min") }
             activity.rpe()?.let { Text("Manually entered effort: ${decimal(it)}/10") }
-            SharedRunDurabilityCard(
-                activity,
-                state.profile?.preferences()?.units() ==
-                    org.racedaydreams.domain.UnitSystem.IMPERIAL,
-                ::formatPaceSeconds,
-                ::decimal,
-            )
             Text(
-                "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
+                "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}",
+                style = MaterialTheme.typography.titleSmall,
             )
             WhyDetails(
                 "Provider: ${activity.source().provider()}\nOrigin: ${activity.source().originPackage() ?: "Unavailable"}\nRecord: ${activity.source().recordId()}",
@@ -137,22 +134,29 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             )
 
             Text(
-                "Values absent from the source remain unavailable. Elapsed time is not presented as moving time."
+                "Values absent from the source remain unavailable. Elapsed time is not presented as moving time.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        SharedRunDurabilityCard(
+            activity,
+            state.profile?.preferences()?.units() == org.racedaydreams.domain.UnitSystem.IMPERIAL,
+            ::formatPaceSeconds,
+            ::decimal,
+        )
         StructuredRunSection(state, model, activity)
         DreamRouteSection(activity)
         RunComparisonSection(state, activity)
         RunFeedbackSection(state, model, activity)
         assessmentSummary?.let { summary ->
-            CoachCard {
-                Text("What this assessment tells us", style = MaterialTheme.typography.titleMedium)
+            ExpressiveSection("What this assessment tells us", Glyph.SPARK, ChartHue.BLUE) {
                 Text("Mode: ${assessment!!.assessment().mode().name.lowercase().replace('_', ' ')}")
                 summary.confidence()?.let { Text("Baseline confidence: ${it.name.lowercase()}") }
                 summary.findings().forEach { Text(it) }
             }
         }
-        CoachHeading("Distance splits")
+        SectionLabel("Distance splits", Glyph.VOLUME, ChartHue.VIOLET)
         Text(
             "See the time and pace for each completed kilometre or mile. A final shorter section is shown separately when recorded."
         )
@@ -164,98 +168,72 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 Text(
                     "Reliable distance/time samples are unavailable. Splits have not been invented from average pace."
                 )
-            splitAnalysis.reasons().forEach { Text(it) }
+            splitAnalysis.reasons().forEach {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             var selectedSplit by
                 rememberSaveable(activity.id(), splitUnits) { mutableIntStateOf(1) }
             val fastestPace = splitAnalysis.splits().minOfOrNull { it.secondsPerKilometre() }
-            if (splitAnalysis.splits().isNotEmpty())
+            // Fastest and slowest are named among complete splits only (as the route card does),
+            // and only when there are at least two to compare. Values are the recorded ones.
+            val complete = splitAnalysis.splits().filterNot { it.partial() }
+            val fastestNumber =
+                complete.takeIf { it.size > 1 }?.minByOrNull { it.secondsPerKilometre() }?.number()
+            val slowestNumber =
+                complete
+                    .takeIf { it.size > 1 }
+                    ?.maxByOrNull { it.secondsPerKilometre() }
+                    ?.number()
+                    ?.takeIf { it != fastestNumber }
+            if (splitAnalysis.splits().isNotEmpty()) {
                 Text(
                     "Tap a split to highlight it · a longer bar means a faster recorded pace",
                     style = MaterialTheme.typography.bodySmall,
                 )
-            splitAnalysis.splits().forEach { split ->
-                val selected = selectedSplit == split.number()
-                Card(
-                    onClick = { selectedSplit = split.number() },
-                    modifier =
-                        Modifier.fillMaxWidth().testTag("run-split-${split.number()}").semantics {
-                            stateDescription = if (selected) "Selected split" else "Recorded split"
-                        },
-                    shape = MaterialTheme.shapes.large,
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor =
-                                if (selected) MaterialTheme.colorScheme.secondaryContainer
-                                else MaterialTheme.colorScheme.surfaceContainerLow
-                        ),
-                ) {
-                    Column(
-                        Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(
-                            "Split ${split.number()}${if (split.partial()) " · partial" else ""}",
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        if (selected)
-                            Text(
-                                "Selected",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        val length =
-                            if (imperial) split.distanceMetres() / 1609.344
-                            else split.distanceMetres() / 1000.0
-                        val pace = split.secondsPerKilometre() * if (imperial) 1.609344 else 1.0
-                        Text(
-                            "${decimal(length)} ${if (imperial) "mi" else "km"} · ${PaceCalculator.formatTime(split.duration())} · ${formatPaceSeconds(pace)}/${if (imperial) "mi" else "km"}",
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        split.averageHeartRate()?.let {
-                            Text("Available-sample HR: ${decimal(it)} bpm")
+                Panel(contentPadding = PaddingValues(8.dp)) {
+                    splitAnalysis.splits().forEach { split ->
+                        SplitRow(
+                            split,
+                            selected = selectedSplit == split.number(),
+                            fastest = split.number() == fastestNumber,
+                            slowest = split.number() == slowestNumber,
+                            fastestPace = fastestPace,
+                            imperial = imperial,
+                            units = units,
+                        ) {
+                            selectedSplit = split.number()
                         }
-                        split.elevationChangeMetres()?.let {
-                            Text("Elevation change: ${decimal(it)} m")
-                        }
-                        split.cadence()?.let { Text("Cadence: ${decimal(it)} steps/min") }
-                        LinearProgressIndicator(
-                            progress = {
-                                ((fastestPace ?: split.secondsPerKilometre()) /
-                                        split.secondsPerKilometre())
-                                    .toFloat()
-                                    .coerceIn(0f, 1f)
-                            },
-                            modifier =
-                                Modifier.fillMaxWidth().height(12.dp).clearAndSetSemantics {},
-                            color =
-                                if (selected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.outline,
-                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            gapSize = 0.dp,
-                            drawStopIndicator = {},
-                        )
                     }
                 }
             }
         }
-        CoachHeading("Recorded laps / intervals")
+        SectionLabel("Recorded laps / intervals", Glyph.LIST, ChartHue.TEAL)
         if (activity.laps().isEmpty())
             Text(
                 "No actual laps were supplied. Planned repetitions are never substituted for completed laps."
             )
-        activity.laps().forEachIndexed { index, lap ->
-            CoachCard {
-                Text(
-                    lap.label()?.takeIf { it.isNotBlank() } ?: "Lap ${index + 1}",
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    "Elapsed: ${PaceCalculator.formatTime(Duration.between(lap.start(), lap.end()))}"
-                )
-                lap.distanceMetres()?.let { Text(formatDistance(it, state)) }
-                lap.plannedSegmentId()?.let { Text("Linked planned segment: $it") }
+        else
+            Panel {
+                activity.laps().forEachIndexed { index, lap ->
+                    if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.surface)
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            lap.label()?.takeIf { it.isNotBlank() } ?: "Lap ${index + 1}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text(
+                            "Elapsed: ${PaceCalculator.formatTime(Duration.between(lap.start(), lap.end()))}"
+                        )
+                        lap.distanceMetres()?.let { Text(formatDistance(it, state)) }
+                        lap.plannedSegmentId()?.let { Text("Linked planned segment: $it") }
+                    }
+                }
             }
-        }
         val response = state.runResponses.firstOrNull { it.activityId() == activity.id() }
         val planned =
             state.planVersions
@@ -264,7 +242,7 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 ?.workouts()
                 ?.firstOrNull { it.id() == response?.plannedWorkoutId() }
                 ?: state.plannedWorkouts.firstOrNull { it.id() == activity.plannedWorkoutId() }
-        CoachHeading("Planned and actual")
+        SectionLabel("Planned and actual", Glyph.FLAG, ChartHue.BLUE)
         if (planned == null)
             Text(
                 if (activity.plannedWorkoutId() == null)
@@ -273,8 +251,12 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                     "The linked planned workout is not currently available. The actual result remains retained."
             )
         else
-            CoachCard {
-                Text("Planned: ${workoutName(planned.category())}")
+            Panel {
+                Text(
+                    "Planned: ${workoutName(planned.category())}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 planned.distanceKm()?.let {
                     Text("Planned distance: ${formatDistance(it * 1000, state)}")
                 }
@@ -287,33 +269,49 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                         Text("Distance difference: ${decimal(actual / 1000 - target)} km")
                     }
                 }
-                Text("The planned prescription is retained separately from this completion.")
+                Text(
+                    "The planned prescription is retained separately from this completion.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         val results = state.results.filter { it.activityId() == activity.id() }
         if (results.isNotEmpty())
-            CoachCard {
-                Text("Linked performance results", style = MaterialTheme.typography.titleMedium)
+            Panel {
+                Text(
+                    "Linked performance results",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 results.forEach {
                     Text(
                         "${it.distance().label()}: ${PaceCalculator.formatTime(it.duration())} · ${it.source().name.lowercase().replace('_', ' ')}"
                     )
                 }
                 Text(
-                    "Personal-best progression is compared with your other retained results in Progress."
+                    "Personal-best progression is compared with your other retained results in Progress.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        CoachHeading("Shoe and your notes")
         val shoe = state.shoes.firstOrNull { it.id() == activity.shoeId() }
-        Text(
-            shoe?.let {
-                "Shoe: ${it.brand()} ${it.model()}${if (it.retired()) " · retired" else ""}"
-            } ?: "No shoe assigned"
-        )
-        OutlinedButton(onClick = { chooseShoe = true }, enabled = !state.busy) {
-            Text("Change shoe assignment")
-        }
-        org.racedaydreams.coach.activity.SharedRunNotes(activity, state.busy) { notes, effort ->
-            model.runningEvidence.saveNotes(activity.id(), notes, effort)
+        ExpressiveSection("Shoe and your notes", Glyph.LIST, ChartHue.BLUE) {
+            Text(
+                shoe?.let {
+                    "Shoe: ${it.brand()} ${it.model()}${if (it.retired()) " · retired" else ""}"
+                } ?: "No shoe assigned",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            OutlinedButton(
+                onClick = { chooseShoe = true },
+                enabled = !state.busy,
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) {
+                Text("Change shoe assignment")
+            }
+            org.racedaydreams.coach.activity.SharedRunNotes(activity, state.busy) { notes, effort ->
+                model.runningEvidence.saveNotes(activity.id(), notes, effort)
+            }
         }
     }
     if (chooseShoe)
@@ -352,4 +350,116 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
             },
             confirmButton = { TextButton(onClick = { chooseShoe = false }) { Text("Close") } },
         )
+}
+
+/**
+ * One distance split as a table row: number, recorded time and pace, a pace bar (longer means
+ * faster) and sample-based extras. Fastest and slowest are named in words; the selected row is
+ * tinted and labelled. Values are the existing split analysis, unchanged.
+ */
+@Composable
+private fun SplitRow(
+    split: org.racedaydreams.domain.activity.RunSplit,
+    selected: Boolean,
+    fastest: Boolean,
+    slowest: Boolean,
+    fastestPace: Double?,
+    imperial: Boolean,
+    units: String,
+    select: () -> Unit,
+) {
+    val tones = chartAccent(ChartHue.VIOLET)
+    Surface(
+        onClick = select,
+        color = if (selected) tones.soft.copy(alpha = 0.18f) else Color.Transparent,
+        shape = RoundedCornerShape(20.dp),
+        modifier =
+            Modifier.fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .testTag("run-split-${split.number()}")
+                .semantics {
+                    stateDescription = if (selected) "Selected split" else "Recorded split"
+                },
+    ) {
+        Column(
+            Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "Split ${split.number()}${if (split.partial()) " · partial" else ""}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                if (fastest) FigureTag("Fastest", ChartHue.VIOLET)
+                if (slowest) FigureTag("Slowest", ChartHue.VIOLET)
+                if (selected)
+                    Text(
+                        "Selected",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+            }
+            val length =
+                if (imperial) split.distanceMetres() / 1609.344 else split.distanceMetres() / 1000.0
+            val pace = split.secondsPerKilometre() * if (imperial) 1.609344 else 1.0
+            Text(
+                "${decimal(length)} $units · ${PaceCalculator.formatTime(split.duration())} · ${formatPaceSeconds(pace)}/$units",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            LinearProgressIndicator(
+                progress = {
+                    ((fastestPace ?: split.secondsPerKilometre()) / split.secondsPerKilometre())
+                        .toFloat()
+                        .coerceIn(0f, 1f)
+                },
+                modifier = Modifier.fillMaxWidth().height(10.dp).clearAndSetSemantics {},
+                color = if (selected || fastest) tones.strong else tones.soft,
+                trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                gapSize = 0.dp,
+                drawStopIndicator = {},
+            )
+            listOfNotNull(
+                    split.averageHeartRate()?.let { "Available-sample HR: ${decimal(it)} bpm" },
+                    split.elevationChangeMetres()?.let { "Elevation change: ${decimal(it)} m" },
+                    split.cadence()?.let { "Cadence: ${decimal(it)} steps/min" },
+                )
+                .forEach {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+        }
+    }
+}
+
+/**
+ * The run's start for display only: the device's time zone and locale, the weekday and full date,
+ * then the time in the system's 12- or 24-hour setting (for example "Monday 23 November 2026 ·
+ * 12:08"). The stored instant and offset are unchanged.
+ */
+private fun localStartLabel(start: java.time.Instant, context: android.content.Context): String {
+    val locale = java.util.Locale.getDefault()
+    val local = start.atZone(java.time.ZoneId.systemDefault())
+    val date =
+        java.time.format.DateTimeFormatter.ofPattern(
+            android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMMyyyy")
+                .replace(",", ""),
+            locale,
+        )
+    val time =
+        java.time.format.DateTimeFormatter.ofPattern(
+            android.text.format.DateFormat.getBestDateTimePattern(
+                locale,
+                if (android.text.format.DateFormat.is24HourFormat(context)) "Hm" else "hma",
+            ),
+            locale,
+        )
+    return "${local.format(date)} · ${local.format(time)}"
 }

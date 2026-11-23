@@ -10,6 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import kotlinx.coroutines.CancellationException
@@ -97,11 +98,13 @@ fun WorkoutHistoryScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                CoachHeading("Workout history")
-                Text(
+                // The header takes the colour of the selected kind, as Progress does for its tab.
+                val strengthOnly = kind == WorkoutHistoryQuery.Kind.STRENGTH.name
+                ScreenHeader(
+                    if (strengthOnly) Discipline.STRENGTH else Discipline.RUNNING,
+                    if (strengthOnly) Glyph.DUMBBELL else Glyph.LIST,
                     "Your recorded training",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp),
+                    "Workout history",
                 )
             }
             item {
@@ -205,63 +208,40 @@ fun WorkoutHistoryScreen(
                 }
             }
             item {
-                Text("${rows.size} workouts loaded", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    "${rows.size} workouts loaded",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             if (rows.isEmpty() && !loading && error == null)
                 item {
-                    CoachCard { Text("No workouts match. Try a wider range, or record a workout.") }
-                }
-            items(rows.size, key = { rows[it].kind.name + rows[it].id }) { index ->
-                val entry = rows[index]
-                Card(
-                    onClick = {
-                        if (entry.kind == WorkoutHistoryQuery.Kind.RUNNING) openRun(entry.id)
-                        else openStrength(entry.id)
-                    },
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
-                    shape = MaterialTheme.shapes.large,
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                        ),
-                ) {
-                    Column(
-                        Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(friendlyDate(entry.date), style = MaterialTheme.typography.labelLarge)
-                        Text(
-                            entry.label.replaceFirstChar { it.uppercase() },
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        entry.distanceMetres?.let {
-                            Text(
-                                formatDistance(it, state),
-                                style = MaterialTheme.typography.headlineSmall,
-                            )
-                        }
-                        entry.minutes?.let {
-                            Text(
-                                "${entry.exerciseCount} exercises · $it min",
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                        if (
-                            entry.kind == WorkoutHistoryQuery.Kind.RUNNING &&
-                                entry.distanceMetres == null
-                        )
-                            Text(
-                                "Distance unavailable",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        Text(
-                            "View recorded workout",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
+                    RecordedWorkoutSummaryRow(Discipline.RUNNING, Glyph.LIST) {
+                        RowDetail(
+                            "No workouts match. Try a wider range, or record a workout.",
+                            MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
-            }
+            // Rows arrive newest first; group them under month labels. Each row keeps its own date,
+            // so a row is still found and announced by its day.
+            rows
+                .groupBy { java.time.YearMonth.from(it.date) }
+                .forEach { (month, entries) ->
+                    item(key = "month:$month") {
+                        HistoryDateLabel(
+                            month.format(
+                                java.time.format.DateTimeFormatter.ofPattern(
+                                    "MMMM uuuu",
+                                    java.util.Locale.UK,
+                                )
+                            )
+                        )
+                    }
+                    items(entries.size, key = { entries[it].kind.name + entries[it].id }) { index ->
+                        WorkoutHistoryRow(entries[index], state, openRun, openStrength)
+                    }
+                }
             if (loading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
             else if (next != null)
                 item {
@@ -273,5 +253,51 @@ fun WorkoutHistoryScreen(
                     }
                 }
         }
+    }
+}
+
+@Composable
+private fun WorkoutHistoryRow(
+    entry: WorkoutHistoryStore.Row,
+    state: CoachUiState,
+    openRun: (String) -> Unit,
+    openStrength: (String) -> Unit,
+) {
+    val running = entry.kind == WorkoutHistoryQuery.Kind.RUNNING
+    RecordedWorkoutRow(
+        if (running) Discipline.RUNNING else Discipline.STRENGTH,
+        if (running) Glyph.RUN else Glyph.DUMBBELL,
+        onClick = { if (running) openRun(entry.id) else openStrength(entry.id) },
+    ) {
+        Text(
+            entry.label.replaceFirstChar { it.uppercase() },
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            friendlyDate(entry.date),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        entry.distanceMetres?.let {
+            Text(
+                formatDistance(it, state),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        entry.minutes?.let {
+            Text(
+                "${entry.exerciseCount} exercises · $it min",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        if (running && entry.distanceMetres == null) RowDetail("Distance unavailable")
+        Text(
+            "View recorded workout",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+        )
     }
 }

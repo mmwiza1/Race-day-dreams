@@ -2,6 +2,7 @@ package org.racedaydreams.coach.strength
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.text.font.FontWeight
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.time.LocalDate
@@ -22,9 +23,13 @@ fun SharedProgrammePreviewContent(
     if (programme.tradeoffs().isNotEmpty())
         WhyDetails(programme.tradeoffs().joinToString("\n"), "Programme trade-offs")
     programme.blocks().forEach { block ->
-        SemanticCard(Tile.Strength) {
-            Text(block.name(), style = MaterialTheme.typography.titleLarge)
-            Text("${formatDate(block.start())} – ${formatDate(block.end())}")
+        SectionLabel(
+            block.name(),
+            Glyph.FLAG,
+            ChartHue.PLUM,
+            caption = "${formatDate(block.start())} – ${formatDate(block.end())}",
+        )
+        Panel {
             WhyDetails(block.explanation(), "Block emphasis")
             // Concrete dated prescriptions are shown as retained, never reconstructed from the
             // first week.
@@ -32,14 +37,20 @@ fun SharedProgrammePreviewContent(
             val chronological =
                 remember(block) { block.workouts().sortedBy { it.date().toEpochDay() } }
             chronological.take(limit).forEach { workout ->
+                HorizontalDivider()
                 Text(
                     "${formatDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min",
                     style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                 )
                 workout.definition().slots().forEach { slot ->
-                    Text("${slot.exercise().name()} · ${describeTarget(slot)}")
+                    Text(
+                        "${slot.exercise().name()} · ${describeTarget(slot)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
-                workout.notes()?.let { Text(it) }
+                workout.notes()?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
             }
             if (limit < block.workouts().size)
                 TextButton(onClick = { limit += 7 }) { Text("Show more dated workouts") }

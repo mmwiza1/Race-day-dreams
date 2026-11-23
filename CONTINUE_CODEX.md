@@ -144,7 +144,36 @@ installations that cannot support them (all existing debug-signed installs).
   - The owner approved the direction app-wide on 23 November 2026, applied per screen purpose rather than copied: V3 final refinements are in PR #38, and each later screen group gets its own draft PR (see `docs/DESIGN_2026.md` §3g). No merge without explicit approval.
   - Workstream branches are stacked on V3 (`ccr-60f602a7-tfmok3`) while PR #38 is unmerged. The Home PR targets the V3 branch, so its diff holds only Home changes. Retarget it to `main` once V3 merges. Draft checks for a stacked PR are started by `workflow_dispatch` of "Shared Android and iOS checks" on its branch, because that workflow's `pull_request` trigger only covers PRs into `main`.
   - Planned order: W1 Home → W2 Plan and Calendar → W3 Progress Running/Overview → W4 activity, live, Gym Now and race/recovery screens → W5 onboarding (with the Galaxy S24 goal-selection retest), library, settings, bouldering and empty states.
+- **V3 merged and published (23 November 2026):** PR #38 was squash-merged as `main` `2e2345a7`, with a tree identical to the verified head `2c796b06`.
+  - Post-merge run 45149065398 passed. API 35 needed one rerun after the known onboarding "5K" timing flake.
+  - It published 0.15.4-test1 / 27 from commit 2e2345a7.
+    - APK SHA-256 `db552154…71b5f`, matching its `.sha256` and the `latest` alias.
+    - `apksigner` certificate `e7af758a…929d`.
+    - Unsigned .ipa SHA-256 `d80f6217…3efee`.
+- **W1 Home merged (23 November 2026):** PR #39 was squash-merged as `main` `95305f41`, with a tree identical to the verified head `f7d4ff29` (source `8926dc51`: Android API 28/35/36, canonical screenshots, iOS shared and device all green).
+  - Post-merge run 45175748454 passed. iOS apple-shared needed one rerun after a simulated GPS fix did not arrive in time.
+  - It published 0.15.4-test1 / 27 from commit 95305f41.
+    - APK SHA-256 `19fe06d6…18e8`, matching its `.sha256`, the `latest` alias and the update manifest.
+    - `apksigner` certificate `e7af758a…929d`.
+    - Unsigned .ipa SHA-256 `07616f5c…7080`.
+- **Recurring CI flakes, for the reliability review (not visual work):**
+  - **iOS `RunningWorkoutPersistenceTests.testFavouriteSurvivesRelaunchWithoutLocationPermission`:** three failures on loaded macOS runners on 23 November 2026, at "Could not reach Pause" and at the `gpsReady` wait on line 159. It also caused a job timeout. The simulated location fix is unreliable under load.
+  - **Android API 35 onboarding "5K" not displayed:** seen after the V1 and V3 merges.
+  - **Android Compose test-thread errors:** "multithreaded access to SnapshotStateObserver" and "performMeasureAndLayout called during measure layout", in tests unrelated to the change under test.
+  - **Infrastructure:** `adb: device offline` and HTTP 429 download limits.
+- **Remaining visual modernisation, owner-authorised 23 November 2026:** develop it concurrently, one draft PR per workstream into `main`.
+  - **Workstreams:**
+    - W2: Plan and Calendar, plus the hybrid same-day Home evidence.
+    - W3: Progress Running and Overview.
+    - W4: supporting screens, split into W4a (history and activity details), W4b (gym, exercise library and records) and W4c (recovery, race day, bouldering and dream routes).
+    - W5: onboarding, settings and empty states; see `docs/design-2026/W5-plan.md`.
+  - **Coordination rules:**
+    - The shared design-system files are edited only by the coordinator.
+    - Each workstream writes its notes to `docs/design-2026/<W>.md`.
+    - There is one screenshot cycle per PR, run serially because canonical screenshot commits conflict between branches. After a merge, the other branches merge `main` and keep their own source.
+  - **Approval:** no later workstream is merged without owner approval.
 - **Outstanding issue to retest (owner-reported):** the running-goal selection buttons were unresponsive on the owner's physical Galaxy S24.
+  - The agreed fix is in `docs/design-2026/W5-plan.md`: reuse the working selectable cards from `SharedStartingPath`, remove the goal checkboxes, and highlight the selection in gold. It is deferred to the final hardening stage.
   - Retest it on that device after the UI modernisation.
   - Do not mark it resolved on emulator evidence alone.
   - Not in V3 scope unless authorised.
