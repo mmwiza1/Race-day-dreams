@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.*
@@ -49,8 +50,8 @@ fun SharedBodyMeasurementsContent(
     val heightUnit = state.preferences.heightUnit()
     CoachPage {
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
-        CoachHeading("Body & protein guidance")
-        Text(
+        ScreenHeader(Discipline.RECOVERY, Glyph.BODY, "Body", "Body & protein guidance")
+        QuietNote(
             "Optional measurements and general adult nutrition guidance. Your programme works without them."
         )
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -72,13 +73,14 @@ fun SharedBodyMeasurementsContent(
             formatBasisDate = presentation.formatWeightDate,
             basisAccessNote = state.advice?.basis()?.let(presentation.basisAccessNote),
         )
-        SemanticCard(Tile.Neutral) {
-            Text("Your measurements", style = MaterialTheme.typography.titleLarge)
+        ExpressiveSection("Your measurements", Glyph.BODY, ChartHue.TEAL) {
             val latestHeight = state.heights.firstOrNull { !it.at().isAfter(presentation.now()) }
             if (latestHeight == null) Text("No height measurement recorded.")
             else {
                 Text(
-                    "Latest height: ${presentation.formatNumber(heightUnit.fromMetres(latestHeight.metres()))} ${heightUnit.label()}"
+                    "Latest height: ${presentation.formatNumber(heightUnit.fromMetres(latestHeight.metres()))} ${heightUnit.label()}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(bodySource(latestHeight.provider(), latestHeight.origin()))
                 Text(presentation.formatHeightDate(latestHeight))
@@ -104,7 +106,11 @@ fun SharedBodyMeasurementsContent(
                 )
             }
             if (measurements) {
-                Text("Record a measurement", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Record a measurement",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 Text("Manual entry is recorded now · ${presentation.manualDate()}")
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
@@ -166,7 +172,11 @@ fun SharedBodyMeasurementsContent(
                 ) {
                     Text("Save body-weight measurement")
                 }
-                Text("Weight history", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Weight history",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 if (state.weights.isEmpty())
                     Text("No weight measurements recorded. No daily protein amount is inferred.")
                 state.weights.take(weightCount).forEach { row ->
@@ -193,7 +203,11 @@ fun SharedBodyMeasurementsContent(
                     TextButton(onClick = { weightCount += 10 }) {
                         Text("Show more weight measurements")
                     }
-                Text("Height history", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Height history",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 state.heights.forEach { row ->
                     HorizontalDivider()
                     Text(

@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.body.*
@@ -21,8 +22,7 @@ fun ProteinGuidanceCard(
     basisAccessNote: String?,
 ) {
     var details by rememberSaveable { mutableStateOf(false) }
-    SemanticCard(Tile.Insight) {
-        Text("General daily protein", style = MaterialTheme.typography.titleLarge)
+    ExpressiveSection("General daily protein", Glyph.SPARK, ChartHue.TEAL) {
         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
             Checkbox(
                 state.preferences.proteinEnabled(),
@@ -37,14 +37,18 @@ fun ProteinGuidanceCard(
             )
         }
         state.advice?.let { advice ->
-            Text(advice.instruction(), style = MaterialTheme.typography.titleMedium)
-            Text(advice.explanation())
+            Text(
+                advice.instruction(),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(advice.explanation(), style = MaterialTheme.typography.bodyLarge)
             advice.basis()?.let { basis ->
                 Text(
                     "Chosen basis: ${formatNumber(basis.kilograms())} kg · ${formatBasisDate(basis)}"
                 )
-                Text(bodySource(basis.provider(), basis.origin()))
-                basisAccessNote?.let { Text(it) }
+                QuietNote(bodySource(basis.provider(), basis.origin()))
+                basisAccessNote?.let { QuietNote(it) }
             }
             if (state.preferences.proteinEnabled()) {
                 TextButton(onClick = onChooseWeight, enabled = !state.busy) {
@@ -69,10 +73,7 @@ fun ProteinGuidanceCard(
                 }
             }
         }
-        Text(
-            "General guidance, not a medical prescription. Individual needs can differ.",
-            style = MaterialTheme.typography.bodySmall,
-        )
+        QuietNote("General guidance, not a medical prescription. Individual needs can differ.")
     }
 }
 

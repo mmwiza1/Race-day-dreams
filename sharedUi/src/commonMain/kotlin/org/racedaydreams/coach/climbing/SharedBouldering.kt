@@ -70,6 +70,8 @@ fun SharedBoulderingHome(
     openSession: () -> Unit,
     openDetail: (String) -> Unit,
     openHistory: () -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     LaunchedEffect(model) { model.refresh() }
@@ -79,89 +81,90 @@ fun SharedBoulderingHome(
         remember(state.sessions, today, period, state.gradeSystem) {
             ClimbingAnalytics.summary(state.sessions, today, period, state.gradeSystem)
         }
-    BackRow(onBack)
-    CoachHeading("Bouldering")
-    Feedback(state)
+    if (!appBarBack) BackRow(onBack)
     val draft = state.draft
-    if (draft != null) {
-        SemanticCard(Tile.Progress) {
-            Text("Unsaved session", style = MaterialTheme.typography.titleMedium)
-            Text(
-                "${if (draft.live()) "In progress since" else "Logged for"} ${friendlyDate(draft.startedAt.let { org.racedaydreams.domain.time.CalendarDates.atOffset(it, draft.offset) })} · " +
+    // Same composition as the Strength tab: one hero carries starting or resuming a session.
+    ScreenHero(
+        Discipline.STRENGTH,
+        Glyph.TREND,
+        "Climbing",
+        "Bouldering",
+        when {
+            draft != null ->
+                "Unsaved session · ${if (draft.live()) "In progress since" else "Logged for"} ${friendlyDate(draft.startedAt.let { org.racedaydreams.domain.time.CalendarDates.atOffset(it, draft.offset) })} · " +
                     plural(draft.problems.size, "problem")
-            )
-            Button(
-                onClick = openSession,
-                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-            ) {
-                Text("Resume session")
-            }
-        }
-    } else if (state.loading) {
-        // Starting is only offered once an interrupted session on this device would be found.
-        Text("Checking for an unsaved session…")
-    } else {
-        Button(
-            onClick = {
-                model.startLive()
-                openSession()
+            // Starting is only offered once an interrupted session on this device would be found.
+            state.loading -> "Checking for an unsaved session…"
+            else -> "Problems, grades and attempts, kept separate from weightlifting."
+        },
+        primary =
+            when {
+                draft != null -> "Resume session" to openSession
+                state.loading -> null
+                else ->
+                    "Start bouldering session" to
+                        {
+                            model.startLive()
+                            openSession()
+                        }
             },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Start bouldering session")
-        }
-        OutlinedButton(
-            onClick = {
-                model.startPast(today)
-                openSession()
-            },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text("Log a past session")
-        }
-    }
+        secondary =
+            if (draft == null && !state.loading)
+                listOf(
+                    "Log a past session" to
+                        {
+                            model.startPast(today)
+                            openSession()
+                        }
+                )
+            else emptyList(),
+    )
+    Feedback(state)
 
-    PeriodSelector(period) { periodName = it.name }
     val highest = summary.highestSend[state.gradeSystem]
     val otherSystem = GradeSystem.values().first { it != state.gradeSystem }
     val otherHighest = summary.highestSend[otherSystem]
-    KpiGrid(
-        listOf(
-            Kpi("Sessions", summary.sessions.toString(), period.label),
-            Kpi(
-                "Climbing time",
-                if (summary.sessions == 0) "None" else climbingTime(summary.climbingSeconds),
-                "Recorded session time",
-            ),
-            Kpi(
-                "Problems",
-                summary.problems.toString(),
-                "${plural(summary.attempts, "attempt")} in total",
-            ),
-            Kpi(
-                "Sends",
-                summary.sends.toString(),
-                "${summary.flashes} ${if (summary.flashes == 1) "flash" else "flashes"} included",
-            ),
-            Kpi(
-                "Highest send",
-                highest?.label ?: otherHighest?.label ?: "None yet",
-                when {
-                    highest != null -> state.gradeSystem.label
-                    otherHighest != null -> "${otherSystem.label} (as entered)"
-                    else -> "Sent problems with a grade"
-                },
-            ),
-            Kpi("Flashes", summary.flashes.toString(), "Sent on the first attempt"),
+    SectionLabel("Your climbing", Glyph.VOLUME, ChartHue.PLUM, period.label)
+    PeriodSelector(period) { periodName = it.name }
+    Panel {
+        KpiGrid(
+            listOf(
+                Kpi("Sessions", summary.sessions.toString(), period.label),
+                Kpi(
+                    "Climbing time",
+                    if (summary.sessions == 0) "None" else climbingTime(summary.climbingSeconds),
+                    "Recorded session time",
+                ),
+                Kpi(
+                    "Problems",
+                    summary.problems.toString(),
+                    "${plural(summary.attempts, "attempt")} in total",
+                ),
+                Kpi(
+                    "Sends",
+                    summary.sends.toString(),
+                    "${summary.flashes} ${if (summary.flashes == 1) "flash" else "flashes"} included",
+                ),
+                Kpi(
+                    "Highest send",
+                    highest?.label ?: otherHighest?.label ?: "None yet",
+                    when {
+                        highest != null -> state.gradeSystem.label
+                        otherHighest != null -> "${otherSystem.label} (as entered)"
+                        else -> "Sent problems with a grade"
+                    },
+                ),
+                Kpi("Flashes", summary.flashes.toString(), "Sent on the first attempt"),
+            )
         )
-    )
+    }
 
-    CoachCard {
-        Text("Grade distribution", style = MaterialTheme.typography.titleLarge)
-        Text(
-            "${state.gradeSystem.label} problems tried · ${period.label}",
-            style = MaterialTheme.typography.bodyMedium,
-        )
+    ExpressiveSection(
+        "Grade distribution",
+        Glyph.VOLUME,
+        ChartHue.PLUM,
+        caption = "${state.gradeSystem.label} problems tried · ${period.label}",
+    ) {
         if (summary.distribution.isEmpty())
             Text("No ${state.gradeSystem.label} problems in this period.")
         else GradeDistribution(summary.distribution)
@@ -178,34 +181,44 @@ fun SharedBoulderingHome(
             Text(
                 "Not converted or shown here: ${excluded.joinToString(" and ")}.",
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
     }
 
-    CoachCard {
-        Text("Hardest send by week", style = MaterialTheme.typography.titleLarge)
-        Text(
-            "${state.gradeSystem.label} · ${period.label} · this week in progress",
-            style = MaterialTheme.typography.bodyMedium,
-        )
+    ExpressiveSection(
+        "Hardest send by week",
+        Glyph.TREND,
+        ChartHue.PLUM,
+        caption = "${state.gradeSystem.label} · ${period.label} · this week in progress",
+    ) {
         if (summary.progression.none { it.highestSend != null })
             Text("Send a graded problem to see your progression.")
         else Progression(summary.progression, state.gradeSystem, friendlyDate)
     }
 
-    CoachCard {
-        SectionHeader("Recent sessions", if (state.sessions.isNotEmpty()) openHistory else null)
-        if (summary.recent.isEmpty()) Text("No bouldering sessions recorded yet.")
+    ExpressiveSection(
+        "Recent sessions",
+        Glyph.LIST,
+        ChartHue.PLUM,
+        trailing =
+            if (state.sessions.isNotEmpty()) {
+                { TextButton(onClick = openHistory) { Text("See all") } }
+            } else null,
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+    ) {
+        if (summary.recent.isEmpty())
+            Text("No bouldering sessions recorded yet.", Modifier.padding(vertical = 12.dp))
         for (session in summary.recent) SessionRow(session, state.gradeSystem, friendlyDate) {
             openDetail(session.id)
         }
     }
 
-    CoachCard {
-        Text("Grades", style = MaterialTheme.typography.titleMedium)
+    ExpressiveSection("Grades", Glyph.LIST, ChartHue.PLUM) {
         GradeSystemChooser(state.gradeSystem) { model.setGradeSystem(it) }
         Text(
             "Grades are always kept as you entered them. Conversions between V-scale and Fontainebleau are approximate.",
             style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Explainer(
             "How bouldering is counted",
@@ -254,8 +267,9 @@ private fun SessionRow(
 @Composable
 private fun GradeDistribution(rows: List<ClimbingAnalytics.GradeCount>) {
     val most = rows.maxOf { it.attempted }.coerceAtLeast(1)
-    val tried = MaterialTheme.colorScheme.secondaryContainer
-    val sent = MaterialTheme.colorScheme.primary
+    val tones = chartAccent(ChartHue.PLUM)
+    val tried = tones.soft.copy(alpha = 0.3f)
+    val sent = tones.strong
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         for (row in rows) Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -296,7 +310,7 @@ private fun Progression(
     val ranks = weeks.mapNotNull { it.highestSend?.rank }
     val top = (ranks.maxOrNull() ?: 0) + 1
     val bottom = ((ranks.minOrNull() ?: 0) - 1).coerceAtLeast(0)
-    val bar = MaterialTheme.colorScheme.primary
+    val bar = chartAccent(ChartHue.PLUM).strong
     val description =
         weeks
             .filter { it.highestSend != null }
@@ -341,10 +355,12 @@ fun SharedBoulderingSession(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     openReview: () -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     val target = state.target()
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     if (target == null) {
         CoachHeading("Bouldering session")
         Text("There is no session in progress.")
@@ -362,17 +378,20 @@ fun SharedBoulderingSession(
                 delay(1_000)
             }
         }
-        SemanticCard(Tile.Progress) {
-            Text("Climbing for", style = MaterialTheme.typography.titleMedium)
-            Text(
-                climbingTime(elapsed),
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.testTag("climbing-elapsed"),
-            )
-            Text(
-                "Started ${friendlyDate(org.racedaydreams.domain.time.CalendarDates.atOffset(target.startedAt, target.offset))}"
-            )
+        HeroSurface(Discipline.STRENGTH, Glyph.TREND, "Live session") {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("Climbing for", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    climbingTime(elapsed),
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.testTag("climbing-elapsed"),
+                )
+                Text(
+                    "Started ${friendlyDate(org.racedaydreams.domain.time.CalendarDates.atOffset(target.startedAt, target.offset))}",
+                    color = LocalContentColor.current.copy(alpha = 0.85f),
+                )
+            }
         }
     } else {
         Text(
@@ -384,11 +403,12 @@ fun SharedBoulderingSession(
 
     var editingProblem by remember { mutableStateOf<ClimbingProblem?>(null) }
     var adding by remember { mutableStateOf(false) }
-    CoachCard {
-        Text("Problems", style = MaterialTheme.typography.titleLarge)
+    ExpressiveSection("Problems", Glyph.LIST, ChartHue.PLUM) {
         Text(
             "${plural(target.problems.size, "problem")} · ${target.problems.count { it.sent() }} sent · " +
                 "${target.problems.count { it.outcome == ClimbOutcome.FLASH }} flashed",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.testTag("climbing-problem-summary"),
         )
         if (target.problems.isEmpty())
@@ -630,10 +650,12 @@ fun SharedBoulderingReview(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     onSaved: (String) -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     val target = state.target()
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     CoachHeading("Review session")
     if (target == null) {
         Text("There is no session to review.")
@@ -641,7 +663,7 @@ fun SharedBoulderingReview(
     }
     Feedback(state)
     val date = org.racedaydreams.domain.time.CalendarDates.atOffset(target.startedAt, target.offset)
-    CoachCard {
+    Panel {
         Text("Date", style = MaterialTheme.typography.labelLarge)
         Text(
             friendlyDate(date),
@@ -689,12 +711,13 @@ fun SharedBoulderingReview(
         )
     }
     CoachTextInput("Climbing gym or location (optional)", target.location, model::setLocation)
-    CoachCard {
-        Text("Problems", style = MaterialTheme.typography.titleMedium)
+    ExpressiveSection("Problems", Glyph.LIST, ChartHue.PLUM) {
         Text(
             "${plural(target.problems.size, "problem")} · ${target.problems.count { it.sent() }} sent · " +
                 "${target.problems.count { it.outcome == ClimbOutcome.FLASH }} flashed · " +
-                "${plural(target.problems.sumOf { it.attempts }, "attempt")}"
+                "${plural(target.problems.sumOf { it.attempts }, "attempt")}",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
         )
         for (problem in target.problems) Text(
             "${gradeText(problem.grade, state.gradeSystem)} — ${problemSummary(problem)}" +
@@ -728,10 +751,12 @@ fun SharedBoulderingDetail(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     openCorrection: () -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     LaunchedEffect(model) { if (state.loading) model.refresh() }
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     val session = state.sessions.firstOrNull { it.id == sessionId }
     if (session == null) {
         CoachHeading("Bouldering session")
@@ -741,18 +766,19 @@ fun SharedBoulderingDetail(
     CoachHeading(session.location.ifBlank { "Bouldering session" })
     Feedback(state)
     Text("${friendlyDate(session.date())} · ${climbingTime(session.durationSeconds)}")
-    KpiGrid(
-        listOf(
-            Kpi(
-                "Problems",
-                session.problems.size.toString(),
-                plural(session.attempts(), "attempt"),
-            ),
-            Kpi("Sends", session.sends().toString(), "${session.flashes()} flashed"),
+    Panel {
+        KpiGrid(
+            listOf(
+                Kpi(
+                    "Problems",
+                    session.problems.size.toString(),
+                    plural(session.attempts(), "attempt"),
+                ),
+                Kpi("Sends", session.sends().toString(), "${session.flashes()} flashed"),
+            )
         )
-    )
-    CoachCard {
-        Text("Problems", style = MaterialTheme.typography.titleLarge)
+    }
+    ExpressiveSection("Problems", Glyph.LIST, ChartHue.PLUM) {
         if (session.problems.isEmpty()) Text("No problems were recorded.")
         for (problem in session.problems) DashboardRow(
             title =
@@ -770,10 +796,7 @@ fun SharedBoulderingDetail(
             )
     }
     if (session.notes.isNotBlank())
-        CoachCard {
-            Text("Notes", style = MaterialTheme.typography.titleMedium)
-            Text(session.notes)
-        }
+        ExpressiveSection("Notes", Glyph.LIST, ChartHue.PLUM) { Text(session.notes) }
     OutlinedButton(
         onClick = {
             model.edit(session.id)
@@ -814,14 +837,17 @@ fun SharedBoulderingHistory(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     openDetail: (String) -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     CoachHeading("Bouldering history")
     if (state.sessions.isEmpty()) Text("No bouldering sessions recorded yet.")
-    CoachCard {
-        for (session in state.sessions) SessionRow(session, state.gradeSystem, friendlyDate) {
-            openDetail(session.id)
+    else
+        Panel(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)) {
+            for (session in state.sessions) SessionRow(session, state.gradeSystem, friendlyDate) {
+                openDetail(session.id)
+            }
         }
-    }
 }

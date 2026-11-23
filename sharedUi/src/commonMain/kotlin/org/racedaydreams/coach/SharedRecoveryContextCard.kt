@@ -1,15 +1,17 @@
 package org.racedaydreams.coach
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.health.RecoveryCoaching
 
 /** Existing preview/keep/accept interaction; never applies a replacement without athlete choice. */
 @Composable
 fun SharedRecoveryContextCard(r: RecoveryCoaching.Context, chooseEasy: ((String) -> Unit)?) {
     if (r.reviewSuggested())
-        SemanticCard(Tile.Insight) {
-            Text("Consider an easier option", style = MaterialTheme.typography.titleMedium)
+        ExpressiveSection("Consider an easier option", Glyph.BODY, ChartHue.TEAL) {
             Text(
                 "Several signals support reviewing today's demand. This is training context, not a diagnosis."
             )
@@ -17,7 +19,12 @@ fun SharedRecoveryContextCard(r: RecoveryCoaching.Context, chooseEasy: ((String)
             Text("Keep the plan, run by effort, move or rest. Your goal stays unchanged.")
             if (chooseEasy != null) {
                 var confirm by remember { mutableStateOf(false) }
-                TextButton(onClick = { confirm = true }) { Text("Preview easy alternative") }
+                OutlinedButton(
+                    onClick = { confirm = true },
+                    modifier = Modifier.heightIn(min = 48.dp),
+                ) {
+                    Text("Preview easy alternative")
+                }
                 if (confirm)
                     AlertDialog(
                         onDismissRequest = { confirm = false },

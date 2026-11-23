@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.achievements.TrainingMilestones
@@ -33,8 +36,8 @@ fun SharedAchievementsScreen(
 ) {
     CoachPage {
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
-        CoachHeading("Recorded milestones")
-        Text(
+        ScreenHeader(Discipline.RECOVERY, Glyph.SPARK, "Training history", "Recorded milestones")
+        QuietNote(
             "Recognise your training without streaks, penalties or pressure to train through a break."
         )
         if (loading) CircularProgressIndicator()
@@ -46,17 +49,61 @@ fun SharedAchievementsScreen(
             }
         }
         if (!loading && awards.isEmpty())
-            SemanticCard(Tile.Insight) {
-                Text("No eligible milestones recorded yet.")
+            Panel {
                 Text(
+                    "No eligible milestones recorded yet.",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                QuietNote(
                     "A completed workout with a working set, or a recorded run, is enough to begin. Historical training can qualify; no maximal test is needed."
                 )
             }
+        if (awards.isNotEmpty())
+            SectionLabel(
+                "Your milestones",
+                Glyph.SPARK,
+                ChartHue.TEAL,
+                if (awards.size == 1) "1 recognised" else "${awards.size} recognised",
+            )
         awards.forEach { stored ->
             val award = stored.award
             var proof by rememberSaveable(award.id()) { mutableStateOf(false) }
-            SemanticCard(Tile.Progress) {
-                Text("✓ ${award.kind().title()}", style = MaterialTheme.typography.titleLarge)
+            val (glyph, discipline) =
+                when (award.kind()) {
+                    TrainingMilestones.Kind.FIRST_GYM,
+                    TrainingMilestones.Kind.FIVE_GYM,
+                    TrainingMilestones.Kind.FIFTY_GYM -> Glyph.DUMBBELL to Discipline.STRENGTH
+                    TrainingMilestones.Kind.FIRST_RUN,
+                    TrainingMilestones.Kind.TEN_RUNS,
+                    TrainingMilestones.Kind.FIRST_FIVE_KM_RUN -> Glyph.RUN to Discipline.RUNNING
+                    TrainingMilestones.Kind.TWELVE_TRAINING_WEEKS ->
+                        Glyph.CALENDAR to Discipline.RECOVERY
+                }
+            Panel {
+                // The badge is decorative; the title and its "Recognised …" line are read together,
+                // so assistive technology still states that the milestone was recognised.
+                Row(
+                    Modifier.testTag("milestone-${award.kind().name}").semantics(
+                        mergeDescendants = true
+                    ) {},
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    DisciplineBadge(glyph, discipline)
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            requireNotNull(award.kind().title()),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "Recognised ${stored.recognizedDate}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = discipline.accent(),
+                        )
+                    }
+                }
                 Text(
                     when (award.kind()) {
                         TrainingMilestones.Kind.FIRST_GYM ->
@@ -73,11 +120,8 @@ fun SharedAchievementsScreen(
                             "One completed run has at least 5 km of recorded distance."
                         TrainingMilestones.Kind.TWELVE_TRAINING_WEEKS ->
                             "Training recorded in twelve different weeks. The weeks do not need to be consecutive."
-                    }
-                )
-                Text(
-                    "Recognised ${stored.recognizedDate}",
-                    style = MaterialTheme.typography.labelMedium,
+                    },
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 TextButton(
                     onClick = { proof = !proof },
@@ -94,7 +138,7 @@ fun SharedAchievementsScreen(
                         "Retained recognition from ${award.evidence().size} recorded sources. Later imports do not award it again or silently redate it."
                     )
                     award.evidence().forEach { evidence ->
-                        HorizontalDivider()
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         val known = (evidence.source() to evidence.recordId()) in availableSources
                         val date = sourceDateLabel(evidence)
                         Text("${evidence.source().name.lowercase()} · $date")
@@ -114,14 +158,13 @@ fun SharedAchievementsScreen(
                                 "Retained source reference; this source is not currently available on this device."
                             )
                     }
-                    Text(
-                        "Deleting source records may leave a retained recognition reference. This is evidence from recognition time, not a claim that deleted details can be restored.",
-                        style = MaterialTheme.typography.bodySmall,
+                    QuietNote(
+                        "Deleting source records may leave a retained recognition reference. This is evidence from recognition time, not a claim that deleted details can be restored."
                     )
                 }
             }
         }
-        SemanticCard(Tile.Neutral) {
+        ExpressiveSection("Celebrations", Glyph.SPARK, ChartHue.TEAL) {
             Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
                 Checkbox(
                     checked = celebrations,
@@ -137,9 +180,8 @@ fun SharedAchievementsScreen(
                     modifier = Modifier.weight(1f).padding(vertical = 12.dp),
                 )
             }
-            Text(
-                "Optional and off by default. No system notifications or missed-training reminders. Your records remain available either way.",
-                style = MaterialTheme.typography.bodySmall,
+            QuietNote(
+                "Optional and off by default. No system notifications or missed-training reminders. Your records remain available either way."
             )
             TextButton(onClick = { onRefresh(null) }, enabled = !loading) {
                 Text("Refresh recorded evidence")
