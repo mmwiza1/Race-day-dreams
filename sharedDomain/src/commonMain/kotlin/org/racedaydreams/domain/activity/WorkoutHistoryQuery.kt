@@ -82,11 +82,7 @@ object WorkoutHistoryQuery {
         val entries = mutableListOf<Entry>()
         if (kind != Kind.STRENGTH && query.isEmpty())
             for (run in runs) {
-                val date =
-                    CalendarDates.atOffset(
-                        run.start(),
-                        run.startOffset() ?: Offsets.ofTotalSeconds(0),
-                    )
+                val date = ActivityDates.localDate(run)
                 val category = types[run.plannedWorkoutId()]
                 if (inRange(date, from, through) && (type == null || category == type))
                     entries.add(

@@ -1,10 +1,6 @@
 package org.racedaydreams.coach
 
-import java.time.ZoneOffset
+import org.racedaydreams.domain.activity.ActivityDates
 
 fun displayActivityDate(activity: org.racedaydreams.domain.activity.ActivityRecord): String =
-    activity
-        .start()
-        .atOffset(activity.startOffset() ?: ZoneOffset.UTC)
-        .toLocalDate()
-        .let(::friendlyDate)
+    friendlyDate(ActivityDates.localDate(activity))

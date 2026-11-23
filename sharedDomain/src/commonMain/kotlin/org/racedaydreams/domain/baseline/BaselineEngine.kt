@@ -39,7 +39,7 @@ object BaselineEngine {
         var measuredDistances = 0
         val origin = combinedOrigin(runs)
         for (run in runs) {
-            val offset = run.startOffset() ?: Offsets.ofTotalSeconds(0)
+            val offset = org.racedaydreams.domain.activity.ActivityDates.offsetOf(run)
             val date = CalendarDates.atOffset(run.start(), offset)
             val monday = date.minusDays((date.getDayOfWeek().getValue() - 1).toLong())
             val week =

@@ -64,8 +64,7 @@ object RacePredictionEngine {
         var longest = 0.0
         val weeks = mutableSetOf<LocalDate>()
         for (a in runs) {
-            val date =
-                CalendarDates.atOffset(a.start(), a.startOffset() ?: Offsets.ofTotalSeconds(0))
+            val date = ActivityDates.localDate(a)
             if (
                 date.toEpochDay() > today.toEpochDay() ||
                     date.toEpochDay() < today.minusDays(27).toEpochDay() ||
