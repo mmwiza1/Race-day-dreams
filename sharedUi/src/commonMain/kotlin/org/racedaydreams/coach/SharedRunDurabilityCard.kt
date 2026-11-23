@@ -4,10 +4,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.font.FontWeight
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.presentation.DurabilityData
 
-/** Actual recorded-run detail card; platform adapters supply existing unit/number text. */
+/**
+ * Actual recorded-run detail section (pace hue, borderless panel); platform adapters supply
+ * existing unit/number text.
+ */
 @Composable
 fun SharedRunDurabilityCard(
     activity: ActivityRecord,
@@ -17,17 +21,24 @@ fun SharedRunDurabilityCard(
 ) {
     val durability = remember(activity) { DurabilityData.of(activity) }
     val evidence = checkNotNull(durability.evidence())
-    CoachCard {
-        Text("Long-run durability", style = MaterialTheme.typography.titleMedium)
-        durability.status()?.let { Text(it) }
+    ExpressiveSection("Long-run durability", Glyph.TREND, ChartHue.VIOLET) {
+        durability.status()?.let {
+            Text(it, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        }
         if (evidence.sufficient()) {
             val factor = if (imperial) 1.609344 else 1.0
             val unit = if (factor > 1) "mi" else "km"
             durability.firstHalfSecondsPerKm()?.let {
-                Text("First half: ${formatPace(it*factor)}/$unit")
+                Text(
+                    "First half: ${formatPace(it*factor)}/$unit",
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
             durability.secondHalfSecondsPerKm()?.let {
-                Text("Second half: ${formatPace(it*factor)}/$unit")
+                Text(
+                    "Second half: ${formatPace(it*factor)}/$unit",
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
             evidence.paceFadePercent()?.let { Text("Late-run pace change: ${formatDecimal(it)}%") }
             activity.rpe()?.let { Text("Session RPE: ${formatDecimal(it)}/10") }
