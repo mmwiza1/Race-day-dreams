@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -237,7 +238,7 @@ fun WeekStrip(days: List<WeekDay>, today: LocalDate, modifier: Modifier = Modifi
     val large = LocalDensity.current.fontScale >= 1.5f
     Surface(
         modifier = modifier.fillMaxWidth().testTag("week-strip"),
-        shape = MaterialTheme.shapes.large,
+        shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column {
@@ -305,13 +306,18 @@ private fun DayColumn(
 ) {
     Column(
         modifier
-            .clip(MaterialTheme.shapes.medium)
+            .padding(horizontal = 2.dp)
+            .clip(RoundedCornerShape(20.dp))
             .background(
-                if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+                when {
+                    isSelected -> MaterialTheme.colorScheme.secondaryContainer
+                    isToday -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
+                    else -> Color.Transparent
+                }
             )
             .clickable(onClick = toggle)
-            .heightIn(min = 80.dp)
-            .padding(vertical = 6.dp)
+            .heightIn(min = 84.dp)
+            .padding(vertical = 8.dp)
             .testTag("week-day-${day.date}")
             .then(daySemantics(day, isToday, isSelected, toggle)),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -549,7 +555,10 @@ fun ScheduleRow(
     }
 }
 
-/** A countdown to a dated goal: the number of days is the headline. */
+/**
+ * A countdown to a dated goal: the number of days is the headline, in a large accent disc beside a
+ * flag-marked label, on a borderless tonal panel.
+ */
 @Composable
 fun CountdownCard(
     days: Long,
@@ -565,23 +574,41 @@ fun CountdownCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Column(
-                Modifier.widthIn(min = 64.dp),
+                Modifier.widthIn(min = 76.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     "$days",
-                    style = MaterialTheme.typography.displaySmall,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
                 Text(
                     if (days == 1L) "day" else "days",
                     style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(label, style = MaterialTheme.typography.labelLarge)
-                Text(title, style = MaterialTheme.typography.titleLarge)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    GlyphIcon(Glyph.FLAG, MaterialTheme.colorScheme.primary, 16.dp)
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
                 Text(
                     supporting,
                     style = MaterialTheme.typography.bodyMedium,
@@ -589,33 +616,27 @@ fun CountdownCard(
                 )
             }
             if (onClick != null)
-                Text(
-                    "›",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.clearAndSetSemantics {},
-                )
+                Box(Modifier.clearAndSetSemantics {}) {
+                    GlyphIcon(Glyph.CHEVRON, MaterialTheme.colorScheme.onSurfaceVariant, 20.dp)
+                }
         }
     }
+    val shape = RoundedCornerShape(28.dp)
+    val colour = MaterialTheme.colorScheme.surfaceContainerLow
     if (onClick != null)
-        Card(
+        Surface(
             onClick = onClick,
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.large,
-            colors =
-                CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                ),
+            shape = shape,
+            color = colour,
+            modifier = Modifier.fillMaxWidth().testTag("race-countdown"),
         ) {
             content()
         }
     else
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.large,
-            colors =
-                CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                ),
+        Surface(
+            shape = shape,
+            color = colour,
+            modifier = Modifier.fillMaxWidth().testTag("race-countdown"),
         ) {
             content()
         }

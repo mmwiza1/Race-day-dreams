@@ -252,6 +252,73 @@ The information was strong; the composition was not.
 - **Calendar:** a compact hero with the month and the shared mark legend. The grid and lists go in borderless panels, with discipline glyph discs on rows. Pairs with C1.
 - **Shared rule:** one hero per tab, labels outside panels, no nested borders, hues by measure or discipline only.
 
+## 3g. App-wide visual modernisation (owner-approved 23 November 2026)
+
+The owner approved the V3 direction as the foundation for the whole app, applied according to
+each screen's purpose rather than copied. Analytics, calculations, coaching logic, persistence,
+health integrations, GPS, signing and release are out of scope throughout.
+
+**Assessment of the current screens (from the canonical API 35 captures):**
+
+| Screen | What makes it feel dated or inconsistent | User impact | Workstream |
+| --- | --- | --- | --- |
+| Home (running, hybrid, strength focus) | A plain "Today" heading. The week strip sits above today's workout, so the day's main action is below the fold. Hybrid strength is a separate tinted card. Quick starts are two identical pills. Navigation lists are outlined boxes. | Highest: every launch | W1 (this PR) |
+| Plan | A list of equal tinted cards with no sense of the block, the phase or progress through the programme. Workout types differ only by text. | High | W2 |
+| Calendar | A dense letter-in-circle grid with no strong today or selection state. List/Week/Month chips sit above a plain title. Week rows use small coloured text links. | High | W2 |
+| Progress → Running, Overview | V1 charts are good, but the surrounding segmented controls, outlined "Distance/Time/Pace" buttons and the plain Overview split summary predate the expressive language. | Medium | W3 |
+| Run detail, summary, splits | Large tinted blocks with small labels, so the figures do not lead. Every section has the same weight. | Medium | W4 |
+| Live run | Functional and already refined. The tinted figures are inconsistent with the new heroes. | Medium (safety-critical, so change carefully) | W4 |
+| Gym Now, programmes, workout builder | Outlined option buttons and a pink hero that differs from the Strength tab hero | Medium | W4 |
+| Exercise library, how-to | Recently refined. Needs only section labels and spacing alignment. | Low | W5 |
+| Onboarding | Radio-button lists in outlined boxes. This is also where the outstanding Galaxy S24 goal-selection retest belongs. | Medium (first impression) | W5 |
+| Settings, storage, backup | Collapsible outlined groups; clear but plain | Low | W5 |
+| Race day, recovery, milestones | Tinted cards similar to Plan's | Low–medium | W4 |
+| Bouldering, dream routes | Bouldering mirrors the old Strength layout. Dream routes are already distinctive and should be preserved. | Low | W5 |
+| Empty, loading and error states | Plain sentences with no glyph or action hierarchy | Low, but frequent for new users | Folded into each workstream |
+
+**Shared building blocks (in `ExpressiveLayout.kt`):**
+- `HeroSurface`, `HeroTitle`, `HeroPrimaryAction` and `HeroSecondaryActions`: for screens whose purpose is an action (Home, Strength).
+- `ScreenHeader`: a compact tonal header for screens whose purpose is content (Progress, and later Calendar).
+- `SectionLabel`, `Panel` and `ExpressiveSection`: labelled, borderless sections.
+- `CompanionSession`: a second discipline's session nested in a day's hero.
+- `QuickStartTiles`: discipline-coloured start tiles with a glyph.
+- `Eyebrow`: letter-spaced capitals that screen readers and tests read as natural-case words.
+- `Glyph`: path-drawn, decorative, no dependency. Now includes run, calendar, flag and spark.
+
+Existing pieces restyled rather than replaced:
+- `ActionGroup` is now a borderless panel with an optional glyph label.
+- `CountdownCard` has an accent day disc and a flag.
+- `WeekStrip` has 28 dp corners and today as a tinted capsule.
+
+**Rules that keep the app unified but not monotonous:**
+- **Heroes by purpose:** a full hero only where the screen's purpose is an action (Home, Strength). Content screens (Progress, Calendar) get a compact header; Plan gets a block-progress header.
+- **Colour:** discipline colour for what kind of training (running primary, strength tertiary, recovery secondary). Chart hues for what is measured. No decorative colour.
+- **One primary action per screen region.** Everything else is a secondary row, a tile or a text button.
+- **Section labels outside panels, panels without borders.** Nested containers only for a second session inside a day (`CompanionSession`).
+- **Glyphs are decorative and hidden from screen readers.** Meaning is always in text.
+
+### W1 — Home (draft PR stacked on V3)
+
+The direction Home now takes:
+- **Header:** the date as a coloured eyebrow, then "Today" as a bold display title. Exactly one "Today" text, so navigation tests and screen readers find one title.
+- **Today first:** today's training is the first content. It is a `HeroSurface` in the running colour, with the workout as a display title and the existing distance, effort and pace figures. "Start with Live Coach" is the single accent action, and "View workout details" a quiet row.
+- **Hybrid days:**
+  - Today's strength session is a `CompanionSession` inside the same hero, with a dumbbell glyph in the strength colour, so running and strength read as one day's training rather than two competing cards.
+  - On a day with no run, a scheduled strength session appears inside the "Your day, your choice" hero.
+- **The days ahead:**
+  - "Your next 7 days" is labelled with a calendar glyph and its existing planned summary, and the strip follows the hero.
+  - "Coming up" is a borderless panel of the existing date-badge rows.
+- **Milestone:** the race countdown moved up, directly after the days ahead, as a borderless panel with the day count in an accent disc.
+- **Unplanned starts:** "Run now" and "Gym now" are colour-coded tiles with glyphs (running blue, strength plum), 64 dp tall, stacked at 200% text.
+- **Secondary navigation:** "Your training" and "Log and adjust" are glyph-labelled, borderless groups.
+- **Strength-focus Home:** the same composition. A strength hero with "Start planned workout" as the accent action and logging and details as quiet rows, then the next 7 days, unplanned-training tiles, "Your week so far" and More.
+
+**Functional changes:** none. Every existing action, route and text remains. The changes are order (today before the strip, the countdown earlier) and presentation.
+
+**Compromises:**
+- "Coming up" still lists only the running plan's next sessions. Upcoming strength sessions remain visible in the strip, but mixing two schedules into one list would need new merging logic, which is out of scope.
+- `ActionGroup`'s borderless restyle also reaches its single use in Settings, which is consistent with W5.
+
 ## 4. Representative journeys (synthetic data; checked against Phase B)
 
 | Person | Onboarding → training → history → progress | Phase B effect | Still to address (later phases) |

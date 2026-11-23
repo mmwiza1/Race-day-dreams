@@ -3,6 +3,7 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,38 +17,35 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
- * Low-emphasis navigation: one outlined card holding plain rows instead of a stack of buttons, so
- * secondary destinations stay one tap away without competing with the screen's primary action.
+ * Low-emphasis navigation: plain rows on one borderless tonal panel instead of a stack of buttons,
+ * so secondary destinations stay one tap away without competing with the screen's primary action.
+ * With a glyph, the title becomes an expressive section label in that hue.
  */
 @Composable
 fun ActionGroup(
     title: String?,
     emphasised: Boolean = false,
+    glyph: Glyph? = null,
+    hue: ChartHue = ChartHue.BLUE,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
-        if (title != null)
+        if (title != null && glyph != null) SectionLabel(title, glyph, hue)
+        else if (title != null)
             Text(
                 title,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.semantics { heading() },
             )
-        // Emphasised groups (Coming up) sit on a filled container; the rest stay outlined.
-        if (emphasised)
-            Card(
-                Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                colors =
-                    CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                    ),
-            ) {
-                Column(Modifier.padding(vertical = 4.dp), content = content)
-            }
-        else
-            OutlinedCard(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(vertical = 4.dp), content = content)
-            }
+        Surface(
+            shape = RoundedCornerShape(28.dp),
+            color =
+                if (emphasised) MaterialTheme.colorScheme.surfaceContainerHigh
+                else MaterialTheme.colorScheme.surfaceContainerLow,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(Modifier.padding(vertical = 8.dp), content = content)
+        }
     }
 }
 

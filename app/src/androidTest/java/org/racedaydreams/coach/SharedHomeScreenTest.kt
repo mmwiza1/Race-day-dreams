@@ -289,6 +289,8 @@ class SharedHomeScreenTest {
             .assertExists()
         // Nothing is open until a day is chosen, so the strip does not repeat today's hero.
         compose.onNodeWithTag("week-day-detail").assertDoesNotExist()
+        // The strip follows today's hero, so bring it into view first.
+        compose.onNodeWithTag("week-strip").performScrollTo()
         compose.onNodeWithTag("week-day-${day.plusDays(2)}").performClick()
         compose.onNodeWithTag("week-day-${day.plusDays(2)}").assertIsSelected()
         compose.onNodeWithTag("week-day-detail").assertExists()
@@ -303,6 +305,21 @@ class SharedHomeScreenTest {
         for (offset in 0L..6L) compose
             .onNodeWithTag("week-day-${day.plusDays(offset)}")
             .assertHeightIsAtLeast(48.dp)
+    }
+
+    @Test
+    fun todayLeadsHomeAndUnplannedStartsAreRecognisableTiles() {
+        show(state())
+        // Today's training comes first, then the days ahead.
+        val hero = compose.onNodeWithTag("today-hero").fetchSemanticsNode().positionInRoot.y
+        val strip = compose.onNodeWithTag("week-strip").fetchSemanticsNode().positionInRoot.y
+        assertTrue("Today's hero is above the next 7 days", hero < strip)
+        // "Today's run" is read as words, not spelt out as capitals.
+        compose.onNodeWithText("Today's run").assertExists()
+        compose.onNodeWithText("Start with Live Coach").assertHeightIsAtLeast(48.dp)
+        compose.onNode(hasText("Gym now") and hasClickAction()).performScrollTo().performClick()
+        compose.runOnIdle { assertEquals("gym-now", actions.last()) }
+        compose.onNode(hasText("Run now") and hasClickAction()).assertHeightIsAtLeast(48.dp)
     }
 
     @Test
