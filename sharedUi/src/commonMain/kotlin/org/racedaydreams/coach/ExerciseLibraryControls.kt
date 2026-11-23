@@ -1,20 +1,67 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+
+/**
+ * A horizontally scrolling chip row whose clipped edges fade while more chips lie beyond them, so a
+ * row that happens to end exactly at the edge still shows it continues. The fade is drawn with
+ * DstOut over the row itself (theme-independent) and is purely visual.
+ */
+@Composable
+internal fun LibraryChipScrollRow(content: @Composable RowScope.() -> Unit) {
+    val scroll = rememberScrollState()
+    Row(
+        Modifier.fillMaxWidth()
+            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+            .drawWithContent {
+                drawContent()
+                val fade = 32.dp.toPx()
+                if (scroll.canScrollForward)
+                    drawRect(
+                        Brush.horizontalGradient(
+                            listOf(Color.Transparent, Color.Black),
+                            startX = size.width - fade,
+                            endX = size.width,
+                        ),
+                        blendMode = BlendMode.DstOut,
+                    )
+                if (scroll.canScrollBackward)
+                    drawRect(
+                        Brush.horizontalGradient(
+                            listOf(Color.Black, Color.Transparent),
+                            startX = 0f,
+                            endX = fade,
+                        ),
+                        blendMode = BlendMode.DstOut,
+                    )
+            }
+            .horizontalScroll(scroll),
+        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        content = content,
+    )
+}
 
 @Composable
 fun LibrarySearchIcon() {

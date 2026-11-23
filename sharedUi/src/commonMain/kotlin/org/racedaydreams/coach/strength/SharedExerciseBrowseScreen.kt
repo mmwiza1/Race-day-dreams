@@ -2,7 +2,6 @@
 
 package org.racedaydreams.coach.strength
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -50,6 +49,7 @@ import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.CoachUiState
 import org.racedaydreams.coach.Discipline
 import org.racedaydreams.coach.Glyph
+import org.racedaydreams.coach.LibraryChipScrollRow
 import org.racedaydreams.coach.LibraryOpenIcon
 import org.racedaydreams.coach.Panel
 import org.racedaydreams.coach.ScreenHeader
@@ -280,10 +280,7 @@ fun SharedExerciseBrowseScreen(
             )
         }
         item(key = "quick-categories") {
-            Row(
-                Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            ) {
+            LibraryChipScrollRow {
                 listOf("All", "Chest", "Back", "Legs", "Arms", "Shoulders", "Core").forEach { value
                     ->
                     CoachFilterChip(
@@ -366,10 +363,7 @@ fun SharedExerciseBrowseScreen(
             }
         if (query.isBlank() || refineSearch) {
             item(key = "shortcuts") {
-                Row(
-                    Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                ) {
+                LibraryChipScrollRow {
                     if (query.isBlank())
                         CoachFilterChip(
                             selected = refineSearch || metadataFilter,
