@@ -11,10 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -69,6 +69,17 @@ public final class OnboardingView extends ScrollView {
     private boolean strategyOpen;
 
     private boolean weekOptionsOpen;
+
+    /*
+     * Goal-step views updated in place when a choice changes, so a tap never rebuilds the form,
+     * moves focus or jumps the scroll position (audit C-01).
+     */
+    private TextView goalFitnessNote;
+    private ChoiceCard goalEvent;
+    private TextView goalEventHint;
+    private LinearLayout goalEventFields;
+    private TextView goalMismatch;
+    private Button goalDate;
 
     /** Receives the existing Compose theme without rebuilding the retained form or its draft. */
     public void applyPalette(
@@ -143,6 +154,8 @@ public final class OnboardingView extends ScrollView {
             button.setPadding(dp(24), dp(12), dp(24), dp(12));
             button.setTextColor(
                     stateColours(primary ? palette[3] : palette[2], disabledColour(0.38f)));
+        } else if (view instanceof ChoiceCard card) {
+            styleChoice(card);
         } else if (view instanceof TextView label) {
             label.setTextColor(stateColours(palette[1], disabledColour(0.38f)));
             if (view instanceof EditText)
@@ -327,56 +340,72 @@ public final class OnboardingView extends ScrollView {
                         draft.strategy = TrainingStrategy.ZONE_2;
                     }
                     changed();
-                    render();
+                    updateGoalStep();
                 },
                 value -> true);
-        if (draft.distance == RaceDistance.GENERAL_FITNESS)
-            note(
-                    "General Fitness / Zone 2 focuses on easy, conversational running. A personal"
-                            + " heart-rate zone is only meaningful when suitable boundaries are"
-                            + " available.");
-        CheckBox event = new CheckBox(getContext());
+        goalFitnessNote =
+                note(
+                        "General Fitness / Zone 2 focuses on easy, conversational running. A"
+                                + " personal heart-rate zone is only meaningful when suitable"
+                                + " boundaries are available.");
+        ChoiceCard event = new ChoiceCard(getContext(), true);
         event.setId(View.generateViewId());
         event.setText(R.string.onboarding_event);
-        event.setTextSize(16);
-        event.setMinHeight(dp(48));
-        event.setChecked(draft.event);
-        event.setEnabled(draft.distance != RaceDistance.GENERAL_FITNESS);
-        content.addView(event, blockParams());
-        event.setOnCheckedChangeListener(
-                (button, selected) -> {
-                    draft.event = selected;
+        styleChoice(event);
+        content.addView(event, choiceParams());
+        goalEvent = event;
+        event.setOnClickListener(
+                view -> {
+                    if (saving || !event.isEnabled()) return;
+                    draft.event = !draft.event;
                     changed();
-                    render();
+                    updateGoalStep();
                 });
-        note(
-                draft.distance == RaceDistance.GENERAL_FITNESS
-                        ? R.string.onboarding_general_event_hint
-                        : R.string.onboarding_event_hint);
-        if (draft.event) {
-            EditText raceName =
-                    input(
-                            R.string.onboarding_race_name,
-                            draft.raceName,
-                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-            TextView mismatch = text("", 16, false);
-            mismatch.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-            showDistanceConflict(mismatch);
-            watch(
-                    raceName,
-                    value -> {
-                        draft.raceName = value;
-                        showDistanceConflict(mismatch);
-                    });
-            TextView label = section(R.string.onboarding_race_date);
-            Button date = button(R.string.onboarding_choose_date);
-            date.setId(View.generateViewId());
-            label.setLabelFor(date.getId());
-            if (draft.raceDate != null) date.setText(formatDate(draft.raceDate));
-            content.addView(date, blockParams());
-            date.setOnClickListener(view -> chooseDate());
-        }
+        goalEventHint = note(R.string.onboarding_event_hint);
+        LinearLayout fields = new LinearLayout(getContext());
+        fields.setOrientation(LinearLayout.VERTICAL);
+        content.addView(fields, blockParams());
+        goalEventFields = fields;
+        buildInto(
+                fields,
+                () -> {
+                    EditText raceName =
+                            input(
+                                    R.string.onboarding_race_name,
+                                    draft.raceName,
+                                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+                    TextView mismatch = text("", 16, false);
+                    mismatch.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+                    goalMismatch = mismatch;
+                    watch(
+                            raceName,
+                            value -> {
+                                draft.raceName = value;
+                                showDistanceConflict(mismatch);
+                            });
+                    TextView label = section(R.string.onboarding_race_date);
+                    Button date = button(R.string.onboarding_choose_date);
+                    date.setId(View.generateViewId());
+                    label.setLabelFor(date.getId());
+                    if (draft.raceDate != null) date.setText(formatDate(draft.raceDate));
+                    content.addView(date, blockParams());
+                    date.setOnClickListener(view -> chooseDate());
+                    goalDate = date;
+                });
         note(R.string.onboarding_safety);
+        updateGoalStep();
+    }
+
+    /** Reflects the current goal choices in the existing views, without a rebuild (C-01). */
+    private void updateGoalStep() {
+        boolean fitness = draft.distance == RaceDistance.GENERAL_FITNESS;
+        goalFitnessNote.setVisibility(fitness ? VISIBLE : GONE);
+        goalEvent.setChecked(draft.event);
+        goalEvent.setEnabled(!fitness && !saving);
+        goalEventHint.setText(
+                fitness ? R.string.onboarding_general_event_hint : R.string.onboarding_event_hint);
+        goalEventFields.setVisibility(draft.event ? VISIBLE : GONE);
+        showDistanceConflict(goalMismatch);
     }
 
     private void chooseDate() {
@@ -387,7 +416,8 @@ public final class OnboardingView extends ScrollView {
                         (view, year, month, day) -> {
                             draft.raceDate = LocalDate.of(year, month + 1, day);
                             changed();
-                            render();
+                            // In place: the date button keeps its position and focus (C-01).
+                            if (goalDate != null) goalDate.setText(formatDate(draft.raceDate));
                         },
                         selected.getYear(),
                         selected.getMonthValue() - 1,
@@ -748,13 +778,7 @@ public final class OnboardingView extends ScrollView {
         LinearLayout group = new LinearLayout(getContext());
         group.setOrientation(LinearLayout.VERTICAL);
         content.addView(group, blockParams());
-        LinearLayout outer = content;
-        content = group;
-        try {
-            build.run();
-        } finally {
-            content = outer;
-        }
+        buildInto(group, build);
         group.setVisibility(open ? VISIBLE : GONE);
         toggle.setOnClickListener(
                 v -> {
@@ -763,6 +787,17 @@ public final class OnboardingView extends ScrollView {
                     toggle.setText(show ? openLabel : closedLabel);
                     remember.accept(show);
                 });
+    }
+
+    /** Adds the views that build creates to group instead of the step's own column. */
+    private void buildInto(LinearLayout group, Runnable build) {
+        LinearLayout outer = content;
+        content = group;
+        try {
+            build.run();
+        } finally {
+            content = outer;
+        }
     }
 
     private Button linkButton(String label) {
@@ -841,36 +876,168 @@ public final class OnboardingView extends ScrollView {
                 });
     }
 
+    /**
+     * One choice from a list, as full-width selectable cards (audit C-01, C-02). A tap updates only
+     * the cards of this group: the form is not rebuilt and the scroll position stays where it is.
+     */
     private <E extends Enum<E>> void radioOptions(
             E[] values,
             E selected,
             Function<E, String> label,
             Consumer<E> selection,
             Predicate<E> enabled) {
-        RadioGroup group = new RadioGroup(getContext());
-        group.setOrientation(RadioGroup.VERTICAL);
+        LinearLayout group = new LinearLayout(getContext());
+        group.setOrientation(LinearLayout.VERTICAL);
         content.addView(group, blockParams());
+        List<ChoiceCard> cards = new ArrayList<>();
         for (E value : values) {
-            RadioButton option = new RadioButton(getContext());
+            ChoiceCard option = new ChoiceCard(getContext(), false);
             option.setId(View.generateViewId());
             option.setText(label.apply(value));
-            option.setTextSize(16);
-            option.setMinHeight(dp(56));
-            option.setPadding(dp(12), dp(8), dp(12), dp(8));
-            android.graphics.drawable.GradientDrawable card =
-                    new android.graphics.drawable.GradientDrawable();
-            card.setCornerRadius(dp(12));
-            card.setStroke(dp(1), 0xFF888888);
-            option.setBackground(card);
             option.setEnabled(enabled.test(value));
-            LinearLayout.LayoutParams optionParams = blockParams();
-            optionParams.bottomMargin = dp(8);
-            group.addView(option, optionParams);
             option.setChecked(value == selected);
-            option.setOnCheckedChangeListener(
-                    (view, checked) -> {
-                        if (checked && !rendering) selection.accept(value);
+            styleChoice(option);
+            group.addView(option, choiceParams());
+            cards.add(option);
+            option.setOnClickListener(
+                    view -> {
+                        if (saving || !option.isEnabled() || option.isChecked()) return;
+                        for (ChoiceCard card : cards) card.setChecked(card == option);
+                        selection.accept(value);
                     });
+        }
+    }
+
+    private LinearLayout.LayoutParams choiceParams() {
+        LinearLayout.LayoutParams params = blockParams();
+        params.bottomMargin = dp(8);
+        return params;
+    }
+
+    /**
+     * Draws a card's selected state as a gold border and tinted container with a check mark. The
+     * card also reports checked and selected to accessibility services, so the meaning is never
+     * carried by colour alone; the ripple gives touch feedback.
+     */
+    private void styleChoice(ChoiceCard card) {
+        int[] colours = colours();
+        int gold = getContext().getColor(R.color.selection_gold);
+        int goldContainer = getContext().getColor(R.color.selection_gold_container);
+        int onGold = getContext().getColor(R.color.on_selection_gold);
+        android.graphics.drawable.GradientDrawable selectedTile =
+                new android.graphics.drawable.GradientDrawable();
+        selectedTile.setCornerRadius(dp(16));
+        selectedTile.setColor(goldContainer);
+        selectedTile.setStroke(dp(2), gold);
+        android.graphics.drawable.GradientDrawable tile =
+                new android.graphics.drawable.GradientDrawable();
+        tile.setCornerRadius(dp(16));
+        tile.setColor(colours[4]);
+        tile.setStroke(dp(1), colours[5]);
+        android.graphics.drawable.StateListDrawable container =
+                new android.graphics.drawable.StateListDrawable();
+        container.addState(new int[] {android.R.attr.state_checked}, selectedTile);
+        container.addState(new int[0], tile);
+        int ripple = colours[2] & 0x00FFFFFF | 0x33000000;
+        card.setBackground(
+                new android.graphics.drawable.RippleDrawable(
+                        android.content.res.ColorStateList.valueOf(ripple), container, null));
+        int disabled = (colours[1] & 0x00FFFFFF) | (Math.round(255 * 0.38f) << 24);
+        card.setTextColor(stateColours(colours[1], disabled));
+        android.graphics.drawable.GradientDrawable mark = indicatorShape(card.multiple);
+        mark.setColor(gold);
+        android.graphics.drawable.Drawable tick =
+                Objects.requireNonNull(getContext().getDrawable(R.drawable.onboarding_choice_check))
+                        .mutate();
+        tick.setTint(onGold);
+        android.graphics.drawable.LayerDrawable checkedMark =
+                new android.graphics.drawable.LayerDrawable(
+                        new android.graphics.drawable.Drawable[] {mark, tick});
+        checkedMark.setLayerInset(1, dp(3), dp(3), dp(3), dp(3));
+        android.graphics.drawable.GradientDrawable off = indicatorShape(card.multiple);
+        off.setColor(0);
+        off.setStroke(dp(2), colours[1] & 0x00FFFFFF | 0x99000000);
+        android.graphics.drawable.GradientDrawable offDisabled = indicatorShape(card.multiple);
+        offDisabled.setColor(0);
+        offDisabled.setStroke(dp(2), disabled);
+        android.graphics.drawable.StateListDrawable indicator =
+                new android.graphics.drawable.StateListDrawable();
+        indicator.addState(new int[] {android.R.attr.state_checked}, checkedMark);
+        indicator.addState(new int[] {-android.R.attr.state_enabled}, offDisabled);
+        indicator.addState(new int[0], off);
+        card.setCheckMarkDrawable(indicator);
+    }
+
+    private android.graphics.drawable.GradientDrawable indicatorShape(boolean multiple) {
+        android.graphics.drawable.GradientDrawable shape =
+                new android.graphics.drawable.GradientDrawable();
+        shape.setShape(
+                multiple
+                        ? android.graphics.drawable.GradientDrawable.RECTANGLE
+                        : android.graphics.drawable.GradientDrawable.OVAL);
+        if (multiple) shape.setCornerRadius(dp(6));
+        shape.setSize(dp(24), dp(24));
+        return shape;
+    }
+
+    /** The palette from the Compose theme, or the app's own colours before it arrives. */
+    private int[] colours() {
+        if (palette != null) return palette;
+        Context context = getContext();
+        return new int[] {
+            context.getColor(R.color.surface),
+            context.getColor(R.color.text_primary),
+            context.getColor(R.color.accent),
+            0xFFFFFFFF,
+            context.getColor(R.color.card),
+            context.getColor(R.color.text_secondary),
+            0xFFBA1A1A
+        };
+    }
+
+    /**
+     * A full-width selectable card: at least 56 dp tall, wrapping its label at large text, with a
+     * check indicator. It is announced as a radio button, or as a checkbox for an on/off choice.
+     */
+    static final class ChoiceCard extends CheckedTextView {
+        final boolean multiple;
+
+        ChoiceCard(Context context, boolean multiple) {
+            super(context);
+            this.multiple = multiple;
+            float density = getResources().getDisplayMetrics().density;
+            setTag("onboarding-choice");
+            setTextSize(16);
+            setMinHeight(Math.round(56 * density));
+            setGravity(android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL);
+            setPadding(
+                    Math.round(16 * density),
+                    Math.round(12 * density),
+                    Math.round(16 * density),
+                    Math.round(12 * density));
+            setClickable(true);
+            setFocusable(true);
+        }
+
+        @Override
+        public void setChecked(boolean checked) {
+            super.setChecked(checked);
+            // Selected as well as checked, so the state reaches every accessibility service.
+            setSelected(checked);
+        }
+
+        @Override
+        public CharSequence getAccessibilityClassName() {
+            return (multiple ? CheckBox.class : RadioButton.class).getName();
+        }
+
+        @Override
+        public void onInitializeAccessibilityNodeInfo(
+                android.view.accessibility.AccessibilityNodeInfo info) {
+            super.onInitializeAccessibilityNodeInfo(info);
+            info.setCheckable(true);
+            info.setChecked(isChecked());
+            info.setSelected(isChecked());
         }
     }
 
