@@ -402,7 +402,7 @@ private fun MonthGrid(
                         verticalArrangement = Arrangement.spacedBy(3.dp),
                     ) {
                         Box(
-                            Modifier.size(28.dp)
+                            Modifier.defaultMinSize(minWidth = 28.dp, minHeight = 28.dp)
                                 .clip(CircleShape)
                                 .background(
                                     if (isToday) MaterialTheme.colorScheme.primary
@@ -425,6 +425,9 @@ private fun MonthGrid(
                                         else -> MaterialTheme.colorScheme.onSurface
                                     },
                                 maxLines = 1,
+                                softWrap = false,
+                                // The disc grows with the number at large text.
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                             )
                         }
                         FlowRow(
@@ -433,7 +436,13 @@ private fun MonthGrid(
                                 Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
                             verticalArrangement = Arrangement.spacedBy(2.dp),
                         ) {
-                            sessions.take(3).forEach { SessionMarkShape(it, 14.dp, null) }
+                            sessions.take(3).forEach {
+                                SessionMarkShape(
+                                    it,
+                                    18.dp,
+                                    markerLetter(requireNotNull(it.category())),
+                                )
+                            }
                             if (sessions.size > 3)
                                 Text(
                                     "+${sessions.size - 3}",

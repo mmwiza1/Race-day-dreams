@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -260,21 +261,16 @@ internal fun SessionMarkShape(entry: CalendarData.Entry, size: Dp, letter: Strin
     val state = entry.state()
     val missed = state == CalendarData.State.NOT_COMPLETED || state == CalendarData.State.SKIPPED
     val filled = state == CalendarData.State.COMPLETED && discipline != null
+    // The letter is sized from the mark, not the text scale, so it always fits inside it; the
+    // day's spoken description carries the same meaning at any text size.
+    val letterSize = with(LocalDensity.current) { (size * 0.52f).toSp() }
     Box(Modifier.size(size), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val stroke = 1.75.dp.toPx()
             val r = (this.size.minDimension - stroke) / 2
             when {
                 filled -> drawCircle(accent)
-                missed -> {
-                    drawCircle(muted, r, style = Stroke(stroke))
-                    drawLine(
-                        muted,
-                        Offset(this.size.width * 0.18f, this.size.height * 0.82f),
-                        Offset(this.size.width * 0.82f, this.size.height * 0.18f),
-                        stroke,
-                    )
-                }
+                missed -> drawCircle(muted, r, style = Stroke(stroke))
                 state == CalendarData.State.MOVED ->
                     drawCircle(
                         accent,
@@ -291,17 +287,31 @@ internal fun SessionMarkShape(entry: CalendarData.Entry, size: Dp, letter: Strin
                 else -> drawCircle(accent, r, style = Stroke(stroke * 1.15f))
             }
         }
-        if (letter != null && !missed)
+        if (letter != null)
             Text(
                 letter,
-                style = MaterialTheme.typography.labelSmall,
+                fontSize = letterSize,
+                lineHeight = letterSize,
                 fontWeight = FontWeight.Bold,
                 color =
-                    if (filled) discipline!!.onAccent()
-                    else if (discipline == null) muted else accent,
+                    when {
+                        filled -> discipline!!.onAccent()
+                        missed || discipline == null -> MaterialTheme.colorScheme.onSurfaceVariant
+                        else -> accent
+                    },
                 maxLines = 1,
+                softWrap = false,
                 modifier = Modifier.clearAndSetSemantics {},
             )
+        if (missed)
+            Canvas(Modifier.fillMaxSize()) {
+                drawLine(
+                    muted,
+                    Offset(this.size.width * 0.18f, this.size.height * 0.82f),
+                    Offset(this.size.width * 0.82f, this.size.height * 0.18f),
+                    1.75.dp.toPx(),
+                )
+            }
     }
 }
 
@@ -338,6 +348,11 @@ internal fun CalendarMarkKey() {
                     Box(Modifier.size(10.dp).clip(CircleShape).background(discipline.accent()))
                 }
             }
+        Text(
+            "E easy · Q quality · L long · R race · S strength · U unclassified run · – rest",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

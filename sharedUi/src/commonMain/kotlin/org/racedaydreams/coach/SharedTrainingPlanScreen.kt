@@ -418,7 +418,7 @@ private fun DateColumn(day: LocalDate, isToday: Boolean, inline: Boolean) {
             if (isToday) ", today" else ""
     val number: @Composable () -> Unit = {
         Box(
-            Modifier.size(36.dp)
+            Modifier.defaultMinSize(minWidth = 36.dp, minHeight = 36.dp)
                 .clip(CircleShape)
                 .background(if (isToday) accent else Color.Transparent),
             contentAlignment = Alignment.Center,
@@ -431,6 +431,9 @@ private fun DateColumn(day: LocalDate, isToday: Boolean, inline: Boolean) {
                     if (isToday) Discipline.RUNNING.onAccent()
                     else MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
+                softWrap = false,
+                // The disc grows with the number at large text instead of clipping it.
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
             )
         }
     }
