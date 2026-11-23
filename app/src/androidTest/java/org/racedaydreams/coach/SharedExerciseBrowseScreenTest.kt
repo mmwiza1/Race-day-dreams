@@ -70,6 +70,39 @@ class SharedExerciseBrowseScreenTest {
     }
 
     @Test
+    fun compactStrengthHeaderCarriesTheSingleLibraryHeadingAndAddAction() {
+        compose.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
+                MaterialTheme {
+                    SharedExerciseBrowseScreen(
+                        state = CoachUiState(loading = false),
+                        onCreateCustom = {},
+                        open = {},
+                        thumbnail = { ExerciseLibraryThumbnail(it) },
+                        nextExerciseId = { "unused" },
+                    )
+                }
+            }
+        }
+        compose.onNodeWithTag("screen-header").assertIsDisplayed()
+        compose
+            .onAllNodes(hasText("Exercise Library") and isHeading())
+            .assertCountEquals(1)
+            .onFirst()
+            .assertIsDisplayed()
+        // Decorative glyph and eyebrow never replace the spoken add label.
+        compose
+            .onNode(hasAnyAncestor(hasTestTag("screen-header")) and hasClickAction())
+            .assertContentDescriptionEquals("Add custom exercise")
+            .assertHeightIsAtLeast(CoachSpace.Touch)
+        compose
+            .onNodeWithTag("exercise-browser-list")
+            .performScrollToNode(hasText("A few useful starting points"))
+        compose.onNode(hasText("A few useful starting points") and isHeading()).assertIsDisplayed()
+    }
+
+    @Test
     fun classifiedCustomActionRemainsOwnedByHostWithoutCreatingAnUnclassifiedExercise() {
         val classified = AtomicInteger()
         compose.setContent {

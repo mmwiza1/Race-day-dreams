@@ -1,66 +1,62 @@
-@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
-
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.PaceCalculator
 import org.racedaydreams.domain.activity.ActivityRecord
 
-/** Presentation only: source summaries retain their original distance and timing semantics. */
+/**
+ * Presentation only: source summaries retain their original distance and timing semantics. The
+ * headline figures lead (elapsed time, then distance and elapsed pace in their measure hues) on a
+ * borderless panel under a glyph-labelled section heading.
+ */
 @Composable
 fun SharedRecordedRunSummary(
     activity: ActivityRecord,
     formatDistance: (Double) -> String,
     elapsedPace: String?,
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth().testTag("run-summary-metrics"),
-        shape = MaterialTheme.shapes.extraLarge,
-        colors =
-            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+    Column(
+        Modifier.fillMaxWidth().testTag("run-summary-metrics"),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            Text("Recorded summary", style = MaterialTheme.typography.labelLarge)
-            Column(Modifier.semantics(mergeDescendants = true) {}) {
-                Text("Elapsed time", style = MaterialTheme.typography.labelLarge)
-                Text(
-                    PaceCalculator.formatTime(activity.elapsedTime()),
-                    style = MaterialTheme.typography.headlineLarge,
+        SectionLabel("Recorded summary", Glyph.RUN, ChartHue.TEAL)
+        Panel(contentPadding = PaddingValues(20.dp)) {
+            MeasureFigure(
+                "Elapsed time",
+                PaceCalculator.formatTime(activity.elapsedTime()),
+                ChartHue.TEAL,
+                large = true,
+            )
+            Spacer(Modifier.height(4.dp))
+            MeasureFigureRow(
+                listOf(
+                    Triple(
+                        "Distance",
+                        activity.distanceMetres()?.let(formatDistance) ?: "Distance unavailable",
+                        ChartHue.BLUE,
+                    ),
+                    Triple(
+                        "Elapsed average pace",
+                        elapsedPace ?: "Pace unavailable",
+                        ChartHue.VIOLET,
+                    ),
                 )
-            }
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                maxItemsInEachRow = if (LocalDensity.current.fontScale >= 1.5f) 1 else 2,
-            ) {
-                RunSummaryValue(
-                    "Distance",
-                    activity.distanceMetres()?.let(formatDistance) ?: "Distance unavailable",
-                    Modifier.weight(1f),
-                )
-                RunSummaryValue(
-                    "Elapsed average pace",
-                    elapsedPace ?: "Pace unavailable",
-                    Modifier.weight(1f),
-                )
-            }
+            )
             activity.movingTime()?.let {
                 Text(
                     "Moving time: ${PaceCalculator.formatTime(it)}",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.titleSmall,
                 )
             }
             Text(
                 "Elapsed time includes pauses. Average pace uses the whole elapsed time and recorded distance. Moving time, when available, is reported separately by the recording or provider.",
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -69,49 +65,37 @@ fun SharedRecordedRunSummary(
 /** No zone boundaries, missing values or whole-session HR streams are inferred from summaries. */
 @Composable
 fun SharedRecordedHeartRateSummary(activity: ActivityRecord, decimal: (Double) -> String) {
-    CoachCard {
-        Column(
-            Modifier.fillMaxWidth().testTag("recorded-heart-rate"),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text("Recorded heart rate", style = MaterialTheme.typography.titleLarge)
+    Column(
+        Modifier.fillMaxWidth().testTag("recorded-heart-rate"),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        SectionLabel("Recorded heart rate", Glyph.TREND, ChartHue.CORAL)
+        Panel {
             if (activity.averageHeartRate() == null && activity.maxHeartRate() == null) {
                 Text("Average and maximum heart-rate summaries are unavailable for this run.")
             } else {
-                FlowRow(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    maxItemsInEachRow = if (LocalDensity.current.fontScale >= 1.5f) 1 else 2,
-                ) {
-                    RunSummaryValue(
-                        "Average recorded heart rate",
-                        activity.averageHeartRate()?.let { "${decimal(it)} bpm" } ?: "Unavailable",
-                        Modifier.weight(1f),
+                MeasureFigureRow(
+                    listOf(
+                        Triple(
+                            "Average recorded heart rate",
+                            activity.averageHeartRate()?.let { "${decimal(it)} bpm" }
+                                ?: "Unavailable",
+                            ChartHue.CORAL,
+                        ),
+                        Triple(
+                            "Maximum recorded heart rate",
+                            activity.maxHeartRate()?.let { "${decimal(it)} bpm" } ?: "Unavailable",
+                            ChartHue.CORAL,
+                        ),
                     )
-                    RunSummaryValue(
-                        "Maximum recorded heart rate",
-                        activity.maxHeartRate()?.let { "${decimal(it)} bpm" } ?: "Unavailable",
-                        Modifier.weight(1f),
-                    )
-                }
+                )
                 Text(
                     "Source-supplied measurements. Missing heart-rate observations remain unknown.",
                     style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun RunSummaryValue(label: String, value: String, modifier: Modifier = Modifier) {
-    Column(
-        modifier.semantics(mergeDescendants = true) {},
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Text(label, style = MaterialTheme.typography.labelLarge)
-        Text(value, style = MaterialTheme.typography.headlineSmall)
     }
 }
 

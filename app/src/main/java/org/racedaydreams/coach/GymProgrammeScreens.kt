@@ -19,16 +19,27 @@ import org.racedaydreams.coach.strength.AuthoredProgrammeWorkout
     val strengthFirst=state.primaryFocus==PrimaryFocus.STRENGTH
     var goal by rememberSaveable{mutableStateOf(current?.settings()?.goal()?.name?:if(strengthFirst)"GENERAL" else "SUPPORT_RUNNING")};var priority by rememberSaveable{mutableStateOf(current?.settings()?.priority()?.name?:if(strengthFirst)"STRENGTH_FIRST" else "RUNNING_FIRST")};var experience by rememberSaveable{mutableStateOf(current?.settings()?.experience()?.name?:"BEGINNER")};var minutes by rememberSaveable{mutableIntStateOf(current?.settings()?.minutes()?:45)};var frequency by rememberSaveable{mutableIntStateOf(current?.settings()?.frequency()?:2)};var effort by rememberSaveable{mutableStateOf(current?.settings()?.effort()?.name?:"RPE")};var days by rememberSaveable{mutableStateOf((current?.settings()?.days()?:state.profile?.preferences()?.gymDays()?:emptySet()).map{it.value})};var equipment by rememberSaveable{mutableStateOf((current?.settings()?.equipment()?:setOf("bodyweight")).toList())}
     CoachPage{
-        CoachHeading("Gym programme")
+        ScreenHeader(Discipline.STRENGTH, Glyph.CALENDAR, "Strength programme", "Gym programme")
         if(author!=null)CoachButton("Build or review programmes",author)
         if(current==null&&!setup){Text("No generated gym programme. Manual logging, PBs and running context work independently.");CoachButton("Create a gym programme"){setup=true};TextButton(onClick={model.strength.disableGym()}){Text("I manage my own strength training")}}
         if(!setup&&state.gymVersions.isNotEmpty()){
             var history by rememberSaveable{mutableStateOf(false)};TextButton(onClick={history=!history}){Text(if(history)"Hide preserved versions"else "View preserved versions")}
             if(history)state.gymVersions.take(20).forEach{version->CoachCard{Text("Version ${version.version()} · ${friendlyDate(version.start())}",style=MaterialTheme.typography.titleMedium);Text(version.reason());var details by rememberSaveable(version.id(),version.version()){mutableStateOf(false)};TextButton(onClick={details=!details}){Text(if(details)"Hide prescriptions"else "View original prescriptions")};if(details)version.sessions().forEach{session->Text("${friendlyDate(session.date())} · ${session.title()}");session.exercises().forEach{e->Text("${ExerciseCatalog.definition(e.exerciseId())?.exercise()?.name()?:"Archived exercise"} · ${prescription(e,version.settings().effort())}")}}}}
         }
-        if(current!=null&&!setup){Text("Version ${current.version()} · ${friendlyDate(current.start())} – ${friendlyDate(current.end())}");Text(label(current.settings().goal().name));WhyDetails(current.reason(),"Why this version?");current.tradeoffs().takeIf{it.isNotEmpty()}?.let{WhyDetails(it.joinToString("\n"),"Scheduling trade-offs")};current.sessions().filter{!it.date().isBefore(LocalDate.now())}.take(8).forEach{s->Card(onClick={open(s.id())},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(16.dp)){Text("${friendlyDate(s.date())} · ${s.title()}");Text("${s.exercises().size} exercises")}}};CoachButton("Change programme settings"){setup=true};TextButton(onClick={model.strength.disableGym()}){Text("Stop generated programming")};Text("${state.gymVersions.size} preserved block versions")}
+        if(current!=null&&!setup){
+            // Block header: goal, version and dates, then upcoming sessions as readable rows.
+            SectionLabel(label(current.settings().goal().name),Glyph.FLAG,ChartHue.PLUM,caption="Version ${current.version()} · ${friendlyDate(current.start())} – ${friendlyDate(current.end())}")
+            WhyDetails(current.reason(),"Why this version?");current.tradeoffs().takeIf{it.isNotEmpty()}?.let{WhyDetails(it.joinToString("\n"),"Scheduling trade-offs")}
+            val upcoming=current.sessions().filter{!it.date().isBefore(LocalDate.now())}.take(8)
+            if(upcoming.isNotEmpty()){
+                SectionLabel("Upcoming sessions",Glyph.CALENDAR,ChartHue.PLUM,caption="Open a session to see its prescription")
+                Panel(contentPadding=PaddingValues(horizontal=12.dp,vertical=8.dp)){upcoming.forEachIndexed{index,s->if(index>0)HorizontalDivider(Modifier.padding(horizontal=8.dp));ProgrammeSessionRow("${friendlyDate(s.date())} · ${s.title()}",if(s.exercises().size==1)"1 exercise" else "${s.exercises().size} exercises"){open(s.id())}}}
+            }
+            CoachButton("Change programme settings"){setup=true};TextButton(onClick={model.strength.disableGym()},modifier=Modifier.heightIn(min=48.dp)){Text("Stop generated programming")}
+            Text("${state.gymVersions.size} preserved block versions",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         if(setup){
-            CoachHeading("Your gym preferences")
+            SectionLabel("Your gym preferences",Glyph.LIST,ChartHue.PLUM,caption="Choose what the six-week block is built around")
             Text("Goal");ChoiceChips(GymProgramme.Goal.values().map{it.name},goal){goal=it}
             Text("Priority");ChoiceChips(GymProgramme.Priority.values().map{it.name},priority){priority=it}
             Text("Experience");ChoiceChips(GymProgramme.Experience.values().map{it.name},experience){experience=it}
@@ -42,6 +53,18 @@ import org.racedaydreams.coach.strength.AuthoredProgrammeWorkout
             TextButton(onClick={setup=false}){Text("Cancel")}
         }
         preview?.let{p->CoachCard{Text("Preview — not applied",style=MaterialTheme.typography.titleLarge);Text("${p.sessions().size} sessions · ${label(p.settings().goal().name)}");p.sessions().take(p.settings().frequency()).forEach{s->Text("${friendlyDate(s.date())} · ${s.title()}");s.exercises().forEach{e->Text("${ExerciseCatalog.definition(e.exerciseId())?.exercise()?.name()} · ${prescription(e,p.settings().effort())}")}};p.tradeoffs().forEach{Text(it)};CoachButton("Accept this programme"){model.strength.saveGym(p);preview=null;setup=false};TextButton(onClick={preview=null}){Text("Keep current programme")}}}
+    }
+}
+/** One upcoming programme session: the whole row opens it; the chevron is decorative. */
+@Composable private fun ProgrammeSessionRow(title:String,detail:String,onClick:()->Unit){
+    Surface(onClick=onClick,color=androidx.compose.ui.graphics.Color.Transparent,shape=androidx.compose.foundation.shape.RoundedCornerShape(16.dp),modifier=Modifier.fillMaxWidth().heightIn(min=56.dp)){
+        Row(Modifier.padding(horizontal=8.dp,vertical=10.dp),verticalAlignment=androidx.compose.ui.Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)){
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)){
+                Text(title,style=MaterialTheme.typography.titleMedium,fontWeight=androidx.compose.ui.text.font.FontWeight.SemiBold)
+                Text(detail,style=MaterialTheme.typography.bodyMedium,color=chartAccent(ChartHue.PLUM).strong)
+            }
+            GlyphIcon(Glyph.CHEVRON,MaterialTheme.colorScheme.onSurfaceVariant,18.dp)
+        }
     }
 }
 @Composable private fun ChoiceChips(options:List<String>,selected:String,choose:(String)->Unit){FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip), verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip)){options.forEach{o->CoachFilterChip(selected=selected==o,onClick={choose(o)},label={Text(label(o))})}}}

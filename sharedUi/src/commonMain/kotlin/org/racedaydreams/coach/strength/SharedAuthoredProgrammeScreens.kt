@@ -1,7 +1,14 @@
 package org.racedaydreams.coach.strength
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.strength.StrengthProgramme
 
@@ -14,18 +21,33 @@ fun SharedAuthoredProgrammeOverview(
     author: (() -> Unit)? = null,
 ) {
     CoachPage {
-        CoachHeading(programme.name())
-        if (author != null) CoachButton("Build or review programmes", author)
-        Text("Programme revision ${programme.revision()}")
+        ScreenHeader(Discipline.STRENGTH, Glyph.CALENDAR, "Gym programme", programme.name())
+        if (author != null) GymRowAction("Build or review programmes", true, author)
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                "Programme revision ${programme.revision()}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                "${formatDate(programme.start())} – ${formatDate(programme.end())} · ${blockCount(programme.blocks().size)}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         WhyDetails(programme.reason(), "Why this revision?")
         if (programme.tradeoffs().isNotEmpty())
             WhyDetails(programme.tradeoffs().joinToString("\n"), "Programme trade-offs")
         programme.blocks().forEach { block ->
-            SemanticCard(Tile.Strength) {
-                Text(block.name(), style = MaterialTheme.typography.titleLarge)
-                Text(
-                    "${formatDate(block.start())} – ${formatDate(block.end())} · ${block.weeks()} weeks"
-                )
+            // Block header: the block (phase) name, its dates and length, then its sessions.
+            SectionLabel(
+                block.name(),
+                Glyph.FLAG,
+                ChartHue.PLUM,
+                caption =
+                    "${formatDate(block.start())} – ${formatDate(block.end())} · ${block.weeks()} weeks",
+            )
+            Panel(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)) {
                 WhyDetails(block.explanation(), "Block emphasis")
                 var limit by
                     remember(programme.id(), programme.revision(), block.id()) {
@@ -34,18 +56,28 @@ fun SharedAuthoredProgrammeOverview(
                 val chronological =
                     remember(block) { block.workouts().sortedBy { it.date().toEpochDay() } }
                 chronological.take(limit).forEach { workout ->
-                    TextButton(onClick = { open(workout.id()) }) {
-                        Text(
-                            "${formatDate(workout.date())} · ${workout.definition().title()} · about ${workout.expectedMinutes()} min"
-                        )
+                    HorizontalDivider()
+                    GymSessionLink(
+                        formatDate(workout.date()),
+                        workout.definition().title(),
+                        "${exerciseCount(workout.definition().slots().size)} · about ${workout.expectedMinutes()} min",
+                    ) {
+                        open(workout.id())
                     }
                 }
                 if (limit < block.workouts().size)
-                    TextButton(onClick = { limit += 7 }) { Text("Show more sessions") }
+                    TextButton(
+                        onClick = { limit += 7 },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text("Show more sessions")
+                    }
             }
         }
     }
 }
+
+private fun blockCount(count: Int) = if (count == 1) "1 block" else "$count blocks"
 
 @Composable
 fun SharedAuthoredProgrammeWorkout(

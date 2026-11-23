@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
@@ -6,9 +8,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
@@ -76,23 +81,44 @@ fun SharedActivityHistoryScreen(
         ) {
             item {
                 CoachHeading("Activity calendar")
-                Text("Recorded runs · list view", Modifier.padding(top = 8.dp))
+                Text(
+                    "Recorded runs · list view",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
                 Text(
                     "Your week can change. Recorded activities are retained independently of planned workouts.",
-                    Modifier.padding(top = 8.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp),
                 )
             }
-            if (state.strengthSessions.isNotEmpty()) item { CoachHeading("Strength history") }
+            if (state.strengthSessions.isNotEmpty())
+                item { SectionLabel("Strength history", Glyph.DUMBBELL, ChartHue.PLUM) }
             items(
                 state.strengthSessions.sortedByDescending { it.startedAt() }.take(20),
                 key = { "strength:" + it.id() },
             ) { session ->
-                CoachCard {
-                    Text("${strengthDate(session.startedAt(), session.offset())} · Strength ✓")
+                RecordedWorkoutSummaryRow(Discipline.STRENGTH, Glyph.DUMBBELL) {
                     Text(
-                        "${session.duration().getSeconds() / 60} min · ${session.exercises().size} exercises"
+                        strengthDate(session.startedAt(), session.offset()),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    session.exercises().forEach { Text(it.exercise().name()) }
+                    Text(
+                        "Strength workout",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    val exercises = session.exercises().size
+                    Text(
+                        "${session.duration().getSeconds() / 60} min · $exercises ${if (exercises == 1) "exercise" else "exercises"}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    session.exercises().forEach { RowDetail(it.exercise().name()) }
+                    RowDetail("Completed")
                 }
             }
             if (state.strengthSessions.size > 20)
@@ -104,84 +130,78 @@ fun SharedActivityHistoryScreen(
             if (error)
                 item {
                     Text("History could not be loaded. Your records are retained.")
-                    TextButton(onClick = { page++ }) { Text("Try again") }
+                    TextButton(onClick = { page++ }, modifier = Modifier.heightIn(min = 48.dp)) {
+                        Text("Try again")
+                    }
                 }
-            if (groups.isEmpty() && !historyPending && !error) item { Text(emptyMessage) }
+            if (groups.isEmpty() && !historyPending && !error)
+                item {
+                    RecordedWorkoutSummaryRow(Discipline.RUNNING, Glyph.RUN) {
+                        RowDetail(emptyMessage, MaterialTheme.colorScheme.onSurface)
+                    }
+                }
+            if (groups.isNotEmpty())
+                item(key = "runs-label") { SectionLabel("Recorded runs", Glyph.RUN, ChartHue.BLUE) }
             groups.forEach { (date, activities) ->
-                item(key = "date:$date") {
-                    Text(
-                        date,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.semantics { heading() },
-                    )
-                }
+                item(key = "date:$date") { HistoryDateLabel(date) }
                 items(activities, key = { it.id() }) { activity ->
-                    Card(
+                    RecordedWorkoutRow(
+                        Discipline.RUNNING,
+                        Glyph.RUN,
                         onClick = { open(activity.id()) },
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
-                        shape = MaterialTheme.shapes.large,
-                        colors =
-                            CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                            ),
                     ) {
-                        Column(
-                            Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
-                        ) {
-                            Text(
-                                if (activity.source().provider() == "assessment") "Assessment run"
-                                else "Recorded run",
-                                style = MaterialTheme.typography.titleMedium,
+                        Text(
+                            if (activity.source().provider() == "assessment") "Assessment run"
+                            else "Recorded run",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        val pace =
+                            elapsedPace(
+                                activity,
+                                state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
                             )
-                            Text(
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            HistoryFigure(
                                 activity.distanceMetres()?.let { distance(it) }
                                     ?: "Distance unavailable",
-                                style = MaterialTheme.typography.headlineSmall,
+                                "distance",
                             )
-                            Text(
-                                "Elapsed: ${PaceCalculator.formatTime(activity.elapsedTime())}",
-                                style = MaterialTheme.typography.titleMedium,
+                            HistoryFigure(
+                                PaceCalculator.formatTime(activity.elapsedTime()),
+                                "elapsed",
                             )
-                            Text(
-                                "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
-                            )
-                            val score =
-                                remember(activity, state.runResponses, state.planVersions) {
-                                    val response =
-                                        state.runResponses.firstOrNull {
-                                            it.activityId() == activity.id()
-                                        }
-                                    val prescription =
-                                        state.planVersions
-                                            .firstOrNull { it.id() == response?.planVersionId() }
-                                            ?.plan()
-                                            ?.workouts()
-                                            ?.firstOrNull {
-                                                it.id() == response?.plannedWorkoutId()
-                                            }
-                                    if (prescription == null) null
-                                    else
-                                        org.racedaydreams.domain.coaching.RunScoreEngine.analyse(
-                                                prescription,
-                                                activity,
-                                                response,
-                                            )
-                                            .score()
-                                }
-                            score?.let { Text("Run Score $it/10") }
-                            elapsedPace(
-                                    activity,
-                                    state.profile?.preferences()?.units() == UnitSystem.IMPERIAL,
-                                )
-                                ?.let {
-                                    Text(
-                                        "Elapsed average pace: $it",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                }
-                            Text("Completed · tap for details")
+                            pace?.let { HistoryFigure(it, "elapsed average pace") }
                         }
+                        RowDetail(
+                            "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
+                        )
+                        val score =
+                            remember(activity, state.runResponses, state.planVersions) {
+                                val response =
+                                    state.runResponses.firstOrNull {
+                                        it.activityId() == activity.id()
+                                    }
+                                val prescription =
+                                    state.planVersions
+                                        .firstOrNull { it.id() == response?.planVersionId() }
+                                        ?.plan()
+                                        ?.workouts()
+                                        ?.firstOrNull { it.id() == response?.plannedWorkoutId() }
+                                if (prescription == null) null
+                                else
+                                    org.racedaydreams.domain.coaching.RunScoreEngine.analyse(
+                                            prescription,
+                                            activity,
+                                            response,
+                                        )
+                                        .score()
+                            }
+                        score?.let { RowDetail("Run Score $it/10") }
+                        RowDetail("Completed · tap for details")
                     }
                 }
             }
@@ -197,4 +217,24 @@ fun SharedActivityHistoryScreen(
                 }
         }
     }
+}
+
+/** A history figure: the value in bold with its plain-word measure after it, read as one phrase. */
+@Composable
+private fun HistoryFigure(value: String, measure: String) {
+    Text(
+        buildAnnotatedString {
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(value) }
+            append(" ")
+            withStyle(
+                SpanStyle(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = MaterialTheme.typography.labelMedium.fontSize,
+                )
+            ) {
+                append(measure)
+            }
+        },
+        style = MaterialTheme.typography.titleMedium,
+    )
 }

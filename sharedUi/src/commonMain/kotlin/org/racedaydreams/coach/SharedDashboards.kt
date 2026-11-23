@@ -173,13 +173,6 @@ fun SharedProgressDashboard(
             )
         )
     }
-    @Composable
-    fun sectionTitle(title: String) =
-        Text(
-            title,
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.semantics { heading() },
-        )
     val runningLinks = listOf(ProgressLink.TRENDS, ProgressLink.PBS, ProgressLink.WEEKLY_REVIEW)
     val bodyLinks =
         listOf(ProgressLink.MILESTONES, ProgressLink.BODY_WEIGHT, ProgressLink.BODY_GUIDANCE)
@@ -215,27 +208,36 @@ fun SharedProgressDashboard(
         when (tab) {
             ProgressTab.STRENGTH ->
                 listOf(
-                    "Strength training" to strengthLinks,
-                    "Running" to listOf(ProgressLink.HISTORY) + runningLinks,
-                    "Milestones & body" to bodyLinks,
+                    ProgressLinkGroup.STRENGTH to strengthLinks,
+                    ProgressLinkGroup.RUNNING to listOf(ProgressLink.HISTORY) + runningLinks,
+                    ProgressLinkGroup.BODY to bodyLinks,
                 )
             else ->
                 listOf(
-                    "Running" to runningLinks,
-                    "Milestones & body" to bodyLinks,
-                    "Strength training" to strengthLinks,
+                    ProgressLinkGroup.RUNNING to runningLinks,
+                    ProgressLinkGroup.BODY to bodyLinks,
+                    ProgressLinkGroup.STRENGTH to strengthLinks,
                 )
         }
     val strengthRecords: (() -> Unit)? =
         if (ProgressLink.STRENGTH_ANALYTICS in links) ({ open(ProgressLink.STRENGTH_ANALYTICS) })
         else null
+    val tabDiscipline =
+        when (tab) {
+            ProgressTab.STRENGTH -> Discipline.STRENGTH
+            ProgressTab.OVERVIEW -> Discipline.RECOVERY
+            ProgressTab.RUNNING -> Discipline.RUNNING
+        }
+    val periodSelector: @Composable () -> Unit = {
+        PeriodSelector(period, tabDiscipline) { periodName = it.name }
+    }
     when (tab) {
         // Strength (V3): exercise progression with actual lifts first, then volume, workload,
         // supporting figures and recent workouts.
         ProgressTab.STRENGTH -> {
             val strength =
                 rememberStrengthPeriod(state, today, requireNotNull(asOf), period, exerciseId)
-            PeriodSelector(period) { periodName = it.name }
+            periodSelector()
             ExerciseProgressionCard(
                 strength,
                 ::mass,
@@ -260,25 +262,28 @@ fun SharedProgressDashboard(
         ProgressTab.OVERVIEW -> {
             val strength = rememberStrengthPeriod(state, today, requireNotNull(asOf), period, null)
             SplitSummary(state, overview, today, dateAt, presentation)
-            PeriodSelector(period) { periodName = it.name }
+            periodSelector()
             explorer()
-            sectionTitle("Running")
+            // Both disciplines' figures at the same depth: one labelled section each, in the
+            // running (blue) and strength (plum) hues.
+            SectionLabel("Running", Glyph.RUN, ChartHue.BLUE, "${period.label} · recorded")
             runningKpis()
-            sectionTitle("Strength")
+            SectionLabel("Strength", Glyph.DUMBBELL, ChartHue.PLUM, "${period.label} · recorded")
             StrengthKpis(strength, strengthRecords)
             RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
         }
         // Running: chart first, with the week's runs as its drill-down, then the figures.
         ProgressTab.RUNNING -> {
-            PeriodSelector(period) { periodName = it.name }
+            periodSelector()
             explorer()
+            SectionLabel("At a glance", Glyph.RUN, ChartHue.BLUE, "${period.label} · recorded")
             runningKpis()
         }
     }
-    MoreDetail(
-        moreLinks.map { (name, group) -> name to group.filter { it in links } },
-        { it.title },
-        { it.summary },
+    ProgressDrillDowns(
+        moreLinks
+            .map { (group, items) -> group to items.filter { it in links } }
+            .filter { it.second.isNotEmpty() },
         open,
     )
 }
@@ -312,8 +317,8 @@ private fun ProgressTabs(
 }
 
 /**
- * Hybrid summary without stacked cards: running and strength this week side by side on one quiet
- * surface, from the existing week-to-date running summary and recorded strength sessions.
+ * Hybrid summary without stacked cards: running and strength this week side by side on one
+ * borderless panel, from the existing week-to-date running summary and recorded strength sessions.
  */
 @Composable
 private fun SplitSummary(
@@ -331,60 +336,94 @@ private fun SplitSummary(
             it.toEpochDay() >= start.toEpochDay() && it.toEpochDay() <= today.toEpochDay()
         }
     val week = overview.weekToDate
-    Surface(
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = Modifier.fillMaxWidth(),
+    val running: @Composable (Modifier) -> Unit = { modifier ->
+        SummaryColumn(
+            Discipline.RUNNING,
+            Glyph.RUN,
+            "Running this week",
+            // A compact count only: the chart directly below owns the large weekly figure.
+            if (week.runs == 0) "No runs" else plural(week.runs, "run"),
+            state.activities
+                .map { dateAt(it.start()) }
+                .filter { it.toEpochDay() <= today.toEpochDay() }
+                .maxByOrNull { it.toEpochDay() }
+                ?.let { "Last: ${presentation.shortDate(it)}" } ?: "No runs recorded",
+            modifier.testTag("progress-running-summary"),
+        )
+    }
+    val strength: @Composable (Modifier) -> Unit = { modifier ->
+        SummaryColumn(
+            Discipline.STRENGTH,
+            Glyph.DUMBBELL,
+            "Strength this week",
+            if (workouts == 0) "None yet" else plural(workouts, "workout"),
+            dates
+                .filter { it.toEpochDay() <= today.toEpochDay() }
+                .maxByOrNull { it.toEpochDay() }
+                ?.let { "Last: ${presentation.shortDate(it)}" } ?: "No workouts recorded",
+            modifier.testTag("progress-strength-hero"),
+        )
+    }
+    // One borderless panel holds both disciplines at the same depth, as Home's hybrid day does:
+    // the same glyph disc, label, figure and last date for each, in its discipline colour.
+    // Side by side on phones; stacked at very large text so neither figure is squeezed.
+    val stacked = LocalDensity.current.fontScale >= 1.5f
+    Panel(
+        Modifier.testTag("progress-hybrid-summary"),
+        contentPadding = PaddingValues(vertical = 20.dp),
     ) {
-        Row(Modifier.padding(vertical = 16.dp).height(IntrinsicSize.Min)) {
-            SummaryColumn(
-                Discipline.RUNNING,
-                "Running this week",
-                // A compact count only: the chart directly below owns the large weekly figure.
-                if (week.runs == 0) "No runs" else plural(week.runs, "run"),
-                state.activities
-                    .map { dateAt(it.start()) }
-                    .filter { it.toEpochDay() <= today.toEpochDay() }
-                    .maxByOrNull { it.toEpochDay() }
-                    ?.let { "Last: ${presentation.shortDate(it)}" } ?: "No runs recorded",
-                Modifier.weight(1f).testTag("progress-running-summary"),
+        if (stacked) {
+            running(Modifier.fillMaxWidth())
+            HorizontalDivider(
+                Modifier.padding(horizontal = 20.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
             )
-            VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            SummaryColumn(
-                Discipline.STRENGTH,
-                "Strength this week",
-                if (workouts == 0) "None yet" else plural(workouts, "workout"),
-                dates
-                    .filter { it.toEpochDay() <= today.toEpochDay() }
-                    .maxByOrNull { it.toEpochDay() }
-                    ?.let { "Last: ${presentation.shortDate(it)}" } ?: "No workouts recorded",
-                Modifier.weight(1f).testTag("progress-strength-hero"),
-            )
-        }
+            strength(Modifier.fillMaxWidth())
+        } else
+            Row(Modifier.height(IntrinsicSize.Min)) {
+                running(Modifier.weight(1f))
+                VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                strength(Modifier.weight(1f))
+            }
     }
 }
 
 @Composable
 private fun SummaryColumn(
     discipline: Discipline,
+    glyph: Glyph,
     label: String,
     value: String,
     detail: String,
     modifier: Modifier,
 ) {
     Column(
-        modifier.padding(horizontal = 16.dp).semantics(mergeDescendants = true) {},
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier.padding(horizontal = 20.dp).semantics(mergeDescendants = true) {},
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(8.dp).background(discipline.accent(), CircleShape))
-            Spacer(Modifier.width(8.dp))
-            Text(label, style = MaterialTheme.typography.labelLarge)
+        // Decorative: the label names the discipline.
+        Box(
+            Modifier.size(36.dp)
+                .background(discipline.accent(), CircleShape)
+                .clearAndSetSemantics {},
+            contentAlignment = Alignment.Center,
+        ) {
+            GlyphIcon(glyph, discipline.onAccent(), 20.dp)
         }
-        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(
+            label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = discipline.accent(),
+        )
         Text(
             detail,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
@@ -653,11 +692,37 @@ private val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 private fun weekdaySpan(days: Int) = if (days <= 1) "Mon" else "Mon–${weekdays[days - 1]}"
 
 @Composable
-internal fun PeriodSelector(selected: Period, select: (Period) -> Unit) {
+internal fun PeriodSelector(selected: Period, select: (Period) -> Unit) =
+    PeriodSelector(selected, null, select)
+
+/**
+ * The reporting period. With a [discipline] (Progress and Training trends), the choices are
+ * borderless tonal capsules and the selected one takes the discipline's container colour with a
+ * checkmark, so the selection never relies on colour alone. Wraps at large text and on narrow
+ * screens; every choice stays at least 48 dp tall.
+ */
+@Composable
+internal fun PeriodSelector(selected: Period, discipline: Discipline?, select: (Period) -> Unit) {
+    val reporting = Modifier.semantics { contentDescription = "Reporting period" }
+    if (discipline != null) {
+        // One row at normal text on phones; wraps at 150%+ text or on narrow screens.
+        TonalPills(
+            Period.values().map { it to it.label },
+            selected,
+            select,
+            selectedContainer = discipline.container(),
+            selectedContent = discipline.onContainer(),
+            unselectedContainer = MaterialTheme.colorScheme.surfaceContainerLow,
+            unselectedContent = MaterialTheme.colorScheme.onSurfaceVariant,
+            tag = { "period-${it.name}" },
+            modifier = reporting,
+        )
+        return
+    }
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.semantics { contentDescription = "Reporting period" },
+        modifier = reporting,
     ) {
         for (period in Period.values()) FilterChip(
             selected = period == selected,

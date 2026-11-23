@@ -113,6 +113,21 @@ class TrainingTrendsScreenTest {
     fun periodsShowTheirCalendarWeeksAndLongRangesGetMonthLabels() {
         // A run every week for a year.
         show((0L until 52L).map { run("w$it", today.minusWeeks(it)) })
+        // Compact running header and a labelled chart section, as on Progress → Running.
+        compose
+            .onNode(hasText("Training trends") and isHeading() and hasAnyAncestor(hasTestTag("screen-header")))
+            .assertIsDisplayed()
+        compose.onNode(hasText("Weekly trend") and isHeading()).assertIsDisplayed()
+        compose.onNodeWithTag("period-TWELVE_WEEKS").assertIsSelected()
+        // At normal text on a phone, the four periods and the four measures each fit one row.
+        for (tags in
+            listOf(
+                listOf("FOUR_WEEKS", "TWELVE_WEEKS", "SIX_MONTHS", "ONE_YEAR").map { "period-$it" },
+                listOf("DISTANCE", "TIME", "PACE", "HEART_RATE").map { "trend-metric-$it" },
+            )) {
+            val tops = tags.map { compose.onNodeWithTag(it).fetchSemanticsNode().positionInRoot.y }
+            assertTrue("$tags share one row: $tops", tops.all { kotlin.math.abs(it - tops[0]) < 1f })
+        }
         assertEquals(12, weekNodes())
         compose.onNodeWithTag("trend-month-labels").assertDoesNotExist()
         compose.onNodeWithTag("period-FOUR_WEEKS").performClick()

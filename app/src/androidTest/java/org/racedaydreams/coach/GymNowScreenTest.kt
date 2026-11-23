@@ -6,9 +6,13 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -16,6 +20,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -73,6 +78,45 @@ class GymNowScreenTest {
         compose.waitUntil(20_000) { models.none { it.state.value.busy } }
         compose.runOnIdle { stores.forEach { it.clear() } }
         io { SqliteUserPreferencesRepository(application).clear() }
+    }
+
+    @Test
+    fun overviewLeadsWithOneStartActionThenLabelledGlyphChoices() {
+        install(largeDark = true)
+        awaitReady()
+        compose
+            .onNode(hasText("Train your way") and isHeading())
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose
+            .onNodeWithText("Start open workout")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .assertIsEnabled()
+        listOf("Choose a workout", "Saved and recent").forEach {
+            compose.onNode(hasText(it) and isHeading()).performScrollTo().assertIsDisplayed()
+        }
+        listOf(
+                "Start planned workout",
+                "Quick workout",
+                "Build a workout",
+                "Generate one for me",
+                "Favourite workouts",
+                "Repeat previous workout",
+            )
+            .forEach { choice ->
+                compose
+                    .onNode(hasText(choice) and hasClickAction())
+                    .performScrollTo()
+                    .assertHeightIsAtLeast(48.dp)
+                    .assertIsEnabled()
+            }
+        click("Quick workout")
+        compose
+            .onNode(hasText("Quick workout") and isHeading())
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose.onNodeWithText("Back to Gym Now").performScrollTo().assertIsDisplayed()
     }
 
     @Test

@@ -1,23 +1,27 @@
 package org.racedaydreams.coach
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.racedaydreams.domain.presentation.CalendarData
 import org.racedaydreams.domain.time.*
 
@@ -98,47 +102,18 @@ private fun markerName(c: CalendarData.Category) =
         else -> c.name.lowercase().replaceFirstChar { it.uppercase() }
     }
 
-@Composable
-private fun markerColour(c: CalendarData.Category): Color {
-    val dark = isSystemInDarkTheme()
-    return when (c) {
-        CalendarData.Category.EASY -> if (dark) Color(0xFF80D8A0) else Color(0xFF206839)
-        CalendarData.Category.QUALITY -> if (dark) Color(0xFF9BC9FF) else Color(0xFF175FA6)
-        CalendarData.Category.LONG -> if (dark) Color(0xFFFFC078) else Color(0xFF955000)
-        CalendarData.Category.STRENGTH -> if (dark) Color(0xFFDDB5FF) else Color(0xFF78469E)
-        CalendarData.Category.RACE -> if (dark) Color(0xFFFFADA7) else Color(0xFFB12F32)
-        else -> if (dark) Color(0xFFCBCBCB) else Color(0xFF5E6268)
-    }
-}
-
+/**
+ * One session's mark: the Home week strip's shapes (completed filled, planned a ring, moved a
+ * dashed ring, missed or skipped slashed), the discipline's colour (running or strength, rest
+ * neutral) and the category letter. Screen readers hear the session and its state.
+ */
 @Composable
 fun CalendarMarker(entry: CalendarData.Entry) {
-    val colour = markerColour(requireNotNull(entry.category()))
-    val filled = entry.state() == CalendarData.State.COMPLETED
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            Modifier.size(20.dp).semantics { contentDescription = entry.description() },
-            contentAlignment = Alignment.Center,
-        ) {
-            Canvas(Modifier.fillMaxSize()) {
-                if (filled) drawCircle(colour)
-                else drawCircle(colour, style = Stroke(1.5.dp.toPx()))
-            }
-            Text(
-                markerLetter(requireNotNull(entry.category())),
-                fontSize = 10.sp,
-                color = if (filled) MaterialTheme.colorScheme.surface else colour,
-                modifier = Modifier.clearAndSetSemantics {},
-            )
-        }
-        val status =
-            when (entry.state()) {
-                CalendarData.State.MOVED -> "↗"
-                CalendarData.State.SKIPPED -> "−"
-                CalendarData.State.NOT_COMPLETED -> "?"
-                else -> null
-            }
-        status?.let { Text(it, fontSize = 9.sp, modifier = Modifier.clearAndSetSemantics {}) }
+    Box(
+        Modifier.size(20.dp).semantics { contentDescription = entry.description() },
+        contentAlignment = Alignment.Center,
+    ) {
+        SessionMarkShape(entry, 20.dp, markerLetter(requireNotNull(entry.category())))
     }
 }
 
@@ -147,23 +122,29 @@ fun CalendarMarker(entry: CalendarData.Entry) {
 fun CalendarLegend() {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        CalendarMarkKey()
         TextButton(
             onClick = { expanded = !expanded },
             modifier = Modifier.heightIn(min = 48.dp),
-            contentPadding = PaddingValues(0.dp),
+            contentPadding = PaddingValues(horizontal = 0.dp),
         ) {
             Text(if (expanded) "Hide calendar key" else "Calendar key ⓘ")
         }
         if (expanded) {
+            Text(
+                "The letter in each mark is the workout type:",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
             FlowRow(
                 Modifier.semantics { contentDescription = "Workout category legend" },
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 CalendarData.Category.entries.forEach { c ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         CalendarMarker(
                             CalendarData.Entry(
@@ -179,18 +160,17 @@ fun CalendarLegend() {
                 }
             }
             Text(
-                "Legend: outline planned · filled completed",
+                "Legend: outline planned · filled completed · dashed moved · slashed missed or skipped",
                 style = MaterialTheme.typography.labelMedium,
             )
             Text(
-                "↗ Moved · − Skipped · ? Not completed",
+                "Running sessions use the running colour and strength sessions the strength colour.",
                 style = MaterialTheme.typography.labelSmall,
             )
-            if (expanded)
-                Text(
-                    "Rest means an available day left free within your programme. Dates outside it and unavailable dates are not rest. U is an unclassified run; no intensity is inferred.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
+            Text(
+                "Rest means an available day left free within your programme. Dates outside it and unavailable dates are not rest. U is an unclassified run; no intensity is inferred.",
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
@@ -211,19 +191,14 @@ fun SharedActivityCalendarScreen(
     var focus by rememberSaveable { mutableStateOf(dates.today().toString()) }
     var showDay by rememberSaveable { mutableStateOf(false) }
     val day = dates.parse(focus)
+    val month = state.calendarView == "Month"
     Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            listOf("List", "Week", "Month").forEach { view ->
-                CoachFilterChip(
-                    selected = state.calendarView == view,
-                    onClick = { onViewChange(view) },
-                    label = { Text(view) },
-                )
-            }
-        }
+        ViewSelector(
+            listOf("List" to Glyph.LIST, "Week" to Glyph.VOLUME, "Month" to Glyph.CALENDAR),
+            state.calendarView,
+            onViewChange,
+            Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
         if (state.calendarView == "List") {
             history()
             return@Column
@@ -232,126 +207,41 @@ fun SharedActivityCalendarScreen(
             Modifier.fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            CoachHeading("Training calendar")
-            CalendarLegend()
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                TextButton(
-                    onClick = {
-                        focus =
-                            (if (state.calendarView == "Month") dates.shiftMonth(day, -1)
-                                else day.minusDays(7))
-                                .toString()
-                    }
-                ) {
-                    Text("Previous")
-                }
-                TextButton(onClick = { focus = dates.today().toString() }) { Text("Today") }
-                TextButton(
-                    onClick = {
-                        focus =
-                            (if (state.calendarView == "Month") dates.shiftMonth(day, 1)
-                                else day.plusWeeks(1))
-                                .toString()
-                    }
-                ) {
-                    Text("Next")
-                }
-            }
-            Text(
-                if (state.calendarView == "Month") dates.monthLabel(day)
-                else "Week of ${dates.label(dates.weekStart(day))}",
-                style = MaterialTheme.typography.titleMedium,
+            ScreenHeader(
+                Discipline.RUNNING,
+                Glyph.CALENDAR,
+                if (month) "Month at a glance" else "Week at a glance",
+                "Training calendar",
             )
-            val start =
-                if (state.calendarView == "Month") dates.weekStart(dates.monthStart(day))
-                else dates.weekStart(day)
+            PeriodNavigator(
+                label =
+                    if (month) dates.monthLabel(day)
+                    else "Week of ${dates.label(dates.weekStart(day))}",
+                unit = if (month) "month" else "week",
+                previous = {
+                    focus = (if (month) dates.shiftMonth(day, -1) else day.minusDays(7)).toString()
+                },
+                today = { focus = dates.today().toString() },
+                next = {
+                    focus = (if (month) dates.shiftMonth(day, 1) else day.plusWeeks(1)).toString()
+                },
+            )
+            CalendarLegend()
+            val start = if (month) dates.weekStart(dates.monthStart(day)) else dates.weekStart(day)
             val entries =
                 remember(state, start, state.calendarView) {
-                    (0 until if (state.calendarView == "Month") 42 else 7).associate {
+                    (0 until if (month) 42 else 7).associate {
                         val d = start.plusDays(it.toLong())
                         d to sharedCalendarEntries(state, d, dates.today())
                     }
                 }
-            if (state.calendarView == "Month") {
-                Row(Modifier.fillMaxWidth()) {
-                    listOf("M", "T", "W", "T", "F", "S", "S").forEach {
-                        Text(
-                            it,
-                            Modifier.weight(1f),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                        )
-                    }
-                }
-                repeat(6) { week ->
-                    Row(Modifier.fillMaxWidth()) {
-                        repeat(7) { i ->
-                            val date = start.plusDays((week * 7 + i).toLong())
-                            val sessions = entries[date].orEmpty()
-                            val outside = CalendarData.outsideMonth(date, day)
-                            val selected = date == day
-                            TextButton(
-                                onClick = {
-                                    focus = date.toString()
-                                    showDay = true
-                                },
-                                modifier =
-                                    Modifier.weight(1f)
-                                        .heightIn(min = 48.dp)
-                                        .then(
-                                            if (selected)
-                                                Modifier.border(
-                                                    2.dp,
-                                                    MaterialTheme.colorScheme.primary,
-                                                    MaterialTheme.shapes.small,
-                                                )
-                                            else Modifier
-                                        )
-                                        .semantics(mergeDescendants = true) {
-                                            contentDescription =
-                                                "${dates.label(date)}${if(date==dates.today())", today"else ""}${if(selected)", selected"else ""}. " +
-                                                    if (sessions.isEmpty()) "No session planned"
-                                                    else
-                                                        sessions.joinToString("; ") {
-                                                            it.description()
-                                                        }
-                                        },
-                                contentPadding = PaddingValues(2.dp),
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        "${date.getDayOfMonth()}",
-                                        color =
-                                            if (outside)
-                                                MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                                    alpha = .6f
-                                                )
-                                            else MaterialTheme.colorScheme.onSurface,
-                                        modifier =
-                                            if (date == dates.today())
-                                                Modifier.background(
-                                                        MaterialTheme.colorScheme.primaryContainer,
-                                                        CircleShape,
-                                                    )
-                                                    .padding(4.dp)
-                                            else Modifier,
-                                    )
-                                    FlowRow(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalArrangement = Arrangement.spacedBy(2.dp),
-                                    ) {
-                                        sessions.take(4).forEach { CalendarMarker(it) }
-                                        if (sessions.size > 4)
-                                            Text(
-                                                "+${sessions.size-4}",
-                                                style = MaterialTheme.typography.labelSmall,
-                                            )
-                                    }
-                                }
-                            }
-                        }
+            if (month) {
+                Panel(contentPadding = PaddingValues(horizontal = 6.dp, vertical = 12.dp)) {
+                    MonthGrid(start, day, dates, entries) { date ->
+                        focus = date.toString()
+                        showDay = true
                     }
                 }
                 if (showDay)
@@ -393,6 +283,185 @@ fun SharedActivityCalendarScreen(
     }
 }
 
+/** The shown week or month between previous and next arrows, with a way back to today. */
+@Composable
+private fun PeriodNavigator(
+    label: String,
+    unit: String,
+    previous: () -> Unit,
+    today: () -> Unit,
+    next: () -> Unit,
+) {
+    val large = LocalDensity.current.fontScale >= 1.5f
+    val back: @Composable () -> Unit = {
+        FilledTonalButton(
+            onClick = today,
+            modifier = Modifier.heightIn(min = 48.dp),
+            contentPadding = PaddingValues(horizontal = 14.dp),
+        ) {
+            Text("Today")
+        }
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            PeriodArrow("Previous $unit", flip = true, previous)
+            Text(
+                label,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f).semantics { heading() },
+            )
+            PeriodArrow("Next $unit", flip = false, next)
+            if (!large) back()
+        }
+        if (large) back()
+    }
+}
+
+@Composable
+private fun PeriodArrow(description: String, flip: Boolean, onClick: () -> Unit) {
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = Modifier.size(48.dp).semantics { contentDescription = description },
+    ) {
+        Box(Modifier.graphicsLayer { if (flip) rotationZ = 180f }) {
+            GlyphIcon(Glyph.CHEVRON, LocalContentColor.current, 22.dp)
+        }
+    }
+}
+
+/**
+ * Six weeks of the month. Today's number sits in a filled disc; the selected date is a tonal tile
+ * with an outline. Each day shows up to three marks (then "+n") and speaks every session.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MonthGrid(
+    start: LocalDate,
+    focus: LocalDate,
+    dates: CoachCalendarDates,
+    entries: Map<LocalDate, List<CalendarData.Entry>>,
+    choose: (LocalDate) -> Unit,
+) {
+    val today = dates.today()
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(Modifier.fillMaxWidth().clearAndSetSemantics {}) {
+            listOf("M", "T", "W", "T", "F", "S", "S").forEach {
+                Text(
+                    it,
+                    Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        repeat(6) { week ->
+            Row(Modifier.fillMaxWidth()) {
+                repeat(7) { i ->
+                    val date = start.plusDays((week * 7 + i).toLong())
+                    val sessions = entries[date].orEmpty()
+                    val outside = CalendarData.outsideMonth(date, focus)
+                    val selected = date == focus
+                    val isToday = date == today
+                    val description =
+                        "${dates.label(date)}${if (isToday) ", today" else ""}${if (selected) ", selected" else ""}. " +
+                            if (sessions.isEmpty()) "No session planned"
+                            else sessions.joinToString("; ") { it.description() }
+                    Column(
+                        Modifier.weight(1f)
+                            .padding(2.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                if (selected) MaterialTheme.colorScheme.secondaryContainer
+                                else Color.Transparent
+                            )
+                            .then(
+                                if (selected)
+                                    Modifier.border(
+                                        2.dp,
+                                        MaterialTheme.colorScheme.primary,
+                                        RoundedCornerShape(14.dp),
+                                    )
+                                else Modifier
+                            )
+                            .clickable { choose(date) }
+                            .heightIn(min = 56.dp)
+                            .padding(vertical = 4.dp)
+                            .testTag("calendar-day-$date")
+                            .clearAndSetSemantics {
+                                contentDescription = description
+                                this.selected = selected
+                                role = Role.Button
+                                onClick {
+                                    choose(date)
+                                    true
+                                }
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(3.dp),
+                    ) {
+                        Box(
+                            Modifier.defaultMinSize(minWidth = 28.dp, minHeight = 28.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isToday) MaterialTheme.colorScheme.primary
+                                    else Color.Transparent
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                "${date.getDayOfMonth()}",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight =
+                                    if (isToday || selected) FontWeight.Bold else FontWeight.Normal,
+                                color =
+                                    when {
+                                        isToday -> MaterialTheme.colorScheme.onPrimary
+                                        outside ->
+                                            MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                alpha = .6f
+                                            )
+                                        else -> MaterialTheme.colorScheme.onSurface
+                                    },
+                                maxLines = 1,
+                                softWrap = false,
+                                // The disc grows with the number at large text.
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                            )
+                        }
+                        FlowRow(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement =
+                                Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                        ) {
+                            sessions.take(3).forEach {
+                                SessionMarkShape(
+                                    it,
+                                    19.dp,
+                                    markerLetter(requireNotNull(it.category())),
+                                )
+                            }
+                            if (sessions.size > 3)
+                                Text(
+                                    "+${sessions.size - 3}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun CalendarDay(
     s: CoachUiState,
@@ -404,74 +473,148 @@ private fun CalendarDay(
     dates: CoachCalendarDates,
     distanceLabel: (Double) -> String,
     strengthAction: String,
-) = CoachCard {
-    Text(
-        "${d.getDayOfWeek().name.lowercase().replaceFirstChar{it.uppercase()}} · ${dates.label(d)}",
-        style = MaterialTheme.typography.titleSmall,
-    )
-    if (entries.isEmpty()) Text("No session planned")
-    entries.forEach { entry ->
+) {
+    val isToday = d == dates.today()
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            CalendarMarker(entry)
-            val status =
-                when (entry.state()) {
-                    CalendarData.State.COMPLETED -> "Completed"
-                    CalendarData.State.NOT_COMPLETED -> "Not completed"
-                    CalendarData.State.SKIPPED -> "Skipped by choice"
-                    CalendarData.State.MOVED -> "Moved"
-                    else -> "Planned"
+            Text(
+                "${d.getDayOfWeek().name.lowercase().replaceFirstChar{it.uppercase()}} · ${dates.label(d)}",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color =
+                    if (isToday) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.semantics { heading() },
+            )
+            if (isToday)
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    shape = RoundedCornerShape(50),
+                    modifier = Modifier.clearAndSetSemantics { contentDescription = "Today" },
+                ) {
+                    Text(
+                        "NOW",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
                 }
-            val volume =
-                if (
-                    entry.category() == CalendarData.Category.STRENGTH ||
-                        entry.category() == CalendarData.Category.REST
+        }
+        Panel(contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)) {
+            if (entries.isEmpty())
+                Text(
+                    "No session planned",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                    null
-                else {
-                    val recorded = s.activities.firstOrNull { it.id() == entry.activityId() }
-                    val planned =
-                        (s.currentPlan?.plan()?.workouts() ?: s.plannedWorkouts).firstOrNull {
-                            it.id() == entry.id()
-                        }
-                    recorded?.let {
-                        it.distanceMetres()?.let { metres -> distanceLabel(metres) }
-                            ?: "${it.elapsedTime().getSeconds() / 60} min"
-                    }
-                        ?: planned?.let {
-                            it.distanceKm()?.let { km -> distanceLabel(km * 1000) }
-                                ?: it.duration()?.let { time -> "${time.getSeconds() / 60} min" }
-                        }
-                }
-            val text = "${entry.label()}${volume?.let{" · $it"}?:""} · $status"
-            when {
-                entry.activityId() != null ->
-                    TextButton(
-                        onClick = { activity(requireNotNull(entry.activityId())) },
-                        modifier = Modifier.heightIn(min = 48.dp),
-                    ) {
-                        Text(text)
-                    }
-                entry.category() == CalendarData.Category.STRENGTH &&
-                    entry.state() == CalendarData.State.PLANNED ->
-                    TextButton(
-                        onClick = { strength(d.toString()) },
-                        modifier = Modifier.heightIn(min = 48.dp),
-                    ) {
-                        Text("$text · $strengthAction")
-                    }
-                entry.category() == CalendarData.Category.STRENGTH -> Text(text)
-                entry.id() != null && entry.state() != CalendarData.State.SKIPPED ->
-                    TextButton(
-                        onClick = { workout(requireNotNull(entry.id())) },
-                        modifier = Modifier.heightIn(min = 48.dp),
-                    ) {
-                        Text(text)
-                    }
-                else -> Text(text)
+            entries.forEach { entry ->
+                CalendarEntryRow(
+                    s,
+                    d,
+                    entry,
+                    workout,
+                    strength,
+                    activity,
+                    distanceLabel,
+                    strengthAction,
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun CalendarEntryRow(
+    s: CoachUiState,
+    d: LocalDate,
+    entry: CalendarData.Entry,
+    workout: (String) -> Unit,
+    strength: (String) -> Unit,
+    activity: (String) -> Unit,
+    distanceLabel: (Double) -> String,
+    strengthAction: String,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        SessionDisc(entry.glyph(), entry.discipline() ?: Discipline.RECOVERY, entry.tone(), 36.dp)
+        val status =
+            when (entry.state()) {
+                CalendarData.State.COMPLETED -> "Completed"
+                CalendarData.State.NOT_COMPLETED -> "Not completed"
+                CalendarData.State.SKIPPED -> "Skipped by choice"
+                CalendarData.State.MOVED -> "Moved"
+                else -> "Planned"
+            }
+        val volume =
+            if (
+                entry.category() == CalendarData.Category.STRENGTH ||
+                    entry.category() == CalendarData.Category.REST
+            )
+                null
+            else {
+                val recorded = s.activities.firstOrNull { it.id() == entry.activityId() }
+                val planned =
+                    (s.currentPlan?.plan()?.workouts() ?: s.plannedWorkouts).firstOrNull {
+                        it.id() == entry.id()
+                    }
+                recorded?.let {
+                    it.distanceMetres()?.let { metres -> distanceLabel(metres) }
+                        ?: "${it.elapsedTime().getSeconds() / 60} min"
+                }
+                    ?: planned?.let {
+                        it.distanceKm()?.let { km -> distanceLabel(km * 1000) }
+                            ?: it.duration()?.let { time -> "${time.getSeconds() / 60} min" }
+                    }
+            }
+        val text = "${entry.label()}${volume?.let{" · $it"}?:""} · $status"
+        val muted =
+            entry.state() == CalendarData.State.NOT_COMPLETED ||
+                entry.state() == CalendarData.State.SKIPPED ||
+                entry.category() == CalendarData.Category.REST
+        val plain: @Composable () -> Unit = {
+            Text(
+                text,
+                style = MaterialTheme.typography.bodyLarge,
+                color =
+                    if (muted) MaterialTheme.colorScheme.onSurfaceVariant
+                    else MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f).padding(vertical = 12.dp),
+            )
+        }
+        val action: (@Composable (() -> Unit, String) -> Unit) = { onClick, label ->
+            TextButton(
+                onClick = onClick,
+                modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                shape = RoundedCornerShape(16.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+            ) {
+                Text(
+                    label,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color =
+                        if (muted) MaterialTheme.colorScheme.onSurfaceVariant
+                        else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                GlyphIcon(Glyph.CHEVRON, MaterialTheme.colorScheme.onSurfaceVariant, 18.dp)
+            }
+        }
+        when {
+            entry.activityId() != null ->
+                action({ activity(requireNotNull(entry.activityId())) }, text)
+            entry.category() == CalendarData.Category.STRENGTH &&
+                entry.state() == CalendarData.State.PLANNED ->
+                action({ strength(d.toString()) }, "$text · $strengthAction")
+            entry.category() == CalendarData.Category.STRENGTH -> plain()
+            entry.id() != null && entry.state() != CalendarData.State.SKIPPED ->
+                action({ workout(requireNotNull(entry.id())) }, text)
+            else -> plain()
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.time.*
@@ -265,14 +266,16 @@ fun SharedStrengthGenerationScreen(
                         }
                         WhyDetails(programme.tradeoffs().joinToString("\n"), "Why this programme?")
                         programme.blocks().forEach { block ->
-                            SemanticCard(Tile.Strength) {
-                                Text(
-                                    block.name().replaceFirstChar { it.uppercase() },
-                                    style = MaterialTheme.typography.titleLarge,
-                                )
-                                Text(
-                                    "${block.weeks()} weeks · ${presentation.formatDate(block.start())} – ${presentation.formatDate(block.end())}"
-                                )
+                            SectionLabel(
+                                block.name().replaceFirstChar { it.uppercase() },
+                                Glyph.FLAG,
+                                ChartHue.PLUM,
+                                caption =
+                                    "${block.weeks()} weeks · ${presentation.formatDate(block.start())} – ${presentation.formatDate(block.end())}",
+                            )
+                            Panel(
+                                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+                            ) {
                                 WhyDetails(block.explanation(), "Block emphasis")
                                 var limit by remember(block.id()) { mutableIntStateOf(6) }
                                 block
@@ -280,13 +283,12 @@ fun SharedStrengthGenerationScreen(
                                     .sortedBy { it.date().toEpochDay() }
                                     .take(limit)
                                     .forEach { row ->
-                                        TextButton(
-                                            onClick = { workoutId = row.id() },
-                                            enabled = enabled,
+                                        HorizontalDivider()
+                                        GymTextLink(
+                                            "${presentation.formatDate(row.date())} · ${row.definition().title()} · about ${row.expectedMinutes()} min",
+                                            enabled,
                                         ) {
-                                            Text(
-                                                "${presentation.formatDate(row.date())} · ${row.definition().title()} · about ${row.expectedMinutes()} min"
-                                            )
+                                            workoutId = row.id()
                                         }
                                     }
                                 if (limit < block.workouts().size)

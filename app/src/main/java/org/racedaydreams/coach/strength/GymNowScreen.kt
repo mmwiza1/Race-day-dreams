@@ -30,6 +30,8 @@ fun GymNowScreen(
         ::gymTargetDescription,
         plannedDate = plannedDate,
         backHandler = { enabled, action -> BackHandler(enabled = enabled, onBack = action) },
+        // The Android shell's app bar Back leaves Gym Now, so the overview shows no second Back.
+        appBarBack = true,
     )
 }
 

@@ -1618,6 +1618,88 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesHybridHomeWithRunAndGymSessionOnTheSameDay() {
+        // The seeded running plan puts its long run on today's weekday. Replace the seeded
+        // gym programme with its next version holding a session today, so today's hero shows
+        // the run with the strength session nested inside it. The database is cleared after
+        // each test, so no fixture state outlives this capture.
+        val today = LocalDate.now()
+        val gym = GymProgrammeStore(context)
+        val seeded = requireNotNull(gym.current())
+        gym.save(
+            GymProgramme(
+                seeded.id(),
+                seeded.version() + 1,
+                Instant.now(),
+                "Test-only hybrid same-day programme",
+                GymProgramme.Settings(
+                    GymProgramme.Goal.SUPPORT_RUNNING,
+                    GymProgramme.Priority.RUNNING_FIRST,
+                    GymProgramme.Experience.INTERMEDIATE,
+                    setOf(today.dayOfWeek),
+                    1,
+                    setOf("full gym"),
+                    45,
+                    GymProgramme.Effort.RPE,
+                ),
+                today,
+                today.plusDays(41),
+                listOf(
+                    GymProgramme.Session(
+                        "hybrid-same-day",
+                        today,
+                        "Lower body strength",
+                        listOf(
+                            GymProgramme.Prescription(
+                                "back-squat",
+                                3,
+                                5,
+                                8,
+                                null,
+                                null,
+                                6,
+                                7,
+                                120,
+                                "Controlled working sets",
+                            )
+                        ),
+                        "Test-only session on the same day as the planned run",
+                    )
+                ),
+                emptyList(),
+            )
+        )
+        SqlitePrimaryFocusRepository(context)
+            .save(org.racedaydreams.domain.settings.PrimaryFocus.HYBRID)
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        try {
+            shell("settings put system font_scale 1.0")
+            shell("cmd uimode night no")
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            val inHero = hasAnyAncestor(hasTestTag("today-hero"))
+            compose.onNode(hasText("Start with Live Coach") and inHero).assertExists()
+            compose
+                .onNode(
+                    hasText("Lower body strength") and
+                        hasAnyAncestor(hasTestTag("companion-session"))
+                )
+                .assertExists()
+            compose.onNode(hasTestTag("companion-session") and inHero).assertExists()
+            capture("home-hybrid-same-day")
+        } finally {
+            closeScenario()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesRecoveryGuidanceFromActualRecordedEvidence() {
         val today = LocalDate.now()
         SqlitePrimaryFocusRepository(context)

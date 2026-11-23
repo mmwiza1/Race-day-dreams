@@ -1,5 +1,7 @@
 package org.racedaydreams.coach.application
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.selection.toggleable
@@ -162,7 +164,9 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
             failed -> Text("Could not load the run. Your records are retained.")
             run == null -> Text("This run is unavailable.")
             else ->
-                CoachCard {
+                // The shared summary, heart-rate and route sections carry their own labelled
+                // panels.
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(dateLabel(run.start(), run.startOffset()))
                     SharedRecordedRunSummary(
                         run,
