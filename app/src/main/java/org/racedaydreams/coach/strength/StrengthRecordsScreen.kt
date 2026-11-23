@@ -1,11 +1,13 @@
 package org.racedaydreams.coach.strength
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -33,13 +35,21 @@ fun StrengthRecordsScreen(
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) {
             Text("Back to Strength")
         }
-        CoachHeading("Strength records")
-        Text("What you recorded and what we estimate are kept separate. No maximal test is needed.")
+        ScreenHeader(Discipline.STRENGTH, Glyph.TREND, "Personal bests", "Strength records")
+        Text(
+            "What you recorded and what we estimate are kept separate. No maximal test is needed.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         val points = history
         if (points == null) CircularProgressIndicator()
         else if (points.isEmpty())
-            SemanticCard(Tile.Neutral) {
-                Text("No recorded working-set records yet.")
+            Panel {
+                Text(
+                    "No recorded working-set records yet.",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 Text(
                     "Record your actual performance in Gym Now or log a workout. Warm-ups do not award these records."
                 )
@@ -70,13 +80,17 @@ fun StrengthRecordsScreen(
                             it.key()!!.kind() != StrengthRecords.Kind.REPETITIONS_AT_LOAD
                     }
                 var details by rememberSaveable(identity.toString()) { mutableStateOf(false) }
-                SemanticCard(Tile.Strength) {
-                    Text(
-                        records.first().exercise()!!.name(),
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                    Text("Recorded performance", style = MaterialTheme.typography.titleMedium)
-                    primary.take(if (details) Int.MAX_VALUE else 3).forEach { record ->
+                // Each exercise is a labelled section; its best recorded figure leads the panel.
+                SectionLabel(
+                    records.first().exercise()!!.name(),
+                    Glyph.DUMBBELL,
+                    ChartHue.PLUM,
+                    caption = "Recorded performance",
+                )
+                Panel {
+                    primary.take(if (details) Int.MAX_VALUE else 3).forEachIndexed { index, record
+                        ->
+                        if (index > 0) HorizontalDivider()
                         RecordResult(record, unit, onWorkout)
                     }
                     TextButton(
@@ -115,7 +129,11 @@ fun StrengthRecordsScreen(
                                             .coerceIn(0f, 1f)
                                     },
                                     modifier =
-                                        Modifier.fillMaxWidth().height(8.dp).clearAndSetSemantics {},
+                                        Modifier.fillMaxWidth()
+                                            .height(8.dp)
+                                            .clearAndSetSemantics {},
+                                    color = chartAccent(ChartHue.PLUM).strong,
+                                    trackColor = chartAccent(ChartHue.PLUM).soft.copy(alpha = 0.22f),
                                 )
                             }
                             if (progression.size > historyCount)
@@ -141,32 +159,48 @@ fun StrengthRecordsScreen(
                 records
                     .firstOrNull { it.estimated() }
                     ?.let { estimate ->
-                        SemanticCard(Tile.Insight) {
-                            Text(
-                                "${estimate.exercise()!!.name()} · estimated single-repetition maximum",
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                "About ${recordValue(estimate,unit)}",
-                                style = MaterialTheme.typography.headlineSmall,
-                            )
-                            Text(
-                                "A calculation of a possible single-repetition maximum, not a recorded lift or a training-weight suggestion."
-                            )
-                            Text(
-                                "Source: recorded ${friendlyDate(requireNotNull(estimate.date()))}"
-                            )
-                            Text(
-                                "Based on ${estimate.actual()!!.reps()} recorded repetitions at ${recordMass(estimate.actual()!!.kilograms(),unit)}."
-                            )
-                            WhyDetails(
-                                StrengthRecords.estimateExplanation(),
-                                "How is this estimated?",
-                            )
-                            TextButton(
-                                onClick = { onWorkout(requireNotNull(estimate.workoutId())) }
+                        // Estimates stay visibly separate from recorded evidence: an outlined,
+                        // untinted panel rather than the strength figure styling.
+                        OutlinedCard(
+                            shape = RoundedCornerShape(28.dp),
+                            colors =
+                                CardDefaults.outlinedCardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Column(
+                                Modifier.padding(20.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
                             ) {
-                                Text("View estimate's source workout")
+                                Text(
+                                    "${estimate.exercise()!!.name()} · estimated single-repetition maximum",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    "About ${recordValue(estimate,unit)}",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(
+                                    "A calculation of a possible single-repetition maximum, not a recorded lift or a training-weight suggestion."
+                                )
+                                Text(
+                                    "Source: recorded ${friendlyDate(requireNotNull(estimate.date()))}"
+                                )
+                                Text(
+                                    "Based on ${estimate.actual()!!.reps()} recorded repetitions at ${recordMass(estimate.actual()!!.kilograms(),unit)}."
+                                )
+                                WhyDetails(
+                                    StrengthRecords.estimateExplanation(),
+                                    "How is this estimated?",
+                                )
+                                TextButton(
+                                    onClick = { onWorkout(requireNotNull(estimate.workoutId())) }
+                                ) {
+                                    Text("View estimate's source workout")
+                                }
                             }
                         }
                     }
@@ -198,9 +232,22 @@ private fun RecordResult(
     unit: MassUnit,
     onWorkout: (String) -> Unit,
 ) {
-    Text(recordLabel(record, unit), style = MaterialTheme.typography.titleSmall)
-    Text(recordValue(record, unit), style = MaterialTheme.typography.titleLarge)
-    Text("Recorded ${friendlyDate(requireNotNull(record.date()))}")
+    Text(
+        recordLabel(record, unit),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Text(
+        recordValue(record, unit),
+        style = MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.Bold,
+        color = chartAccent(ChartHue.PLUM).strong,
+    )
+    Text(
+        "Recorded ${friendlyDate(requireNotNull(record.date()))}",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
     TextButton(
         onClick = { onWorkout(requireNotNull(record.workoutId())) },
         modifier = Modifier.heightIn(min = 48.dp),
