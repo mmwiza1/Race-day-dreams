@@ -151,6 +151,16 @@ installations that cannot support them (all existing debug-signed installs).
     - `apksigner` certificate `e7af758a…929d`.
     - Unsigned .ipa SHA-256 `d80f6217…3efee`.
 - **W1 Home merged (23 November 2026):** PR #39 was squash-merged as `main` `95305f41`, with a tree identical to the verified head `f7d4ff29` (source `8926dc51`: Android API 28/35/36, canonical screenshots, iOS shared and device all green).
+  - Post-merge run 45175748454 passed. iOS apple-shared needed one rerun after a simulated GPS fix did not arrive in time.
+  - It published 0.15.4-test1 / 27 from commit 95305f41.
+    - APK SHA-256 `19fe06d6…18e8`, matching its `.sha256`, the `latest` alias and the update manifest.
+    - `apksigner` certificate `e7af758a…929d`.
+    - Unsigned .ipa SHA-256 `07616f5c…7080`.
+- **Recurring CI flakes, for the reliability review (not visual work):**
+  - **iOS `RunningWorkoutPersistenceTests.testFavouriteSurvivesRelaunchWithoutLocationPermission`:** three failures on loaded macOS runners on 23 November 2026, at "Could not reach Pause" and at the `gpsReady` wait on line 159. It also caused a job timeout. The simulated location fix is unreliable under load.
+  - **Android API 35 onboarding "5K" not displayed:** seen after the V1 and V3 merges.
+  - **Android Compose test-thread errors:** "multithreaded access to SnapshotStateObserver" and "performMeasureAndLayout called during measure layout", in tests unrelated to the change under test.
+  - **Infrastructure:** `adb: device offline` and HTTP 429 download limits.
 - **Remaining visual modernisation, owner-authorised 23 November 2026:** develop it concurrently, one draft PR per workstream into `main`.
   - **Workstreams:**
     - W2: Plan and Calendar, plus the hybrid same-day Home evidence.
