@@ -263,7 +263,7 @@ internal fun SessionMarkShape(entry: CalendarData.Entry, size: Dp, letter: Strin
     val filled = state == CalendarData.State.COMPLETED && discipline != null
     // The letter is sized from the mark, not the text scale, so it always fits inside it; the
     // day's spoken description carries the same meaning at any text size.
-    val letterSize = with(LocalDensity.current) { (size * 0.52f).toSp() }
+    val letterSize = with(LocalDensity.current) { (size * 0.6f).toSp() }
     Box(Modifier.size(size), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val stroke = 1.75.dp.toPx()
@@ -292,7 +292,7 @@ internal fun SessionMarkShape(entry: CalendarData.Entry, size: Dp, letter: Strin
                 letter,
                 fontSize = letterSize,
                 lineHeight = letterSize,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 color =
                     when {
                         filled -> discipline!!.onAccent()
@@ -316,17 +316,19 @@ internal fun SessionMarkShape(entry: CalendarData.Entry, size: Dp, letter: Strin
 }
 
 /**
- * The calendar's always-visible key: the three state shapes and the two discipline colours,
- * mirroring the Home week strip. Each day already speaks its own state, so the key is hidden from
- * screen readers.
+ * The calendar's always-visible key, on one compact line where it fits: the three state shapes
+ * (done filled, planned ring, missed slashed), then the two discipline colours as small squares so
+ * colour and state are never confused. The letter glossary lives in the expandable "Calendar key".
+ * Each day already speaks its own sessions, so this key is hidden from screen readers.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun CalendarMarkKey() {
     FlowRow(
         Modifier.fillMaxWidth().testTag("calendar-mark-key").clearAndSetSemantics {},
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         listOf(
                 CalendarData.State.COMPLETED to "Done",
@@ -342,17 +344,20 @@ internal fun CalendarMarkKey() {
                     )
                 }
             }
-        listOf(Discipline.RUNNING to "Running", Discipline.STRENGTH to "Strength training")
-            .forEach { (discipline, label) ->
-                KeyItem(label) {
-                    Box(Modifier.size(10.dp).clip(CircleShape).background(discipline.accent()))
-                }
-            }
-        Text(
-            "E easy · Q quality · L long · R race · S strength · U unclassified run · – rest",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        Box(
+            Modifier.size(width = 1.dp, height = 12.dp)
+                .background(MaterialTheme.colorScheme.outlineVariant)
         )
+        listOf(Discipline.RUNNING to "Run", Discipline.STRENGTH to "Strength").forEach {
+            (discipline, label) ->
+            KeyItem(label) {
+                Box(
+                    Modifier.size(10.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(discipline.accent())
+                )
+            }
+        }
     }
 }
 
@@ -360,12 +365,12 @@ internal fun CalendarMarkKey() {
 private fun KeyItem(label: String, mark: @Composable () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         mark()
         Text(
             label,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }

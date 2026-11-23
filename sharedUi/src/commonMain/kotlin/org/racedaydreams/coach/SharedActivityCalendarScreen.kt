@@ -131,6 +131,11 @@ fun CalendarLegend() {
             Text(if (expanded) "Hide calendar key" else "Calendar key ⓘ")
         }
         if (expanded) {
+            Text(
+                "The letter in each mark is the workout type:",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
             FlowRow(
                 Modifier.semantics { contentDescription = "Workout category legend" },
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -439,7 +444,7 @@ private fun MonthGrid(
                             sessions.take(3).forEach {
                                 SessionMarkShape(
                                     it,
-                                    18.dp,
+                                    19.dp,
                                     markerLetter(requireNotNull(it.category())),
                                 )
                             }
