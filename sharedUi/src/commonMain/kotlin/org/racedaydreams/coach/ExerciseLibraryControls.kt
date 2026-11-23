@@ -35,23 +35,10 @@ fun LibrarySearchIcon() {
     }
 }
 
+/** Decorative "opens a page" chevron, shared with the expressive rows; hidden from readers. */
 @Composable
 fun LibraryOpenIcon() {
-    val colour = MaterialTheme.colorScheme.onSurfaceVariant
-    Canvas(Modifier.size(16.dp)) {
-        drawLine(
-            colour,
-            Offset(size.width * .35f, size.height * .2f),
-            Offset(size.width * .65f, size.height * .5f),
-            2.dp.toPx(),
-        )
-        drawLine(
-            colour,
-            Offset(size.width * .65f, size.height * .5f),
-            Offset(size.width * .35f, size.height * .8f),
-            2.dp.toPx(),
-        )
-    }
+    GlyphIcon(Glyph.CHEVRON, MaterialTheme.colorScheme.onSurfaceVariant, 20.dp)
 }
 
 @Composable

@@ -7,6 +7,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.time.CalendarDates
@@ -40,12 +42,14 @@ fun SharedExerciseDetail(
                 .sortedByDescending { it.startedAt() }
         }
     CoachPage {
-        Row(Modifier.fillMaxWidth()) {
-            Text(
-                e.name(),
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.weight(1f),
-            )
+        // Compact strength header: the exercise name is the page heading and the favourite star
+        // is its single trailing control (spoken label unchanged).
+        ScreenHeader(
+            discipline = Discipline.STRENGTH,
+            glyph = Glyph.DUMBBELL,
+            eyebrow = "Strength exercise",
+            title = e.name(),
+        ) {
             IconButton(
                 onClick = {
                     onExerciseChoice(
@@ -53,10 +57,13 @@ fun SharedExerciseDetail(
                         choice?.favourite() != true,
                         choice?.archived() == true,
                     )
-                }
+                },
+                modifier = Modifier.size(CoachSpace.Touch),
             ) {
                 Text(
                     if (choice?.favourite() == true) "★" else "☆",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Discipline.STRENGTH.onContainer(),
                     modifier =
                         Modifier.semantics {
                             contentDescription =
@@ -80,10 +87,14 @@ fun SharedExerciseDetail(
             }
         when (section) {
             "Overview" -> {
-                CoachCard {
-                    Text(ExerciseCatalog.definition(e.id())?.category() ?: "Custom exercise")
+                Panel {
                     Text(
-                        "Equipment: ${ExerciseCatalog.definition(e.id())?.equipment()?:customMetadata?.let{org.racedaydreams.coach.strength.customEquipmentDescription(it)}?:"User defined"}"
+                        ExerciseCatalog.definition(e.id())?.category() ?: "Custom exercise",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        "Equipment:${ExerciseCatalog.definition(e.id())?.equipment()?:customMetadata?.let{org.racedaydreams.coach.strength.customEquipmentDescription(it)}?:"User defined"}"
                     )
                     Text(org.racedaydreams.domain.presentation.AthleteLanguage.measurement(e))
                     WhyDetails(
@@ -116,31 +127,49 @@ fun SharedExerciseDetail(
                         else "Hide from My Exercises"
                     )
                 }
-                Text("${sessions.size} recorded workouts")
+                Text(
+                    "${sessions.size} recorded workouts",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 if (ExerciseCatalog.definition(e.id()) == null) {
                     CoachTextInput("Custom exercise name", renamed, { renamed = it })
-                    CoachButton("Save exercise name") {
-                        onSaveExercise(
-                            StrengthExercise(
-                                e.id(),
-                                renamed.trim(),
-                                e.region(),
-                                e.mode(),
-                                e.estimateOneRepMax(),
-                                e.measurement(),
+                    // The Favourite button stays the screen's one filled action.
+                    OutlinedButton(
+                        onClick = {
+                            onSaveExercise(
+                                StrengthExercise(
+                                    e.id(),
+                                    renamed.trim(),
+                                    e.region(),
+                                    e.mode(),
+                                    e.estimateOneRepMax(),
+                                    e.measurement(),
+                                )
                             )
-                        )
+                        },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = CoachSpace.Touch),
+                    ) {
+                        Text("Save exercise name")
                     }
                 }
             }
             "How to do it" -> technique(e.id())
             "History" -> {
                 if (sessions.isEmpty())
-                    Text("No workouts for this exercise yet. Log a workout to start its history.")
+                    Text(
+                        "No workouts for this exercise yet. Log a workout to start its history.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 var limit by rememberSaveable { mutableIntStateOf(20) }
                 sessions.take(limit).forEach { s ->
-                    CoachCard {
-                        Text(formatDate(CalendarDates.atOffset(s.startedAt(), s.offset())))
+                    Panel(contentPadding = PaddingValues(16.dp)) {
+                        Text(
+                            formatDate(CalendarDates.atOffset(s.startedAt(), s.offset())),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Discipline.STRENGTH.accent(),
+                        )
                         s.exercises()
                             .filter { it.exercise().id() == id }
                             .forEach {
@@ -171,10 +200,12 @@ fun SharedExerciseDetail(
                     }
                 if (records.isEmpty())
                     Text(
-                        "No personal best recorded yet. Record your main sets or add a previous result from PBs & progression."
+                        "No personal best recorded yet. Record your main sets or add a previous result from PBs & progression.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 records.forEach { r ->
-                    CoachCard {
+                    // Borderless record panel: the label, then the result as the figure that leads.
+                    Panel(contentPadding = PaddingValues(16.dp)) {
                         Text(
                             org.racedaydreams.domain.presentation.AthleteLanguage.recordLabel(
                                 requireNotNull(r.category())
@@ -182,26 +213,37 @@ fun SharedExerciseDetail(
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Text(
-                            if (requireNotNull(r.category()).startsWith("Duration"))
-                                StrengthMeasurementPolicy.duration(r.value().toLong())
-                            else if (requireNotNull(r.category()).startsWith("Distance"))
-                                "${formatNumber(r.value())} m"
-                            else if (r.category() == "Estimated 1RM")
-                                "Estimated maximum for one repetition: ~${kotlin.math.round(state.massUnit.fromKilograms(r.value())).toInt()} ${state.massUnit.name.lowercase()}"
-                            else if (r.category() == "Bodyweight reps") "${r.reps()} reps"
-                            else
-                                "${formatNumber(state.massUnit.fromKilograms(r.kilograms()))} ${state.massUnit.name.lowercase()} × ${r.reps()}"
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Discipline.STRENGTH.accent(),
+                            text =
+                                if (requireNotNull(r.category()).startsWith("Duration"))
+                                    StrengthMeasurementPolicy.duration(r.value().toLong())
+                                else if (requireNotNull(r.category()).startsWith("Distance"))
+                                    "${formatNumber(r.value())} m"
+                                else if (r.category() == "Estimated 1RM")
+                                    "Estimated maximum for one repetition: ~${kotlin.math.round(state.massUnit.fromKilograms(r.value())).toInt()} ${state.massUnit.name.lowercase()}"
+                                else if (r.category() == "Bodyweight reps") "${r.reps()} reps"
+                                else
+                                    "${formatNumber(state.massUnit.fromKilograms(r.kilograms()))} ${state.massUnit.name.lowercase()} × ${r.reps()}",
                         )
-                        Text(requireNotNull(r.provenance()))
                         Text(
-                            r.date()?.let {
-                                (if (
-                                    r.precision() ==
-                                        HistoricalStrengthRecord.DatePrecision.APPROXIMATE
-                                )
-                                    "Around "
-                                else "") + formatDate(it)
-                            } ?: "Date unknown · outside chronology"
+                            requireNotNull(r.provenance()),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text =
+                                r.date()?.let {
+                                    (if (
+                                        r.precision() ==
+                                            HistoricalStrengthRecord.DatePrecision.APPROXIMATE
+                                    )
+                                        "Around "
+                                    else "") + formatDate(it)
+                                } ?: "Date unknown · outside chronology",
                         )
                         if (r.sessionId() != null)
                             TextButton(onClick = { source(requireNotNull(r.sessionId())) }) {

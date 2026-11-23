@@ -2,7 +2,6 @@
 
 package org.racedaydreams.coach.strength
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,14 +16,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,16 +40,23 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
+import org.racedaydreams.coach.ChartHue
 import org.racedaydreams.coach.CoachExerciseSearch
 import org.racedaydreams.coach.CoachFilterChip
-import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.CoachUiState
+import org.racedaydreams.coach.Discipline
+import org.racedaydreams.coach.Glyph
 import org.racedaydreams.coach.LibraryOpenIcon
+import org.racedaydreams.coach.Panel
+import org.racedaydreams.coach.ScreenHeader
+import org.racedaydreams.coach.SectionLabel
+import org.racedaydreams.coach.accent
+import org.racedaydreams.coach.container
+import org.racedaydreams.coach.onContainer
 import org.racedaydreams.domain.strength.CustomStrengthExercise
 import org.racedaydreams.domain.strength.ExerciseMetadata
 import org.racedaydreams.domain.strength.ExerciseMetadataCatalog
@@ -235,16 +242,14 @@ fun SharedExerciseBrowseScreen(
         verticalArrangement = Arrangement.spacedBy(CoachSpace.Card),
     ) {
         item(key = "heading") {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+            // Compact strength-coloured header: a content screen, so no hero. The add action is
+            // the header's single trailing control and keeps its spoken label.
+            ScreenHeader(
+                discipline = Discipline.STRENGTH,
+                glyph = if (shortcut == "Excluded") Glyph.LIST else Glyph.DUMBBELL,
+                eyebrow = "Strength exercises",
+                title = if (shortcut == "Excluded") "Excluded exercises" else "Exercise Library",
             ) {
-                Column(Modifier.weight(1f)) {
-                    CoachHeading(
-                        if (shortcut == "Excluded") "Excluded exercises" else "Exercise Library"
-                    )
-                }
                 IconButton(
                     onClick = {
                         if (onCreateClassifiedCustom != null) onCreateClassifiedCustom()
@@ -258,6 +263,7 @@ fun SharedExerciseBrowseScreen(
                     Text(
                         "+",
                         style = MaterialTheme.typography.headlineMedium,
+                        color = Discipline.STRENGTH.onContainer(),
                         modifier = Modifier.clearAndSetSemantics {},
                     )
                 }
@@ -404,13 +410,18 @@ fun SharedExerciseBrowseScreen(
             }
             if (shortcut == "Excluded")
                 item(key = "exclusion-explanation") {
-                    Text(
-                        "Excluded exercises are not selected for new programmes or alternatives. Existing workouts, favourites and PBs remain. Restore an exercise to make it eligible again."
-                    )
+                    Panel {
+                        Text(
+                            "Excluded exercises are not selected for new programmes or alternatives. Existing workouts, favourites and PBs remain. Restore an exercise to make it eligible again.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             if (refineSearch)
                 item(key = "browse") {
-                    Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                    // Refinements sit in one borderless panel rather than loose chip rows.
+                    Panel(contentPadding = PaddingValues(16.dp)) {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
                             verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
@@ -536,12 +547,15 @@ fun SharedExerciseBrowseScreen(
         }
         item(key = "result-summary") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    if (shortcut == "For you" && query.isBlank() && !metadataFilter)
-                        "A few useful starting points"
-                    else "${rows.size} matching ${if (rows.size == 1) "exercise" else "exercises"}",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.semantics { heading() },
+                // Results are a labelled section: label outside, borderless rows below.
+                SectionLabel(
+                    title =
+                        if (shortcut == "For you" && query.isBlank() && !metadataFilter)
+                            "A few useful starting points"
+                        else
+                            "${rows.size} matching ${if (rows.size == 1) "exercise" else "exercises"}",
+                    glyph = Glyph.LIST,
+                    hue = ChartHue.PLUM,
                 )
                 if (hasFilters && query.isBlank())
                     TextButton(
@@ -561,30 +575,33 @@ fun SharedExerciseBrowseScreen(
                     }
                 if (rows.isEmpty())
                     Text(
-                        when (shortcut) {
-                            "Favourites" ->
-                                "No matching favourites. Star an exercise from its detail page, or clear the current filters."
-                            "Recent" ->
-                                "No matching recent exercises. Record a workout or clear the current filters."
-                            "In my programme" ->
-                                "No matching programme exercises. Create a gym programme or clear the current filters."
-                            else ->
-                                "No matching exercises. Try another name, alias or category. Custom exercises without classified metadata can be found through search."
-                        }
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text =
+                            when (shortcut) {
+                                "Favourites" ->
+                                    "No matching favourites. Star an exercise from its detail page, or clear the current filters."
+                                "Recent" ->
+                                    "No matching recent exercises. Record a workout or clear the current filters."
+                                "In my programme" ->
+                                    "No matching programme exercises. Create a gym programme or clear the current filters."
+                                else ->
+                                    "No matching exercises. Try another name, alias or category. Custom exercises without classified metadata can be found through search."
+                            },
                     )
             }
         }
         items(rows, key = { "exercise:${it.id()}" }) { exercise ->
-            OutlinedCard(
+            // Borderless, large-radius rows led by the exercise thumbnail (no nested outlines).
+            Card(
                 onClick = { open(exercise.id()) },
                 modifier =
                     Modifier.fillMaxWidth()
                         .heightIn(min = 80.dp)
                         .testTag("exercise-row-${exercise.id()}"),
-                shape = MaterialTheme.shapes.medium,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                shape = RoundedCornerShape(24.dp),
                 colors =
-                    CardDefaults.outlinedCardColors(
+                    CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                         contentColor = MaterialTheme.colorScheme.onSurface,
                     ),
@@ -638,6 +655,7 @@ fun SharedExerciseBrowseScreen(
                             Text(
                                 status.joinToString(" · "),
                                 style = MaterialTheme.typography.labelMedium,
+                                color = Discipline.STRENGTH.accent(),
                             )
                         if (exercise.id() in excluded && onRestore != null)
                             TextButton(
@@ -656,15 +674,22 @@ fun SharedExerciseBrowseScreen(
         }
         item(key = "explore-all") {
             if (shortcut != "All")
-                OutlinedButton(
+                FilledTonalButton(
                     onClick = { shortcut = "All" },
                     modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                    colors =
+                        ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Discipline.STRENGTH.container(),
+                            contentColor = Discipline.STRENGTH.onContainer(),
+                        ),
                 ) {
                     Text("Explore all exercises")
                 }
             Text(
                 "Technique guides, history and PBs remain on each exercise page.",
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = CoachSpace.Tiny),
             )
         }
     }

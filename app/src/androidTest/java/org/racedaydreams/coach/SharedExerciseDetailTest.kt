@@ -161,6 +161,29 @@ class SharedExerciseDetailTest {
     }
 
     @Test
+    fun compactHeaderNamesTheExerciseOnceAndKeepsTheFavouriteToggle() {
+        val bench = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
+        val selected = AtomicReference<Triple<String, Boolean, Boolean>>()
+        render(
+            CoachUiState(loading = false, exercises = listOf(bench)),
+            bench.id(),
+            largeDark = true,
+            choice = { id, favourite, archived -> selected.set(Triple(id, favourite, archived)) },
+        )
+        compose.onNodeWithTag("screen-header").assertIsDisplayed()
+        compose.onNode(hasText(bench.name()) and isHeading()).assertIsDisplayed()
+        compose.onAllNodesWithText(bench.name()).assertCountEquals(1)
+        compose
+            .onNodeWithContentDescription("Add ${bench.name()} to favourites")
+            .assertIsDisplayed()
+            .performClick()
+        compose.runOnIdle { assertEquals(Triple(bench.id(), true, false), selected.get()) }
+        compose.onNodeWithText("How to do it").performClick()
+        compose.onAllNodesWithText("How to do it").assertCountEquals(2)
+        compose.onNode(hasText("How to do it") and isHeading()).assertExists()
+    }
+
+    @Test
     fun timedHistoricalEvidenceRetainsUnknownDateAndNeverBecomesAnEstimatedLift() {
         val plank = requireNotNull(ExerciseCatalog.definition("plank")).exercise()
         val old =
